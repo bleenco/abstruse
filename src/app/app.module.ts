@@ -5,18 +5,21 @@ import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
+import { AppLoginComponent } from './components/app-login';
 import { AppDashboardComponent } from './components/app-dashboard';
 
 @NgModule({
   declarations: [
     AppComponent,
+    AppLoginComponent,
     AppDashboardComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
     RouterModule.forRoot([
-      { path: '', pathMatch: 'full', component: AppDashboardComponent }
+      { path: '', pathMatch: 'full', component: AppDashboardComponent },
+      { path: 'login', component: AppLoginComponent }
     ]),
     HttpModule,
     FormsModule
