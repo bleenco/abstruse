@@ -25,21 +25,18 @@
             </h2>
             <div class="setup-list">
               <div class="setup-list-item">
-                <img class="icon" src="images/icons/check-true.svg"> Compatible OS
+                <img class="icon" [src]="serverStatus.docker ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Installed
               </div>
               <div class="setup-list-item">
-                <img class="icon" src="images/icons/check-true.svg"> Docker Installed
+                <img class="icon" [src]="serverStatus.dockerRunning ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Running
               </div>
               <div class="setup-list-item">
-                <img class="icon" src="images/icons/check-false.svg"> Docker Running
-              </div>
-              <div class="setup-list-item">
-                <img class="icon" src="images/icons/check-true.svg"> SQLite Installed
+                <img class="icon" [src]="serverStatus.sqlite ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> SQLite3 Installed
               </div>
             </div>
             <hr/>
             <p>Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
-            <button type="button" class="button">Re-check Configuration</button>
+            <button type="button" class="button" (click)="checkConfiguration()">Re-check Configuration</button>
           </div>
         </div>
       </div>

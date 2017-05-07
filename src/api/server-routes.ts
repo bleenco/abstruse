@@ -1,18 +1,23 @@
 import * as express from 'express';
 import * as docker from './docker';
+import * as system from './system';
 
 export function setupRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/docker-status', (req: express.Request, res: express.Response) => {
-    docker.isDockerInstalled().subscribe(installed => {
-      if (installed) {
-        docker.isDockerRunning().subscribe(running => {
-          res.status(200).json({ data: { installed: installed, running: running }});
-        });
-      } else {
-        res.status(200).json({ data: { installed: installed, running: false } });
-      }
+  router.get('/status', (req: express.Request, res: express.Response) => {
+    system.isSQLiteInstalled().subscribe(sqlite => {
+      docker.isDockerInstalled().subscribe(dockerInstalled => {
+        if (dockerInstalled) {
+          docker.isDockerRunning().subscribe(dockerRunning => {
+            const data = { sqlite: sqlite, docker: dockerInstalled, dockerRunning: dockerRunning };
+            res.status(200).json({ data: data });
+          });
+        } else {
+          const data = { sqlite: sqlite, docker: false, dockerRunning: false };
+          res.status(200).json({ data: data });
+        }
+      });
     });
   });
 

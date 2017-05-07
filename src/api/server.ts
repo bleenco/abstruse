@@ -25,7 +25,7 @@ export class ExpressServer implements IExpressServer {
       const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
-      app.use('/setup', routes.setupRoutes());
+      app.use('/api/setup', routes.setupRoutes());
       app.listen(this.config.port, () => {
         observer.next(`Server running on port ${this.config.port}`);
       });

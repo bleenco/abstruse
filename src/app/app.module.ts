@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
+import { ApiServiceProvider } from './services/api.service';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppLoginComponent } from './components/app-login';
@@ -28,6 +29,9 @@ import { AppDashboardComponent } from './components/app-dashboard';
     ]),
     HttpModule,
     FormsModule
+  ],
+  providers: [
+    ApiServiceProvider
   ],
   bootstrap: [ AppComponent ]
 })
