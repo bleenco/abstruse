@@ -3,7 +3,7 @@
   "version": "0.0.5",
   "description": "Abstruse CI",
   "bin": {
-    "abstruse": "./dist/api/server.js"
+    "abstruse": "./dist/api/index.js"
   },
   "scripts": {
     "clean": "rimraf dist",
