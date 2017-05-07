@@ -1,0 +1,68 @@
+.content
+  margin: 20px 0
+  width: 100%
+  background: $background-button
+  border: 1px solid $border
+  border-radius: 4px
+
+  h1
+    color: $white
+    font-size: 24px
+    padding: 20px
+
+  .columns
+    margin: 0
+
+    .column
+      margin: 0
+      padding: 0
+
+.list-header
+  background: $border
+  color: $color-secondary
+  font-size: 14px
+  display: flex
+  align-items: center
+  height: 36px
+
+  .column
+    padding: 0 10px !important
+
+.list-item
+  display: flex
+  align-items: center
+  height: 65px
+  margin: 0
+  border-bottom: 1px solid $border
+  color: $white
+  font-size: 14px
+
+  .column
+    padding: 0 10px !important
+
+  &:last-child
+    border-bottom: none
+
+  .status-circle
+    display: inline-block
+    width: 12px
+    height: 12px
+    border-radius: 50%
+    border: 2px solid $grey
+    margin-right: 5px
+
+    &.green
+      border-color: $green
+
+    &.red
+      border-color: $red
+
+    &.yellow
+      border-color: $yellow
+
+  .commit-column
+    span
+      display: block
+
+      &.bold
+        font-family: $font-family-bold
