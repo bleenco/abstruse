@@ -1,20 +1,42 @@
 .nav
   height: 70px
-  background: $background-button
+  background: $background
   box-shadow: 0 1px 0 0 $border
 
-  .nav-left
-    .nav-item
-      color: $white
-      font-size: 18px
+  .nav-item
+    color: $white
 
-  .nav-center
-    display: flex
-    align-items: center
+    &.nav-logo
+      &:hover
+        path
+          fill: $green
 
-  .nav-right
-    display: flex
-    align-items: center
-    .nav-search
-      width: 270px
-      margin-right: 20px
+    .nav-avatar
+      display: block
+      float: left
+      width: 40px
+      min-height: 40px
+      border-radius: 50%
+      border: 2px solid $border
+
+    .nav-item-arrow
+      display: block
+      float: left
+      margin-left: 10px
+
+    &:hover
+      color: $green
+
+      .nav-avatar
+        border-color: $green
+
+      .nav-item-arrow
+        path
+          fill: $green
+
+  &.sub-nav
+    background: $background-button
+
+    .nav-center
+      display: flex
+      align-items: center
