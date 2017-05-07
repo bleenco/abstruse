@@ -6,13 +6,15 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { AppLoginComponent } from './components/app-login';
+import { AppHeaderComponent } from './components/app-header';
 import { AppDashboardComponent } from './components/app-dashboard';
 
 @NgModule({
   declarations: [
     AppComponent,
     AppLoginComponent,
-    AppDashboardComponent
+    AppDashboardComponent,
+    AppHeaderComponent
   ],
   imports: [
     BrowserModule,
