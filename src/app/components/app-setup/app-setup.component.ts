@@ -16,7 +16,7 @@ export interface ServerStatus {
 export class AppSetupComponent implements OnInit {
   serverStatus: ServerStatus;
   readyToSetup: boolean;
-  step: 'config' | 'progress' | 'done';
+  step: 'config' | 'db' | 'docker' | 'done';
   terminalInput: string;
   loading: boolean;
 
@@ -37,7 +37,7 @@ export class AppSetupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.isAppReady().subscribe(event => {
+    this.apiService.isAppReady().delay(1000).subscribe(event => {
       if (event) {
         this.router.navigate(['/login']);
       } else {
@@ -48,19 +48,17 @@ export class AppSetupComponent implements OnInit {
 
   checkConfiguration(): void {
     this.loading = true;
-    setTimeout(() => {
-      this.apiService.getServerStatus().subscribe((resp: ServerStatus) => {
-        this.serverStatus = resp;
-        const i =
-          Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
-        this.readyToSetup = i === -1 ? true : false;
-        this.loading = false;
-      });
-    }, 1000);
+    this.apiService.getServerStatus().delay(1000).subscribe((resp: ServerStatus) => {
+      this.serverStatus = resp;
+      const i =
+        Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+      this.readyToSetup = i === -1 ? true : false;
+      this.loading = false;
+    });
   }
 
-  continue(): void {
-    this.step = 'progress';
+  continueToDb(): void {
+    this.step = 'db';
   }
 
   terminalOutput(e: any): void {

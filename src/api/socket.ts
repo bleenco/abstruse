@@ -1,6 +1,7 @@
 import * as ws from 'ws';
 import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { PtyInstance } from './pty';
+import * as logger from './logger';
 
 export interface ISocketServerOptions {
   port: number;
@@ -47,9 +48,12 @@ export class SocketServer {
 
   private createRxServer = (options: ws.IServerOptions) => {
     return new Observable((observer: Observer<any>) => {
-      console.log(`Socket server running at port ${options.port}...`);
+      logger.info(`Socket server running at port ${options.port}`);
       let wss: ws.Server = new ws.Server(options);
-      wss.on('connection', (client: ws) => observer.next(client));
+      wss.on('connection', (connection: ws) => {
+        observer.next(connection);
+        logger.info(`socket connection established.`);
+      });
 
       return () => {
         wss.close();
@@ -64,6 +68,7 @@ export class SocketServer {
       connection.on('close', () => {
         connection.close();
         observer.next(JSON.stringify({ type: 'close' }));
+        logger.info(`socket connection closed.`);
         this.ptyProcesses.forEach(pty => {
           pty.kill('SIGHUP');
         });

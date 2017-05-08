@@ -22,6 +22,13 @@
     &.green
       background: darken($green, 3)
 
+  &[disabled]
+    background: lighten($background-button, 10)
+    pointer-events: none
+
+    &.green
+      background: lighten($green, 10)
+
 .group-buttons
   display: flex
   justify-content: center

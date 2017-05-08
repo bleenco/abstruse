@@ -44,10 +44,42 @@
                 <hr/>
                 <p *ngIf="!readyToSetup">Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
                 <button type="button" class="button" (click)="checkConfiguration()" *ngIf="!readyToSetup">Re-check Configuration</button>
-                <button type="button" class="button" (click)="continue()" *ngIf="readyToSetup">Continue with Setup</button>
+                <button type="button" class="button" (click)="continueToDb()" *ngIf="readyToSetup">Continue</button>
               </div>
 
-              <div *ngIf="step === 'progress'">
+              <div *ngIf="step === 'db'">
+                <h2>
+                  <img src="images/icons/password.svg">
+                  Administrator Account
+                </h2>
+                <form class="password-form">
+                  <div class="columns">
+                    <div class="column is-6 is-offset-3">
+                      <div class="form-field">
+                        <label class="form-label">Email</label>
+                        <input class="form-input" type="text" name="email" placeholder="Email">
+                      </div>
+                      <div class="form-field">
+                        <label class="form-label">Full Name</label>
+                        <input class="form-input" type="text" name="name" placeholder="Full Name">
+                      </div>
+                      <div class="form-field">
+                        <label class="form-label">Password</label>
+                        <input class="form-input" type="password" name="password" placeholder="Password">
+                      </div>
+                      <div class="form-field">
+                        <label class="form-label">Repeat Password</label>
+                        <input class="form-input" type="password" name="password2" placeholder="Repeat Password">
+                      </div>
+                      <div class="form-field">
+                        <button type="button" class="button green" disabled>Continue</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div *ngIf="step === 'docker'">
                 <div class="paragraph">
                   <div class="loader"></div>
                   Setting up docker image, please wait ...

@@ -1,6 +1,7 @@
 import { homedir } from 'os';
 import { join, resolve } from 'path';
 import { existsSync, copyFile } from './fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 export function initSetup(): void {
   const srcDir = resolve(__dirname, '../../src/files');
@@ -8,6 +9,25 @@ export function initSetup(): void {
 
   copyFile(join(srcDir, 'xvfb'), join(destDir, 'docker-files', 'xvfb'));
   copyFile(join(srcDir, 'Dockerfile'), join(destDir, 'docker-files', 'Dockerfile'));
+}
+
+export function writeDefaultConfig(): void {
+  const config = {
+    port: 6500,
+    wsport: 6501,
+    dbclient: 'sqlite3',
+    connection: {
+      filename: './abstruse.sqlite'
+    }
+  };
+
+  if (!existsSync(getFilePath('config.json'))) {
+    try {
+      writeFileSync(getFilePath('config.json'), config);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 
 export function appReady(): boolean {
@@ -20,6 +40,10 @@ export function getRootDir(): string {
 
 export function getFilePath(relativePath: string): string {
   return join(getRootDir(), relativePath);
+}
+
+export function getConfig(): string {
+  return readFileSync(getFilePath('config.json')).toString();
 }
 
 export function getHumanSize(bytes: number, decimals = 2): string {

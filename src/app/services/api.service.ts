@@ -20,6 +20,10 @@ export class ApiService {
     return this.get(`${this.url}/setup/status`);
   }
 
+  initializeConfigs(): Observable<any> {
+    return this.post(`${this.url}/setup/init`, {});
+  }
+
   login(username: string, password: string): Observable<any> {
     let user = { username, password };
 

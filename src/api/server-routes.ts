@@ -4,6 +4,8 @@ import * as system from './system';
 import * as utils from './utils';
 import { resolve } from 'path';
 import { Observable } from 'rxjs';
+import { exists } from './fs';
+import { getFilePath } from './utils';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -28,7 +30,8 @@ export function setupRoutes(): express.Router {
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
-      docker.imageExists('abstruse')
+      docker.imageExists('abstruse'),
+      Observable.fromPromise(exists(getFilePath('config.json')))
     ])
     .toArray()
     .subscribe(data => {
@@ -42,7 +45,6 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
-    utils.initSetup();
     system.isSQLiteInstalled().subscribe(sqlite => {
       docker.isDockerInstalled().subscribe(dockerInstalled => {
         if (dockerInstalled) {
@@ -56,6 +58,12 @@ export function setupRoutes(): express.Router {
         }
       });
     });
+  });
+
+  router.post('/init', (req: express.Request, res: express.Response) => {
+    utils.initSetup();
+    utils.writeDefaultConfig();
+    res.status(200).json({ data: true });
   });
 
   router.get('/init', (req: express.Request, res: express.Response) => {
