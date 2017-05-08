@@ -2,6 +2,22 @@ import * as express from 'express';
 import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
+import { resolve } from 'path';
+
+export function webRoutes(): express.Router {
+  const router = express.Router();
+
+  router.use('/css', express.static(resolve(__dirname, '../app/css'), { index: false }));
+  router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
+  router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
+  router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+
+  router.get('/setup', index);
+  router.get('/login', index);
+  router.all('/*', index);
+
+  return router;
+}
 
 export function setupRoutes(): express.Router {
   const router = express.Router();
@@ -34,4 +50,8 @@ export function setupRoutes(): express.Router {
   });
 
   return router;
+}
+
+function index(req: express.Request, res: express.Response): void {
+  return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }
