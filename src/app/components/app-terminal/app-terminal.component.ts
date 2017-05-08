@@ -15,7 +15,7 @@ import * as hterm from 'hterm';
 })
 export class AppTerminalComponent implements OnInit {
   @Input() data: string;
-  @Output() outputData: EventEmitter<string>;
+  @Output() outputData: EventEmitter<any>;
 
   term: any;
   termReady: boolean;
@@ -37,29 +37,13 @@ export class AppTerminalComponent implements OnInit {
     this.term.onTerminalReady = () => {
       let io = this.term.io.push();
 
-      // this.socket.onMessage().subscribe(data => {
-      //   if (!this.termVisible) {
-      //     this.processDone = false;
-      //     this.termVisible = true;
-      //     this.startDate = new Date();
-      //   }
-
-      //   if (data.type === 'data') {
-      //     requestAnimationFrame(() => this.term.io.writeUTF8(data.message));
-      //   } else if (data.type === 'exit') {
-      //     this.processDone = true;
-      //     this.endDate = new Date();
-      //     this.exitCode = data.message;
-      //   }
-      // }, err => this.term = null, () => this.term = null);
-
-      // io.onTerminalResize = (col: number, row: number) => {
-      //   this.socket.emit({ action: 'resize', col: col, row: row });
-      // };
+      io.onTerminalResize = (col: number, row: number) => {
+        this.outputData.emit({ action: 'resize', col: col, row: row });
+      };
 
       this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
       this.term.prefs_.set('font-size', 12);
-      this.term.prefs_.set('background-color', '#222C3C');
+      this.term.prefs_.set('background-color', '#273142');
       this.term.prefs_.set('foreground-color', '#FFFFFF');
       this.term.prefs_.set('cursor-color', 'transparent');
       this.term.prefs_.set('color-palette-overrides', [
@@ -80,6 +64,8 @@ export class AppTerminalComponent implements OnInit {
         '#3971ed',
         '#ffffff'
       ]);
+
+      this.term.setWindowTitle = () => {};
 
       this.termReady = true;
       this.outputData.emit('ready');

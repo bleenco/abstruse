@@ -2,7 +2,7 @@
   <div class="hero-body">
     <div class="container">
       <div class="columns is-multiline">
-        <div class="column is-6 is-offset-3">
+        <div class="column is-8 is-offset-2">
           <div class="setup-logo">
             <svg width="44px" height="43px" viewBox="0 0 44 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -11,7 +11,7 @@
             </svg>
           </div>
         </div>
-        <div class="column is-6 is-offset-3">
+        <div class="column is-8 is-offset-2">
           <div class="setup-content">
             <h1>
               <img src="images/icons/server.svg">
@@ -45,6 +45,13 @@
             <div *ngIf="step === 'progress'">
               <p>Setting up docker image, please wait ...</p>
               <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>
+            </div>
+            <div *ngIf="step === 'done'">
+              <p>
+                <img class="icon" src="images/icons/check-true.svg">
+                Abstruse successfully configured.
+              </p>
+              <a class="button" routerLink="/login">Login Page</a>
             </div>
           </div>
         </div>

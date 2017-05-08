@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { SocketService } from '../../services/socket.service';
 
 export interface ServerStatus {
   sqlite: boolean;
@@ -17,7 +18,7 @@ export class AppSetupComponent implements OnInit {
   step: 'config' | 'progress' | 'done';
   terminalInput: string;
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService, private socketService: SocketService) {
     this.serverStatus = {
       sqlite: false,
       docker: false,
@@ -46,7 +47,16 @@ export class AppSetupComponent implements OnInit {
 
   terminalOutput(data: string): void {
     if (data === 'ready') {
-      this.terminalInput = 'asdasdasdasd';
+      this.socketService.onMessage().skip(2).subscribe(event => {
+        if (event.type === 'terminalOutput') {
+          this.terminalInput = event.data;
+        } else if (event.type === 'terminalExit') {
+          if (event.data === 0) {
+            this.step = 'done';
+          }
+        }
+      });
+      this.socketService.emit({ type: 'data', data: 'initializeDockerImage' });
     }
   }
 }

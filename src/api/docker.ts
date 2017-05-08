@@ -33,7 +33,7 @@ export function buildImage(name: string): Observable<boolean> {
 
 export function killAllContainers(): Observable<boolean> {
   return new Observable(observer => {
-    const kill = spawn('docker', ['rm', '$(docker ps -a -q)']);
+    const kill = spawn('docker', ['rm', '$(docker ps -a -q)', '-f']);
     kill.on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();

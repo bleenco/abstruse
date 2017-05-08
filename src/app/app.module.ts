@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
+import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
+import { SocketServiceProvider } from './services/socket.service';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
@@ -33,7 +35,9 @@ import { AppDashboardComponent } from './components/app-dashboard';
     FormsModule
   ],
   providers: [
-    ApiServiceProvider
+    ConfigServiceProvider,
+    ApiServiceProvider,
+    SocketServiceProvider
   ],
   bootstrap: [ AppComponent ]
 })
