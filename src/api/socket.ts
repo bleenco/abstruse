@@ -20,15 +20,17 @@ export class SocketServer {
         .map(this.createRxSocket)
         .subscribe(conn => {
           conn.subscribe(event => {
+            const pty = new PtyInstance();
+            const process = pty.create();
             if (event.type === 'data') {
               if (event.data === 'initializeDockerImage') {
-                const pty = new PtyInstance();
-                const process = pty.create();
                 process.on('data', data => conn.next({ type: 'terminalOutput', data: data }));
                 process.on('exit', code => conn.next({ type: 'terminalExit', data: code }));
                 process.write('docker build -t abstruse ~/.abstruse/docker-files\r');
                 process.write('exit\r');
               }
+            } else if (event.type === 'resize') {
+              process.resize(event.data.cols, event.data.rows);
             }
           });
         });

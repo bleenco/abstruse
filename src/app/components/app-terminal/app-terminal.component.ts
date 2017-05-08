@@ -38,7 +38,7 @@ export class AppTerminalComponent implements OnInit {
       let io = this.term.io.push();
 
       io.onTerminalResize = (col: number, row: number) => {
-        this.outputData.emit({ action: 'resize', col: col, row: row });
+        this.outputData.emit({ type: 'resize', cols: col, rows: row });
       };
 
       this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);

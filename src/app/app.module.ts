@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
 import { SocketServiceProvider } from './services/socket.service';
+import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
+import { AuthServiceProvider } from './services/auth.service';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
@@ -27,8 +29,17 @@ import { AppDashboardComponent } from './components/app-dashboard';
     BrowserModule,
     CommonModule,
     RouterModule.forRoot([
-      { path: '', pathMatch: 'full', component: AppDashboardComponent },
-      { path: 'login', component: AppLoginComponent },
+      {
+        path: '',
+        pathMatch: 'full',
+        component: AppDashboardComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'login',
+        component: AppLoginComponent,
+        canActivate: [AuthGuard]
+      },
       { path: 'setup', component: AppSetupComponent }
     ]),
     HttpModule,
@@ -37,7 +48,9 @@ import { AppDashboardComponent } from './components/app-dashboard';
   providers: [
     ConfigServiceProvider,
     ApiServiceProvider,
-    SocketServiceProvider
+    SocketServiceProvider,
+    AuthServiceProvider,
+    AuthGuardProvider
   ],
   bootstrap: [ AppComponent ]
 })

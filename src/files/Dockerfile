@@ -2,10 +2,10 @@ FROM ubuntu:17.04
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN echo 'export PS1="> "' > /root/.bashrc
-RUN apt-get update && apt-get install -y curl apt-transport-https
+RUN apt update && apt install -y curl apt-transport-https apt-utils
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install -y \
+RUN apt update && apt install -y \
   build-essential \
   ca-certificates \
   git \

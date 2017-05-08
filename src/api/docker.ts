@@ -15,6 +15,16 @@ export function runInteractive(name: string, image: string): Subject<any> {
   return execTty(cmd, args);
 }
 
+export function imageExists(name: string): Observable<boolean> {
+  return new Observable(observer => {
+    const image = spawn('docker', ['inspect', '--type=image', name]);
+    image.on('close', code => {
+      observer.next(code === 0 ? true : false);
+      observer.complete();
+    });
+  });
+}
+
 export function buildImage(name: string): Observable<boolean> {
   return new Observable(observer => {
     const dockerFile = utils.getFilePath('docker-files');

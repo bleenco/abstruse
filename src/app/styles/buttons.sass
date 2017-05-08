@@ -9,10 +9,18 @@
   text-align: center
   text-transform: none
   border: 1px solid $border
+  transition: none
 
   &.green
     background: $green
     border-color: $green
+
+  &:hover
+    color: $white
+    background: darken($background-button, 1)
+
+    &.green
+      background: darken($green, 3)
 
 .group-buttons
   display: flex

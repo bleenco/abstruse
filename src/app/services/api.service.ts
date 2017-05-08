@@ -1,6 +1,6 @@
 import { Injectable, Provider } from '@angular/core';
 import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angular/http';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 
 @Injectable()
 export class ApiService {
@@ -10,6 +10,10 @@ export class ApiService {
     let loc: Location = window.location;
     let port: string = loc.port === '8000' ? ':6500' : `:${loc.port}`; // dev mode
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
+  }
+
+  isAppReady(): Observable<any> {
+    return this.get(`${this.url}/setup/ready`);
   }
 
   getServerStatus(): Observable<any> {
@@ -39,7 +43,7 @@ export class ApiService {
 
   private extractData(res: Response) {
     let body = res.json();
-    return body && body.data || {};
+    return body && typeof body.data !== 'undefined' ? body.data : {};
   }
 
   private handleError (error: Response | any) {

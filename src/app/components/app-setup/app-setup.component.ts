@@ -45,8 +45,8 @@ export class AppSetupComponent implements OnInit {
     this.step = 'progress';
   }
 
-  terminalOutput(data: string): void {
-    if (data === 'ready') {
+  terminalOutput(e: any): void {
+    if (e === 'ready') {
       this.socketService.onMessage().skip(2).subscribe(event => {
         if (event.type === 'terminalOutput') {
           this.terminalInput = event.data;
@@ -57,6 +57,8 @@ export class AppSetupComponent implements OnInit {
         }
       });
       this.socketService.emit({ type: 'data', data: 'initializeDockerImage' });
+    } else if (e && e.type && e.type === 'resize') {
+      this.socketService.emit({ type: 'resize', data: { cols: e.cols, rows: e.rows }});
     }
   }
 }

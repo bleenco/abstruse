@@ -43,7 +43,10 @@
             </div>
 
             <div *ngIf="step === 'progress'">
-              <p>Setting up docker image, please wait ...</p>
+              <div class="paragraph">
+                <div class="loader"></div>
+                Setting up docker image, please wait ...
+              </div>
               <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>
             </div>
             <div *ngIf="step === 'done'">
