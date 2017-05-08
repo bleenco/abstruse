@@ -37,8 +37,7 @@ import { AppDashboardComponent } from './components/app-dashboard';
       },
       {
         path: 'login',
-        component: AppLoginComponent,
-        canActivate: [AuthGuard]
+        component: AppLoginComponent
       },
       { path: 'setup', component: AppSetupComponent }
     ]),

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 
@@ -17,8 +18,13 @@ export class AppSetupComponent implements OnInit {
   readyToSetup: boolean;
   step: 'config' | 'progress' | 'done';
   terminalInput: string;
+  loading: boolean;
 
-  constructor(private apiService: ApiService, private socketService: SocketService) {
+  constructor(
+    private apiService: ApiService,
+    private socketService: SocketService,
+    private router: Router
+  ) {
     this.serverStatus = {
       sqlite: false,
       docker: false,
@@ -27,18 +33,30 @@ export class AppSetupComponent implements OnInit {
 
     this.readyToSetup = false;
     this.step = 'config';
+    this.loading = true;
   }
 
   ngOnInit() {
-    this.checkConfiguration();
+    this.apiService.isAppReady().subscribe(event => {
+      if (event) {
+        this.router.navigate(['/login']);
+      } else {
+        this.checkConfiguration();
+      }
+    });
   }
 
   checkConfiguration(): void {
-    this.apiService.getServerStatus().subscribe((resp: ServerStatus) => {
-      this.serverStatus = resp;
-      let i = Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
-      this.readyToSetup = i === -1 ? true : false;
-    });
+    this.loading = true;
+    setTimeout(() => {
+      this.apiService.getServerStatus().subscribe((resp: ServerStatus) => {
+        this.serverStatus = resp;
+        const i =
+          Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+        this.readyToSetup = i === -1 ? true : false;
+        this.loading = false;
+      });
+    }, 1000);
   }
 
   continue(): void {

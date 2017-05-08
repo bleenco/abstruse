@@ -9,9 +9,11 @@ export interface ISocketServerOptions {
 export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
+  ptyProcesses: any[];
 
   constructor(options: ISocketServerOptions) {
     this.options = options;
+    this.ptyProcesses = [];
   }
 
   start(): Observable<null> {
@@ -19,13 +21,19 @@ export class SocketServer {
       this.createRxServer(this.options)
         .map(this.createRxSocket)
         .subscribe(conn => {
+          const pty = new PtyInstance();
+          const process = pty.create();
+          this.ptyProcesses.push(process);
+
+          process.on('data', data => conn.next({ type: 'terminalOutput', data: data }));
+          process.on('exit', code => {
+            process.kill('SIGHUP');
+            conn.next({ type: 'terminalExit', data: code });
+          });
+
           conn.subscribe(event => {
-            const pty = new PtyInstance();
-            const process = pty.create();
             if (event.type === 'data') {
               if (event.data === 'initializeDockerImage') {
-                process.on('data', data => conn.next({ type: 'terminalOutput', data: data }));
-                process.on('exit', code => conn.next({ type: 'terminalExit', data: code }));
                 process.write('docker build -t abstruse ~/.abstruse/docker-files\r');
                 process.write('exit\r');
               }
@@ -56,6 +64,10 @@ export class SocketServer {
       connection.on('close', () => {
         connection.close();
         observer.next(JSON.stringify({ type: 'close' }));
+        this.ptyProcesses.forEach(pty => {
+          pty.kill('SIGHUP');
+        });
+        this.ptyProcesses = [];
       });
     }));
 
