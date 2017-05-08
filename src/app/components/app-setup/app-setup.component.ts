@@ -13,6 +13,9 @@ export interface ServerStatus {
 })
 export class AppSetupComponent implements OnInit {
   serverStatus: ServerStatus;
+  readyToSetup: boolean;
+  step: 'config' | 'progress' | 'done';
+  terminalInput: string;
 
   constructor(private apiService: ApiService) {
     this.serverStatus = {
@@ -20,6 +23,9 @@ export class AppSetupComponent implements OnInit {
       docker: false,
       dockerRunning: false
     };
+
+    this.readyToSetup = false;
+    this.step = 'config';
   }
 
   ngOnInit() {
@@ -29,6 +35,18 @@ export class AppSetupComponent implements OnInit {
   checkConfiguration(): void {
     this.apiService.getServerStatus().subscribe((resp: ServerStatus) => {
       this.serverStatus = resp;
+      let i = Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+      this.readyToSetup = i === -1 ? true : false;
     });
+  }
+
+  continue(): void {
+    this.step = 'progress';
+  }
+
+  terminalOutput(data: string): void {
+    if (data === 'ready') {
+      this.terminalInput = 'asdasdasdasd';
+    }
   }
 }

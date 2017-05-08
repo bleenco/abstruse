@@ -19,24 +19,33 @@
               <span>Configure Abstruse Continous Integration Server</span>
             </h1>
             <hr/>
-            <h2>
-              <img src="images/icons/server-status.svg">
-              Server Status
-            </h2>
-            <div class="setup-list">
-              <div class="setup-list-item">
-                <img class="icon" [src]="serverStatus.docker ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Installed
+
+            <div *ngIf="step === 'config'">
+              <h2>
+                <img src="images/icons/server-status.svg">
+                Server Status
+              </h2>
+              <div class="setup-list">
+                <div class="setup-list-item">
+                  <img class="icon" [src]="serverStatus.docker ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Installed
+                </div>
+                <div class="setup-list-item">
+                  <img class="icon" [src]="serverStatus.dockerRunning ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Running
+                </div>
+                <div class="setup-list-item">
+                  <img class="icon" [src]="serverStatus.sqlite ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> SQLite3 Installed
+                </div>
               </div>
-              <div class="setup-list-item">
-                <img class="icon" [src]="serverStatus.dockerRunning ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Running
-              </div>
-              <div class="setup-list-item">
-                <img class="icon" [src]="serverStatus.sqlite ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> SQLite3 Installed
-              </div>
+              <hr/>
+              <p *ngIf="!readyToSetup">Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
+              <button type="button" class="button" (click)="checkConfiguration()" *ngIf="!readyToSetup">Re-check Configuration</button>
+              <button type="button" class="button" (click)="continue()" *ngIf="readyToSetup">Continue with Setup</button>
             </div>
-            <hr/>
-            <p>Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
-            <button type="button" class="button" (click)="checkConfiguration()">Re-check Configuration</button>
+
+            <div *ngIf="step === 'progress'">
+              <p>Setting up docker image, please wait ...</p>
+              <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>
+            </div>
           </div>
         </div>
       </div>
