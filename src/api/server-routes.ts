@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as docker from './docker';
 import * as system from './system';
+import * as utils from './utils';
 
 export function setupRoutes(): express.Router {
   const router = express.Router();
@@ -18,6 +19,17 @@ export function setupRoutes(): express.Router {
           res.status(200).json({ data: data });
         }
       });
+    });
+  });
+
+  router.get('/init', (req: express.Request, res: express.Response) => {
+    utils.initSetup();
+    docker.buildImage('abstruse').subscribe(data => {
+      console.log(data);
+    }, err => {
+      console.error(err);
+    }, () => {
+      res.status(200).json({ data: true });
     });
   });
 

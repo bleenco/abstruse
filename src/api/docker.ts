@@ -1,5 +1,7 @@
 import { spawn } from 'child_process';
 import { Subject, Observable, Observer } from 'rxjs';
+import * as fs from './fs';
+import * as utils from './utils';
 const pty = require('node-pty');
 
 export interface TTYMessage {
@@ -13,16 +15,47 @@ export function runInteractive(name: string, image: string): Subject<any> {
   return execTty(cmd, args);
 }
 
+export function buildImage(name: string): Observable<boolean> {
+  return new Observable(observer => {
+    const dockerFile = utils.getFilePath('docker-files');
+    const build = spawn('docker', ['build', '-t', name, dockerFile]);
+
+    build.stdout.on('data', data => observer.next(data.toString()));
+
+    build.stdout.on('error', err => observer.error(err.toString()));
+
+    build.on('close', code => {
+      observer.next(code === 0 ? true : false);
+      observer.complete();
+    });
+  });
+}
+
+export function killAllContainers(): Observable<boolean> {
+  return new Observable(observer => {
+    const kill = spawn('docker', ['rm', '$(docker ps -a -q)']);
+    kill.on('close', code => {
+      observer.next(code === 0 ? true : false);
+      observer.complete();
+    });
+  });
+}
+
+export function killContainer(id: string): Observable<boolean> {
+  return new Observable(observer => {
+    const kill = spawn('docker', ['rm', id]);
+    kill.on('close', code => {
+      observer.next(code === 0 ? true : false);
+      observer.complete();
+    });
+  });
+}
+
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
     const info = spawn('docker', ['info']);
     info.on('close', code => {
-      if (code === 0) {
-        observer.next(true);
-      } else {
-        observer.next(false);
-      }
-
+      observer.next(code === 0 ? true : false);
       observer.complete();
     });
   });
@@ -32,12 +65,7 @@ export function isDockerInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
     const which = spawn('which', ['docker']);
     which.on('close', code => {
-      if (code === 0) {
-        observer.next(true);
-      } else {
-        observer.next(false);
-      }
-
+      observer.next(code === 0 ? true : false);
       observer.complete();
     });
   });
