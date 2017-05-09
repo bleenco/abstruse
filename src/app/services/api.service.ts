@@ -20,6 +20,10 @@ export class ApiService {
     return this.get(`${this.url}/setup/status`);
   }
 
+  getDatabaseStatus(): Observable<any> {
+    return this.get(`${this.url}/setup/db`);
+  }
+
   initializeConfigs(): Observable<any> {
     return this.post(`${this.url}/setup/init`, {});
   }

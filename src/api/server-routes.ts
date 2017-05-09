@@ -44,6 +44,11 @@ export function setupRoutes(): express.Router {
     });
   });
 
+  router.get('/db', (req: express.Request, res: express.Response) => {
+    Observable.fromPromise(exists(getFilePath('abstruse.sqlite')))
+      .subscribe(data => res.status(200).json({ data: data }));
+  });
+
   router.get('/status', (req: express.Request, res: express.Response) => {
     system.isSQLiteInstalled().subscribe(sqlite => {
       docker.isDockerInstalled().subscribe(dockerInstalled => {

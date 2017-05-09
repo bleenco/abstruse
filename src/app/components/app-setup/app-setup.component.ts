@@ -9,6 +9,14 @@ export interface ServerStatus {
   dockerRunning: boolean;
 }
 
+export interface User {
+  email: string;
+  fullname: string;
+  password: string;
+  confirmPassword: string;
+  admin: boolean;
+}
+
 @Component({
   selector: 'app-setup',
   templateUrl: 'app-setup.component.html'
@@ -19,6 +27,7 @@ export class AppSetupComponent implements OnInit {
   step: 'config' | 'db' | 'docker' | 'done';
   terminalInput: string;
   loading: boolean;
+  user: User;
 
   constructor(
     private apiService: ApiService,
@@ -58,7 +67,17 @@ export class AppSetupComponent implements OnInit {
   }
 
   continueToDb(): void {
-    this.step = 'db';
+    this.loading = true;
+    this.apiService.getDatabaseStatus().delay(1000).subscribe(dbStatus => {
+      if (!dbStatus) {
+        this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
+        this.step = 'db';
+      } else {
+        this.step = 'docker';
+      }
+
+      this.loading = false;
+    });
   }
 
   terminalOutput(e: any): void {

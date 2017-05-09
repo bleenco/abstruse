@@ -52,27 +52,37 @@
                   <img src="images/icons/password.svg">
                   Administrator Account
                 </h2>
-                <form class="password-form">
-                  <div class="columns">
+                <div class="message blue">
+                  <p>
+                    <img src="images/icons/info.svg">
+                    All fields are mandatory.
+                  </p>
+                </div>
+                <form class="password-form" #userForm="ngForm" (ngSubmit)="saveUserToDb()">
+                  <div class="columns is-multiline">
                     <div class="column is-6 is-offset-3">
                       <div class="form-field">
                         <label class="form-label">Email</label>
-                        <input class="form-input" type="text" name="email" placeholder="Email">
+                        <input class="form-input" type="text" name="email" placeholder="Email" [(ngModel)]="user.email" required>
+                        <p class="helper">Email is used for username.</p>
                       </div>
                       <div class="form-field">
                         <label class="form-label">Full Name</label>
-                        <input class="form-input" type="text" name="name" placeholder="Full Name">
+                        <input class="form-input" type="text" name="name" placeholder="Full Name" [(ngModel)]="user.fullname" required>
+                        <p class="helper">John Wayne.</p>
                       </div>
                       <div class="form-field">
                         <label class="form-label">Password</label>
-                        <input class="form-input" type="password" name="password" placeholder="Password">
+                        <input class="form-input" type="password" name="password" placeholder="Password" [(ngModel)]="user.password" required>
+                        <p class="helper">Pick your password.</p>
                       </div>
                       <div class="form-field">
                         <label class="form-label">Repeat Password</label>
-                        <input class="form-input" type="password" name="password2" placeholder="Repeat Password">
+                        <input class="form-input" type="password" name="password2" placeholder="Repeat Password" [(ngModel)]="user.confirmPassword" required validateEqual="password">
+                        <p class="helper">Repeat picked password from the previous field.</p>
                       </div>
                       <div class="form-field">
-                        <button type="button" class="button green" disabled>Continue</button>
+                        <button type="button" class="button green" [disabled]="!userForm.valid">Continue</button>
                       </div>
                     </div>
                   </div>
@@ -88,10 +98,12 @@
                 <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>
               </div>
               <div *ngIf="step === 'done'">
-                <p>
-                  <img class="icon" src="images/icons/check-true.svg">
-                  Abstruse successfully configured.
-                </p>
+                <div class="message green">
+                  <p>
+                    <img src="images/icons/info.svg">
+                    Abstruse successfully configured.
+                  </p>
+                </div>
                 <a class="button" routerLink="/login">Login Page</a>
               </div>
             </div>
