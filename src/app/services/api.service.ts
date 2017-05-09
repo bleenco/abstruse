@@ -32,10 +32,8 @@ export class ApiService {
     return this.post(`${this.url}/user/create`, data);
   }
 
-  login(username: string, password: string): Observable<any> {
-    let user = { username, password };
-
-    return this.post(`${this.url}/user/login`, user);
+  login(data: any): Observable<any> {
+    return this.post(`${this.url}/user/login`, data);
   }
 
   private get(url: string, searchParams: URLSearchParams = null): Observable<any> {

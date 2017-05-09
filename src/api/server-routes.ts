@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
-import { usersExists, createUser } from './db/user';
+import { usersExists, createUser, login } from './db/user';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -26,6 +26,12 @@ export function webRoutes(): express.Router {
 
 export function userRoutes(): express.Router {
   const router = express.Router();
+
+  router.post('/login', (req: express.Request, res: express.Response) => {
+    login(req.body).then(credentials => {
+      res.status(200).json({ data: credentials });
+    });
+  });
 
   router.post('/create', (req: express.Request, res: express.Response) => {
     createUser(req.body).then(() => {
