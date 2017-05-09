@@ -10,7 +10,6 @@ const socket = new SocketServer({ port: 6501 });
 Observable
   .merge(...[
     Observable.fromPromise(utils.initSetup()),
-    utils.writeDefaultConfig(),
     server.start(),
     socket.start()
   ])

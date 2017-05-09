@@ -68,7 +68,7 @@ export class AppSetupComponent implements OnInit {
 
   continueToDb(): void {
     this.loading = true;
-    this.apiService.getDatabaseStatus().delay(1000).subscribe(dbStatus => {
+    this.apiService.getDatabaseStatus().delay(2000).subscribe(dbStatus => {
       if (!dbStatus) {
         this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
         this.apiService.initializeDatabase().subscribe(event => {

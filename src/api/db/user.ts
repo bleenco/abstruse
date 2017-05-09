@@ -9,7 +9,7 @@ export function usersExists(): Promise<boolean> {
       } else {
         resolve(false);
       }
-    });
+    }).catch(err => resolve(false));
   });
 }
 

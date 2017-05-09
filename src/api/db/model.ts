@@ -1,3 +1,4 @@
+import * as bookshelf from 'bookshelf';
 import { Bookshelf } from './config';
 
 export class User extends Bookshelf.Model<any> {

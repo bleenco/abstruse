@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
+import { usersExists } from './db/user';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -33,7 +34,8 @@ export function setupRoutes(): express.Router {
       docker.isDockerRunning(),
       docker.imageExists('abstruse'),
       Observable.fromPromise(exists(getFilePath('config.json'))),
-      Observable.fromPromise(exists(getFilePath('abstruse.sqlite')))
+      Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
+      Observable.fromPromise(usersExists())
     ])
     .toArray()
     .subscribe(data => {
@@ -47,8 +49,14 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/db', (req: express.Request, res: express.Response) => {
-    Observable.fromPromise(exists(getFilePath('abstruse.sqlite')))
-      .subscribe(data => res.status(200).json({ data: data }));
+    Observable.merge(...[
+      Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
+      Observable.fromPromise(usersExists())
+    ])
+    .toArray()
+    .subscribe(data => {
+      return res.status(200).json({ data: data.findIndex(x => !x) === -1 });
+    });
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
@@ -68,7 +76,7 @@ export function setupRoutes(): express.Router {
   });
 
   router.post('/db/init', (req: express.Request, res: express.Response) => {
-   reinitializeDatabase().then(() => {
+    reinitializeDatabase().then(() => {
       return res.status(200).json({ data: true });
     });
   });

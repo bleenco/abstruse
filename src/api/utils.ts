@@ -1,41 +1,26 @@
 import { homedir } from 'os';
 import { join, resolve } from 'path';
-import { existsSync, exists, copyFile, writeJsonFile } from './fs';
-import { readFileSync } from 'fs';
+import { existsSync, exists, copyFile, writeJsonFile, readJsonFile } from './fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { Observable } from 'rxjs';
+
+const defaultConfig = {
+  port: 6500,
+  wsport: 6501,
+  db: {
+    client: 'sqlite3',
+    connection: {
+      filename: './abstruse.sqlite'
+    },
+    useNullAsDefault: true
+  }
+};
 
 export function initSetup(): Promise<null> {
   const srcDir = resolve(__dirname, '../../src/files');
   const destDir = getFilePath('docker-files');
 
   return copyFile(srcDir, destDir);
-}
-
-export function writeDefaultConfig(): Observable<null> {
-  return new Observable(observer => {
-    const configPath = getFilePath('config.json');
-    const config = {
-      port: 6500,
-      wsport: 6501,
-      db: {
-        client: 'sqlite3',
-        connection: {
-          filename: './abstruse.sqlite'
-        },
-        useNullAsDefault: true
-      }
-    };
-
-    exists(configPath).then(e => {
-      if (!e) {
-        writeJsonFile(configPath, config).then(() => {
-          observer.complete();
-        });
-      } else {
-        observer.complete();
-      }
-    });
-  });
 }
 
 export function appReady(): boolean {
@@ -48,6 +33,15 @@ export function getRootDir(): string {
 
 export function getFilePath(relativePath: string): string {
   return join(getRootDir(), relativePath);
+}
+
+export function writeDefaultConfig(): void {
+  const configPath = getFilePath('config.json');
+  writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+}
+
+export function configExists(): boolean {
+  return existsSync(getFilePath('config.json'));
 }
 
 export function getConfig(): string {
