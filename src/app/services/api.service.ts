@@ -28,6 +28,10 @@ export class ApiService {
     return this.post(`${this.url}/setup/db/init`, {});
   }
 
+  createUser(data: any): Observable<any> {
+    return this.post(`${this.url}/user/create`, data);
+  }
+
   login(username: string, password: string): Observable<any> {
     let user = { username, password };
 

@@ -5,12 +5,13 @@ export function create(): Promise<null> {
   let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
 
   return new Promise((resolve, reject) => {
-    schema.createTableIfNotExists('user', (t: knex.TableBuilder) => {
+    schema.createTableIfNotExists('users', (t: knex.TableBuilder) => {
       t.increments('id');
       t.string('email').unique().notNullable();
       t.string('fullname').notNullable();
       t.string('password').notNullable();
-      t.string('avatar');
+      t.boolean('admin').notNullable().defaultTo(false);
+      t.string('avatar').notNullable().defaultTo('images/avatars/user.png');
       t.timestamps();
     })
     .then(() => resolve())

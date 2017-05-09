@@ -69,6 +69,7 @@ export class AppSetupComponent implements OnInit {
   continueToDb(): void {
     this.loading = true;
     this.apiService.getDatabaseStatus().delay(2000).subscribe(dbStatus => {
+      this.loading = false;
       if (!dbStatus) {
         this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
         this.apiService.initializeDatabase().subscribe(event => {
@@ -79,8 +80,16 @@ export class AppSetupComponent implements OnInit {
       } else {
         this.step = 'docker';
       }
+    });
+  }
 
+  createUser(): void {
+    this.loading = true;
+    this.apiService.createUser(this.user).delay(2000).subscribe(event => {
       this.loading = false;
+      if (event) {
+        this.step = 'docker';
+      }
     });
   }
 

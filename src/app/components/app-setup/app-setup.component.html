@@ -58,7 +58,7 @@
                     All fields are mandatory.
                   </p>
                 </div>
-                <form class="password-form" #userForm="ngForm" (ngSubmit)="saveUserToDb()">
+                <form class="password-form" #userForm="ngForm" (ngSubmit)="createUser()">
                   <div class="columns is-multiline">
                     <div class="column is-6 is-offset-3">
                       <div class="form-field">
@@ -82,7 +82,7 @@
                         <p class="helper">Repeat picked password from the previous field.</p>
                       </div>
                       <div class="form-field">
-                        <button type="button" class="button green" [disabled]="!userForm.valid">Continue</button>
+                        <button type="submit" class="button green" [disabled]="!userForm.valid">Continue</button>
                       </div>
                     </div>
                   </div>

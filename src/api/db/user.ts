@@ -13,10 +13,12 @@ export function usersExists(): Promise<boolean> {
   });
 }
 
-export function registerUser(data: any): Promise<boolean> {
+export function createUser(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
     generatePassword(data.password).then(encrypted => {
       data.password = encrypted;
+      delete data.confirmPassword;
+
       new User(data).save().then(result => {
         if (!result) {
           reject(result);
