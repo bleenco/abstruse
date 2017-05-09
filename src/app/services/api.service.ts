@@ -24,8 +24,8 @@ export class ApiService {
     return this.get(`${this.url}/setup/db`);
   }
 
-  initializeConfigs(): Observable<any> {
-    return this.post(`${this.url}/setup/init`, {});
+  initializeDatabase(): Observable<any> {
+    return this.post(`${this.url}/setup/db/init`, {});
   }
 
   login(username: string, password: string): Observable<any> {

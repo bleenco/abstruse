@@ -17,7 +17,7 @@ export class SocketServer {
     this.ptyProcesses = [];
   }
 
-  start(): Observable<null> {
+  start(): Observable<string> {
     return new Observable(observer => {
       this.createRxServer(this.options)
         .map(this.createRxSocket)

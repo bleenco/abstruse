@@ -1,36 +1,41 @@
 import { homedir } from 'os';
 import { join, resolve } from 'path';
-import { existsSync, copyFile } from './fs';
-import { readFileSync, writeFileSync } from 'fs';
+import { existsSync, exists, copyFile, writeJsonFile } from './fs';
+import { readFileSync } from 'fs';
+import { Observable } from 'rxjs';
 
-export function initSetup(): void {
+export function initSetup(): Promise<null> {
   const srcDir = resolve(__dirname, '../../src/files');
-  const destDir = getRootDir();
+  const destDir = getFilePath('docker-files');
 
-  copyFile(join(srcDir, 'xvfb'), join(destDir, 'docker-files', 'xvfb'));
-  copyFile(join(srcDir, 'Dockerfile'), join(destDir, 'docker-files', 'Dockerfile'));
+  return copyFile(srcDir, destDir);
 }
 
-export function writeDefaultConfig(): void {
-  const config = {
-    port: 6500,
-    wsport: 6501,
-    db: {
-      client: 'sqlite3',
-      connection: {
-        filename: './abstruse.sqlite'
-      },
-      useNullAsDefault: true
-    }
-  };
+export function writeDefaultConfig(): Observable<null> {
+  return new Observable(observer => {
+    const configPath = getFilePath('config.json');
+    const config = {
+      port: 6500,
+      wsport: 6501,
+      db: {
+        client: 'sqlite3',
+        connection: {
+          filename: './abstruse.sqlite'
+        },
+        useNullAsDefault: true
+      }
+    };
 
-  if (!existsSync(getFilePath('config.json'))) {
-    try {
-      writeFileSync(getFilePath('config.json'), config);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+    exists(configPath).then(e => {
+      if (!e) {
+        writeJsonFile(configPath, config).then(() => {
+          observer.complete();
+        });
+      } else {
+        observer.complete();
+      }
+    });
+  });
 }
 
 export function appReady(): boolean {
@@ -46,7 +51,7 @@ export function getFilePath(relativePath: string): string {
 }
 
 export function getConfig(): string {
-  return readFileSync(getFilePath('config.json')).toString();
+  return JSON.parse(readFileSync(getFilePath('config.json')).toString());
 }
 
 export function getHumanSize(bytes: number, decimals = 2): string {

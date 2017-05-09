@@ -71,7 +71,11 @@ export class AppSetupComponent implements OnInit {
     this.apiService.getDatabaseStatus().delay(1000).subscribe(dbStatus => {
       if (!dbStatus) {
         this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
-        this.step = 'db';
+        this.apiService.initializeDatabase().subscribe(event => {
+          if (event) {
+            this.step = 'db';
+          }
+        });
       } else {
         this.step = 'docker';
       }

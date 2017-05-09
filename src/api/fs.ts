@@ -2,8 +2,16 @@ import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import { dirname } from 'path';
 
-export function copyFile(srcPath: string, destPath: string): void {
-  fse.copySync(srcPath, destPath);
+export function copyFile(srcPath: string, destPath: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    fse.copy(srcPath, destPath, err => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve();
+    });
+  });
 }
 
 export function readFile(filePath: string): Promise<string> {

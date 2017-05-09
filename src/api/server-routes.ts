@@ -6,6 +6,7 @@ import { resolve } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath } from './utils';
+import { reinitializeDatabase } from './db/migrations';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -31,7 +32,8 @@ export function setupRoutes(): express.Router {
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
       docker.imageExists('abstruse'),
-      Observable.fromPromise(exists(getFilePath('config.json')))
+      Observable.fromPromise(exists(getFilePath('config.json'))),
+      Observable.fromPromise(exists(getFilePath('abstruse.sqlite')))
     ])
     .toArray()
     .subscribe(data => {
@@ -65,19 +67,9 @@ export function setupRoutes(): express.Router {
     });
   });
 
-  router.post('/init', (req: express.Request, res: express.Response) => {
-    utils.initSetup();
-    utils.writeDefaultConfig();
-    res.status(200).json({ data: true });
-  });
-
-  router.get('/init', (req: express.Request, res: express.Response) => {
-    docker.buildImage('abstruse').subscribe(data => {
-      console.log(data);
-    }, err => {
-      console.error(err);
-    }, () => {
-      res.status(200).json({ data: true });
+  router.post('/db/init', (req: express.Request, res: express.Response) => {
+   reinitializeDatabase().then(() => {
+      return res.status(200).json({ data: true });
     });
   });
 
