@@ -15,9 +15,12 @@ export function writeDefaultConfig(): void {
   const config = {
     port: 6500,
     wsport: 6501,
-    dbclient: 'sqlite3',
-    connection: {
-      filename: './abstruse.sqlite'
+    db: {
+      client: 'sqlite3',
+      connection: {
+        filename: './abstruse.sqlite'
+      },
+      useNullAsDefault: true
     }
   };
 
