@@ -1,3 +1,65 @@
+.button-addon
+  display: flex
+  align-items: center
+  position: relative
+
+  .button
+    background: $background-secondary
+
+  .button-item
+    background: $background-secondary
+    border: 1px solid $border
+    height: 40px
+    margin-left: -2px
+    border-top-right-radius: 4px
+    border-bottom-right-radius: 4px
+    display: flex
+    align-items: center
+    justify-content: center
+
+  &:hover
+
+    .button
+      background: $background-secondary
+
+    .button-item
+      background: #2A3546
+
+  &:active, &.is-active, &:focus
+
+    .button
+      background: $background-secondary
+
+    .button-item
+      background: #323E50
+
+  .button-dropdown
+    width: 100%
+    border-radius: 4px
+    background: $background-button
+    border: 1px solid $border
+    position: absolute
+    top: 48px
+    left: 0
+    right: 0
+    z-index: 20
+    display: none
+
+    &.is-active
+      display: block
+
+    .button-dropdown-item
+      width: 100%
+      height: 40px
+      display: flex
+      align-items: center
+      padding: 0 10px
+      color: $white
+
+      &:hover
+        background: $border
+        color: $blue
+
 .button
   height: 40px
   background: linear-gradient(to bottom, #516173, #3A4857)
@@ -13,6 +75,7 @@
   justify-content: center
   align-items: center
   outline: none
+  flex: 1
 
   &.is-fullwidth
     width: 100%
@@ -28,7 +91,7 @@
     &.green
       background: darken($green, 3)
 
-  &:focus, &.is-active
+  &.is-active
     background: linear-gradient(to bottom, #354353, #232E3B)
 
   &[disabled]
@@ -41,6 +104,11 @@
     width: 14px
     height: 14px
     margin-right: 5px
+
+.button-item
+  width: 24px
+  img
+    width: 10px
 
 .group-buttons
   display: flex

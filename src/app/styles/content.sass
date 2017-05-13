@@ -46,11 +46,10 @@
   cursor: pointer
   background: $background-button
 
-  &:hover
-    background: lighten($background-button, 10)
-
   .column
     padding: 0 10px !important
+    display: flex
+    align-items: center
 
   &:last-child
     border-bottom: none
@@ -72,12 +71,16 @@
     &.yellow
       border-color: $yellow
 
-  .commit-column
-    span
-      display: block
+  .icon
+    margin-right: 10px
+    img
+      width: 20px
 
-      &.bold
-        font-family: $font-family-bold
+  span
+    display: block
 
-    &.is-active
-      border-left: 3px solid $yellow
+    &.bold
+      font-family: $font-family-bold
+
+  &.is-active
+    border-left: 3px solid $yellow
