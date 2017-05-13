@@ -10,7 +10,7 @@ import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
 import { getBuilds } from './db/build';
-import { startBuild } from './process-manager';
+import { startBuild, restartBuild } from './process-manager';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -41,6 +41,12 @@ export function buildRoutes(): express.Router {
       return res.status(200).json({ status: true });
     });
   });
+
+  // router.post('/restart', (req: express.Request, res: express.Response) => {
+  //   restartBuild(req.body.id).then(() => {
+  //     return res.status(200).json({ status: true });
+  //   });
+  // });
 
   return router;
 }

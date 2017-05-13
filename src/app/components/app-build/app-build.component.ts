@@ -15,8 +15,14 @@ export class AppBuildComponent implements OnInit {
   constructor(private socketService: SocketService, private apiService: ApiService) { }
 
   ngOnInit() {
-    this.socketService.emit({ type: 'data', data: '' });
     this.fetch();
+
+    this.socketService.outputEvents.subscribe(event => {
+      const index = this.builds.findIndex(build => build.uuid === event.data.id);
+      if (index !== -1) {
+        this.builds[index].status = event.data.status;
+      }
+    });
   }
 
   fetch(): void {
@@ -26,7 +32,9 @@ export class AppBuildComponent implements OnInit {
     });
   }
 
-  toggleDropdown(index: number): void {
+  toggleDropdown(e: MouseEvent, index: number): void {
+    e.preventDefault();
+    e.stopPropagation();
     this.buildDropdowns = this.buildDropdowns.map((repo, i) => {
       if (i !== index) {
         return false;
@@ -40,6 +48,10 @@ export class AppBuildComponent implements OnInit {
     this.apiService.runBuild(repositoryId).subscribe(event => {
       // build runned.
     });
+  }
+
+  restartBuild(buildId: number): void {
+    this.socketService.emit({ type: 'restartBuild', data: buildId });
   }
 
   // terminalOutput(e: any): void {

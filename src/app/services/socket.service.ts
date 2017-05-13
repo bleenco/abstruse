@@ -15,10 +15,7 @@ export class SocketService {
     this.socket.willOpen = () => this.connectionState.next(ConnectionStates.CONNECTING);
     this.socket.didClose = () => this.connectionState.next(ConnectionStates.CLOSED);
     this.outputEvents = new EventEmitter<any>();
-
-    this.onMessage().subscribe(data => {
-      this.outputEvents.emit(data);
-    });
+    this.onMessage().subscribe(data => this.outputEvents.emit(data));
   }
 
   connect(): Observable<any> {

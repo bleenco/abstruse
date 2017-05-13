@@ -5,7 +5,7 @@ import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
 import { processes, startBuildProcess } from './process';
-import { getAllRunningBuilds } from './process-manager';
+import { getAllRunningBuilds, restartBuild } from './process-manager';
 
 export interface ISocketServerOptions {
   port: number;
@@ -37,43 +37,61 @@ export class SocketServer {
           // });
 
           conn.subscribe(event => {
-            if (event.type === 'data') {
 
-              if (event.data === 'initializeDockerImage') {
-                // process.write('docker build -t abstruse ~/.abstruse/docker-files\r');
-                // process.write('exit\r');
-              } else if (event.data === 'runBuild') {
-                // if (!processes.length) {
-                //   startBuildProcess();
-                // }
-
-                // let proc = processes[0];
-                // proc.log.forEach(line => {
-                //   conn.next({ type: 'terminalOutput', data: line });
-                // });
-
-                // proc.pty.subscribe(data => {
-                //   if (data.type === 'data') {
-                //     conn.next({ type: 'terminalOutput', data: data.message });
-                //   } else if (data.type === 'exit') {
-                //     conn.next({ type: 'terminalExit', data: data.message });
-                //   }
-                // });
-              } else if (event.data === 'getAllRunningBuilds') {
-                getAllRunningBuilds()
-                  .subscribe(event => {
-                    if (event.type === 'data') {
-                      conn.next({ type: 'terminalOutput', data: event });
-                    } else if (event.type === 'exit') {
-                      conn.next({ type: 'terminalExit', data: event.data });
-                    }
+            switch (event.type) {
+              case 'restartBuild':
+                const buildId = event.data;
+                restartBuild(buildId).then(proc => {
+                  proc.pty.subscribe(event => {
+                    conn.next({ type: 'terminalOutput', data: event });
                   });
-              } else if (event.type === 'resize') {
-                // if (tty) {
-                //   tty.next({ action: 'resize', col: event.data.cols, row: event.data.rows });
-                // }
-              }
+                });
+              break;
             }
+
+
+
+
+
+            // if (event.type === 'data') {
+
+            //   if (event.data === 'initializeDockerImage') {
+            //     // process.write('docker build -t abstruse ~/.abstruse/docker-files\r');
+            //     // process.write('exit\r');
+            //   } else if (event.data === 'runBuild') {
+            //     // if (!processes.length) {
+            //     //   startBuildProcess();
+            //     // }
+
+            //     // let proc = processes[0];
+            //     // proc.log.forEach(line => {
+            //     //   conn.next({ type: 'terminalOutput', data: line });
+            //     // });
+
+            //     // proc.pty.subscribe(data => {
+            //     //   if (data.type === 'data') {
+            //     //     conn.next({ type: 'terminalOutput', data: data.message });
+            //     //   } else if (data.type === 'exit') {
+            //     //     conn.next({ type: 'terminalExit', data: data.message });
+            //     //   }
+            //     // });
+            //   } else if (event.data === 'getAllRunningBuilds') {
+            //     getAllRunningBuilds()
+            //       .subscribe(event => {
+            //         if (event.type === 'data') {
+            //           conn.next({ type: 'terminalOutput', data: event });
+            //         } else if (event.type === 'exit') {
+            //           conn.next({ type: 'terminalExit', data: event.data });
+            //         }
+            //       });
+            //   } else if (event.data === 'restartBuild') {
+
+            //   } else if (event.type === 'resize') {
+            //     // if (tty) {
+            //     //   tty.next({ action: 'resize', col: event.data.cols, row: event.data.rows });
+            //     // }
+            //   }
+            // }
           });
         });
     });

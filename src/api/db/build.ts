@@ -12,6 +12,18 @@ export function getBuilds(): Promise<any> {
   });
 }
 
+export function getBuild(buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build({ id: buildId }).fetch().then(build => {
+      if (!build) {
+        reject();
+      }
+
+      resolve(build.toJSON());
+    });
+  });
+}
+
 export function insertBuild(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build(data).save(null, { method: 'insert' }).then(build => {
