@@ -9,6 +9,8 @@ import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
+import { getBuilds } from './db/build';
+import { startBuild } from './process-manager';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -21,6 +23,24 @@ export function webRoutes(): express.Router {
   router.get('/setup', index);
   router.get('/login', index);
   router.all('/*', index);
+
+  return router;
+}
+
+export function buildRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/', (req: express.Request, res: express.Response) => {
+    getBuilds().then(builds => {
+      return res.status(200).json({ data: builds });
+    });
+  });
+
+  router.post('/', (req: express.Request, res: express.Response) => {
+    startBuild(req.body.id).then(() => {
+      return res.status(200).json({ status: true });
+    });
+  });
 
   return router;
 }

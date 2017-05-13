@@ -10,3 +10,8 @@ export class Repository extends Bookshelf.Model<any> {
   get tableName() { return 'repositories'; }
   get hasTimestamps() { return true; }
 }
+
+export class Build extends Bookshelf.Model<any> {
+  get tableName() { return 'builds'; }
+  get hasTimestamps() { return true; }
+}

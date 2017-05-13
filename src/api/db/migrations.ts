@@ -34,11 +34,12 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('uuid').notNullable();
-      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'failure'])
+      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'errored'])
        .notNullable().defaultTo('queue');
       t.integer('repositories_id').notNullable();
       t.foreign('repositories_id').references('repositories.id');
       t.text('log');
+      t.timestamps();
     }))
     .then(() => resolve())
     .catch(err => {

@@ -5,14 +5,16 @@ import * as utils from './utils';
 const pty = require('node-pty');
 
 export interface TTYMessage {
+  id: string;
   type: 'data' | 'error' | 'exit';
-  message: string;
+  data: string;
+  status:  'starting' | 'running' | 'errored' | 'done';
 }
 
-export function runInteractive(name: string, image: string): Subject<any> {
+export function runInteractive(id: string, image: string): Subject<any> {
   let cmd = 'docker';
-  let args = ['run', '-it', '--rm', '--privileged', '--name', name, image];
-  return execTty(cmd, args);
+  let args = ['run', '-it', '--rm', '--privileged', '--name', id, image];
+  return execTty(id, cmd, args);
 }
 
 export function imageExists(name: string): Observable<boolean> {
@@ -81,22 +83,25 @@ export function isDockerInstalled(): Observable<boolean> {
   });
 }
 
-function execTty(cmd: string, args: string[] = []): Subject<any> {
+function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
   let ps = pty.spawn(cmd, args);
 
   let output = new Observable((observer: Observer<TTYMessage>) => {
+    let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'starting' };
+    observer.next(msg);
+
     ps.on('data', data => {
-      let msg: TTYMessage = { type: 'data', message: data };
+      let msg: TTYMessage = { id: id, type: 'data', data: data, status: 'running' };
       observer.next(msg);
     });
 
     ps.on('error', err => {
-      let error: TTYMessage = { type: 'error', message: err };
+      let error: TTYMessage = { id: id, type: 'error', data: err, status: 'errored' };
       observer.next(error);
     });
 
     ps.on('exit', code => {
-      let exitCode: TTYMessage = { type: 'exit', message: code };
+      let exitCode: TTYMessage = { id: id, type: 'exit', data: code, status: 'done' };
       observer.next(exitCode);
       ps.kill('SIGHUP');
       observer.complete();

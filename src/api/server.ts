@@ -28,6 +28,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/setup', routes.setupRoutes());
       app.use('/api/user', routes.userRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());
+      app.use('/api/builds', routes.buildRoutes());
       app.use(routes.webRoutes());
       app.listen(this.config.port, () => {
         observer.next(`Server running on port ${this.config.port}`);

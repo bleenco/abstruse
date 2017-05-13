@@ -1,4 +1,4 @@
-import { Injectable, Provider } from '@angular/core';
+import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, Subscriber, Subscription } from 'rxjs';
 import { RxWebSocket, ConnectionStates } from '../classes/rx-web-socket.class';
 
@@ -6,6 +6,7 @@ import { RxWebSocket, ConnectionStates } from '../classes/rx-web-socket.class';
 export class SocketService {
   connectionState: BehaviorSubject<ConnectionStates>;
   socket: RxWebSocket;
+  outputEvents: EventEmitter<any>;
 
   constructor() {
     this.socket = new RxWebSocket();
@@ -13,6 +14,11 @@ export class SocketService {
     this.socket.didOpen = () => this.connectionState.next(ConnectionStates.CONNECTED);
     this.socket.willOpen = () => this.connectionState.next(ConnectionStates.CONNECTING);
     this.socket.didClose = () => this.connectionState.next(ConnectionStates.CLOSED);
+    this.outputEvents = new EventEmitter<any>();
+
+    this.onMessage().subscribe(data => {
+      this.outputEvents.emit(data);
+    });
   }
 
   connect(): Observable<any> {

@@ -51,6 +51,20 @@
     display: flex
     align-items: center
 
+    &.commit-column
+      display: inline-block
+
+      span
+        display: block
+
+        &.icon
+          display: inline-block
+          float: left
+          margin-top: 10px
+
+  &.is-active
+    border-left: 3px solid $green
+
   &:last-child
     border-bottom: none
 
@@ -81,6 +95,3 @@
 
     &.bold
       font-family: $font-family-bold
-
-  &.is-active
-    border-left: 3px solid $yellow
