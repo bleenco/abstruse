@@ -70,6 +70,8 @@
 
   &.is-running
     border-left: 3px solid $yellow
+    -webkit-animation: pulsate 2.0s infinite ease-in-out
+    animation: pulsate 2.0s infinite ease-in-out
 
   &.is-errored
     border-left: 3px solid $red
@@ -82,17 +84,18 @@
     width: 12px
     height: 12px
     border-radius: 50%
-    border: 2px solid $grey
+    border: none
     margin-right: 5px
+    background: $grey
 
     &.green
-      border-color: $green
+      background: $green
 
     &.red
-      border-color: $red
+      background: $red
 
     &.yellow
-      border-color: $yellow
+      background: $yellow
 
   .icon
     margin-right: 10px

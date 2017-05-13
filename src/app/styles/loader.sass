@@ -90,3 +90,16 @@
   50%
     transform: scale(1.0)
     -webkit-transform: scale(1.0)
+
+
+@-webkit-keyframes pulsate
+  0%, 100%
+    border-left-color: $yellow
+  50%
+    border-left-color: rgba($yellow, 0.1)
+
+@keyframes pulsate
+  0%, 100%
+    border-left-color: $yellow
+  50%
+    border-left-color: rgba($yellow, 0.1)
