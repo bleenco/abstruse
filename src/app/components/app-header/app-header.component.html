@@ -13,20 +13,15 @@
       <a class="nav-item" routerLink="/repositories" routerLinkActive="is-active">Repositories</a>
     </div>
     <div class="nav-right">
-      <a class="nav-item">
+      <a class="nav-item user-item">
         <img class="nav-avatar" src="https://avatars0.githubusercontent.com/u/1796022?v=3&s=460">
-        <svg class="nav-item-arrow" width="7px" height="4px" viewBox="0 0 7 4" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-            <g transform="translate(-1543.000000, -34.000000)" fill="#363E4A">
-              <g transform="translate(30.000000, 13.000000)">
-                <g transform="translate(1468.000000, 4.000000)">
-                  <path d="M47,19 L47,15.4976988 C47,15.2148438 46.7761424,15 46.5,15 C46.2319336,15 46,15.2228273 46,15.4976988 L46,19.5023012 C46,19.6433359 46.0556539,19.767462 46.1456934,19.8564782 C46.2365497,19.9423476 46.3606559,20 46.4976988,20 L50.5023012,20 C50.7851562,20 51,19.7761424 51,19.5 C51,19.2319336 50.7771727,19 50.5023012,19 L47,19 Z" id="Arrow" transform="translate(48.500000, 17.500000) rotate(-45.000000) translate(-48.500000, -17.500000) "></path>
-                </g>
-              </g>
-            </g>
-          </g>
-        </svg>
       </a>
+      <button class="button red exit-button" (click)="logout()">
+        <span class="icon">
+          <img src="images/icons/exit.svg">
+        </span>
+        <span>Exit</span>
+      </button>
     </div>
   </div>
 </header>

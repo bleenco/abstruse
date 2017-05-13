@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: 'app-header.component.html'
 })
 export class AppHeaderComponent {
-
   constructor(private authService: AuthService, private router: Router) { }
 
   logout(): void {

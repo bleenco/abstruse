@@ -8,6 +8,7 @@ import { SocketService } from '../../services/socket.service';
 })
 export class AppBuildComponent implements OnInit {
   builds: any[];
+  buildDropdowns: boolean[];
   // terminalInput: string;
   // resize: { cols: number; rows: number; };
 
@@ -21,6 +22,23 @@ export class AppBuildComponent implements OnInit {
   fetch(): void {
     this.apiService.getBuilds().subscribe(event => {
       this.builds = event;
+      this.buildDropdowns = this.builds.map(build => false);
+    });
+  }
+
+  toggleDropdown(index: number): void {
+    this.buildDropdowns = this.buildDropdowns.map((repo, i) => {
+      if (i !== index) {
+        return false;
+      } else {
+        return !repo;
+      }
+    });
+  }
+
+  runBuild(repositoryId: number): void {
+    this.apiService.runBuild(repositoryId).subscribe(event => {
+      // build runned.
     });
   }
 

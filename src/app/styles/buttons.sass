@@ -84,12 +84,20 @@
     background: $green
     border-color: $green
 
+  &.red
+    background: linear-gradient(to bottom, #F95359, #DD151C)
+    border-color: $red
+
   &:hover
     color: $white
     background: linear-gradient(to bottom, #415061, #303D4C)
 
     &.green
       background: darken($green, 3)
+
+    &.red
+      background: linear-gradient(to bottom, #EC4249, #BD0C13)
+      border: 1px solid #BD0C13
 
   &.is-active
     background: linear-gradient(to bottom, #354353, #232E3B)
