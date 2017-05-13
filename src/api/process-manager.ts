@@ -43,7 +43,7 @@ export function startBuild(repositoryId: number): Promise<Process> {
               log: proc.log.join('\n')
             }).then(() => {
               proc.exitStatus = data.data;
-              proc.status = 'done';
+              proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
             });
           }
         });
@@ -54,26 +54,20 @@ export function startBuild(repositoryId: number): Promise<Process> {
   });
 }
 
-export function restartBuild(buildId: number): Promise<Process> {
+export function restartBuild(uuid: number): Promise<Process> {
   return new Promise((resolve, reject) => {
-    let build: any;
-    getBuild(buildId)
-      .then(buildData => {
-        build = buildData;
-        buildData.status = 'starting';
-        return updateBuild(buildData);
-      })
-      .then(() => {
+    getBuild(uuid)
+      .then(build => {
         let proc = startBuildProcess(build.uuid, build.repositoryId);
-        // const splitted = data.url.split('/');
-        // const name = splitted[splitted.length - 1].replace(/\.git/, '');
+        const splitted = build.repository.url.split('/');
+        const name = splitted[splitted.length - 1].replace(/\.git/, '');
 
         let cmds = [
           '/etc/init.d/xvfb start',
           'export DISPLAY=:99',
           'export CHROME_BIN=chromium-browser',
-          `git clone --depth 50 -q https://github.com/d3/d3.git d3`,
-          `cd d3`,
+          `git clone --depth 50 -q ${build.repository.url} ${name}`,
+          `cd ${name}`,
           'yarn',
           'yarn test',
           'exit $?'
@@ -97,7 +91,7 @@ export function restartBuild(buildId: number): Promise<Process> {
               log: proc.log.join('\n')
             }).then(() => {
               proc.exitStatus = data.data;
-              proc.status = 'done';
+              proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
             });
           }
         });

@@ -12,12 +12,15 @@ export class AppBuildDetailsComponent implements OnInit {
   terminalReady: boolean;
   terminalInput: string;
   resize: { cols: number; rows: number; };
+  terminalOptions: { size: 'small' | 'large' };
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    this.terminalOptions = { size: 'large' };
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {

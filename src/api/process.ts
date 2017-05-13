@@ -4,11 +4,11 @@ import { PtyInstance } from './pty';
 
 export interface Process {
   id: string;
-  status: 'starting' | 'running' | 'done';
+  status: 'queue' | 'starting' | 'running' | 'stopped' | 'success' | 'errored';
   type: 'setup' | 'build';
   pty: any;
   log: string[];
-  exitStatus: string;
+  exitStatus: number;
   repositoryId?: number;
 }
 

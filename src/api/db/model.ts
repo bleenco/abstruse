@@ -14,4 +14,5 @@ export class Repository extends Bookshelf.Model<any> {
 export class Build extends Bookshelf.Model<any> {
   get tableName() { return 'builds'; }
   get hasTimestamps() { return true; }
+  repository() { return this.belongsTo(Repository, 'repositories_id'); }
 }

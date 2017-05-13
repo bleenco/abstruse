@@ -15,6 +15,7 @@ import * as hterm from 'hterm';
 })
 export class AppTerminalComponent implements OnInit {
   @Input() data: string;
+  @Input() options: { size: 'normal' | 'large' };
   @Output() outputData: EventEmitter<any>;
 
   term: any;

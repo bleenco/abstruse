@@ -8,7 +8,7 @@ export interface TTYMessage {
   id: string;
   type: 'data' | 'error' | 'exit';
   data: string;
-  status:  'starting' | 'running' | 'errored' | 'done';
+  status:  'queue' | 'starting' | 'running' | 'stopped' | 'success' | 'errored';
 }
 
 export function runInteractive(id: string, image: string): Subject<any> {
@@ -101,7 +101,13 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
     });
 
     ps.on('exit', code => {
-      let exitCode: TTYMessage = { id: id, type: 'exit', data: code, status: 'done' };
+      let exitCode: TTYMessage = {
+        id: id,
+        type: 'exit',
+        data: code,
+        status: code === 0 ? 'success' : 'errored'
+      };
+
       observer.next(exitCode);
       ps.kill('SIGHUP');
       observer.complete();

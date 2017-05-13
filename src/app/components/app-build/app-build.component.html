@@ -20,7 +20,7 @@
           <div class="column is-12">
             <div class="columns list-header">
               <div class="column is-1">Build Id</div>
-              <div class="column is-3">UUID</div>
+              <div class="column is-3">Repository</div>
               <div class="column is-2">Commit</div>
               <div class="column is-2">Commited by</div>
               <div class="column is-1">Status</div>
@@ -38,7 +38,7 @@
                 <span>{{ build.id }}</span>
               </div>
               <div class="column is-3">
-                <span>{{ build.uuid }}</span>
+                <span>{{ build.repository.url }}</span>
               </div>
               <div class="column is-2 commit-column">
                 <span class="icon">
@@ -68,7 +68,7 @@
                   <div class="button-dropdown" [ngClass]="{ 'is-active': buildDropdowns[i] }">
                     <div class="button-dropdown-item" (click)="runBuild(build.repositories_id)">Run Build</div>
                     <div class="button-dropdown-item">Stop Build</div>
-                    <div class="button-dropdown-item" (click)="restartBuild(build.id)">Re-Start Build</div>
+                    <div class="button-dropdown-item" (click)="restartBuild(build.uuid)">Re-Start Build</div>
                   </div>
                 </div>
               </div>

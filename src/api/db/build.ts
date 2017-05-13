@@ -2,7 +2,7 @@ import { Build } from './model';
 
 export function getBuilds(): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build().fetchAll().then(builds => {
+    new Build().orderBy('id', 'DESC').fetchAll({ withRelated: ['repository'] }).then(builds => {
       if (!builds) {
         reject();
       }
@@ -12,9 +12,9 @@ export function getBuilds(): Promise<any> {
   });
 }
 
-export function getBuild(buildId: number): Promise<any> {
+export function getBuild(uuid: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: buildId }).fetch().then(build => {
+    new Build({ uuid: uuid }).fetch({ withRelated: ['repository'] }).then(build => {
       if (!build) {
         reject();
       }
