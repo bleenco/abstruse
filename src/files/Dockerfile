@@ -23,9 +23,6 @@ COPY xvfb /etc/init.d/xvfb
 RUN chmod a+x /etc/init.d/xvfb
 RUN /etc/init.d/xvfb start
 
-RUN useradd -ms /bin/bash abstruse
-USER abstruse
-WORKDIR /home/abstruse
 RUN export DISPLAY=:99
 RUN export CHROME_BIN=chromium-browser
 

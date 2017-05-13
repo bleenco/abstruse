@@ -42,9 +42,9 @@ export class AppTerminalComponent implements OnInit {
       };
 
       this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
-      this.term.prefs_.set('font-size', 11);
+      this.term.prefs_.set('font-size', 12);
       this.term.prefs_.set('background-color', '#222C3C');
-      this.term.prefs_.set('foreground-color', '#7F8FA4');
+      this.term.prefs_.set('foreground-color', '#FFFFFF');
       this.term.prefs_.set('cursor-color', 'transparent');
       this.term.prefs_.set('color-palette-overrides', [
         '#1d1f21',
@@ -77,7 +77,7 @@ export class AppTerminalComponent implements OnInit {
       return;
     }
 
-    requestAnimationFrame(() => this.term.io.writeUTF8(this.data));
+    this.term.io.writeUTF8(this.data);
   }
 
   setBasic() {

@@ -1,0 +1,18 @@
+<app-header></app-header>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-12">
+      <div class="content">
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <h1>Build</h1>
+          </div>
+          <div class="column is-12">
+            <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

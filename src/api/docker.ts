@@ -11,7 +11,7 @@ export interface TTYMessage {
 
 export function runInteractive(name: string, image: string): Subject<any> {
   let cmd = 'docker';
-  let args = ['run', '-it', '--rm', '--name', name, image];
+  let args = ['run', '-it', '--rm', '--privileged', '--name', name, image];
   return execTty(cmd, args);
 }
 
@@ -98,6 +98,7 @@ function execTty(cmd: string, args: string[] = []): Subject<any> {
     ps.on('exit', code => {
       let exitCode: TTYMessage = { type: 'exit', message: code };
       observer.next(exitCode);
+      ps.kill('SIGHUP');
       observer.complete();
     });
   });
@@ -105,7 +106,7 @@ function execTty(cmd: string, args: string[] = []): Subject<any> {
   let input: any = {
     next(data: any) {
       if (data.action === 'command') {
-        ps.write(`${data.message}\n`);
+        ps.write(`${data.message}\r`);
       } else if (data.action === 'resize') {
         ps.resize(data.col, data.row);
       }

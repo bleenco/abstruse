@@ -6,14 +6,40 @@ export function create(): Promise<null> {
 
   return new Promise((resolve, reject) => {
     schema.createTableIfNotExists('users', (t: knex.TableBuilder) => {
-      t.increments('id');
-      t.string('email').unique().notNullable();
+      t.increments('id').unsigned().primary();
+      t.string('email').notNullable();
       t.string('fullname').notNullable();
       t.string('password').notNullable();
       t.boolean('admin').notNullable().defaultTo(false);
       t.string('avatar').notNullable().defaultTo('images/avatars/user.png');
       t.timestamps();
     })
+    .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.string('url').notNullable();
+      t.timestamps();
+    }))
+    .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.integer('repositories_id').notNullable();
+      t.foreign('repositories_id').references('repositories.id');
+      t.integer('users_id').notNullable();
+      t.foreign('users_id').references('users.id');
+      t.boolean('read').notNullable().defaultTo(true);
+      t.boolean('start').notNullable().defaultTo(true);
+      t.boolean('stop').notNullable().defaultTo(true);
+      t.boolean('delete').notNullable().defaultTo(false);
+      t.timestamps();
+    }))
+    .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.string('uuid').notNullable();
+      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'failure'])
+       .notNullable().defaultTo('queue');
+      t.integer('repositories_id').notNullable();
+      t.foreign('repositories_id').references('repositories.id');
+      t.text('log');
+    }))
     .then(() => resolve())
     .catch(err => {
       console.error(err);
