@@ -15,7 +15,11 @@ export class ApiService {
   getRepositories(userId: string): Observable<any> {
     const params = new URLSearchParams();
     params.append('userId', userId);
-    return this.get(`${this.url}/repositories`, params);
+    return this.get(`${this.url}/repository`, params);
+  }
+
+  addRepository(data: any): Observable<any> {
+    return this.post(`${this.url}/repository/add`, data);
   }
 
   isAppReady(): Observable<any> {

@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="nav-right">
-      <button class="nav-item button" (click)="openAddPopup()">
+      <button class="nav-item button" (click)="addRepositoryForm()">
         <img src="images/icons/add.svg">
         Add Repository
       </button>
@@ -26,14 +26,14 @@
           <div class="column is-12">
             <h1>My Repositories</h1>
           </div>
-          <div class="column is-12">
-            <form class="add-repo-form">
+          <div class="column is-12" *ngIf="repository">
+            <form class="add-repo-form" #repositoryForm="ngForm" (ngSubmit)="addRepository()">
               <h1>Add New Repository</h1>
               <div class="columns is-multiline">
                 <div class="column is-6">
                   <div class="form-field">
                     <label class="form-label">Repository URL</label>
-                    <input class="form-input" type="text" placeholder="Git URL">
+                    <input class="form-input" type="text" placeholder="Git URL" name="url" [(ngModel)]="repository.url" required>
                   </div>
                 </div>
                 <div class="column is-6"></div>
@@ -59,7 +59,7 @@
                   <hr/>
                 </div>
                 <div class="column is-12">
-                  <button type="submit" class="button green float-right">Save</button>
+                  <button type="submit" class="button green float-right" [disabled]="!repositoryForm.valid">Save</button>
                 </div>
               </div>
             </form>

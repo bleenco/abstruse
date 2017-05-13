@@ -8,6 +8,7 @@ import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
+import { addRepository } from './db/repository';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -39,6 +40,18 @@ export function userRoutes(): express.Router {
     }).catch(err => {
       return res.status(200).json({ status: false });
     });
+  });
+
+  return router;
+}
+
+export function repositoryRoutes(): express.Router {
+  const router = express.Router();
+
+  router.post('/add', (req: express.Request, res: express.Response) => {
+    addRepository(req.body).then(result => {
+      return res.status(200).json({ status: true });
+    }).catch(err => res.status(200).json({ status: false }));
   });
 
   return router;
