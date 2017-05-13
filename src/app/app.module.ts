@@ -17,6 +17,7 @@ import { AppLoginComponent } from './components/app-login';
 import { AppHeaderComponent } from './components/app-header';
 import { AppDashboardComponent } from './components/app-dashboard';
 import { AppBuildComponent } from './components/app-build';
+import { AppRepositoriesComponent } from './components/app-repositories';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { AppBuildComponent } from './components/app-build';
     AppDashboardComponent,
     AppHeaderComponent,
     AppBuildComponent,
+    AppRepositoriesComponent,
     EqualValidator
   ],
   imports: [
@@ -43,6 +45,11 @@ import { AppBuildComponent } from './components/app-build';
       {
         path: 'build',
         component: AppBuildComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'repositories',
+        component: AppRepositoriesComponent,
         canActivate: [AuthGuard]
       },
       {

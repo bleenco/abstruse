@@ -1,0 +1,77 @@
+<app-header></app-header>
+
+<nav class="nav sub-nav">
+  <div class="container">
+    <div class="nav-left"></div>
+    <div class="nav-center">
+      <div class="group-buttons">
+        <button class="group-button is-active">My Repositories</button>
+        <button class="group-button">All Repositories</button>
+      </div>
+    </div>
+    <div class="nav-right">
+      <button class="nav-item button" (click)="openAddPopup()">
+        <img src="images/icons/add.svg">
+        Add Repository
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-12">
+      <div class="content">
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <h1>My Repositories</h1>
+          </div>
+          <div class="column is-12">
+            <form class="add-repo-form">
+              <h1>Add New Repository</h1>
+              <div class="columns is-multiline">
+                <div class="column is-6">
+                  <div class="form-field">
+                    <label class="form-label">Repository URL</label>
+                    <input class="form-input" type="text" placeholder="Git URL">
+                  </div>
+                </div>
+                <div class="column is-6"></div>
+                <div class="column is-12">
+                  <hr/>
+                </div>
+                <div class="column is-12">
+                  <h4>Credentials</h4>
+                </div>
+                <div class="column is-6">
+                  <div class="form-field">
+                    <label class="form-label">Username</label>
+                    <input class="form-input" type="text" placeholder="Username">
+                  </div>
+                </div>
+                <div class="column is-6">
+                  <div class="form-field">
+                    <label class="form-label">Password</label>
+                    <input class="form-input" type="password" placeholder="Username">
+                  </div>
+                </div>
+                <div class="column is-12">
+                  <hr/>
+                </div>
+                <div class="column is-12">
+                  <button type="submit" class="button green float-right">Save</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay">
+  <div class="popup">
+
+  </div>
+</div>

@@ -12,6 +12,12 @@ export class ApiService {
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
   }
 
+  getRepositories(userId: string): Observable<any> {
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    return this.get(`${this.url}/repositories`, params);
+  }
+
   isAppReady(): Observable<any> {
     return this.get(`${this.url}/setup/ready`);
   }

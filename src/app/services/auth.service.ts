@@ -21,6 +21,10 @@ export class AuthService {
   logout(): void {
     sessionStorage.removeItem('abs-token');
   }
+
+  getData(): Object {
+    return this.jwtHelper.decodeToken(sessionStorage.getItem('abs-token'));
+  }
 }
 
 export const AuthServiceProvider: Provider = {
