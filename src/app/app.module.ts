@@ -17,6 +17,7 @@ import { AppLoginComponent } from './components/app-login';
 import { AppHeaderComponent } from './components/app-header';
 import { AppDashboardComponent } from './components/app-dashboard';
 import { AppBuildComponent } from './components/app-build';
+import { AppBuildDetailsComponent } from './components/app-build-details';
 import { AppRepositoriesComponent } from './components/app-repositories';
 
 
@@ -29,6 +30,7 @@ import { AppRepositoriesComponent } from './components/app-repositories';
     AppDashboardComponent,
     AppHeaderComponent,
     AppBuildComponent,
+    AppBuildDetailsComponent,
     AppRepositoriesComponent,
     EqualValidator
   ],
@@ -45,6 +47,11 @@ import { AppRepositoriesComponent } from './components/app-repositories';
       {
         path: 'build',
         component: AppBuildComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'build/:id',
+        component: AppBuildDetailsComponent,
         canActivate: [AuthGuard]
       },
       {

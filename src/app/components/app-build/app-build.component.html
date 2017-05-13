@@ -30,7 +30,7 @@
             <div class="columns list-item"
                  *ngFor="let build of builds; let i = index;"
                  [ngClass]="{ 'is-success': build.status === 'success' || build.status === 'done', 'is-running': build.status === 'running', 'is-errored': build.status === 'errored' }"
-                 (click)="gotoBuild(build.id)">
+                 (click)="gotoBuild(build.uuid)">
               <div class="column is-1">
                 <span class="icon">
                   <img src="images/icons/hammer.svg">

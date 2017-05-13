@@ -5,7 +5,7 @@ import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
 import { processes, startBuildProcess } from './process';
-import { getAllRunningBuilds, restartBuild } from './process-manager';
+import { getAllRunningBuilds, restartBuild, getProcess } from './process-manager';
 
 export interface ISocketServerOptions {
   port: number;
@@ -40,12 +40,19 @@ export class SocketServer {
 
             switch (event.type) {
               case 'restartBuild':
-                const buildId = event.data;
-                restartBuild(buildId).then(proc => {
+                restartBuild(event.data).then(proc => {
                   proc.pty.subscribe(event => {
                     conn.next({ type: 'terminalOutput', data: event });
                   });
                 });
+              break;
+              case 'getLog':
+                const proc = getProcess(event.data);
+                if (proc) {
+                  proc.log.forEach(line => {
+                    conn.next({ type: 'logLine', data: { id: event.data, data: line } });
+                  });
+                }
               break;
             }
 

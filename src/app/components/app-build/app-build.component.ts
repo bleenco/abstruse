@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 
@@ -12,12 +13,20 @@ export class AppBuildComponent implements OnInit {
   // terminalInput: string;
   // resize: { cols: number; rows: number; };
 
-  constructor(private socketService: SocketService, private apiService: ApiService) { }
+  constructor(
+    private socketService: SocketService,
+    private apiService: ApiService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.fetch();
 
     this.socketService.outputEvents.subscribe(event => {
+      if (!this.builds) {
+        return;
+      }
+
       const index = this.builds.findIndex(build => build.uuid === event.data.id);
       if (index !== -1) {
         this.builds[index].status = event.data.status;
@@ -52,6 +61,10 @@ export class AppBuildComponent implements OnInit {
 
   restartBuild(buildId: number): void {
     this.socketService.emit({ type: 'restartBuild', data: buildId });
+  }
+
+  gotoBuild(buildId: number) {
+    this.router.navigate(['build', buildId]);
   }
 
   // terminalOutput(e: any): void {

@@ -35,14 +35,14 @@ export function startBuild(repositoryId: number): Promise<Process> {
           }
 
           if (data.type === 'data') {
-            proc.log.push(data.message);
+            proc.log.push(data.data);
           } else if (data.type === 'exit') {
             updateBuild({
               id: insertedBuild.toJSON().id,
               status: data.status,
               log: proc.log.join('\n')
             }).then(() => {
-              proc.exitStatus = data.message;
+              proc.exitStatus = data.data;
               proc.status = 'done';
             });
           }
@@ -89,14 +89,14 @@ export function restartBuild(buildId: number): Promise<Process> {
           }
 
           if (data.type === 'data') {
-            proc.log.push(data.message);
+            proc.log.push(data.data);
           } else if (data.type === 'exit') {
             updateBuild({
               id: build.id,
               status: data.status,
               log: proc.log.join('\n')
             }).then(() => {
-              proc.exitStatus = data.message;
+              proc.exitStatus = data.data;
               proc.status = 'done';
             });
           }
@@ -118,6 +118,10 @@ export function getAllRunningBuilds(): Observable<any> {
 
 export function getAllProcesses(): Process[] {
   return processes;
+}
+
+export function getProcess(buildId: string): Process {
+  return processes[processes.findIndex(proc => proc.id === buildId)] || null;
 }
 
 function generateId(): string {
