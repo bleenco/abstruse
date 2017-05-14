@@ -14,13 +14,13 @@ export interface Process {
 
 export let processes: Process[] = [];
 
-export function startBuildProcess(id: string, repositoryId: number): Process {
-  let pty = new PtyInstance(id);
+export function startBuildProcess(uuid: string, repositoryId: number): Process {
+  let pty = new PtyInstance(uuid);
   let proc: Process = {
-    id: id,
+    id: uuid,
     status: 'starting',
     type: 'build',
-    pty: docker.runInteractive(id, 'abstruse').share(),
+    pty: docker.runInteractive(uuid, 'abstruse').share(),
     log: [],
     exitStatus: null,
     repositoryId: repositoryId
@@ -29,3 +29,14 @@ export function startBuildProcess(id: string, repositoryId: number): Process {
   return proc;
 }
 
+export function exitProcess(id: string): void {
+  const index = processes.findIndex(proc => proc.id === id);
+  if (index === -1) {
+    return;
+  }
+
+  const proc = processes[index];
+
+  proc.pty.next({ action: 'exit' });
+  processes = processes.filter(process => process.id !== id);
+}

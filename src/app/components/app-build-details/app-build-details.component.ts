@@ -44,8 +44,12 @@ export class AppBuildDetailsComponent implements OnInit {
     });
   }
 
-  restartBuild(buildId: number): void {
+  restartBuild(buildId: string): void {
     this.socketService.emit({ type: 'restartBuild', data: buildId });
+  }
+
+  stopBuild(): void {
+    this.socketService.emit({ type: 'stopBuild', data: this.uuid });
   }
 
   terminalOutput(e: any): void {

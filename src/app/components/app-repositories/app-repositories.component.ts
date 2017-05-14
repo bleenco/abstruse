@@ -73,8 +73,6 @@ export class AppRepositoriesComponent implements OnInit {
   }
 
   runBuild(repositoryId: number): void {
-    this.apiService.runBuild(repositoryId).subscribe(event => {
-      // build runned.
-    });
+    this.socketService.emit({ type: 'startBuild', data: repositoryId });
   }
 }

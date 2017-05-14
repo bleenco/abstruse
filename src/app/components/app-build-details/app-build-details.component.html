@@ -7,6 +7,13 @@
         <div class="columns is-multiline">
           <div class="column is-12">
             <h1>Build</h1>
+            <div class="spinner spinner-abs">
+              <span class="double-bounce1"></span>
+              <span class="double-bounce2"></span>
+            </div>
+          </div>
+          <div class="column is-12">
+            <button type="button" class="button red" (click)="stopBuild()">Stop Build</button>
           </div>
           <div class="column is-12">
             <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>

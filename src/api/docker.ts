@@ -120,6 +120,8 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
         ps.write(`${data.message}\r`);
       } else if (data.action === 'resize') {
         ps.resize(data.col, data.row);
+      } else if (data.action === 'exit') {
+        ps.kill('SIGHUP');
       }
     }
   };

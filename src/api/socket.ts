@@ -4,8 +4,9 @@ import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
-import { processes, startBuildProcess } from './process';
-import { getAllRunningBuilds, restartBuild, getProcess } from './process-manager';
+import { exitProcess } from './process';
+import { getAllRunningBuilds, restartBuild, getProcess, startBuild } from './process-manager';
+import { getBuild } from './db/build';
 
 export interface ISocketServerOptions {
   port: number;
@@ -39,12 +40,21 @@ export class SocketServer {
           conn.subscribe(event => {
 
             switch (event.type) {
-              case 'restartBuild':
-                restartBuild(event.data).then(proc => {
+              case 'startBuild':
+                startBuild(event.data).then(proc => {
                   proc.pty.subscribe(event => {
                     conn.next({ type: 'terminalOutput', data: event });
                   });
                 });
+              break;
+              case 'restartBuild':
+                if (!getProcess(event.data)) {
+                  restartBuild(event.data).then(proc => {
+                    proc.pty.subscribe(event => {
+                      conn.next({ type: 'terminalOutput', data: event });
+                    });
+                  });
+                }
               break;
               case 'getLog':
                 const proc = getProcess(event.data);
@@ -52,7 +62,14 @@ export class SocketServer {
                   proc.log.forEach(line => {
                     conn.next({ type: 'logLine', data: { id: event.data, data: line } });
                   });
+                } else {
+                  getBuild(event.data).then(build => {
+                    conn.next({ type: 'logLine', data: { id: event.data, data: build.log } });
+                  });
                 }
+              break;
+              case 'stopBuild':
+                exitProcess(event.data);
               break;
             }
 

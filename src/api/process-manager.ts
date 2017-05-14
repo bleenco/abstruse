@@ -1,6 +1,6 @@
 import * as uuid from 'uuid';
 import { getRepository } from './db/repository';
-import { startBuildProcess, processes, Process } from './process';
+import { startBuildProcess, processes, Process, exitProcess } from './process';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 
@@ -30,7 +30,7 @@ export function startBuild(repositoryId: number): Promise<Process> {
         processes.push(proc);
 
         proc.pty.subscribe(data => {
-          if (proc.status === 'starting') {
+          if (proc.status !== 'running') {
             proc.status = 'running';
           }
 
@@ -41,9 +41,12 @@ export function startBuild(repositoryId: number): Promise<Process> {
               id: insertedBuild.toJSON().id,
               status: data.status,
               log: proc.log.join('\n')
-            }).then(() => {
+            })
+            .then(() => {
               proc.exitStatus = data.data;
               proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
+
+              exitProcess(uuid);
             });
           }
         });
@@ -54,7 +57,7 @@ export function startBuild(repositoryId: number): Promise<Process> {
   });
 }
 
-export function restartBuild(uuid: number): Promise<Process> {
+export function restartBuild(uuid: string): Promise<Process> {
   return new Promise((resolve, reject) => {
     getBuild(uuid)
       .then(build => {
@@ -92,6 +95,8 @@ export function restartBuild(uuid: number): Promise<Process> {
             }).then(() => {
               proc.exitStatus = data.data;
               proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
+
+              exitProcess(uuid);
             });
           }
         });
