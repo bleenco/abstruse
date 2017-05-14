@@ -17,6 +17,7 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('url').notNullable();
+      t.string('default_branch').notNullable().defaultTo('master');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
@@ -34,7 +35,13 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('uuid').notNullable();
-      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'errored'])
+      t.string('branch').notNullable();
+      t.string('commit_hash');
+      t.string('commited_by');
+      t.dateTime('start_time').notNullable();
+      t.dateTime('end_time');
+      t.integer('iteration').notNullable().defaultTo(1);
+      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'failed'])
        .notNullable().defaultTo('queue');
       t.integer('repositories_id').notNullable();
       t.foreign('repositories_id').references('repositories.id');
