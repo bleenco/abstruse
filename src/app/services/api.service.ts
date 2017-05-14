@@ -16,10 +16,6 @@ export class ApiService {
     return this.get(`${this.url}/builds`);
   }
 
-  runBuild(repositoryId: number): Observable<any> {
-    return this.post(`${this.url}/builds`, { id: repositoryId });
-  }
-
   getRepositories(userId: string): Observable<any> {
     const params = new URLSearchParams();
     params.append('userId', userId);
@@ -40,6 +36,10 @@ export class ApiService {
 
   getDatabaseStatus(): Observable<any> {
     return this.get(`${this.url}/setup/db`);
+  }
+
+  dockerImageExists(): Observable<any> {
+    return this.get(`${this.url}/setup/docker-image`);
   }
 
   initializeDatabase(): Observable<any> {

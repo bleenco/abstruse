@@ -11,6 +11,7 @@ import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
 import { getBuilds } from './db/build';
 import { startBuild, restartBuild } from './process-manager';
+import { imageExists } from './docker';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -35,18 +36,6 @@ export function buildRoutes(): express.Router {
       return res.status(200).json({ data: builds });
     });
   });
-
-  router.post('/', (req: express.Request, res: express.Response) => {
-    startBuild(req.body.id).then(() => {
-      return res.status(200).json({ status: true });
-    });
-  });
-
-  // router.post('/restart', (req: express.Request, res: express.Response) => {
-  //   restartBuild(req.body.id).then(() => {
-  //     return res.status(200).json({ status: true });
-  //   });
-  // });
 
   return router;
 }
@@ -143,6 +132,12 @@ export function setupRoutes(): express.Router {
   router.post('/db/init', (req: express.Request, res: express.Response) => {
     reinitializeDatabase().then(() => {
       return res.status(200).json({ data: true });
+    });
+  });
+
+  router.get('/docker-image', (req: express.Request, res: express.Response) => {
+    imageExists('abstruse').subscribe(exists => {
+      return res.status(200).json({ data: exists });
     });
   });
 

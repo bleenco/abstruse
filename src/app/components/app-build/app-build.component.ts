@@ -54,9 +54,9 @@ export class AppBuildComponent implements OnInit {
   }
 
   runBuild(repositoryId: number): void {
-    this.apiService.runBuild(repositoryId).subscribe(event => {
-      // build runned.
-    });
+    // this.apiService.runBuild(repositoryId).subscribe(event => {
+    //   // build runned.
+    // });
   }
 
   restartBuild(uuid: number): void {

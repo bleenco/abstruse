@@ -78,7 +78,19 @@ export class AppSetupComponent implements OnInit {
           }
         });
       } else {
+        this.continueToDockerImageBuild();
+      }
+    });
+  }
+
+  continueToDockerImageBuild(): void {
+    this.loading = true;
+    this.apiService.dockerImageExists().delay(2000).subscribe(exists => {
+      this.loading = false;
+      if (!exists) {
         this.step = 'docker';
+      } else {
+        this.router.navigate(['/login']);
       }
     });
   }
@@ -88,7 +100,7 @@ export class AppSetupComponent implements OnInit {
     this.apiService.createUser(this.user).delay(2000).subscribe(event => {
       this.loading = false;
       if (event) {
-        this.step = 'docker';
+        this.continueToDockerImageBuild();
       }
     });
   }
