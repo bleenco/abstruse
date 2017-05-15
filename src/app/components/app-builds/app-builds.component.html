@@ -17,7 +17,17 @@
           <div class="column is-12">
             <h1>Builds</h1>
           </div>
-          <div class="column is-12">
+
+          <div class="column is-12" *ngIf="!builds || !builds.length">
+            <div class="notification">
+              <span class="icon">
+                <img src="images/icons/info.svg">
+              </span>
+              <span>No builds has been runned yet.</span>
+            </div>
+          </div>
+
+          <div class="column is-12" *ngIf="builds && builds.length">
             <div class="columns list-header">
               <div class="column is-1">Build Id</div>
               <div class="column is-3">Repository</div>
@@ -74,9 +84,7 @@
               </div>
             </div>
           </div>
-          <div class="column is-12">
-            <!--<app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)"></app-terminal>-->
-          </div>
+
         </div>
       </div>
     </div>
