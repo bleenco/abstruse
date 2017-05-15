@@ -14,7 +14,7 @@ export interface Repository {
 })
 export class AppRepositoriesComponent implements OnInit {
   repository: Repository;
-  userData: Object;
+  userData: any;
   repositories: string[];
   repositoriesDropdowns: boolean[];
 
@@ -30,7 +30,7 @@ export class AppRepositoriesComponent implements OnInit {
   }
 
   fetch(): void {
-    this.apiService.getRepositories('1').subscribe(event => {
+    this.apiService.getRepositories(this.userData.id).subscribe(event => {
       this.repositories = event;
       this.repositoriesDropdowns = this.repositories.map(repo => false);
     });
