@@ -11,6 +11,7 @@ export function startBuild(repositoryId: number): Promise<Process> {
 
       insertBuild({ uuid: uuid, repositories_id: repositoryId }).then(insertedBuild => {
         let proc = startBuildProcess(uuid, repositoryId);
+        proc.status = 'starting';
         const splitted = data.url.split('/');
         const name = splitted[splitted.length - 1].replace(/\.git/, '');
 

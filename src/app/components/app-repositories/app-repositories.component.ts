@@ -27,19 +27,6 @@ export class AppRepositoriesComponent implements OnInit {
   ngOnInit() {
     this.userData = this.authService.getData();
     this.fetch();
-
-    this.socketService.onMessage().distinct(x => x.data.status).subscribe(event => {
-      if (event.type === 'terminalOutput') {
-        console.log(event.data);
-
-      } else if (event.type === 'terminalExit') {
-        if (event.data === 0) {
-
-        }
-      }
-    });
-
-    this.socketService.emit({ type: 'data', data: 'getAllRunningBuilds' });
   }
 
   fetch(): void {
