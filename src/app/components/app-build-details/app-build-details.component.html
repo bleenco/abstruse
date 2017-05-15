@@ -5,15 +5,57 @@
     <div class="column is-12">
       <div class="content">
         <div class="columns is-multiline">
-          <div class="column is-12">
-            <h1>Build</h1>
-            <div class="spinner spinner-abs">
-              <span class="double-bounce1"></span>
-              <span class="double-bounce2"></span>
+          <div class="column is-12" *ngIf="build">
+            <div class="build-top-container">
+              <div class="columns is-multiline">
+                <div class="column is-8">
+                  <h2>{{ build.repository.url }}</h2>
+                </div>
+                <div class="column is-4 column-centered">
+                  <button type="button" class="button" disabled>
+                    <span class="icon">
+                      <img src="images/icons/restart.svg">
+                    </span>
+                    Re-Start Build
+                  </button>
+                  <button type="button" class="button red" disabled>
+                    <span class="icon">
+                      <img src="images/icons/stop.svg">
+                    </span>
+                    Stop Build
+                  </button>
+                </div>
+                <div class="column is-12">
+                  <h3>#{{ build.id }}.{{ build.iteration }} ({{ build.uuid }})</h3>
+                </div>
+                <div class="column is-3">
+                  <div class="label" [ngClass]="{ green: build.status === 'success', yellow: build.status === 'running', running: build.status === 'running', red: build.status === 'errored' }">
+                    <span *ngIf="build.status === 'success'">
+                      <span class="icon">
+                        <img src="images/icons/check-icon-white.svg">
+                      </span>
+                      Success
+                    </span>
+                    <span *ngIf="build.status === 'errored'">
+                      <span class="icon">
+                        <img src="images/icons/check-icon-white-false.svg">
+                      </span>
+                      <span>Failing</span>
+                    </span>
+                    <span *ngIf="build.status === 'running'">
+                      <span class="icon">
+                        <img src="images/icons/hammer.svg">
+                      </span>
+                      Running
+                    </span>
+                    <span *ngIf="build.status === 'queue'">
+                      In Queue
+                    </span>
+                  </div>
+                </div>
+                <div class="column is-9"></div>
+              </div>
             </div>
-          </div>
-          <div class="column is-12">
-            <button type="button" class="button red" (click)="stopBuild()">Stop Build</button>
           </div>
           <div class="column is-12">
             <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>

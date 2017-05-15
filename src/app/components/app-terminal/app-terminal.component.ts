@@ -35,36 +35,36 @@ export class AppTerminalComponent implements OnInit {
 
     this.setBasic();
 
+    this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
+    this.term.prefs_.set('font-size', 12);
+    this.term.prefs_.set('background-color', '#000000');
+    this.term.prefs_.set('foreground-color', '#FFFFFF');
+    this.term.prefs_.set('cursor-color', 'transparent');
+    this.term.prefs_.set('color-palette-overrides', [
+      '#1d1f21',
+      '#cc342b',
+      '#198844',
+      '#fba922',
+      '#3971ed',
+      '#a36ac7',
+      '#3971ed',
+      '#c5c8c6',
+      '#969896',
+      '#cc342b',
+      '#198844',
+      '#fba922',
+      '#3971ed',
+      '#a36ac7',
+      '#3971ed',
+      '#ffffff'
+    ]);
+
     this.term.onTerminalReady = () => {
       let io = this.term.io.push();
 
       io.onTerminalResize = (col: number, row: number) => {
         this.outputData.emit({ type: 'resize', cols: col, rows: row });
       };
-
-      this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
-      this.term.prefs_.set('font-size', 12);
-      this.term.prefs_.set('background-color', '#222C3C');
-      this.term.prefs_.set('foreground-color', '#FFFFFF');
-      this.term.prefs_.set('cursor-color', 'transparent');
-      this.term.prefs_.set('color-palette-overrides', [
-        '#1d1f21',
-        '#cc342b',
-        '#198844',
-        '#fba922',
-        '#3971ed',
-        '#a36ac7',
-        '#3971ed',
-        '#c5c8c6',
-        '#969896',
-        '#cc342b',
-        '#198844',
-        '#fba922',
-        '#3971ed',
-        '#a36ac7',
-        '#3971ed',
-        '#ffffff'
-      ]);
 
       this.term.setWindowTitle = () => {};
 
@@ -94,7 +94,6 @@ export class AppTerminalComponent implements OnInit {
       this.term.prefs_.set('alt-sends-what', 'browser-key');
       this.term.prefs_.set('scrollbar-visible', false);
       this.term.prefs_.set('enable-clipboard-notice', false);
-      this.term.prefs_.set('background-color', 'transparent');
     });
   }
 }

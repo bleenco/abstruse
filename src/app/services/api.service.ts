@@ -16,6 +16,10 @@ export class ApiService {
     return this.get(`${this.url}/builds`);
   }
 
+  getBuild(id: string): Observable<any> {
+    return this.get(`${this.url}/builds/${id}`);
+  }
+
   getRepositories(userId: string): Observable<any> {
     const params = new URLSearchParams();
     params.append('userId', userId);

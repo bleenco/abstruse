@@ -9,7 +9,7 @@ import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
-import { getBuilds } from './db/build';
+import { getBuilds, getBuild } from './db/build';
 import { startBuild, restartBuild } from './process-manager';
 import { imageExists } from './docker';
 
@@ -34,6 +34,12 @@ export function buildRoutes(): express.Router {
   router.get('/', (req: express.Request, res: express.Response) => {
     getBuilds().then(builds => {
       return res.status(200).json({ data: builds });
+    });
+  });
+
+  router.get('/:id', (req: express.Request, res: express.Response) => {
+    getBuild(req.params.id).then(build => {
+      return res.status(200).json({ data: build });
     });
   });
 
