@@ -15,8 +15,7 @@ import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
 import { AppLoginComponent } from './components/app-login';
 import { AppHeaderComponent } from './components/app-header';
-import { AppDashboardComponent } from './components/app-dashboard';
-import { AppBuildComponent } from './components/app-build';
+import { AppBuildsComponent } from './components/app-builds';
 import { AppBuildDetailsComponent } from './components/app-build-details';
 import { AppRepositoriesComponent } from './components/app-repositories';
 
@@ -27,9 +26,8 @@ import { AppRepositoriesComponent } from './components/app-repositories';
     AppSetupComponent,
     AppTerminalComponent,
     AppLoginComponent,
-    AppDashboardComponent,
     AppHeaderComponent,
-    AppBuildComponent,
+    AppBuildsComponent,
     AppBuildDetailsComponent,
     AppRepositoriesComponent,
     EqualValidator
@@ -41,12 +39,7 @@ import { AppRepositoriesComponent } from './components/app-repositories';
       {
         path: '',
         pathMatch: 'full',
-        component: AppDashboardComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'build',
-        component: AppBuildComponent,
+        component: AppBuildsComponent,
         canActivate: [AuthGuard]
       },
       {

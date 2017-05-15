@@ -4,10 +4,10 @@ import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 
 @Component({
-  selector: 'app-build',
-  templateUrl: 'app-build.component.html'
+  selector: 'app-builds',
+  templateUrl: 'app-builds.component.html'
 })
-export class AppBuildComponent implements OnInit {
+export class AppBuildsComponent implements OnInit {
   builds: any[];
   buildDropdowns: boolean[];
   // terminalInput: string;
