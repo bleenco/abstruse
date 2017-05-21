@@ -24,7 +24,7 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.string('branch').notNullable();
       t.string('commit_hash');
-      t.string('commit_authot');
+      t.string('commit_author');
       t.dateTime('commit_date');
       t.string('commit_message');
       t.dateTime('start_time').notNullable();

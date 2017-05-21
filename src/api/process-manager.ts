@@ -1,7 +1,7 @@
-import { getRepository } from './db/repository';
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
+import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
 
@@ -27,17 +27,33 @@ export interface JobProcess {
 
 export let jobProcesses: JobProcess[] = [];
 
-export function startBuild(): Promise<null> {
-  let gitUrl = 'https://github.com/jkuri/bterm.git';
+// inserts new build into db and queue related jobs.
+export function startBuild(repositoryId: number, branch: string): Promise<number> {
+  return getRepository(repositoryId)
+    .then(repository => {
+      return getRepositoryDetails(repository.url)
+        .then(details => {
+          // TODO: save initial build to database (or delete all logs)
+          const buildData = {
+            branch: branch,
+            commit_hash: details.log.commit_hash,
+            commit_author: details.log.commit_author,
+            commit_date: details.log.commit_date,
+            commit_message: details.log.commit_message,
+            start_time: new Date(),
+            repositories_id: repositoryId
+          };
 
-  return getRepositoryDetails(gitUrl)
-    .then(details => {
-      // TODO: save initial build to database (or delete all logs)
+          return insertBuild(buildData)
+            .then(build => {
+              let jobsCommands = generateCommands(repository.url, details.config);
+              jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
+                return { build_id: build.id, job_id: i + 1, job: queueJob(1, i + 1, commands) };
+              }));
 
-      let jobsCommands = generateCommands(gitUrl, details.config);
-      jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
-        return { build_id: 1, job_id: i + 1, job: queueJob(1, i + 1, commands) };
-      }));
+              return build.id;
+            });
+        });
     });
 }
 

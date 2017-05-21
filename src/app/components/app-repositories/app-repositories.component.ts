@@ -59,7 +59,8 @@ export class AppRepositoriesComponent implements OnInit {
     });
   }
 
-  runBuild(repositoryId: number): void {
-    this.socketService.emit({ type: 'startBuild', data: repositoryId });
+  runBuild(repositoryId: number, branch: string): void {
+    const data = { repositoryId, branch };
+    this.socketService.emit({ type: 'startBuild', data: data });
   }
 }
