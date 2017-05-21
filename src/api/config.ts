@@ -58,7 +58,7 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
         env = `export ${mat.env}`;
       }
 
-      return [cloneCommand, install, env].filter(cmd => cmd !== '');
+      return [cloneCommand, cdCommand, install, env].filter(cmd => cmd !== '');
     });
   }
 

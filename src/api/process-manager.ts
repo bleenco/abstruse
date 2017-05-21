@@ -1,111 +1,8 @@
 import { getRepository } from './db/repository';
-import { startBuildJob, jobs, Job, exitProcess } from './process';
+import { startBuildJob, Job } from './process';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import { getRepositoryDetails, generateCommands } from './config';
-
-// export function startBuild(repositoryId: number): Promise<Process> {
-//   return new Promise((resolve, reject) => {
-//     getRepository(repositoryId).then(data => {
-//       const uuid = generateId();
-
-//       insertBuild({ uuid: uuid, repositories_id: repositoryId }).then(insertedBuild => {
-//         let proc = startBuildProcess(uuid, repositoryId);
-//         proc.status = 'starting';
-//         const splitted = data.url.split('/');
-//         const name = splitted[splitted.length - 1].replace(/\.git/, '');
-
-//         let cmds = [
-//           '/etc/init.d/xvfb start',
-//           'export DISPLAY=:99',
-//           'export CHROME_BIN=chromium-browser',
-//           `git clone --depth 50 -q ${data.url} ${name}`,
-//           `cd ${name}`,
-//           'yarn',
-//           'yarn test',
-//           'exit $?'
-//         ].forEach(command => {
-//           proc.pty.next({ action: 'command', message: command });
-//         });
-
-//         processes.push(proc);
-
-//         proc.pty.subscribe(data => {
-//           if (proc.status !== 'running') {
-//             proc.status = 'running';
-//           }
-
-//           if (data.type === 'data') {
-//             proc.log.push(data.data);
-//           } else if (data.type === 'exit') {
-//             updateBuild({
-//               id: insertedBuild.toJSON().id,
-//               status: data.status,
-//               log: proc.log.join('\n')
-//             })
-//             .then(() => {
-//               proc.exitStatus = data.data;
-//               proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
-
-//               exitProcess(uuid);
-//             });
-//           }
-//         });
-
-//         resolve(proc);
-//       });
-//     });
-//   });
-// }
-
-// export function restartBuild(uuid: string): Promise<Process> {
-//   return new Promise((resolve, reject) => {
-//     getBuild(uuid)
-//       .then(build => {
-//         let proc = startBuildProcess(build.uuid, build.repositoryId);
-//         const splitted = build.repository.url.split('/');
-//         const name = splitted[splitted.length - 1].replace(/\.git/, '');
-
-//         let cmds = [
-//           '/etc/init.d/xvfb start',
-//           'export DISPLAY=:99',
-//           'export CHROME_BIN=chromium-browser',
-//           `git clone --depth 50 -q ${build.repository.url} ${name}`,
-//           `cd ${name}`,
-//           'yarn',
-//           'yarn test:e2e',
-//           'exit $?'
-//         ].forEach(command => {
-//           proc.pty.next({ action: 'command', message: command });
-//         });
-
-//         processes.push(proc);
-
-//         proc.pty.subscribe(data => {
-//           if (proc.status === 'starting') {
-//             proc.status = 'running';
-//           }
-
-//           if (data.type === 'data') {
-//             proc.log.push(data.data);
-//           } else if (data.type === 'exit') {
-//             updateBuild({
-//               id: build.id,
-//               status: data.status,
-//               log: proc.log.join('\n')
-//             }).then(() => {
-//               proc.exitStatus = data.data;
-//               proc.status = proc.exitStatus === 0 ? 'success' : 'errored';
-
-//               exitProcess(uuid);
-//             });
-//           }
-//         });
-
-//         resolve(proc);
-//       });
-//   });
-// }
 
 export interface BuildMessage {
   type: string;
@@ -113,36 +10,44 @@ export interface BuildMessage {
 }
 
 export interface JobMessage {
-  id: number;
   build_id: number;
+  job_id: number;
   type: string;
   data: string | number;
 }
 
-export function startBuild(): Observable<BuildMessage> {
-  return new Observable(observer => {
-    let gitUrl = 'https://github.com/jkuri/bterm.git';
-
-    getRepositoryDetails(gitUrl)
-      .then(details => {
-        // TODO: save initial build to database (or delete all logs)
-
-        let commands = generateCommands(gitUrl, details.config);
-        console.log(commands);
-
-      });
-  });
+export interface JobProcess {
+  build_id: number;
+  job_id: number;
+  job: Job;
 }
 
-export function startJob(id: number, buildId: number): Observable<JobMessage> {
+export let jobProcesses: any[] = [];
+
+export function startBuild(): Promise<null> {
+  let gitUrl = 'https://github.com/jkuri/bterm.git';
+
+  return getRepositoryDetails(gitUrl)
+    .then(details => {
+      // TODO: save initial build to database (or delete all logs)
+
+      let jobsCommands = generateCommands(gitUrl, details.config);
+      jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
+        return { build_id: 1, job_id: i + 1, job: startJob(1, i + 1, commands) };
+      }));
+    });
+}
+
+export function startJob(buildId: number, jobId: number, commands: string[]):
+  Observable<JobMessage> {
   return new Observable(observer => {
-    let job = startBuildJob(id, buildId);
+    let job = startBuildJob(buildId, jobId);
 
     // subscribe to job pty
     job.pty.subscribe(output => {
       const message: JobMessage = {
-        id: id,
         build_id: buildId,
+        job_id: jobId,
         type: output.type,
         data: output.data
       };
@@ -152,6 +57,8 @@ export function startJob(id: number, buildId: number): Observable<JobMessage> {
       if (output.type === 'exit') {
         observer.complete();
       }
+
+      commands.forEach(command => job.pty.next({ action: 'command', message: command }));
     }, err => {
       console.error(err);
     }, () => {
@@ -160,23 +67,32 @@ export function startJob(id: number, buildId: number): Observable<JobMessage> {
   });
 }
 
-export function getRunningJob(id: number): Observable<any> {
-  const index = jobs.findIndex(job => job.id === id);
-  return jobs[index].pty.asObservable();
-}
+// export function getRunningJob(id: number): Observable<any> {
+//   const index = jobs.findIndex(job => job.id === id);
+//   return jobs[index].pty.asObservable();
+// }
 
-export function getAllRunningJobs(): Observable<any> {
-  return Observable.merge(...jobs.map(job => getRunningJob(job.id)));
-}
+// export function getAllRunningJobs(): Observable<any> {
+//   return Observable.merge(...jobs.map(job => getRunningJob(job.id)));
+// }
 
-export function getAllJobs(): Job[] {
-  return jobs;
-}
+// export function getAllJobs(): Job[] {
+//   return jobs;
+// }
 
-export function getJob(id: number): Job {
-  return jobs[jobs.findIndex(job => job.id === id)] || null;
-}
+// export function getJob(id: number): Job {
+//   return jobs[jobs.findIndex(job => job.id === id)] || null;
+// }
 
-startBuild().subscribe(event => {
-  console.log(event);
+startBuild().then(() => {
+  jobProcesses.forEach(jobProcess => {
+    jobProcess.job.subscribe(event => {
+      console.log(event);
+    }, err => {
+      console.error(err);
+    }, () => {
+      console.log('done');
+    });
+  });
 });
+
