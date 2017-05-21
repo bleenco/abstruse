@@ -2,6 +2,7 @@ import { homedir } from 'os';
 import { join, resolve } from 'path';
 import { existsSync, exists, copyFile, writeJsonFile, readJsonFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
+import { ensureDirSync } from 'fs-extra';
 import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 
@@ -23,7 +24,6 @@ export function initSetup(): Promise<null> {
     .then(() => {
       const srcDir = resolve(__dirname, '../../src/files');
       const destDir = getFilePath('docker-files');
-
       return copyFile(srcDir, destDir);
     });
 }
@@ -57,6 +57,7 @@ export function createTempDir(): Promise<string> {
 }
 
 export function writeDefaultConfig(): void {
+  ensureDirSync(getRootDir());
   const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
 }
