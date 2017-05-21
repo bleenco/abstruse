@@ -10,7 +10,6 @@ import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
-import { startBuild, restartBuild } from './process-manager';
 import { imageExists } from './docker';
 
 export function webRoutes(): express.Router {

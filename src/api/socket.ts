@@ -5,7 +5,7 @@ import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
 import { exitProcess } from './process';
-import { getAllRunningBuilds, restartBuild, getProcess, startBuild } from './process-manager';
+import { startBuild } from './process-manager';
 import { getBuild } from './db/build';
 
 export interface ISocketServerOptions {
@@ -39,39 +39,39 @@ export class SocketServer {
 
           conn.subscribe(event => {
 
-            switch (event.type) {
-              case 'startBuild':
-                startBuild(event.data).then(proc => {
-                  proc.pty.subscribe(event => {
-                    conn.next({ type: 'terminalOutput', data: event });
-                  });
-                });
-              break;
-              case 'restartBuild':
-                if (!getProcess(event.data)) {
-                  restartBuild(event.data).then(proc => {
-                    proc.pty.subscribe(event => {
-                      conn.next({ type: 'terminalOutput', data: event });
-                    });
-                  });
-                }
-              break;
-              case 'getLog':
-                const proc = getProcess(event.data);
-                if (proc) {
-                  proc.log.forEach(line => {
-                    conn.next({ type: 'logLine', data: { id: event.data, data: line } });
-                  });
-                } else {
-                  getBuild(event.data).then(build => {
-                    conn.next({ type: 'logLine', data: { id: event.data, data: build.log } });
-                  });
-                }
-              break;
-              case 'stopBuild':
-                exitProcess(event.data);
-              break;
-            }
+            // switch (event.type) {
+            //   case 'startBuild':
+            //     startBuild(event.data).then(proc => {
+            //       proc.pty.subscribe(event => {
+            //         conn.next({ type: 'terminalOutput', data: event });
+            //       });
+            //     });
+            //   break;
+            //   case 'restartBuild':
+            //     if (!getProcess(event.data)) {
+            //       restartBuild(event.data).then(proc => {
+            //         proc.pty.subscribe(event => {
+            //           conn.next({ type: 'terminalOutput', data: event });
+            //         });
+            //       });
+            //     }
+            //   break;
+            //   case 'getLog':
+            //     const proc = getProcess(event.data);
+            //     if (proc) {
+            //       proc.log.forEach(line => {
+            //         conn.next({ type: 'logLine', data: { id: event.data, data: line } });
+            //       });
+            //     } else {
+            //       getBuild(event.data).then(build => {
+            //         conn.next({ type: 'logLine', data: { id: event.data, data: build.log } });
+            //       });
+            //     }
+            //   break;
+            //   case 'stopBuild':
+            //     exitProcess(event.data);
+            //   break;
+            // }
 
 
 
