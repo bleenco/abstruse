@@ -4,7 +4,12 @@ import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
-import { startBuild, startSetup, findDockerImageBuildJob } from './process-manager';
+import {
+  startBuild,
+  startSetup,
+  findDockerImageBuildJob,
+  getJobsForBuild
+} from './process-manager';
 import { getBuild } from './db/build';
 
 export interface ISocketServerOptions {
@@ -53,6 +58,15 @@ export class SocketServer {
                 }, () => {
                   console.log('Docker image build completed.');
                 });
+              break;
+              case 'startBuild':
+                startBuild(event.data.repositoryId, event.data.branch)
+                  .then(buildId => {
+                    const jobs = getJobsForBuild(buildId);
+                    Observable.merge(...jobs.map(job => job.job)).subscribe(event => {
+                      console.log(event);
+                    });
+                  });
               break;
             }
 

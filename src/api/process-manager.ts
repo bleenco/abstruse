@@ -28,12 +28,12 @@ export interface JobProcess {
 export let jobProcesses: JobProcess[] = [];
 
 // inserts new build into db and queue related jobs.
+// returns inserted build id
 export function startBuild(repositoryId: number, branch: string): Promise<number> {
   return getRepository(repositoryId)
     .then(repository => {
       return getRepositoryDetails(repository.url)
         .then(details => {
-          // TODO: save initial build to database (or delete all logs)
           const buildData = {
             branch: branch,
             commit_hash: details.log.commit_hash,
@@ -48,7 +48,11 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
             .then(build => {
               let jobsCommands = generateCommands(repository.url, details.config);
               jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
-                return { build_id: build.id, job_id: i + 1, job: queueJob(1, i + 1, commands) };
+                return {
+                  build_id: build.id,
+                  job_id: i + 1,
+                  job: queueJob(1, i + 1, commands)
+                };
               }));
 
               return build.id;
@@ -149,6 +153,10 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 export function findDockerImageBuildJob(name: string): JobProcess | null {
   const index = jobProcesses.findIndex(job => job.image_name && job.image_name === name);
   return jobProcesses[index] || null;
+}
+
+export function getJobsForBuild(buildId: number): JobProcess[] {
+  return jobProcesses.filter(jobProcess => jobProcess.build_id === buildId);
 }
 
 // export function getRunningJob(id: number): Observable<any> {
