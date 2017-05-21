@@ -39,6 +39,9 @@ export function create(): Promise<null> {
       t.dateTime('end_time');
       t.enum('status', ['queued', 'running', 'success', 'failed']).notNullable().defaultTo('queue');
       t.string('commands').notNullable();
+      t.string('language');
+      t.string('language_version');
+      t.string('test_script');
       t.text('log');
       t.integer('builds_id').notNullable();
       t.foreign('builds_id').references('builds.id');

@@ -50,12 +50,19 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
               let jobsCommands = generateCommands(repository.url, details.config);
 
               return Promise.all(jobsCommands.map((commands, i) => {
+                const lang = details.config.language;
+                const langVersion = details.config.matrix[i].node_js; // TODO: update
+                const testScript = details.config.matrix[i].env;
+
                 const data = {
                   start_time: new Date(),
                   end_time: null,
                   status: 'queued',
                   commands: JSON.stringify(commands),
                   log: '',
+                  language: lang,
+                  language_version: langVersion,
+                  test_script: testScript,
                   builds_id: build.id
                 };
 

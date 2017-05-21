@@ -13,7 +13,7 @@ import 'rxjs/add/operator/takeWhile';
   templateUrl: 'app-build-details.component.html'
 })
 export class AppBuildDetailsComponent implements OnInit {
-  uuid: string;
+  id: string;
   terminalReady: boolean;
   terminalInput: string;
   terminalOptions: { size: 'small' | 'large' };
@@ -28,25 +28,13 @@ export class AppBuildDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
-    Observable.interval(100)
-      .map(() => this.terminalReady)
-      .takeWhile(x => !x)
-      .subscribe(() => null, err => console.error(err), () => {
-        this.route.params.subscribe(params => {
-          this.uuid = params.id;
+    this.route.params.subscribe(params => {
+      this.id = params.id;
 
-          this.apiService.getBuild(this.uuid).subscribe(build => {
-            this.build = build;
-            this.terminalInput = build.log.split('\r\n').join('\r');
-
-            this.socketService.outputEvents.subscribe(event => {
-              if (this.uuid === event.data.id) {
-                this.terminalInput = event.data.data;
-              }
-            });
-          });
-        });
+      this.apiService.getBuild(this.id).subscribe(build => {
+        this.build = build;
       });
+    });
   }
 
   runBuild(repositoryId: number): void {
@@ -60,12 +48,6 @@ export class AppBuildDetailsComponent implements OnInit {
   }
 
   stopBuild(): void {
-    this.socketService.emit({ type: 'stopBuild', data: this.uuid });
-  }
-
-  terminalOutput(e: any): void {
-    if (e === 'ready') {
-      this.terminalReady = true;
-    }
+    this.socketService.emit({ type: 'stopBuild', data: this.id });
   }
 }
