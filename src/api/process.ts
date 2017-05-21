@@ -5,8 +5,6 @@ import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 
 export interface Job {
-  id: number;
-  build_id: number;
   status: 'queued' | 'running' | 'success' | 'failed';
   type: 'setup' | 'build';
   pty: any;
@@ -20,13 +18,10 @@ export interface SpawnedProcessOutput {
   exit: number;
 }
 
-export let jobs: Job[] = [];
-
-export function startBuildJob(id: number, buildId: number): Job {
+export function startBuildJob(buildId: number, jobId: number): Job {
+  let id = `${buildId}_${jobId}`;
   let pty = new PtyInstance(id);
   let job: Job = {
-    id: id,
-    build_id: buildId,
     status: 'queued',
     type: 'build',
     pty: docker.runInteractive(id, 'abstruse'),
@@ -37,16 +32,16 @@ export function startBuildJob(id: number, buildId: number): Job {
   return job;
 }
 
-export function exitProcess(id: number): void {
-  const index = jobs.findIndex(proc => proc.id === id);
-  if (index === -1) {
-    return;
-  }
+// export function exitProcess(id: number): void {
+//   const index = jobs.findIndex(proc => proc.id === id);
+//   if (index === -1) {
+//     return;
+//   }
 
-  const proc = jobs[index];
-  proc.pty.next({ action: 'exit' });
-  jobs = jobs.filter(job => job.id !== id);
-}
+//   const proc = jobs[index];
+//   proc.pty.next({ action: 'exit' });
+//   jobs = jobs.filter(job => job.id !== id);
+// }
 
 export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput> {
   return new Promise(resolve => {

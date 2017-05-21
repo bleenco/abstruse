@@ -4,7 +4,6 @@ import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
-import { exitProcess } from './process';
 import { startBuild } from './process-manager';
 import { getBuild } from './db/build';
 
