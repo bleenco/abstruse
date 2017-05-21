@@ -54,11 +54,11 @@
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
-                <span class="bold">3f534a</span>
-                <span>chore(): initial commit</span>
+                <span class="bold">{{ build.commit_hash.substr(0, 7) }}</span>
+                <span>{{ build.commit_message }}</span>
               </div>
               <div class="column is-2">
-                <span>Jan Kuri</span>
+                <span>{{ build.commit_author }}</span>
               </div>
               <div class="column is-1">
                 <span class="status-circle" [ngClass]="{ green: build.status === 'success' || build.status === 'done', yellow: build.status === 'running', red: build.status === 'errored' }"></span>

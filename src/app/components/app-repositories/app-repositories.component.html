@@ -108,7 +108,7 @@
                     <img src="images/icons/dropdown.svg">
                   </span>
                   <div class="button-dropdown" [ngClass]="{ 'is-active': repositoriesDropdowns[i] }">
-                    <div class="button-dropdown-item" (click)="runBuild(repo.id)">Run Build</div>
+                    <div class="button-dropdown-item" (click)="runBuild(repo.id, 'master')">Run Build</div>
                     <div class="button-dropdown-item">Stop Build</div>
                     <div class="button-dropdown-item">Re-Start Build</div>
                   </div>
