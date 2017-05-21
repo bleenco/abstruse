@@ -112,7 +112,8 @@ export class AppSetupComponent implements OnInit {
       this.socketService.onMessage().subscribe(event => {
         if (event.type === 'terminalOutput') {
           if (event.data.type === 'exit') {
-            if (event.data === 0) {
+            console.log(event.data);
+            if (event.data.data === 0) {
               this.step = 'done';
             }
           } else {

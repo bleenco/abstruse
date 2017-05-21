@@ -28,19 +28,10 @@ export function imageExists(name: string): Observable<boolean> {
 }
 
 export function buildImage(name: string): Observable<boolean> {
-  return new Observable(observer => {
-    const dockerFile = utils.getFilePath('docker-files');
-    const build = spawn('docker', ['build', '-t', name, dockerFile]);
-
-    build.stdout.on('data', data => observer.next({ type: 'data', data: data.toString() }));
-
-    build.stdout.on('error', err => observer.error({ type: 'error', data: err.toString() }));
-
-    build.on('close', code => {
-      observer.next({ type: 'exit', data: code });
-      observer.complete();
-    });
-  });
+  let dockerFile = utils.getFilePath('docker-files');
+  let cmd = 'docker';
+  let args = ['build', '-t', name, dockerFile];
+  return execTty(name, cmd, args);
 }
 
 export function killAllContainers(): Observable<boolean> {
