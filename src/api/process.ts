@@ -4,14 +4,14 @@ import { PtyInstance } from './pty';
 import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 
-export interface Process {
-  id: string;
-  status: 'queue' | 'starting' | 'running' | 'stopped' | 'success' | 'errored';
+export interface Job {
+  id: number;
+  build_id: number;
+  status: 'queued' | 'running' | 'success' | 'failed';
   type: 'setup' | 'build';
   pty: any;
   log: string[];
   exitStatus: number;
-  repositoryId?: number;
 }
 
 export interface SpawnedProcessOutput {
@@ -20,32 +20,32 @@ export interface SpawnedProcessOutput {
   exit: number;
 }
 
-export let processes: Process[] = [];
+export let jobs: Job[] = [];
 
-export function startBuildProcess(uuid: string, repositoryId: number): Process {
-  let pty = new PtyInstance(uuid);
-  let proc: Process = {
-    id: uuid,
-    status: 'starting',
+export function startBuildJob(id: number, buildId: number): Job {
+  let pty = new PtyInstance(id);
+  let job: Job = {
+    id: id,
+    build_id: buildId,
+    status: 'queued',
     type: 'build',
-    pty: docker.runInteractive(uuid, 'abstruse').share(),
+    pty: docker.runInteractive(id, 'abstruse'),
     log: [],
-    exitStatus: null,
-    repositoryId: repositoryId
+    exitStatus: null
   };
 
-  return proc;
+  return job;
 }
 
-export function exitProcess(id: string): void {
-  const index = processes.findIndex(proc => proc.id === id);
+export function exitProcess(id: number): void {
+  const index = jobs.findIndex(proc => proc.id === id);
   if (index === -1) {
     return;
   }
 
-  const proc = processes[index];
+  const proc = jobs[index];
   proc.pty.next({ action: 'exit' });
-  processes = processes.filter(process => process.id !== id);
+  jobs = jobs.filter(job => job.id !== id);
 }
 
 export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput> {

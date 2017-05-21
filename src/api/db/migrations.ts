@@ -20,6 +20,29 @@ export function create(): Promise<null> {
       t.string('default_branch').notNullable().defaultTo('master');
       t.timestamps();
     }))
+    .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.string('branch').notNullable();
+      t.string('commit_hash');
+      t.string('commit_authot');
+      t.dateTime('commit_date');
+      t.string('commit_message');
+      t.dateTime('start_time').notNullable();
+      t.dateTime('end_time');
+      t.integer('repositories_id').notNullable();
+      t.foreign('repositories_id').references('repositories.id');
+      t.text('log');
+      t.timestamps();
+    }))
+    .then(() => schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.dateTime('start_time').notNullable();
+      t.dateTime('end_time');
+      t.enum('status', ['queued', 'running', 'success', 'failed']).notNullable().defaultTo('queue');
+      t.integer('builds_id').notNullable();
+      t.foreign('builds_id').references('builds.id');
+      t.timestamps();
+    }))
     .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('repositories_id').notNullable();
@@ -29,22 +52,6 @@ export function create(): Promise<null> {
       t.boolean('read').notNullable().defaultTo(true);
       t.boolean('write').notNullable().defaultTo(true);
       t.boolean('execute').notNullable().defaultTo(true);
-      t.timestamps();
-    }))
-    .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
-      t.increments('id').unsigned().primary();
-      t.string('uuid').notNullable();
-      t.string('branch').notNullable();
-      t.string('commit_hash');
-      t.string('commited_by');
-      t.dateTime('start_time').notNullable();
-      t.dateTime('end_time');
-      t.integer('iteration').notNullable().defaultTo(1);
-      t.enum('status', ['queue', 'starting', 'running', 'stopped', 'success', 'failed'])
-       .notNullable().defaultTo('queue');
-      t.integer('repositories_id').notNullable();
-      t.foreign('repositories_id').references('repositories.id');
-      t.text('log');
       t.timestamps();
     }))
     .then(() => resolve())

@@ -2,13 +2,13 @@ import * as os from 'os';
 const pty = require('node-pty');
 
 export class PtyInstance {
-  id: string;
+  id: number;
   shell: string;
   args: string[];
   user: any;
   path: string;
 
-  constructor(id: string) {
+  constructor(id: number) {
     this.id = id;
     this.user = os.userInfo({ encoding: 'utf8' });
     switch (os.platform()) {

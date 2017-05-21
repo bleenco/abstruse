@@ -5,15 +5,15 @@ import * as utils from './utils';
 const pty = require('node-pty');
 
 export interface TTYMessage {
-  id: string;
+  id: number;
   type: 'data' | 'error' | 'exit';
   data: string;
   status:  'queue' | 'starting' | 'running' | 'stopped' | 'success' | 'errored';
 }
 
-export function runInteractive(id: string, image: string): Subject<any> {
+export function runInteractive(id: number, image: string): Subject<any> {
   let cmd = 'docker';
-  let args = ['run', '-it', '--rm', '--privileged', '--name', id, image];
+  let args = ['run', '-it', '--rm', '--privileged', '--name', id.toString(), image];
   return execTty(id, cmd, args);
 }
 
@@ -83,7 +83,7 @@ export function isDockerInstalled(): Observable<boolean> {
   });
 }
 
-function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
+function execTty(id: number, cmd: string, args: string[] = []): Subject<any> {
   let ps = pty.spawn(cmd, args);
 
   let output = new Observable((observer: Observer<TTYMessage>) => {

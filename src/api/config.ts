@@ -7,7 +7,8 @@ import * as yaml from 'yamljs';
 
 export interface Config {
   language?: string;
-  matrix?: { [language: string]: string; env: string };
+  git: { depth: number };
+  matrix?: { node_js?: string; env: string }[];
   preinstall?: string[];
   install?: string[];
   postinstall?: string[];
@@ -26,6 +27,66 @@ export interface GitLog {
 export interface RepositoryInfo {
   config: Config;
   log: GitLog;
+}
+
+export function generateCommands(repositoryUrl: string, config: Config): any[] {
+  let matrix = [];
+
+  // 1. clone
+  const splitted = repositoryUrl.split('/');
+  const name = splitted[splitted.length - 1].replace(/\.git/, '');
+  let cloneCommand = `git clone ${repositoryUrl} ${name}`;
+
+  if (config.git && config.git.depth) {
+    cloneCommand = `${cloneCommand} --depth ${config.git.depth}`;
+  }
+
+  // 2. cd into directory
+  const cdCommand = `cd ${name}`;
+
+  // 3. environment
+  if (config.matrix) {
+    matrix = config.matrix.map(mat => {
+      let install = '';
+      let env = '';
+
+      if (mat.node_js) {
+        install = `nvm install ${mat.node_js}`;
+      }
+
+      if (mat.env) {
+        env = `export ${mat.env}`;
+      }
+
+      return [cloneCommand, install, env].filter(cmd => cmd !== '');
+    });
+  }
+
+  // 4. commands
+  const preinstall = config.preinstall || [];
+  const install = config.install || [];
+  const postinstall = config.postinstall || [];
+  const pretest = config.pretest || [];
+  const test = config.test || [];
+  const posttest = config.posttest || [];
+
+  // 5. exit code
+  const exitcode = ['exit $?'];
+
+  const commonCommands = []
+    .concat(preinstall)
+    .concat(install)
+    .concat(postinstall)
+    .concat(pretest)
+    .concat(test)
+    .concat(posttest)
+    .concat(exitcode);
+
+  matrix = matrix.map(mat => {
+    return mat.concat(commonCommands);
+  });
+
+  return matrix;
 }
 
 export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
