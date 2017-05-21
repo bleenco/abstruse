@@ -1,6 +1,7 @@
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
+import { insertJob } from './db/job';
 import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
@@ -47,16 +48,44 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
           return insertBuild(buildData)
             .then(build => {
               let jobsCommands = generateCommands(repository.url, details.config);
-              jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
-                return {
-                  build_id: build.id,
-                  job_id: i + 1,
-                  job: queueJob(1, i + 1, commands)
-                };
-              }));
 
-              return build.id;
+              return Promise.all(jobsCommands.map((commands, i) => {
+                const data = {
+                  start_time: new Date(),
+                  end_time: null,
+                  status: 'queued',
+                  commands: JSON.stringify(commands),
+                  log: '',
+                  builds_id: build.id
+                };
+
+                return insertJob(data).then(job => {
+                  const jobProcess: JobProcess = {
+                    build_id: build.id,
+                    job_id: job.id,
+                    job: queueJob(build.id, job.id, commands)
+                  };
+
+                  jobProcesses.push(jobProcess);
+                });
+              }))
+              .then(() => {
+                return build.id;
+              });
             });
+        });
+    });
+}
+
+export function restartBuild(buildId: number): Promise<null> {
+  return getBuild(buildId)
+    .then(build => {
+      build.start_time = new Date();
+      build.end_time = null;
+
+      return updateBuild(build)
+        .then(() => {
+
         });
     });
 }
