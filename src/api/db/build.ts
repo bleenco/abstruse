@@ -2,13 +2,14 @@ import { Build } from './model';
 
 export function getBuilds(): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build().orderBy('id', 'DESC').fetchAll({ withRelated: ['repository'] }).then(builds => {
-      if (!builds) {
-        reject();
-      }
+    new Build().orderBy('id', 'DESC').fetchAll({ withRelated: ['repository', 'jobs'] })
+      .then(builds => {
+        if (!builds) {
+          reject();
+        }
 
-      resolve(builds.toJSON());
-    });
+        resolve(builds.toJSON());
+      });
   });
 }
 
