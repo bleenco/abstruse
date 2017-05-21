@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import { dirname } from 'path';
+import * as rimraf from 'rimraf';
 
 export function copyFile(srcPath: string, destPath: string): Promise<null> {
   return new Promise((resolve, reject) => {
@@ -89,5 +90,17 @@ export function existsSync(filePath: string): boolean {
 export function exists(filePath: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     fs.exists(filePath, (exists: boolean) => resolve(exists));
+  });
+}
+
+export function rmdir(dirPath: string): Promise<null> {
+  return new Promise((resolve, reject) => {
+    rimraf(dirPath, err => {
+      if (err) {
+        reject();
+      } else {
+        resolve();
+      }
+    });
   });
 }
