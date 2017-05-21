@@ -32,14 +32,13 @@
               <div class="column is-1">Build Id</div>
               <div class="column is-3">Repository</div>
               <div class="column is-2">Commit</div>
-              <div class="column is-2">Commited by</div>
+              <div class="column is-3">Commited by</div>
               <div class="column is-1">Status</div>
-              <div class="column is-1">Time</div>
               <div class="column is-2"></div>
             </div>
             <div class="columns list-item"
                  *ngFor="let build of builds; let i = index;"
-                 [ngClass]="{ 'is-queued': build.status === 'queue', 'is-success': build.status === 'success' || build.status === 'done', 'is-running': build.status === 'running', 'is-errored': build.status === 'errored' }"
+                 [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }"
                  (click)="gotoBuild(build.uuid)">
               <div class="column is-1">
                 <span class="icon">
@@ -57,15 +56,12 @@
                 <span class="bold">{{ build.commit_hash.substr(0, 7) }}</span>
                 <span>{{ build.commit_message }}</span>
               </div>
-              <div class="column is-2">
+              <div class="column is-3">
                 <span>{{ build.commit_author }}</span>
               </div>
               <div class="column is-1">
-                <span class="status-circle" [ngClass]="{ green: build.status === 'success' || build.status === 'done', yellow: build.status === 'running', red: build.status === 'errored' }"></span>
+                <span class="status-circle" [ngClass]="{ green: build.status === 'success', yellow: build.status === 'running', red: build.status === 'failed' }"></span>
                 <span>{{ build.status }}</span>
-              </div>
-              <div class="column is-1">
-                <span>0:00</span>
               </div>
               <div class="column is-2">
                 <div class="button-addon" (click)="toggleDropdown($event, i)">

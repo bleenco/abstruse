@@ -38,6 +38,24 @@ export class AppBuildsComponent implements OnInit {
     this.apiService.getBuilds().subscribe(event => {
       this.builds = event;
       this.buildDropdowns = this.builds.map(build => false);
+
+      this.builds = this.builds.map(build => {
+        let status = 'queued';
+        if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+          status = 'failed';
+        }
+
+        if (status === 'queued' && build.jobs.findIndex(job => job.status === 'running') !== -1) {
+          status = 'running';
+        }
+
+        if (status === 'queued' && build.jobs.findIndex(job => job.status === 'success') !== -1) {
+          status = 'success';
+        }
+
+        build.status = status;
+        return build;
+      });
     });
   }
 
@@ -53,12 +71,6 @@ export class AppBuildsComponent implements OnInit {
     });
   }
 
-  runBuild(repositoryId: number): void {
-    // this.apiService.runBuild(repositoryId).subscribe(event => {
-    //   // build runned.
-    // });
-  }
-
   restartBuild(uuid: number): void {
     this.socketService.emit({ type: 'restartBuild', data: uuid });
   }
@@ -66,27 +78,4 @@ export class AppBuildsComponent implements OnInit {
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
   }
-
-  // terminalOutput(e: any): void {
-  //   if (e === 'ready') {
-  //     this.socketService.onMessage().skip(2).subscribe(event => {
-  //       if (event.type === 'terminalOutput') {
-  //         this.terminalInput = event.data;
-  //       } else if (event.type === 'terminalExit') {
-  //         if (event.data === 0) {
-
-  //         }
-  //       }
-  //     });
-
-  //     this.socketService.emit({ type: 'data', data: 'runBuild' });
-  //     if (this.resize) {
-  //       this.socketService.emit({ type: 'resize', data: {
-  //         cols: this.resize.cols, rows: this.resize.rows
-  //       }});
-  //     }
-  //   } else if (e && e.type && e.type === 'resize') {
-  //     this.resize = { cols: e.cols, rows: e.rows };
-  //   }
-  // }
 }
