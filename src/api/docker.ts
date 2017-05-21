@@ -32,12 +32,12 @@ export function buildImage(name: string): Observable<boolean> {
     const dockerFile = utils.getFilePath('docker-files');
     const build = spawn('docker', ['build', '-t', name, dockerFile]);
 
-    build.stdout.on('data', data => observer.next(data.toString()));
+    build.stdout.on('data', data => observer.next({ type: 'data', data: data.toString() }));
 
-    build.stdout.on('error', err => observer.error(err.toString()));
+    build.stdout.on('error', err => observer.error({ type: 'error', data: err.toString() }));
 
     build.on('close', code => {
-      observer.next(code === 0 ? true : false);
+      observer.next({ type: 'exit', data: code });
       observer.complete();
     });
   });

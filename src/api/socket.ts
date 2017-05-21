@@ -4,7 +4,7 @@ import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
-import { startBuild } from './process-manager';
+import { startBuild, startSetup, findDockerImageBuildJob } from './process-manager';
 import { getBuild } from './db/build';
 
 export interface ISocketServerOptions {
@@ -37,6 +37,24 @@ export class SocketServer {
           // });
 
           conn.subscribe(event => {
+
+            switch (event.type) {
+              case 'initializeDockerImage':
+                let build = findDockerImageBuildJob('abstruse');
+                if (!build) {
+                  startSetup('abstruse');
+                  build = findDockerImageBuildJob('abstruse');
+                }
+
+                build.job.subscribe(event => {
+                  conn.next({ type: 'terminalOutput', data: event });
+                }, err => {
+                  console.error(err);
+                }, () => {
+                  console.log('Docker image build completed.');
+                });
+              break;
+            }
 
             // switch (event.type) {
             //   case 'startBuild':

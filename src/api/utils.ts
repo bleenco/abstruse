@@ -81,3 +81,7 @@ export function getHumanSize(bytes: number, decimals = 2): string {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
 }
+
+export function generateRandomId(): string {
+  return Math.random().toString(36).substring(7);
+}

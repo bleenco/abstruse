@@ -1,8 +1,8 @@
-import * as uuid from 'uuid';
 import * as docker from './docker';
 import { PtyInstance } from './pty';
 import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
+import { generateRandomId } from './utils';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -16,6 +16,20 @@ export interface SpawnedProcessOutput {
   stdout: string;
   stderr: string;
   exit: number;
+}
+
+export function startDockerImageSetupJob(name: string): Job {
+  let id = generateRandomId();
+  let pty = new PtyInstance(id);
+  let job: Job = {
+    status: 'queued',
+    type: 'build',
+    pty: docker.buildImage(name),
+    log: [],
+    exitStatus: null
+  };
+
+  return job;
 }
 
 export function startBuildJob(buildId: number, jobId: number): Job {
