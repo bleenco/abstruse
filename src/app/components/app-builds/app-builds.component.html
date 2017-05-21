@@ -31,15 +31,15 @@
             <div class="columns list-header">
               <div class="column is-1">Build Id</div>
               <div class="column is-3">Repository</div>
-              <div class="column is-2">Commit</div>
-              <div class="column is-3">Commited by</div>
+              <div class="column is-3">Commit</div>
+              <div class="column is-2">Commited by</div>
               <div class="column is-1">Status</div>
               <div class="column is-2"></div>
             </div>
             <div class="columns list-item"
                  *ngFor="let build of builds; let i = index;"
                  [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }"
-                 (click)="gotoBuild(build.uuid)">
+                 (click)="gotoBuild(build.id)">
               <div class="column is-1">
                 <span class="icon">
                   <img src="images/icons/hammer.svg">
@@ -49,14 +49,14 @@
               <div class="column is-3">
                 <span>{{ build.repository.url }}</span>
               </div>
-              <div class="column is-2 commit-column">
+              <div class="column is-3 commit-column">
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
                 <span class="bold">{{ build.commit_hash.substr(0, 7) }}</span>
                 <span>{{ build.commit_message }}</span>
               </div>
-              <div class="column is-3">
+              <div class="column is-2">
                 <span>{{ build.commit_author }}</span>
               </div>
               <div class="column is-1">

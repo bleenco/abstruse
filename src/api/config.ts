@@ -94,7 +94,7 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
     let cloneDir = null;
     let configPath = null;
     let yml = null;
-    let log = null;
+    let log: GitLog;
 
     createTempDir()
       .then(tempDir => {

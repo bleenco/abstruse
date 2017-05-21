@@ -57,9 +57,59 @@
               </div>
             </div>
           </div>
-          <div class="column is-12">
-            <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+
+          <div class="column is-12" *ngIf="build && build.jobs && build.jobs.length">
+            <div class="columns list-header">
+              <div class="column is-1">Job Id</div>
+              <div class="column is-4">Environment</div>
+              <div class="column is-4">Script</div>
+              <div class="column is-2">Status</div>
+              <div class="column is-1"></div>
+            </div>
+            <div class="columns list-item"
+                 *ngFor="let job of build.jobs; let i = index;"
+                 [ngClass]="{ 'is-queued': job.status === 'queued', 'is-success': job.status === 'success', 'is-running': job.status === 'running', 'is-errored': job.status === 'failed' }">
+              <div class="column is-1">
+                <span># {{ build.id }}.{{ job.id }}</span>
+              </div>
+              <div class="column is-4">
+                <div class="icon-and-text">
+                  <span class="icon">
+                    <img src="images/icons/linux.svg">
+                  </span>
+                  <span>Linux</span>
+                </div>
+                <div class="icon-and-text">
+                  <span class="icon">
+                    <img src="images/icons/code.svg">
+                  </span>
+                  <span *ngIf="job.language === 'node_js'">Node.js:</span>
+                  <span>{{ job.language_version }}</span>
+                </div>
+              </div>
+              <div class="column is-4">
+                <div class="icon-and-text">
+                  <span class="icon script">
+                    <img src="images/icons/computing-script.svg">
+                  </span>
+                  <span>{{ job.test_script }}</span>
+                </div>
+              </div>
+              <div class="column is-2">
+                <span class="status-circle" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }"></span>
+                <span>{{ job.status }}</span>
+              </div>
+              <div class="column is-1">
+                <button type="button" class="button green">
+                  Restart
+                </button>
+              </div>
+            </div>
           </div>
+
+          <!--<div class="column is-12">
+            <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+          </div>-->
         </div>
       </div>
     </div>
