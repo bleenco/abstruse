@@ -27,7 +27,6 @@ export function getBuild(uuid: string): Promise<any> {
 export function insertBuild(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     data.start_time = new Date();
-    data.branch = 'master'; // TODO: remove this when implemented
 
     new Build(data).save(null, { method: 'insert' }).then(build => {
       if (!build) {
