@@ -12,9 +12,9 @@ export function getBuilds(): Promise<any> {
   });
 }
 
-export function getBuild(uuid: string): Promise<any> {
+export function getBuild(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ uuid: uuid }).fetch({ withRelated: ['repository'] }).then(build => {
+    new Build({ id: id }).fetch({ withRelated: ['repository'] }).then(build => {
       if (!build) {
         reject();
       }

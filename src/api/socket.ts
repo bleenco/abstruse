@@ -31,16 +31,6 @@ export class SocketServer {
       this.createRxServer(this.options)
         .map(this.createRxSocket)
         .subscribe(conn => {
-          // const pty = new PtyInstance();
-          // const process = pty.create();
-          // this.ptyProcesses.push(process);
-
-          // process.on('data', data => conn.next({ type: 'terminalOutput', data: data }));
-          // process.on('exit', code => {
-          //   process.kill('SIGHUP');
-          //   conn.next({ type: 'terminalExit', data: code });
-          // });
-
           conn.subscribe(event => {
 
             switch (event.type) {
@@ -67,6 +57,9 @@ export class SocketServer {
                       console.log(event);
                     });
                   });
+              break;
+              case 'restartBuild':
+
               break;
             }
 
@@ -102,50 +95,6 @@ export class SocketServer {
             //   case 'stopBuild':
             //     exitProcess(event.data);
             //   break;
-            // }
-
-
-
-
-
-            // if (event.type === 'data') {
-
-            //   if (event.data === 'initializeDockerImage') {
-            //     // process.write('docker build -t abstruse ~/.abstruse/docker-files\r');
-            //     // process.write('exit\r');
-            //   } else if (event.data === 'runBuild') {
-            //     // if (!processes.length) {
-            //     //   startBuildProcess();
-            //     // }
-
-            //     // let proc = processes[0];
-            //     // proc.log.forEach(line => {
-            //     //   conn.next({ type: 'terminalOutput', data: line });
-            //     // });
-
-            //     // proc.pty.subscribe(data => {
-            //     //   if (data.type === 'data') {
-            //     //     conn.next({ type: 'terminalOutput', data: data.message });
-            //     //   } else if (data.type === 'exit') {
-            //     //     conn.next({ type: 'terminalExit', data: data.message });
-            //     //   }
-            //     // });
-            //   } else if (event.data === 'getAllRunningBuilds') {
-            //     getAllRunningBuilds()
-            //       .subscribe(event => {
-            //         if (event.type === 'data') {
-            //           conn.next({ type: 'terminalOutput', data: event });
-            //         } else if (event.type === 'exit') {
-            //           conn.next({ type: 'terminalExit', data: event.data });
-            //         }
-            //       });
-            //   } else if (event.data === 'restartBuild') {
-
-            //   } else if (event.type === 'resize') {
-            //     // if (tty) {
-            //     //   tty.next({ action: 'resize', col: event.data.cols, row: event.data.rows });
-            //     // }
-            //   }
             // }
           });
         });
