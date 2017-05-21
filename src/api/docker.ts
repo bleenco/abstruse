@@ -8,7 +8,7 @@ export interface TTYMessage {
   id: string;
   type: 'data' | 'error' | 'exit';
   data: string;
-  status:  'queue' | 'starting' | 'running' | 'stopped' | 'success' | 'errored';
+  status:  'queued' | 'running' | 'success' | 'failed';
 }
 
 export function runInteractive(id: string, image: string): Subject<any> {
@@ -55,7 +55,7 @@ export function killAllContainers(): Observable<boolean> {
 
 export function killContainer(id: string): Observable<boolean> {
   return new Observable(observer => {
-    const kill = spawn('docker', ['rm', id]);
+    const kill = spawn('docker', ['rm', id, '-f']);
     kill.on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();
@@ -87,7 +87,7 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
   let ps = pty.spawn(cmd, args);
 
   let output = new Observable((observer: Observer<TTYMessage>) => {
-    let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'starting' };
+    let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'queued' };
     observer.next(msg);
 
     ps.on('data', data => {
@@ -96,7 +96,7 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
     });
 
     ps.on('error', err => {
-      let error: TTYMessage = { id: id, type: 'error', data: err, status: 'errored' };
+      let error: TTYMessage = { id: id, type: 'error', data: err, status: 'failed' };
       observer.next(error);
     });
 
@@ -105,11 +105,11 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
         id: id,
         type: 'exit',
         data: code,
-        status: code === 0 ? 'success' : 'errored'
+        status: code === 0 ? 'success' : 'failed'
       };
 
       observer.next(exitCode);
-      ps.kill('SIGHUP');
+      ps.kill();
       observer.complete();
     });
   });
@@ -121,7 +121,7 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
       } else if (data.action === 'resize') {
         ps.resize(data.col, data.row);
       } else if (data.action === 'exit') {
-        ps.kill('SIGHUP');
+        ps.kill();
       }
     }
   };

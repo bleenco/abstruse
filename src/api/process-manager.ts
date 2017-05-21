@@ -1,8 +1,9 @@
 import { getRepository } from './db/repository';
 import { startBuildJob, Job } from './process';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import { getRepositoryDetails, generateCommands } from './config';
+import { killContainer } from './docker';
 
 export interface BuildMessage {
   type: string;
@@ -19,10 +20,10 @@ export interface JobMessage {
 export interface JobProcess {
   build_id: number;
   job_id: number;
-  job: Job;
+  job: Subject<JobMessage> | any;
 }
 
-export let jobProcesses: any[] = [];
+export let jobProcesses: JobProcess[] = [];
 
 export function startBuild(): Promise<null> {
   let gitUrl = 'https://github.com/jkuri/bterm.git';
@@ -33,17 +34,23 @@ export function startBuild(): Promise<null> {
 
       let jobsCommands = generateCommands(gitUrl, details.config);
       jobProcesses = jobProcesses.concat(jobsCommands.map((commands, i) => {
-        return { build_id: 1, job_id: i + 1, job: startJob(1, i + 1, commands) };
+        return { build_id: 1, job_id: i + 1, job: queueJob(1, i + 1, commands) };
       }));
     });
 }
 
-export function startJob(buildId: number, jobId: number, commands: string[]):
-  Observable<JobMessage> {
-  return new Observable(observer => {
-    let job = startBuildJob(buildId, jobId);
+export function stopBuild(buildId: number): void {
+  jobProcesses.forEach(jobProcess => {
+    if (jobProcess.build_id === buildId) {
+      jobProcess.job.next({ action: 'exit' });
+    }
+  });
+}
 
-    // subscribe to job pty
+export function queueJob(buildId: number, jobId: number, commands: string[]): Subject<JobMessage> {
+  let job = startBuildJob(buildId, jobId);
+
+  let jobOutput =  new Observable(observer => {
     job.pty.subscribe(output => {
       const message: JobMessage = {
         build_id: buildId,
@@ -55,16 +62,27 @@ export function startJob(buildId: number, jobId: number, commands: string[]):
       observer.next(message);
 
       if (output.type === 'exit') {
-        observer.complete();
+        killContainer(`${buildId}_${jobId}`).toPromise()
+          .then(() => {
+            observer.complete();
+          });
       }
 
       commands.forEach(command => job.pty.next({ action: 'command', message: command }));
     }, err => {
       console.error(err);
     }, () => {
-      observer.complete();
+
     });
   });
+
+  let jobObserver: any = {
+    next(message) {
+      job.pty.next(message);
+    }
+  };
+
+  return Subject.create(jobObserver, jobOutput);
 }
 
 // export function getRunningJob(id: number): Observable<any> {
@@ -86,7 +104,7 @@ export function startJob(buildId: number, jobId: number, commands: string[]):
 
 startBuild().then(() => {
   jobProcesses.forEach(jobProcess => {
-    jobProcess.job.subscribe(event => {
+    let sub = jobProcess.job.subscribe(event => {
       console.log(event);
     }, err => {
       console.error(err);
@@ -94,5 +112,6 @@ startBuild().then(() => {
       console.log('done');
     });
   });
-});
 
+  setTimeout(() => stopBuild(1), 3000);
+});

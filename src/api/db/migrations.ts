@@ -31,7 +31,6 @@ export function create(): Promise<null> {
       t.dateTime('end_time');
       t.integer('repositories_id').notNullable();
       t.foreign('repositories_id').references('repositories.id');
-      t.text('log');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
@@ -39,6 +38,8 @@ export function create(): Promise<null> {
       t.dateTime('start_time').notNullable();
       t.dateTime('end_time');
       t.enum('status', ['queued', 'running', 'success', 'failed']).notNullable().defaultTo('queue');
+      t.string('commands').notNullable();
+      t.text('log');
       t.integer('builds_id').notNullable();
       t.foreign('builds_id').references('builds.id');
       t.timestamps();
