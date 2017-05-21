@@ -37,7 +37,7 @@ export class AppBuildDetailsComponent implements OnInit {
 
           this.apiService.getBuild(this.uuid).subscribe(build => {
             this.build = build;
-            this.terminalInput = build.log;
+            this.terminalInput = build.log.split('\r\n').join('\r');
 
             this.socketService.outputEvents.subscribe(event => {
               if (this.uuid === event.data.id) {

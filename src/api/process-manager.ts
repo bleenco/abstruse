@@ -73,7 +73,7 @@ export function restartBuild(uuid: string): Promise<Process> {
           `git clone --depth 50 -q ${build.repository.url} ${name}`,
           `cd ${name}`,
           'yarn',
-          'yarn test',
+          'yarn test:e2e',
           'exit $?'
         ].forEach(command => {
           proc.pty.next({ action: 'command', message: command });

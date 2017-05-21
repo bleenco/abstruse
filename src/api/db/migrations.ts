@@ -27,9 +27,8 @@ export function create(): Promise<null> {
       t.integer('users_id').notNullable();
       t.foreign('users_id').references('users.id');
       t.boolean('read').notNullable().defaultTo(true);
-      t.boolean('start').notNullable().defaultTo(true);
-      t.boolean('stop').notNullable().defaultTo(true);
-      t.boolean('delete').notNullable().defaultTo(false);
+      t.boolean('write').notNullable().defaultTo(true);
+      t.boolean('execute').notNullable().defaultTo(true);
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {

@@ -1,8 +1,9 @@
 import { homedir } from 'os';
 import { join, resolve } from 'path';
-import { existsSync, exists, copyFile, writeJsonFile, readJsonFile } from './fs';
+import { existsSync, exists, copyFile, writeJsonFile, readJsonFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { Observable } from 'rxjs';
+import * as uuid from 'uuid';
 
 const defaultConfig = {
   port: 6500,
@@ -17,10 +18,14 @@ const defaultConfig = {
 };
 
 export function initSetup(): Promise<null> {
-  const srcDir = resolve(__dirname, '../../src/files');
-  const destDir = getFilePath('docker-files');
+  return makeAbstruseDir()
+    .then(() => makeCacheDir())
+    .then(() => {
+      const srcDir = resolve(__dirname, '../../src/files');
+      const destDir = getFilePath('docker-files');
 
-  return copyFile(srcDir, destDir);
+      return copyFile(srcDir, destDir);
+    });
 }
 
 export function appReady(): boolean {
@@ -33,6 +38,22 @@ export function getRootDir(): string {
 
 export function getFilePath(relativePath: string): string {
   return join(getRootDir(), relativePath);
+}
+
+export function makeAbstruseDir(): Promise<null> {
+  const abstruseDir = getRootDir();
+  return ensureDirectory(abstruseDir);
+}
+
+export function makeCacheDir(): Promise<null> {
+  const cachePath = getFilePath('cache');
+  return ensureDirectory(cachePath);
+}
+
+export function createTempDir(): Promise<string> {
+  const tempDir = getFilePath(`cache/${uuid()}`);
+  return ensureDirectory(tempDir)
+    .then(() => tempDir);
 }
 
 export function writeDefaultConfig(): void {
