@@ -1,7 +1,7 @@
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
-import { insertJob } from './db/job';
+import { insertJob, resetJobs, updateJob } from './db/job';
 import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
@@ -84,6 +84,7 @@ export function restartBuild(buildId: number): Promise<null> {
       build.end_time = null;
 
       return updateBuild(build)
+        .then(() => resetJobs(buildId))
         .then(() => {
 
         });
@@ -146,27 +147,35 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 
   let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
-      const message: JobMessage = {
-        build_id: buildId,
-        job_id: jobId,
-        type: output.type,
-        data: output.data
-      };
+      updateJob({ id: jobId, start_time: new Date(), status: 'running' })
+        .then(() => {
+          const message: JobMessage = {
+            build_id: buildId,
+            job_id: jobId,
+            type: output.type,
+            data: output.data
+          };
 
-      observer.next(message);
+          observer.next(message);
 
-      if (output.type === 'exit') {
-        killContainer(`${buildId}_${jobId}`).toPromise()
-          .then(() => {
-            observer.complete();
-          });
-      }
+          if (output.type === 'exit') {
+            killContainer(`${buildId}_${jobId}`).toPromise()
+              .then(() => {
+                return updateJob({
+                  id: jobId,
+                  end_time: new Date(),
+                  status: output.data === 0 ? 'success' : 'failed'
+                });
+              })
+              .then(() => observer.complete());
+          }
 
-      commands.forEach(command => job.pty.next({ action: 'command', message: command }));
+          commands.forEach(command => job.pty.next({ action: 'command', message: command }));
+        });
     }, err => {
       console.error(err);
     }, () => {
-
+      observer.complete();
     });
   });
 
