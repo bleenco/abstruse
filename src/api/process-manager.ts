@@ -1,5 +1,5 @@
 import { getRepository } from './db/repository';
-import { startBuildJob, Job } from './process';
+import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import { getRepositoryDetails, generateCommands } from './config';
@@ -11,16 +11,18 @@ export interface BuildMessage {
 }
 
 export interface JobMessage {
-  build_id: number;
-  job_id: number;
+  build_id?: number;
+  job_id?: number;
+  image_name?: string;
   type: string;
   data: string | number;
 }
 
 export interface JobProcess {
-  build_id: number;
-  job_id: number;
-  job: Subject<JobMessage> | any;
+  build_id?: number;
+  job_id?: number;
+  image_name?: string;
+  job: Subject<JobMessage> | Observable<JobMessage> | any;
 }
 
 export let jobProcesses: JobProcess[] = [];
@@ -47,10 +49,53 @@ export function stopBuild(buildId: number): void {
   });
 }
 
+export function startSetup(name: string): void {
+  const setup: JobProcess = {
+    image_name: name,
+    job: queueSetupDockerImage(name)
+  };
+
+  jobProcesses.push(setup);
+}
+
+export function queueSetupDockerImage(name: string): Observable<JobMessage> {
+  let job = startDockerImageSetupJob(name);
+
+  let jobOutput = new Observable(observer => {
+    job.pty.subscribe(output => {
+      const message: JobMessage = {
+        image_name: name,
+        type: output.type,
+        data: output.data
+      };
+
+      observer.next(message);
+
+      if (output.type === 'exit') {
+        jobProcesses = jobProcesses.filter(jobProcess => {
+          if (jobProcess.image_name && jobProcess.image_name === name) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+
+        observer.complete();
+      }
+    }, err => {
+      console.error(err);
+    }, () => {
+      observer.complete();
+    });
+  });
+
+  return jobOutput;
+}
+
 export function queueJob(buildId: number, jobId: number, commands: string[]): Subject<JobMessage> {
   let job = startBuildJob(buildId, jobId);
 
-  let jobOutput =  new Observable(observer => {
+  let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
       const message: JobMessage = {
         build_id: buildId,
@@ -85,6 +130,11 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
   return Subject.create(jobObserver, jobOutput);
 }
 
+export function findDockerImageBuildJob(name: string): JobProcess | null {
+  const index = jobProcesses.findIndex(job => job.image_name && job.image_name === name);
+  return jobProcesses[index] || null;
+}
+
 // export function getRunningJob(id: number): Observable<any> {
 //   const index = jobs.findIndex(job => job.id === id);
 //   return jobs[index].pty.asObservable();
@@ -102,16 +152,16 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 //   return jobs[jobs.findIndex(job => job.id === id)] || null;
 // }
 
-startBuild().then(() => {
-  jobProcesses.forEach(jobProcess => {
-    let sub = jobProcess.job.subscribe(event => {
-      console.log(event);
-    }, err => {
-      console.error(err);
-    }, () => {
-      console.log('done');
-    });
-  });
+// startBuild().then(() => {
+//   jobProcesses.forEach(jobProcess => {
+//     let sub = jobProcess.job.subscribe(event => {
+//       console.log(event);
+//     }, err => {
+//       console.error(err);
+//     }, () => {
+//       console.log('done');
+//     });
+//   });
 
-  setTimeout(() => stopBuild(1), 3000);
-});
+//   setTimeout(() => stopBuild(1), 3000);
+// });

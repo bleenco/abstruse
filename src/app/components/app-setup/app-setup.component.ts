@@ -28,6 +28,7 @@ export class AppSetupComponent implements OnInit {
   terminalInput: string;
   loading: boolean;
   user: User;
+  terminalOptions:  { size: 'small' | 'large' };
 
   constructor(
     private apiService: ApiService,
@@ -43,6 +44,7 @@ export class AppSetupComponent implements OnInit {
     this.readyToSetup = false;
     this.step = 'config';
     this.loading = true;
+    this.terminalOptions = { size: 'small' };
   }
 
   ngOnInit() {
@@ -107,16 +109,18 @@ export class AppSetupComponent implements OnInit {
 
   terminalOutput(e: any): void {
     if (e === 'ready') {
-      this.socketService.onMessage().skip(2).subscribe(event => {
+      this.socketService.onMessage().subscribe(event => {
         if (event.type === 'terminalOutput') {
-          this.terminalInput = event.data;
-        } else if (event.type === 'terminalExit') {
-          if (event.data === 0) {
-            this.step = 'done';
+          if (event.data.type === 'exit') {
+            if (event.data === 0) {
+              this.step = 'done';
+            }
+          } else {
+            this.terminalInput = event.data.data;
           }
         }
       });
-      this.socketService.emit({ type: 'data', data: 'initializeDockerImage' });
+      this.socketService.emit({ type: 'initializeDockerImage', data: 'abstruse' });
     } else if (e && e.type && e.type === 'resize') {
       this.socketService.emit({ type: 'resize', data: { cols: e.cols, rows: e.rows }});
     }
