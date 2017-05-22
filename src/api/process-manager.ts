@@ -1,7 +1,7 @@
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
-import { insertJob, resetJobs, updateJob } from './db/job';
+import { insertJob, resetJobs, updateJob, resetJob } from './db/job';
 import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
@@ -193,6 +193,30 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
   };
 
   return Subject.create(jobObserver, jobOutput);
+}
+
+export function restartJob(jobId: number): Promise<Subject<JobMessage>> {
+  stopJob(jobId);
+
+  return resetJob(jobId)
+    .then(job => {
+      console.log(job);
+      const commands = JSON.parse(job.commands);
+      return queueJob(job.build_id, jobId, commands);
+    });
+}
+
+export function stopJob(jobId: number): void {
+  const jobIndex = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
+  if (jobIndex !== -1) {
+    jobProcesses[jobIndex].job.next({ action: 'exit' });
+    jobProcesses = jobProcesses.filter(jobProcess => jobProcess.job_id === jobId);
+  }
+}
+
+export function getBuildJobsData(buildId: number): Observable<JobMessage> {
+  const jobs = getJobsForBuild(buildId);
+  return Observable.merge(...jobs.map(job => job.job));
 }
 
 export function findDockerImageBuildJob(name: string): JobProcess | null {

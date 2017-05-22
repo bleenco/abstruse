@@ -47,6 +47,13 @@ export class AppBuildDetailsComponent implements OnInit {
     this.socketService.emit({ type: 'restartBuild', data: buildId });
   }
 
+  restartJob(e: MouseEvent, jobId: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.socketService.emit({ type: 'restartJob', data: { jobId: jobId } });
+  }
+
   stopBuild(): void {
     this.socketService.emit({ type: 'stopBuild', data: this.id });
   }
