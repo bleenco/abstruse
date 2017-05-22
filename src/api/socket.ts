@@ -8,7 +8,8 @@ import {
   startBuild,
   startSetup,
   findDockerImageBuildJob,
-  getJobsForBuild
+  getJobsForBuild,
+  restartJob
 } from './process-manager';
 import { getBuild } from './db/build';
 
@@ -19,11 +20,9 @@ export interface ISocketServerOptions {
 export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
-  ptyProcesses: any[];
 
   constructor(options: ISocketServerOptions) {
     this.options = options;
-    this.ptyProcesses = [];
   }
 
   start(): Observable<string> {
@@ -60,6 +59,13 @@ export class SocketServer {
               break;
               case 'restartBuild':
 
+              break;
+              case 'restartJob':
+                restartJob(event.data.jobId).then(subj => {
+                  subj.subscribe(event => {
+                    console.log(event);
+                  });
+                });
               break;
             }
 

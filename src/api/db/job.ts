@@ -66,3 +66,22 @@ export function resetJobs(buildId: number): Promise<any> {
     });
   });
 }
+
+export function resetJob(jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const data = {
+      start_time: new Date(),
+      end_time: null,
+      status: 'queued',
+      log: ''
+    };
+
+    new Job({ id: jobId }).save(data, { method: 'update' }).then(job => {
+      if (!job) {
+        reject();
+      }
+
+      getJob(jobId).then(job => resolve(job));
+    });
+  });
+}
