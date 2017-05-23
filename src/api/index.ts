@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
