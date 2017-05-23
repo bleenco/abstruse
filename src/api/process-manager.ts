@@ -1,10 +1,12 @@
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import { insertJob, resetJobs, updateJob, resetJob } from './db/job';
+import * as dbJob from './db/job';
 import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
+import * as logger from './logger';
 
 export interface BuildMessage {
   type: string;
@@ -26,7 +28,18 @@ export interface JobProcess {
   job: Subject<JobMessage> | Observable<JobMessage> | any;
 }
 
+export interface JobProcessEvent {
+  build_id?: number;
+  job_id?: number;
+  data: string;
+}
+
 export let jobProcesses: JobProcess[] = [];
+export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({ data: 'init' });
+
+jobEvents.subscribe(event => {
+  logger.info(`build: ${event.build_id} job: ${event.job_id} - ${event.data}`);
+});
 
 // inserts new build into db and queue related jobs.
 // returns inserted build id
@@ -74,6 +87,7 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
                   };
 
                   jobProcesses.push(jobProcess);
+                  jobEvents.next({ build_id: build.id, job_id: job.id, data: 'jobAdded' });
                 });
               }))
               .then(() => {
@@ -102,6 +116,11 @@ export function stopBuild(buildId: number): void {
   jobProcesses.forEach(jobProcess => {
     if (jobProcess.build_id === buildId) {
       jobProcess.job.next({ action: 'exit' });
+      jobEvents.next({
+        build_id: jobProcess.build_id,
+        job_id: jobProcess.job_id,
+        data: 'jobStopped'
+      });
     }
   });
 }
@@ -192,26 +211,60 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
     }
   };
 
+  jobEvents.next({ build_id: buildId, job_id: jobId, data: 'jobQueued' });
   return Subject.create(jobObserver, jobOutput);
 }
 
-export function restartJob(jobId: number): Promise<Subject<JobMessage>> {
-  stopJob(jobId);
+export function startJob(buildId: number, jobId: number, commands: any): void {
+  const jobProcess: JobProcess = {
+    build_id: buildId,
+    job_id: jobId,
+    job: queueJob(buildId, jobId, JSON.parse(commands))
+  };
 
+  jobProcesses.push(jobProcess);
+
+  jobProcess.job.subscribe(event => {
+    console.log(event);
+  });
+
+  jobEvents.next({ build_id: buildId, job_id: jobId, data: 'jobStarted' });
+}
+
+export function restartJob(jobId: number): Promise<null> {
   return resetJob(jobId)
     .then(job => {
-      console.log(job);
-      const commands = JSON.parse(job.commands);
-      return queueJob(job.build_id, jobId, commands);
+      jobEvents.next({ build_id: job.builds_id, job_id: job.id, data: 'jobRestarted' });
+      return stopJob(jobId);
+    })
+    .then(jobData => {
+      return startJob(jobData.builds_id, jobData.id, jobData.commands);
     });
 }
 
-export function stopJob(jobId: number): void {
-  const jobIndex = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
-  if (jobIndex !== -1) {
-    jobProcesses[jobIndex].job.next({ action: 'exit' });
-    jobProcesses = jobProcesses.filter(jobProcess => jobProcess.job_id === jobId);
-  }
+export function stopJob(jobId: number): Promise<any> {
+  let job;
+  return dbJob.stopJob(jobId)
+    .then(jobData => {
+      job = jobData;
+      return killContainer(`${job.builds_id}_${job.id}`).toPromise();
+    })
+    .then(() => {
+      const jobIndex = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
+      if (jobIndex !== -1) {
+        const jobProcess = jobProcesses[jobIndex];
+        jobProcess.job.next({ action: 'exit' });
+        jobEvents.next({
+          build_id: jobProcess.build_id,
+          job_id: jobProcess.job_id,
+          data: 'jobStopped'
+        });
+
+        jobProcesses = jobProcesses.filter(jobProcess => jobProcess.job_id === jobId);
+      }
+
+      return job;
+    });
 }
 
 export function getBuildJobsData(buildId: number): Observable<JobMessage> {

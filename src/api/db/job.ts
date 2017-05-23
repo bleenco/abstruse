@@ -76,11 +76,20 @@ export function resetJob(jobId: number): Promise<any> {
       log: ''
     };
 
-    new Job({ id: jobId }).save(data, { method: 'update' }).then(job => {
-      if (!job) {
-        reject();
-      }
+    new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
+      getJob(jobId).then(job => resolve(job));
+    });
+  });
+}
 
+export function stopJob(jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const data = {
+      end_time: new Date(),
+      status: 'failed'
+    };
+
+    new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
       getJob(jobId).then(job => resolve(job));
     });
   });
