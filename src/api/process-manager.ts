@@ -1,7 +1,6 @@
 import { startBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
-import { insertJob, resetJobs, updateJob, resetJob } from './db/job';
 import * as dbJob from './db/job';
 import { getRepository } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
@@ -82,7 +81,7 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
                   builds_id: build.id
                 };
 
-                return insertJob(data).then(job => {
+                return dbJob.insertJob(data).then(job => {
                   const jobProcess: JobProcess = {
                     build_id: build.id,
                     job_id: job.id,
@@ -113,7 +112,7 @@ export function restartBuild(buildId: number): Promise<null> {
       build.end_time = null;
 
       return updateBuild(build)
-        .then(() => resetJobs(buildId))
+        .then(() => dbJob.resetJobs(buildId))
         .then(() => {
 
         });
@@ -182,7 +181,7 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 
   let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
-      updateJob({ id: jobId, start_time: new Date(), status: 'running' })
+      dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
         .then(() => {
           const message: JobMessage = {
             build_id: buildId,
@@ -196,7 +195,7 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
           if (output.type === 'exit') {
             killContainer(`${buildId}_${jobId}`).toPromise()
               .then(() => {
-                return updateJob({
+                return dbJob.updateJob({
                   id: jobId,
                   end_time: new Date(),
                   status: output.data === 0 ? 'success' : 'failed'
@@ -246,7 +245,7 @@ export function startJob(buildId: number, jobId: number, commands: any): void {
 }
 
 export function restartJob(jobId: number): Promise<null> {
-  return resetJob(jobId)
+  return dbJob.resetJob(jobId)
     .then(job => {
       jobEvents.next({
         type: 'process',
@@ -285,11 +284,6 @@ export function stopJob(jobId: number): Promise<any> {
 
       return job;
     });
-}
-
-export function getBuildJobsData(buildId: number): Observable<JobMessage> {
-  const jobs = getJobsForBuild(buildId);
-  return Observable.merge(...jobs.map(job => job.job));
 }
 
 export function findDockerImageBuildJob(name: string): JobProcess | null {
