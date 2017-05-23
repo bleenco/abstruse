@@ -31,11 +31,14 @@ export interface JobProcess {
 export interface JobProcessEvent {
   build_id?: number;
   job_id?: number;
+  type: string;
   data: string;
 }
 
 export let jobProcesses: JobProcess[] = [];
-export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({ data: 'init' });
+export let jobEvents: BehaviorSubject<JobProcessEvent> =
+  new BehaviorSubject({ type: 'init', data: 'init' });
+export let terminalEvents: Subject<JobProcessEvent> = new Subject();
 
 jobEvents.subscribe(event => {
   logger.info(`build: ${event.build_id} job: ${event.job_id} - ${event.data}`);
@@ -87,7 +90,12 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
                   };
 
                   jobProcesses.push(jobProcess);
-                  jobEvents.next({ build_id: build.id, job_id: job.id, data: 'jobAdded' });
+                  jobEvents.next({
+                    type: 'process',
+                    build_id: build.id,
+                    job_id: job.id,
+                    data: 'jobAdded'
+                  });
                 });
               }))
               .then(() => {
@@ -117,6 +125,7 @@ export function stopBuild(buildId: number): void {
     if (jobProcess.build_id === buildId) {
       jobProcess.job.next({ action: 'exit' });
       jobEvents.next({
+        type: 'process',
         build_id: jobProcess.build_id,
         job_id: jobProcess.job_id,
         data: 'jobStopped'
@@ -193,7 +202,16 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
                   status: output.data === 0 ? 'success' : 'failed'
                 });
               })
-              .then(() => observer.complete());
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: buildId,
+                  job_id: jobId,
+                  data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
+                });
+
+                observer.complete();
+              });
           }
 
           commands.forEach(command => job.pty.next({ action: 'command', message: command }));
@@ -211,7 +229,7 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
     }
   };
 
-  jobEvents.next({ build_id: buildId, job_id: jobId, data: 'jobQueued' });
+  jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobQueued' });
   return Subject.create(jobObserver, jobOutput);
 }
 
@@ -223,18 +241,19 @@ export function startJob(buildId: number, jobId: number, commands: any): void {
   };
 
   jobProcesses.push(jobProcess);
-
-  jobProcess.job.subscribe(event => {
-    console.log(event);
-  });
-
-  jobEvents.next({ build_id: buildId, job_id: jobId, data: 'jobStarted' });
+  jobProcess.job.subscribe(event => terminalEvents.next(event));
+  jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
 }
 
 export function restartJob(jobId: number): Promise<null> {
   return resetJob(jobId)
     .then(job => {
-      jobEvents.next({ build_id: job.builds_id, job_id: job.id, data: 'jobRestarted' });
+      jobEvents.next({
+        type: 'process',
+        build_id: job.builds_id,
+        job_id: job.id,
+        data: 'jobRestarted'
+      });
       return stopJob(jobId);
     })
     .then(jobData => {
@@ -255,6 +274,7 @@ export function stopJob(jobId: number): Promise<any> {
         const jobProcess = jobProcesses[jobIndex];
         jobProcess.job.next({ action: 'exit' });
         jobEvents.next({
+          type: 'process',
           build_id: jobProcess.build_id,
           job_id: jobProcess.job_id,
           data: 'jobStopped'
@@ -280,34 +300,3 @@ export function findDockerImageBuildJob(name: string): JobProcess | null {
 export function getJobsForBuild(buildId: number): JobProcess[] {
   return jobProcesses.filter(jobProcess => jobProcess.build_id === buildId);
 }
-
-// export function getRunningJob(id: number): Observable<any> {
-//   const index = jobs.findIndex(job => job.id === id);
-//   return jobs[index].pty.asObservable();
-// }
-
-// export function getAllRunningJobs(): Observable<any> {
-//   return Observable.merge(...jobs.map(job => getRunningJob(job.id)));
-// }
-
-// export function getAllJobs(): Job[] {
-//   return jobs;
-// }
-
-// export function getJob(id: number): Job {
-//   return jobs[jobs.findIndex(job => job.id === id)] || null;
-// }
-
-// startBuild().then(() => {
-//   jobProcesses.forEach(jobProcess => {
-//     let sub = jobProcess.job.subscribe(event => {
-//       console.log(event);
-//     }, err => {
-//       console.error(err);
-//     }, () => {
-//       console.log('done');
-//     });
-//   });
-
-//   setTimeout(() => stopBuild(1), 3000);
-// });
