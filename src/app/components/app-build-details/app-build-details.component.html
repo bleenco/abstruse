@@ -100,8 +100,11 @@
                 <span>{{ job.status }}</span>
               </div>
               <div class="column is-1">
-                <button type="button" class="button green" (click)="restartJob($event, job.id)">
+                <button type="button" class="button green" (click)="restartJob($event, job.id)" *ngIf="job.status !== 'running'" [disabled]="job.status === 'queued'">
                   Restart
+                </button>
+                <button type="button" class="button red" (click)="stopJob($event, job.id)" *ngIf="job.status === 'running'">
+                  Stop
                 </button>
               </div>
             </div>

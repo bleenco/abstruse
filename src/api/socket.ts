@@ -9,8 +9,9 @@ import {
   startSetup,
   findDockerImageBuildJob,
   getJobsForBuild,
+  jobEvents,
   restartJob,
-  jobEvents
+  stopJob
 } from './process-manager';
 import { getBuild } from './db/build';
 
@@ -75,6 +76,9 @@ export class SocketServer {
               break;
               case 'restartJob':
                 restartJob(event.data.jobId);
+              break;
+              case 'stopJob':
+                stopJob(event.data.jobId);
               break;
               case 'subscribeToBuildData':
 

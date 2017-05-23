@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -7,6 +7,7 @@ import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/takeWhile';
+import 'rxjs/add/operator/filter';
 
 @Component({
   selector: 'app-build-details',
@@ -22,7 +23,8 @@ export class AppBuildDetailsComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ngZone: NgZone
   ) {
     this.terminalOptions = { size: 'large' };
   }
@@ -33,6 +35,23 @@ export class AppBuildDetailsComponent implements OnInit {
 
       this.apiService.getBuild(this.id).subscribe(build => {
         this.build = build;
+
+        this.socketService.outputEvents
+        .filter(event => event.type === 'process')
+        .subscribe(event => {
+          let index = this.build.jobs.findIndex(job => job.id === event.job_id);
+          if (index !== -1) {
+            this.ngZone.run(() => {
+              if (event.data === 'jobStarted') {
+                this.build.jobs[index].status = 'running';
+              } else if (event.data === 'jobSucceded') {
+                this.build.jobs[index].status = 'success';
+              } else if (event.data == 'jobFailed') {
+                this.build.jobs[index].status = 'failed';
+              }
+            });
+          }
+        });
       });
     });
   }
@@ -52,6 +71,13 @@ export class AppBuildDetailsComponent implements OnInit {
     e.stopPropagation();
 
     this.socketService.emit({ type: 'restartJob', data: { jobId: jobId } });
+  }
+
+  stopJob(e: MouseEvent, jobId: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.socketService.emit({ type: 'stopJob', data: { jobId: jobId } });
   }
 
   stopBuild(): void {
