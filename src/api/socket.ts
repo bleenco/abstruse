@@ -13,7 +13,6 @@ import {
   restartJob,
   stopJob
 } from './process-manager';
-import { getBuild } from './db/build';
 
 export interface ISocketServerOptions {
   port: number;
