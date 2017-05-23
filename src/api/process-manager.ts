@@ -181,40 +181,37 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 
   let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
-      dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
-        .then(() => {
-          const message: JobMessage = {
-            build_id: buildId,
-            job_id: jobId,
-            type: output.type,
-            data: output.data
-          };
+      const message: JobMessage = {
+        build_id: buildId,
+        job_id: jobId,
+        type: output.type,
+        data: output.data
+      };
 
-          observer.next(message);
+      observer.next(message);
 
-          if (output.type === 'exit') {
-            killContainer(`${buildId}_${jobId}`).toPromise()
-              .then(() => {
-                return dbJob.updateJob({
-                  id: jobId,
-                  end_time: new Date(),
-                  status: output.data === 0 ? 'success' : 'failed'
-                });
-              })
-              .then(() => {
-                jobEvents.next({
-                  type: 'process',
-                  build_id: buildId,
-                  job_id: jobId,
-                  data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
-                });
+      if (output.type === 'exit') {
+        killContainer(`${buildId}_${jobId}`).toPromise()
+          .then(() => {
+            return dbJob.updateJob({
+              id: jobId,
+              end_time: new Date(),
+              status: output.data === 0 ? 'success' : 'failed'
+            });
+          })
+          .then(() => {
+            jobEvents.next({
+              type: 'process',
+              build_id: buildId,
+              job_id: jobId,
+              data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
+            });
 
-                observer.complete();
-              });
-          }
+            observer.complete();
+          });
+      }
 
-          commands.forEach(command => job.pty.next({ action: 'command', message: command }));
-        });
+      commands.forEach(command => job.pty.next({ action: 'command', message: command }));
     }, err => {
       console.error(err);
     }, () => {
@@ -232,16 +229,19 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
   return Subject.create(jobObserver, jobOutput);
 }
 
-export function startJob(buildId: number, jobId: number, commands: any): void {
-  const jobProcess: JobProcess = {
-    build_id: buildId,
-    job_id: jobId,
-    job: queueJob(buildId, jobId, JSON.parse(commands))
-  };
+export function startJob(buildId: number, jobId: number, commands: any): Promise<null> {
+  return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
+    .then(() => {
+      const jobProcess: JobProcess = {
+        build_id: buildId,
+        job_id: jobId,
+        job: queueJob(buildId, jobId, JSON.parse(commands))
+      };
 
-  jobProcesses.push(jobProcess);
-  jobProcess.job.subscribe(event => terminalEvents.next(event));
-  jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
+      jobProcesses.push(jobProcess);
+      jobProcess.job.subscribe(event => terminalEvents.next(event));
+      jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
+    });
 }
 
 export function restartJob(jobId: number): Promise<null> {

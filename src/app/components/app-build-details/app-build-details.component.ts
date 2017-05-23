@@ -35,35 +35,50 @@ export class AppBuildDetailsComponent implements OnInit {
 
       this.apiService.getBuild(this.id).subscribe(build => {
         this.build = build;
-        this.build.jobs.forEach(job => {
-          job.time = '00:00';
-        });
+        this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.commit_date);
 
         this.status = this.getBuildStatus();
 
-        this.socketService.outputEvents
-        .filter(event => event.type === 'process')
-        .subscribe(event => {
-          let index = this.build.jobs.findIndex(job => job.id === event.job_id);
-          if (index !== -1) {
-            this.ngZone.run(() => {
-              if (event.data === 'jobStarted') {
-                this.build.jobs[index].status = 'running';
-                this.build.jobs.end_time = null;
-              } else if (event.data === 'jobSucceded') {
-                this.build.jobs[index].status = 'success';
-                this.build.jobs.end_time = new Date().getTime();
-              } else if (event.data == 'jobFailed') {
-                this.build.jobs[index].status = 'failed';
-                this.build.jobs.end_time = new Date().getTime();
-              }
+        this.updateJobTimes();
+        setInterval(() => this.updateJobTimes(), 1000);
 
-              this.status = this.getBuildStatus();
-            });
-          }
+        this.socketService.outputEvents
+          .filter(event => event.type === 'process')
+          .subscribe(event => {
+            let index = this.build.jobs.findIndex(job => job.id === event.job_id);
+            if (index !== -1) {
+              this.ngZone.run(() => {
+                if (event.data === 'jobStarted') {
+                  this.build.jobs[index].status = 'running';
+                  this.build.jobs[index].end_time = null;
+                  this.build.jobs[index].start_time = new Date().getTime();
+                } else if (event.data === 'jobSucceded') {
+                  this.build.jobs[index].status = 'success';
+                  this.build.jobs[index].end_time = new Date().getTime();
+                } else if (event.data == 'jobFailed') {
+                  this.build.jobs[index].status = 'failed';
+                  this.build.jobs[index].end_time = new Date().getTime();
+                }
+
+                this.status = this.getBuildStatus();
+              });
+            }
         });
       });
+    });
+  }
+
+  updateJobTimes(): void {
+    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
+    this.build.jobs = this.build.jobs.map(job => {
+      if (!job.end_time || job.status === 'running') {
+        job.time = format(currentTime - job.start_time, 'mm:ss');
+      } else {
+        job.time = format(job.end_time - job.start_time, 'mm:ss');
+      }
+
+      return job;
     });
   }
 

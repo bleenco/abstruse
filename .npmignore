@@ -9,3 +9,4 @@ e2e/
 art/
 tsconfig.json
 tslint.json
+!src/files/
