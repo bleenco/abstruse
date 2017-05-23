@@ -9,7 +9,8 @@ import {
   startSetup,
   findDockerImageBuildJob,
   getJobsForBuild,
-  restartJob
+  restartJob,
+  jobEvents
 } from './process-manager';
 import { getBuild } from './db/build';
 
@@ -20,9 +21,11 @@ export interface ISocketServerOptions {
 export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
+  clients: any[];
 
   constructor(options: ISocketServerOptions) {
     this.options = options;
+    this.clients = [];
   }
 
   start(): Observable<string> {
@@ -30,7 +33,20 @@ export class SocketServer {
       this.createRxServer(this.options)
         .map(this.createRxSocket)
         .subscribe(conn => {
+          const client = { connection: conn, subs: [] };
+          this.clients.push(client);
+
+          // send client latest status about jobs
+          jobEvents.subscribe(event => conn.next(event));
+
           conn.subscribe(event => {
+            if (event.type === 'disconnected') {
+              const connIndex = this.clients.findIndex(client => client.connection === conn);
+              if (connIndex !== -1) {
+                this.clients.splice(connIndex, 1);
+                logger.info(`client ${connIndex + 1} disconnected`);
+              }
+            }
 
             switch (event.type) {
               case 'initializeDockerImage':
@@ -51,21 +67,17 @@ export class SocketServer {
               case 'startBuild':
                 startBuild(event.data.repositoryId, event.data.branch)
                   .then(buildId => {
-                    const jobs = getJobsForBuild(buildId);
-                    Observable.merge(...jobs.map(job => job.job)).subscribe(event => {
-                      console.log(event);
-                    });
+                    console.log('New Build: ', buildId);
                   });
               break;
               case 'restartBuild':
 
               break;
               case 'restartJob':
-                restartJob(event.data.jobId).then(subj => {
-                  subj.subscribe(event => {
-                    console.log(event);
-                  });
-                });
+                restartJob(event.data.jobId);
+              break;
+              case 'subscribeToBuildData':
+
               break;
             }
 
@@ -125,7 +137,9 @@ export class SocketServer {
   private createRxSocket = (connection: any) => {
     let messages = Observable.fromEvent(connection, 'message', msg => {
       return JSON.parse(msg.data);
-    });
+    }).merge(Observable.fromEvent(connection, 'close', () => {
+      return { type: 'disconnected' };
+    }));
 
     let messageObserver: any = {
       next(message) {
