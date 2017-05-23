@@ -6,54 +6,47 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="build">
-            <div class="build-top-container">
-              <div class="columns is-multiline">
-                <div class="column is-8">
-                  <h2>{{ build.repository.url }}</h2>
+            <div class="build-top-container" [ngClass]="{ green: status === 'success', yellow: status === 'running', red: status === 'failed' }">
+              <div class="build-top-content">
+                <div class="columns">
+                  <div class="column is-1">
+                    <span class="build-icon">
+                      <img src="images/icons/hourglass.svg" *ngIf="status === 'queued'">
+                      <img src="images/icons/tail-spin.svg" *ngIf="status === 'running'">
+                      <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
+                      <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
+                    </span>
+                  </div>
+                  <div class="column is-9">
+                    <h1 class="bold">{{ build.repository.url }}</h1>
+                    <h2>{{ build.commit_message }}</h2>
+                  </div>
+                  <div class="column is-2">
+                    <button class="button is-fullwidth" type="button">
+                      Restart Build
+                    </button>
+                  </div>
                 </div>
-                <div class="column is-4 column-centered">
-                  <button type="button" class="button" disabled>
-                    <span class="icon">
-                      <img src="images/icons/restart.svg">
-                    </span>
-                    Re-Start Build
-                  </button>
-                  <button type="button" class="button red" disabled>
-                    <span class="icon">
-                      <img src="images/icons/stop.svg">
-                    </span>
-                    Stop Build
-                  </button>
-                </div>
-                <div class="column is-12">
-                  <h3>#{{ build.id }}.{{ build.iteration }} ({{ build.uuid }})</h3>
-                </div>
-                <div class="column is-3">
-                  <div class="label" [ngClass]="{ green: build.status === 'success', yellow: build.status === 'running', running: build.status === 'running', red: build.status === 'errored' }">
-                    <span *ngIf="build.status === 'success'">
+                <div class="columns">
+                  <div class="column is-1"></div>
+                  <div class="column is-9">
+                    <p>{{ build.commit_hash }}</p>
+                  </div>
+                  <div class="column is-2">
+                    <span class="total-time">
                       <span class="icon">
-                        <img src="images/icons/check-icon-white.svg">
+                        <img src="images/icons/hourglass.svg">
                       </span>
-                      Success
-                    </span>
-                    <span *ngIf="build.status === 'errored'">
-                      <span class="icon">
-                        <img src="images/icons/check-icon-white-false.svg">
-                      </span>
-                      <span>Failing</span>
-                    </span>
-                    <span *ngIf="build.status === 'running'">
-                      <span class="icon">
-                        <img src="images/icons/hammer.svg">
-                      </span>
-                      Running
-                    </span>
-                    <span *ngIf="build.status === 'queue'">
-                      In Queue
+                      5:32
                     </span>
                   </div>
                 </div>
-                <div class="column is-9"></div>
+                <div class="columns">
+                  <div class="column is-1"></div>
+                  <div class="column is-11">
+                    <p>{{ build.commit_author }} authored and commited.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

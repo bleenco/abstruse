@@ -1,0 +1,21 @@
+<svg width="50px" height="60px" viewBox="0 0 50 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="hourglass" fill-rule="nonzero" fill="#FFFFFF">
+      <circle id="Oval" cx="25" cy="26" r="1"></circle>
+      <circle id="Oval" cx="28" cy="24" r="1"></circle>
+      <circle id="Oval" cx="22" cy="24" r="1"></circle>
+      <circle id="Oval" cx="19" cy="22" r="1"></circle>
+      <circle id="Oval" cx="31" cy="22" r="1"></circle>
+      <circle id="Oval" cx="34" cy="20" r="1"></circle>
+      <circle id="Oval" cx="16" cy="20" r="1"></circle>
+      <circle id="Oval" cx="25" cy="22" r="1"></circle>
+      <circle id="Oval" cx="25" cy="34" r="1"></circle>
+      <circle id="Oval" cx="25" cy="37" r="1"></circle>
+      <circle id="Oval" cx="25" cy="40" r="1"></circle>
+      <circle id="Oval" cx="25" cy="43" r="1"></circle>
+      <circle id="Oval" cx="25" cy="46" r="1"></circle>
+      <circle id="Oval" cx="25" cy="49" r="1"></circle>
+      <path d="M49,58 L46,58 L46,54 L41,54 L41,43.778 C41,41.078 39.658,38.57 37.411,37.072 L26.803,30 L37.411,22.928 C39.658,21.43 41,18.922 41,16.222 L41,6 L46,6 L46,2 L49,2 C49.552,2 50,1.553 50,1 C50,0.447 49.552,0 49,0 L46,0 L45,0 L5,0 L4,0 L1,0 C0.448,0 0,0.447 0,1 C0,1.553 0.448,2 1,2 L4,2 L4,6 L9,6 L9,16.222 C9,18.922 10.342,21.43 12.589,22.928 L23.197,30 L12.589,37.072 C10.342,38.57 9,41.078 9,43.778 L9,54 L4,54 L4,58 L1,58 C0.448,58 0,58.447 0,59 C0,59.553 0.448,60 1,60 L4,60 L5,60 L45,60 L46,60 L49,60 C49.552,60 50,59.553 50,59 C50,58.447 49.552,58 49,58 Z M6,4 L6,2 L44,2 L44,4 L41,4 L9,4 L6,4 Z M13.698,21.264 C12.009,20.137 11,18.252 11,16.222 L11,6 L39,6 L39,16.222 C39,18.252 37.991,20.137 36.302,21.264 L25,28.798 L13.698,21.264 Z M11,43.778 C11,41.748 12.009,39.863 13.698,38.736 L25,31.202 L36.302,38.736 C37.991,39.863 39,41.748 39,43.778 L39,54 L11,54 L11,43.778 Z M6,56 L9,56 L41,56 L44,56 L44,58 L6,58 L6,56 Z" id="Shape"></path>
+    </g>
+  </g>
+</svg>

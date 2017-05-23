@@ -15,10 +15,8 @@ import 'rxjs/add/operator/filter';
 })
 export class AppBuildDetailsComponent implements OnInit {
   id: string;
-  terminalReady: boolean;
-  terminalInput: string;
-  terminalOptions: { size: 'small' | 'large' };
   build: any;
+  status: string;
 
   constructor(
     private socketService: SocketService,
@@ -26,7 +24,7 @@ export class AppBuildDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private ngZone: NgZone
   ) {
-    this.terminalOptions = { size: 'large' };
+    this.status = 'queued';
   }
 
   ngOnInit() {
@@ -35,6 +33,8 @@ export class AppBuildDetailsComponent implements OnInit {
 
       this.apiService.getBuild(this.id).subscribe(build => {
         this.build = build;
+
+        this.status = this.getBuildStatus();
 
         this.socketService.outputEvents
         .filter(event => event.type === 'process')
@@ -49,11 +49,31 @@ export class AppBuildDetailsComponent implements OnInit {
               } else if (event.data == 'jobFailed') {
                 this.build.jobs[index].status = 'failed';
               }
+
+              this.status = this.getBuildStatus();
             });
           }
         });
       });
     });
+  }
+
+  getBuildStatus(): string {
+    let status = '';
+
+    if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+      status = 'failed';
+    }
+
+    if (this.build.jobs.findIndex(job => job.status === 'success') !== -1) {
+      status = 'success';
+    }
+
+    if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
+      status = 'running';
+    }
+
+    return status === '' ? 'queued' : status;
   }
 
   runBuild(repositoryId: number): void {
