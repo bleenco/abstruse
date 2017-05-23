@@ -36,6 +36,9 @@ export class SocketServer {
           const client = { connection: conn, subs: [] };
           this.clients.push(client);
 
+          // send server time for sync
+          conn.next({ type: 'time', data: new Date().getTime() });
+
           // send client latest status about jobs
           jobEvents.subscribe(event => conn.next(event));
 

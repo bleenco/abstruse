@@ -44,7 +44,7 @@
                 <div class="columns">
                   <div class="column is-1"></div>
                   <div class="column is-11">
-                    <p>{{ build.commit_author }} authored and commited.</p>
+                    <p>{{ build.commit_author }} authored and commited {{ timeWords }} ago.</p>
                   </div>
                 </div>
               </div>
@@ -55,7 +55,8 @@
             <div class="columns list-header">
               <div class="column is-1">Job Id</div>
               <div class="column is-4">Environment</div>
-              <div class="column is-4">Script</div>
+              <div class="column is-3">Script</div>
+              <div class="column is-1">Time</div>
               <div class="column is-2">Status</div>
               <div class="column is-1"></div>
             </div>
@@ -80,12 +81,20 @@
                   <span class="version">{{ job.language_version }}</span>
                 </div>
               </div>
-              <div class="column is-4">
+              <div class="column is-3">
                 <div class="icon-and-text">
                   <span class="icon script">
                     <img src="images/icons/computing-script.svg">
                   </span>
                   <span>{{ job.test_script }}</span>
+                </div>
+              </div>
+              <div class="column is-1">
+                <div class="icon-and-text">
+                  <span class="icon">
+                    <img src="images/icons/hourglass.svg">
+                  </span>
+                  <span>{{ job.time }}</span>
                 </div>
               </div>
               <div class="column is-2">
