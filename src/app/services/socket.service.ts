@@ -7,6 +7,7 @@ export class SocketService {
   connectionState: BehaviorSubject<ConnectionStates>;
   socket: RxWebSocket;
   outputEvents: EventEmitter<any>;
+  timeSyncDiff: number;
 
   constructor() {
     this.socket = new RxWebSocket();
@@ -15,7 +16,13 @@ export class SocketService {
     this.socket.willOpen = () => this.connectionState.next(ConnectionStates.CONNECTING);
     this.socket.didClose = () => this.connectionState.next(ConnectionStates.CLOSED);
     this.outputEvents = new EventEmitter<any>();
-    this.onMessage().subscribe(data => this.outputEvents.emit(data));
+    this.onMessage().subscribe(event => {
+      if (event.type === 'time') {
+        this.timeSyncDiff = new Date().getTime() - event.data;
+      } else {
+        this.outputEvents.emit(event);
+      }
+    });
   }
 
   connect(): Observable<any> {

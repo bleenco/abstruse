@@ -8,6 +8,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/retryWhen';
 import 'rxjs/add/operator/takeWhile';
 import 'rxjs/add/operator/filter';
+import { distanceInWordsToNow, format } from 'date-fns';
 
 @Component({
   selector: 'app-build-details',
@@ -17,6 +18,7 @@ export class AppBuildDetailsComponent implements OnInit {
   id: string;
   build: any;
   status: string;
+  timeWords: string;
 
   constructor(
     private socketService: SocketService,
@@ -33,6 +35,10 @@ export class AppBuildDetailsComponent implements OnInit {
 
       this.apiService.getBuild(this.id).subscribe(build => {
         this.build = build;
+        this.build.jobs.forEach(job => {
+          job.time = '00:00';
+        });
+        this.timeWords = distanceInWordsToNow(this.build.commit_date);
 
         this.status = this.getBuildStatus();
 
@@ -44,10 +50,13 @@ export class AppBuildDetailsComponent implements OnInit {
             this.ngZone.run(() => {
               if (event.data === 'jobStarted') {
                 this.build.jobs[index].status = 'running';
+                this.build.jobs.end_time = null;
               } else if (event.data === 'jobSucceded') {
                 this.build.jobs[index].status = 'success';
+                this.build.jobs.end_time = new Date().getTime();
               } else if (event.data == 'jobFailed') {
                 this.build.jobs[index].status = 'failed';
+                this.build.jobs.end_time = new Date().getTime();
               }
 
               this.status = this.getBuildStatus();
