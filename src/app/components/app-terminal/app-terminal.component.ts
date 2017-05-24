@@ -37,27 +37,27 @@ export class AppTerminalComponent implements OnInit {
 
     this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
     this.term.prefs_.set('font-size', 12);
-    this.term.prefs_.set('background-color', '#000000');
-    this.term.prefs_.set('foreground-color', '#FFFFFF');
+    this.term.prefs_.set('background-color', '#1e1f29');
+    this.term.prefs_.set('foreground-color', '#f8f8f2');
     this.term.prefs_.set('cursor-color', 'transparent');
     this.term.prefs_.set('color-palette-overrides', [
-      '#1d1f21',
-      '#cc342b',
-      '#198844',
-      '#fba922',
-      '#3971ed',
-      '#a36ac7',
-      '#3971ed',
-      '#c5c8c6',
-      '#969896',
-      '#cc342b',
-      '#198844',
-      '#fba922',
-      '#3971ed',
-      '#a36ac7',
-      '#3971ed',
-      '#ffffff'
-    ]);
+      '#ffffff',
+      '#8be9fd',
+      '#ff79c6',
+      '#bd93f9',
+      '#f1fa8c',
+      '#50fa7b',
+      '#ff5555',
+      '#555555',
+      '#bbbbbb',
+      '#8be9fd',
+      '#ff79c6',
+      '#bd93f9',
+      '#f1fa8c',
+      '#50fa7b',
+      '#ff5555',
+      '#000000'
+    ].reverse());
 
     this.term.onTerminalReady = () => {
       let io = this.term.io.push();

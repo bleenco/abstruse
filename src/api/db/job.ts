@@ -38,12 +38,11 @@ export function insertJob(data: any): Promise<any> {
 
 export function updateJob(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ id: data.id }).save(data, { method: 'update' }).then(job => {
-      if (!job) {
-        reject();
-      }
-
-      resolve(job.toJSON());
+    new Job({ id: data.id }).save(data, { method: 'update', require: false }).then(job => {
+      const jobId = data.id;
+      new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
+        getJob(jobId).then(job => resolve(job));
+      });
     });
   });
 }
@@ -57,7 +56,7 @@ export function resetJobs(buildId: number): Promise<any> {
       log: ''
     };
 
-    new Job({ builds_id: buildId }).save(data, { method: 'update' }).then(jobs => {
+    new Job({ builds_id: buildId }).save(data, { method: 'update', require: false }).then(jobs => {
       if (!jobs) {
         reject();
       }
@@ -74,19 +73,6 @@ export function resetJob(jobId: number): Promise<any> {
       end_time: null,
       status: 'queued',
       log: ''
-    };
-
-    new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
-      getJob(jobId).then(job => resolve(job));
-    });
-  });
-}
-
-export function stopJob(jobId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const data = {
-      end_time: new Date(),
-      status: 'failed'
     };
 
     new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {

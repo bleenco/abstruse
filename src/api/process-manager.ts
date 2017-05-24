@@ -25,6 +25,7 @@ export interface JobProcess {
   job_id?: number;
   image_name?: string;
   job: Subject<JobMessage> | Observable<JobMessage> | any;
+  log: string[];
 }
 
 export interface JobProcessEvent {
@@ -85,7 +86,8 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
                   const jobProcess: JobProcess = {
                     build_id: build.id,
                     job_id: job.id,
-                    job: queueJob(build.id, job.id, commands)
+                    job: queueJob(build.id, job.id, commands),
+                    log: []
                   };
 
                   jobProcesses.push(jobProcess);
@@ -136,7 +138,8 @@ export function stopBuild(buildId: number): void {
 export function startSetup(name: string): void {
   const setup: JobProcess = {
     image_name: name,
-    job: queueSetupDockerImage(name)
+    job: queueSetupDockerImage(name),
+    log: []
   };
 
   jobProcesses.push(setup);
@@ -193,10 +196,14 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
       if (output.type === 'exit') {
         killContainer(`${buildId}_${jobId}`).toPromise()
           .then(() => {
+            const index = jobProcesses.findIndex(job => job.job_id === jobId);
+            const log = jobProcesses[index].log.join('\n');
+
             return dbJob.updateJob({
               id: jobId,
               end_time: new Date(),
-              status: output.data === 0 ? 'success' : 'failed'
+              status: output.data === 0 ? 'success' : 'failed',
+              log: log
             });
           })
           .then(() => {
@@ -230,16 +237,26 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
 }
 
 export function startJob(buildId: number, jobId: number, commands: any): Promise<null> {
-  return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
+  return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running', log: '' })
     .then(() => {
       const jobProcess: JobProcess = {
         build_id: buildId,
         job_id: jobId,
-        job: queueJob(buildId, jobId, JSON.parse(commands))
+        job: queueJob(buildId, jobId, JSON.parse(commands)),
+        log: []
       };
 
       jobProcesses.push(jobProcess);
-      jobProcess.job.subscribe(event => terminalEvents.next(event));
+      const index = jobProcesses.findIndex(job => job.job_id === jobId);
+      const ps = jobProcesses[index];
+
+      jobProcess.job.subscribe(event => {
+        if (event.data) {
+          ps.log.push(event.data);
+          terminalEvents.next(event);
+        }
+      });
+
       jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
     });
 }
@@ -262,7 +279,10 @@ export function restartJob(jobId: number): Promise<null> {
 
 export function stopJob(jobId: number): Promise<any> {
   let job;
-  return dbJob.stopJob(jobId)
+  const index = jobProcesses.findIndex(job => job.job_id === jobId);
+  const log = (index !== -1) ? jobProcesses[index].log.join('\n') : '';
+
+  return dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
     .then(jobData => {
       job = jobData;
       return killContainer(`${job.builds_id}_${job.id}`).toPromise();
