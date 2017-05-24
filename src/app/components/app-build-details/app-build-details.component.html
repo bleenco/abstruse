@@ -62,7 +62,8 @@
             </div>
             <div class="columns list-item"
                  *ngFor="let job of build.jobs; let i = index;"
-                 [ngClass]="{ 'is-queued': job.status === 'queued', 'is-success': job.status === 'success', 'is-running': job.status === 'running', 'is-errored': job.status === 'failed' }">
+                 [ngClass]="{ 'is-queued': job.status === 'queued', 'is-success': job.status === 'success', 'is-running': job.status === 'running', 'is-errored': job.status === 'failed' }"
+                 (click)="gotoJob($event, job.id)">
               <div class="column is-1">
                 <span># {{ build.id }}.{{ job.id }}</span>
               </div>
@@ -90,12 +91,7 @@
                 </div>
               </div>
               <div class="column is-1">
-                <div class="icon-and-text">
-                  <span class="icon">
-                    <img src="images/icons/hourglass.svg">
-                  </span>
-                  <span>{{ job.time }}</span>
-                </div>
+                <span>{{ job.time }}</span>
               </div>
               <div class="column is-2">
                 <span class="status-circle" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }"></span>

@@ -18,6 +18,7 @@ import { AppHeaderComponent } from './components/app-header';
 import { AppBuildsComponent } from './components/app-builds';
 import { AppBuildDetailsComponent } from './components/app-build-details';
 import { AppRepositoriesComponent } from './components/app-repositories';
+import { AppJobComponent } from './components/app-job';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { AppRepositoriesComponent } from './components/app-repositories';
     AppBuildsComponent,
     AppBuildDetailsComponent,
     AppRepositoriesComponent,
+    AppJobComponent,
     EqualValidator
   ],
   imports: [
@@ -45,6 +47,11 @@ import { AppRepositoriesComponent } from './components/app-repositories';
       {
         path: 'build/:id',
         component: AppBuildDetailsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'job/:id',
+        component: AppJobComponent,
         canActivate: [AuthGuard]
       },
       {

@@ -1,13 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/retryWhen';
-import 'rxjs/add/operator/takeWhile';
-import 'rxjs/add/operator/filter';
 import { distanceInWordsToNow, format } from 'date-fns';
 
 @Component({
@@ -24,7 +18,8 @@ export class AppBuildDetailsComponent implements OnInit {
     private socketService: SocketService,
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private router: Router
   ) {
     this.status = 'queued';
   }
@@ -126,5 +121,12 @@ export class AppBuildDetailsComponent implements OnInit {
 
   stopBuild(): void {
     this.socketService.emit({ type: 'stopBuild', data: this.id });
+  }
+
+  gotoJob(e: MouseEvent, jobId: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.router.navigate(['job', jobId]);
   }
 }
