@@ -1,6 +1,6 @@
 import * as ws from 'ws';
 import * as uuid from 'uuid';
-import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
+import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { PtyInstance } from './pty';
 import * as logger from './logger';
 import * as docker from './docker';
@@ -8,10 +8,10 @@ import {
   startBuild,
   startSetup,
   findDockerImageBuildJob,
-  getJobsForBuild,
   jobEvents,
   restartJob,
-  stopJob
+  stopJob,
+  terminalEvents
 } from './process-manager';
 
 export interface ISocketServerOptions {
@@ -33,7 +33,7 @@ export class SocketServer {
       this.createRxServer(this.options)
         .map(this.createRxSocket)
         .subscribe(conn => {
-          const client = { connection: conn, subs: [] };
+          const client = { connection: conn, sub: null };
           this.clients.push(client);
 
           // send server time for sync
@@ -82,8 +82,15 @@ export class SocketServer {
               case 'stopJob':
                 stopJob(event.data.jobId);
               break;
-              case 'subscribeToBuildData':
+              case 'subscribeToJobOutput':
+                const index = this.clients.findIndex(client => client.connection === conn);
+                if (this.clients[index].sub) {
+                  this.clients[index].sub.unsubscribe();
+                }
 
+                this.clients[index].sub = terminalEvents
+                  .filter(e => e.job_id === parseInt(event.data.jobId, 10))
+                  .subscribe(output => conn.next(output));
               break;
             }
           });

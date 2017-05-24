@@ -30,6 +30,15 @@ export class AppJobComponent implements OnInit {
 
       this.apiService.getJob(this.id).subscribe(job => {
         this.job = job;
+
+        this.socketService.outputEvents
+          .subscribe(event => {
+            if (event.type === 'data') {
+              this.terminalInput = event.data;
+            }
+          });
+
+        this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
       });
     });
   }
