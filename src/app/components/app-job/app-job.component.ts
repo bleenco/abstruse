@@ -11,6 +11,9 @@ export class AppJobComponent implements OnInit {
   id: number;
   job: any;
   status: string;
+  terminalReady: boolean;
+  terminalOptions:  { size: 'small' | 'large' };
+  terminalInput: string;
 
   constructor(
     private socketService: SocketService,
@@ -18,12 +21,22 @@ export class AppJobComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.status = 'queued';
+    this.terminalOptions = { size: 'large' };
   }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.id = params.id;
 
+      this.apiService.getJob(this.id).subscribe(job => {
+        this.job = job;
+      });
     });
+  }
+
+  terminalOutput(e: any): void {
+    if (e.ready) {
+      this.terminalReady = true;
+    }
   }
 }

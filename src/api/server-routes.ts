@@ -10,6 +10,7 @@ import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
 import { addRepository, getRepositories } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
+import { getJob } from './db/job';
 import { imageExists } from './docker';
 
 export function webRoutes(): express.Router {
@@ -39,6 +40,18 @@ export function buildRoutes(): express.Router {
   router.get('/:id', (req: express.Request, res: express.Response) => {
     getBuild(req.params.id).then(build => {
       return res.status(200).json({ data: build });
+    });
+  });
+
+  return router;
+}
+
+export function jobRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/:id', (req: express.Request, res: express.Response) => {
+    getJob(req.params.id).then(job => {
+      return res.status(200).json({ data: job });
     });
   });
 
