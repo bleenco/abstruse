@@ -18,7 +18,7 @@ export class AppJobComponent implements OnInit {
   status: string;
   terminalReady: boolean;
   terminalOptions:  { size: 'small' | 'large' };
-  terminalInput: string;
+  terminalInput: any;
 
   constructor(
     private socketService: SocketService,
@@ -55,7 +55,8 @@ export class AppJobComponent implements OnInit {
             setInterval(() => this.updateJobTime(), 1000);
 
             this.socketService.outputEvents
-              .filter(event => event.type === 'process' && this.id === event.job_id)
+              .filter(event => event.type === 'process')
+              .filter(event => event.job_id === parseInt(<any>this.id, 10))
               .subscribe(event => {
                 this.ngZone.run(() => {
                   if (event.data === 'jobStarted') {
@@ -86,6 +87,7 @@ export class AppJobComponent implements OnInit {
   }
 
   restartJob(): void {
+    this.terminalInput = { clear: true };
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
   }
 

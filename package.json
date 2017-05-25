@@ -94,7 +94,7 @@
     "date-fns": "^1.28.5",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.11.1",
-    "hterm": "0.0.1",
+    "htermabstruse": "^0.0.1",
     "html-webpack-plugin": "^2.28.0",
     "node-sass": "^4.5.2",
     "portfinder": "^1.0.13",

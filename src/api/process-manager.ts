@@ -179,10 +179,11 @@ export function queueSetupDockerImage(name: string): Observable<JobMessage> {
   return jobOutput;
 }
 
-export function queueJob(buildId: number, jobId: number, commands: string[]): Subject<JobMessage> {
-  let job = startBuildJob(buildId, jobId, commands);
+export function queueJob(buildId: number, jobId: number, commands: string[]):
+  Observable<JobMessage> {
+  return new Observable(observer => {
+    let job = startBuildJob(buildId, jobId, commands);
 
-  let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
       const message: JobMessage = {
         build_id: buildId,
@@ -219,15 +220,6 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
       observer.complete();
     });
   });
-
-  let jobObserver: any = {
-    next(message) {
-      job.pty.next(message);
-    }
-  };
-
-  jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobQueued' });
-  return Subject.create(jobObserver, jobOutput);
 }
 
 export function startJob(buildId: number, jobId: number, commands: any): Promise<null> {
@@ -285,7 +277,6 @@ export function stopJob(jobId: number): Promise<any> {
       const jobIndex = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
       if (jobIndex !== -1) {
         const jobProcess = jobProcesses[jobIndex];
-        jobProcess.job.next({ action: 'exit' });
         jobEvents.next({
           type: 'process',
           build_id: jobProcess.build_id,
@@ -303,6 +294,12 @@ export function stopJob(jobId: number): Promise<any> {
 export function findDockerImageBuildJob(name: string): JobProcess | null {
   const index = jobProcesses.findIndex(job => job.image_name && job.image_name === name);
   return jobProcesses[index] || null;
+}
+
+export function getJobProcess(jobId: number): JobProcess | null {
+  const index = jobProcesses
+    .findIndex(jobProcess => parseInt(<any>jobProcess.job_id, 10) === jobId);
+  return index === -1 ? null : jobProcesses[index];
 }
 
 export function getJobsForBuild(buildId: number): JobProcess[] {

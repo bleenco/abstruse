@@ -11,7 +11,8 @@ import {
   jobEvents,
   restartJob,
   stopJob,
-  terminalEvents
+  terminalEvents,
+  getJobProcess
 } from './process-manager';
 
 export interface ISocketServerOptions {
@@ -83,6 +84,11 @@ export class SocketServer {
                 stopJob(event.data.jobId);
               break;
               case 'subscribeToJobOutput':
+                const jobProcess = getJobProcess(parseInt(event.data.jobId, 10));
+                if (jobProcess) {
+                  conn.next({ type: 'data', data: jobProcess.log.join('\n') });
+                }
+
                 const index = this.clients.findIndex(client => client.connection === conn);
                 if (this.clients[index].sub) {
                   this.clients[index].sub.unsubscribe();

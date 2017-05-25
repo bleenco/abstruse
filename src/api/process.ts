@@ -4,6 +4,7 @@ import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
 import { Observable } from 'rxjs';
+import { green, red } from 'chalk';
 const pty = require('node-pty');
 
 export interface Job {
@@ -83,6 +84,11 @@ function runInDocker(name: string, image: string, cmds: string[]):
       });
 
       attach.on('exit', exitCode => {
+        const exit = exitCode === 0 ?
+          green(`Process exited with code ${exitCode}`) :
+          red(`Process errored with code ${exitCode}`);
+        observer.next({ type: 'data', data: exit });
+
         observer.next({ type: 'exit', data: exitCode });
 
         const rm = pty.spawn('docker', ['rm', name, '-f']);

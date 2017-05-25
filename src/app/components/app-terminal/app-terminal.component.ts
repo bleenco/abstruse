@@ -7,14 +7,14 @@ import {
   Output,
   SimpleChange
 } from '@angular/core';
-import * as hterm from 'hterm';
+import * as hterm from 'htermabstruse';
 
 @Component({
   selector: 'app-terminal',
   templateUrl: 'app-terminal.component.html'
 })
 export class AppTerminalComponent implements OnInit {
-  @Input() data: string;
+  @Input() data: any;
   @Input() options: { size: 'normal' | 'large' };
   @Output() outputData: EventEmitter<any>;
 
@@ -78,7 +78,12 @@ export class AppTerminalComponent implements OnInit {
       return;
     }
 
-    this.term.io.writeUTF8(this.data);
+    if (this.data.clear) {
+      this.term.wipeContents();
+      this.term.scrollHome();
+    } else {
+      this.term.io.writeUTF8(this.data);
+    }
   }
 
   setBasic() {

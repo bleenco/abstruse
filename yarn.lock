@@ -1833,9 +1833,9 @@ hpack.js@^2.1.6:
     readable-stream "^2.0.1"
     wbuf "^1.1.0"
 
-hterm@0.0.1:
+htermabstruse@^0.0.1:
   version "0.0.1"
-  resolved "http://morose.bleenco.io/hterm/-/hterm-0.0.1.tgz#50519959a3696e5fd7784d2842324a45cefdc670"
+  resolved "https://registry.yarnpkg.com/htermabstruse/-/htermabstruse-0.0.1.tgz#35cebd742320b2fc696d002800bd34dd28e77780"
 
 html-comment-regex@^1.1.0:
   version "1.1.1"
