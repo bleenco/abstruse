@@ -2,14 +2,12 @@ import * as os from 'os';
 const pty = require('node-pty');
 
 export class PtyInstance {
-  id: string;
   shell: string;
   args: string[];
   user: any;
   path: string;
 
-  constructor(id: string) {
-    this.id = id;
+  constructor() {
     this.user = os.userInfo({ encoding: 'utf8' });
     switch (os.platform()) {
       case 'win32':

@@ -180,7 +180,7 @@ export function queueSetupDockerImage(name: string): Observable<JobMessage> {
 }
 
 export function queueJob(buildId: number, jobId: number, commands: string[]): Subject<JobMessage> {
-  let job = startBuildJob(buildId, jobId);
+  let job = startBuildJob(buildId, jobId, commands);
 
   let jobOutput = new Observable(observer => {
     job.pty.subscribe(output => {
@@ -194,31 +194,25 @@ export function queueJob(buildId: number, jobId: number, commands: string[]): Su
       observer.next(message);
 
       if (output.type === 'exit') {
-        killContainer(`${buildId}_${jobId}`).toPromise()
-          .then(() => {
-            const index = jobProcesses.findIndex(job => job.job_id === jobId);
-            const log = jobProcesses[index].log.join('\n');
+        const index = jobProcesses.findIndex(job => job.job_id === jobId);
+        const log = jobProcesses[index].log.join('\n');
 
-            return dbJob.updateJob({
-              id: jobId,
-              end_time: new Date(),
-              status: output.data === 0 ? 'success' : 'failed',
-              log: log
-            });
-          })
-          .then(() => {
-            jobEvents.next({
-              type: 'process',
-              build_id: buildId,
-              job_id: jobId,
-              data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
-            });
-
-            observer.complete();
+        return dbJob.updateJob({
+          id: jobId,
+          end_time: new Date(),
+          status: output.data === 0 ? 'success' : 'failed',
+          log: log
+        }).then(() => {
+          jobEvents.next({
+            type: 'process',
+            build_id: buildId,
+            job_id: jobId,
+            data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
           });
-      }
 
-      commands.forEach(command => job.pty.next({ action: 'command', message: command }));
+          observer.complete();
+        });
+      }
     }, err => {
       console.error(err);
     }, () => {
@@ -250,7 +244,7 @@ export function startJob(buildId: number, jobId: number, commands: any): Promise
       const index = jobProcesses.findIndex(job => job.job_id === jobId);
       const ps = jobProcesses[index];
 
-      jobProcess.job.subscribe(event => {
+      jobProcess.job.skip(1).subscribe(event => {
         if (event.data) {
           ps.log.push(event.data);
           terminalEvents.next(event);

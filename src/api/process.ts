@@ -3,6 +3,8 @@ import { PtyInstance } from './pty';
 import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
+import { Observable } from 'rxjs';
+const pty = require('node-pty');
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -19,8 +21,7 @@ export interface SpawnedProcessOutput {
 }
 
 export function startDockerImageSetupJob(name: string): Job {
-  let id = generateRandomId();
-  let pty = new PtyInstance(id);
+  let pty = new PtyInstance();
   let job: Job = {
     status: 'queued',
     type: 'build',
@@ -32,30 +33,19 @@ export function startDockerImageSetupJob(name: string): Job {
   return job;
 }
 
-export function startBuildJob(buildId: number, jobId: number): Job {
+export function startBuildJob(buildId: number, jobId: number, commands: string[]): Job {
   let id = `${buildId}_${jobId}`;
-  let pty = new PtyInstance(id);
+  let pty = new PtyInstance();
   let job: Job = {
     status: 'queued',
     type: 'build',
-    pty: docker.runInteractive(id, 'abstruse'),
+    pty: runInDocker(id, 'abstruse', commands),
     log: [],
     exitStatus: null
   };
 
   return job;
 }
-
-// export function exitProcess(id: number): void {
-//   const index = jobs.findIndex(proc => proc.id === id);
-//   if (index === -1) {
-//     return;
-//   }
-
-//   const proc = jobs[index];
-//   proc.pty.next({ action: 'exit' });
-//   jobs = jobs.filter(job => job.id !== id);
-// }
 
 export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput> {
   return new Promise(resolve => {
@@ -68,6 +58,36 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
     command.on('exit', exit => {
       const output = { stdout, stderr, exit };
       resolve(output);
+    });
+  });
+}
+
+function runInDocker(name: string, image: string, cmds: string[]):
+  Observable<{ type: string, data: string }> {
+  return new Observable(observer => {
+    const docker =
+      pty.spawn('docker', ['run', '--privileged', '--name', name, '-dti', image]);
+    let executed: boolean;
+
+    docker.on('exit', code => {
+      const attach = pty.spawn('docker', ['attach', name]);
+      const commands = cmds.map(c => c + ' ;').join(' ') + ' exit $1 \r';
+
+      attach.on('data', data => {
+        if (!executed) {
+          attach.write(commands);
+          executed = true;
+        } else {
+          observer.next({ type: 'data', data: data });
+        }
+      });
+
+      attach.on('exit', exitCode => {
+        observer.next({ type: 'exit', data: exitCode });
+
+        const rm = pty.spawn('docker', ['rm', name, '-f']);
+        rm.on('exit', () => observer.complete());
+      });
     });
   });
 }
