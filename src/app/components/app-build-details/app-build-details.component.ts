@@ -59,7 +59,7 @@ export class AppBuildDetailsComponent implements OnInit {
                 this.status = this.getBuildStatus();
               });
             }
-        });
+          });
       });
     });
   }

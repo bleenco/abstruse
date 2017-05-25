@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeWhile';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-job',
@@ -22,7 +23,8 @@ export class AppJobComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ngZone: NgZone
   ) {
     this.status = 'queued';
     this.terminalOptions = { size: 'large' };
@@ -48,9 +50,43 @@ export class AppJobComponent implements OnInit {
               });
 
             this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
+
+            this.updateJobTime();
+            setInterval(() => this.updateJobTime(), 1000);
+
+            this.socketService.outputEvents
+              .filter(event => event.type === 'process' && this.id === event.job_id)
+              .subscribe(event => {
+                this.ngZone.run(() => {
+                  if (event.data === 'jobStarted') {
+                    job.status = 'running';
+                    job.end_time = null;
+                    job.start_time = new Date().getTime();
+                  } else if (event.data === 'jobSucceded') {
+                    job.status = 'success';
+                    job.end_time = new Date().getTime();
+                  } else if (event.data == 'jobFailed') {
+                    job.status = 'failed';
+                    job.end_time = new Date().getTime();
+                  }
+                });
+              });
+            });
           });
         });
-      });
+  }
+
+  updateJobTime(): void {
+    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
+    if (!this.job.end_time || this.job.status === 'running') {
+      this.job.time = format(currentTime - this.job.start_time, 'mm:ss');
+    } else {
+      this.job.time = format(this.job.end_time - this.job.start_time, 'mm:ss');
+    }
+  }
+
+  restartJob(): void {
+    this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
   }
 
   terminalOutput(e: any): void {
