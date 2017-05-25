@@ -16,7 +16,6 @@ export class AppRepositoriesComponent implements OnInit {
   repository: Repository;
   userData: any;
   repositories: string[];
-  repositoriesDropdowns: boolean[];
 
   constructor(
     private apiService: ApiService,
@@ -32,7 +31,6 @@ export class AppRepositoriesComponent implements OnInit {
   fetch(): void {
     this.apiService.getRepositories(this.userData.id).subscribe(event => {
       this.repositories = event;
-      this.repositoriesDropdowns = this.repositories.map(repo => false);
     });
   }
 
@@ -49,17 +47,10 @@ export class AppRepositoriesComponent implements OnInit {
     });
   }
 
-  toggleDropdown(index: number): void {
-    this.repositoriesDropdowns = this.repositoriesDropdowns.map((repo, i) => {
-      if (i !== index) {
-        return false;
-      } else {
-        return !repo;
-      }
-    });
-  }
+  runBuild(e: MouseEvent, repositoryId: number, branch: string): void {
+    e.preventDefault();
+    e.stopPropagation();
 
-  runBuild(repositoryId: number, branch: string): void {
     const data = { repositoryId, branch };
     this.socketService.emit({ type: 'startBuild', data: data });
   }

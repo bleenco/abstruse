@@ -100,19 +100,9 @@
                 <span>Passing</span>
               </div>
               <div class="column is-2">
-                <div class="button-addon" (click)="toggleDropdown(i)">
-                  <button type="button" class="button">
-                    Actions
-                  </button>
-                  <span class="button-item">
-                    <img src="images/icons/dropdown.svg">
-                  </span>
-                  <div class="button-dropdown" [ngClass]="{ 'is-active': repositoriesDropdowns[i] }">
-                    <div class="button-dropdown-item" (click)="runBuild(repo.id, 'master')">Run Build</div>
-                    <div class="button-dropdown-item">Stop Build</div>
-                    <div class="button-dropdown-item">Re-Start Build</div>
-                  </div>
-                </div>
+                <button type="button" class="button green" (click)="runBuild($event, repo.id, 'master')">
+                  Start New Build
+                </button>
               </div>
             </div>
           </div>

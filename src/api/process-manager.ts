@@ -46,7 +46,7 @@ jobEvents.subscribe(event => {
 
 // inserts new build into db and queue related jobs.
 // returns inserted build id
-export function startBuild(repositoryId: number, branch: string): Promise<number> {
+export function startBuild(repositoryId: number, branch: string): Promise<null> {
   return getRepository(repositoryId)
     .then(repository => {
       return getRepositoryDetails(repository.url)
@@ -83,25 +83,16 @@ export function startBuild(repositoryId: number, branch: string): Promise<number
                 };
 
                 return dbJob.insertJob(data).then(job => {
-                  const jobProcess: JobProcess = {
-                    build_id: build.id,
-                    job_id: job.id,
-                    job: queueJob(build.id, job.id, commands),
-                    log: []
-                  };
-
-                  jobProcesses.push(jobProcess);
                   jobEvents.next({
                     type: 'process',
                     build_id: build.id,
                     job_id: job.id,
                     data: 'jobAdded'
                   });
+
+                  return startJob(build.id, job.id, JSON.stringify(commands));
                 });
-              }))
-              .then(() => {
-                return build.id;
-              });
+              }));
             });
         });
     });
