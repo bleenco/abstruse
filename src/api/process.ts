@@ -72,7 +72,13 @@ function runInDocker(name: string, image: string, cmds: string[]):
 
     docker.on('exit', code => {
       const attach = pty.spawn('docker', ['attach', name]);
-      const commands = cmds.map(c => '(' + c + ') ;').join(' ') + ' exit $1 \r';
+      const commands = cmds.map(cmd => {
+        if (cmd.includes('&')) {
+          return `(${cmd}) ;`;
+        } else {
+          return `${cmd} ;`;
+        }
+      }).join(' ') + '\r';
 
       attach.on('data', data => {
         if (!executed) {
