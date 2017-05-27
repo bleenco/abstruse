@@ -48,7 +48,7 @@ export function killContainer(id: string): Observable<boolean> {
   return new Observable(observer => {
     const kill = spawn('docker', ['rm', id, '-f']);
     kill.on('close', code => {
-      observer.next(code === 0 ? true : false);
+      observer.next();
       observer.complete();
     });
   });

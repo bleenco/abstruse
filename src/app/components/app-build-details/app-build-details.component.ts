@@ -55,9 +55,11 @@ export class AppBuildDetailsComponent implements OnInit {
                 } else if (event.data === 'jobSucceded') {
                   this.build.jobs[index].status = 'success';
                   this.build.jobs[index].end_time = new Date().getTime();
-                } else if (event.data == 'jobFailed') {
+                } else if (event.data === 'jobFailed' || event.data === 'jobStopped') {
                   this.build.jobs[index].status = 'failed';
                   this.build.jobs[index].end_time = new Date().getTime();
+                } else if (event.data === 'jobQueued') {
+                  this.build.jobs[index].status = 'queued';
                 }
 
                 this.status = this.getBuildStatus();

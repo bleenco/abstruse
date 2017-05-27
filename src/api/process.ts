@@ -34,7 +34,7 @@ export function startDockerImageSetupJob(name: string): Job {
   return job;
 }
 
-export function startBuildJob(buildId: number, jobId: number, commands: string[]): Job {
+export function prepareBuildJob(buildId: number, jobId: number, commands: string[]): Job {
   let id = `${buildId}_${jobId}`;
   let pty = new PtyInstance();
   let job: Job = {
