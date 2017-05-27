@@ -23,9 +23,20 @@
     <div class="column is-12">
       <div class="content">
         <div class="columns is-multiline">
-          <div class="column is-12">
+          <div class="column is-4">
             <h1>My Repositories</h1>
           </div>
+          <div class="column is-4">
+            <div class="message-center" *ngIf="buildTriggered">
+              <div class="message green">
+                <p>
+                  <img src="images/icons/hammer.svg">
+                  <a routerLink="/">New Build triggered</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="column is-4"></div>
 
           <div class="column is-12" *ngIf="repository">
             <form class="add-repo-form" #repositoryForm="ngForm" (ngSubmit)="addRepository()">
@@ -100,9 +111,17 @@
                 <span>Passing</span>
               </div>
               <div class="column is-2">
-                <button type="button" class="button green" (click)="runBuild($event, repo.id, 'master')">
-                  Start New Build
-                </button>
+                <div class="button-addon" (click)="toggleDropdown($event, i)">
+                  <button type="button" class="button">
+                    Actions
+                  </button>
+                  <span class="button-item">
+                    <img src="images/icons/dropdown.svg">
+                  </span>
+                  <div class="button-dropdown" [ngClass]="{ 'is-active': dropdowns[i] }">
+                    <div class="button-dropdown-item" (click)="runBuild($event, repo.id, 'master')">Trigger Build</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

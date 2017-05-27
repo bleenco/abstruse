@@ -11,7 +11,6 @@ import { format } from 'date-fns';
 export class AppBuildsComponent implements OnInit {
   loading: boolean;
   builds: any[];
-  buildDropdowns: boolean[];
 
   constructor(
     private socketService: SocketService,
@@ -40,8 +39,6 @@ export class AppBuildsComponent implements OnInit {
   fetch(): void {
     this.apiService.getBuilds().subscribe(builds => {
       this.builds = builds;
-
-      this.buildDropdowns = this.builds.map(build => false);
 
       this.builds = this.builds.map(build => {
         let status = 'queued';
@@ -90,18 +87,6 @@ export class AppBuildsComponent implements OnInit {
       })), 'mm:ss');
 
       return build;
-    });
-  }
-
-  toggleDropdown(e: MouseEvent, index: number): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.buildDropdowns = this.buildDropdowns.map((repo, i) => {
-      if (i !== index) {
-        return false;
-      } else {
-        return !repo;
-      }
     });
   }
 

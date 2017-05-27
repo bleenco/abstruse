@@ -16,6 +16,8 @@ export class AppRepositoriesComponent implements OnInit {
   repository: Repository;
   userData: any;
   repositories: string[];
+  dropdowns: boolean[];
+  buildTriggered: boolean;
 
   constructor(
     private apiService: ApiService,
@@ -31,6 +33,8 @@ export class AppRepositoriesComponent implements OnInit {
   fetch(): void {
     this.apiService.getRepositories(this.userData.id).subscribe(event => {
       this.repositories = event;
+
+      this.dropdowns = this.repositories.map(() => false);
     });
   }
 
@@ -53,5 +57,21 @@ export class AppRepositoriesComponent implements OnInit {
 
     const data = { repositoryId, branch };
     this.socketService.emit({ type: 'startBuild', data: data });
+    this.dropdowns = this.dropdowns.map(() => false);
+
+    this.buildTriggered = true;
+    setTimeout(() => this.buildTriggered = false, 5000);
+  }
+
+  toggleDropdown(e: MouseEvent, index: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.dropdowns = this.dropdowns.map((repo, i) => {
+      if (i !== index) {
+        return false;
+      } else {
+        return !repo;
+      }
+    });
   }
 }
