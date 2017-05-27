@@ -8,7 +8,18 @@ export function getBuilds(): Promise<any> {
           reject();
         }
 
-        resolve(builds.toJSON());
+        builds = builds.toJSON();
+        // hack, cannot get properties from jobs with `withRelated` and qb.column?
+        builds = builds.map(build => {
+          build.jobs = build.jobs.map(job => {
+            delete job.log;
+            return job;
+          });
+
+          return build;
+        });
+
+        resolve(builds);
       });
   });
 }
@@ -20,7 +31,13 @@ export function getBuild(id: number): Promise<any> {
         reject();
       }
 
-      resolve(build.toJSON());
+      build = build.toJSON();
+      build.jobs = build.jobs.map(job => {
+        delete job.log;
+        return job;
+      });
+
+      resolve(build);
     });
   });
 }
@@ -32,7 +49,7 @@ export function insertBuild(data: any): Promise<any> {
         reject();
       }
 
-      resolve(build);
+      resolve(build.toJSON());
     });
   });
 }

@@ -37,6 +37,7 @@ export class AppBuildsComponent implements OnInit {
   fetch(): void {
     this.apiService.getBuilds().subscribe(event => {
       this.builds = event;
+
       this.buildDropdowns = this.builds.map(build => false);
 
       this.builds = this.builds.map(build => {
