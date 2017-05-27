@@ -10,8 +10,8 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="job">
-            <div class="build-top-container" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }">
-              <div class="build-top-content">
+            <div class="job-top-container" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }">
+              <div class="job-top-content">
                 <div class="columns">
                   <div class="column is-1">
                     <span class="build-icon">
@@ -21,21 +21,7 @@
                       <img src="images/icons/check-false.svg" *ngIf="job.status === 'failed'">
                     </span>
                   </div>
-                  <div class="column is-9">
-                    <!--<h1 class="bold">{{ build.repository.url }}</h1>
-                    <h2>{{ build.commit_message }}</h2>-->
-                  </div>
-                  <div class="column is-2">
-                    <button class="button is-fullwidth" type="button" (click)="restartJob()">
-                      Restart Job
-                    </button>
-                  </div>
-                </div>
-                <div class="columns">
-                  <div class="column is-1"></div>
-                  <div class="column is-9">
-                    <!--<p>{{ build.commit_hash }}</p>-->
-                  </div>
+                  <div class="column is-9"></div>
                   <div class="column is-2">
                     <span class="total-time">
                       <span class="icon">
@@ -56,6 +42,23 @@
           </div>
           <div class="column is-12">
             <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+          </div>
+          <div class="column is-12">
+            <div class="job-bottom-container">
+              <div class="columns">
+                <div class="column is-1">
+
+                </div>
+                <div class="column is-9"></div>
+                <div class="column is-2">
+                  <div class="centered">
+                    <button class="button is-fullwidth" type="button" (click)="restartJob()">
+                      Restart Job
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

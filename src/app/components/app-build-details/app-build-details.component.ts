@@ -81,21 +81,21 @@ export class AppBuildDetailsComponent implements OnInit {
   }
 
   getBuildStatus(): string {
-    let status = '';
+    let status = 'queued';
 
     if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
       status = 'failed';
-    }
-
-    if (this.build.jobs.findIndex(job => job.status === 'success') !== -1) {
-      status = 'success';
     }
 
     if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
       status = 'running';
     }
 
-    return status === '' ? 'queued' : status;
+    if (this.build.jobs.length === this.build.jobs.filter(job => job.status === 'success').length) {
+      status = 'success';
+    }
+
+    return status;
   }
 
   runBuild(repositoryId: number): void {

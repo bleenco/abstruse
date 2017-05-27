@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -15,7 +15,8 @@ export class AppBuildsComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {
     this.loading = true;
   }
@@ -47,11 +48,11 @@ export class AppBuildsComponent implements OnInit {
           status = 'failed';
         }
 
-        if (status === 'queued' && build.jobs.findIndex(job => job.status === 'running') !== -1) {
+        if (build.jobs.findIndex(job => job.status === 'running') !== -1) {
           status = 'running';
         }
 
-        if (status === 'queued' && build.jobs.findIndex(job => job.status === 'success') !== -1) {
+        if (build.jobs.length === build.jobs.filter(job => job.status === 'success').length) {
           status = 'success';
         }
 
