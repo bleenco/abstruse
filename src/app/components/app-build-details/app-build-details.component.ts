@@ -14,6 +14,7 @@ export class AppBuildDetailsComponent implements OnInit {
   build: any;
   status: string;
   timeWords: string;
+  totalTime: string;
 
   constructor(
     private socketService: SocketService,
@@ -78,6 +79,14 @@ export class AppBuildDetailsComponent implements OnInit {
 
       return job;
     });
+
+    this.totalTime = format(Math.max(...this.build.jobs.map(job => {
+      let date = new Date();
+      let splitted = job.time.split(':');
+      date.setUTCMinutes(splitted[0]);
+      date.setUTCSeconds(splitted[1]);
+      return date;
+    })), 'mm:ss');
   }
 
   getBuildStatus(): string {
@@ -96,12 +105,6 @@ export class AppBuildDetailsComponent implements OnInit {
     }
 
     return status;
-  }
-
-  runBuild(repositoryId: number): void {
-    // this.apiService.runBuild(repositoryId).subscribe(event => {
-    //   // build runned.
-    // });
   }
 
   restartBuild(buildId: string): void {

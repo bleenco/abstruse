@@ -2,6 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-builds',
@@ -37,8 +38,8 @@ export class AppBuildsComponent implements OnInit {
   }
 
   fetch(): void {
-    this.apiService.getBuilds().subscribe(event => {
-      this.builds = event;
+    this.apiService.getBuilds().subscribe(builds => {
+      this.builds = builds;
 
       this.buildDropdowns = this.builds.map(build => false);
 
@@ -60,7 +61,35 @@ export class AppBuildsComponent implements OnInit {
         return build;
       });
 
+      this.updateJobTimes();
+      setInterval(() => this.updateJobTimes(), 1000);
+
       this.loading = false;
+    });
+  }
+
+  updateJobTimes(): void {
+    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
+
+    this.builds = this.builds.map(build => {
+      build.jobs = build.jobs.map(job => {
+        if (!job.end_time || job.status === 'running') {
+          job.time = format(currentTime - job.start_time, 'mm:ss');
+        } else {
+          job.time = format(job.end_time - job.start_time, 'mm:ss');
+        }
+        return job;
+      });
+
+      build.totalTime = format(Math.max(...build.jobs.map(job => {
+        let date = new Date();
+        let splitted = job.time.split(':');
+        date.setUTCMinutes(splitted[0]);
+        date.setUTCSeconds(splitted[1]);
+        return date;
+      })), 'mm:ss');
+
+      return build;
     });
   }
 
