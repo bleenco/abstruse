@@ -12,11 +12,22 @@
           <div class="column is-12" *ngIf="job">
             <div class="job-top-container" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }">
               <div class="job-top-content">
+                <div class="job-top-actions">
+                  <div class="columns">
+                    <div class="column is-2">
+                      <a class="button" [routerLink]="['/build', job.builds_id]">
+                        <img src="images/icons/back.svg"> Back
+                      </a>
+                    </div>
+                    <div class="column is-10"></div>
+                  </div>
+                  <hr/>
+                </div>
                 <div class="columns">
                   <div class="column is-1">
                     <span class="build-icon">
                       <img src="images/icons/clock.svg" *ngIf="job.status === 'queued'">
-                      <img src="images/icons/flickr.svg" *ngIf="job.status === 'running'">
+                      <img class="loading-img" src="images/icons/flickr.svg" *ngIf="job.status === 'running'">
                       <img src="images/icons/check-true.svg" *ngIf="job.status === 'success'">
                       <img src="images/icons/check-false.svg" *ngIf="job.status === 'failed'">
                     </span>
