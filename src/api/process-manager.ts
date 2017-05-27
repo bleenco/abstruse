@@ -51,7 +51,7 @@ jobEvents
   });
 
 // main scheduler
-Observable.interval(100)
+Observable.interval(1000)
   .map(() => {
     if (this.queueBlocked) { return; }
 

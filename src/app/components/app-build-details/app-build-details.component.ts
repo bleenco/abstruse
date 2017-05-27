@@ -73,7 +73,9 @@ export class AppBuildDetailsComponent implements OnInit {
   updateJobTimes(): void {
     let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
     this.build.jobs = this.build.jobs.map(job => {
-      if (!job.end_time || job.status === 'running') {
+      if (job.status === 'queued') {
+        job.time = '00:00';
+      } else if (!job.end_time || job.status === 'running') {
         job.time = format(currentTime - job.start_time, 'mm:ss');
       } else {
         job.time = format(job.end_time - job.start_time, 'mm:ss');
