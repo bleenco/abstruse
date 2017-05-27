@@ -1,6 +1,10 @@
 <app-header></app-header>
 
-<div class="container">
+<div class="container" *ngIf="loading">
+  <img src="images/icons/flickr.svg" class="main-loader">
+</div>
+
+<div class="container" [class.hidden]="loading">
   <div class="columns">
     <div class="column is-12">
       <div class="content">

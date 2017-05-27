@@ -9,6 +9,7 @@ import { distanceInWordsToNow, format } from 'date-fns';
   templateUrl: 'app-build-details.component.html'
 })
 export class AppBuildDetailsComponent implements OnInit {
+  loading: boolean;
   id: string;
   build: any;
   status: string;
@@ -21,6 +22,7 @@ export class AppBuildDetailsComponent implements OnInit {
     private ngZone: NgZone,
     private router: Router
   ) {
+    this.loading = true;
     this.status = 'queued';
   }
 
@@ -29,6 +31,7 @@ export class AppBuildDetailsComponent implements OnInit {
       this.id = params.id;
 
       this.apiService.getBuild(this.id).subscribe(build => {
+        this.loading = false;
         this.build = build;
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.commit_date);

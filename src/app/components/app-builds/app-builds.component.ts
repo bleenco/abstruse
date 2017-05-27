@@ -8,16 +8,17 @@ import { SocketService } from '../../services/socket.service';
   templateUrl: 'app-builds.component.html'
 })
 export class AppBuildsComponent implements OnInit {
+  loading: boolean;
   builds: any[];
   buildDropdowns: boolean[];
-  // terminalInput: string;
-  // resize: { cols: number; rows: number; };
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
     private router: Router
-  ) { }
+  ) {
+    this.loading = true;
+  }
 
   ngOnInit() {
     this.fetch();
@@ -57,6 +58,8 @@ export class AppBuildsComponent implements OnInit {
         build.status = status;
         return build;
       });
+
+      this.loading = false;
     });
   }
 

@@ -13,6 +13,7 @@ import { format } from 'date-fns';
   templateUrl: 'app-job.component.html'
 })
 export class AppJobComponent implements OnInit {
+  loading: boolean;
   id: number;
   job: any;
   status: string;
@@ -26,6 +27,7 @@ export class AppJobComponent implements OnInit {
     private route: ActivatedRoute,
     private ngZone: NgZone
   ) {
+    this.loading = true;
     this.status = 'queued';
     this.terminalOptions = { size: 'large' };
   }
@@ -41,6 +43,7 @@ export class AppJobComponent implements OnInit {
           this.apiService.getJob(this.id).subscribe(job => {
             this.job = job;
             this.terminalInput = job.log;
+            this.loading = false;
 
             this.socketService.outputEvents
               .subscribe(event => {
