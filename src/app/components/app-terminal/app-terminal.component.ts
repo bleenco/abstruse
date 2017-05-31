@@ -5,9 +5,11 @@ import {
   Input,
   EventEmitter,
   Output,
-  SimpleChange
+  SimpleChange,
+  Renderer
 } from '@angular/core';
-import * as hterm from 'htermabstruse';
+// import * as hterm from 'htermabstruse';
+import * as xterminal from 'xterm';
 
 @Component({
   selector: 'app-terminal',
@@ -21,56 +23,44 @@ export class AppTerminalComponent implements OnInit {
   term: any;
   termReady: boolean;
 
-  constructor(private elementRef: ElementRef) {
+  constructor(private elementRef: ElementRef, private renderer: Renderer) {
     this.outputData = new EventEmitter<string>();
     this.termReady = false;
   }
 
   ngOnInit() {
-    hterm.hterm.defaultStorage = new hterm.lib.Storage.Local();
-    hterm.hterm.Terminal.prototype.overlaySize = () => {};
+    let el = this.elementRef.nativeElement;
+    let xterm: any = <any>xterminal;
+    xterm.loadAddon('fit');
+    this.term = new xterm({ scrollback: 3000 });
 
-    let storage = new hterm.lib.Storage.Local();
-    this.term = new hterm.hterm.Terminal();
-
-    this.setBasic();
-
-    this.term.prefs_.set('font-family', `Menlo, 'Lucida Console', monaco, monospace`);
-    this.term.prefs_.set('font-size', 12);
-    this.term.prefs_.set('background-color', '#1e1f29');
-    this.term.prefs_.set('foreground-color', '#f8f8f2');
-    this.term.prefs_.set('cursor-color', 'transparent');
-    this.term.prefs_.set('color-palette-overrides', [
-      '#ffffff',
-      '#8be9fd',
-      '#ff79c6',
-      '#bd93f9',
-      '#f1fa8c',
-      '#50fa7b',
-      '#ff5555',
-      '#555555',
-      '#bbbbbb',
-      '#8be9fd',
-      '#ff79c6',
-      '#bd93f9',
-      '#f1fa8c',
-      '#50fa7b',
-      '#ff5555',
-      '#000000'
-    ].reverse());
-
-    this.term.onTerminalReady = () => {
-      let io = this.term.io.push();
-
-      io.onTerminalResize = (col: number, row: number) => {
-        this.outputData.emit({ type: 'resize', cols: col, rows: row });
-      };
-
-      this.term.setWindowTitle = () => {};
+    this.term.on('open', () => {
+      const colors = [
+        '#2a2a2a',
+        '#ff0000',
+        '#79ff0f',
+        '#e7bf00',
+        '#396bd7',
+        '#b449be',
+        '#66ccff',
+        '#bbbbbb',
+        '#666666',
+        '#ff0080',
+        '#66ff66',
+        '#f3d64e',
+        '#709aed',
+        '#db67e6',
+        '#7adff2',
+        '#ffffff'
+      ].reverse().forEach((color: string, index: number) => {
+        console.log(`.xterm-color-${index + 1}\n` + `  color: ${color}\n`);
+      });
 
       this.termReady = true;
       this.outputData.emit('ready');
-    };
+    });
+
+    this.term.open(el.querySelector('.window-terminal-container'), true);
   }
 
   ngOnChanges(changes: SimpleChange) {
@@ -79,26 +69,10 @@ export class AppTerminalComponent implements OnInit {
     }
 
     if (this.data.clear) {
-      this.term.wipeContents();
-      this.term.scrollHome();
+      this.term.reset();
     } else {
-      this.term.io.writeUTF8(this.data);
+      this.term.write(this.data);
+      setTimeout(() => this.term.fit());
     }
-  }
-
-  setBasic() {
-    setTimeout(() => {
-      this.term.decorate(this.elementRef.nativeElement.querySelector('.terminal'));
-      this.term.prefs_.storage.clear();
-      this.term.prefs_.set('font-smoothing', 'subpixel-antialiased');
-      this.term.prefs_.set('enable-bold', false);
-      this.term.prefs_.set('backspace-sends-backspace', true);
-      this.term.prefs_.set('cursor-blink', false);
-      this.term.prefs_.set('receive-encoding', 'raw');
-      this.term.prefs_.set('send-encoding', 'raw');
-      this.term.prefs_.set('alt-sends-what', 'browser-key');
-      this.term.prefs_.set('scrollbar-visible', false);
-      this.term.prefs_.set('enable-clipboard-notice', false);
-    });
   }
 }

@@ -90,8 +90,8 @@ export class AppBuildsComponent implements OnInit {
     });
   }
 
-  restartBuild(uuid: number): void {
-    this.socketService.emit({ type: 'restartBuild', data: uuid });
+  restartBuild(id: number): void {
+    this.socketService.emit({ type: 'restartBuild', data: id });
   }
 
   gotoBuild(buildId: number) {
