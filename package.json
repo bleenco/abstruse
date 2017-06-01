@@ -99,6 +99,7 @@
     "htermabstruse": "^0.0.1",
     "html-webpack-plugin": "^2.28.0",
     "node-sass": "^4.5.2",
+    "nodemon": "^1.11.0",
     "portfinder": "^1.0.13",
     "protractor": "^5.1.1",
     "rash": "^0.1.2",
