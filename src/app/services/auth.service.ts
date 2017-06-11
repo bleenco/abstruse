@@ -11,19 +11,19 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return (sessionStorage.getItem('abs-token')) ? true : false;
+    return (localStorage.getItem('abs-token')) ? true : false;
   }
 
   login(jwt: string): void {
-    sessionStorage.setItem('abs-token', jwt);
+    localStorage.setItem('abs-token', jwt);
   }
 
   logout(): void {
-    sessionStorage.removeItem('abs-token');
+    localStorage.removeItem('abs-token');
   }
 
   getData(): Object {
-    return this.jwtHelper.decodeToken(sessionStorage.getItem('abs-token'));
+    return this.jwtHelper.decodeToken(localStorage.getItem('abs-token'));
   }
 }
 
