@@ -42,7 +42,7 @@ export class AppJobComponent implements OnInit {
 
           this.apiService.getJob(this.id).subscribe(job => {
             this.job = job;
-            this.terminalInput = job.log;
+            this.terminalInput = job.log.split('\n').filter(line => line !== '').join('\n');
             this.loading = false;
 
             this.socketService.outputEvents
