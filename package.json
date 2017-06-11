@@ -10,7 +10,7 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "prebuild": "npm run clean",
-    "compile": "npm run lint && tsc && node ./dist/api/index.js",
+    "compile": "tsc && node ./dist/api/index.js",
     "dev": "nodemon -w src/api -i src/app -e ts --exec \"npm run compile\"",
     "build:prod": "npm run build && npm run build:app:prod",
     "build:app": "webpack --env.dev --progress --hide-modules",

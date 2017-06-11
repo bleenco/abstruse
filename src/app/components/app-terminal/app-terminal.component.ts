@@ -32,30 +32,12 @@ export class AppTerminalComponent implements OnInit {
     let el = this.elementRef.nativeElement;
     let xterm: any = <any>xterminal;
     xterm.loadAddon('fit');
-    this.term = new xterm({ scrollback: 3000 });
+    this.term = new xterm({
+      scrollback: 15000,
+      cols: 120
+    });
 
     this.term.on('open', () => {
-      const colors = [
-        '#2a2a2a',
-        '#ff0000',
-        '#79ff0f',
-        '#e7bf00',
-        '#396bd7',
-        '#b449be',
-        '#66ccff',
-        '#bbbbbb',
-        '#666666',
-        '#ff0080',
-        '#66ff66',
-        '#f3d64e',
-        '#709aed',
-        '#db67e6',
-        '#7adff2',
-        '#ffffff'
-      ].reverse().forEach((color: string, index: number) => {
-        console.log(`.xterm-color-${index + 1}\n` + `  color: ${color}\n`);
-      });
-
       this.termReady = true;
       this.outputData.emit('ready');
     });
@@ -72,7 +54,9 @@ export class AppTerminalComponent implements OnInit {
       this.term.reset();
     } else {
       this.term.write(this.data);
-      setTimeout(() => this.term.fit());
+      setTimeout(() => {
+        this.term.fit();
+      });
     }
   }
 }
