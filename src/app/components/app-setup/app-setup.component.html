@@ -21,7 +21,9 @@
             <hr/>
 
             <div *ngIf="loading" class="loading">
-              <div class="loader"></div>
+              <div class="loader">
+                <img src="/images/icons/tail-spin.svg">
+              </div>
             </div>
 
             <div *ngIf="!loading">
@@ -91,7 +93,9 @@
 
               <div *ngIf="step === 'docker'">
                 <div class="paragraph">
-                  <div class="loader"></div>
+                  <div class="loader">
+                    <img src="/images/icons/tail-spin.svg">
+                  </div>
                   Setting up docker image, please wait ...
                 </div>
                 <hr/>

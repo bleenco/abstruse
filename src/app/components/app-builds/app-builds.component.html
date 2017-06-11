@@ -9,15 +9,17 @@
   </div>
 </nav>
 
-<div class="container" *ngIf="loading">
-  <img src="images/icons/flickr.svg" class="main-loader">
-</div>
-
-<div class="container" *ngIf="!loading">
+<div class="container">
   <div class="columns">
     <div class="column is-12">
       <div class="content">
-        <div class="columns is-multiline">
+        <div *ngIf="loading" class="loading">
+          <div class="loader">
+            <img src="/images/icons/tail-spin.svg">
+          </div>
+        </div>
+
+        <div class="columns is-multiline" *ngIf="!loading">
           <div class="column is-12">
             <h1>Builds</h1>
           </div>

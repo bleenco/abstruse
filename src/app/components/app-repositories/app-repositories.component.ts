@@ -13,6 +13,7 @@ export interface Repository {
   templateUrl: 'app-repositories.component.html'
 })
 export class AppRepositoriesComponent implements OnInit {
+  loading: boolean;
   repository: Repository;
   userData: any;
   repositories: string[];
@@ -23,7 +24,9 @@ export class AppRepositoriesComponent implements OnInit {
     private apiService: ApiService,
     private authService: AuthService,
     private socketService: SocketService
-  ) { }
+  ) {
+    this.loading = true;
+  }
 
   ngOnInit() {
     this.userData = this.authService.getData();
@@ -33,8 +36,8 @@ export class AppRepositoriesComponent implements OnInit {
   fetch(): void {
     this.apiService.getRepositories(this.userData.id).subscribe(event => {
       this.repositories = event;
-
       this.dropdowns = this.repositories.map(() => false);
+      this.loading = false;
     });
   }
 

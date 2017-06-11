@@ -4,7 +4,9 @@
       <div class="columns">
         <div class="column is-4 is-offset-4">
           <div *ngIf="loading" class="loading">
-            <div class="loader"></div>
+            <div class="loader">
+              <img src="/images/icons/tail-spin.svg">
+            </div>
           </div>
           <form class="login-form" *ngIf="!loading" #loginForm="ngForm" (ngSubmit)="doLogin()">
             <h1>Sign In</h1>
