@@ -7,6 +7,7 @@ import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
+import { getConfig } from './utils';
 
 export interface BuildMessage {
   type: string;
@@ -37,6 +38,7 @@ export interface JobProcessEvent {
   data?: string;
 }
 
+const config: any = getConfig();
 let queueBlocked: boolean;
 export let jobProcesses: JobProcess[] = [];
 export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({});
@@ -54,9 +56,8 @@ jobEvents
 Observable.interval(1000)
   .map(() => {
     if (this.queueBlocked) { return; }
-
     let runningJobs = jobProcesses.filter(jp => jp.status === 'running').length;
-    let parallelJobsAvailable = 2;
+    let parallelJobsAvailable = config.concurrency;
     if (runningJobs < parallelJobsAvailable) {
       let newJobProcesses = jobProcesses.filter(jp => jp.status === 'queued');
       if (newJobProcesses.length) {

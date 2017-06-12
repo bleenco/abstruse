@@ -9,6 +9,7 @@ import * as uuid from 'uuid';
 const defaultConfig = {
   port: 6500,
   wsport: 6501,
+  concurrency: 10,
   db: {
     client: 'sqlite3',
     connection: {

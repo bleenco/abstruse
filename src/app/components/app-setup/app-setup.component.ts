@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
+import { AuthService } from '../../services/auth.service';
 
 export interface ServerStatus {
   sqlite: boolean;
@@ -33,7 +34,8 @@ export class AppSetupComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private socketService: SocketService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.serverStatus = {
       sqlite: false,
@@ -52,6 +54,10 @@ export class AppSetupComponent implements OnInit {
       if (event) {
         this.router.navigate(['/login']);
       } else {
+        if (this.authService.isLoggedIn()) {
+          this.authService.logout();
+        }
+
         this.checkConfiguration();
       }
     });
