@@ -39,7 +39,6 @@ export interface JobProcessEvent {
 }
 
 const config: any = getConfig();
-let queueBlocked: boolean;
 export let jobProcesses: JobProcess[] = [];
 export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({});
 export let terminalEvents: Subject<JobProcessEvent> = new Subject();
@@ -53,28 +52,30 @@ jobEvents
   });
 
 // main scheduler
+let processing = false;
 Observable.interval(1000)
-  .map(() => {
-    if (this.queueBlocked) { return; }
-    let runningJobs = jobProcesses.filter(jp => jp.status === 'running').length;
-    let parallelJobsAvailable = config.concurrency;
-    if (runningJobs < parallelJobsAvailable) {
-      let newJobProcesses = jobProcesses.filter(jp => jp.status === 'queued');
-      if (newJobProcesses.length) {
-        let toRun = newJobProcesses.length > parallelJobsAvailable ?
-          parallelJobsAvailable : newJobProcesses.length;
+  .timeInterval()
+  .mergeMap(() => processing ? Observable.empty() : Observable.of(null))
+  .subscribe(() => {
+    const concurrency = config.concurrency || 10;
+    const running = jobProcesses.filter(jobProcess => jobProcess.status === 'running');
+    const queued = jobProcesses.filter(jobProcess => jobProcess.status === 'queued');
 
-        if (toRun) {
-          this.queueBlocked = true;
-          Promise.all(newJobProcesses.slice(0, toRun).map(jp => {
-            this.queueBlocked = true;
-            return startJob(jp.build_id, jp.job_id);
-          })).then(() => this.queueBlocked = false);
-        }
-      }
+    if (running.length >= concurrency || queued.length === 0) {
+      return;
     }
-  })
-  .subscribe();
+
+    const current = running.length;
+    const num = queued.length > concurrency ? concurrency - current : queued.length - current;
+    if (num > 0) {
+      processing = true;
+      Promise.all(queued.slice(0, num).map(queuedJob => {
+        return startJob(queuedJob.build_id, queuedJob.job_id);
+      })).then(() => processing = false);
+    } else {
+      processing = false;
+    }
+  });
 
 // inserts new build into db and queue related jobs.
 // returns inserted build id
@@ -202,23 +203,6 @@ export function queueSetupDockerImage(name: string): Observable<JobMessage> {
   return jobOutput;
 }
 
-export function restartJob(jobId: number): Promise<null> {
-  return dbJob.resetJob(jobId)
-    .then(job => {
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'jobRestarted'
-      });
-
-      return stopJob(jobId);
-    })
-    .then(jobData => {
-      return queueJob(jobData.builds_id, jobData.id);
-    });
-}
-
 function queueJob(buildId: number, jobId: number): Promise<null> {
   return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'queued' })
     .then(jobData => {
@@ -236,27 +220,68 @@ function queueJob(buildId: number, jobId: number): Promise<null> {
     });
 }
 
-function startJob(buildId: number, jobId: number): Promise<null> {
+export function startJob(buildId: number, jobId: number): Promise<null> {
   const index = jobProcesses.findIndex(job => job.job_id === jobId);
-  if (index === -1) {
-    return Promise.resolve();
-  } else {
+  if (index !== -1) {
+    jobProcesses[index].status = 'running';
+    jobProcesses[index].job
+      .skip(1)
+      .subscribe(event => {
+        terminalEvents.next(event);
+        if (event.data) {
+          jobProcesses[index].log.push(event.data);
+        }
+      });
+
     return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
       .then(jobData => {
         jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
-        jobProcesses[index].status = 'running';
-        jobProcesses[index].job
-          .skip(1)
-          .subscribe(event => {
-            if (event.data) {
-              if (jobProcesses[index]) {
-                jobProcesses[index].log.push(event.data);
-              }
-
-              terminalEvents.next(event);
-            }
-          });
       });
+  } else {
+    return Promise.resolve();
+  }
+}
+
+export function restartJob(jobId: number): Promise<null> {
+  if (getJobProcess(jobId)) {
+    let jobData;
+    return dbJob.resetJob(jobId)
+      .then(job => {
+        jobData = job;
+        jobEvents.next({
+          type: 'process',
+          build_id: job.builds_id,
+          job_id: job.id,
+          data: 'jobRestarted'
+        });
+
+        return stopJob(jobId);
+      })
+      .then(() => queueJob(jobData.builds_id, jobData.id));
+  } else {
+    dbJob.getJob(jobId).then(job => queueJob(job.builds_id, job.id));
+  }
+}
+
+export function stopJob(jobId: number): Promise<any> {
+  const index = jobProcesses.findIndex(job => job.job_id === jobId);
+  if (index !== -1) {
+    const job = jobProcesses[index];
+    const log = job.log.join('\n');
+    jobProcesses = jobProcesses.filter(jobProcess => jobProcess.job_id !== jobId);
+
+    jobEvents.next({
+      type: 'process',
+      build_id: job.build_id,
+      job_id: job.job_id,
+      data: 'jobStopped'
+    });
+
+    return dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
+      .then(() => killContainer(`${job.build_id}_${job.job_id}`).toPromise())
+      .then(() => job);
+  } else {
+    return dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed' });
   }
 }
 
@@ -306,34 +331,6 @@ function prepareJob(buildId: number, jobId: number,  cmds: any): Observable<JobM
       observer.complete();
     });
   });
-}
-
-export function stopJob(jobId: number): Promise<any> {
-  let job;
-  const index = jobProcesses.findIndex(job => job.job_id === jobId);
-  const log = (index !== -1) ? jobProcesses[index].log.join('\n') : '';
-
-  return dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
-    .then(jobData => {
-      job = jobData;
-      return killContainer(`${job.builds_id}_${job.id}`).toPromise();
-    })
-    .then(() => {
-      const jobIndex = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
-      if (jobIndex !== -1) {
-        const jobProcess = jobProcesses[jobIndex];
-        jobProcesses = jobProcesses.filter(jobProcess => jobProcess.job_id === jobId);
-      }
-
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'jobStopped'
-      });
-
-      return job;
-    });
 }
 
 export function findDockerImageBuildJob(name: string): JobProcess | null {
