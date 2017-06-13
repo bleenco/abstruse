@@ -228,7 +228,7 @@ export function startJob(buildId: number, jobId: number): Promise<null> {
       .skip(1)
       .subscribe(event => {
         terminalEvents.next(event);
-        if (event.data) {
+        if (event.data && jobProcesses[index] && jobProcesses[index].log) {
           jobProcesses[index].log.push(event.data);
         }
       });
