@@ -7,7 +7,8 @@ export class ConfigService {
   wsurl: string;
 
   constructor() {
-    this.wsurl = `ws://${location.hostname}:6501`;
+    let proto = location.protocol === 'https:' ? 'wss' : 'ws';
+    this.wsurl = `${proto}://${location.hostname}:6501`;
   }
 }
 

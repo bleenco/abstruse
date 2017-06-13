@@ -10,6 +10,9 @@ const defaultConfig = {
   port: 6500,
   wsport: 6501,
   concurrency: 10,
+  ssl: false,
+  sslcert: null,
+  sslkey: null,
   db: {
     client: 'sqlite3',
     connection: {

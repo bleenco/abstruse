@@ -14,6 +14,11 @@ import {
   terminalEvents,
   getJobProcess
 } from './process-manager';
+import { getConfig } from './utils';
+import * as https from 'https';
+import * as http from 'http';
+import { readFileSync } from 'fs';
+import * as express from 'express';
 
 export interface ISocketServerOptions {
   port: number;
@@ -106,8 +111,22 @@ export class SocketServer {
 
   private createRxServer = (options: ws.IServerOptions) => {
     return new Observable((observer: Observer<any>) => {
+      let config: any = getConfig();
+      let server;
+
+      if (config.ssl) {
+        server = https.createServer({
+          cert: readFileSync(config.cert),
+          key: readFileSync(config.key)
+        }, express());
+      } else {
+        server = http.createServer();
+      }
+
+      server.listen(options.port);
       logger.info(`Socket server running at port ${options.port}`);
-      let wss: ws.Server = new ws.Server(options);
+
+      let wss: ws.Server = new ws.Server({ server: server });
       wss.on('connection', (connection: ws) => {
         observer.next(connection);
         logger.info(`socket connection established.`);
