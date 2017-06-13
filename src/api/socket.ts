@@ -116,8 +116,8 @@ export class SocketServer {
 
       if (config.ssl) {
         server = https.createServer({
-          cert: readFileSync(config.cert),
-          key: readFileSync(config.key)
+          cert: readFileSync(config.sslcert),
+          key: readFileSync(config.sslkey)
         }, express());
       } else {
         server = http.createServer();
