@@ -2,7 +2,12 @@
 
 <nav class="nav sub-nav">
   <div class="container">
-    <div class="nav-left"></div>
+    <div class="nav-left">
+      <span class="nav-item">
+        <h1>My Repositories</h1>
+        <span>| 2 repositories</span>
+      </span>
+    </div>
     <div class="nav-center">
       <div class="group-buttons">
         <button class="group-button is-active">My Repositories</button>
@@ -10,9 +15,10 @@
       </div>
     </div>
     <div class="nav-right">
-      <button class="nav-item button" (click)="addRepositoryForm()">
-        <img src="images/icons/add.svg">
-        Add Repository
+      <button class="nav-item button green" (click)="addRepositoryForm()">
+        <span class="icon">
+          <img src="images/icons/plus.svg">
+        </span>
       </button>
     </div>
   </div>
@@ -29,8 +35,8 @@
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
-          <div class="column is-4">
-            <h1>My Repositories</h1>
+          <div class="column is-12">
+            <h3>My Repositories</h3>
           </div>
           <div class="column is-4">
             <div class="message-center" *ngIf="buildTriggered">
@@ -46,30 +52,22 @@
 
           <div class="column is-12" *ngIf="repository">
             <form class="add-repo-form" #repositoryForm="ngForm" (ngSubmit)="addRepository()">
-              <h1>Add New Repository</h1>
               <div class="columns is-multiline">
-                <div class="column is-6">
+                <div class="column is-4">
                   <div class="form-field">
                     <label class="form-label">Repository URL</label>
                     <input class="form-input" type="text" placeholder="Git URL" name="url" [(ngModel)]="repository.url" required>
                   </div>
                 </div>
-                <div class="column is-6"></div>
-                <div class="column is-12">
-                  <hr/>
-                </div>
-                <div class="column is-12">
-                  <h4>Credentials</h4>
-                </div>
-                <div class="column is-6">
+                <div class="column is-4">
                   <div class="form-field">
                     <label class="form-label">Username</label>
                     <input class="form-input" type="text" placeholder="Username">
                   </div>
                 </div>
-                <div class="column is-6">
+                <div class="column is-4">
                   <div class="form-field">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">Password / Token</label>
                     <input class="form-input" type="password" placeholder="Username">
                   </div>
                 </div>

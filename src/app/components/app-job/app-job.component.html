@@ -19,7 +19,15 @@
                         <img src="images/icons/back.svg"> Back
                       </a>
                     </div>
-                    <div class="column is-10"></div>
+                    <div class="column is-8"></div>
+                    <div class="column is-2">
+                      <div class="centered">
+                        <button class="button is-fullwidth green" type="button" (click)="restartJob()">
+                          <img src="images/icons/sync.svg">
+                          Restart Job
+                        </button>
+                      </div>
+                    </div>
                   </div>
                   <hr/>
                 </div>
@@ -53,23 +61,6 @@
           </div>
           <div class="column is-12">
             <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
-          </div>
-          <div class="column is-12">
-            <div class="job-bottom-container">
-              <div class="columns">
-                <div class="column is-1">
-
-                </div>
-                <div class="column is-9"></div>
-                <div class="column is-2">
-                  <div class="centered">
-                    <button class="button is-fullwidth" type="button" (click)="restartJob()">
-                      Restart Job
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

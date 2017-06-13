@@ -1,5 +1,5 @@
 .nav
-  height: 70px
+  height: 100px
   background: $background
   box-shadow: 0 1px 0 0 $border
 
@@ -9,7 +9,7 @@
     &.nav-logo
       &:hover
         path
-          fill: $yellow
+          fill: $blue
 
     .nav-avatar
       display: block
@@ -25,20 +25,20 @@
       margin-left: 10px
 
     &:hover
-      color: $yellow
+      color: $blue
 
       .nav-avatar
-        border-color: $yellow
+        border-color: $blue
 
       .nav-item-arrow
         path
-          fill: $yellow
+          fill: $blue
 
   .exit-button
     width: auto
     display: inline-flex
     flex: none
-    margin-top: 17px
+    margin-top: 30px
     margin-left: 10px
     align-items: center
     justify-content: center
@@ -46,6 +46,20 @@
 
   &.sub-nav
     background: $background-button
+    border-bottom: none
+    box-shadow: none
+
+    .nav-left
+
+      .nav-item
+        h1
+          font-size: 20px
+        span
+          margin-left: 20px
+          color: $color-secondary
+
+        &:hover
+          color: $white
 
     .nav-center
       display: flex
@@ -56,7 +70,11 @@
       align-items: center
 
       .nav-item
-        max-width: 150px
+        max-width: 50px
+
+        img
+          max-width: 20px
+          margin-right: 0
 
         &:hover
           color: $white

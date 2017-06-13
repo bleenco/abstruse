@@ -4,15 +4,19 @@
   position: relative
   display: inline-block
   color: $white
-  width: 100%
-  height: 100%
-  font-family: Monaco, monospace
+  width: calc(100% - 20px)
+  margin: 20px 10px
+  font-family: monaco, monospace
   font-size: 12px
-  padding: 20px 30px
+  padding: 0 10px
   height: 400px
+  background: $background
+  border-radius: 4px
+  box-shadow: 1px 2px 10px rgba($background, 0.7)
+  border: 1px solid $divider
 
   &.large
-    height: 600px
+    height: 700px
 
   .terminal-cursor
     background: transparent
@@ -20,7 +24,7 @@
     font-size: 0
 
   .xterm-viewport
-    background-color: #1D2838
+    background-color: $background
     color: #FFFFFF
 
   .xterm-theme-default

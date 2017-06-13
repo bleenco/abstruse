@@ -228,7 +228,8 @@ export function startJob(buildId: number, jobId: number): Promise<null> {
       .skip(1)
       .subscribe(event => {
         terminalEvents.next(event);
-        if (event.data && jobProcesses[index] && jobProcesses[index].log) {
+        let idx = jobProcesses.findIndex(job => job.job_id === event.job_id);
+        if (event.data && idx !== -1 && jobProcesses[idx] && jobProcesses[idx].log) {
           jobProcesses[index].log.push(event.data);
         }
       });

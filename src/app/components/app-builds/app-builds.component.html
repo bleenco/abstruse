@@ -1,11 +1,20 @@
 <app-header></app-header>
 
 <nav class="nav sub-nav">
-  <div class="nav-center">
-    <div class="group-buttons">
-      <button class="group-button is-active">My Builds</button>
-      <button class="group-button">All Builds</button>
+  <div class="container">
+    <div class="nav-left">
+      <span class="nav-item">
+        <h1>My Builds</h1>
+        <span>| 2 builds</span>
+      </span>
     </div>
+    <div class="nav-center">
+      <div class="group-buttons">
+        <button class="group-button is-active">My Builds</button>
+        <button class="group-button">All Builds</button>
+      </div>
+    </div>
+    <div class="nav-right"></div>
   </div>
 </nav>
 
@@ -21,7 +30,7 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
           <div class="column is-12">
-            <h1>Builds</h1>
+            <h3>Builds</h3>
           </div>
 
           <div class="column is-12" *ngIf="!builds || !builds.length">

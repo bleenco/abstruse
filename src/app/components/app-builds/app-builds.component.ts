@@ -29,7 +29,7 @@ export class AppBuildsComponent implements OnInit {
         return;
       }
 
-      const index = this.builds.findIndex(build => build.uuid === event.data.id);
+      const index = this.builds.findIndex(build => build.id === event.data.id);
       if (index !== -1) {
         this.builds[index].status = event.data.status;
       }
