@@ -1,0 +1,35 @@
+<app-header></app-header>
+
+<nav class="nav sub-nav">
+  <div class="container">
+    <div class="nav-left">
+      <span class="nav-item">
+        <h1>Settings</h1>
+        <span>| Profile</span>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="column is-12">
+      <div class="content">
+        <div *ngIf="loading" class="loading">
+          <div class="loader">
+            <img src="/images/icons/tail-spin.svg">
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="column is-12">
+    <div class="tabs">
+      <ul>
+        <li class="is-active"><a>Pictures</a></li>
+        <li><a>Music</a></li>
+        <li><a>Videos</a></li>
+        <li><a>Documents</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
