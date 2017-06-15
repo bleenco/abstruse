@@ -6,6 +6,8 @@ import { Notification, NotificationService } from '../../services/notification.s
   templateUrl: 'app-settings.component.html'
 })
 export class AppSettingsComponent implements OnInit {
+  loading: boolean;
+
   constructor(private notificationService: NotificationService) { }
 
   ngOnInit() {
@@ -16,5 +18,10 @@ export class AppSettingsComponent implements OnInit {
       datetime: new Date()
     };
     // this.notificationService.events.emit(notify);
+  }
+
+  updateProfile(e: Event): void {
+    e.preventDefault();
+
   }
 }
