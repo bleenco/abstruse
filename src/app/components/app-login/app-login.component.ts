@@ -41,12 +41,12 @@ export class AppLoginComponent implements OnInit {
   doLogin(): void {
     this.loading = true;
     this.apiService.login(this.user).delay(1500).subscribe(jwt => {
-      this.loading = false;
       if (jwt) {
         this.authService.login(jwt);
         this.router.navigate(['/']);
       } else {
         this.user = { email: '', password: '' };
+        this.loading = false;
       }
     });
   }
