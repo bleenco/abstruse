@@ -9,6 +9,7 @@ import { ApiServiceProvider } from './services/api.service';
 import { SocketServiceProvider } from './services/socket.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
+import { NotificationServiceProvider } from './services/notification.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
@@ -20,6 +21,7 @@ import { AppBuildDetailsComponent } from './components/app-build-details';
 import { AppRepositoriesComponent } from './components/app-repositories';
 import { AppJobComponent } from './components/app-job';
 import { AppSettingsComponent } from './components/app-settings';
+import { AppNotificationComponent } from './components/app-notification';
 
 
 @NgModule({
@@ -34,6 +36,7 @@ import { AppSettingsComponent } from './components/app-settings';
     AppRepositoriesComponent,
     AppJobComponent,
     AppSettingsComponent,
+    AppNotificationComponent,
     EqualValidator
   ],
   imports: [
@@ -80,7 +83,8 @@ import { AppSettingsComponent } from './components/app-settings';
     ApiServiceProvider,
     SocketServiceProvider,
     AuthServiceProvider,
-    AuthGuardProvider
+    AuthGuardProvider,
+    NotificationServiceProvider
   ],
   bootstrap: [ AppComponent ]
 })
