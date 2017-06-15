@@ -25,11 +25,40 @@
   <div class="column is-12">
     <div class="tabs">
       <ul>
-        <li class="is-active"><a>Pictures</a></li>
-        <li><a>Music</a></li>
-        <li><a>Videos</a></li>
-        <li><a>Documents</a></li>
+        <li class="is-active"><a>Profile</a></li>
+        <li><a>Credentials</a></li>
+        <li><a>Users</a></li>
+        <li><a>Repositories</a></li>
       </ul>
     </div>
   </div>
+
+  <!-- Profile -->
+  <div class="column is-12">
+    <div class="columns is-multiline">
+      <div class="column is-4">
+        <figure class="image">
+          <img src="https://avatars0.githubusercontent.com/u/1796022?v=3&s=460">
+        </figure>
+      </div>
+      <div class="column is-8">
+        <form method="post" #profileForm="ngForm" (ngSubmit)="updateProfile($event)">
+          <div class="form-field">
+            <label class="form-label">Email (Username)</label>
+            <input class="form-input" type="text" placeholder="Email" name="email" required>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required>
+          </div>
+          <div class="form-field">
+            <button type="submit" class="button green float-right">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- End Profile -->
+
+
 </div>
