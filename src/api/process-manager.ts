@@ -55,25 +55,30 @@ jobEvents
 let processing = false;
 Observable.interval(1000)
   .timeInterval()
-  .mergeMap(() => processing ? Observable.empty() : Observable.of(null))
   .subscribe(() => {
+    if (processing) {
+      return;
+    }
+
     const concurrency = config.concurrency || 10;
     const running = jobProcesses.filter(jobProcess => jobProcess.status === 'running');
     const queued = jobProcesses.filter(jobProcess => jobProcess.status === 'queued');
 
-    if (running.length >= concurrency || queued.length === 0) {
+    if (running.length > concurrency || queued.length === 0) {
       return;
     }
 
     const current = running.length;
-    const num = queued.length > concurrency ? concurrency - current : queued.length - current;
+    let num = queued.length > concurrency ? concurrency - current : queued.length - current;
+    if (queued.length === 1 && current === 1 && num === 0) {
+      num = 1;
+    }
+
     if (num > 0) {
       processing = true;
       Promise.all(queued.slice(0, num).map(queuedJob => {
         return startJob(queuedJob.build_id, queuedJob.job_id);
       })).then(() => processing = false);
-    } else {
-      processing = false;
     }
   });
 
@@ -230,11 +235,11 @@ export function startJob(buildId: number, jobId: number): Promise<null> {
         terminalEvents.next(event);
         let idx = jobProcesses.findIndex(job => job.job_id === event.job_id);
         if (event.data && idx !== -1 && jobProcesses[idx] && jobProcesses[idx].log) {
-          jobProcesses[index].log.push(event.data);
+          jobProcesses[idx].log.push(event.data);
         }
       });
 
-    return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running' })
+    return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running', log: '' })
       .then(jobData => {
         jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobStarted' });
       });
@@ -302,7 +307,13 @@ function prepareJob(buildId: number, jobId: number,  cmds: any): Observable<JobM
 
       if (output.type === 'exit') {
         const index = jobProcesses.findIndex(job => job.job_id === jobId);
-        const log = (index !== -1) ? jobProcesses[index].log.join('\n') : '';
+
+        if (index === -1) {
+          observer.complete();
+        }
+
+        const proc = jobProcesses[index];
+        const log = proc && proc.log ? proc.log.join('\n') : '';
 
         return dbJob.updateJob({
           id: jobId,
@@ -317,8 +328,6 @@ function prepareJob(buildId: number, jobId: number,  cmds: any): Observable<JobM
             data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
           });
 
-          // remove from process list
-          const index = jobProcesses.findIndex(jp => jp.job_id === jobId);
           if (index !== -1) {
             jobProcesses.splice(index, 1);
           }
