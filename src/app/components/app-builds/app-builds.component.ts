@@ -25,7 +25,7 @@ export class AppBuildsComponent implements OnInit {
     this.fetch();
 
     this.socketService.outputEvents.subscribe(event => {
-      if (!this.builds) {
+      if (!this.builds || !event.data || !event.data.id) {
         return;
       }
 
