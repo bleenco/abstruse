@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://cloud.githubusercontent.com/assets/1796022/26345139/44ccd8a0-3fa2-11e7-8c8a-66d8cd76cb0b.png">
+  <img src="https://user-images.githubusercontent.com/1796022/27810379-cf213604-6059-11e7-9b85-33ba4cea93e5.jpg">
 </p>
 
 # abstruse
