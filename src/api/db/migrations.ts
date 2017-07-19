@@ -18,6 +18,8 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.string('url').notNullable();
       t.string('default_branch').notNullable().defaultTo('master');
+      t.string('username');
+      t.string('password');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {

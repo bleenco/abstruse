@@ -234,7 +234,11 @@ export function startJob(buildId: number, jobId: number): Promise<void> {
       .subscribe(event => {
         terminalEvents.next(event);
         let idx = jobProcesses.findIndex(job => job.job_id === event.job_id);
-        if (event.data && idx !== -1 && jobProcesses[idx] && jobProcesses[idx].log) {
+        if (event.data && idx !== -1 && jobProcesses[idx]) {
+          if (!jobProcesses[idx].log) {
+            jobProcesses[idx].log = [];
+          }
+
           jobProcesses[idx].log.push(event.data);
         }
       });
@@ -265,7 +269,7 @@ export function restartJob(jobId: number): Promise<void> {
       })
       .then(() => queueJob(jobData.builds_id, jobData.id));
   } else {
-    dbJob.getJob(jobId).then(job => queueJob(job.builds_id, job.id));
+    return dbJob.getJob(jobId).then(job => queueJob(job.builds_id, job.id));
   }
 }
 
@@ -291,7 +295,7 @@ export function stopJob(jobId: number): Promise<any> {
   }
 }
 
-function prepareJob(buildId: number, jobId: number,  cmds: any): Observable<JobMessage> {
+function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMessage> {
   return new Observable(observer => {
     let job = prepareBuildJob(buildId, jobId, cmds);
 
@@ -349,8 +353,7 @@ export function findDockerImageBuildJob(name: string): JobProcess | null {
 }
 
 export function getJobProcess(jobId: number): JobProcess | null {
-  const index = jobProcesses
-    .findIndex(jobProcess => parseInt(<any>jobProcess.job_id, 10) === jobId);
+  const index = jobProcesses.findIndex(jobProcess => jobProcess.job_id === jobId);
   return index === -1 ? null : jobProcesses[index];
 }
 

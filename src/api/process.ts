@@ -3,6 +3,7 @@ import { PtyInstance } from './pty';
 import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
+import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red } from 'chalk';
 const pty = require('node-pty');
@@ -66,40 +67,68 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
 function runInDocker(name: string, image: string, cmds: string[]):
   Observable<{ type: string, data: string }> {
   return new Observable(observer => {
-    const docker =
-      pty.spawn('docker', ['run', '--privileged', '--name', name, '-dti', image]);
+    const docker = pty.spawn('docker', ['run', '--privileged', '--name', name, '-dti', image]);
     let executed: boolean;
 
     docker.on('exit', code => {
-      const attach = pty.spawn('docker', ['attach', name]);
-      const commands = cmds.map(cmd => {
-        if (cmd.includes('&')) {
-          return `(${cmd}) ;`;
-        } else {
-          return `${cmd} ;`;
-        }
-      }).join(' ') + '\r';
+      Promise.resolve()
+        .then(() => saveCredentialsToImage(name, parseInt(name.split('_')[0], 10)))
+        .then(() => {
+          const attach = pty.spawn('docker', ['attach', name]);
+          const commands = cmds.map(cmd => {
+            if (cmd.includes('&')) {
+              return `(${cmd}) ;`;
+            } else {
+              return `${cmd} ;`;
+            }
+          }).join(' ') + '\r';
 
-      attach.on('data', data => {
-        if (!executed) {
-          attach.write(commands);
-          executed = true;
-        } else {
-          observer.next({ type: 'data', data: data });
-        }
-      });
+          attach.on('data', data => {
+            if (!executed) {
+              attach.write(commands);
+              executed = true;
+            } else {
+              observer.next({ type: 'data', data: data });
+            }
+          });
 
-      attach.on('exit', exitCode => {
-        const exit = exitCode === 0 ?
-          green(`Process exited with code ${exitCode}`) :
-          red(`Process errored with code ${exitCode}`);
-        observer.next({ type: 'data', data: exit });
+          attach.on('exit', exitCode => {
+            const exit = exitCode === 0 ?
+              green(`Process exited with code ${exitCode}`) :
+              red(`Process errored with code ${exitCode}`);
+            observer.next({ type: 'data', data: exit });
 
-        observer.next({ type: 'exit', data: exitCode });
+            observer.next({ type: 'exit', data: exitCode });
 
-        const rm = pty.spawn('docker', ['rm', name, '-f']);
-        rm.on('exit', () => observer.complete());
-      });
+            const rm = pty.spawn('docker', ['rm', name, '-f']);
+            rm.on('exit', () => observer.complete());
+          });
+        });
     });
+  });
+}
+
+function saveCredentialsToImage(name: string, buildId: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    getRepositoryByBuildId(buildId)
+      .then(repo => {
+        if (repo.username !== '' && repo.password !== '') {
+          const matches = repo.url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+          const domain = matches && matches[1];
+          const cmd = `echo 'machine ${domain} login ${repo.username} password ${repo.password}'` +
+            `> /home/abstruse/.netrc`;
+          const save = pty.spawn('docker', [
+            'exec',
+            name,
+            'sh',
+            '-c',
+            cmd
+          ]);
+
+          save.on('exit', () => resolve());
+        } else {
+          resolve();
+        }
+      });
   });
 }

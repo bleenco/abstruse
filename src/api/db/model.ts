@@ -9,6 +9,7 @@ export class User extends Bookshelf.Model<any> {
 export class Repository extends Bookshelf.Model<any> {
   get tableName() { return 'repositories'; }
   get hasTimestamps() { return true; }
+  builds() { return this.hasMany(Build, 'repositories_id'); }
 }
 
 export class Build extends Bookshelf.Model<any> {

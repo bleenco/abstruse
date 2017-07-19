@@ -12,6 +12,21 @@ export function getRepository(id: number): Promise<any> {
   });
 }
 
+export function getRepositoryByBuildId(buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Repository().query(qb => {
+      qb.leftJoin('builds', 'repositories.id', 'builds.repositories_id');
+      qb.where('builds.id', '=', buildId);
+    }).fetch().then(repo => {
+      if (!repo) {
+        reject();
+      } else {
+        resolve(repo.toJSON());
+      }
+    });
+  });
+}
+
 export function getRepositories(userId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     new Repository().fetchAll().then(repos => {

@@ -83,7 +83,7 @@ export class SocketServer {
 
               break;
               case 'restartJob':
-                restartJob(event.data.jobId);
+                restartJob(parseInt(event.data.jobId, 10));
               break;
               case 'stopJob':
                 stopJob(event.data.jobId);

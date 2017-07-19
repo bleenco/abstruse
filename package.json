@@ -1,6 +1,6 @@
 {
   "name": "abstruse",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Abstruse CI",
   "bin": {
     "abstruse": "./dist/api/index.js"
