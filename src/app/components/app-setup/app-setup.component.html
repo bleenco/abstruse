@@ -20,10 +20,8 @@
             </h1>
             <hr/>
 
-            <div *ngIf="loading" class="loading">
-              <div class="loader">
-                <img src="/images/icons/tail-spin.svg">
-              </div>
+            <div class="container" *ngIf="loading">
+              <img src="images/icons/flickr.svg" class="main-loader">
             </div>
 
             <div *ngIf="!loading">

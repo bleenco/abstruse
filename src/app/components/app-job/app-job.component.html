@@ -10,7 +10,7 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="job">
-            <div class="job-top-container" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }">
+            <div class="job-top-container">
               <div class="job-top-content">
                 <div class="job-top-actions">
                   <div class="columns">
@@ -29,7 +29,6 @@
                       </div>
                     </div>
                   </div>
-                  <hr/>
                 </div>
                 <div class="columns">
                   <div class="column is-1">

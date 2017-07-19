@@ -1,13 +1,11 @@
 <div class="hero is-fullheight login-hero">
   <div class="hero-body">
     <div class="container">
-      <div class="columns">
+      <div class="columns is-multiline">
+        <div class="container" *ngIf="loading">
+          <img src="images/icons/flickr.svg" class="main-loader">
+        </div>
         <div class="column is-4 is-offset-4">
-          <div *ngIf="loading" class="loading">
-            <div class="loader">
-              <img src="/images/icons/tail-spin.svg">
-            </div>
-          </div>
           <form class="login-form" *ngIf="!loading" #loginForm="ngForm" (ngSubmit)="doLogin()">
             <h1>Sign In</h1>
             <div class="form-field">

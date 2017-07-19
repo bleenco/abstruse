@@ -12,7 +12,7 @@ export function getRepository(id: number): Promise<any> {
   });
 }
 
-export function getRepositories(userId: string): Promise<boolean> {
+export function getRepositories(userId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     new Repository().fetchAll().then(repos => {
       if (!repos) {

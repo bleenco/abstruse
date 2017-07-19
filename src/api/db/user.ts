@@ -1,7 +1,7 @@
 import { User } from './model';
 import { generatePassword, comparePassword, generateJwt } from '../security';
 
-export function login(data: any): Promise<boolean> {
+export function login(data: any): Promise<boolean | string> {
   return new Promise(resolve => {
     new User({ email: data.email }).fetch().then(user => {
       if (!user) {

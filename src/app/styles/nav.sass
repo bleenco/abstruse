@@ -5,7 +5,8 @@
   z-index: auto !important
 
   .nav-item
-    color: $white
+    color: $grey-light !important
+    font-weight: bold
 
     &.nav-logo
       &:hover
@@ -25,8 +26,8 @@
       float: left
       margin-left: 10px
 
-    &:hover
-      color: $grey-light
+    &:hover, &.is-active
+      color: $white !important
 
       .nav-avatar
         border-color: $grey-light

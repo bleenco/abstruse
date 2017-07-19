@@ -84,7 +84,7 @@ Observable.interval(1000)
 
 // inserts new build into db and queue related jobs.
 // returns inserted build id
-export function startBuild(repositoryId: number, branch: string): Promise<null> {
+export function startBuild(repositoryId: number, branch: string): Promise<void[]> {
   return getRepository(repositoryId)
     .then(repository => {
       return getRepositoryDetails(repository.url)
@@ -136,7 +136,7 @@ export function startBuild(repositoryId: number, branch: string): Promise<null> 
     });
 }
 
-export function restartBuild(buildId: number): Promise<null> {
+export function restartBuild(buildId: number): Promise<void> {
   return getBuild(buildId)
     .then(build => {
       build.start_time = new Date();
@@ -174,7 +174,7 @@ export function startSetup(name: string): void {
   jobProcesses.push(setup);
 }
 
-export function queueSetupDockerImage(name: string): Observable<JobMessage> {
+export function queueSetupDockerImage(name: string): Observable<any> {
   let job = startDockerImageSetupJob(name);
 
   let jobOutput = new Observable(observer => {
@@ -208,7 +208,7 @@ export function queueSetupDockerImage(name: string): Observable<JobMessage> {
   return jobOutput;
 }
 
-function queueJob(buildId: number, jobId: number): Promise<null> {
+function queueJob(buildId: number, jobId: number): Promise<void> {
   return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'queued' })
     .then(jobData => {
       const jobProcess: JobProcess = {
@@ -225,7 +225,7 @@ function queueJob(buildId: number, jobId: number): Promise<null> {
     });
 }
 
-export function startJob(buildId: number, jobId: number): Promise<null> {
+export function startJob(buildId: number, jobId: number): Promise<void> {
   const index = jobProcesses.findIndex(job => job.job_id === jobId);
   if (index !== -1) {
     jobProcesses[index].status = 'running';
@@ -248,7 +248,7 @@ export function startJob(buildId: number, jobId: number): Promise<null> {
   }
 }
 
-export function restartJob(jobId: number): Promise<null> {
+export function restartJob(jobId: number): Promise<void> {
   if (getJobProcess(jobId)) {
     let jobData;
     return dbJob.resetJob(jobId)
