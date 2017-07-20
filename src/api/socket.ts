@@ -12,7 +12,7 @@ import {
   restartJob,
   stopJob,
   terminalEvents,
-  getJobProcess
+  getJobProcesses
 } from './process-manager';
 import { getConfig } from './utils';
 import * as https from 'https';
@@ -59,19 +59,26 @@ export class SocketServer {
 
             switch (event.type) {
               case 'initializeDockerImage':
-                let build = findDockerImageBuildJob('abstruse');
-                if (!build) {
-                  startSetup('abstruse');
-                  build = findDockerImageBuildJob('abstruse');
-                }
-
-                build.job.subscribe(event => {
-                  conn.next({ type: 'terminalOutput', data: event });
-                }, err => {
-                  console.error(err);
-                }, () => {
-                  console.log('Docker image build completed.');
-                });
+                findDockerImageBuildJob('abstruse')
+                  .then(dbuild => {
+                    if (!dbuild) {
+                      return startSetup('abstruse')
+                        .then(() => findDockerImageBuildJob('abstruse'))
+                        .then(build => build);
+                    } else {
+                      return Promise.resolve()
+                        .then(() => dbuild);
+                    }
+                  })
+                  .then(build => {
+                    build.job.subscribe(event => {
+                      conn.next({ type: 'terminalOutput', data: event });
+                    }, err => {
+                      console.error(err);
+                    }, () => {
+                      console.log('Docker image build completed.');
+                    });
+                  });
               break;
               case 'startBuild':
                 startBuild(event.data.repositoryId, event.data.branch)
@@ -89,10 +96,13 @@ export class SocketServer {
                 stopJob(event.data.jobId);
               break;
               case 'subscribeToJobOutput':
-                const jobProcess = getJobProcess(parseInt(event.data.jobId, 10));
-                if (jobProcess) {
-                  conn.next({ type: 'data', data: jobProcess.log.join('\n') });
-                }
+                getJobProcesses()
+                  .then(procs => {
+                    const proc = procs.find(job => job.job_id === parseInt(event.data.jobId, 10));
+                    if (proc) {
+                      conn.next({ type: 'data', data: proc.log.join('\n') });
+                    }
+                  });
 
                 const index = this.clients.findIndex(client => client.connection === conn);
                 if (this.clients[index].sub) {
