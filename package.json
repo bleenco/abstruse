@@ -69,17 +69,17 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@angular/animations": "4.3.0",
-    "@angular/common": "4.3.0",
-    "@angular/compiler": "4.3.0",
-    "@angular/compiler-cli": "4.3.0",
-    "@angular/core": "4.3.0",
-    "@angular/forms": "4.3.0",
-    "@angular/http": "4.3.0",
-    "@angular/platform-browser": "4.3.0",
-    "@angular/platform-browser-dynamic": "4.3.0",
-    "@angular/platform-server": "4.3.0",
-    "@angular/router": "4.3.0",
+    "@angular/animations": "4.3.1",
+    "@angular/common": "4.3.1",
+    "@angular/compiler": "4.3.1",
+    "@angular/compiler-cli": "4.3.1",
+    "@angular/core": "4.3.1",
+    "@angular/forms": "4.3.1",
+    "@angular/http": "4.3.1",
+    "@angular/platform-browser": "4.3.1",
+    "@angular/platform-browser-dynamic": "4.3.1",
+    "@angular/platform-server": "4.3.1",
+    "@angular/router": "4.3.1",
     "@ngtools/webpack": "^1.5.1",
     "@types/body-parser": "^1.16.4",
     "@types/bookshelf": "^0.9.3",
@@ -123,7 +123,7 @@
     "style-loader": "^0.18.2",
     "to-string-loader": "^1.1.5",
     "tslint": "^5.5.0",
-    "typescript": "^2.4.1",
+    "typescript": "^2.4.2",
     "uglify-js": "^2.8.29",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.3.0",
@@ -135,6 +135,6 @@
     "ts-node": "^3.2.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jasmine": "^2.6.0",
-    "zone.js": "0.8.12"
+    "zone.js": "0.8.14"
   }
 }
