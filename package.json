@@ -17,7 +17,20 @@
     "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
     "start": "webpack-dev-server --env.dev --env.serve --progress",
     "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress",
-    "lint": "tslint ./src/api/**/*.ts"
+    "lint": "tslint ./src/api/**/*.ts",
+    "test:e2e": "node ./tests/run_e2e.js",
+    "test:protractor": "node ./tests/run_protractor.js",
+    "preprotractor": "npm run webdriver",
+    "protractor:ci": "protractor ./protractor.conf.js --baseUrl http://localhost:6500",
+    "preprotractor:ci": "npm run webdriver",
+    "webdriver": "npm run webdriver:update -- --standalone",
+    "webdriver:update": "npm run webdriver-manager update",
+    "webdriver-manager": "webdriver-manager",
+    "webdriver:start": "npm run webdriver-manager start",
+    "protractor:live": "npm run e2e -- --elementExplorer",
+    "protractor": "protractor ./protractor.conf.js",
+    "protractor:delay": "sleep 30 && protractor ./protractor.conf.js",
+    "protractor:travis": "node ./tests/run_protractor.js"
   },
   "repository": {
     "type": "git",
@@ -85,6 +98,7 @@
     "@types/ws": "3.0.2",
     "@types/xterm": "^2.0.3",
     "@types/yamljs": "^0.2.30",
+    "@types/jasmine": "^2.5.53",
     "add-asset-html-webpack-plugin": "^2.0.1",
     "angular2-jwt": "^0.2.3",
     "bulma": "^0.4.3",
@@ -116,6 +130,11 @@
     "webpack-dev-server": "^2.5.1",
     "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
     "webpack-merge": "^4.1.0",
-    "zone.js": "0.8.14"
+    "tree-kill": "^1.1.0",
+    "temp": "^0.8.3",
+    "ts-node": "^3.2.0",
+    "jasmine-spec-reporter": "^4.1.1",
+    "jasmine": "^2.6.0",
+    "zone.js": "0.8.12"
   }
 }
