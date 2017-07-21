@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 import * as request from 'request';
 
+let home = `${homedir()}/.abstruse`;
 const defaultConfig = {
   secret: 'thisIsSecret',
   port: 6500,

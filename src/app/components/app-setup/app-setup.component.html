@@ -39,8 +39,8 @@
                 </div>
                 <hr/>
                 <p *ngIf="!readyToSetup">Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
-                <button type="button" class="button" (click)="checkConfiguration()" *ngIf="!readyToSetup">Re-check Configuration</button>
-                <button type="button" class="button" (click)="continueToDb()" *ngIf="readyToSetup">Continue</button>
+                <button type="button" class="button" name="btn-recheck" (click)="checkConfiguration()" *ngIf="!readyToSetup">Re-check Configuration</button>
+                <button type="button" class="button" name="btn-continue" (click)="continueToDb()" *ngIf="readyToSetup">Continue</button>
               </div>
 
               <div *ngIf="step === 'db'">
@@ -78,7 +78,7 @@
                         <p class="helper">Repeat picked password from the previous field.</p>
                       </div>
                       <div class="form-field">
-                        <button type="submit" class="button green" [disabled]="!userForm.valid">Continue</button>
+                        <button type="submit" class="button green" name="btn-register" [disabled]="!userForm.valid">Continue</button>
                       </div>
                     </div>
                   </div>
