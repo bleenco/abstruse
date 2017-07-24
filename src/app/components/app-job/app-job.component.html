@@ -14,16 +14,6 @@
               <div class="job-top-content">
                 <div class="job-top-actions">
                   <div class="columns">
-                    <div class="column is-2">
-                      <a class="button floated" [routerLink]="['/build', job.builds_id]">
-                        <img src="images/icons/back.svg"> Back
-                      </a>
-                      <button class="button floated green" type="button" (click)="restartJob()">
-                        <img src="images/icons/sync.svg">
-                        Restart
-                      </button>
-                    </div>
-                    <div class="column is-9"></div>
                     <div class="column is-1">
                       <span class="total-time">
                         <span class="icon">
@@ -31,6 +21,20 @@
                         </span>
                         {{ job?.time }}
                       </span>
+                    </div>
+                    <div class="column is-8"></div>
+                    <div class="column is-3">
+                      <a class="button floated" [routerLink]="['/build', job.builds_id]">
+                        <img src="images/icons/back.svg"> Back
+                      </a>
+                      <button class="button floated green" type="button" (click)="restartJob()">
+                        <img src="images/icons/sync.svg">
+                        Restart
+                      </button>
+                      <button class="button floated red" type="button" (click)="stopJob()" [disabled]="job.status !== 'running'">
+                        <img src="images/icons/stop.svg">
+                        Stop
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -46,10 +50,9 @@
                   <div class="column is-10">
                     <h2 class="bold">{{ job.build.repository.url }}</h2>
                     <p>
+                      <span class="underlined">{{ job?.build.commit_hash.slice(0, 7) }}</span>
                       <span class="bold">{{ job?.build.commit_message }}</span>
-                      <span class="underlined">({{ job?.build.commit_hash.slice(0, 7) }})</span>
-                    </p>
-                    <p>{{ job?.build.commit_author }} authored and commited {{ timeWords }} ago.</p>
+                      <span>{{ job?.build.commit_author }} authored and commited {{ timeWords }} ago.</span>
                   </div>
                   <div class="column is-1"></div>
                 </div>
