@@ -329,7 +329,7 @@ function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMe
               id: jobId,
               end_time: new Date(),
               status: output.data === 0 ? 'success' : 'failed',
-              log: proc.log.map(line => line && line.trim()).join('\r')
+              log: proc.log.map(line => line.toString().trim()).join('\r')
             }).then(() => {
               jobEvents.next({
                 type: 'process',

@@ -27,7 +27,12 @@
                   </div>
                   <div class="column is-2">
                     <button class="button is-fullwidth" type="button">
-                      Restart Build
+                      <div class="centered">
+                        <span class="icon">
+                          <img src="images/icons/restart.svg">
+                        </span>
+                        <span>Restart Build</span>
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -58,11 +63,11 @@
           <div class="column is-12" *ngIf="build && build.jobs && build.jobs.length">
             <div class="columns list-header">
               <div class="column is-1">Job Id</div>
-              <div class="column is-4">Environment</div>
+              <div class="column is-3">Environment</div>
               <div class="column is-3">Script</div>
               <div class="column is-1">Time</div>
               <div class="column is-2">Status</div>
-              <div class="column is-1"></div>
+              <div class="column is-2"></div>
             </div>
             <div class="columns list-item"
                  *ngFor="let job of build.jobs; let i = index;"
@@ -71,7 +76,7 @@
               <div class="column is-1">
                 <span># {{ build.id }}.{{ job.id }}</span>
               </div>
-              <div class="column is-4">
+              <div class="column is-3">
                 <div class="icon-and-text">
                   <span class="icon">
                     <img src="images/icons/linux.svg">
@@ -101,12 +106,22 @@
                 <span class="status-circle" [ngClass]="{ green: job.status === 'success', yellow: job.status === 'running', red: job.status === 'failed' }"></span>
                 <span>{{ job.status }}</span>
               </div>
-              <div class="column is-1">
+              <div class="column is-2">
                 <button type="button" class="button green" (click)="restartJob($event, job.id)" *ngIf="job.status !== 'running'">
-                  Restart
+                  <div class="centered">
+                    <span class="icon">
+                      <img src="images/icons/restart.svg">
+                    </span>
+                    <span>Restart</span>
+                  </div>
                 </button>
                 <button type="button" class="button red" (click)="stopJob($event, job.id)" *ngIf="job.status === 'running'">
-                  Stop
+                  <div class="centered">
+                    <span class="icon">
+                      <img src="images/icons/stop.svg">
+                    </span>
+                    <span>Stop</span>
+                  </div>
                 </button>
               </div>
             </div>
