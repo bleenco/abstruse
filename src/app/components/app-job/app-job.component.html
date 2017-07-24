@@ -7,7 +7,7 @@
 <div class="container" [class.hidden]="loading">
   <div class="columns">
     <div class="column is-12">
-      <div class="content">
+      <div class="content bg-background">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="job">
             <div class="job-top-container">
@@ -15,18 +15,22 @@
                 <div class="job-top-actions">
                   <div class="columns">
                     <div class="column is-2">
-                      <a class="button" [routerLink]="['/build', job.builds_id]">
+                      <a class="button floated" [routerLink]="['/build', job.builds_id]">
                         <img src="images/icons/back.svg"> Back
                       </a>
+                      <button class="button floated green" type="button" (click)="restartJob()">
+                        <img src="images/icons/sync.svg">
+                        Restart
+                      </button>
                     </div>
-                    <div class="column is-8"></div>
-                    <div class="column is-2">
-                      <div class="centered">
-                        <button class="button is-fullwidth green" type="button" (click)="restartJob()">
-                          <img src="images/icons/sync.svg">
-                          Restart Job
-                        </button>
-                      </div>
+                    <div class="column is-9"></div>
+                    <div class="column is-1">
+                      <span class="total-time">
+                        <span class="icon">
+                          <img src="images/icons/clock.svg">
+                        </span>
+                        {{ job?.time }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -39,15 +43,15 @@
                       <img src="images/icons/check-false.svg" *ngIf="job.status === 'failed'">
                     </span>
                   </div>
-                  <div class="column is-9"></div>
-                  <div class="column is-2">
-                    <span class="total-time">
-                      <span class="icon">
-                        <img src="images/icons/clock.svg">
-                      </span>
-                      {{ job.time }}
-                    </span>
+                  <div class="column is-10">
+                    <h2 class="bold">{{ job.build.repository.url }}</h2>
+                    <p>
+                      <span class="bold">{{ job?.build.commit_message }}</span>
+                      <span class="underlined">({{ job?.build.commit_hash.slice(0, 7) }})</span>
+                    </p>
+                    <p>{{ job?.build.commit_author }} authored and commited {{ timeWords }} ago.</p>
                   </div>
+                  <div class="column is-1"></div>
                 </div>
                 <div class="columns">
                   <div class="column is-1"></div>

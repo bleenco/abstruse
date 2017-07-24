@@ -9,7 +9,6 @@ export function getBuilds(): Promise<any> {
         }
 
         builds = builds.toJSON();
-        // hack, cannot get properties from jobs with `withRelated` and qb.column?
         builds = builds.map(build => {
           build.jobs = build.jobs.map(job => {
             delete job.log;

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeWhile';
-import { format } from 'date-fns';
+import { format, distanceInWordsToNow } from 'date-fns';
 
 @Component({
   selector: 'app-job',
@@ -20,6 +20,7 @@ export class AppJobComponent implements OnInit {
   terminalReady: boolean;
   terminalOptions:  { size: 'small' | 'large' };
   terminalInput: any;
+  timeWords: string;
 
   constructor(
     private socketService: SocketService,
@@ -42,7 +43,8 @@ export class AppJobComponent implements OnInit {
 
           this.apiService.getJob(this.id).subscribe(job => {
             this.job = job;
-            this.terminalInput = job.log.split('\n').filter(line => line !== '').join('\n');
+            this.terminalInput = job.log.split('\r').join('\n');
+            this.timeWords = distanceInWordsToNow(job.build.commit_date);
             this.loading = false;
 
             this.socketService.outputEvents

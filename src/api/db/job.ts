@@ -14,7 +14,7 @@ export function getJobs(buildId: number): Promise<any> {
 
 export function getJob(jobId: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ id: jobId }).fetch().then(job => {
+    new Job({ id: jobId }).fetch({ withRelated: ['build.repository'] }).then(job => {
       if (!job) {
         reject();
       }
