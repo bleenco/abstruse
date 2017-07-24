@@ -113,7 +113,7 @@ function saveCredentialsToImage(name: string, buildId: number): Promise<void> {
     getRepositoryByBuildId(buildId)
       .then(repo => {
         if (repo.username !== '' && repo.password !== '') {
-          const matches = repo.url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
+          const matches = repo.clone_url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
           const domain = matches && matches[1];
           const cmd = `echo 'machine ${domain} login ${repo.username} password ${repo.password}'` +
             `> /home/abstruse/.netrc`;

@@ -72,24 +72,18 @@ jobProcesses
 
 // inserts new build into db and queue related jobs.
 // returns inserted build id
-export function startBuild(repositoryId: number, branch: string): Promise<void[]> {
-  return getRepository(repositoryId)
+export function startBuild(data: any): Promise<any> {
+  return getRepository(data.repositories_id)
     .then(repository => {
-      return getRepositoryDetails(repository.url)
+      return getRepositoryDetails(repository.clone_url)
         .then(details => {
-          const buildData = {
-            branch: branch,
-            commit_hash: details.log.commit_hash,
-            commit_author: details.log.commit_author,
-            commit_date: details.log.commit_date,
-            commit_message: details.log.commit_message,
-            start_time: new Date(),
-            repositories_id: repositoryId
-          };
-
-          return insertBuild(buildData)
+          return insertBuild(data)
             .then(build => {
-              let jobsCommands = generateCommands(repository.url, details.config);
+              if (data.pr && data.pr !== '') {
+                details.config.git.pr = data.pr;
+              }
+
+              let jobsCommands = generateCommands(repository.clone_url, details.config);
 
               return Promise.all(jobsCommands.map((commands, i) => {
                 const lang = details.config.language;

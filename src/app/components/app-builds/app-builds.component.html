@@ -10,8 +10,9 @@
     </div>
     <div class="nav-center">
       <div class="group-buttons">
-        <button class="group-button is-active">My Builds</button>
-        <button class="group-button">All Builds</button>
+        <button class="group-button is-active">All Builds</button>
+        <button class="group-button">Branches</button>
+        <button class="group-button">Pull Requests</button>
       </div>
     </div>
     <div class="nav-right"></div>
@@ -42,9 +43,9 @@
 
           <div class="column is-12" *ngIf="builds && builds.length">
             <div class="columns list-header">
-              <div class="column is-1">Build Id</div>
-              <div class="column is-3">Repository</div>
-              <div class="column is-3">Commit</div>
+              <div class="column is-1">Build</div>
+              <div class="column is-2">Repository</div>
+              <div class="column is-4">Commit</div>
               <div class="column is-3">Commited by</div>
               <div class="column is-1">Status</div>
               <div class="column is-1">Time</div>
@@ -57,27 +58,31 @@
                 <span class="icon">
                   <img src="images/icons/hammer.svg">
                 </span>
-                <span>{{ build.id }}</span>
+                <span *ngIf="!build?.pr">#{{ build?.id }}</span>
+                <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
               </div>
-              <div class="column is-3">
-                <span>{{ build.repository.url }}</span>
+              <div class="column is-2">
+                <span>{{ build?.repository.full_name }}</span>
               </div>
-              <div class="column is-3 commit-column">
+              <div class="column is-4 commit-column">
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
-                <span class="bold">{{ build.commit_hash.substr(0, 7) }}</span>
-                <span>{{ build.commit_message }}</span>
+                <span class="bold">{{ build?.head_sha.slice(0, 7) }}</span>
+                <span>{{ build?.message }}</span>
               </div>
               <div class="column is-3">
-                <span>{{ build.commit_author }}</span>
+                <span class="icon">
+                  <img [src]="build?.repository?.head_user_avatar_url">
+                </span>
+                <span>{{ build?.author }}</span>
               </div>
               <div class="column is-1">
                 <span class="status-circle" [ngClass]="{ green: build.status === 'success', yellow: build.status === 'running', red: build.status === 'failed' }"></span>
-                <span>{{ build.status }}</span>
+                <span>{{ build?.status }}</span>
               </div>
               <div class="column is-1">
-                {{ build.totalTime }}
+                {{ build?.totalTime }}
               </div>
             </div>
           </div>

@@ -18,6 +18,7 @@ export class AppBuildsComponent implements OnInit {
     private router: Router,
     private ngZone: NgZone
   ) {
+    this.builds = [];
     this.loading = true;
   }
 
@@ -25,8 +26,12 @@ export class AppBuildsComponent implements OnInit {
     this.fetch();
 
     this.socketService.outputEvents.subscribe(event => {
-      if (!this.builds || !event.data || !event.data.id) {
+      if (!this.builds || !event.data) {
         return;
+      }
+
+      if (event.data === 'jobAdded') {
+        this.fetch();
       }
 
       const index = this.builds.findIndex(build => build.id === event.data.id);
