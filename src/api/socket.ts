@@ -81,7 +81,7 @@ export class SocketServer {
                   });
               break;
               case 'startBuild':
-                startBuild(event.data.repositoryId, event.data.branch)
+                startBuild({ repositories_id: event.data.repositoryId })
                   .then(buildId => {
                     console.log('New Build: ', buildId);
                   });

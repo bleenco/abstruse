@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { ensureDirSync } from 'fs-extra';
 import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
+import * as request from 'request';
 
 const defaultConfig = {
   secret: 'thisIsSecret',
@@ -89,4 +90,23 @@ export function getHumanSize(bytes: number, decimals = 2): string {
 
 export function generateRandomId(): string {
   return Math.random().toString(36).substring(7);
+}
+
+export function getHttpJsonResponse(url: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url: url,
+      headers: {
+        'User-Agent': 'request'
+      }
+    };
+
+    request(options, (err, resp, body) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(body));
+      }
+    });
+  });
 }

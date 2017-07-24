@@ -7,7 +7,7 @@ import * as yaml from 'yamljs';
 
 export interface Config {
   language?: string;
-  git: { depth: number };
+  git: { depth: number, pr?: number, sha?: string };
   matrix?: { node_js?: string; env: string }[];
   preinstall?: string[];
   install?: string[];
@@ -17,16 +17,8 @@ export interface Config {
   posttest: string[];
 }
 
-export interface GitLog {
-  commit_hash: string;
-  commit_author: string;
-  commit_date: Date;
-  commit_message: string;
-}
-
 export interface RepositoryInfo {
   config: Config;
-  log: GitLog;
 }
 
 export function generateCommands(repositoryUrl: string, config: Config): any[] {
@@ -44,7 +36,15 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   // 2. cd into directory
   const cdCommand = `cd ${name}`;
 
-  // 3. environment
+  // 3. fetch & checkout commands
+  let fetchCommand = '';
+  let checkoutCommand = '';
+  if (config.git && config.git.pr) {
+    fetchCommand = `git fetch origin pull/${config.git.pr}/head:pr${config.git.pr}`;
+    checkoutCommand = `git checkout pr${config.git.pr}`;
+  }
+
+  // 4. environment
   if (config.matrix) {
     matrix = config.matrix.map(mat => {
       let install = '';
@@ -58,11 +58,12 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
         env = `export ${mat.env}`;
       }
 
-      return [cloneCommand, cdCommand, install, env].filter(cmd => cmd !== '');
+      return [cloneCommand, cdCommand, fetchCommand, checkoutCommand, install, env]
+        .filter(cmd => cmd !== '');
     });
   }
 
-  // 4. commands
+  // 5. commands
   const preinstall = config.preinstall || [];
   const install = config.install || [];
   const postinstall = config.postinstall || [];
@@ -70,7 +71,7 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   const test = config.test || [];
   const posttest = config.posttest || [];
 
-  // 5. exit code
+  // 6. exit code
   const exitcode = ['exit $?'];
 
   const commonCommands = []
@@ -94,7 +95,6 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
     let cloneDir = null;
     let configPath = null;
     let yml = null;
-    let log: GitLog;
 
     createTempDir()
       .then(tempDir => {
@@ -110,20 +110,8 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
         return sh.cat(configPath);
       })
       .then(configYml => yml = yaml.parse(configYml))
-      .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), '--no-pager', 'log', '-1']))
-      .then(gitLog => log = parseGitLog(gitLog.stdout))
       .then(() => rmdir(cloneDir))
-      .then(() => resolve({ config: yml, log: log }))
+      .then(() => resolve({ config: yml }))
       .catch(err => reject(err));
   });
-}
-
-function parseGitLog(str: string): GitLog {
-  let splitted = str.split('\n');
-  return {
-    commit_hash: splitted[0].replace(/commit/, '').replace(/\(.*\)/, '').trim(),
-    commit_author: splitted[1].replace(/Author:/, '').trim(),
-    commit_date: new Date(splitted[2].replace(/Date:/, '').trim()),
-    commit_message: splitted[4].trim()
-  };
 }

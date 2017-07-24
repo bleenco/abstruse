@@ -1,7 +1,8 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
 import { getConfig } from './utils';
-import { pingRepository } from './db/repository';
+import { pingRepository, createPullRequest } from './db/repository';
+import { startBuild } from './process-manager';
 
 const config: any = getConfig();
 export const webhooks = express.Router();
@@ -48,14 +49,10 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
   } else if (ev === 'pull_request') {
     switch (payload.action) {
       case 'opened':
-        const prNumber = payload.pull_request.number;
-        const state = payload.pull_request.state;
-        const createdAt = payload.pull_request.created_at;
-        const updatedAt = payload.pull_request.updated_at;
-        const prBody = payload.pull_request.body;
-
-        console.log(payload.pull_request);
-        res.status(200).json(payload);
+        createPullRequest(payload.pull_request)
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => console.error(err));
       break;
     }
   }

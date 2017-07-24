@@ -43,13 +43,13 @@ export function getBuild(id: number): Promise<any> {
 
 export function insertBuild(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build(data).save(null, { method: 'insert' }).then(build => {
+    new Build().save(data, { method: 'insert' }).then(build => {
       if (!build) {
-        reject();
+        reject(build);
+      } else {
+        resolve(build.toJSON());
       }
-
-      resolve(build.toJSON());
-    });
+    }).catch(err => reject(err));
   });
 }
 
