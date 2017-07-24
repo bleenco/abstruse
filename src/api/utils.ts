@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 
 const defaultConfig = {
+  secret: 'thisIsSecret',
   port: 6500,
   wsport: 6501,
   concurrency: 10,
