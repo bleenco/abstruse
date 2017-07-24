@@ -50,3 +50,19 @@ export function addRepository(data: any): Promise<boolean> {
     }).catch(err => reject());
   });
 }
+
+// ping repository
+export function pingRepository(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    console.log(data);
+    new Repository().where({ url: data.html_url }).save(data, { method: 'update' })
+      .then(result => {
+        if (!result) {
+          reject(result);
+        } else {
+          resolve(result.toJSON());
+        }
+      })
+      .catch(err => reject(err));
+  });
+}

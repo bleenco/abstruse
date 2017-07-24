@@ -3,6 +3,7 @@ import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { Observable } from 'rxjs';
 import * as routes from './server-routes';
+import { webhooks } from './webhooks';
 
 export interface ServerConfig {
   port: number;
@@ -25,6 +26,7 @@ export class ExpressServer implements IExpressServer {
       const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
+      app.use('/webhooks', webhooks);
       app.use('/api/setup', routes.setupRoutes());
       app.use('/api/user', routes.userRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());

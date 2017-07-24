@@ -16,15 +16,22 @@ export function create(): Promise<null> {
     })
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
+      t.integer('github_id');
       t.string('url').notNullable();
       t.string('default_branch').notNullable().defaultTo('master');
+      t.string('name');
+      t.string('full_name');
+      t.string('description');
+      t.boolean('private');
+      t.string('html_url');
+      t.boolean('is_fork');
       t.string('username');
       t.string('password');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.string('branch').notNullable();
+      t.string('branch');
       t.string('commit_hash');
       t.string('commit_author');
       t.dateTime('commit_date');
