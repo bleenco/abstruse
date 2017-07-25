@@ -30,6 +30,10 @@ export class ApiService {
     return this.get(`${this.url}/repositories`, params);
   }
 
+  getRepository(id: string): Observable<any> {
+    return this.get(`${this.url}/repositories/${id}`);
+  }
+
   addRepository(data: any): Observable<any> {
     return this.post(`${this.url}/repositories/add`, data);
   }

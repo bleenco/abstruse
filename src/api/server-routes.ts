@@ -8,7 +8,7 @@ import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import { usersExists, createUser, login } from './db/user';
-import { addRepository, getRepositories } from './db/repository';
+import { addRepository, getRepositories, getRepository } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
 import { imageExists } from './docker';
@@ -84,6 +84,12 @@ export function repositoryRoutes(): express.Router {
   router.get('/', (req: express.Request, res: express.Response) => {
     getRepositories('1').then(repos => {
       return res.status(200).json({ data: repos });
+    }).catch(err => res.status(200).json({ status: false }));
+  });
+
+  router.get('/:id', (req: express.Request, res: express.Response) => {
+    getRepository(req.params.id).then(repo => {
+      return res.status(200).json({ data: repo });
     }).catch(err => res.status(200).json({ status: false }));
   });
 

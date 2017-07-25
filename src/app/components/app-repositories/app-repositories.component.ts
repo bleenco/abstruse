@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
-import 'rxjs/add/operator/distinct';
 
 export interface Repository {
   url: string;
@@ -23,7 +23,8 @@ export class AppRepositoriesComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private router: Router
   ) {
     this.loading = true;
   }
@@ -52,6 +53,13 @@ export class AppRepositoriesComponent implements OnInit {
         this.fetch();
       }
     });
+  }
+
+  gotoRepository(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.router.navigate(['repo', id]);
   }
 
   runBuild(e: MouseEvent, repositoryId: number, branch: string): void {

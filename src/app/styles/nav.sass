@@ -1,5 +1,5 @@
 .nav
-  height: 100px
+  height: 70px
   background: $background
   box-shadow: 0 1px 0 0 $border
   z-index: auto !important
@@ -19,7 +19,7 @@
       width: 40px
       min-height: 40px
       border-radius: 50%
-      border: 2px solid $grey-light
+      border: 2px solid $divider
 
     .nav-item-arrow
       display: block
@@ -78,15 +78,17 @@
         color: $white
 
   &.sub-nav
-    background: $background-button
-    border-bottom: none
+    background: transparent
     box-shadow: none
+    border-bottom: none
+    padding-top: 20px
 
     .nav-left
 
       .nav-item
         h1
-          font-size: 20px
+          font-size: 28px
+
         span
           margin-left: 20px
           color: $color-secondary

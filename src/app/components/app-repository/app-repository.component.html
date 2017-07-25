@@ -4,18 +4,16 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>Dashboard</h1>
-        <span>| 12 builds</span>
+        <h1>{{ repo?.full_name }}</h1>
+        <span>| status badge</span>
       </span>
     </div>
-    <div class="nav-center">
-
-    </div>
+    <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button is-active">All Builds</button>
-        <button class="group-button">Branches</button>
+        <button class="group-button is-active">Builds</button>
         <button class="group-button">Pull Requests</button>
+        <button class="group-button">Settings</button>
       </div>
     </div>
   </div>
@@ -31,7 +29,7 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
 
-          <div class="column is-12" *ngIf="!builds || !builds.length">
+          <div class="column is-12" *ngIf="!repo?.builds.length">
             <div class="notification">
               <span class="icon">
                 <img src="images/icons/info.svg">
@@ -40,9 +38,9 @@
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="builds && builds.length">
+          <div class="column is-12" *ngIf="repo?.builds.length">
             <div class="columns list-item"
-                 *ngFor="let build of builds; let i = index;"
+                 *ngFor="let build of repo.builds; let i = index;"
                  [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }"
                  (click)="gotoBuild(build.id)">
               <div class="column is-2">
