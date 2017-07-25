@@ -19,6 +19,7 @@ import { AppHeaderComponent } from './components/app-header';
 import { AppBuildsComponent } from './components/app-builds';
 import { AppBuildDetailsComponent } from './components/app-build-details';
 import { AppRepositoriesComponent } from './components/app-repositories';
+import { AppRepositoryComponent } from './components/app-repository';
 import { AppJobComponent } from './components/app-job';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppNotificationComponent } from './components/app-notification';
@@ -34,6 +35,7 @@ import { AppNotificationComponent } from './components/app-notification';
     AppBuildsComponent,
     AppBuildDetailsComponent,
     AppRepositoriesComponent,
+    AppRepositoryComponent,
     AppJobComponent,
     AppSettingsComponent,
     AppNotificationComponent,
@@ -62,6 +64,11 @@ import { AppNotificationComponent } from './components/app-notification';
       {
         path: 'repositories',
         component: AppRepositoriesComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'repo/:id',
+        component: AppRepositoryComponent,
         canActivate: [AuthGuard]
       },
       {

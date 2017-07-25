@@ -95,18 +95,18 @@
               <div class="column is-3">Status</div>
               <div class="column is-2"></div>
             </div>
-            <div class="columns list-item" *ngFor="let repo of repositories; let i = index;">
+            <div class="columns list-item" *ngFor="let repo of repositories; let i = index;" (click)="gotoRepository($event, repo.id)">
               <div class="column is-4">
                 <span class="icon">
                   <img src="images/icons/git-repository.svg">
                 </span>
-                <span>{{ repo.url }}</span>
+                <span>{{ repo.html_url }}</span>
               </div>
               <div class="column is-3">
                 <span class="icon">
                   <img src="images/icons/git-branch.svg">
                 </span>
-                <span>master</span>
+                <span>{{ repo.default_branch }}</span>
               </div>
               <div class="column is-3">
                 <span class="status-circle green"></span>

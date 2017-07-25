@@ -1,51 +1,42 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiService } from '../../services/api.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
+import { ApiService } from '../../services/api.service';
 import { format, distanceInWordsToNow } from 'date-fns';
 
 @Component({
-  selector: 'app-builds',
-  templateUrl: 'app-builds.component.html'
+  selector: 'app-repository',
+  templateUrl: 'app-repository.component.html'
 })
-export class AppBuildsComponent implements OnInit {
+export class AppRepositoryComponent implements OnInit {
   loading: boolean;
-  builds: any[];
+  id: string;
+  repo: any;
 
   constructor(
-    private socketService: SocketService,
-    private apiService: ApiService,
+    private route: ActivatedRoute,
     private router: Router,
-    private ngZone: NgZone
-  ) {
-    this.builds = [];
-    this.loading = true;
-  }
+    private socketService: SocketService,
+    private api: ApiService
+  ) { }
 
   ngOnInit() {
-    this.fetch();
-
-    this.socketService.outputEvents.subscribe(event => {
-      if (!this.builds || !event.data) {
-        return;
-      }
-
-      if (event.data === 'jobAdded') {
+    this.route.params.subscribe(params => {
+      this.id = params.id || null;
+      if (!this.id) {
+        this.router.navigate(['repositories']);
+      } else {
         this.fetch();
-      }
-
-      const index = this.builds.findIndex(build => build.id === event.data.id);
-      if (index !== -1) {
-        this.builds[index].status = event.data.status;
       }
     });
   }
 
   fetch(): void {
-    this.apiService.getBuilds().subscribe(builds => {
-      this.builds = builds;
+    this.api.getRepository(this.id).subscribe(event => {
+      this.repo = event;
+      this.loading = false;
 
-      this.builds = this.builds.map(build => {
+      this.repo.builds = this.repo.builds.map(build => {
         let status = 'queued';
         if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
           status = 'failed';
@@ -66,15 +57,13 @@ export class AppBuildsComponent implements OnInit {
 
       this.updateJobTimes();
       setInterval(() => this.updateJobTimes(), 1000);
-
-      this.loading = false;
     });
   }
 
   updateJobTimes(): void {
     let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
 
-    this.builds = this.builds.map(build => {
+    this.repo.builds = this.repo.builds.map(build => {
       build.jobs = build.jobs.map(job => {
         if (!job.end_time || job.status === 'running') {
           job.time = format(currentTime - job.start_time, 'mm:ss');
@@ -94,13 +83,5 @@ export class AppBuildsComponent implements OnInit {
 
       return build;
     });
-  }
-
-  restartBuild(id: number): void {
-    this.socketService.emit({ type: 'restartBuild', data: id });
-  }
-
-  gotoBuild(buildId: number) {
-    this.router.navigate(['build', buildId]);
   }
 }

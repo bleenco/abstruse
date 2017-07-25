@@ -4,7 +4,9 @@ import { getHttpJsonResponse } from '../utils';
 
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository({ id: id }).fetch().then(repo => {
+    new Repository({ id: id }).fetch({
+      withRelated: ['builds.repository', 'builds.jobs']
+    }).then(repo => {
       if (!repo) {
         reject(repo);
       } else {
