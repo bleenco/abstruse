@@ -68,7 +68,9 @@ module.exports = function (options, webpackOptions) {
         rules: [{ test: /\.ts$/, loader: '@ngtools/webpack' }]
       },
       plugins: [
-        new AoTPlugin({ tsConfigPath: root('src/app/tsconfig.json') })
+        new AoTPlugin({
+          tsConfigPath: root('src/app/tsconfig.json')
+        })
       ]
     });
   } else {
