@@ -2,7 +2,7 @@ import { prepareBuildJob, Job, startDockerImageSetupJob } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import * as dbJob from './db/job';
-import { getRepository } from './db/repository';
+import { getRepositoryOnly } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
@@ -73,16 +73,28 @@ jobProcesses
 // inserts new build into db and queue related jobs.
 // returns inserted build id
 export function startBuild(data: any): Promise<any> {
-  return getRepository(data.repositories_id)
+  return getRepositoryOnly(data.repositories_id)
     .then(repository => {
       return getRepositoryDetails(repository.clone_url)
         .then(details => {
+          if (data.pr && data.pr !== '') {
+            details.config.git.pr = data.pr;
+          } else if (typeof data.sha === 'undefined' || data.sha === '') {
+            details.config.git.sha = details.log.commit_hash;
+            data.sha = details.log.commit_hash;
+            data.head_sha = details.log.commit_hash;
+            data.label = repository.full_name;
+            data.head_label = repository.full_name;
+            data.ref = repository.default_branch;
+            data.head_ref = repository.default_branch;
+            data.author = details.log.commit_author;
+            data.user = details.log.commit_author;
+            data.message = details.log.commit_message;
+            data.start_time = details.log.commit_date;
+          }
+
           return insertBuild(data)
             .then(build => {
-              if (data.pr && data.pr !== '') {
-                details.config.git.pr = data.pr;
-              }
-
               let jobsCommands = generateCommands(repository.clone_url, details.config);
 
               return Promise.all(jobsCommands.map((commands, i) => {
@@ -238,6 +250,7 @@ export function startJob(buildId: number, jobId: number): Promise<void> {
               job_id: jobId,
               data: 'jobStarted'
             });
+
             resolve();
           });
       });

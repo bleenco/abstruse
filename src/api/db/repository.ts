@@ -16,6 +16,18 @@ export function getRepository(id: number): Promise<any> {
   });
 }
 
+export function getRepositoryOnly(id: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Repository({ id: id }).fetch().then(repo => {
+      if (!repo) {
+        reject(repo);
+      } else {
+        resolve(repo.toJSON());
+      }
+    }).catch(err => reject(err));
+  });
+}
+
 export function getRepositoryByBuildId(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository().query(qb => {
@@ -58,15 +70,30 @@ export function addRepository(data: any): Promise<boolean> {
 // ping repository
 export function pingRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository().where({ url: data.html_url }).save(data, { method: 'update' })
-      .then(result => {
-        if (!result) {
-          reject(result);
+    new Repository().where({ github_id: data.github_id }).fetch()
+      .then(repo => {
+        if (!repo) {
+          new Repository().save(data, { method: 'insert' })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
+            .catch(err => reject(err));
         } else {
-          resolve(result.toJSON());
+          repo.save(data, { method: 'update' })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
+            .catch(err => reject(err));
         }
-      })
-      .catch(err => reject(err));
+      });
   });
 }
 

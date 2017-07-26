@@ -33,14 +33,20 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
 
   if (ev === 'ping') {
     const data = {
-      html_url: payload.repository.html_url,
-      description: payload.repository.description,
       github_id: payload.repository.id,
+      clone_url: payload.repository.clone_url,
+      html_url: payload.repository.html_url,
+      default_branch: payload.repository.default_branch,
       name: payload.repository.name,
       full_name: payload.repository.full_name,
+      description: payload.repository.description,
       private: payload.repository.private,
-      is_fork: payload.repository.fork,
-      default_branch: payload.repository.default_branch
+      fork: payload.repository.fork,
+      user_login: payload.repository.owner.login,
+      user_id: payload.repository.owner.id,
+      user_avatar_url: payload.repository.owner.avatar_url,
+      user_url: payload.repository.owner.url,
+      user_html_url: payload.repository.owner.html_url
     };
 
     pingRepository(data)
