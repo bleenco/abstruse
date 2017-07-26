@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
 import { getConfig } from './utils';
-import { pingRepository, createPullRequest } from './db/repository';
+import { pingRepository, createPullRequest, synchronizePullRequest } from './db/repository';
 import { startBuild } from './process-manager';
 
 const config: any = getConfig();
@@ -54,8 +54,17 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
       .catch(err => res.status(400).json(err));
   } else if (ev === 'pull_request') {
     switch (payload.action) {
+      case 'closed':
+        res.status(200).json({ msg: 'ok' });
+      break;
       case 'opened':
         createPullRequest(payload.pull_request)
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => console.error(err));
+      break;
+      case 'synchronize':
+        synchronizePullRequest(payload.pull_request)
           .then(build => startBuild(build))
           .then(() => res.status(200).json({ msg: 'ok' }))
           .catch(err => console.error(err));
