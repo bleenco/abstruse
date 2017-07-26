@@ -78,8 +78,8 @@ export function addRepository(data: any): Promise<boolean> {
 
 export function updateRepository(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    new Repository().where({ github_id: data })
-      .save(data, { method: 'update' }).then(result => {
+    new Repository().where({ github_id: data.github_id })
+      .save(data, { method: 'update', require: false }).then(result => {
         if (!result) {
           reject(result);
         } else {
