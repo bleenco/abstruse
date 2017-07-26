@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/27810379-cf213604-6059-11e7-9b85-33ba4cea93e5.jpg">
+  <img src="https://user-images.githubusercontent.com/1796022/28603921-79363332-71c7-11e7-811f-e5079f1b9f9c.png">
 </p>
 
 # abstruse
@@ -9,6 +9,12 @@ Run Continuous Integration (CI) on your own servers.
 Built with latest techonologies using **Node.JS**, **Angular** and **RxJS**.
 
 Provides safe and reliable testing & deployment environment using Docker containers.
+
+## Sneak Peek
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/28603923-7bbf78b6-71c7-11e7-8575-edd27779e8f1.png">
+</p>
 
 ## Current Status
 
@@ -34,6 +40,20 @@ After install is done running a server is as easy as running below command :-)
 ```sh
 $ abstruse
 ```
+
+## GitHub Integration
+
+To integrate `abstruse` with GitHub go to `Settings -> Webhooks` and add URL where you deployed abstruse with `/webhooks/github` suffix.
+
+Secret is defined in `~/.abstruse/config.json` and after updating the secret abstruse instance need to be restarted.
+
+Default secret is `thisIsSecret`.
+
+Check sample configuration on the screenshot below.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/28603956-a12a2b5a-71c7-11e7-89db-57f606513d57.png">
+</p>
 
 ## Sample Configuration
 
