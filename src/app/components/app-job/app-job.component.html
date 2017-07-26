@@ -50,7 +50,7 @@
                   <div class="column is-10">
                     <h2 class="bold">{{ job?.build.repository.clone_url }}</h2>
                     <p>
-                      <span class="underlined">{{ job?.build.sha.slice(0, 7) }}</span>
+                      <span class="underlined">{{ job?.build.sha }}</span>
                       <span class="bold">{{ job?.build.label }}</span>
                       <span>{{ job?.build.user }} authored and commited {{ timeWords }} ago.</span>
                   </div>

@@ -12,7 +12,6 @@
     <div class="nav-right">
       <div class="group-buttons">
         <button class="group-button is-active">Builds</button>
-        <button class="group-button">Pull Requests</button>
         <button class="group-button">Settings</button>
       </div>
     </div>
@@ -28,6 +27,29 @@
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
+          <div class="column is-12">
+            <div class="columns repository-details">
+              <div class="column is-8">
+                <span>
+                  <img src="images/icons/github-white.svg">
+                  <a [href]="repo?.html_url">{{ repo?.html_url }}</a>
+                </span>
+                <span>
+                  <img src="images/icons/git-branch.svg">
+                  {{ repo?.default_branch }}
+                </span>
+                <span *ngIf="repo?.private">
+                  <img src="images/icons/unlock.svg">
+                  Private
+                </span>
+                <span *ngIf="!repo?.private">
+                  <img src="images/icons/unlock.svg">
+                  Public Repository
+                </span>
+              </div>
+              <div class="column is-4"></div>
+            </div>
+          </div>
 
           <div class="column is-12" *ngIf="!repo?.builds.length">
             <div class="notification">
@@ -55,7 +77,7 @@
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
-                <span class="bold">{{ build?.head_sha.slice(0, 7) }}</span>
+                <span class="bold">{{ build?.head_sha }}</span>
                 <span>{{ build?.message }}</span>
                 <span class="smaller">{{ build?.timeInWords }} ago</span>
               </div>

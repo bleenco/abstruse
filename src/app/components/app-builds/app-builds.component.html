@@ -5,7 +5,6 @@
     <div class="nav-left">
       <span class="nav-item">
         <h1>Dashboard</h1>
-        <span>| 12 builds</span>
       </span>
     </div>
     <div class="nav-center">
@@ -46,7 +45,8 @@
                  [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }"
                  (click)="gotoBuild(build.id)">
               <div class="column is-2">
-                <img class="avatar-icon" [src]="build?.repository?.head_user_avatar_url">
+                <img class="avatar-icon" [src]="build?.repository?.head_user_avatar_url" *ngIf="build?.repository?.head_user_avatar_url">
+                <img class="avatar-icon" [src]="build?.repository?.user_avatar_url" *ngIf="!build?.repository?.head_user_avatar_url">
                 <span *ngIf="!build?.pr" class="bold larger">#{{ build?.id }}</span>
                 <span *ngIf="build?.pr" class="bold larger">PR #{{ build?.pr }}</span>
               </div>
@@ -57,7 +57,7 @@
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
-                <span class="bold">{{ build?.head_sha.slice(0, 7) }}</span>
+                <span class="bold">{{ build?.head_sha }}</span>
                 <span>{{ build?.message }}</span>
                 <span class="smaller">{{ build?.timeInWords }} ago</span>
               </div>

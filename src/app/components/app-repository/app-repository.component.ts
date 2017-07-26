@@ -29,11 +29,27 @@ export class AppRepositoryComponent implements OnInit {
         this.fetch();
       }
     });
+
+    this.socketService.outputEvents.subscribe(event => {
+      if (!this.repo || !event.data) {
+        return;
+      }
+
+      if (event.data === 'jobAdded') {
+        this.fetch();
+      }
+
+      const index = this.repo.builds.findIndex(build => build.id === event.data.id);
+      if (index !== -1) {
+        this.repo.builds[index].status = event.data.status;
+      }
+    });
   }
 
   fetch(): void {
     this.api.getRepository(this.id).subscribe(event => {
       this.repo = event;
+      console.log(event);
       this.loading = false;
 
       this.repo.builds = this.repo.builds.map(build => {
@@ -83,5 +99,9 @@ export class AppRepositoryComponent implements OnInit {
 
       return build;
     });
+  }
+
+  gotoBuild(buildId: number) {
+    this.router.navigate(['build', buildId]);
   }
 }

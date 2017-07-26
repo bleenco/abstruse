@@ -5,13 +5,21 @@
   z-index: auto !important
 
   .nav-item
-    color: $grey-light !important
+    color: $white !important
     font-weight: bold
+    font-size: 15px
+    margin-right: 10px
+
+    img
+      width: 25px
+      height: 25px
+      margin-right: 10px
 
     &.nav-logo
-      &:hover
-        path
-          fill: $grey-light
+      margin-right: 25px
+
+      path
+        fill: $white
 
     .nav-avatar
       display: block
@@ -87,14 +95,12 @@
 
       .nav-item
         h1
+          color: $white
           font-size: 28px
 
         span
           margin-left: 20px
           color: $color-secondary
-
-        &:hover
-          color: $white
 
     .nav-center
       display: flex

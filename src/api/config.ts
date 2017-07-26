@@ -17,8 +17,16 @@ export interface Config {
   posttest: string[];
 }
 
+export interface GitLog {
+  commit_hash: string;
+  commit_author: string;
+  commit_date: Date;
+  commit_message: string;
+}
+
 export interface RepositoryInfo {
   config: Config;
+  log?: GitLog;
 }
 
 export function generateCommands(repositoryUrl: string, config: Config): any[] {
@@ -42,6 +50,9 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   if (config.git && config.git.pr) {
     fetchCommand = `git fetch origin pull/${config.git.pr}/head:pr${config.git.pr}`;
     checkoutCommand = `git checkout pr${config.git.pr}`;
+  } else if (config.git && config.git.sha) {
+    fetchCommand = `git fetch origin`;
+    checkoutCommand = `git checkout ${config.git.sha}`;
   }
 
   // 4. environment
@@ -95,6 +106,7 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
     let cloneDir = null;
     let configPath = null;
     let yml = null;
+    let log = null;
 
     createTempDir()
       .then(tempDir => {
@@ -110,8 +122,20 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
         return sh.cat(configPath);
       })
       .then(configYml => yml = yaml.parse(configYml))
+      .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), '--no-pager', 'log', '-1']))
+      .then(gitLog => log = parseGitLog(gitLog.stdout))
       .then(() => rmdir(cloneDir))
-      .then(() => resolve({ config: yml }))
+      .then(() => resolve({ config: yml, log: log }))
       .catch(err => reject(err));
   });
+}
+
+function parseGitLog(str: string): GitLog {
+  let splitted = str.split('\n');
+  return {
+    commit_hash: splitted[0].replace(/commit/, '').replace(/\(.*\)/, '').trim(),
+    commit_author: splitted[1].replace(/Author:/, '').trim(),
+    commit_date: new Date(splitted[2].replace(/Date:/, '').trim()),
+    commit_message: splitted[4].trim()
+  };
 }
