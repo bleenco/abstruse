@@ -6,7 +6,10 @@
     "noImplicitAny": false,
     "sourceMap": false,
     "declaration": false,
-    "outDir": "./dist/api"
+    "outDir": "./dist/api",
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "formatCodeOptions": {
     "indentSize": 2,
