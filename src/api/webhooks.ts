@@ -31,48 +31,50 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
     return res.status(400).json({ error: 'X-Hub-Signature does not match blob signature' });
   }
 
-  if (ev === 'ping') {
-    const data = {
-      github_id: payload.repository.id,
-      clone_url: payload.repository.clone_url,
-      html_url: payload.repository.html_url,
-      default_branch: payload.repository.default_branch,
-      name: payload.repository.name,
-      full_name: payload.repository.full_name,
-      description: payload.repository.description,
-      private: payload.repository.private,
-      fork: payload.repository.fork,
-      user_login: payload.repository.owner.login,
-      user_id: payload.repository.owner.id,
-      user_avatar_url: payload.repository.owner.avatar_url,
-      user_url: payload.repository.owner.url,
-      user_html_url: payload.repository.owner.html_url
-    };
+  return res.status(200).json({ msg: 'ok' });
 
-    pingRepository(data)
-      .then(repo => res.status(200).json({ msg: 'ok' }))
-      .catch(err => res.status(400).json(err));
-  } else if (ev === 'pull_request') {
-    switch (payload.action) {
-      case 'closed':
-        res.status(200).json({ msg: 'ok' });
-      break;
-      case 'opened':
-        createPullRequest(payload.pull_request)
-          .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
-          .catch(err => console.error(err));
-      break;
-      case 'synchronize':
-        synchronizePullRequest(payload.pull_request)
-          .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
-          .catch(err => console.error(err));
-      break;
-    }
-  } else {
-    return res.status(400).json({ error: 'Event type is not supported!' });
-  }
+  // if (ev === 'ping') {
+  //   const data = {
+  //     github_id: payload.repository.id,
+  //     clone_url: payload.repository.clone_url,
+  //     html_url: payload.repository.html_url,
+  //     default_branch: payload.repository.default_branch,
+  //     name: payload.repository.name,
+  //     full_name: payload.repository.full_name,
+  //     description: payload.repository.description,
+  //     private: payload.repository.private,
+  //     fork: payload.repository.fork,
+  //     user_login: payload.repository.owner.login,
+  //     user_id: payload.repository.owner.id,
+  //     user_avatar_url: payload.repository.owner.avatar_url,
+  //     user_url: payload.repository.owner.url,
+  //     user_html_url: payload.repository.owner.html_url
+  //   };
+
+  //   pingRepository(data)
+  //     .then(repo => res.status(200).json({ msg: 'ok' }))
+  //     .catch(err => res.status(400).json(err));
+  // } else if (ev === 'pull_request') {
+  //   switch (payload.action) {
+  //     case 'closed':
+  //       res.status(200).json({ msg: 'ok' });
+  //     break;
+  //     case 'opened':
+  //       createPullRequest(payload.pull_request)
+  //         .then(build => startBuild(build))
+  //         .then(() => res.status(200).json({ msg: 'ok' }))
+  //         .catch(err => console.error(err));
+  //     break;
+  //     case 'synchronize':
+  //       synchronizePullRequest(payload.pull_request)
+  //         .then(build => startBuild(build))
+  //         .then(() => res.status(200).json({ msg: 'ok' }))
+  //         .catch(err => console.error(err));
+  //     break;
+  //   }
+  // } else {
+  //   return res.status(400).json({ error: 'Event type is not supported!' });
+  // }
 });
 
 function verifyGithubWebhook(signature: string, payload: any, secret: string): boolean {
