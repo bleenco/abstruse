@@ -123,13 +123,41 @@ export function getRepositoryDetails(url: string, sha = null, pr = null): Promis
       })
       .then(() => {
         if (pr) {
-          return spawn('git', ['--git-dir', join(cloneDir, '.git'), 'fetch', 'origin',
-            `pull/${pr}/head:pr${pr}`])
-            .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), 'checkout', `pr${pr}`]))
+          return spawn('git', [
+              '--git-dir',
+              join(cloneDir, '.git'),
+              '--work-tree',
+              cloneDir,
+              'fetch',
+              'origin',
+              `pull/${pr}/head:pr${pr}`
+            ])
+            .then(() => spawn('git', [
+              '--git-dir',
+              join(cloneDir, '.git'),
+              '--work-tree',
+              cloneDir,
+              'checkout',
+              `pr${pr}`
+            ]))
             .then(() => Promise.resolve());
         } else if (sha) {
-          return spawn('git', ['--git-dir', join(cloneDir, '.git'), 'fetch', 'origin'])
-            .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), 'checkout', sha]))
+          return spawn('git', [
+              '--git-dir',
+              join(cloneDir, '.git'),
+              '--work-tree',
+              cloneDir,
+              'fetch',
+              'origin'
+            ])
+            .then(() => spawn('git', [
+              '--git-dir',
+              join(cloneDir, '.git'),
+              '--work-tree',
+              cloneDir,
+              'checkout',
+              sha
+            ]))
             .then(() => Promise.resolve());
         } else {
           return Promise.resolve();
@@ -137,9 +165,8 @@ export function getRepositoryDetails(url: string, sha = null, pr = null): Promis
       })
       .then(() => {
         let configPath = join(cloneDir, '.abstruse.yml');
-        console.log(configPath);
         if (!existsSync(configPath)) {
-          return Promise.reject('');
+          return Promise.reject(`${configPath} does not exists`);
         } else {
           return Promise.resolve(sh.cat(configPath));
         }
