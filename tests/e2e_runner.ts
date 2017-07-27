@@ -80,7 +80,7 @@ testsToRun.reduce((previous, relativeName) => {
       .then(() => printHeader(currentFileName))
       .then(() => allSetups.indexOf(relativeName) === -1 ? abstruse() : Promise.resolve(null))
       .then(() => previousDir = process.cwd())
-      // .then(() => fn())
+      .then(() => fn())
       .then(() => console.log('----'))
       .then(() => killAllProcesses())
       .then(() => killAllDockerContainers())

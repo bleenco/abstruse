@@ -89,9 +89,25 @@ export function updateRepository(data: any): Promise<boolean> {
   });
 }
 
-// ping repository
 export function pingRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
+    data = {
+      github_id: data.repository.id,
+      clone_url: data.repository.clone_url,
+      html_url: data.repository.html_url,
+      default_branch: data.repository.default_branch,
+      name: data.repository.name,
+      full_name: data.repository.full_name,
+      description: data.repository.description,
+      private: data.repository.private,
+      fork: data.repository.fork,
+      user_login: data.repository.owner.login,
+      user_id: data.repository.owner.id,
+      user_avatar_url: data.repository.owner.avatar_url,
+      user_url: data.repository.owner.url,
+      user_html_url: data.repository.owner.html_url
+    };
+
     new Repository().where({ github_id: data.github_id }).fetch()
       .then(repo => {
         if (!repo) {

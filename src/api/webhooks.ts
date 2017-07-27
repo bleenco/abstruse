@@ -33,48 +33,71 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
 
   // return res.status(200).json({ msg: 'ok' });
 
-  if (ev === 'ping') {
-    const data = {
-      github_id: payload.repository.id,
-      clone_url: payload.repository.clone_url,
-      html_url: payload.repository.html_url,
-      default_branch: payload.repository.default_branch,
-      name: payload.repository.name,
-      full_name: payload.repository.full_name,
-      description: payload.repository.description,
-      private: payload.repository.private,
-      fork: payload.repository.fork,
-      user_login: payload.repository.owner.login,
-      user_id: payload.repository.owner.id,
-      user_avatar_url: payload.repository.owner.avatar_url,
-      user_url: payload.repository.owner.url,
-      user_html_url: payload.repository.owner.html_url
-    };
-
-    pingRepository(data)
-      .then(repo => res.status(200).json({ msg: 'ok' }))
-      .catch(err => res.status(400).json(err));
-  } else if (ev === 'pull_request') {
-    switch (payload.action) {
-      case 'closed':
-        res.status(200).json({ msg: 'ok' });
-      break;
-      case 'opened':
-        createPullRequest(payload.pull_request)
-          .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
-          .catch(err => console.error(err));
-      break;
-      case 'synchronize':
-        synchronizePullRequest(payload.pull_request)
-          .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
-          .catch(err => console.error(err));
-      break;
-    }
-  } else {
-    // return res.status(400).json({ error: 'Event type is not supported!' });
-    return res.status(200).json({ msg: 'ok' });
+  switch (ev) {
+    case 'ping':
+      pingRepository(payload)
+        .then(repo => res.status(200).json({ msg: 'ok' }))
+        .catch(err => res.status(400).json(err));
+    break;
+    case 'pull_request':
+      switch (payload.action) {
+        case 'opened':
+          createPullRequest(payload.pull_request)
+            .then(build => startBuild(build))
+            .then(() => res.status(200).json({ msg: 'ok' }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
+        break;
+        case 'closed':
+          // should kill all jobs related to this PR?
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'reopened':
+          synchronizePullRequest(payload.pull_request)
+            .then(build => startBuild(build))
+            .then(() => res.status(200).json({ msg: 'ok' }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
+        break;
+        case 'assigned':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'unassigned':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'review_requested':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'review_request_removed':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'labeled':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'unlabeled':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'edited':
+          res.status(200).json({ msg: 'ok' });
+        break;
+        case 'synchronize':
+          synchronizePullRequest(payload.pull_request)
+            .then(build => startBuild(build))
+            .then(() => res.status(200).json({ msg: 'ok' }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
+        break;
+      }
+    break;
+    default:
+      res.status(200).json({ msg: 'ok' });
+    break;
   }
 });
 
