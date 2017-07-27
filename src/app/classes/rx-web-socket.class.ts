@@ -61,7 +61,7 @@ export class RxWebSocket {
           this.socket.close();
           this.socket = null;
           this._out = null;
-        }
+        };
       });
     }
 

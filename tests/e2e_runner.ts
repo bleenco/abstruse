@@ -27,7 +27,7 @@ let allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: ar
   .sort();
 
 if (argv['nolink']) {
-  allSetups = allSetups.filter(name => !name.includes('npm-link.ts'));
+  allSetups = allSetups.filter(name => !name.includes('link.ts'));
 }
 
 if (argv['nobuild']) {
@@ -92,7 +92,10 @@ testsToRun.reduce((previous, relativeName) => {
         printFooter(currentFileName, start);
         console.error(err);
         throw err;
-      });
+      })
+      .catch(err => killAllProcesses().then(() => {
+        process.exit(exitCode);
+      }));
   });
 }, Promise.resolve())
   .then(() => {

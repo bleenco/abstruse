@@ -31,6 +31,8 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
     return res.status(400).json({ error: 'X-Hub-Signature does not match blob signature' });
   }
 
+  // return res.status(200).json({ msg: 'ok' });
+
   if (ev === 'ping') {
     const data = {
       github_id: payload.repository.id,

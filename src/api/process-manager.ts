@@ -75,11 +75,14 @@ jobProcesses
 export function startBuild(data: any): Promise<any> {
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
-      return getRepositoryDetails(repository.clone_url)
+      const sha = data && data.sha ? data.sha : null;
+      const pr = data && data.pr ? data.pr : null;
+
+      return getRepositoryDetails(repository.clone_url, sha, pr)
         .then(details => {
-          if (data.pr && data.pr !== '') {
+          if (pr) {
             details.config.git.pr = data.pr;
-          } else if (typeof data.sha === 'undefined' || data.sha === '') {
+          } else if (!sha) {
             details.config.git.sha = details.log.commit_hash;
             data.sha = details.log.commit_hash;
             data.head_sha = details.log.commit_hash;

@@ -101,7 +101,7 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   return matrix;
 }
 
-export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
+export function getRepositoryDetails(url: string, sha = null, pr = null): Promise<RepositoryInfo> {
   return new Promise((resolve, reject) => {
     let cloneDir = null;
     let configPath = null;
@@ -113,13 +113,36 @@ export function getRepositoryDetails(url: string): Promise<RepositoryInfo> {
         cloneDir = tempDir;
         return spawn('git', ['clone', url, '--depth', '1', cloneDir]);
       })
-      .then(cloned => {
-        let configPath = join(cloneDir, '.abstruse.yml');
-        if (cloned.exit !== 0 || !existsSync(configPath)) {
-          reject();
+      .then(cloned => cloned.exit === 0 ? Promise.resolve() : Promise.reject(''))
+      .then(() => {
+        if (existsSync(cloneDir) && existsSync(join(cloneDir, '.git'))) {
+          return Promise.resolve();
+        } else {
+          return Promise.reject(`${cloneDir} does not exists`);
         }
-
-        return sh.cat(configPath);
+      })
+      .then(() => {
+        if (pr) {
+          return spawn('git', ['--git-dir', join(cloneDir, '.git'), 'fetch', 'origin',
+            `pull/${pr}/head:pr${pr}`])
+            .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), 'checkout', `pr${pr}`]))
+            .then(() => Promise.resolve());
+        } else if (sha) {
+          return spawn('git', ['--git-dir', join(cloneDir, '.git'), 'fetch', 'origin'])
+            .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), 'checkout', sha]))
+            .then(() => Promise.resolve());
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .then(() => {
+        let configPath = join(cloneDir, '.abstruse.yml');
+        console.log(configPath);
+        if (!existsSync(configPath)) {
+          return Promise.reject('');
+        } else {
+          return Promise.resolve(sh.cat(configPath));
+        }
       })
       .then(configYml => yml = yaml.parse(configYml))
       .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), '--no-pager', 'log', '-1']))

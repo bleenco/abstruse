@@ -183,7 +183,7 @@ export function createPullRequest(data: any): Promise<any> {
           repositories_id: repo.id
         };
 
-        return getHttpJsonResponse(repo.head_user_url);
+        return getHttpJsonResponse(data.head.user.url);
       })
       .then(userData => {
         buildData.author = userData.name;
