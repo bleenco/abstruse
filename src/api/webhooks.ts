@@ -70,6 +70,8 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           .catch(err => console.error(err));
       break;
     }
+  } else {
+    return res.status(400).json({ error: 'Event type is not supported!' });
   }
 });
 
