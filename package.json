@@ -17,7 +17,7 @@
     "build:app:prod": "webpack --env.aot -p --progress --hide-modules",
     "start": "webpack-dev-server --env.dev --env.serve --progress",
     "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress",
-    "lint": "tslint ./src/api/**/*.ts",
+    "lint": "tslint ./src/**/*.ts",
     "test:e2e": "node ./tests/run_e2e.js",
     "test:protractor": "node ./tests/run_protractor.js",
     "preprotractor": "npm run webdriver",
