@@ -16,6 +16,9 @@ preinstall:
 install:
   - npm install
 
+postinstall:
+  - npm install enhanced-resolve@3.0.0 webpack@3.0.0
+
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
   - if [[ "$NODE_SCRIPT" ]]; then node ./$NODE_SCRIPT; fi
