@@ -13,7 +13,7 @@ Provides safe and reliable testing & deployment environment using Docker contain
 ## Sneak Peek
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/28603923-7bbf78b6-71c7-11e7-8575-edd27779e8f1.png">
+  <img src="https://user-images.githubusercontent.com/1796022/28693241-05049a04-7324-11e7-9c8b-0b3132cdf21b.png">
 </p>
 
 ## Current Status
