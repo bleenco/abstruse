@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as request from 'request';
+import { exec } from 'child_process';
 
 export function sendRequest(data: any, headers: any): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -27,6 +28,14 @@ export function sendRequest(data: any, headers: any): Promise<any> {
           });
         }
       }
+    });
+  });
+}
+
+export function killAllDockerContainers(): Promise<boolean> {
+  return new Promise(resolve => {
+    exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => {
+      resolve();
     });
   });
 }

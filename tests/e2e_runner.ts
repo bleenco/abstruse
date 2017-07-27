@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import * as path from 'path';
 import * as minimist from 'minimist';
 import { abstruse, killAllProcesses } from './e2e/utils/process';
+import { killAllDockerContainers } from './e2e/utils/utils';
 
 Error.stackTraceLimit = Infinity;
 
@@ -79,22 +80,17 @@ testsToRun.reduce((previous, relativeName) => {
       .then(() => printHeader(currentFileName))
       .then(() => allSetups.indexOf(relativeName) === -1 ? abstruse() : Promise.resolve(null))
       .then(() => previousDir = process.cwd())
-      .then(() => fn(() => clean = false))
+      // .then(() => fn())
       .then(() => console.log('----'))
-      .then(() => {
-        if (allSetups.indexOf(relativeName) === -1) {
-          return killAllProcesses();
-        } else {
-          return Promise.resolve();
-        }
-      })
+      .then(() => killAllProcesses())
+      .then(() => killAllDockerContainers())
       .then(() => printFooter(currentFileName, start), err => {
         printFooter(currentFileName, start);
         console.error(err);
         throw err;
       })
       .catch(err => killAllProcesses().then(() => {
-        process.exit(exitCode);
+        process.exit(process.exitCode);
       }));
   });
 }, Promise.resolve())
