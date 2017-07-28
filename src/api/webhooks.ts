@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as crypto from 'crypto';
 import { getConfig } from './utils';
 import { pingRepository, createPullRequest, synchronizePullRequest } from './db/repository';
+import { insertBuild } from './db/build';
 import { startBuild } from './process-manager';
 
 const config: any = getConfig();
@@ -38,6 +39,41 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
       pingRepository(payload)
         .then(repo => res.status(200).json({ msg: 'ok' }))
         .catch(err => res.status(400).json(err));
+    break;
+    case 'push':
+      pingRepository(payload)
+        .then(repo => {
+          const buildData = {
+            ref: payload.base_ref,
+            sha: payload.after,
+            message: payload.head_commit.message,
+            user: payload.head_commit.author.login,
+            author: payload.head_commit.author.name,
+            head_github_id: payload.repository.id,
+            head_clone_url: payload.repository.clone_url,
+            head_html_url: payload.repository.html_url,
+            head_default_branch: payload.repository.default_branch,
+            head_name: payload.repository.name,
+            head_full_name: payload.repository.full_name,
+            head_description: payload.repository.description,
+            head_private: payload.repository.private,
+            head_fork: payload.repository.fork,
+            head_user_login: payload.sender.login,
+            head_user_id: payload.sender.id,
+            head_user_avatar_url: payload.sender.avatar_url,
+            head_user_url: payload.sender.url,
+            head_user_html_url: payload.sender.html_url,
+            start_time: new Date(),
+            repositories_id: repo.id
+          };
+
+          return startBuild(buildData);
+        })
+        .then(() => res.status(200).json({ msg: 'ok' }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
     break;
     case 'pull_request':
       switch (payload.action) {

@@ -15,9 +15,12 @@ preinstall:
 
 install:
   - npm install
+  - sudo apt-get install -y docker.io sqlite3
 
 postinstall:
   - npm install enhanced-resolve@3.3.0 webpack@3.3.0
+  - sudo usermod -aG docker abstruse
+  - sudo /etc/init.d/docker start
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi

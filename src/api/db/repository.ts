@@ -121,7 +121,7 @@ export function pingRepository(data: any): Promise<any> {
             })
             .catch(err => reject(err));
         } else {
-          repo.save(data, { method: 'update' })
+          repo.save(data, { method: 'update', require: false })
             .then(result => {
               if (!result) {
                 reject(result);

@@ -55,7 +55,7 @@ export function insertBuild(data: any): Promise<any> {
 
 export function updateBuild(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    new Build({ id: data.id }).save(data, { method: 'update' }).then(build => {
+    new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
         reject();
       }

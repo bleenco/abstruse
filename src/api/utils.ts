@@ -24,6 +24,12 @@ const defaultConfig = {
   }
 };
 
+export let abstruseHome = null;
+
+export function setHome(dirPath: string): void {
+  abstruseHome = dirPath;
+}
+
 export function initSetup(): Promise<null> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
@@ -39,7 +45,7 @@ export function appReady(): boolean {
 }
 
 export function getRootDir(): string {
-  return join(homedir(), '.abstruse');
+  return join(abstruseHome, '.abstruse');
 }
 
 export function getFilePath(relativePath: string): string {
