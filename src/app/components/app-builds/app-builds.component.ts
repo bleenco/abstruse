@@ -25,9 +25,14 @@ export class AppBuildsComponent implements OnInit {
   ngOnInit() {
     this.fetch();
 
-    this.socketService.outputEvents.subscribe(event => {
+    this.socketService.outputEvents.skip(1).subscribe(event => {
       if (!this.builds || !event.data) {
         return;
+      }
+
+      if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
+        const buildIndex = this.builds.findIndex(build => build.id === event.data);
+        this.builds[buildIndex].processingRequest = false;
       }
 
       if (event.data === 'jobAdded') {
@@ -117,8 +122,20 @@ export class AppBuildsComponent implements OnInit {
       });
   }
 
-  restartBuild(id: number): void {
-    this.socketService.emit({ type: 'restartBuild', data: id });
+  restartBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const buildIndex = this.builds.findIndex(build => build.id === id);
+    this.builds[buildIndex].processingRequest = true;
+    this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
+  }
+
+  stopBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const buildIndex = this.builds.findIndex(build => build.id === id);
+    this.builds[buildIndex].processingRequest = true;
+    this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
   gotoBuild(buildId: number) {

@@ -11,6 +11,8 @@ import {
   jobEvents,
   restartJob,
   stopJob,
+  restartBuild,
+  stopBuild,
   terminalEvents,
   getJobProcesses
 } from './process-manager';
@@ -86,8 +88,17 @@ export class SocketServer {
                     console.log('New Build: ', buildId);
                   });
               break;
+              case 'stopBuild':
+                stopBuild(event.data.buildId)
+                  .then(() => {
+                    conn.next({ type: 'buildStopped', data: event.data.buildId });
+                  });
+              break;
               case 'restartBuild':
-
+                restartBuild(event.data.buildId)
+                  .then(() => {
+                    conn.next({ type: 'buildRestarted', data: event.data.buildId });
+                  });
               break;
               case 'restartJob':
                 restartJob(parseInt(event.data.jobId, 10));

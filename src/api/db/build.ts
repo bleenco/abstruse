@@ -55,12 +55,15 @@ export function insertBuild(data: any): Promise<any> {
 
 export function updateBuild(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
+    delete data.jobs;
+    delete data.repository;
+
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
-        reject();
+        reject(build);
+      } else {
+        resolve(build.toJSON());
       }
-
-      resolve(true);
     });
   });
 }

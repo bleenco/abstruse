@@ -167,17 +167,16 @@ export function startBuild(data: any): Promise<any> {
     });
 }
 
-export function restartBuild(buildId: number): Promise<void> {
-  return getBuild(buildId)
+export function restartBuild(buildId: number): Promise<any> {
+  return stopBuild(buildId)
+    .then(() => getBuild(buildId))
     .then(build => {
       build.start_time = new Date();
       build.end_time = null;
 
       return updateBuild(build)
         .then(() => dbJob.resetJobs(buildId))
-        .then(() => {
-
-        });
+        .then(jobs => Promise.all(jobs.map(job => queueJob(buildId, job.id))));
     });
 }
 

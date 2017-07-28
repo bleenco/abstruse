@@ -138,8 +138,20 @@
   .icon
     margin-right: 10px
 
-    img
+    img, svg
       width: 20px
+      height: 20px
+
+      g
+        fill: $white
+
+    &.disabled
+      pointer-events: none
+
+      svg
+
+        g
+          fill: $color-disabled
 
   .avatar-icon
     width: 50px

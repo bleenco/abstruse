@@ -2,12 +2,12 @@ import { Job } from './model';
 
 export function getJobs(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ builds_id: buildId }).fetchAll().then(jobs => {
+    new Job().where({ builds_id: buildId }).fetchAll().then(jobs => {
       if (!jobs) {
         reject();
+      } else {
+        resolve(jobs.toJSON());
       }
-
-      resolve(jobs.toJSON());
     });
   });
 }
@@ -56,12 +56,14 @@ export function resetJobs(buildId: number): Promise<any> {
       log: ''
     };
 
-    new Job({ builds_id: buildId }).save(data, { method: 'update', require: false }).then(jobs => {
-      if (!jobs) {
-        reject();
-      }
-
-      resolve(jobs.toJSON());
+    new Job().where({ builds_id: buildId }).save(data, { method: 'update', require: false })
+      .then(jobs => {
+        if (!jobs) {
+          reject();
+        } else {
+          new Job().where({ builds_id: buildId }).fetchAll()
+            .then(jobs => jobs ? resolve(jobs.toJSON()) : reject(jobs));
+        }
     });
   });
 }
