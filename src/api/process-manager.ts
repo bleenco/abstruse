@@ -7,7 +7,7 @@ import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
-import { getConfig } from './utils';
+import { getConfig, getHttpJsonResponse } from './utils';
 
 export interface BuildMessage {
   type: string;
@@ -77,33 +77,67 @@ export function startBuild(data: any): Promise<any> {
     .then(repository => {
       const sha = data && data.sha ? data.sha : null;
       const pr = data && data.pr ? data.pr : null;
+      let repoDetails = null;
 
       return getRepositoryDetails(repository.clone_url, sha, pr)
         .then(details => {
+          repoDetails = details;
+
           if (pr) {
-            details.config.git.pr = data.pr;
+            repoDetails.config.git.pr = data.pr;
           } else if (!sha) {
-            details.config.git.sha = details.log.commit_hash;
-            data.sha = details.log.commit_hash;
-            data.head_sha = details.log.commit_hash;
+            repoDetails.config.git.sha = repoDetails.log.commit_hash;
+            data.sha = repoDetails.log.commit_hash;
+            data.head_sha = repoDetails.log.commit_hash;
             data.label = repository.full_name;
             data.head_label = repository.full_name;
             data.ref = repository.default_branch;
             data.head_ref = repository.default_branch;
-            data.author = details.log.commit_author;
-            data.user = details.log.commit_author;
-            data.message = details.log.commit_message;
-            data.start_time = details.log.commit_date;
+            data.author = repoDetails.log.commit_author;
+            data.user = repoDetails.log.commit_author.split('<')[0];
+            data.message = repoDetails.log.commit_message;
+            data.start_time = repoDetails.log.commit_date;
+          }
+        })
+        .then(() => {
+          if (!sha) {
+            const url = 'https://api.github.com/repos/' +
+              repository.full_name + '/commits/' + repoDetails.log.commit_hash;
+            return getHttpJsonResponse(url);
+          } else {
+            return Promise.resolve(null);
+          }
+        })
+        .then(commit => {
+          if (commit) {
+            data = Object.assign(data, {
+              user: commit.author.login,
+              author: commit.commit.author.name,
+              head_github_id: repository.github_id,
+              head_clone_url: repository.clone_url,
+              head_html_url: repository.html_url,
+              head_default_branch: repository.default_branch,
+              head_name: repository.name,
+              head_full_name: repository.full_name,
+              head_description: repository.description,
+              head_private: repository.private,
+              head_fork: repository.fork,
+              head_user_login: commit.author.login,
+              head_user_id: commit.author.id,
+              head_user_avatar_url: commit.author.avatar_url,
+              head_user_url: commit.author.url,
+              head_user_html_url: commit.author.html_url
+            });
           }
 
           return insertBuild(data)
             .then(build => {
-              let jobsCommands = generateCommands(repository.clone_url, details.config);
+              let jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
               return Promise.all(jobsCommands.map((commands, i) => {
-                const lang = details.config.language;
-                const langVersion = details.config.matrix[i].node_js; // TODO: update
-                const testScript = details.config.matrix[i].env;
+                const lang = repoDetails.config.language;
+                const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
+                const testScript = repoDetails.config.matrix[i].env;
 
                 const data = {
                   start_time: new Date(),
