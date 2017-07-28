@@ -43,7 +43,7 @@ export class AppJobComponent implements OnInit {
 
           this.apiService.getJob(this.id).subscribe(job => {
             this.job = job;
-            this.terminalInput = job.log.split('\r').join('\n');
+            this.terminalInput = job.log;
             this.timeWords = distanceInWordsToNow(job.build.commit_date);
             this.loading = false;
 

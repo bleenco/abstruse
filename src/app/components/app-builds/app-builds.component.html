@@ -56,7 +56,8 @@
                 <span class="icon">
                   <img src="images/icons/git-commit.svg">
                 </span>
-                <span class="bold">{{ build?.head_sha }}</span>
+                <span class="bold" *ngIf="build?.head_sha">{{ build?.head_sha }}</span>
+                <span class="bold" *ngIf="!build?.head_sha">{{ build?.sha }}</span>
                 <span>{{ build?.message }}</span>
                 <span class="smaller">{{ build?.timeInWords }} ago</span>
               </div>

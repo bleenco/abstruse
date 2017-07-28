@@ -34,9 +34,31 @@ export class AppBuildsComponent implements OnInit {
         this.fetch();
       }
 
-      const index = this.builds.findIndex(build => build.id === event.data.id);
+      const index = this.builds.findIndex(build => build.id === event.build_id);
       if (index !== -1) {
-        this.builds[index].status = event.data.status;
+        const jobIndex = this.builds[index].jobs.findIndex(job => job.id === event.job_id);
+        if (jobIndex !== -1) {
+          let status = null;
+          switch (event.data) {
+            case 'jobSucceded':
+              status = 'success';
+            break;
+            case 'jobQueued':
+              status = 'queued';
+            break;
+            case 'jobStarted':
+              status = 'running';
+            break;
+            case 'jobFailed':
+              status = 'failed';
+            break;
+            case 'jobStopped':
+              status = 'failed';
+            break;
+          }
+
+          this.builds[index].jobs[jobIndex].status = status;
+        }
       }
     });
   }
@@ -44,8 +66,38 @@ export class AppBuildsComponent implements OnInit {
   fetch(): void {
     this.apiService.getBuilds().subscribe(builds => {
       this.builds = builds;
+      this.updateJobs();
+      setInterval(() => this.updateJobs(), 1000);
 
-      this.builds = this.builds.map(build => {
+      this.loading = false;
+    });
+  }
+
+  updateJobs(): void {
+    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
+
+    this.builds = this.builds
+      .map(build => {
+        build.jobs = build.jobs.map(job => {
+          if (!job.end_time || job.status === 'running') {
+            job.time = format(currentTime - job.start_time, 'mm:ss');
+          } else {
+            job.time = format(job.end_time - job.start_time, 'mm:ss');
+          }
+          return job;
+        });
+
+        build.totalTime = format(Math.max(...build.jobs.map(job => {
+          let date = new Date();
+          let splitted = job.time.split(':');
+          date.setUTCMinutes(splitted[0]);
+          date.setUTCSeconds(splitted[1]);
+          return date;
+        })), 'mm:ss');
+
+        return build;
+      })
+      .map(build => {
         let status = 'queued';
         if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
           status = 'failed';
@@ -63,37 +115,6 @@ export class AppBuildsComponent implements OnInit {
         build.timeInWords = distanceInWordsToNow(build.created_at);
         return build;
       });
-
-      this.updateJobTimes();
-      setInterval(() => this.updateJobTimes(), 1000);
-
-      this.loading = false;
-    });
-  }
-
-  updateJobTimes(): void {
-    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-
-    this.builds = this.builds.map(build => {
-      build.jobs = build.jobs.map(job => {
-        if (!job.end_time || job.status === 'running') {
-          job.time = format(currentTime - job.start_time, 'mm:ss');
-        } else {
-          job.time = format(job.end_time - job.start_time, 'mm:ss');
-        }
-        return job;
-      });
-
-      build.totalTime = format(Math.max(...build.jobs.map(job => {
-        let date = new Date();
-        let splitted = job.time.split(':');
-        date.setUTCMinutes(splitted[0]);
-        date.setUTCSeconds(splitted[1]);
-        return date;
-      })), 'mm:ss');
-
-      return build;
-    });
   }
 
   restartBuild(id: number): void {

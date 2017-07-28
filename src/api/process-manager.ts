@@ -301,12 +301,12 @@ export function stopJob(jobId: number): Promise<any> {
             data: 'jobStopped'
           });
 
-          const log = jobProcess.log.join('\r');
+          const log = jobProcess.log.join('');
           dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
             .then(() => killContainer(`${jobProcess.build_id}_${jobProcess.job_id}`).toPromise())
             .then(() => resolve(jobProcess));
         } else {
-          dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: '' })
+          dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed' })
             .then(jobProcess => resolve(jobProcess));
         }
       });
@@ -339,7 +339,7 @@ function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMe
               id: jobId,
               end_time: new Date(),
               status: output.data === 0 ? 'success' : 'failed',
-              log: proc.log.map(line => line.toString().trim()).join('\r')
+              log: proc.log.join('')
             }).then(() => {
               jobEvents.next({
                 type: 'process',
