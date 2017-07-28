@@ -9,4 +9,9 @@ e2e/
 art/
 tsconfig.json
 tslint.json
+tests/
+protractor.conf.js
+tsconfig.json
+tslint.json
+webpack.config.js
 !src/files/
