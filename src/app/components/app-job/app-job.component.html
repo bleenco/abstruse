@@ -48,19 +48,13 @@
                     </span>
                   </div>
                   <div class="column is-10">
-                    <h2 class="bold">{{ job?.build.repository.clone_url }}</h2>
+                    <h2 class="bold">{{ job?.build.head_full_name }}</h2>
                     <p>
-                      <span class="underlined">{{ job?.build.sha }}</span>
-                      <span class="bold">{{ job?.build.label }}</span>
-                      <span>{{ job?.build.user }} authored and commited {{ timeWords }} ago.</span>
+                      <span>{{ job?.build.head_sha }}</span>
+                      <span class="bold">{{ job?.build.message }}</span>
+                      <span>{{ job?.build.author }} authored and commited {{ timeWords }} ago.</span>
                   </div>
                   <div class="column is-1"></div>
-                </div>
-                <div class="columns">
-                  <div class="column is-1"></div>
-                  <div class="column is-11">
-                    <!--<p>{{ build.commit_author }} authored and commited {{ timeWords }} ago.</p>-->
-                  </div>
                 </div>
               </div>
             </div>

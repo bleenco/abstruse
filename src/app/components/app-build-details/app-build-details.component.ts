@@ -35,7 +35,7 @@ export class AppBuildDetailsComponent implements OnInit {
         this.loading = false;
         this.build = build;
         this.build.jobs.forEach(job => job.time = '00:00');
-        this.timeWords = distanceInWordsToNow(this.build.commit_date);
+        this.timeWords = distanceInWordsToNow(this.build.start_time);
 
         this.status = this.getBuildStatus();
 

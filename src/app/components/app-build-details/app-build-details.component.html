@@ -22,8 +22,8 @@
                     </span>
                   </div>
                   <div class="column is-9">
-                    <h1 class="bold">{{ build.repository.url }}</h1>
-                    <h2>{{ build.commit_message }}</h2>
+                    <h1 class="bold">{{ build?.head_full_name }}</h1>
+                    <h2>{{ build?.message }}</h2>
                   </div>
                   <div class="column is-2">
                     <button class="button is-fullwidth" type="button">
@@ -39,7 +39,7 @@
                 <div class="columns">
                   <div class="column is-1"></div>
                   <div class="column is-9">
-                    <p>{{ build.commit_hash }}</p>
+                    <p>{{ build?.head_sha }}</p>
                   </div>
                   <div class="column is-2">
                     <span class="total-time">
@@ -53,7 +53,7 @@
                 <div class="columns">
                   <div class="column is-1"></div>
                   <div class="column is-11">
-                    <p>{{ build.commit_author }} authored and commited {{ timeWords }} ago.</p>
+                    <p>{{ build?.author }} commited {{ timeWords }} ago.</p>
                   </div>
                 </div>
               </div>
