@@ -176,16 +176,20 @@ export function restartBuild(buildId: number): Promise<any> {
 
       return updateBuild(build)
         .then(() => dbJob.resetJobs(buildId))
-        .then(jobs => Promise.all(jobs.map(job => queueJob(buildId, job.id))));
+        .then(jobs => {
+          return jobs.reduce((prev, curr) => {
+            return prev.then(() => queueJob(buildId, curr.id));
+          }, Promise.resolve());
+        });
     });
 }
 
 export function stopBuild(buildId: number): Promise<any> {
   return getJobProcesses()
     .then(procs => {
-      return Promise.all(procs.filter(job => job.build_id === buildId).map(job => {
-        return stopJob(job.job_id);
-      }));
+        return procs.filter(job => job.build_id === buildId).reduce((prev, current) => {
+          return prev.then(() => stopJob(current.job_id));
+        }, Promise.resolve());
     });
 }
 

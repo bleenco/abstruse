@@ -53,12 +53,15 @@ export class AppBuildsComponent implements OnInit {
             break;
             case 'jobStarted':
               status = 'running';
+              this.builds[index].jobs[jobIndex].start_time = new Date();
             break;
             case 'jobFailed':
               status = 'failed';
+              this.builds[index].jobs[jobIndex].end_time = new Date();
             break;
             case 'jobStopped':
               status = 'failed';
+              this.builds[index].jobs[jobIndex].end_time = new Date();
             break;
           }
 
@@ -73,7 +76,6 @@ export class AppBuildsComponent implements OnInit {
       this.builds = builds;
       this.updateJobs();
       setInterval(() => this.updateJobs(), 1000);
-
       this.loading = false;
     });
   }
