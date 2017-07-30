@@ -35,6 +35,11 @@ export class AppRepositoryComponent implements OnInit {
         return;
       }
 
+      if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
+        const buildIndex = this.repo.builds.findIndex(build => build.id === event.data);
+        this.repo.builds[buildIndex].processingRequest = false;
+      }
+
       if (event.data === 'jobAdded') {
         this.fetch();
       }
@@ -53,12 +58,15 @@ export class AppRepositoryComponent implements OnInit {
             break;
             case 'jobStarted':
               status = 'running';
+              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
             break;
             case 'jobFailed':
               status = 'failed';
+              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
             break;
             case 'jobStopped':
               status = 'failed';
+              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
             break;
           }
 
@@ -119,6 +127,22 @@ export class AppRepositoryComponent implements OnInit {
         build.timeInWords = distanceInWordsToNow(build.created_at);
         return build;
       });
+  }
+
+  restartBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const buildIndex = this.repo.builds.findIndex(build => build.id === id);
+    this.repo.builds[buildIndex].processingRequest = true;
+    this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
+  }
+
+  stopBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+    const buildIndex = this.repo.builds.findIndex(build => build.id === id);
+    this.repo.builds[buildIndex].processingRequest = true;
+    this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
   gotoBuild(buildId: number) {

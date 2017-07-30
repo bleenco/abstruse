@@ -15,6 +15,7 @@ export class AppBuildDetailsComponent implements OnInit {
   status: string;
   timeWords: string;
   totalTime: string;
+  processingBuild: boolean;
 
   constructor(
     private socketService: SocketService,
@@ -47,24 +48,28 @@ export class AppBuildDetailsComponent implements OnInit {
           .subscribe(event => {
             let index = this.build.jobs.findIndex(job => job.id === event.job_id);
             if (index !== -1) {
-              this.ngZone.run(() => {
-                if (event.data === 'jobStarted') {
-                  this.build.jobs[index].status = 'running';
-                  this.build.jobs[index].end_time = null;
-                  this.build.jobs[index].start_time = new Date().getTime();
-                } else if (event.data === 'jobSucceded') {
-                  this.build.jobs[index].status = 'success';
-                  this.build.jobs[index].end_time = new Date().getTime();
-                } else if (event.data === 'jobFailed' || event.data === 'jobStopped') {
-                  this.build.jobs[index].status = 'failed';
-                  this.build.jobs[index].end_time = new Date().getTime();
-                } else if (event.data === 'jobQueued') {
-                  this.build.jobs[index].status = 'queued';
-                }
+              if (event.data === 'jobStarted') {
+                this.build.jobs[index].status = 'running';
+                this.build.jobs[index].end_time = null;
+                this.build.jobs[index].start_time = new Date().getTime();
+              } else if (event.data === 'jobSucceded') {
+                this.build.jobs[index].status = 'success';
+                this.build.jobs[index].end_time = new Date().getTime();
+              } else if (event.data === 'jobFailed' || event.data === 'jobStopped') {
+                this.build.jobs[index].status = 'failed';
+                this.build.jobs[index].end_time = new Date().getTime();
+              } else if (event.data === 'jobQueued') {
+                this.build.jobs[index].status = 'queued';
+              }
 
-                this.status = this.getBuildStatus();
-              });
+              this.status = this.getBuildStatus();
             }
+          });
+
+        this.socketService.outputEvents
+          .filter(event => event.type === 'buildRestarted' || event.type === 'buildStopped')
+          .subscribe(event => {
+            this.processingBuild = false;
           });
       });
     });
@@ -111,10 +116,6 @@ export class AppBuildDetailsComponent implements OnInit {
     return status;
   }
 
-  restartBuild(buildId: string): void {
-    this.socketService.emit({ type: 'restartBuild', data: buildId });
-  }
-
   restartJob(e: MouseEvent, jobId: number): void {
     e.preventDefault();
     e.stopPropagation();
@@ -129,8 +130,20 @@ export class AppBuildDetailsComponent implements OnInit {
     this.socketService.emit({ type: 'stopJob', data: { jobId: jobId } });
   }
 
-  stopBuild(): void {
-    this.socketService.emit({ type: 'stopBuild', data: this.id });
+  restartBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.processingBuild = true;
+    this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
+  }
+
+  stopBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.processingBuild = true;
+    this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
   gotoJob(e: MouseEvent, jobId: number): void {

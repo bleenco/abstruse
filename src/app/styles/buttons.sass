@@ -70,7 +70,7 @@
   display: flex
   justify-content: center
   align-items: center
-  outline: none
+  outline: none !important
   flex: 1
 
   &:focus, &:active
@@ -95,6 +95,10 @@
       background: lighten($red, 5)
       border-color: $red
       color: $white
+
+  &.white
+    background: transparent
+    border-color: $white
 
   &.blue
     background: linear-gradient(to bottom, #1991EB, #2DA1F8)
