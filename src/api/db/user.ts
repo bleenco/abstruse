@@ -13,6 +13,24 @@ export function getUser(id: number): Promise<any> {
   });
 }
 
+export function getUsers(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new User().fetchAll().then(users => {
+      if (!users) {
+        reject(users);
+      } else {
+        let data = users.toJSON();
+        data = data.map(user => {
+          delete user.password;
+          return user;
+        });
+
+        resolve(data);
+      }
+    });
+  });
+}
+
 export function updateUser(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new User({ id: data.id }).save(data, { method: 'update', require: false })

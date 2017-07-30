@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config.service';
 
 export interface IUser {
   id: number;
@@ -26,8 +27,9 @@ export class AppSettingsComponent implements OnInit {
   user: IUser;
   userPasswordSaved: boolean;
   userPass: IUserPass;
+  avatarUrl: string;
 
-  constructor(private api: ApiService, private auth: AuthService) { }
+  constructor(private api: ApiService, private auth: AuthService, private config: ConfigService) { }
 
   ngOnInit() {
     const data: any = this.auth.getData();
@@ -44,6 +46,8 @@ export class AppSettingsComponent implements OnInit {
       password: '',
       repeat_password: ''
     };
+
+    this.avatarUrl = this.config.url + '/' + data.avatar;
   }
 
   updateProfile(e: MouseEvent): void {

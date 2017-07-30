@@ -37,6 +37,11 @@ export function initSetup(): Promise<null> {
       const srcDir = resolve(__dirname, '../../src/files');
       const destDir = getFilePath('docker-files');
       return copyFile(srcDir, destDir);
+    })
+    .then(() => {
+      const avatarDir = resolve(__dirname, '../../src/avatars');
+      const destDir = getFilePath('avatars');
+      return copyFile(avatarDir, destDir);
     });
 }
 

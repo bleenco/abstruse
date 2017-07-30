@@ -19,8 +19,46 @@
   <div class="columns">
     <div class="column is-12">
       <div class="content">
+        <div *ngIf="loading">
+          <img src="images/icons/flickr.svg" class="main-loader">
+        </div>
 
+        <div class="columns is-multiline" *ngIf="!loading">
+          <div class="column is-12" *ngIf="!users || !users.length">
+            <div class="notification is-info">
+              No users found.
+            </div>
+          </div>
+
+          <div class="column is-12" *ngIf="users && users.length">
+            <div class="columns list-item list-item-slim" *ngFor="let user of users; let i = index;">
+              <div class="column is-3">
+                <span class="icon">
+                  <img src="images/icons/git-repository.svg">
+                </span>
+                <span class="bold">{{ user.full_name }}</span>
+              </div>
+              <div class="column is-5">
+                <span class="icon">
+                  <img src="images/icons/github-white.svg">
+                </span>
+                <span>{{ user.email }}</span>
+              </div>
+              <div class="column is-2">
+                <span class="icon">
+                  <img src="images/icons/git-branch.svg">
+                </span>
+                <span>{{ user.id }}</span>
+              </div>
+              <div class="column is-2 justify-end">
+                <!-- <img [src]="repo.status_badge"> -->
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
 </div>
+

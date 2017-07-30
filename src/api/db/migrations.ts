@@ -11,7 +11,7 @@ export function create(): Promise<null> {
       t.string('fullname').notNullable();
       t.string('password').notNullable();
       t.boolean('admin').notNullable().defaultTo(false);
-      t.string('avatar').notNullable().defaultTo('images/avatars/user.png');
+      t.string('avatar').notNullable().defaultTo('avatars/user.png');
       t.timestamps();
     })
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {

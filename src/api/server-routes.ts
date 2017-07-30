@@ -7,7 +7,15 @@ import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
-import { usersExists, createUser, login, getUser, updateUser, updateUserPassword } from './db/user';
+import {
+  usersExists,
+  createUser,
+  login,
+  getUser,
+  updateUser,
+  updateUserPassword,
+  getUsers
+} from './db/user';
 import { addRepository, getRepositories, getRepository, getRepositoryBadge } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
@@ -20,6 +28,7 @@ export function webRoutes(): express.Router {
   router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
   router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
   router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+  router.use('/avatars', express.static(getFilePath('avatars'), { index: false }));
 
   router.get('/setup', index);
   router.get('/login', index);
@@ -60,6 +69,14 @@ export function jobRoutes(): express.Router {
 
 export function userRoutes(): express.Router {
   const router = express.Router();
+
+  router.get('/', (req: express.Request, res: express.Response) => {
+    getUsers().then(users => {
+      return res.status(200).json({ data: users });
+    }).catch(err => {
+      return res.status(200).json({ err: err });
+    });
+  });
 
   router.post('/login', (req: express.Request, res: express.Response) => {
     login(req.body).then(credentials => {

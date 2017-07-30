@@ -15,7 +15,7 @@
     </div>
     <div class="nav-right">
       <a class="nav-item user-item" (click)="toggleMenu()">
-        <img class="nav-avatar" src="https://avatars0.githubusercontent.com/u/1796022?v=3&s=460">
+        <img class="nav-avatar" [src]="user.avatar">
         <div class="nav-dropdown" *ngIf="menuDropped">
           <a class="nav-dropdown-item" routerLink="/settings">
             Settings

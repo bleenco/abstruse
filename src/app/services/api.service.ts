@@ -59,6 +59,10 @@ export class ApiService {
     return this.post(`${this.url}/setup/db/init`, {});
   }
 
+  getUsers(): Observable<any> {
+    return this.get(`${this.url}/user`);
+  }
+
   getUser(id: number): Observable<any> {
     return this.get(`${this.url}/user/${id}`);
   }
