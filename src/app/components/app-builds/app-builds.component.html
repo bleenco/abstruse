@@ -65,9 +65,9 @@
                 <span>{{ build?.author }}</span>
               </div>
               <div class="column is-1">
-                {{ build?.totalTime }}
+                <span>{{ build?.totalTime }}</span>
               </div>
-              <div class="column is-1">
+              <div class="column is-1 justify-end">
                 <span class="icon" (click)="restartBuild($event, build.id)" [class.disabled]="build.processingRequest">
                   <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

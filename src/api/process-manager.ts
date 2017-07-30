@@ -317,7 +317,17 @@ export function restartJob(jobId: number): Promise<void> {
           })
           .then(() => queueJob(jobData.builds_id, jobData.id));
       } else {
-        return dbJob.getJob(jobId).then(job => queueJob(job.builds_id, job.id));
+        console.log(jobId);
+        return dbJob.getJob(jobId).then(job => {
+          jobEvents.next({
+            type: 'process',
+            build_id: job.builds_id,
+            job_id: job.id,
+            data: 'jobRestarted'
+          });
+
+          return queueJob(job.builds_id, job.id);
+        });
       }
     });
 }
@@ -343,8 +353,19 @@ export function stopJob(jobId: number): Promise<any> {
             .then(() => killContainer(`${jobProcess.build_id}_${jobProcess.job_id}`).toPromise())
             .then(() => resolve(jobProcess));
         } else {
+          let job = null;
           dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed' })
-            .then(jobProcess => resolve(jobProcess));
+            .then(jobData => {
+              job = jobData;
+              jobEvents.next({
+                type: 'process',
+                build_id: job.builds_id,
+                job_id: job.id,
+                data: 'jobStopped'
+              });
+            })
+            .then(() => killContainer(`${job.builds_id}_${job.id}`).toPromise())
+            .then(() => resolve(job));
         }
       });
   });

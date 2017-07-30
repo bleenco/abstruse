@@ -101,10 +101,16 @@ export class SocketServer {
                   });
               break;
               case 'restartJob':
-                restartJob(parseInt(event.data.jobId, 10));
+                restartJob(parseInt(event.data.jobId, 10))
+                  .then(() => {
+                    conn.next({ type: 'jobRestarted', data: event.data.jobId });
+                  });
               break;
               case 'stopJob':
-                stopJob(event.data.jobId);
+                stopJob(event.data.jobId)
+                  .then(() => {
+                    conn.next({ type: 'jobStopped', data: event.data.jobId });
+                  });
               break;
               case 'subscribeToJobOutput':
                 getJobProcesses()

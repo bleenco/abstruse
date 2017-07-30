@@ -10,51 +10,69 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="job">
-            <div class="job-top-container">
-              <div class="job-top-content">
-                <div class="job-top-actions">
-                  <div class="columns">
-                    <div class="column is-1">
-                      <span class="total-time">
-                        <span class="icon">
-                          <img src="images/icons/clock.svg">
-                        </span>
-                        {{ job?.time }}
+            <div class="build-top-container" [ngClass]="{ green: job?.status === 'success', yellow: job?.status === 'running', red: job?.status === 'failed' }">
+              <div class="build-top-content">
+                <div class="columns is-multiline">
+                  <div class="column is-9">
+                    <h1 class="bold">
+                      <span><a [routerLink]="['/repo', job?.builds_id]">{{ job?.build.head_full_name }}</a></span>
+                      <span class="build-icon">
+                        <img src="images/icons/clock.svg" *ngIf="job?.status === 'queued'">
+                        <img src="images/icons/flickr.svg" *ngIf="job?.status === 'running'">
+                        <img src="images/icons/check-true.svg" *ngIf="job?.status === 'success'">
+                        <img src="images/icons/check-false.svg" *ngIf="job?.status === 'failed'">
                       </span>
-                    </div>
-                    <div class="column is-8"></div>
-                    <div class="column is-3">
-                      <a class="button floated" [routerLink]="['/build', job.builds_id]">
-                        <img src="images/icons/back.svg"> Back
-                      </a>
-                      <button class="button floated green" type="button" (click)="restartJob()">
-                        <img src="images/icons/sync.svg">
-                        Restart
-                      </button>
-                      <button class="button floated red" type="button" (click)="stopJob()" [disabled]="job.status !== 'running'">
-                        <img src="images/icons/stop.svg">
-                        Stop
-                      </button>
-                    </div>
+                    </h1>
                   </div>
-                </div>
-                <div class="columns">
-                  <div class="column is-1">
-                    <span class="build-icon">
-                      <img src="images/icons/clock.svg" *ngIf="job.status === 'queued'">
-                      <img class="loading-img" src="images/icons/flickr.svg" *ngIf="job.status === 'running'">
-                      <img src="images/icons/check-true.svg" *ngIf="job.status === 'success'">
-                      <img src="images/icons/check-false.svg" *ngIf="job.status === 'failed'">
-                    </span>
+                  <div class="column is-3 justify-end right-buttons-top">
+                    <button class="button is-fullwidth" type="button" (click)="restartJob($event)" [disabled]="processing">
+                      <div class="centered">
+                        <span class="icon">
+                          <img src="images/icons/restart.svg">
+                        </span>
+                        <span>Restart</span>
+                      </div>
+                    </button>
+                    <button class="button is-fullwidth" type="button" (click)="stopJob($event)" [class.is-hidden]="job.status !== 'running'" [disabled]="processing">
+                      <div class="centered">
+                        <span class="icon">
+                          <img src="images/icons/stop.svg">
+                        </span>
+                        <span>Stop</span>
+                      </div>
+                    </button>
                   </div>
-                  <div class="column is-10">
-                    <h2 class="bold">{{ job?.build.head_full_name }}</h2>
+
+                  <hr/>
+
+                  <div class="column is-3">
+                    <h2>{{ job?.build.message }}</h2>
+                  </div>
+                  <div class="column is-3">
                     <p>
-                      <span>{{ job?.build.head_sha }}</span>
-                      <span class="bold">{{ job?.build.message }}</span>
-                      <span>{{ job?.build.author }} authored and commited {{ timeWords }} ago.</span>
+                      <span class="icon">
+                        <img src="images/icons/git-commit.svg">
+                      </span>
+                      <span *ngIf="job?.build.head_sha">{{ job?.build.head_sha.slice(0, 7) }}</span>
+                      <span *ngIf="!job?.build.head_sha">{{ job?.build.sha.slice(0, 7) }}</span>
+                    </p>
                   </div>
-                  <div class="column is-1"></div>
+                  <div class="column is-4">
+                    <p>
+                      <span class="icon">
+                        <img [src]="job?.build.head_user_avatar_url" class="avatar-img">
+                      </span>
+                      <span>{{ job?.build.author }} commited {{ timeWords }} ago</span>
+                    </p>
+                  </div>
+                  <div class="column is-2">
+                    <p class="total-time">
+                      <span class="icon">
+                        <img src="images/icons/clock.svg">
+                      </span>
+                      <span>{{ job?.time }}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

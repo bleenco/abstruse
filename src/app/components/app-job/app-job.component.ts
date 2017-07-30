@@ -24,6 +24,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   terminalOptions:  { size: 'small' | 'large' };
   terminalInput: any;
   timeWords: string;
+  processing: boolean;
 
   constructor(
     private socketService: SocketService,
@@ -53,6 +54,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
               .subscribe(event => {
                 if (event.type === 'data') {
                   this.terminalInput = event.data;
+                } else if (event.type === 'jobStopped' && event.data === this.id) {
+                  this.processing = false;
+                } else if (event.type === 'jobRestarted' && event.data === this.id) {
+                  this.processing = false;
                 }
               });
 
@@ -96,9 +101,19 @@ export class AppJobComponent implements OnInit, OnDestroy {
     }
   }
 
-  restartJob(): void {
+  restartJob(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
     this.terminalInput = { clear: true };
+    this.processing = true;
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
+  }
+
+  stopJob(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.processing = true;
+    this.socketService.emit({ type: 'stopJob', data: { jobId: this.id } });
   }
 
   terminalOutput(e: any): void {
