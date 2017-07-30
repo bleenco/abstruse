@@ -4,17 +4,13 @@
 
 # abstruse
 
+[![AbstruseCI](https://abstruse.bleenco.io/api/repositories/badge/1)](https://abstruse.bleenco.io/repo/1)
+
 Run Continuous Integration (CI) on your own servers.
 
 Built with latest techonologies using **Node.JS**, **Angular** and **RxJS**.
 
 Provides safe and reliable testing & deployment environment using Docker containers.
-
-## Sneak Peek
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/28693241-05049a04-7324-11e7-9c8b-0b3132cdf21b.png">
-</p>
 
 ## Current Status
 
@@ -87,9 +83,11 @@ test:
   - if [[ "$NODE_SCRIPT" ]]; then node ./$NODE_SCRIPT; fi
 ```
 
-## Preview
+## Sneak Peek
 
-- [Screenshots](https://github.com/bleenco/abstruse/wiki/Screenshots-(Preview))
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/28693241-05049a04-7324-11e7-9c8b-0b3132cdf21b.png">
+</p>
 
 ## Licence
 
