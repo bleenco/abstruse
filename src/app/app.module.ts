@@ -21,6 +21,7 @@ import { AppRepositoriesComponent } from './components/app-repositories';
 import { AppRepositoryComponent } from './components/app-repository';
 import { AppJobComponent } from './components/app-job';
 import { AppSettingsComponent } from './components/app-settings';
+import { AppTeamComponent } from './components/app-team';
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { AppSettingsComponent } from './components/app-settings';
     AppRepositoryComponent,
     AppJobComponent,
     AppSettingsComponent,
+    AppTeamComponent,
     EqualValidator
   ],
   imports: [
@@ -71,6 +73,11 @@ import { AppSettingsComponent } from './components/app-settings';
       {
         path: 'settings',
         component: AppSettingsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'team',
+        component: AppTeamComponent,
         canActivate: [AuthGuard]
       },
       {
