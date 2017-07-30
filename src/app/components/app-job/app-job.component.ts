@@ -1,8 +1,9 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeWhile';
@@ -12,8 +13,10 @@ import { format, distanceInWordsToNow } from 'date-fns';
   selector: 'app-job',
   templateUrl: 'app-job.component.html'
 })
-export class AppJobComponent implements OnInit {
+export class AppJobComponent implements OnInit, OnDestroy {
   loading: boolean;
+  termSub: Subscription;
+  sub: Subscription;
   id: number;
   job: any;
   status: string;
@@ -25,8 +28,7 @@ export class AppJobComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private route: ActivatedRoute,
-    private ngZone: NgZone
+    private route: ActivatedRoute
   ) {
     this.loading = true;
     this.status = 'queued';
@@ -47,7 +49,7 @@ export class AppJobComponent implements OnInit {
             this.timeWords = distanceInWordsToNow(job.build.start_time);
             this.loading = false;
 
-            this.socketService.outputEvents
+            this.termSub = this.socketService.outputEvents
               .subscribe(event => {
                 if (event.type === 'data') {
                   this.terminalInput = event.data;
@@ -59,27 +61,30 @@ export class AppJobComponent implements OnInit {
             this.updateJobTime();
             setInterval(() => this.updateJobTime(), 1000);
 
-            this.socketService.outputEvents
+            this.sub = this.socketService.outputEvents
               .filter(event => event.type === 'process')
               .filter(event => event.job_id === parseInt(<any>this.id, 10))
               .subscribe(event => {
-                this.ngZone.run(() => {
-                  if (event.data === 'jobStarted') {
-                    job.status = 'running';
-                    job.end_time = null;
-                    job.start_time = new Date().getTime();
-                  } else if (event.data === 'jobSucceded') {
-                    job.status = 'success';
-                    job.end_time = new Date().getTime();
-                  } else if (event.data == 'jobFailed') {
-                    job.status = 'failed';
-                    job.end_time = new Date().getTime();
-                  }
-                });
+                if (event.data === 'jobStarted') {
+                  job.status = 'running';
+                  job.end_time = null;
+                  job.start_time = new Date().getTime();
+                } else if (event.data === 'jobSucceded') {
+                  job.status = 'success';
+                  job.end_time = new Date().getTime();
+                } else if (event.data == 'jobFailed') {
+                  job.status = 'failed';
+                  job.end_time = new Date().getTime();
+                }
               });
             });
           });
         });
+  }
+
+  ngOnDestroy() {
+    this.termSub.unsubscribe();
+    this.sub.unsubscribe();
   }
 
   updateJobTime(): void {

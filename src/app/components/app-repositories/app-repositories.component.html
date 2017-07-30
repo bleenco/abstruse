@@ -4,13 +4,13 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>My Repositories</h1>
+        <h1>Repositories</h1>
       </span>
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button is-active">My Repositories</button>
+        <button class="group-button is-active">Repositories</button>
         <button class="group-button">All Repositories</button>
       </div>
     </div>
@@ -21,7 +21,7 @@
   <div class="columns">
     <div class="column is-12">
       <div class="content">
-        <div class="container" *ngIf="loading">
+        <div *ngIf="loading">
           <img src="images/icons/flickr.svg" class="main-loader">
         </div>
 
@@ -37,23 +37,26 @@
 
           <div class="column is-12" *ngIf="repositories && repositories.length">
             <div class="columns list-item list-item-slim" *ngFor="let repo of repositories; let i = index;" (click)="gotoRepository($event, repo.id)">
-              <div class="column is-4">
+              <div class="column is-3">
                 <span class="icon">
                   <img src="images/icons/git-repository.svg">
                 </span>
+                <span class="bold">{{ repo.full_name }}</span>
+              </div>
+              <div class="column is-5">
+                <span class="icon">
+                  <img src="images/icons/github-white.svg">
+                </span>
                 <span>{{ repo.html_url }}</span>
               </div>
-              <div class="column is-3">
+              <div class="column is-2">
                 <span class="icon">
                   <img src="images/icons/git-branch.svg">
                 </span>
                 <span>{{ repo.default_branch }}</span>
               </div>
-              <div class="column is-3">
-                <img [src]="repo.status_badge">
-              </div>
               <div class="column is-2">
-
+                <img [src]="repo.status_badge">
               </div>
             </div>
           </div>
