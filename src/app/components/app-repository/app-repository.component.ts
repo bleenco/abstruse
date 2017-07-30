@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
+import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
 
 @Component({
   selector: 'app-repository',
   templateUrl: 'app-repository.component.html'
 })
-export class AppRepositoryComponent implements OnInit {
+export class AppRepositoryComponent implements OnInit, OnDestroy {
   loading: boolean;
+  sub: Subscription;
   id: string;
   repo: any;
   url: string;
@@ -36,7 +38,7 @@ export class AppRepositoryComponent implements OnInit {
       }
     });
 
-    this.socketService.outputEvents.subscribe(event => {
+    this.sub = this.socketService.outputEvents.subscribe(event => {
       if (!this.repo || !event.data) {
         return;
       }
@@ -83,6 +85,10 @@ export class AppRepositoryComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
   fetch(): void {

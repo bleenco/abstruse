@@ -1,15 +1,17 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 import { format, distanceInWordsToNow } from 'date-fns';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-builds',
   templateUrl: 'app-builds.component.html'
 })
-export class AppBuildsComponent implements OnInit {
+export class AppBuildsComponent implements OnInit, OnDestroy {
   loading: boolean;
+  sub: Subscription;
   builds: any[];
 
   constructor(
@@ -25,7 +27,7 @@ export class AppBuildsComponent implements OnInit {
   ngOnInit() {
     this.fetch();
 
-    this.socketService.outputEvents.skip(1).subscribe(event => {
+    this.sub = this.socketService.outputEvents.skip(1).subscribe(event => {
       if (!this.builds || !event.data) {
         return;
       }
@@ -69,6 +71,10 @@ export class AppBuildsComponent implements OnInit {
         }
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.sub.unsubscribe();
   }
 
   fetch(): void {

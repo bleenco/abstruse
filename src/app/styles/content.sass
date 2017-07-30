@@ -84,7 +84,7 @@
   color: $white
   font-size: 14px
   cursor: pointer
-  background: $background
+  background: linear-gradient(to bottom, $background, $background-secondary)
   border-radius: 3px
   border: 1px solid $divider
 
@@ -99,6 +99,7 @@
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
+    margin-right: 10px
 
   &:hover
     background: lighten($background-button, 0.5)
@@ -142,8 +143,8 @@
     margin-right: 10px
 
     img, svg
-      width: 20px
-      height: 20px
+      width: 23px
+      height: 23px
 
       g
         fill: $white
