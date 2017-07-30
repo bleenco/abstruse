@@ -14,6 +14,7 @@ export class AppRepositoryComponent implements OnInit {
   id: string;
   repo: any;
   url: string;
+  statusBadge: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -76,6 +77,9 @@ export class AppRepositoryComponent implements OnInit {
           }
 
           this.repo.builds[index].jobs[jobIndex].status = status;
+
+          this.statusBadge = '';
+          this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
         }
       }
     });
@@ -86,6 +90,8 @@ export class AppRepositoryComponent implements OnInit {
       this.repo = event;
       this.loading = false;
       this.updateJobs();
+      this.statusBadge = '';
+      this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
       setInterval(() => this.updateJobs(), 1000);
     });
   }
