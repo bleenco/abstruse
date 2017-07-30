@@ -12,18 +12,17 @@
           <div class="column is-12" *ngIf="build">
             <div class="build-top-container" [ngClass]="{ green: status === 'success', yellow: status === 'running', red: status === 'failed' }">
               <div class="build-top-content">
-                <div class="columns">
-                  <div class="column is-1">
-                    <span class="build-icon">
-                      <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
-                      <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
-                      <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
-                      <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
-                    </span>
-                  </div>
-                  <div class="column is-9">
-                    <h1 class="bold">{{ build?.head_full_name }}</h1>
-                    <h2>{{ build?.message }}</h2>
+                <div class="columns is-multiline">
+                  <div class="column is-10">
+                    <h1 class="bold">
+                      <span>{{ build?.head_full_name }}</span>
+                      <span class="build-icon">
+                        <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
+                        <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
+                        <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
+                        <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
+                      </span>
+                    </h1>
                   </div>
                   <div class="column is-2">
                     <button class="button is-fullwidth" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
@@ -35,25 +34,35 @@
                       </div>
                     </button>
                   </div>
-                </div>
-                <div class="columns">
-                  <div class="column is-1"></div>
-                  <div class="column is-9">
-                    <p>{{ build?.head_sha }}</p>
+
+                  <hr/>
+
+                  <div class="column is-4">
+                    <h2>{{ build?.message }}</h2>
                   </div>
                   <div class="column is-2">
-                    <span class="total-time">
+                    <p>
+                      <span class="icon">
+                        <img src="images/icons/git-commit.svg">
+                      </span>
+                      {{ build?.head_sha.slice(0, 7) }}
+                    </p>
+                  </div>
+                  <div class="column is-4">
+                    <p>
+                      <span class="icon">
+                        <img [src]="build?.head_user_avatar_url" class="avatar-img">
+                      </span>
+                      <span>{{ build?.author }} commited {{ timeWords }} ago</span>
+                    </p>
+                  </div>
+                  <div class="column is-2">
+                    <p class="total-time">
                       <span class="icon">
                         <img src="images/icons/clock.svg">
                       </span>
-                      {{ totalTime }}
-                    </span>
-                  </div>
-                </div>
-                <div class="columns">
-                  <div class="column is-1"></div>
-                  <div class="column is-11">
-                    <p>{{ build?.author }} commited {{ timeWords }} ago.</p>
+                      <span>{{ totalTime }}</span>
+                    </p>
                   </div>
                 </div>
               </div>

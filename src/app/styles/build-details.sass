@@ -1,31 +1,43 @@
 .build-top-container
   margin-top: 30px
   width: 100%
-  border: 3px solid $background
+  border: 3px solid $divider
   border-radius: 4px
   margin-bottom: 30px
-  background: $background
 
   &.green
-    border-color: $green
+    border-bottom: 3px solid $green
 
   &.red
-    border-color: $red
+    border-bottom: 3px solid $red
 
   &.yellow
-    border-color: $yellow
+    border-bottom: 3px solid $yellow
 
   .build-top-content
-    padding: 10px 20px
+    padding: 20px
+    background: linear-gradient(to bottom, $background, $background-secondary)
+
+    .avatar-img
+      border-radius: 50%
+      margin: 4px 5px 0 0
+      display: block
+      float: left
+
+    hr
+      margin: 20px 0
 
     h1
       font-size: 20px
       text-overflow: ellipsis
       white-space: nowrap
       overflow: hidden
-      padding: 10px 20px 0 20px
+      padding: 10px 20px 0 0
       margin: 0 0 5px 0
 
+      span
+        display: block
+        float: left
 
       &.bold
         font-family: $font-family-bold
@@ -35,30 +47,45 @@
       text-overflow: ellipsis
       white-space: nowrap
       overflow: hidden
-      padding: 5px 20px
+      padding: 5px 20px 5px 0
 
     p
       font-size: 14px
       color: $white
       padding: 5px 20px
+      display: flex
+      align-items: center
+
+    .icon
+      margin-right: 5px
 
     .build-icon
       display: block
-      width: 50px
-      height: 50px
-      padding-top: 8px
-      margin: 10px auto
+      width: 16px
+      height: 16px
+      margin-left: 15px
+      margin-top: 3px
+      float: left
 
       img
-        width: 50px
-        height: 50px
+        width: 16px
+        height: 16px
 
     .total-time
       display: flex
-      justify-content: center
+      justify-content: flex-end
       align-items: center
-      font-size: 24px
+      font-size: 16px
       color: $white
+      font-weight: bold
+      padding-right: 0
+      margin-right: 0
 
       .icon
-        margin-right: 20px
+        margin-right: 5px
+        width: 16px
+        height: 16px
+
+        img
+          width: 16px
+          height: 16px
