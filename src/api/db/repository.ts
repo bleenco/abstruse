@@ -87,9 +87,13 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
   });
 }
 
-export function getRepositories(userId: string): Promise<any[]> {
+export function getRepositories(userId: string, keyword: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
-    new Repository().fetchAll().then(repos => {
+    new Repository().query(qb => {
+      if (keyword !== '') {
+        qb.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
+      }
+    }).fetchAll().then(repos => {
       if (!repos) {
         reject();
       }

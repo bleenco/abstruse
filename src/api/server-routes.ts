@@ -104,7 +104,7 @@ export function repositoryRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
-    getRepositories('1').then(repos => {
+    getRepositories(req.query.userId, req.query.keyword).then(repos => {
       return res.status(200).json({ data: repos });
     }).catch(err => res.status(200).json({ status: false }));
   });

@@ -9,9 +9,21 @@
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
-      <div class="group-buttons">
-        <button class="group-button is-active">Repositories</button>
-        <button class="group-button">All Repositories</button>
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search" [(ngModel)]="searchKeyword" (ngModelChange)="onKeywordChanged($event)">
+        <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g transform="translate(-1376.000000, -97.000000)" fill="#A1A7AF">
+              <g transform="translate(0.000000, 70.000000)">
+                <g transform="translate(1136.000000, 17.000000)">
+                  <g>
+                    <path d="M250.5355,13.4645 C248.5825,11.5115 245.4175,11.5115 243.4645,13.4645 C241.5115,15.4175 241.5115,18.5825 243.4645,20.5355 C245.4175,22.4885 248.5825,22.4885 250.5355,20.5355 C252.4885,18.5825 252.4885,15.4175 250.5355,13.4645 M255.7355,25.7355 C255.3445,26.1255 254.7115,26.1255 254.3205,25.7355 L251.1715,22.5855 C248.4295,24.6355 244.5415,24.4415 242.0505,21.9495 C239.3165,19.2165 239.3165,14.7845 242.0505,12.0505 C244.7835,9.3165 249.2165,9.3165 251.9495,12.0505 C254.4415,14.5415 254.6355,18.4295 252.5855,21.1715 L255.7355,24.3215 C256.1255,24.7115 256.1255,25.3445 255.7355,25.7355" id="Icon"></path>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </svg>
       </div>
     </div>
   </div>
@@ -27,11 +39,8 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
           <div class="column is-12" *ngIf="!repositories || !repositories.length">
-            <div class="notification">
-              <span class="icon">
-                <img src="images/icons/info.svg">
-              </span>
-              <span>No repositories found.</span>
+            <div class="notification is-info">
+              No repositories found.
             </div>
           </div>
 

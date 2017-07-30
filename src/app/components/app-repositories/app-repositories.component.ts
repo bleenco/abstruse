@@ -4,6 +4,10 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/operator/filter';
 
 export interface Repository {
   url: string;
@@ -21,6 +25,8 @@ export class AppRepositoriesComponent implements OnInit {
   dropdowns: boolean[];
   buildTriggered: boolean;
   url: string;
+  searchKeyword: string;
+  modelChanged: Subject<string> = new Subject<string>();
 
   constructor(
     private apiService: ApiService,
@@ -36,10 +42,16 @@ export class AppRepositoriesComponent implements OnInit {
     this.url = this.config.url;
     this.userData = this.authService.getData();
     this.fetch();
+
+    this.modelChanged
+      .debounceTime(400)
+      .distinctUntilChanged()
+      .subscribe(event => this.fetch(event));
   }
 
-  fetch(): void {
-    this.apiService.getRepositories(this.userData.id).subscribe(event => {
+  fetch(keyword = ''): void {
+    this.loading = true;
+    this.apiService.getRepositories(this.userData.id, keyword).subscribe(event => {
       this.repositories = event.map(repo => {
         repo.status_badge = this.url + '/api/repositories/badge/' + repo.id;
         return repo;
@@ -65,5 +77,9 @@ export class AppRepositoriesComponent implements OnInit {
 
     this.buildTriggered = true;
     setTimeout(() => this.buildTriggered = false, 5000);
+  }
+
+  onKeywordChanged(text: string): void {
+    this.modelChanged.next(text);
   }
 }
