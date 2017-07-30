@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
+import { ConfigService } from '../../services/config.service';
 import { format, distanceInWordsToNow } from 'date-fns';
 
 @Component({
@@ -12,15 +13,19 @@ export class AppRepositoryComponent implements OnInit {
   loading: boolean;
   id: string;
   repo: any;
+  url: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private socketService: SocketService,
-    private api: ApiService
+    private api: ApiService,
+    private config: ConfigService
   ) { }
 
   ngOnInit() {
+    this.url = this.config.url;
+
     this.route.params.subscribe(params => {
       this.id = params.id || null;
       if (!this.id) {

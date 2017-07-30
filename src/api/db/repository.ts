@@ -37,6 +37,41 @@ export function getRepositoryOnly(id: number): Promise<any> {
   });
 }
 
+export function getRepositoryBadge(id: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    new Repository({ id: id })
+      .fetch({
+        withRelated: [
+          { 'builds': query => query.where('pr', null).orderBy('id', 'desc').limit(1) },
+          'builds.jobs'
+        ]
+      } as any)
+      .then(repo => {
+        if (!repo) {
+          resolve('unknown');
+        } else {
+          repo = repo.toJSON();
+          let status = 'queued';
+
+          if (repo.builds[0].jobs.findIndex(job => job.status === 'failed') !== -1) {
+            status = 'failing';
+          }
+
+          if (repo.builds[0].jobs.findIndex(job => job.status === 'running') !== -1) {
+            status = 'running';
+          }
+
+          if (repo.builds[0].jobs.length ===
+              repo.builds[0].jobs.filter(job => job.status === 'success').length) {
+            status = 'passing';
+          }
+
+          resolve(status);
+        }
+      });
+  });
+}
+
 export function getRepositoryByBuildId(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository().query(qb => {
