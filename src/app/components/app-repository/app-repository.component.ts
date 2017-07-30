@@ -38,53 +38,56 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.sub = this.socketService.outputEvents.subscribe(event => {
-      if (!this.repo || !event.data) {
-        return;
-      }
-
-      if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
-        const buildIndex = this.repo.builds.findIndex(build => build.id === event.data);
-        this.repo.builds[buildIndex].processingRequest = false;
-      }
-
-      if (event.data === 'jobAdded') {
-        this.fetch();
-      }
-
-      const index = this.repo.builds.findIndex(build => build.id === event.build_id);
-      if (index !== -1) {
-        const jobIndex = this.repo.builds[index].jobs.findIndex(job => job.id === event.job_id);
-        if (jobIndex !== -1) {
-          let status = null;
-          switch (event.data) {
-            case 'jobSucceded':
-              status = 'success';
-            break;
-            case 'jobQueued':
-              status = 'queued';
-            break;
-            case 'jobStarted':
-              status = 'running';
-              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
-            break;
-            case 'jobFailed':
-              status = 'failed';
-              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
-            break;
-            case 'jobStopped':
-              status = 'failed';
-              this.repo.builds[index].jobs[jobIndex].start_time = new Date();
-            break;
-          }
-
-          this.repo.builds[index].jobs[jobIndex].status = status;
-
-          this.statusBadge = '';
-          this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
+    this.sub = this.socketService.outputEvents
+      .filter(x => x.type !== 'data')
+      .subscribe(event => {
+        if (!this.repo || !event.data) {
+          return;
         }
-      }
-    });
+
+        if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
+          const buildIndex = this.repo.builds.findIndex(build => build.id === event.data);
+          this.repo.builds[buildIndex].processingRequest = false;
+        }
+
+        if (event.data === 'jobAdded') {
+          this.fetch();
+        }
+
+        const index = this.repo.builds.findIndex(build => build.id === event.build_id);
+        if (index !== -1) {
+          const jobIndex = this.repo.builds[index].jobs.findIndex(job => job.id === event.job_id);
+          if (jobIndex !== -1) {
+            let status = null;
+            switch (event.data) {
+              case 'jobSucceded':
+                status = 'success';
+                this.repo.builds[index].jobs[jobIndex].end_time = new Date();
+              break;
+              case 'jobQueued':
+                status = 'queued';
+              break;
+              case 'jobStarted':
+                status = 'running';
+                this.repo.builds[index].jobs[jobIndex].start_time = new Date();
+              break;
+              case 'jobFailed':
+                status = 'failed';
+                this.repo.builds[index].jobs[jobIndex].start_time = new Date();
+              break;
+              case 'jobStopped':
+                status = 'failed';
+                this.repo.builds[index].jobs[jobIndex].end_time = new Date();
+              break;
+            }
+
+            this.repo.builds[index].jobs[jobIndex].status = status;
+
+            this.statusBadge = '';
+            this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
+          }
+        }
+      });
   }
 
   ngOnDestroy() {

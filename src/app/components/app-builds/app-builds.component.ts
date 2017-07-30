@@ -27,50 +27,52 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fetch();
 
-    this.sub = this.socketService.outputEvents.skip(1).subscribe(event => {
-      if (!this.builds || !event.data) {
-        return;
-      }
-
-      if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
-        const buildIndex = this.builds.findIndex(build => build.id === event.data);
-        this.builds[buildIndex].processingRequest = false;
-      }
-
-      if (event.data === 'jobAdded') {
-        this.fetch();
-      }
-
-      const index = this.builds.findIndex(build => build.id === event.build_id);
-      if (index !== -1) {
-        const jobIndex = this.builds[index].jobs.findIndex(job => job.id === event.job_id);
-        if (jobIndex !== -1) {
-          let status = null;
-          switch (event.data) {
-            case 'jobSucceded':
-              status = 'success';
-            break;
-            case 'jobQueued':
-              status = 'queued';
-            break;
-            case 'jobStarted':
-              status = 'running';
-              this.builds[index].jobs[jobIndex].start_time = new Date();
-            break;
-            case 'jobFailed':
-              status = 'failed';
-              this.builds[index].jobs[jobIndex].end_time = new Date();
-            break;
-            case 'jobStopped':
-              status = 'failed';
-              this.builds[index].jobs[jobIndex].end_time = new Date();
-            break;
-          }
-
-          this.builds[index].jobs[jobIndex].status = status;
+    this.sub = this.socketService.outputEvents
+      .filter(x => x.type !== 'data')
+      .subscribe(event => {
+        if (!this.builds || !event.data) {
+          return;
         }
-      }
-    });
+
+        if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
+          const buildIndex = this.builds.findIndex(build => build.id === event.data);
+          this.builds[buildIndex].processingRequest = false;
+        }
+
+        if (event.data === 'jobAdded') {
+          this.fetch();
+        }
+
+        const index = this.builds.findIndex(build => build.id === event.build_id);
+        if (index !== -1) {
+          const jobIndex = this.builds[index].jobs.findIndex(job => job.id === event.job_id);
+          if (jobIndex !== -1) {
+            let status = null;
+            switch (event.data) {
+              case 'jobSucceded':
+                status = 'success';
+              break;
+              case 'jobQueued':
+                status = 'queued';
+              break;
+              case 'jobStarted':
+                status = 'running';
+                this.builds[index].jobs[jobIndex].start_time = new Date();
+              break;
+              case 'jobFailed':
+                status = 'failed';
+                this.builds[index].jobs[jobIndex].end_time = new Date();
+              break;
+              case 'jobStopped':
+                status = 'failed';
+                this.builds[index].jobs[jobIndex].end_time = new Date();
+              break;
+            }
+
+            this.builds[index].jobs[jobIndex].status = status;
+          }
+        }
+      });
   }
 
   ngOnDestroy() {
