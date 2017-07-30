@@ -1,6 +1,47 @@
 import { User } from './model';
 import { generatePassword, comparePassword, generateJwt } from '../security';
 
+export function getUser(id: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new User({ id: id }).fetch().then(user => {
+      if (!user) {
+        reject(user);
+      } else {
+        resolve(user.toJSON());
+      }
+    });
+  });
+}
+
+export function updateUser(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new User({ id: data.id }).save(data, { method: 'update', require: false })
+      .then(user => {
+        if (!user) {
+          reject(user);
+        } else {
+          resolve(user.toJSON());
+        }
+      });
+  });
+}
+
+export function updateUserPassword(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    generatePassword(data.password).then(generatedPassword => {
+      let userData = { password: generatedPassword };
+      new User({ id: data.id }).save(userData, { method: 'update', require: false })
+        .then(user => {
+          if (!user) {
+            reject(user);
+          } else {
+            resolve(user.toJSON());
+          }
+        });
+    });
+  });
+}
+
 export function login(data: any): Promise<boolean | string> {
   return new Promise(resolve => {
     new User({ email: data.email }).fetch().then(user => {

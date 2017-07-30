@@ -4,17 +4,16 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>Settings</h1>
-        <span>| Profile</span>
+        <h1>My Settings</h1>
       </span>
     </div>
   </div>
 </nav>
 
 <div class="container">
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="loading">
       <div class="content">
-        <div *ngIf="loading" class="loading">
+        <div class="loading">
           <div class="loader">
             <img src="/images/icons/tail-spin.svg">
           </div>
@@ -22,18 +21,6 @@
       </div>
   </div>
 
-  <div class="column is-12">
-    <div class="tabs">
-      <ul>
-        <li class="is-active"><a>Profile</a></li>
-        <li><a>Credentials</a></li>
-        <li><a>Users</a></li>
-        <li><a>Repositories</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Profile -->
   <div class="column is-12">
     <div class="columns is-multiline">
       <div class="column is-4">
@@ -43,22 +30,46 @@
       </div>
       <div class="column is-8">
         <form method="post" #profileForm="ngForm" (ngSubmit)="updateProfile($event)">
+          <div class="notification is-success" *ngIf="userSaved">
+            <button class="delete" (click)="userSaved = false"></button>
+            Data successfully updated.
+          </div>
+          <h2>User Settings</h2>
           <div class="form-field">
             <label class="form-label">Email (Username)</label>
-            <input class="form-input" type="text" placeholder="Email" name="email" required>
+            <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
           </div>
           <div class="form-field">
             <label class="form-label">Full Name</label>
-            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required>
+            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
+          </div>
+          <input type="hidden" name="id" [(ngModel)]="user.id">
+          <div class="form-field">
+            <button type="submit" class="button green float-right" [disabled]="!profileForm.form.valid">Save Details</button>
+          </div>
+        </form>
+
+        <form method="post" #passwordForm="ngForm" (ngSubmit)="updatePassword($event)">
+          <div class="notification is-success" *ngIf="userPasswordSaved">
+            <button class="delete" (click)="userPasswordSaved = false"></button>
+            Password successfully updated.
+          </div>
+          <h2>Password Update</h2>
+          <div class="form-field">
+            <label class="form-label">New Password</label>
+            <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userPass.password">
           </div>
           <div class="form-field">
-            <button type="submit" class="button green float-right">Save</button>
+            <label class="form-label">Repeat New Password</label>
+            <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required [(ngModel)]="userPass.repeat_password" validateEqual="password">
+          </div>
+          <input type="hidden" name="id" [(ngModel)]="userPass.id">
+          <div class="form-field">
+            <button type="submit" class="button green float-right" [disabled]="!passwordForm.form.valid">Save Details</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-  <!-- End Profile -->
-
 
 </div>

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath } from './utils';
 import { reinitializeDatabase } from './db/migrations';
-import { usersExists, createUser, login } from './db/user';
+import { usersExists, createUser, login, getUser, updateUser, updateUserPassword } from './db/user';
 import { addRepository, getRepositories, getRepository, getRepositoryBadge } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
@@ -73,6 +73,28 @@ export function userRoutes(): express.Router {
     }).catch(err => {
       return res.status(200).json({ status: false });
     });
+  });
+
+  router.post('/save', (req: express.Request, res: express.Response) => {
+    updateUser(req.body).then(() => {
+      return res.status(200).json({ data: true });
+    }).catch(err => {
+      return res.status(200).json({ data: false });
+    });
+  });
+
+  router.post('/update-password', (req: express.Request, res: express.Response) => {
+    updateUserPassword(req.body).then(() => {
+      return res.status(200).json({ data: true });
+    }).catch(err => {
+      return res.status(200).json({ data: false });
+    });
+  });
+
+  router.get('/:id', (req: express.Request, res: express.Response) => {
+    getUser(req.params.id)
+      .then(user => res.status(200).json({ data: user }))
+      .catch(err => res.status(400).json({ err: err }));
   });
 
   return router;

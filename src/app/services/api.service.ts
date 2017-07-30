@@ -58,6 +58,18 @@ export class ApiService {
     return this.post(`${this.url}/setup/db/init`, {});
   }
 
+  getUser(id: number): Observable<any> {
+    return this.get(`${this.url}/user/${id}`);
+  }
+
+  updateUser(data: any): Observable<any> {
+    return this.post(`${this.url}/user/save`, data);
+  }
+
+  updatePassword(data: any): Observable<any> {
+    return this.post(`${this.url}/user/update-password`, data);
+  }
+
   createUser(data: any): Observable<any> {
     return this.post(`${this.url}/user/create`, data);
   }
