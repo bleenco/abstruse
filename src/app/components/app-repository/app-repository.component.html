@@ -52,11 +52,8 @@
           </div>
 
           <div class="column is-12" *ngIf="!repo?.builds.length">
-            <div class="notification">
-              <span class="icon">
-                <img src="images/icons/info.svg">
-              </span>
-              <span>No builds has been runned yet.</span>
+            <div class="notification is-info">
+              No builds has been runned yet.
             </div>
           </div>
 

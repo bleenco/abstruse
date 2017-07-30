@@ -31,11 +31,8 @@
         <div class="columns is-multiline" *ngIf="!loading">
 
           <div class="column is-12" *ngIf="!builds || !builds.length">
-            <div class="notification">
-              <span class="icon">
-                <img src="images/icons/info.svg">
-              </span>
-              <span>No builds has been runned yet.</span>
+            <div class="notification is-info">
+              No builds has been runned yet.
             </div>
           </div>
 
