@@ -8,6 +8,8 @@ matrix:
     env: SCRIPT=lint
   - node_js: "8"
     env: NODE_SCRIPT=./tests/run_e2e.js
+  - node_js: "8"
+    env: SCRIPT=protractor:abstruse
 
 preinstall:
   - npm config set spin false
@@ -18,9 +20,11 @@ install:
   - sudo apt-get install -y docker.io sqlite3
 
 postinstall:
-  - npm install enhanced-resolve@3.3.0 webpack@3.3.0
   - sudo usermod -aG docker abstruse
   - sudo /etc/init.d/docker start
+  - sudo /etc/init.d/xvfb start &
+  - export DISPLAY=:99
+  - exec sg docker newgrp `id -gn`
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
