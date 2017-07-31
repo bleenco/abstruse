@@ -9,6 +9,6 @@ describe('App', () => {
   it('should have a title', () => {
     let subject = browser.getTitle();
     let result  = 'Abstruse CI';
-    expect(subject).toEqual(result as any);
+    return expect(subject).toEqual(result as any);
   });
 });

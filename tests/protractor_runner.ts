@@ -1,4 +1,4 @@
-import { execSilent, exec, abstruse, killAllProcesses } from './helpers/process';
+import { execSilent, exec, abstruse, killAllProcesses } from './e2e/utils/process';
 import { join } from 'path';
 import * as temp from 'temp';
 
