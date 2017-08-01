@@ -52,6 +52,9 @@
   },
   "homepage": "https://github.com/bleenco/abstruse#readme",
   "dependencies": {
+    "ansi-to-html": "^0.6.3",
+    "ansi_up": "^2.0.2",
+    "ansispan": "0.0.4",
     "body-parser": "^1.17.2",
     "bookshelf": "^0.10.4",
     "chalk": "^2.0.1",

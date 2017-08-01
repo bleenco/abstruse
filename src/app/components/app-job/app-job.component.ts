@@ -37,54 +37,49 @@ export class AppJobComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    Observable.interval(100)
-      .map(() => this.terminalReady)
-      .takeWhile(x => !x)
-      .subscribe(() => { }, err => console.error(err), () => {
-        this.route.params.subscribe(params => {
-          this.id = params.id;
+    this.route.params.subscribe(params => {
+      this.id = params.id;
 
-          this.apiService.getJob(this.id).subscribe(job => {
-            this.job = job;
-            this.terminalInput = job.log;
-            this.timeWords = distanceInWordsToNow(job.build.start_time);
-            this.loading = false;
+      this.apiService.getJob(this.id).subscribe(job => {
+        this.job = job;
+        this.terminalInput = job.log;
+        this.timeWords = distanceInWordsToNow(job.build.start_time);
+        this.loading = false;
 
-            this.termSub = this.socketService.outputEvents
-              .subscribe(event => {
-                if (event.type === 'data') {
-                  this.terminalInput = event.data;
-                } else if (event.type === 'jobStopped' && event.data === this.id) {
-                  this.processing = false;
-                } else if (event.type === 'jobRestarted' && event.data === this.id) {
-                  this.processing = false;
-                }
-              });
+        this.termSub = this.socketService.outputEvents
+          .subscribe(event => {
+            if (event.type === 'data') {
+              this.terminalInput = event.data;
+            } else if (event.type === 'jobStopped' && event.data === this.id) {
+              this.processing = false;
+            } else if (event.type === 'jobRestarted' && event.data === this.id) {
+              this.processing = false;
+            }
+          });
 
-            this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
+        this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
 
-            this.updateJobTime();
-            setInterval(() => this.updateJobTime(), 1000);
+        this.updateJobTime();
+        setInterval(() => this.updateJobTime(), 1000);
 
-            this.sub = this.socketService.outputEvents
-              .filter(event => event.type === 'process')
-              .filter(event => event.job_id === parseInt(<any>this.id, 10))
-              .subscribe(event => {
-                if (event.data === 'jobStarted') {
-                  job.status = 'running';
-                  job.end_time = null;
-                  job.start_time = new Date().getTime();
-                } else if (event.data === 'jobSucceded') {
-                  job.status = 'success';
-                  job.end_time = new Date().getTime();
-                } else if (event.data == 'jobFailed') {
-                  job.status = 'failed';
-                  job.end_time = new Date().getTime();
-                }
-              });
-            });
+        this.sub = this.socketService.outputEvents
+          .filter(event => event.type === 'process')
+          .filter(event => event.job_id === parseInt(<any>this.id, 10))
+          .subscribe(event => {
+            if (event.data === 'jobStarted') {
+              job.status = 'running';
+              job.end_time = null;
+              job.start_time = new Date().getTime();
+            } else if (event.data === 'jobSucceded') {
+              job.status = 'success';
+              job.end_time = new Date().getTime();
+            } else if (event.data == 'jobFailed') {
+              job.status = 'failed';
+              job.end_time = new Date().getTime();
+            }
           });
         });
+      });
   }
 
   ngOnDestroy() {

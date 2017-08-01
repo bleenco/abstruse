@@ -1,4 +1,4 @@
-import { prepareBuildJob, Job, startDockerImageSetupJob } from './process';
+import { prepareBuildJob, startDockerImageSetupJob, startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import * as dbJob from './db/job';
@@ -317,7 +317,6 @@ export function restartJob(jobId: number): Promise<void> {
           })
           .then(() => queueJob(jobData.builds_id, jobData.id));
       } else {
-        console.log(jobId);
         return dbJob.getJob(jobId).then(job => {
           jobEvents.next({
             type: 'process',
@@ -350,7 +349,10 @@ export function stopJob(jobId: number): Promise<any> {
 
           const log = jobProcess.log.join('');
           dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
-            .then(() => killContainer(`${jobProcess.build_id}_${jobProcess.job_id}`).toPromise())
+            .then(() => {
+              const name = `abstruse_${jobProcess.build_id}_${jobProcess.job_id}`;
+              return killContainer(name).toPromise();
+            })
             .then(() => resolve(jobProcess));
         } else {
           let job = null;
@@ -364,7 +366,10 @@ export function stopJob(jobId: number): Promise<any> {
                 data: 'jobStopped'
               });
             })
-            .then(() => killContainer(`${job.builds_id}_${job.id}`).toPromise())
+            .then(() => {
+              const name = `abstruse_${job.builds_id}_${job.id}`;
+              return killContainer(name).toPromise();
+            })
             .then(() => resolve(job));
         }
       });
@@ -373,9 +378,9 @@ export function stopJob(jobId: number): Promise<any> {
 
 function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMessage> {
   return new Observable(observer => {
-    let job = prepareBuildJob(buildId, jobId, cmds);
+    const job = startBuildProcess(buildId, jobId, cmds, 'abstruse');
 
-    job.pty.subscribe(output => {
+    job.subscribe(output => {
       const message: JobMessage = {
         build_id: buildId,
         job_id: jobId,
@@ -384,35 +389,60 @@ function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMe
       };
 
       observer.next(message);
+    }, err => {
+      getJobProcesses()
+        .then(procs => {
+          const index = procs.findIndex(job => job.job_id === jobId && job.build_id === buildId);
+          procs[index].status = 'completed';
+          jobProcesses.next(procs);
+          const proc = procs[index];
 
-      if (output.type === 'exit') {
-        getJobProcesses()
-          .then(procs => {
-            const index = procs.findIndex(job => job.job_id === jobId && job.build_id === buildId);
-            procs[index].status = 'completed';
-            jobProcesses.next(procs);
-            const proc = procs[index];
-
-            return dbJob.updateJob({
-              id: jobId,
-              end_time: new Date(),
-              status: output.data === 0 ? 'success' : 'failed',
-              log: proc.log.join('')
-            }).then(() => {
-              jobEvents.next({
-                type: 'process',
-                build_id: buildId,
-                job_id: jobId,
-                data: output.data === 0 ? 'jobSucceded' : 'jobFailed'
-              });
-
-              procs = procs.filter(job => job.job_id !== jobId && job.build_id !== buildId);
-              jobProcesses.next(procs);
-
-              observer.complete();
+          return dbJob.updateJob({
+            id: jobId,
+            end_time: new Date(),
+            status: 'failed',
+            log: proc.log.join('')
+          }).then(() => {
+            jobEvents.next({
+              type: 'process',
+              build_id: buildId,
+              job_id: jobId,
+              data: 'jobFailed'
             });
+
+            procs = procs.filter(job => job.job_id !== jobId && job.build_id !== buildId);
+            jobProcesses.next(procs);
+
+            observer.complete();
           });
-      }
+        });
+    }, () => {
+      getJobProcesses()
+        .then(procs => {
+          const index = procs.findIndex(job => job.job_id === jobId && job.build_id === buildId);
+          procs[index].status = 'completed';
+          jobProcesses.next(procs);
+          const proc = procs[index];
+
+          return dbJob.updateJob({
+            id: jobId,
+            end_time: new Date(),
+            status: 'success',
+            log: proc.log.join('')
+          }).then(() => {
+            jobEvents.next({
+              type: 'process',
+              build_id: buildId,
+              job_id: jobId,
+              data: 'jobSucceded'
+            });
+
+            procs = procs.filter(job => job.job_id !== jobId && job.build_id !== buildId);
+            jobProcesses.next(procs);
+
+            observer.complete();
+          });
+        });
     });
   });
 }
