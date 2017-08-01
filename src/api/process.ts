@@ -6,7 +6,7 @@ import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow } from 'chalk';
-const pty = require('node-pty');
+const pty = require('child_pty');
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -52,16 +52,13 @@ export function startBuildProcess(buildId: number, jobId: number,
 
 function executeInContainer(name: string, command: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['exec', '--privileged']
-      .concat(command.includes('service start') || command.includes('/etc/init.d/') ? '-i' : '-it')
+    const args = ['exec', '--privileged', '-it']
       .concat(vars)
-      .concat(name, 'bash', '-l', '-c', command);
-
-    const process = pty.spawn('docker', args);
+      .concat(name, 'bash', '-l', '-c', `'${command}'`);
+    const process = pty.spawn('docker', [args.join(' ')], { shell: true });
 
     observer.next({ type: 'data', data: bold(yellow(command)) + '\r\n' });
-
-    process.on('data', data => observer.next({ type: 'data', data: data.toString() }));
+    process.stdout.on('data', data => observer.next({ type: 'data', data: data.toString() }));
     process.on('exit', exitCode => {
       if (exitCode !== 0) {
         observer.error(bold(`Executed command returned exit code ${red(exitCode.toString())}`));
@@ -125,20 +122,6 @@ export function startDockerImageSetupJob(name: string): Job {
   return job;
 }
 
-export function prepareBuildJob(buildId: number, jobId: number, commands: string[]): Job {
-  let id = `${buildId}_${jobId}`;
-  let pty = new PtyInstance();
-  let job: Job = {
-    status: 'queued',
-    type: 'build',
-    pty: runInDocker(id, 'abstruse', commands),
-    log: [],
-    exitStatus: null
-  };
-
-  return job;
-}
-
 export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput> {
   return new Promise(resolve => {
     let stdout = '';
@@ -150,50 +133,6 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
     command.on('exit', exit => {
       const output = { stdout, stderr, exit };
       resolve(output);
-    });
-  });
-}
-
-function runInDocker(name: string, image: string, cmds: string[]):
-  Observable<{ type: string, data: string }> {
-  return new Observable(observer => {
-    const docker = pty.spawn('docker', ['run', '--privileged', '--name', name, '-dti', image]);
-    let executed: boolean;
-
-    docker.on('exit', code => {
-      Promise.resolve()
-        .then(() => saveCredentialsToImage(name, parseInt(name.split('_')[0], 10)))
-        .then(() => {
-          const attach = pty.spawn('docker', ['attach', name]);
-          const commands = cmds.map(cmd => {
-            if (cmd.includes('&')) {
-              return `(${cmd}) ;`;
-            } else {
-              return `${cmd} ;`;
-            }
-          }).join(' ') + '\r';
-
-          attach.on('data', data => {
-            if (!executed) {
-              attach.write(commands);
-              executed = true;
-            } else {
-              observer.next({ type: 'data', data: data });
-            }
-          });
-
-          attach.on('exit', exitCode => {
-            const exit = exitCode === 0 ?
-              green(`Process exited with code ${exitCode}`) :
-              red(`Process errored with code ${exitCode}`);
-            observer.next({ type: 'data', data: exit });
-
-            observer.next({ type: 'exit', data: exitCode });
-
-            const rm = pty.spawn('docker', ['rm', name, '-f']);
-            rm.on('exit', () => observer.complete());
-          });
-        });
     });
   });
 }

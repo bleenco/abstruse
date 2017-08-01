@@ -1,5 +1,5 @@
 import * as os from 'os';
-const pty = require('node-pty');
+const pty = require('child_pty');
 
 export class PtyInstance {
   shell: string;

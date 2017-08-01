@@ -1,4 +1,4 @@
-import { prepareBuildJob, startDockerImageSetupJob, startBuildProcess } from './process';
+import { startDockerImageSetupJob, startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
 import * as dbJob from './db/job';
