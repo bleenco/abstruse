@@ -25,7 +25,7 @@
                     </h1>
                   </div>
                   <div class="column is-3 justify-end right-buttons-top">
-                    <button class="button is-fullwidth" type="button" (click)="restartJob($event)" [disabled]="processing">
+                    <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/restart.svg">
@@ -33,7 +33,7 @@
                         <span>Restart</span>
                       </div>
                     </button>
-                    <button class="button is-fullwidth" type="button" (click)="stopJob($event)" [class.is-hidden]="job.status !== 'running'" [disabled]="processing">
+                    <button class="button is-fullwidth" name="btn-stop" type="button" (click)="stopJob($event)" [class.is-hidden]="job.status !== 'running'" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/stop.svg">
