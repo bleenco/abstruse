@@ -19,7 +19,8 @@ RUN echo '. /home/abstruse/.nvm/nvm.sh' >> /home/abstruse/.bashrc
 RUN echo "abstruse ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER abstruse
-WORKDIR /home/abstruse
+RUN mkdir /home/abstruse/build
+WORKDIR /home/abstruse/build
 
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash \
   && export NVM_DIR="$HOME/.nvm" \

@@ -35,16 +35,9 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   // 1. clone
   const splitted = repositoryUrl.split('/');
   const name = splitted[splitted.length - 1].replace(/\.git/, '');
-  let cloneCommand = `git clone ${repositoryUrl} ${name}`;
+  let cloneCommand = `git clone ${repositoryUrl} .`;
 
-  if (config.git && config.git.depth) {
-    cloneCommand = `${cloneCommand} --depth ${config.git.depth}`;
-  }
-
-  // 2. cd into directory
-  const cdCommand = `cd ${name}`;
-
-  // 3. fetch & checkout commands
+  // 2. fetch & checkout commands
   let fetchCommand = '';
   let checkoutCommand = '';
   if (config.git && config.git.pr) {
@@ -52,10 +45,10 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
     checkoutCommand = `git checkout pr${config.git.pr}`;
   } else if (config.git && config.git.sha) {
     fetchCommand = `git fetch origin`;
-    checkoutCommand = `git checkout ${config.git.sha}`;
+    checkoutCommand = `git checkout ${config.git.sha} .`;
   }
 
-  // 4. environment
+  // 3. environment
   if (config.matrix) {
     matrix = config.matrix.map(mat => {
       let install = '';
@@ -69,12 +62,12 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
         env = `export ${mat.env}`;
       }
 
-      return [cloneCommand, cdCommand, fetchCommand, checkoutCommand, install, env]
+      return [cloneCommand, fetchCommand, checkoutCommand, install, env]
         .filter(cmd => cmd !== '');
     });
   }
 
-  // 5. commands
+  // 4. commands
   const preinstall = config.preinstall || [];
   const install = config.install || [];
   const postinstall = config.postinstall || [];
@@ -82,17 +75,13 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   const test = config.test || [];
   const posttest = config.posttest || [];
 
-  // 6. exit code
-  const exitcode = ['exit $?'];
-
   const commonCommands = []
     .concat(preinstall)
     .concat(install)
     .concat(postinstall)
     .concat(pretest)
     .concat(test)
-    .concat(posttest)
-    .concat(exitcode);
+    .concat(posttest);
 
   matrix = matrix.map(mat => {
     return mat.concat(commonCommands);

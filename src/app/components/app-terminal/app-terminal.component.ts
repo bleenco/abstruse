@@ -1,15 +1,5 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  Input,
-  EventEmitter,
-  Output,
-  SimpleChange,
-  Renderer
-} from '@angular/core';
-// import * as hterm from 'htermabstruse';
-import * as xterminal from 'xterm';
+import { Component, ElementRef, OnInit, Input, SimpleChange } from '@angular/core';
+import * as AnsiUp from 'ansi_up';
 
 @Component({
   selector: 'app-terminal',
@@ -18,45 +8,25 @@ import * as xterminal from 'xterm';
 export class AppTerminalComponent implements OnInit {
   @Input() data: any;
   @Input() options: { size: 'normal' | 'large' };
-  @Output() outputData: EventEmitter<any>;
+  au: any;
 
-  term: any;
-  termReady: boolean;
-
-  constructor(private elementRef: ElementRef, private renderer: Renderer) {
-    this.outputData = new EventEmitter<string>();
-    this.termReady = false;
-  }
+  constructor(private elementRef: ElementRef) { }
 
   ngOnInit() {
-    let el = this.elementRef.nativeElement;
-    let xterm: any = <any>xterminal;
-    xterm.loadAddon('fit');
-    this.term = new xterm({
-      scrollback: 15000,
-      cols: 120
-    });
-
-    this.term.on('open', () => {
-      this.termReady = true;
-      this.outputData.emit('ready');
-    });
-
-    this.term.open(el.querySelector('.window-terminal-container'), true);
+    this.au = new AnsiUp.default();
   }
 
   ngOnChanges(changes: SimpleChange) {
-    if (!this.data || !this.termReady) {
+    if (!this.data) {
       return;
     }
 
-    if (this.data.clear) {
-      this.term.reset();
+    const el = this.elementRef.nativeElement.querySelector('.window-terminal-container');
+    if (typeof this.data.clear !== 'undefined') {
+      el.innerHTML = '';
     } else {
-      this.term.write(this.data);
-      setTimeout(() => {
-        this.term.fit();
-      });
+      el.innerHTML += this.au.ansi_to_html(this.data);
+      setTimeout(() => el.scrollTop = el.scrollHeight);
     }
   }
 }
