@@ -8,6 +8,8 @@ matrix:
     env: SCRIPT=lint
   - node_js: "8"
     env: NODE_SCRIPT=./tests/run_e2e.js
+  - node_js: "8"
+    env: SCRIPT=protractor:abstruse
 
 preinstall:
   - npm config set spin false
@@ -20,6 +22,7 @@ install:
 postinstall:
   - sudo usermod -aG docker abstruse
   - sudo /etc/init.d/docker start
+  - sudo /etc/init.d/xvfb start
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
