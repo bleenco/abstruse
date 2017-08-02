@@ -275,7 +275,7 @@ export function startJob(buildId: number, jobId: number): Promise<void> {
           .skip(1)
           .subscribe(event => {
             terminalEvents.next(event);
-            if (event.data) {
+            if (event.data && event.type === 'data') {
               process.log.push(event.data);
               procs[procIndex] = process;
               jobProcesses.next(procs);

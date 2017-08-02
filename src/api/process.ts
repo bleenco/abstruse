@@ -52,7 +52,8 @@ export function startBuildProcess(buildId: number, jobId: number,
 
 function executeInContainer(name: string, command: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['exec', '--privileged', '-it']
+    const args = ['exec', '--privileged']
+      .concat(command.startsWith('sudo') ? '-i' : '-it')
       .concat(vars)
       .concat(name, 'bash', '-l', '-c', `'${command}'`);
     const process = pty.spawn('docker', [args.join(' ')], { shell: true });
@@ -72,7 +73,7 @@ function executeInContainer(name: string, command: string, vars = []): Observabl
 
 function startContainer(name: string, image: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['run', '--privileged', '-dit', '--name', name, image];
+    const args = ['run', '--privileged', '-di', '--name', name, image];
     const process = pty.spawn('docker', args);
 
     process.on('exit', exitCode => {
