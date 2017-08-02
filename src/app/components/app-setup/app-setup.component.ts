@@ -97,6 +97,18 @@ export class AppSetupComponent implements OnInit {
       this.loading = false;
       if (!exists) {
         this.step = 'docker';
+        this.socketService.onMessage().subscribe(event => {
+          if (event.type === 'terminalOutput') {
+            if (event.data.type === 'exit') {
+              if (event.data.data === 0) {
+                this.step = 'done';
+              }
+            } else {
+              this.terminalInput = event.data.data;
+            }
+          }
+        });
+        this.socketService.emit({ type: 'initializeDockerImage', data: 'abstruse' });
       } else {
         this.router.navigate(['/login']);
       }
@@ -111,25 +123,5 @@ export class AppSetupComponent implements OnInit {
         this.continueToDockerImageBuild();
       }
     });
-  }
-
-  terminalOutput(e: any): void {
-    if (e === 'ready') {
-      this.socketService.onMessage().subscribe(event => {
-        if (event.type === 'terminalOutput') {
-          if (event.data.type === 'exit') {
-            console.log(event.data);
-            if (event.data.data === 0) {
-              this.step = 'done';
-            }
-          } else {
-            this.terminalInput = event.data.data;
-          }
-        }
-      });
-      this.socketService.emit({ type: 'initializeDockerImage', data: 'abstruse' });
-    } else if (e && e.type && e.type === 'resize') {
-      this.socketService.emit({ type: 'resize', data: { cols: e.cols, rows: e.rows }});
-    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -29,7 +29,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private ngZone: NgZone
   ) {
     this.loading = true;
     this.status = 'queued';
@@ -49,7 +50,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
         this.termSub = this.socketService.outputEvents
           .subscribe(event => {
             if (event.type === 'data') {
-              this.terminalInput = event.data;
+              this.ngZone.run(() => this.terminalInput = event.data);
             } else if (event.type === 'jobStopped' && event.data === this.id) {
               this.processing = false;
             } else if (event.type === 'jobRestarted' && event.data === this.id) {

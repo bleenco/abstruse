@@ -45,6 +45,7 @@ export function startBuildProcess(buildId: number, jobId: number,
       }, err => {
         observer.next({ type: 'data', data: err });
         observer.error(err);
+        observer.complete();
         stopContainer(name).subscribe((event: ProcessOutput) => observer.next(event));
       }, () => {
         observer.complete();
@@ -55,40 +56,35 @@ export function startBuildProcess(buildId: number, jobId: number,
 
 function executeInContainer(name: string, command: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    let executed = false;
     const start = nodePty.spawn('docker', ['start', name]);
 
     start.on('exit', () => {
       let exitCode = 255;
-      const attach = nodePty.spawn('docker', ['attach', '--detach-keys=D', name]);
+      let executed = false;
+      let attach = null;
+      let detachKey = null;
+
+      if (command.includes('init.d') && command.includes('start')) {
+        attach = nodePty.spawn('docker', ['attach', '--detach-keys=D', name]);
+        detachKey = 'D';
+      } else {
+        attach = nodePty.spawn('docker', ['exec', '-it', '--privileged', name, 'bash', '-l']);
+      }
 
       attach.on('data', data => {
-        data = data.toString();
+        const trimmed = data.trim();
+
         if (!executed) {
           executed = true;
-          attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
-        } else {
-          if ((data.includes('EXECNOK') || data.includes('EXECOK')) && !data.includes(command)) {
-            if (data.includes('EXECOK')) {
-              exitCode = 0;
-            }
-
-            attach.write('D');
-            return;
-          }
-
-          if (data.includes('> read escape sequence')) {
-            return;
-          }
-
-          if (data.includes(command)) {
-            data = bold(yellow(command)) + '\n';
-          }
-
-          if (!data.trim().includes('logout') && !data.trim().includes('exit') &&
-              !data.trim().includes('read escape sequence')) {
-            observer.next({ type: 'data', data: data });
-          }
+          attach.write(command + ' && echo EXECOK || echo EXECNOK\r\n');
+          observer.next({ type: 'data', data: bold(yellow(command)) + '\r\n' });
+        } else if (data.includes('EXECOK') && !data.includes(command)) {
+          exitCode = 0;
+          attach.write(detachKey ? detachKey : 'exit $?\r\n');
+        } else if (data.includes('EXECNOK') && !data.includes(command)) {
+          attach.write(detachKey ? detachKey : 'exit $?\r\n');
+        } else if (!data.includes(command)) {
+          observer.next({ type: 'data', data: data });
         }
       });
 

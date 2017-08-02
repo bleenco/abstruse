@@ -91,7 +91,7 @@
                   Setting up docker image, please wait ...
                 </div>
                 <hr/>
-                <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+                <app-terminal [data]="terminalInput" [options]="terminalOptions"></app-terminal>
               </div>
               <div *ngIf="step === 'done'">
                 <div class="message green">
