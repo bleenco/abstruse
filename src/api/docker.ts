@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import { Subject, Observable, Observer } from 'rxjs';
 import * as fs from './fs';
 import * as utils from './utils';
-const pty = require('child_pty');
+const pty = require('node-pty');
 
 export interface TTYMessage {
   id: string;
@@ -81,12 +81,12 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
     let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'queued' };
     observer.next(msg);
 
-    ps.stdout.on('data', data => {
+    ps.on('data', data => {
       let msg: TTYMessage = { id: id, type: 'data', data: data, status: 'running' };
       observer.next(msg);
     });
 
-    ps.stdout.on('error', err => {
+    ps.on('error', err => {
       let error: TTYMessage = { id: id, type: 'error', data: err, status: 'failed' };
       observer.next(error);
     });

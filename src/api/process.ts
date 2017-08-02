@@ -6,7 +6,7 @@ import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow } from 'chalk';
-const pty = require('child_pty');
+const nodePty = require('node-pty');
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -32,11 +32,14 @@ export function startBuildProcess(buildId: number, jobId: number,
   return new Observable(observer => {
     const name = 'abstruse_' + buildId + '_' + jobId;
     const vars = commands.filter(cmd => cmd.startsWith('export'))
-      .map(cmd => cmd.replace('export', '-e'));
+      .map(cmd => cmd.replace('export', '-e'))
+      .reduce((acc, curr) => {
+        return acc.concat(curr.split(' '));
+      }, []);
     commands = commands.filter(cmd => !cmd.startsWith('export'));
 
-    startContainer(name, image)
-      .concat(...commands.map(command => executeInContainer(name, command, vars)))
+    startContainer(name, image, vars)
+      .concat(...commands.map(command => executeInContainer(name, command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {
@@ -50,31 +53,45 @@ export function startBuildProcess(buildId: number, jobId: number,
   });
 }
 
-function executeInContainer(name: string, command: string, vars = []): Observable<ProcessOutput> {
+function executeInContainer(name: string, command: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['exec', '--privileged']
-      .concat(command.startsWith('sudo') ? '-i' : '-it')
-      .concat(vars)
-      .concat(name, 'bash', '-l', '-c', `'${command}'`);
-    const process = pty.spawn('docker', [args.join(' ')], { shell: true });
+    let executed = false;
+    const start = nodePty.spawn('docker', ['start', name]);
 
-    observer.next({ type: 'data', data: bold(yellow(command)) + '\r\n' });
-    process.stdout.on('data', data => observer.next({ type: 'data', data: data.toString() }));
-    process.on('exit', exitCode => {
-      if (exitCode !== 0) {
-        observer.error(bold(`Executed command returned exit code ${red(exitCode.toString())}`));
-      } else {
-        observer.next({ type: 'exit', data: exitCode.toString() });
-        observer.complete();
-      }
+    start.on('exit', () => {
+      const attach = nodePty.spawn('docker', ['attach', name]);
+      attach.on('data', data => {
+        data = data.toString();
+        if (!executed) {
+          executed = true;
+          attach.write(command + ' && exit $?\r');
+        } else {
+          if (data.includes('&& exit $?')) {
+            data = bold(yellow(data.replace('&& exit $?', '')));
+            observer.next({ type: 'data', data: data });
+          } else if (data.trim() !== 'exit') {
+            observer.next({ type: 'data', data: data });
+          }
+        }
+      });
+
+      attach.on('exit', exitCode => {
+        if (exitCode !== 0) {
+          observer.error(bold(`Executed command returned exit code ${red(exitCode.toString())}`));
+        } else {
+          observer.next({ type: 'exit', data: exitCode.toString() });
+          observer.complete();
+        }
+      });
     });
   });
 }
 
-function startContainer(name: string, image: string): Observable<ProcessOutput> {
+function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['run', '--privileged', '-di', '--name', name, image];
-    const process = pty.spawn('docker', args);
+    const args = ['run', '--privileged', '-dit'].concat(vars).concat('--name', name, image);
+    console.log(args);
+    const process = nodePty.spawn('docker', args);
 
     process.on('exit', exitCode => {
       if (exitCode !== 0) {
@@ -93,7 +110,7 @@ function startContainer(name: string, image: string): Observable<ProcessOutput> 
 
 function stopContainer(name: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const process = pty.spawn('docker', [
+    const process = nodePty.spawn('docker', [
       'rm',
       '-f',
       name
@@ -147,7 +164,7 @@ function saveCredentialsToImage(name: string, buildId: number): Promise<void> {
           const domain = matches && matches[1];
           const cmd = `echo 'machine ${domain} login ${repo.username} password ${repo.password}'` +
             `> /home/abstruse/.netrc`;
-          const save = pty.spawn('docker', [
+          const save = nodePty.spawn('docker', [
             'exec',
             name,
             'sh',
