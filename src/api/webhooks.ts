@@ -137,7 +137,12 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
   }
 });
 
+
 webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
+  res.status(200).json({ msg: 'ok' });
+});
+
+webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
   res.status(200).json({ msg: 'ok' });
 });
 
