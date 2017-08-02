@@ -29,7 +29,7 @@
     "protractor:live": "npm run e2e -- --elementExplorer",
     "protractor": "protractor ./protractor.conf.js",
     "protractor:delay": "sleep 30 && protractor ./protractor.conf.js",
-    "protractor:travis": "node ./tests/run_protractor.js",
+    "protractor:abstruse": "node ./tests/run_protractor.js",
     "prepublishOnly": "npm run build:prod",
     "log": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },

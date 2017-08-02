@@ -59,23 +59,35 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
     const start = nodePty.spawn('docker', ['start', name]);
 
     start.on('exit', () => {
-      const attach = nodePty.spawn('docker', ['attach', name]);
+      let exitCode = 255;
+      const attach = nodePty.spawn('docker', ['attach', '--detach-keys=D', name]);
+
       attach.on('data', data => {
         data = data.toString();
         if (!executed) {
           executed = true;
-          attach.write(command + ' && exit $?\r');
+          attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
         } else {
-          if (data.includes('&& exit $?')) {
-            data = bold(yellow(data.replace('&& exit $?', '')));
-            observer.next({ type: 'data', data: data });
-          } else if (data.trim() !== 'exit') {
+          if ((data.includes('EXECNOK') || data.includes('EXECOK')) && !data.includes(command)) {
+            if (data.includes('EXECOK')) {
+              exitCode = 0;
+            }
+
+            attach.write('D');
+            return;
+          }
+
+          if (data.includes(command)) {
+            data = bold(yellow(command)) + '\n';
+          }
+
+          if (!data.trim().includes('logout') && !data.trim().includes('exit')) {
             observer.next({ type: 'data', data: data });
           }
         }
       });
 
-      attach.on('exit', exitCode => {
+      attach.on('exit', code => {
         if (exitCode !== 0) {
           observer.error(bold(`Executed command returned exit code ${red(exitCode.toString())}`));
         } else {
@@ -89,8 +101,8 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
 function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
+    console.log(vars);
     const args = ['run', '--privileged', '-dit'].concat(vars).concat('--name', name, image);
-    console.log(args);
     const process = nodePty.spawn('docker', args);
 
     process.on('exit', exitCode => {

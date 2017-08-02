@@ -35,7 +35,7 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   // 1. clone
   const splitted = repositoryUrl.split('/');
   const name = splitted[splitted.length - 1].replace(/\.git/, '');
-  let cloneCommand = `git clone ${repositoryUrl} .`;
+  let cloneCommand = `git clone -q ${repositoryUrl} .`;
 
   // 2. fetch & checkout commands
   let fetchCommand = '';
