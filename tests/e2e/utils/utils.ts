@@ -58,6 +58,32 @@ export function sendBitBucketRequest(data: any, headers: any): Promise<any> {
   });
 }
 
+export function sendGitLabRequest(data: any, headers: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let options = {
+      url: 'http://localhost:6500/webhooks/gitlab',
+      method: 'POST',
+      headers: headers,
+      json: data
+    };
+
+    request(options, (err, response, body) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (response.statusCode === 200) {
+          resolve(body);
+        } else {
+          reject({
+            statusCode: response.statusCode,
+            response: body
+          });
+        }
+      }
+    });
+  });
+}
+
 export function killAllDockerContainers(): Promise<boolean> {
   return new Promise(resolve => {
     exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => {
