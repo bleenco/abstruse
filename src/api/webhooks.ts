@@ -137,6 +137,10 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
   }
 });
 
+webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
+  res.status(200).json({ msg: 'ok' });
+});
+
 function verifyGithubWebhook(signature: string, payload: any, secret: string): boolean {
   const computedSig =
     `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')}`;

@@ -1,7 +1,7 @@
 import { browser, by, element } from 'protractor';
 import { isLoaded, login, logout } from './utils';
 import { request, header } from '../tests/e2e/webhooks/github/PingEvent';
-import { sendRequest } from '../tests/e2e/utils/utils';
+import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 describe('Repositories', () => {
 
@@ -22,7 +22,7 @@ describe('Repositories', () => {
   });
 
   it('should add repository bterm (send ping event)', () => {
-    return sendRequest(request, header)
+    return sendGitHubRequest(request, header)
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))

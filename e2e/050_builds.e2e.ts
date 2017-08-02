@@ -4,7 +4,7 @@ import { request as pushEventRequest, header as pushEventHeader }
   from '../tests/e2e/webhooks/github/PushEvent';
 import { requestOpened, requestReopened, header as pullRequestHeader }
   from '../tests/e2e/webhooks/github/PullRequestEvent';
-import { sendRequest } from '../tests/e2e/utils/utils';
+import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 describe('Builds', () => {
 
@@ -27,7 +27,7 @@ describe('Builds', () => {
   });
 
   it('should start new build (send push event)', () => {
-    return sendRequest(pushEventRequest, pushEventHeader)
+    return sendGitHubRequest(pushEventRequest, pushEventHeader)
       .then(() => browser.get('/'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()));
@@ -60,7 +60,7 @@ describe('Builds', () => {
   });
 
   it('should start new build (send open_pull_request event)', () => {
-    return sendRequest(requestOpened, pullRequestHeader)
+    return sendGitHubRequest(requestOpened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
       .then((): any => browser.wait(() => {
@@ -91,7 +91,7 @@ describe('Builds', () => {
   });
 
   it('should start new build (send reopen_pull_request event)', () => {
-    return sendRequest(requestReopened, pullRequestHeader)
+    return sendGitHubRequest(requestReopened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
       .then((): any => browser.wait(() => {

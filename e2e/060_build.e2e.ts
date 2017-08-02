@@ -1,7 +1,7 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded, login, logout, delay } from './utils';
 import { request, header } from '../tests/e2e/webhooks/github/PushEvent';
-import { sendRequest } from '../tests/e2e/utils/utils';
+import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 describe('Build', () => {
 
@@ -16,7 +16,7 @@ describe('Build', () => {
   });
 
   it('should start new build (send open_pull_request event)', () => {
-    return sendRequest(request, header)
+    return sendGitHubRequest(request, header)
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
       .then((): any => browser.wait(() => {
