@@ -1,4 +1,4 @@
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded } from './utils';
 
 describe('User Registration', () => {
@@ -66,7 +66,7 @@ describe('User Registration', () => {
       .then(url => expect(url).toEqual('http://localhost:6500/setup'));
   });
 
-  it('should successfully register user', () => {
+  it('should successfully register user and build docker images', () => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -76,7 +76,12 @@ describe('User Registration', () => {
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.form-input[name="password2"]')).sendKeys('test123'))
       .then(() => element(by.css('.button[name="btn-register"]')).click())
-      .then(() => browser.get('/login'))
+      .then((): any => browser.wait(() => element(by.css('[name="loginPage"]')).isPresent()))
+      .then((): any => browser.wait(() => {
+        return ExpectedConditions.elementToBeClickable(element(by.css('[name="loginPage"]')));
+      }))
+      .then((): any => element(by.css('[name="loginPage"]')).click())
+      .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
       .then(url => expect(url).toEqual('http://localhost:6500/login'));
   });
