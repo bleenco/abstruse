@@ -23,6 +23,7 @@ postinstall:
   - sudo usermod -aG docker abstruse
   - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
+  - export DISPLAY=:99
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi

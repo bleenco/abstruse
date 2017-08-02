@@ -45,7 +45,6 @@ export function startBuildProcess(buildId: number, jobId: number,
       }, err => {
         observer.next({ type: 'data', data: err });
         observer.error(err);
-        observer.complete();
         stopContainer(name).subscribe((event: ProcessOutput) => observer.next(event));
       }, () => {
         observer.complete();
@@ -72,16 +71,14 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
       }
 
       attach.on('data', data => {
-        const trimmed = data.trim();
-
         if (!executed) {
           attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
-          observer.next({ type: 'data', data: bold(yellow(command)) + '\r' });
+          observer.next({ type: 'data', data: bold(yellow('==> ' + command)) + '\r' });
           executed = true;
-        } else if (trimmed.startsWith('EXECOK')) {
+        } else if (data.includes('EXECOK')) {
           exitCode = 0;
           attach.write(detachKey ? detachKey : 'exit $?\r');
-        } else if (trimmed.startsWith('EXECNOK')) {
+        } else if (data.includes('EXECNOK')) {
           attach.write(detachKey ? detachKey : 'exit $?\r');
         } else if (!data.includes(command) && !data.includes('exit $?') &&
           !data.includes('logout') && !data.includes('read escape sequence')) {
