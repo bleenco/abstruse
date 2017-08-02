@@ -77,11 +77,16 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
             return;
           }
 
+          if (data.includes('> read escape sequence')) {
+            return;
+          }
+
           if (data.includes(command)) {
             data = bold(yellow(command)) + '\n';
           }
 
-          if (!data.trim().includes('logout') && !data.trim().includes('exit')) {
+          if (!data.trim().includes('logout') && !data.trim().includes('exit') &&
+              !data.trim().includes('read escape sequence')) {
             observer.next({ type: 'data', data: data });
           }
         }
@@ -101,7 +106,6 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
 function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    console.log(vars);
     const args = ['run', '--privileged', '-dit'].concat(vars).concat('--name', name, image);
     const process = nodePty.spawn('docker', args);
 
