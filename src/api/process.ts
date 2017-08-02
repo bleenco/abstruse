@@ -75,16 +75,17 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
         const trimmed = data.trim();
 
         if (!executed) {
+          attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
+          observer.next({ type: 'data', data: bold(yellow(command)) + '\r' });
           executed = true;
-          attach.write(command + ' && echo EXECOK || echo EXECNOK\r\n');
-          observer.next({ type: 'data', data: bold(yellow(command)) + '\r\n' });
-        } else if (data.includes('EXECOK') && !data.includes(command)) {
+        } else if (trimmed.startsWith('EXECOK')) {
           exitCode = 0;
-          attach.write(detachKey ? detachKey : 'exit $?\r\n');
-        } else if (data.includes('EXECNOK') && !data.includes(command)) {
-          attach.write(detachKey ? detachKey : 'exit $?\r\n');
-        } else if (!data.includes(command)) {
-          observer.next({ type: 'data', data: data });
+          attach.write(detachKey ? detachKey : 'exit $?\r');
+        } else if (trimmed.startsWith('EXECNOK')) {
+          attach.write(detachKey ? detachKey : 'exit $?\r');
+        } else if (!data.includes(command) && !data.includes('exit $?') &&
+          !data.includes('logout') && !data.includes('read escape sequence')) {
+          observer.next({ type: 'data', data: data.replace('> ', '') });
         }
       });
 
