@@ -385,7 +385,7 @@ export function stopJob(jobId: number): Promise<any> {
           dbJob.updateJob({ id: jobId, end_time: new Date(), status: 'failed', log: log })
             .then(() => {
               const name = `abstruse_${jobProcess.build_id}_${jobProcess.job_id}`;
-              return killContainer(name).toPromise();
+              return killContainer(name);
             })
             .then(() => resolve(jobProcess));
         } else {
@@ -402,7 +402,7 @@ export function stopJob(jobId: number): Promise<any> {
             })
             .then(() => {
               const name = `abstruse_${job.builds_id}_${job.id}`;
-              return killContainer(name).toPromise();
+              return killContainer(name);
             })
             .then(() => resolve(job));
         }

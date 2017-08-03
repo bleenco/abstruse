@@ -44,13 +44,10 @@ export function killAllContainers(): Observable<boolean> {
   });
 }
 
-export function killContainer(id: string): Observable<boolean> {
-  return new Observable(observer => {
-    const kill = spawn('docker', ['rm', id, '-f']);
-    kill.on('close', code => {
-      observer.next();
-      observer.complete();
-    });
+export function killContainer(id: string): Promise<void> {
+  return new Promise(resolve => {
+    const kill = pty.spawn('docker', ['rm', id, '-f']);
+    kill.on('exit', code => resolve());
   });
 }
 
