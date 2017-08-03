@@ -19,52 +19,39 @@ describe('Build', () => {
     return sendGitHubRequest(request, header)
       .then(() => browser.get('/'))
       .then(() => delay(3000))
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then(() => {
-        return browser.wait(
-          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
-      })
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/'));
   });
 
   it('should stop job', () => {
     return browser.get('/')
       .then(() => delay(3000))
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/job/'))
       .then((): any => browser.wait(() => element(by.css('[name="btn-stop"]')).isDisplayed()))
       .then((): any => element(by.css('[name="btn-stop"]')).click())
       .then(() => browser.wait(() => {
-        return element.all(by.css('.yellow')).count()
-          .then(count => count === 0);
+        return element.all(by.css('.yellow')).count().then(count => count === 0);
       }));
   });
 
   it('should restart job', () => {
     return browser.get('/')
       .then(() => delay(3000))
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then(() => {
-        return browser.wait(
-          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
-      })
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.list-item')));
-      }))
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/job/'))
       .then((): any => browser.wait(() => element(by.css('[name="btn-restart"]')).isDisplayed()))
       .then((): any => element(by.css('[name="btn-restart"]')).click())
       .then(() => browser.wait(() => {
-        return element.all(by.css('.yellow')).count()
-          .then(count => count > 0);
+        return element.all(by.css('.yellow')).count().then(count => count > 0);
       }));
   });
 
