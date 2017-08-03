@@ -2,7 +2,16 @@ import { browser, by, element } from 'protractor';
 
 export function isLoaded() {
   return browser.wait(() => {
-    return element(by.css('.main-loader')).isPresent().then(isPresent => !isPresent);
+    return element(by.css('.main-loader')).isDisplayed()
+      .then(isDisplayed => !isDisplayed)
+      .catch(() => true);
+  });
+}
+
+export function waitForUrlToChangeTo(expectedUrl) {
+  return browser.wait(() => {
+    return browser.getCurrentUrl()
+      .then(url => url.indexOf(expectedUrl) !== -1);
   });
 }
 

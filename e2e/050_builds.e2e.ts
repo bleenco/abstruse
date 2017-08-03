@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout, delay } from './utils';
+import { isLoaded, login, logout, waitForUrlToChangeTo } from './utils';
 import { request as pushEventRequest, header as pushEventHeader }
   from '../tests/e2e/webhooks/github/PushEvent';
 import { requestOpened, requestReopened, header as pullRequestHeader }
@@ -36,117 +36,102 @@ describe('Builds', () => {
   it('should redirect after click on first build', () => {
     return browser.get('/')
       .then(() => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then(() => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.list-item')));
-      }))
+      .then(() => {
+        return browser.wait(
+          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
+      })
       .then(() => element(by.css('.list-item')).click())
-      .then(() => delay(500))
-      .then(() => isLoaded())
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/build/1'));
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/1'));
   });
 
   it('should stop last build', () => {
     browser.get('/')
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.stop-build')));
-      }))
       .then(() => element(by.css('.stop-build')).click())
-      .then(() => delay(2000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBe(0));
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => count === 0);
+      }));
   });
 
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(requestOpened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.list-item')));
-      }))
+      .then(() => {
+        return browser.wait(
+          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
+      })
       .then((): any => element.all(by.css('.list-item')).first().click())
-      .then(() => delay(1000))
-      .then((): any => isLoaded())
-      .then((): any => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/build/2'));
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'));
   });
 
   it('should stop last build', () => {
     browser.get('/')
-      .then(() => delay(2000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBeGreaterThan(0))
-      .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.stop-build')));
-      }))
-      .then(() => element.all(by.css('.stop-build')).first().click())
-      .then(() => delay(5000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBe(0));
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => {
+            if (count === 0) {
+              return true;
+            }
+            element.all(by.css('.stop-build')).first().click();
+          });
+      }));
   });
 
   it('should start new build (send reopen_pull_request event)', () => {
     return sendGitHubRequest(requestReopened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.list-item')));
-      }))
+      .then(() => {
+        return browser.wait(
+          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
+      })
       .then((): any => element.all(by.css('.list-item')).first().click())
-      .then(() => delay(1000))
-      .then((): any => isLoaded())
-      .then((): any => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/build/3'));
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/3'));
   });
 
   it('should stop last build', () => {
     browser.get('/')
-      .then(() => delay(2000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBeGreaterThan(0))
-      .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.stop-build')));
-      }))
-      .then(() => element.all(by.css('.stop-build')).first().click())
-      .then(() => delay(5000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBe(0));
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => {
+            if (count === 0) {
+              return true;
+            }
+            element.all(by.css('.stop-build')).first().click();
+          });
+      }));
   });
 
-  it('should restart last build and then stop again', () => {
+  it('should restart last build', () => {
     browser.get('/')
-      .then(() => delay(2000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBe(0))
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => count === 0);
+      }))
       .then((): any => browser.wait(() => element(by.css('.restart-build')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.restart-build')));
-      }))
+      .then(() => {
+        return browser.wait(
+          ExpectedConditions.elementToBeClickable(element(by.css('.restart-build'))), 10000);
+      })
       .then(() => element.all(by.css('.restart-build')).first().click())
-      .then(() => delay(5000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBeGreaterThan(0))
-      .then(() => delay(3000))
-      .then(() => isLoaded())
-      .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('.stop-build')));
-      }))
-      .then(() => element.all(by.css('.stop-build')).first().click())
-      .then(() => delay(5000))
-      .then(() => isLoaded())
-      .then(() => element.all(by.css('.is-running')).count())
-      .then(runningBuilds => expect(runningBuilds).toBe(0))
-      ;
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => count > 0);
+      }));
+  });
+
+  it('should stop last build', () => {
+    browser.get('/')
+      .then(() => browser.wait(() => {
+        return element.all(by.css('.is-running')).count()
+          .then(count => {
+            if (count === 0) {
+              return true;
+            }
+            element.all(by.css('.stop-build')).first().click();
+          });
+      }));
   });
 });
