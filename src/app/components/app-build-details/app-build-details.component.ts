@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
-import { distanceInWordsToNow, format } from 'date-fns';
+import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
 
 @Component({
   selector: 'app-build-details',
@@ -15,6 +15,7 @@ export class AppBuildDetailsComponent implements OnInit {
   status: string;
   timeWords: string;
   totalTime: string;
+  previousRuntime: string;
   processingBuild: boolean;
 
   constructor(
@@ -37,6 +38,8 @@ export class AppBuildDetailsComponent implements OnInit {
         this.build = build;
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.start_time);
+        this.previousRuntime = distanceInWordsStrict(
+          this.build.lastBuild.end_time, this.build.lastBuild.start_time);
 
         this.status = this.getBuildStatus();
 

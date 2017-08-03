@@ -36,7 +36,23 @@ export function getBuild(id: number): Promise<any> {
         return job;
       });
 
-      resolve(build);
+      return build;
+    })
+    .then(build => {
+      new Build()
+        .query(q => {
+          q.where('head_github_id', build.head_github_id)
+          .andWhere('id', '<', build.id)
+          .andWhere('start_time', 'is not null')
+          .andWhere('end_time', 'is not null')
+          .orderBy('id', 'desc');
+        })
+        .fetch()
+        .then(lastBuild => {
+          build.lastBuild = lastBuild;
+
+          resolve(build);
+        });
     });
   });
 }
