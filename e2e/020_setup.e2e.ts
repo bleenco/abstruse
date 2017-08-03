@@ -2,10 +2,13 @@ import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded } from './utils';
 
 describe('User Registration', () => {
-
-  beforeEach(() => {
-    browser.get('/');
+  let originalTimeout = 300000;
+  beforeAll(() => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 1200000;
   });
+
+  afterAll(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout);
 
   it(`continue button should be disabled when password is empty`, () => {
     return browser.get('/setup')
@@ -77,11 +80,7 @@ describe('User Registration', () => {
       .then(() => element(by.css('.form-input[name="password2"]')).sendKeys('test123'))
       .then(() => element(by.css('.button[name="btn-register"]')).click())
       .then((): any => browser.wait(() => element(by.css('[name="loginPage"]')).isPresent()))
-      .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css('[name="loginPage"]')));
-      }))
       .then((): any => element(by.css('[name="loginPage"]')).click())
-      .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
       .then(url => expect(url).toEqual('http://localhost:6500/login'));
   });
