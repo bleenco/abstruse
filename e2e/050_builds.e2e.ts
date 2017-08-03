@@ -62,12 +62,8 @@ describe('Builds', () => {
     return sendGitHubRequest(requestOpened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then(() => delay(3000))
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then(() => {
-        return browser.wait(
-          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
-      })
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'));
   });
 
@@ -92,12 +88,8 @@ describe('Builds', () => {
     return sendGitHubRequest(requestReopened, pullRequestHeader)
       .then(() => browser.get('/'))
       .then(() => delay(3000))
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then(() => {
-        return browser.wait(
-          ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
-      })
-      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
+      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/3'));
   });
 
