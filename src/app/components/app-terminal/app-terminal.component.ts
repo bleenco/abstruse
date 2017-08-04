@@ -14,6 +14,7 @@ export class AppTerminalComponent implements OnInit {
 
   ngOnInit() {
     this.au = new AnsiUp.default();
+    this.au.use_classes = true;
   }
 
   ngOnChanges(changes: SimpleChange) {
