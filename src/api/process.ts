@@ -23,12 +23,12 @@ export interface SpawnedProcessOutput {
 }
 
 export interface ProcessOutput {
-  type: 'data' | 'exit' | 'container';
+  type: 'data' | 'exit' | 'container' | 'exposedPort';
   data: string;
 }
 
 export function startBuildProcess(buildId: number, jobId: number,
-  commands: string[], image: string): Observable<ProcessOutput> {
+  commands: string[], image: string, ssh = false): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + buildId + '_' + jobId;
     const vars = commands.filter(cmd => cmd.startsWith('export'))
@@ -39,6 +39,8 @@ export function startBuildProcess(buildId: number, jobId: number,
     commands = commands.filter(cmd => !cmd.startsWith('export'));
 
     startContainer(name, image, vars)
+      .concat(ssh ? executeInContainer(name, 'sudo /etc/init.d/ssh start') : null)
+      .concat(ssh ? getContainerExposedPort(name, 22) : null)
       .concat(...commands.map(command => executeInContainer(name, command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
@@ -100,7 +102,7 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
 function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['run', '--privileged', '-dit'].concat(vars).concat('--name', name, image);
+    const args = ['run', '--privileged', '-dit', '-P'].concat(vars).concat('--name', name, image);
     const process = nodePty.spawn('docker', args);
 
     process.on('exit', exitCode => {
@@ -134,6 +136,19 @@ function stopContainer(name: string): Observable<ProcessOutput> {
 
       observer.complete();
     });
+  });
+}
+
+function getContainerExposedPort(name: string, port: number): Observable<ProcessOutput> {
+  return new Observable(observer => {
+    const process = nodePty.spawn('docker', [
+      'port',
+      name,
+      port
+    ]);
+
+    process.on('data', data => observer.next({ type: 'exposedPort', data: data.split(':')[1] }));
+    process.on('exit', () => observer.complete());
   });
 }
 

@@ -25,6 +25,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   terminalInput: any;
   timeWords: string;
   processing: boolean;
+  sshd: string;
 
   constructor(
     private socketService: SocketService,
@@ -55,6 +56,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
               this.processing = false;
             } else if (event.type === 'jobRestarted' && event.data === this.id) {
               this.processing = false;
+            } else if (event.type === 'exposedPort') {
+              this.sshd = `${document.location.hostname}:${event.data}`;
             }
           });
 
@@ -103,6 +106,14 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.terminalInput = { clear: true };
     this.processing = true;
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
+  }
+
+  restartJobWithSSH(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.terminalInput = { clear: true };
+    this.processing = true;
+    this.socketService.emit({ type: 'restartJobWithSSH', data: { jobId: this.id } });
   }
 
   stopJob(e: MouseEvent): void {

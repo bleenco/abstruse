@@ -13,7 +13,7 @@
             <div class="build-top-container" [ngClass]="{ green: job?.status === 'success', yellow: job?.status === 'running', red: job?.status === 'failed' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
-                  <div class="column is-9">
+                  <div class="column is-2">
                     <h1 class="bold">
                       <span><a [routerLink]="['/repo', job?.build.repository.id]">{{ job?.build.head_full_name }}</a></span>
                       <span class="build-icon">
@@ -24,7 +24,18 @@
                       </span>
                     </h1>
                   </div>
-                  <div class="column is-3 justify-end right-buttons-top">
+                  <div class="column is-5">
+                    <code *ngIf="sshd" class="ssh">ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse</code>
+                  </div>
+                  <div class="column is-5 justify-end right-buttons-top">
+                    <button class="button is-fullwidth" name="btn-restart-ssh" type="button" (click)="restartJobWithSSH($event)" [disabled]="processing">
+                      <div class="centered">
+                        <span class="icon">
+                          <img src="images/icons/restart.svg">
+                        </span>
+                        <span>Restart (enable SSH)</span>
+                      </div>
+                    </button>
                     <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
