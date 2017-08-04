@@ -108,21 +108,25 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
 function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const args = ['run', '--privileged', '-dit', '-P'].concat(vars).concat('--name', name, image);
-    const process = nodePty.spawn('docker', args);
+    docker.killContainer(name)
+      .then(() => {
+        const args = ['run', '--privileged', '-dit', '-P'].concat(vars)
+          .concat('--name', name, image);
+        const process = nodePty.spawn('docker', args);
 
-    process.on('exit', exitCode => {
-      if (exitCode !== 0) {
-        observer.error(`Error starting container (${exitCode})`);
-      } else {
-        observer.next({
-          type: 'container',
-          data: `Container ${bold(name)} succesfully started.`
+        process.on('exit', exitCode => {
+          if (exitCode !== 0) {
+            observer.error(`Error starting container (${exitCode})`);
+          } else {
+            observer.next({
+              type: 'container',
+              data: `Container ${bold(name)} succesfully started.`
+            });
+          }
+
+          observer.complete();
         });
-      }
-
-      observer.complete();
-    });
+      });
   });
 }
 
