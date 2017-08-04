@@ -43,8 +43,8 @@ export function getBuild(id: number): Promise<any> {
         .query(q => {
           q.where('head_github_id', build.head_github_id)
           .andWhere('id', '<', build.id)
-          .andWhere('start_time', 'is not null')
-          .andWhere('end_time', 'is not null')
+          .whereNotNull('start_time')
+          .whereNotNull('end_time')
           .orderBy('id', 'desc');
         })
         .fetch()
@@ -73,6 +73,7 @@ export function updateBuild(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
     delete data.jobs;
     delete data.repository;
+    delete data.lastBuild;
 
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
