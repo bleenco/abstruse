@@ -54,20 +54,13 @@ jobEvents
 // main scheduler
 const concurrency = config.concurrency || 10;
 jobProcesses
-  .mergeMap(jobProcesses => {
-    const running = jobProcesses.filter(proc => proc.status === 'running');
-    const len = running.length;
-    if (len < concurrency) {
-      return Observable.from(
-        jobProcesses
-          .filter(job => job.status === 'queued')
-          .filter((job, i) => i < concurrency - len)
-          .map(job => Observable.fromPromise(startJob(job.build_id, job.job_id)))
+  .mergeMap((jobProcesses: JobProcess[]) => {
+    return Observable.from(
+      jobProcesses
+        .filter(job => job.status === 'queued')
+        .map(job => Observable.fromPromise(startJob(job.build_id, job.job_id)))
       );
-    } else {
-      return Observable.empty();
-    }
-  })
+  }, concurrency)
   .subscribe();
 
 // inserts new build into db and queue related jobs.
