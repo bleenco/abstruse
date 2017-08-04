@@ -51,8 +51,9 @@ describe('Builds', () => {
 
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(requestOpened, pullRequestHeader)
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
-      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
+      .then((): any => element(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'))
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
@@ -71,8 +72,9 @@ describe('Builds', () => {
 
   it('should start new build (send reopen_pull_request event)', () => {
     return sendGitHubRequest(requestReopened, pullRequestHeader)
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
-      .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
+      .then((): any => element(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/3'))
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
