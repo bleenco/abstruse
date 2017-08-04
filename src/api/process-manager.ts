@@ -240,7 +240,7 @@ export function queueSetupDockerImage(name: string): Observable<any> {
   return jobOutput;
 }
 
-function queueJob(buildId: number, jobId: number): Promise<void> {
+function queueJob(buildId: number, jobId: number, ssh = false): Promise<void> {
   let commands;
   return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'queued' })
     .then(jobData => {
@@ -252,7 +252,7 @@ function queueJob(buildId: number, jobId: number): Promise<void> {
         build_id: buildId,
         job_id: jobId,
         status: 'queued',
-        job: prepareJob(buildId, jobId, JSON.parse(commands)),
+        job: prepareJob(buildId, jobId, JSON.parse(commands), ssh),
         log: []
       };
 
@@ -331,6 +331,40 @@ export function restartJob(jobId: number): Promise<void> {
     });
 }
 
+export function restartJobWithSSH(jobId: number): Promise<void> {
+  return getJobProcesses()
+    .then(procs => {
+      const jobProcess = procs.find(job => job.job_id === jobId);
+      if (jobProcess) {
+        let jobData;
+        return dbJob.resetJob(jobId)
+          .then(job => {
+            jobData = job;
+            jobEvents.next({
+              type: 'process',
+              build_id: job.builds_id,
+              job_id: job.id,
+              data: 'jobRestarted'
+            });
+
+            return stopJob(jobId);
+          })
+          .then(() => queueJob(jobData.builds_id, jobData.id, true));
+      } else {
+        return dbJob.getJob(jobId).then(job => {
+          jobEvents.next({
+            type: 'process',
+            build_id: job.builds_id,
+            job_id: job.id,
+            data: 'jobRestarted'
+          });
+
+          return queueJob(job.builds_id, job.id, true);
+        });
+      }
+    });
+}
+
 export function stopJob(jobId: number): Promise<any> {
   return new Promise(resolve => {
     getJobProcesses()
@@ -376,9 +410,10 @@ export function stopJob(jobId: number): Promise<any> {
   });
 }
 
-function prepareJob(buildId: number, jobId: number, cmds: any): Observable<JobMessage> {
+function prepareJob(buildId: number, jobId: number,
+  cmds: any, ssh = false): Observable<JobMessage> {
   return new Observable(observer => {
-    const job = startBuildProcess(buildId, jobId, cmds, 'abstruse');
+    const job = startBuildProcess(buildId, jobId, cmds, 'abstruse', ssh);
 
     job.subscribe(output => {
       const message: JobMessage = {
