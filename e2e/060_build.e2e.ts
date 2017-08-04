@@ -18,30 +18,24 @@ describe('Build', () => {
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(request, header)
       .then(() => browser.get('/'))
-      .then(() => delay(3000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/'));
-  });
-
-  xit('should stop job', () => {
-    return browser.get('/')
-      .then(() => delay(3000))
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/'))
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element(by.css('.list-item:nth-child(1)')).click())
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/'))
       .then((): any => element(by.css('.list-item:nth-child(1)')).click())
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/'))
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/job/'))
       .then((): any => browser.wait(() => element(by.css('[name="btn-stop"]')).isDisplayed()))
       .then((): any => element(by.css('[name="btn-stop"]')).click())
-      .then(() => browser.wait(() => {
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.yellow')).count().then(count => count === 0);
       }));
   });
 
   it('should restart job', () => {
     return browser.get('/')
-      .then(() => delay(3000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
@@ -52,12 +46,8 @@ describe('Build', () => {
       .then((): any => element(by.css('[name="btn-restart"]')).click())
       .then(() => browser.wait(() => {
         return element.all(by.css('.yellow')).count().then(count => count > 0);
-      }));
-  });
-
-  it('should stop last build', () => {
-    browser.get('/')
-      .then(() => delay(3000))
+      }))
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
       .then(() => element.all(by.css('.stop-build')).first().click())
       .then(() => browser.wait(() => {

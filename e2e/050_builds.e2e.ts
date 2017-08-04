@@ -21,7 +21,6 @@ describe('Builds', () => {
 
   it('should open first page with zero builds', () => {
     return browser.get('/')
-      .then(() => delay(3000))
       .then(() => browser.wait(() => element(by.css('.is-info')).isPresent()))
       .then(() => expect(element(by.css('.is-info')).getText())
         .toContain('No builds has been runned yet.'));
@@ -29,30 +28,22 @@ describe('Builds', () => {
 
   it('should start new build (send push event)', () => {
     return sendGitHubRequest(pushEventRequest, pushEventHeader)
-      .then(() => browser.get('/'))
-      .then(() => delay(3000))
-      .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()));
   });
 
   it('should redirect after click on first build', () => {
-    return browser.get('/')
-      .then(() => delay(3000))
-      .then(() => browser.wait(() => element(by.css('.list-item')).isPresent()))
+    return Promise.resolve()
+      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
       .then(() => {
         return browser.wait(
           ExpectedConditions.elementToBeClickable(element(by.css('.list-item'))), 10000);
       })
-      .then(() => element(by.css('.list-item')).click())
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/1'));
-  });
-
-  it('should stop last build', () => {
-    browser.get('/')
-      .then(() => delay(3000))
+      .then((): any => element(by.css('.list-item')).click())
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/1'))
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then(() => element(by.css('.stop-build')).click())
-      .then(() => browser.wait(() => {
+      .then((): any => element(by.css('.stop-build')).click())
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count()
           .then(count => count === 0);
       }));
@@ -60,19 +51,13 @@ describe('Builds', () => {
 
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(requestOpened, pullRequestHeader)
-      .then(() => browser.get('/'))
-      .then(() => delay(3000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'));
-  });
-
-  it('should stop last build', () => {
-    browser.get('/')
-      .then(() => delay(3000))
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'))
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then(() => element.all(by.css('.stop-build')).first().click())
-      .then(() => browser.wait(() => {
+      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count()
           .then(count => {
             if (count === 0) {
@@ -86,19 +71,13 @@ describe('Builds', () => {
 
   it('should start new build (send reopen_pull_request event)', () => {
     return sendGitHubRequest(requestReopened, pullRequestHeader)
-      .then(() => browser.get('/'))
-      .then(() => delay(3000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/3'));
-  });
-
-  it('should stop last build', () => {
-    browser.get('/')
-      .then(() => delay(3000))
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/3'))
+      .then(() => browser.get('/'))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
-      .then(() => element.all(by.css('.stop-build')).first().click())
-      .then(() => browser.wait(() => {
+      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count()
           .then(count => {
             if (count === 0) {
@@ -112,18 +91,12 @@ describe('Builds', () => {
 
   it('should restart last build', () => {
     browser.get('/')
-      .then(() => delay(3000))
       .then((): any => browser.wait(() => element(by.css('.restart-build')).isPresent()))
       .then(() => element.all(by.css('.restart-build')).first().click())
       .then(() => browser.wait(() => {
         return element.all(by.css('.is-running')).count()
           .then(count => count > 0);
-      }));
-  });
-
-  it('should stop last build', () => {
-    browser.get('/')
-      .then(() => delay(3000))
+      }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.stop-build')).count()
           .then(c => c === 3);
