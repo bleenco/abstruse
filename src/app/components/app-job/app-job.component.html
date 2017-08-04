@@ -13,9 +13,9 @@
             <div class="build-top-container" [ngClass]="{ green: job?.status === 'success', yellow: job?.status === 'running', red: job?.status === 'failed' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
-                  <div class="column is-2">
+                  <div class="column is-7">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', job?.build.repository.id]">{{ job?.build.head_full_name }}</a></span>
+                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.head_full_name }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="job?.status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="job?.status === 'running'">
@@ -23,9 +23,6 @@
                         <img src="images/icons/check-false.svg" *ngIf="job?.status === 'failed'">
                       </span>
                     </h1>
-                  </div>
-                  <div class="column is-5">
-                    <code *ngIf="sshd" class="ssh">ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse</code>
                   </div>
                   <div class="column is-5 justify-end right-buttons-top">
                     <button class="button is-fullwidth" name="btn-restart-ssh" type="button" (click)="restartJobWithSSH($event)" [disabled]="processing">
@@ -57,23 +54,23 @@
                   <hr/>
 
                   <div class="column is-3">
-                    <h2>{{ job?.build.message }}</h2>
+                    <h2>{{ job?.build?.message }}</h2>
                   </div>
                   <div class="column is-3">
                     <p>
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
                       </span>
-                      <span *ngIf="job?.build.head_sha">{{ job?.build.head_sha.slice(0, 7) }}</span>
-                      <span *ngIf="!job?.build.head_sha">{{ job?.build.sha.slice(0, 7) }}</span>
+                      <span *ngIf="job?.build?.head_sha">{{ job?.build?.head_sha.slice(0, 7) }}</span>
+                      <span *ngIf="!job?.build?.head_sha">{{ job?.build?.sha.slice(0, 7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">
                     <p>
                       <span class="icon">
-                        <img [src]="job?.build.head_user_avatar_url" class="avatar-img">
+                        <img [src]="job?.build?.head_user_avatar_url" class="avatar-img">
                       </span>
-                      <span>{{ job?.build.author }} commited {{ timeWords }} ago</span>
+                      <span>{{ job?.build?.author }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>
                   <div class="column is-2">
@@ -86,6 +83,16 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="column is-12" *ngIf="sshd">
+            <div class="ssh-container">
+              <span class="icon">
+                <img src="images/icons/ssh.svg">
+              </span>
+              <span>SSH Daemon is enabled in this container.</span>
+              <code>ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse</code>
+              <code>password: abstruse</code>
             </div>
           </div>
           <div class="column is-12">

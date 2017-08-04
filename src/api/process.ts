@@ -39,8 +39,8 @@ export function startBuildProcess(buildId: number, jobId: number,
     commands = commands.filter(cmd => !cmd.startsWith('export'));
 
     startContainer(name, image, vars)
-      .concat(ssh ? executeInContainer(name, 'sudo /etc/init.d/ssh start') : null)
-      .concat(ssh ? getContainerExposedPort(name, 22) : null)
+      .concat(ssh ? executeInContainer(name, 'sudo /etc/init.d/ssh start') : Observable.empty())
+      .concat(ssh ? getContainerExposedPort(name, 22) : Observable.empty())
       .concat(...commands.map(command => executeInContainer(name, command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
@@ -57,9 +57,14 @@ export function startBuildProcess(buildId: number, jobId: number,
 
 function executeInContainer(name: string, command: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const start = nodePty.spawn('docker', ['start', name]);
+    const start = nodePty.spawn('docker', ['start', name], { name: 'xterm-color' });
 
-    start.on('exit', () => {
+    start.on('exit', startCode => {
+      if (startCode !== 0) {
+        observer.error(bold(red('Container errored with exit code ' + startCode)));
+      }
+
+
       let exitCode = 255;
       let executed = false;
       let attach = null;
@@ -81,6 +86,7 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
           exitCode = 0;
           attach.write(detachKey ? detachKey : 'exit $?\r');
         } else if (data.includes('EXECNOK')) {
+          observer.error(red(`Last executed command returned error.`));
           attach.write(detachKey ? detachKey : 'exit $?\r');
         } else if (!data.includes(command) && !data.includes('exit $?') &&
           !data.includes('logout') && !data.includes('read escape sequence')) {
