@@ -18,7 +18,7 @@ describe('Build', () => {
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(request, header)
       .then(() => browser.get('/'))
-      .then(() => delay(3000))
+      .then(() => delay(10000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element.all(by.css('.list-item:nth-child(1)')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/'));
@@ -26,7 +26,7 @@ describe('Build', () => {
 
   it('should stop job', () => {
     return browser.get('/')
-      .then(() => delay(3000))
+      .then(() => delay(10000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
@@ -41,7 +41,7 @@ describe('Build', () => {
 
   it('should restart job', () => {
     return browser.get('/')
-      .then(() => delay(3000))
+      .then(() => delay(10000))
       .then((): any => browser.wait(() => element(by.css('.list-item:nth-child(1)')).isPresent()))
       .then((): any => element(by.css('.list-item:nth-child(1)')).click())
       .then(() => waitForUrlToChangeTo('http://localhost:6500/build/'))
@@ -57,7 +57,7 @@ describe('Build', () => {
 
   it('should stop last build', () => {
     browser.get('/')
-      .then(() => delay(3000))
+      .then(() => delay(10000))
       .then((): any => browser.wait(() => element(by.css('.stop-build')).isPresent()))
       .then(() => element.all(by.css('.stop-build')).first().click())
       .then(() => browser.wait(() => {
