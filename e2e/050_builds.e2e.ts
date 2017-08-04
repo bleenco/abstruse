@@ -89,7 +89,7 @@ describe('Builds', () => {
       }));
   });
 
-  it('should restart last build', () => {
+  xit('should restart last build', () => {
     browser.get('/')
       .then((): any => browser.wait(() => element(by.css('.restart-build')).isPresent()))
       .then(() => element.all(by.css('.restart-build')).first().click())
