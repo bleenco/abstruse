@@ -74,12 +74,17 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <p class="total-time">
-                      <span class="icon">
-                        <img src="images/icons/clock.svg">
-                      </span>
-                      <span>{{ job?.time }}</span>
-                    </p>
+                    <div class="column is-12">
+                      <p class="total-time">
+                        <span class="icon">
+                          <img src="images/icons/clock.svg">
+                        </span>
+                        <span>{{ job?.time }}</span>
+                      </p>
+                    </div>
+                    <div class="column is-12" *ngIf="job.status === 'running' && job.lastJob">
+                      <progress class="progress is-small" [value]="expectedProgress" max="1">{{expectedProgress}}%</progress>
+                    </div>
                   </div>
                 </div>
               </div>
