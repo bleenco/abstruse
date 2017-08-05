@@ -15,8 +15,9 @@ export class AppBuildDetailsComponent implements OnInit {
   status: string;
   timeWords: string;
   totalTime: string;
-  previousRuntime: string;
+  previousRuntime: number;
   processingBuild: boolean;
+  approximatelyRemainingTime: string;
 
   constructor(
     private socketService: SocketService,
@@ -38,8 +39,9 @@ export class AppBuildDetailsComponent implements OnInit {
         this.build = build;
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.start_time);
-        this.previousRuntime = distanceInWordsStrict(
-          this.build.lastBuild.end_time, this.build.lastBuild.start_time);
+        if (this.build.lastBuild) {
+          this.previousRuntime = this.build.lastBuild.end_time - this.build.lastBuild.start_time;
+        }
 
         this.status = this.getBuildStatus();
 
@@ -92,13 +94,18 @@ export class AppBuildDetailsComponent implements OnInit {
       return job;
     });
 
-    this.totalTime = format(Math.max(...this.build.jobs.map(job => {
+    let runningTime = Math.max(...this.build.jobs.map(job => {
       let date = new Date();
       let splitted = job.time.split(':');
       date.setUTCMinutes(splitted[0]);
       date.setUTCSeconds(splitted[1]);
       return date;
-    })), 'mm:ss');
+    }));
+    this.totalTime = format(runningTime, 'mm:ss');
+
+    if (this.previousRuntime && this.previousRuntime > runningTime) {
+      this.approximatelyRemainingTime = format(this.previousRuntime - runningTime, 'mm:ss');
+    }
   }
 
   getBuildStatus(): string {
