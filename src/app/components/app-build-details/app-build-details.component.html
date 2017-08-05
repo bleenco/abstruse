@@ -58,12 +58,17 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <p class="total-time">
-                      <span class="icon">
-                        <img src="images/icons/clock.svg">
-                      </span>
-                      <span>{{ totalTime }}</span>
-                    </p>
+                    <div class="column is-12">
+                      <p class="total-time">
+                        <span class="icon">
+                          <img src="images/icons/clock.svg">
+                        </span>
+                        <span>{{ totalTime }}</span>
+                      </p>
+                    </div>
+                    <div class="column is-12" *ngIf="status === 'running' && build.lastBuild">
+                      <span>approximately {{ approximatelyRemainingTime }} remaining</span>
+                    </div>
                   </div>
                 </div>
               </div>
