@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/takeWhile';
-import { format, distanceInWordsToNow } from 'date-fns';
+import { format, distanceInWordsToNow, distanceInWordsStrict } from 'date-fns';
 
 @Component({
   selector: 'app-job',
@@ -24,8 +24,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
   terminalOptions:  { size: 'small' | 'large' };
   terminalInput: any;
   timeWords: string;
+  previousRuntime: number;
   processing: boolean;
   sshd: string;
+  expectedProgress: number;
 
   constructor(
     private socketService: SocketService,
@@ -37,6 +39,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.status = 'queued';
     this.terminalOptions = { size: 'large' };
     this.id = null;
+    this.expectedProgress = 0;
   }
 
   ngOnInit() {
@@ -82,6 +85,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
         this.terminalInput = job.log;
         this.timeWords = distanceInWordsToNow(job.build.start_time);
         this.loading = false;
+        if (this.job.lastJob) {
+          this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
+        }
 
         this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
 
@@ -102,6 +108,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
       this.job.time = format(currentTime - this.job.start_time, 'mm:ss');
     } else {
       this.job.time = format(this.job.end_time - this.job.start_time, 'mm:ss');
+    }
+    if (this.previousRuntime) {
+      this.expectedProgress = (currentTime - this.job.start_time) / this.previousRuntime;
     }
   }
 
