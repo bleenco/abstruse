@@ -126,36 +126,38 @@ export function startBuild(data: any): Promise<any> {
 
           return insertBuild(data)
             .then(build => {
-              let jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
+              const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
-              return Promise.all(jobsCommands.map((commands, i) => {
-                const lang = repoDetails.config.language;
-                const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
-                const testScript = repoDetails.config.matrix[i].env;
+              return jobsCommands.reduce((prev, commands, i) => {
+                return prev.then(() => {
+                  const lang = repoDetails.config.language;
+                  const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
+                  const testScript = repoDetails.config.matrix[i].env;
 
-                const data = {
-                  start_time: new Date(),
-                  end_time: null,
-                  status: 'queued',
-                  commands: JSON.stringify(commands),
-                  log: '',
-                  language: lang,
-                  language_version: langVersion,
-                  test_script: testScript,
-                  builds_id: build.id
-                };
+                  const data = {
+                    start_time: new Date(),
+                    end_time: null,
+                    status: 'queued',
+                    commands: JSON.stringify(commands),
+                    log: '',
+                    language: lang,
+                    language_version: langVersion,
+                    test_script: testScript,
+                    builds_id: build.id
+                  };
 
-                return dbJob.insertJob(data).then(job => {
-                  jobEvents.next({
-                    type: 'process',
-                    build_id: build.id,
-                    job_id: job.id,
-                    data: 'jobAdded'
+                  return dbJob.insertJob(data).then(job => {
+                    jobEvents.next({
+                      type: 'process',
+                      build_id: build.id,
+                      job_id: job.id,
+                      data: 'jobAdded'
+                    });
+
+                    return queueJob(build.id, job.id);
                   });
-
-                  return queueJob(build.id, job.id);
                 });
-              }));
+              }, Promise.resolve());
             });
         });
     });
@@ -195,7 +197,9 @@ export function stopJob(jobId: number): Promise<void> {
   return getJobProcesses().then(processes => {
     const job = processes.find(proc => proc.job_id == jobId);
     if (!job) {
-      return Promise.resolve();
+      return Promise.resolve()
+        .then(() => dbJob.getJob(jobId))
+        .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`));
     } else {
       return Promise.resolve()
         .then(() => killContainer(`abstruse_${job.build_id}_${job.job_id}`))

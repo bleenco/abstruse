@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import { Subject, Observable, Observer } from 'rxjs';
 import * as fs from './fs';
 import * as utils from './utils';
@@ -34,13 +34,9 @@ export function buildImage(name: string): Observable<boolean> {
   return execTty(name, cmd, args);
 }
 
-export function killAllContainers(): Observable<boolean> {
-  return new Observable(observer => {
-    const kill = spawn('docker', ['rm', '$(docker ps -a -q)', '-f']);
-    kill.on('close', code => {
-      observer.next(code === 0 ? true : false);
-      observer.complete();
-    });
+export function killAllContainers(): Promise<void> {
+  return new Promise(resolve => {
+    exec('docker rm $(docker ps -a -q) -f', (error, stdout, stderr) => resolve());
   });
 }
 
