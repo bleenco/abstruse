@@ -30,13 +30,15 @@ export function imageExists(name: string): Observable<boolean> {
 export function buildImage(name: string): Observable<boolean> {
   let dockerFile = utils.getFilePath('docker-files');
   let cmd = 'docker';
-  let args = ['build', '-t', name, dockerFile];
+  let args = ['build', '--compress=true', '-m=2048M', '-t', name, dockerFile];
   return execTty(name, cmd, args);
 }
 
 export function killAllContainers(): Promise<void> {
   return new Promise(resolve => {
-    exec('docker rm $(docker ps -a -q) -f', (error, stdout, stderr) => resolve());
+    exec('docker kill $(docker ps -a -q)', (error, stdout, stderr) => {
+      exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => resolve());
+    });
   });
 }
 
