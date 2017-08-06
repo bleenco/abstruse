@@ -5,13 +5,9 @@ import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 describe('Repositories', () => {
 
-  beforeAll(() => {
-    login();
-  });
+  beforeAll(() => login());
 
-  afterAll(() => {
-    logout();
-  });
+  afterAll(() => logout());
 
   it('should open repository page with zero repositories', () => {
     return browser.get('/repositories')

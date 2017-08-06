@@ -110,7 +110,9 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
   return new Observable(observer => {
     docker.killContainer(name)
       .then(() => {
-        const args = ['run', '--privileged', '-dit', '-P'].concat(vars)
+        const args = ['run', '--privileged', '-dit', '-P']
+          .concat('-m=1024M', '--cpuset-cpus="0"')
+          .concat(vars)
           .concat('--name', name, image);
         const process = nodePty.spawn('docker', args);
 
