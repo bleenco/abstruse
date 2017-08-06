@@ -9,12 +9,10 @@ import {
   header as pullRequestHeader
 } from '../tests/e2e/webhooks/github/PullRequestEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
-import { killAllContainers } from '../src/api/docker';
 
 describe('Builds', () => {
   beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
   afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
-  afterEach(() => delay(5000).then(() => killAllContainers()));
 
   afterEach(() => {
     return Promise.resolve(() => {

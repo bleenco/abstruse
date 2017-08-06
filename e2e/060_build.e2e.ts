@@ -2,12 +2,10 @@ import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded, login, logout, waitForUrlToChangeTo, delay } from './utils';
 import { request, header } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
-import { killAllContainers } from '../src/api/docker';
 
 describe('Build', () => {
   beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
   afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
-  afterEach(() => delay(5000).then(() => killAllContainers()));
 
   it('should start new build (send open_pull_request event)', () => {
     return sendGitHubRequest(request, header)
