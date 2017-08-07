@@ -10,7 +10,7 @@ import {
   findDockerImageBuildJob,
   jobEvents,
   restartJob,
-  restartJobWithSSH,
+  restartJobWithSshAndVnc,
   stopJob,
   restartBuild,
   stopBuild,
@@ -107,8 +107,8 @@ export class SocketServer {
                     conn.next({ type: 'jobRestarted', data: event.data.jobId });
                   });
               break;
-              case 'restartJobWithSSH':
-                restartJobWithSSH(parseInt(event.data.jobId, 10))
+              case 'restartJobWithSshAndVnc':
+                restartJobWithSshAndVnc(parseInt(event.data.jobId, 10))
                   .then(() => {
                     conn.next({ type: 'jobRestarted', data: event.data.jobId });
                   });

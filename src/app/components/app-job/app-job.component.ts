@@ -27,6 +27,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   previousRuntime: number;
   processing: boolean;
   sshd: string;
+  vnc: string;
   expectedProgress: number;
 
   constructor(
@@ -52,7 +53,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
         } else if (event.type === 'jobRestarted' && event.data === this.id) {
           this.processing = false;
         } else if (event.type === 'exposedPort') {
-          this.sshd = `${document.location.hostname}:${event.data}`;
+          if (parseInt(event.data.split(':')[0], 10) === 22) {
+            this.sshd = `${document.location.hostname}:${event.data.split(':')[1]}`;
+          } else if (parseInt(event.data.split(':')[0], 10) === 5900) {
+            this.vnc = `${document.location.hostname}:${event.data.split(':')[1]}`;
+          }
         }
       });
 
@@ -120,6 +125,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.terminalInput = { clear: true };
     this.processing = true;
     this.sshd = null;
+    this.vnc = null;
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
   }
 
@@ -129,7 +135,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.terminalInput = { clear: true };
     this.processing = true;
     this.sshd = null;
-    this.socketService.emit({ type: 'restartJobWithSSH', data: { jobId: this.id } });
+    this.vnc = null;
+    this.socketService.emit({ type: 'restartJobWithSshAndVnc', data: { jobId: this.id } });
   }
 
   stopJob(e: MouseEvent): void {
@@ -137,6 +144,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     this.processing = true;
     this.sshd = null;
+    this.vnc = null;
     this.socketService.emit({ type: 'stopJob', data: { jobId: this.id } });
   }
 

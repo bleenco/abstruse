@@ -28,7 +28,7 @@ export interface ProcessOutput {
 }
 
 export function startBuildProcess(buildId: number, jobId: number,
-  commands: string[], image: string, ssh = false): Observable<ProcessOutput> {
+  commands: string[], image: string, sshAndVnc = false): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + buildId + '_' + jobId;
     const vars = commands.filter(cmd => cmd.startsWith('export'))
@@ -38,9 +38,22 @@ export function startBuildProcess(buildId: number, jobId: number,
       }, []);
     commands = commands.filter(cmd => !cmd.startsWith('export'));
 
+    let debug: Observable<any> = Observable.empty();
+    if (sshAndVnc) {
+      debug = Observable.concat(...[
+        executeInContainer(name, 'sudo /etc/init.d/ssh start'),
+        getContainerExposedPort(name, 22),
+        executeInContainer(name, 'export DISPLAY=:99 && sudo /etc/init.d/xvfb start && ' +
+          'sleep 3 && sudo /etc/init.d/openbox start'),
+        executeInContainer(name, 'export DISPLAY=:99 && ' +
+        'x11vnc -xkb -noxrecord -noxfixes -noxdamage -display :99 ' +
+         '-forever -bg -rfbauth /etc/x11vnc.pass -rfbport 5900'),
+        getContainerExposedPort(name, 5900)
+      ]);
+    }
+
     const sub = startContainer(name, image, vars)
-      .concat(ssh ? executeInContainer(name, 'sudo /etc/init.d/ssh start') : Observable.empty())
-      .concat(ssh ? getContainerExposedPort(name, 22) : Observable.empty())
+      .concat(debug)
       .concat(...commands.map(command => executeInContainer(name, command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
@@ -166,7 +179,9 @@ function getContainerExposedPort(name: string, port: number): Observable<Process
       port
     ]);
 
-    process.on('data', data => observer.next({ type: 'exposedPort', data: data.split(':')[1] }));
+    process.on('data', data => {
+      return observer.next({ type: 'exposedPort', data: port + ':' + data.split(':')[1] });
+    });
     process.on('exit', () => observer.complete());
   });
 }

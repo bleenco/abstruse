@@ -221,7 +221,7 @@ export function stopJob(jobId: number): Promise<void> {
   });
 }
 
-function queueJob(buildId: number, jobId: number, ssh = false): Promise<void> {
+function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<void> {
   let commands: string[] = null;
   let processes: JobProcess[] = null;
 
@@ -245,7 +245,7 @@ function queueJob(buildId: number, jobId: number, ssh = false): Promise<void> {
         build_id: buildId,
         job_id: jobId,
         status: 'queued',
-        job: prepareJob(buildId, jobId, commands, ssh),
+        job: prepareJob(buildId, jobId, commands, sshAndVnc),
         log: []
       };
 
@@ -255,7 +255,7 @@ function queueJob(buildId: number, jobId: number, ssh = false): Promise<void> {
     });
 }
 
-function prepareJob(buildId: number, jobId: number, cmds: any,  ssh = false):
+function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false):
   Observable<JobMessage> {
   return new Observable(observer => {
     getJobProcesses().then(processes => {
@@ -264,7 +264,7 @@ function prepareJob(buildId: number, jobId: number, cmds: any,  ssh = false):
       jobProcesses.next(processes);
       const process = processes[index];
 
-      startBuildProcess(buildId, jobId, cmds, 'abstruse', ssh).subscribe(event => {
+      startBuildProcess(buildId, jobId, cmds, 'abstruse', sshAndVnc).subscribe(event => {
         const msg: JobMessage = {
           build_id: buildId,
           job_id: jobId,
@@ -361,35 +361,19 @@ export function restartJob(jobId: number): Promise<void> {
     });
 }
 
-export function restartJobWithSSH(jobId: number): Promise<void> {
-  return getJobProcesses()
-    .then(procs => {
-      const jobProcess = procs.find(job => job.job_id === jobId);
-      if (jobProcess) {
-        let jobData;
-        return dbJob.resetJob(jobId)
-          .then(job => {
-            jobData = job;
-            jobEvents.next({
-              type: 'process',
-              build_id: job.builds_id,
-              job_id: job.id,
-              data: 'jobRestarted'
-            });
-          })
-          .then(() => queueJob(jobData.builds_id, jobData.id, true));
-      } else {
-        return dbJob.getJob(jobId).then(job => {
-          jobEvents.next({
-            type: 'process',
-            build_id: job.builds_id,
-            job_id: job.id,
-            data: 'jobRestarted'
-          });
-
-          return queueJob(job.builds_id, job.id, true);
-        });
-      }
+export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
+  let jobData = null;
+  return stopJob(jobId)
+    .then(() => dbJob.resetJob(jobId))
+    .then(job => jobData = job)
+    .then(() => queueJob(jobData.builds_id, jobId, true))
+    .then(() => {
+      jobEvents.next({
+        type: 'process',
+        build_id: jobData.builds_id,
+        job_id: jobData.id,
+        data: 'jobRestarted'
+      });
     });
 }
 
