@@ -17,14 +17,14 @@ preinstall:
 
 install:
   - npm install
-  - sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo apt-key fingerprint 0EBFCD88
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get install docker-ce sqlite3 -y
+  - curl -fsSL get.docker.com -o get-docker.sh
+  - chmod +x get-docker.sh
+  - sudo ./get-docker.sh
+  - sudo apt-get install sqlite3 -y
+  - sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual -y
 
 postinstall:
+  - sudo $(which node) ./tests/postinstall_ci.js
   - sudo usermod -aG docker abstruse
   - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
