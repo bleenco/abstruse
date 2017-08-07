@@ -62,7 +62,7 @@
                 <span>{{ build?.author }}</span>
               </div>
               <div class="column is-1">
-                <span>{{ build?.totalTime }}</span>
+                <span class="build-time">{{ build?.totalTime }}</span>
               </div>
               <div class="column is-1 justify-end">
                 <span class="icon restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="build.processingRequest">

@@ -16,7 +16,7 @@ exports.config = {
   framework: 'jasmine',
   jasmineNodeOpts: {
     showColors: true,
-    defaultTimeoutInterval: 300000,
+    defaultTimeoutInterval: 120000,
     print: function() {}
   },
   useAllAngular2AppRoots: true,

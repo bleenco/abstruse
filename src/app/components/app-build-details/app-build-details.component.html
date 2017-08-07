@@ -25,7 +25,7 @@
                     </h1>
                   </div>
                   <div class="column is-2">
-                    <button class="button is-fullwidth" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
+                    <button class="button is-fullwidth" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/restart.svg">
@@ -107,10 +107,10 @@
                 </div>
               </div>
               <div class="column is-1">
-                <span>{{ job.time }}</span>
+                <span class="job-time">{{ job.time }}</span>
               </div>
               <div class="column is-1">
-                <span class="icon" (click)="restartJob($event, job.id)">
+                <span class="icon" name="restart-job" (click)="restartJob($event, job.id)">
                   <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                       <g id="icon" fill-rule="nonzero" fill="#FFFFFF">
@@ -119,7 +119,7 @@
                     </g>
                   </svg>
                 </span>
-                <span class="icon" (click)="stopJob($event, job.id)">
+                <span class="icon" name="stop-job" (click)="stopJob($event, job.id)">
                   <svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                       <g id="cancel-2" fill-rule="nonzero" fill="#FFFFFF">
