@@ -38,19 +38,25 @@ export function startBuildProcess(buildId: number, jobId: number,
       }, []);
     commands = commands.filter(cmd => !cmd.startsWith('export'));
 
-    startContainer(name, image, vars)
+    const sub = startContainer(name, image, vars)
       .concat(ssh ? executeInContainer(name, 'sudo /etc/init.d/ssh start') : Observable.empty())
       .concat(ssh ? getContainerExposedPort(name, 22) : Observable.empty())
       .concat(...commands.map(command => executeInContainer(name, command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {
-        observer.next({ type: 'data', data: err });
+        sub.unsubscribe();
         observer.error(err);
-        stopContainer(name).subscribe((event: ProcessOutput) => observer.next(event));
+        stopContainer(name).subscribe((event: ProcessOutput) => {
+          observer.next(event);
+          observer.next({ type: 'data', data: err });
+        });
       }, () => {
+        sub.unsubscribe();
         observer.complete();
-        stopContainer(name).subscribe((event: ProcessOutput) => observer.next(event));
+        stopContainer(name).subscribe((event: ProcessOutput) => {
+          observer.next(event);
+        });
       });
   });
 }
@@ -61,7 +67,7 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
     start.on('exit', startCode => {
       if (startCode !== 0) {
-        observer.error(bold(red('Container errored with exit code ' + startCode)));
+        observer.error(red('Container errored with exit code ' + startCode));
       }
 
 
@@ -80,7 +86,7 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
       attach.on('data', data => {
         if (!executed) {
           attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
-          observer.next({ type: 'data', data: bold(yellow('==> ' + command)) + '\r' });
+          observer.next({ type: 'data', data: yellow('==> ' + command) + '\r' });
           executed = true;
         } else if (data.includes('EXECOK')) {
           exitCode = 0;
@@ -95,8 +101,9 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
       });
 
       attach.on('exit', code => {
+        code = (detachKey === 'D') ? exitCode : code;
         if (exitCode !== 0) {
-          observer.error(bold(`Executed command returned exit code ${red(exitCode.toString())}`));
+          observer.error(red(`Executed command returned exit code ${bold(exitCode.toString())}`));
         } else {
           observer.next({ type: 'exit', data: exitCode.toString() });
           observer.complete();

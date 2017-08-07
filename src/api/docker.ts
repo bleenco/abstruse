@@ -36,17 +36,12 @@ export function buildImage(name: string): Observable<boolean> {
 
 export function killAllContainers(): Promise<void> {
   return new Promise(resolve => {
-    exec('docker kill $(docker ps -a -q)', (error, stdout, stderr) => {
-      exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => resolve());
-    });
+    exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => resolve());
   });
 }
 
 export function killContainer(id: string): Promise<void> {
-  return new Promise(resolve => {
-    const kill = pty.spawn('docker', ['rm', id, '-f']);
-    kill.on('exit', code => resolve());
-  });
+  return new Promise(resolve => exec(`docker rm -f ${id}`, () => resolve()));
 }
 
 export function isDockerRunning(): Observable<boolean> {

@@ -13,8 +13,8 @@ export interface Config {
   install?: string[];
   postinstall?: string[];
   pretest?: string[];
-  test: string[];
-  posttest: string[];
+  test?: string[];
+  posttest?: string[];
 }
 
 export interface GitLog {

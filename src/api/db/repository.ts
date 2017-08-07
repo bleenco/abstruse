@@ -53,17 +53,19 @@ export function getRepositoryBadge(id: number): Promise<string> {
           repo = repo.toJSON();
           let status = 'queued';
 
-          if (repo.builds[0].jobs.findIndex(job => job.status === 'failed') !== -1) {
-            status = 'failing';
-          }
+          if (repo.builds[0] && repo.builds[0].jobs) {
+            if (repo.builds[0].jobs.findIndex(job => job.status === 'failed') !== -1) {
+              status = 'failing';
+            }
 
-          if (repo.builds[0].jobs.findIndex(job => job.status === 'running') !== -1) {
-            status = 'running';
-          }
+            if (repo.builds[0].jobs.findIndex(job => job.status === 'running') !== -1) {
+              status = 'running';
+            }
 
-          if (repo.builds[0].jobs.length ===
-              repo.builds[0].jobs.filter(job => job.status === 'success').length) {
-            status = 'passing';
+            if (repo.builds[0].jobs.length ===
+                repo.builds[0].jobs.filter(job => job.status === 'success').length) {
+              status = 'passing';
+            }
           }
 
           resolve(status);

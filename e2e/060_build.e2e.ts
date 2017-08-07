@@ -141,41 +141,41 @@ describe('Build Details', () => {
       });
   });
 
-  it('should restart all jobs', () => {
-    return Promise.resolve()
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt > 0;
-      })))
-      .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
-        return cnt === 0;
-      })))
-      .then((): any => {
-        return browser.wait(() => {
-          return element.all(by.css(`[name="restart-job"]`)).each(el => el.isPresent());
-        });
-      })
-      .then((): any => element.all(by.css(`[name="restart-job"]`)).each(el => el.click()))
-      .then((): any => element.all(by.css('.list-item')).count())
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === num));
-      })
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.job-time')).each(el => {
-          return el.getAttribute('innerHTML').then(html => parseInt(html, 10) > 5);
-        }));
-      })
-      .then((): any => {
-        return browser.wait(() => {
-          return element.all(by.css(`[name="stop-job"]`)).each(el => el.isPresent());
-        });
-      })
-      .then((): any => {
-        return element.all(by.css(`[name="stop-job"]`)).each(el => el.click());
-      })
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 0));
-      });
-  });
+  // it('should restart all jobs', () => {
+  //   return Promise.resolve()
+  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+  //       return cnt > 0;
+  //     })))
+  //     .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+  //       return cnt === 0;
+  //     })))
+  //     .then((): any => {
+  //       return browser.wait(() => {
+  //         return element.all(by.css(`[name="restart-job"]`)).each(el => el.isPresent());
+  //       });
+  //     })
+  //     .then((): any => element.all(by.css(`[name="restart-job"]`)).each(el => el.click()))
+  //     .then((): any => element.all(by.css('.list-item')).count())
+  //     .then((num): any => {
+  //       return browser.wait(() => element.all(by.css('.is-running')).count()
+  //         .then(cnt => cnt === num));
+  //     })
+  //     .then((): any => {
+  //       return browser.wait(() => element.all(by.css('.job-time')).each(el => {
+  //         return el.getAttribute('innerHTML').then(html => parseInt(html, 10) > 5);
+  //       }));
+  //     })
+  //     .then((): any => {
+  //       return browser.wait(() => {
+  //         return element.all(by.css(`[name="stop-job"]`)).each(el => el.isPresent());
+  //       });
+  //     })
+  //     .then((): any => {
+  //       return element.all(by.css(`[name="stop-job"]`)).each(el => el.click());
+  //     })
+  //     .then((num): any => {
+  //       return browser.wait(() => element.all(by.css('.is-running')).count()
+  //         .then(cnt => cnt === 0));
+  //     });
+  // });
 });
