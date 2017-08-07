@@ -198,7 +198,7 @@ export function stopJob(jobId: number): Promise<void> {
     const job = processes.find(proc => proc.job_id == jobId);
     if (!job) {
       return Promise.resolve()
-        .then(() => dbJob.getJob(jobId))
+        .then(() => dbJob.resetJob(jobId))
         .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`));
     } else {
       return Promise.resolve()

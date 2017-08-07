@@ -27,9 +27,29 @@ describe('Builds', () => {
         .toContain('No builds has been runned yet.'));
   });
 
-  it('should start new build (send push event)', () => {
-    return sendGitHubRequest(pushEventRequest, pushEventHeader)
-      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()));
+  it('should start new build (send open_pull_request event)', () => {
+    return sendGitHubRequest(requestOpened, pullRequestHeader)
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt === 1;
+      })))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.build-time'))
+          .then(times => times[0])
+          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
+      }))
+      .then((): any => browser.wait(() => {
+        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+      }))
+      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 0);
+      }));
   });
 
   it('should redirect after click on first build', () => {
@@ -47,8 +67,8 @@ describe('Builds', () => {
       }));
   });
 
-  it('should start new build (send open_pull_request event)', () => {
-    return sendGitHubRequest(requestOpened, pullRequestHeader)
+  it('should start new build (send reopen_pull_request event)', () => {
+    return sendGitHubRequest(requestReopened, pullRequestHeader)
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 2;
       })))
@@ -56,24 +76,40 @@ describe('Builds', () => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
       .then((): any => browser.wait(() => {
+        return element.all(by.css('.build-time'))
+          .then(times => times[0])
+          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
+      }))
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isPresent();
       }))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
+      .then((): any => {
+        return browser.wait(() => {
+          const el = element(by.css('.list-item:nth-child(1) .stop-build'));
+          return ExpectedConditions.elementToBeClickable(el);
+        });
+      })
+      .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
   });
 
-  it('should start new build (send reopen_pull_request event)', () => {
-    return sendGitHubRequest(requestReopened, pullRequestHeader)
+  it('should start new build (send push event)', () => {
+    return sendGitHubRequest(pushEventRequest, pushEventHeader)
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 3;
       })))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.build-time'))
+          .then(times => times[0])
+          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
@@ -104,6 +140,11 @@ describe('Builds', () => {
       .then((): any => element.all(by.css('.restart-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count > 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.build-time'))
+          .then(times => times[0])
+          .then(el => el.getAttribute('innerHTML').then(html => html === '00:15'));
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
