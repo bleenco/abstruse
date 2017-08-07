@@ -21,7 +21,6 @@ install:
   - chmod +x get-docker.sh
   - sudo ./get-docker.sh
   - sudo apt-get install sqlite3 -y
-  - sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual -y
 
 postinstall:
   - sudo $(which node) ./tests/postinstall_ci.js
