@@ -50,14 +50,12 @@ export class AppTerminalComponent implements OnInit {
       this.commands = [];
     } else {
       const output: string = this.au.ansi_to_html(this.data);
-      const regex = /<span(.*)==&gt;(.*)<\/span>/g;
-      const regexLinux = /<span(.*)==>(.*)<\/span>/g;
+      const regex = /==[&gt;|>](.*)/g;
       let match;
       let commands: string[] = [];
 
-      if (output.match(regex) || output.match(regexLinux)) {
+      if (output.match(regex)) {
         while (match = regex.exec(output)) { commands.push(match[0]); }
-        while (match = regexLinux.exec(output)) { commands.push(match[0]); }
 
         if (commands.length > 1) {
           this.commands = [];
@@ -72,16 +70,14 @@ export class AppTerminalComponent implements OnInit {
             re = new RegExp('(' + c + ')' + '[\\s\\S]+');
           }
 
-          console.log(re);
-
           return acc.concat({
-            command: curr,
+            command: curr.trim(),
             visible: i === commands.length - 1 ? true : false,
             output: output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : ''
           });
         }, this.commands);
       } else {
-        this.commands[this.commands.length - 1].output += output;
+        this.commands[this.commands.length - 1].output += output.trim();
       }
 
       this.commands = this.commands.map((cmd, i) => {
