@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
+import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
 import { SocketServiceProvider } from './services/socket.service';
@@ -87,7 +88,8 @@ import { AppTeamComponent } from './components/app-team';
       { path: 'setup', component: AppSetupComponent }
     ]),
     HttpModule,
-    FormsModule
+    FormsModule,
+    NgSlimScrollModule
   ],
   providers: [
     ConfigServiceProvider,
