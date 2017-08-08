@@ -11,6 +11,7 @@ import { SocketServiceProvider } from './services/socket.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { EqualValidator } from './directives/equal-validator.directive';
+import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
@@ -39,7 +40,8 @@ import { AppTeamComponent } from './components/app-team';
     AppJobComponent,
     AppSettingsComponent,
     AppTeamComponent,
-    EqualValidator
+    EqualValidator,
+    SafeHtmlPipe
   ],
   imports: [
     BrowserModule,

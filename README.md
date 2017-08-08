@@ -4,7 +4,7 @@
 
 # abstruse
 
-[![AbstruseCI](https://abstruse.bleenco.io/api/repositories/badge/1)](https://abstruse.bleenco.io/repo/1)
+[![AbstruseCI](https://abstruse.bleenco.io/badge/1)](https://abstruse.bleenco.io/repo/1)
 
 Run Continuous Integration (CI) on your own servers.
 

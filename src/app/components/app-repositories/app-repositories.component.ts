@@ -21,7 +21,7 @@ export class AppRepositoriesComponent implements OnInit {
   loading: boolean;
   repository: Repository;
   userData: any;
-  repositories: string[];
+  repositories: any[];
   dropdowns: boolean[];
   buildTriggered: boolean;
   url: string;
@@ -52,10 +52,15 @@ export class AppRepositoriesComponent implements OnInit {
   fetch(keyword = ''): void {
     this.loading = true;
     this.apiService.getRepositories(this.userData.id, keyword).subscribe(event => {
-      this.repositories = event.map(repo => {
-        repo.status_badge = this.url + '/api/repositories/badge/' + repo.id;
-        return repo;
+      this.repositories = event;
+      this.repositories.forEach((repo: any, i) => {
+        this.apiService.getBadge(repo.id).subscribe(badge => {
+          if (badge.ok) {
+            this.repositories[i].status_badge = badge._body;
+          }
+        });
       });
+
       this.loading = false;
     });
   }

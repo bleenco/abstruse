@@ -138,7 +138,13 @@ export function repositoryRoutes(): express.Router {
     }).catch(err => res.status(200).json({ status: false }));
   });
 
-  router.get('/badge/:id', (req: express.Request, res: express.Response) => {
+  return router;
+}
+
+export function badgeRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/:id', (req: express.Request, res: express.Response) => {
     getRepositoryBadge(req.params.id).then(status => {
       let background = null;
       if (status === 'failing') {

@@ -5,7 +5,7 @@
     <div class="nav-left">
       <span class="nav-item">
         <h1>{{ repo?.full_name }}</h1>
-        <span><img [src]="statusBadge" class="badge-img"></span>
+        <span *ngIf="statusBadge" [innerHTML]="statusBadge | safeHtml" class="status-badge"></span>
       </span>
     </div>
     <div class="nav-center"></div>
