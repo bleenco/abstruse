@@ -51,11 +51,13 @@ export class AppTerminalComponent implements OnInit {
     } else {
       const output: string = this.au.ansi_to_html(this.data);
       const regex = /<span(.*)==&gt;(.*)<\/span>/g;
+      const regexLinux = /<span(.*)==>(.*)<\/span>/g;
       let match;
       let commands: string[] = [];
 
-      if (output.match(regex)) {
+      if (output.match(regex) || output.match(regexLinux)) {
         while (match = regex.exec(output)) { commands.push(match[0]); }
+        while (match = regexLinux.exec(output)) { commands.push(match[0]); }
 
         if (commands.length > 1) {
           this.commands = [];
