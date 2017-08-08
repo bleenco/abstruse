@@ -85,7 +85,7 @@
                 </span>
               </div>
             </div>
-            <div layout-align="center" *ngIf="builds.length === show" align="center">
+            <div layout-align="center" *ngIf="builds.length" align="center" class="more-button-container">
               <button class="button" (click)="showPreviousBuilds($event)">Show Previous Builds</button>
             </div>
           </div>

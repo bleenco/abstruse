@@ -28,7 +28,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.fetch();
-    this.offset = this.show;
 
     this.sub = this.socketService.outputEvents
       .filter(x => x.type !== 'data')
@@ -43,6 +42,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         }
 
         if (event.data === 'jobAdded') {
+          this.show = 5;
+          this.offset = 0;
           this.fetch();
         }
 
@@ -83,6 +84,16 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   fetch(): void {
+    this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
+      this.builds = builds;
+      this.updateJobs();
+      setInterval(() => this.updateJobs(), 1000);
+      this.loading = false;
+      this.offset = this.show;
+    });
+  }
+
+  fetchAndConcat(): void {
     this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
       this.builds = this.builds.concat(builds);
       this.updateJobs();
@@ -158,7 +169,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   showPreviousBuilds(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    this.fetch();
+    this.fetchAndConcat();
     this.show = this.show * 2;
     this.offset = this.show;
   }

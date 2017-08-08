@@ -77,7 +77,7 @@ export class AppTerminalComponent implements OnInit {
           });
         }, this.commands);
       } else {
-        this.commands[this.commands.length - 1].output += output.trim();
+        this.commands[this.commands.length - 1].output += output;
       }
 
       this.commands = this.commands.map((cmd, i) => {
