@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, Input, SimpleChange } from '@angular/core';
+import { Component, ElementRef, OnInit, Input, SimpleChange, EventEmitter } from '@angular/core';
+import { ISlimScrollOptions, SlimScrollEvent } from 'ngx-slimscroll';
 import * as AnsiUp from 'ansi_up';
 
 @Component({
@@ -9,8 +10,27 @@ export class AppTerminalComponent implements OnInit {
   @Input() data: any;
   @Input() options: { size: 'normal' | 'large' };
   au: any;
+  scrollOptions: ISlimScrollOptions;
+  scrollEvents: EventEmitter<SlimScrollEvent>;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef) {
+    this.scrollOptions = {
+      position: 'right',
+      barBackground: '#11121A',
+      barOpacity: '0.8',
+      barWidth: '10',
+      barBorderRadius: '10',
+      barMargin: '2px 2px 2px 0',
+      gridBackground: '#282a36',
+      gridOpacity: '1',
+      gridWidth: '10',
+      gridBorderRadius: '0',
+      gridMargin: '2px 2px 2px 0',
+      alwaysVisible: true
+    };
+
+    this.scrollEvents = new EventEmitter<SlimScrollEvent>();
+  }
 
   ngOnInit() {
     this.au = new AnsiUp.default();
@@ -27,7 +47,14 @@ export class AppTerminalComponent implements OnInit {
       el.innerHTML = '';
     } else {
       el.innerHTML += this.au.ansi_to_html(this.data);
-      setTimeout(() => el.scrollTop = el.scrollHeight);
+
+      const recalculateEvent = new SlimScrollEvent({ type: 'recalculate' });
+      const bottomEvent = new SlimScrollEvent({ type: 'scrollToBottom', duration: 300 });
+
+      setTimeout(() => {
+        this.scrollEvents.emit(recalculateEvent);
+        this.scrollEvents.emit(bottomEvent);
+      });
     }
   }
 }
