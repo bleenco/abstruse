@@ -4,13 +4,12 @@
 .window-terminal-container
   position: relative
   display: block
-  color: #e5e5e5
+  color: #F0F0F0
   margin: 0
   font-family: monaco, monospace
-  font-size: 12px
   padding: 10px 0
   height: 400px
-  background: #111111
+  background: #1D2021
   border-radius: 4px
   box-shadow: 1px 2px 10px rgba($background, 0.7)
   border: 1px solid $divider
@@ -19,38 +18,44 @@
   &.large
     height: 700px
 
-.terminal
-  display: inline-block
-  text-align: left
-  padding: 0
-  margin: 0
-  width: 100%
-
-  .icon
+  .terminal
     display: block
-    float: left
+    text-align: left
     padding: 0
     margin: 0
-
-    img
-      width: 24px
-      height: 24px
-
-  .output
-    display: inline-block
     width: 100%
-    color: #e5e5e5
-    margin: 0 !important
-    font-family: monaco, monospace
-    font-size: 12px
-    padding: 0 20px !important
-    background: #111111
 
-  .command
-    display: block
-    float: left
+    .command-line
+      display: flex
+      align-items: center
+      background: #282a36
+      margin: 2px 5px
+      padding: 1px 5px
+      border-radius: 10px
+      cursor: pointer
 
-    .ansi-yellow-fg
-      color: #FFEE58 !important
-      font-weight: bold !important
-      font-size: 13px
+      .icon
+        margin-top: 8px
+
+        img
+          width: 24px
+          height: 24px
+
+      .command
+
+        span
+          font-size: 12px
+          color: #FFEE58
+          font-weight: bold
+
+    .output
+      display: inline-block
+      width: 100%
+      color: #F0F0F0
+      margin: 0 !important
+      font-family: Monaco, monospace
+      font-size: 12px
+      padding: 10px 20px !important
+      background: #1D2021
+      white-space: pre-wrap
+      word-wrap: break-word

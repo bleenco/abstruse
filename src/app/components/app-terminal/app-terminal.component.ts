@@ -19,16 +19,16 @@ export class AppTerminalComponent implements OnInit {
     this.scrollOptions = {
       position: 'right',
       barBackground: '#11121A',
-      barOpacity: '0.8',
+      barOpacity: '0.2',
       barWidth: '10',
-      barBorderRadius: '10',
+      barBorderRadius: '0',
       barMargin: '2px 2px 2px 0',
       gridBackground: '#282a36',
       gridOpacity: '1',
       gridWidth: '10',
       gridBorderRadius: '0',
       gridMargin: '2px 2px 2px 0',
-      alwaysVisible: true
+      alwaysVisible: false
     };
 
     this.scrollEvents = new EventEmitter<SlimScrollEvent>();
@@ -62,8 +62,16 @@ export class AppTerminalComponent implements OnInit {
         }
 
         this.commands = commands.reduce((acc, curr, i) => {
-          const next = commands[i + 1] || '';
-          const re = new RegExp('(' + curr + ')(' + '[\\s\\S]*' + ')(' + next + ')');
+          let next = commands[i + 1] || '';
+          next = next.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+          const c = curr.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+          let re = new RegExp('(' + c + ')(' + '[\\s\\S]+' + ')(' + next + ')');
+          if (!output.match(re)) {
+            re = new RegExp('(' + c + ')' + '[\\s\\S]+');
+          }
+
+          console.log(re);
+
           return acc.concat({
             command: curr,
             visible: i === commands.length - 1 ? true : false,
@@ -72,11 +80,12 @@ export class AppTerminalComponent implements OnInit {
         }, this.commands);
       } else {
         this.commands[this.commands.length - 1].output += output;
-        this.commands = this.commands.map((cmd, i) => {
-          cmd.visible = i === this.commands.length - 1 ? true : false;
-          return cmd;
-        });
       }
+
+      this.commands = this.commands.map((cmd, i) => {
+        cmd.visible = i === this.commands.length - 1 ? true : false;
+        return cmd;
+      });
 
       const recalculateEvent = new SlimScrollEvent({ type: 'recalculate' });
       const bottomEvent = new SlimScrollEvent({ type: 'scrollToBottom', duration: 300 });
