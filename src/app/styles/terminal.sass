@@ -8,7 +8,7 @@
   margin: 0
   font-family: monaco, monospace
   font-size: 12px
-  padding: 0
+  padding: 10px 0
   height: 400px
   background: #111111
   border-radius: 4px
@@ -19,13 +19,38 @@
   &.large
     height: 700px
 
-.output
+.terminal
+  display: inline-block
+  text-align: left
   padding: 0
   margin: 0
-
-.terminal
-  display: flex
-  align-items: left
-  height: 100%
   width: 100%
-  text-align: left
+
+  .icon
+    display: block
+    float: left
+    padding: 0
+    margin: 0
+
+    img
+      width: 24px
+      height: 24px
+
+  .output
+    display: inline-block
+    width: 100%
+    color: #e5e5e5
+    margin: 0 !important
+    font-family: monaco, monospace
+    font-size: 12px
+    padding: 0 20px !important
+    background: #111111
+
+  .command
+    display: block
+    float: left
+
+    .ansi-yellow-fg
+      color: #FFEE58 !important
+      font-weight: bold !important
+      font-size: 13px

@@ -1,5 +1,4 @@
-import {
-  Component, ElementRef, OnInit, Input, SimpleChange, EventEmitter, NgZone } from '@angular/core';
+import { Component, ElementRef, OnInit, Input, SimpleChange, EventEmitter } from '@angular/core';
 import { ISlimScrollOptions, SlimScrollEvent } from 'ngx-slimscroll';
 
 import * as AnsiUp from 'ansi_up';
@@ -16,7 +15,7 @@ export class AppTerminalComponent implements OnInit {
   scrollEvents: EventEmitter<SlimScrollEvent>;
   commands: { command: string, visible: boolean, output: string }[];
 
-  constructor(private elementRef: ElementRef, private ngZone: NgZone) {
+  constructor(private elementRef: ElementRef) {
     this.scrollOptions = {
       position: 'right',
       barBackground: '#11121A',
@@ -33,6 +32,7 @@ export class AppTerminalComponent implements OnInit {
     };
 
     this.scrollEvents = new EventEmitter<SlimScrollEvent>();
+    this.commands = [];
   }
 
   ngOnInit() {
@@ -46,52 +46,46 @@ export class AppTerminalComponent implements OnInit {
       return;
     }
 
-    this.ngZone.run(() => {
-      const el = this.elementRef.nativeElement.querySelector('.window-terminal-container');
-      if (typeof this.data.clear !== 'undefined') {
-        el.innerHTML = '';
-      } else {
-        let output: string = this.au.ansi_to_html(this.data);
-        if (output) {
-          if (this.commands.length > 0) {
-            if (output.indexOf('==&gt;') !== -1) {
-              let command = output.split('</span>')[0] + '</span>';
-              this.commands.push({
-                command: command,
-                visible: true,
-                output: output
-              });
-            } else {
-              this.commands[this.commands.length - 1].command += ` ${output}`;
-            }
-          } else {
-            let regexp = /<span(.*)==&gt;/gi;
-            regexp.lastIndex = 1;
-            let match = regexp.exec(output);
-            if (match) {
-              let indexEnd = match.index;
-              let indexStart = 0;
-              while (indexEnd >= 0) {
-                let log = output.substring(indexStart, indexEnd);
-                let command = log.split('</span>')[0] + '</span>';
-                this.commands.push({
-                  command: command,
-                  visible: true,
-                  output: log
-                });
-                indexStart = indexEnd;
-                indexEnd = regexp.exec(output).index;
-              }
-            }
-          }
+    if (typeof this.data.clear !== 'undefined') {
+      this.commands = [];
+    } else {
+      const output: string = this.au.ansi_to_html(this.data);
+      const regex = /<span(.*)==&gt;(.*)<\/span>/g;
+      let match;
+      let commands: string[] = [];
+
+      if (output.match(regex)) {
+        while (match = regex.exec(output)) { commands.push(match[0]); }
+
+        if (commands.length > 1) {
+          this.commands = [];
         }
 
-        const recalculateEvent = new SlimScrollEvent({ type: 'recalculate' });
-        const bottomEvent = new SlimScrollEvent({ type: 'scrollToBottom', duration: 300 });
-
-        setTimeout(() => el.scrollTop = el.scrollHeight);
+        this.commands = commands.reduce((acc, curr, i) => {
+          const next = commands[i + 1] || '';
+          const re = new RegExp('(' + curr + ')(' + '[\\s\\S]*' + ')(' + next + ')');
+          return acc.concat({
+            command: curr,
+            visible: i === commands.length - 1 ? true : false,
+            output: output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : ''
+          });
+        }, this.commands);
+      } else {
+        this.commands[this.commands.length - 1].output += output;
+        this.commands = this.commands.map((cmd, i) => {
+          cmd.visible = i === this.commands.length - 1 ? true : false;
+          return cmd;
+        });
       }
-    });
+
+      const recalculateEvent = new SlimScrollEvent({ type: 'recalculate' });
+      const bottomEvent = new SlimScrollEvent({ type: 'scrollToBottom', duration: 300 });
+
+      setTimeout(() => {
+        this.scrollEvents.emit(recalculateEvent);
+        this.scrollEvents.emit(bottomEvent);
+      });
+    }
   }
 
   toogleCommand(index: number) {
