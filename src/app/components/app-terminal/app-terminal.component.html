@@ -1,12 +1,10 @@
-<pre class="window-terminal-container dracula-ansi-theme" [ngClass]="{ large: options.size === 'large' }" slimScroll [options]="scrollOptions" [scrollEvents]="scrollEvents">
-  <div class="command columns log" *ngFor="let cmd of commands; let i = index;" [id]="i">
-    <div class="terminal">
-      <span class="icon">
-        <img *ngIf="cmd.visible" src="images/icons/collapse.svg"  (click)="toogleCommand(i)">
-        <img *ngIf="!cmd.visible" src="images/icons/expand.svg"  (click)="toogleCommand(i)">
-      </span>
-      <div class="output" [class.is-hidden]="!cmd.visible" [innerHTML]="cmd.output"></div>
-      <div class="output" [class.is-hidden]="cmd.visible" [innerHTML]="cmd.command"></div>
-    </div>
+<div class="window-terminal-container dracula-ansi-theme" [ngClass]="{ large: options.size === 'large' }" slimScroll [options]="scrollOptions" [scrollEvents]="scrollEvents">
+  <div class="terminal" *ngFor="let cmd of commands; let i = index;" [id]="i">
+    <span class="icon">
+      <img *ngIf="cmd.visible" src="images/icons/collapse.svg"  (click)="toogleCommand(i)">
+      <img *ngIf="!cmd.visible" src="images/icons/expand.svg"  (click)="toogleCommand(i)">
+    </span>
+    <span class="command" [innerHTML]="cmd.command"></span>
+    <pre class="output" [class.is-hidden]="!cmd.visible" [innerHTML]="cmd.output"></pre>
   </div>
-</pre>
+</div>
