@@ -5,11 +5,17 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class ApiService {
   url: string;
+  loc: Location;
+  port: string;
 
   constructor(private http: Http) {
-    let loc: Location = window.location;
-    let port: string = loc.port === '8000' ? ':6500' : `:${loc.port}`; // dev mode
-    this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
+    this.loc = window.location;
+    this.port = this.loc.port === '8000' ? ':6500' : `:${this.loc.port}`; // dev mode
+    this.url = `${this.loc.protocol}//${this.loc.hostname}${this.port}/api`;
+  }
+
+  getBadge(id: number): Observable<any> {
+    return this.http.get(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
   }
 
   getBuilds(limit: number, offset: number): Observable<any> {

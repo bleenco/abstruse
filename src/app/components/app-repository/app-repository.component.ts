@@ -24,7 +24,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private api: ApiService,
     private config: ConfigService
-  ) { }
+  ) {
+    this.loading = true;
+  }
 
   ngOnInit() {
     this.url = this.config.url;
@@ -35,6 +37,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         this.router.navigate(['repositories']);
       } else {
         this.fetch();
+        this.fetchBadge();
       }
     });
 
@@ -82,9 +85,6 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
             }
 
             this.repo.builds[index].jobs[jobIndex].status = status;
-
-            this.statusBadge = '';
-            this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
           }
         }
       });
@@ -99,9 +99,15 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       this.repo = event;
       this.loading = false;
       this.updateJobs();
-      this.statusBadge = '';
-      this.statusBadge = this.url + '/api/repositories/badge/' + this.id;
       setInterval(() => this.updateJobs(), 1000);
+    });
+  }
+
+  fetchBadge(): void {
+    this.api.getBadge(parseInt(this.id, 10)).subscribe(event => {
+      if (event.ok) {
+        this.statusBadge = event._body.replace(/ \r/g, '').trim();
+      }
     });
   }
 
