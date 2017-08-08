@@ -40,8 +40,8 @@ export function webRoutes(): express.Router {
 export function buildRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/', (req: express.Request, res: express.Response) => {
-    getBuilds().then(builds => {
+  router.get('/limit/:limit/offset/:offset', (req: express.Request, res: express.Response) => {
+    getBuilds(req.params.limit, req.params.offset).then(builds => {
       return res.status(200).json({ data: builds });
     });
   });

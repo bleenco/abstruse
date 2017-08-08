@@ -13,6 +13,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   loading: boolean;
   sub: Subscription;
   builds: any[];
+  show = 5;
+  offset = 0;
 
   constructor(
     private socketService: SocketService,
@@ -26,6 +28,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.fetch();
+    this.offset = this.show;
 
     this.sub = this.socketService.outputEvents
       .filter(x => x.type !== 'data')
@@ -80,8 +83,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   fetch(): void {
-    this.apiService.getBuilds().subscribe(builds => {
-      this.builds = builds;
+    this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
+      this.builds = this.builds.concat(builds);
       this.updateJobs();
       setInterval(() => this.updateJobs(), 1000);
       this.loading = false;
@@ -150,5 +153,13 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
+  }
+
+  showPreviousBuilds(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.fetch();
+    this.show = this.show * 2;
+    this.offset = this.show;
   }
 }

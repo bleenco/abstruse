@@ -1,8 +1,10 @@
 import { Build } from './model';
 
-export function getBuilds(): Promise<any> {
+export function getBuilds(limit: number, offset: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build().orderBy('id', 'DESC').fetchAll({ withRelated: ['repository', 'jobs'] })
+    new Build()
+      .query(q => q.orderBy('id', 'DESC').offset(offset).limit(limit))
+      .fetchAll({ withRelated: ['repository', 'jobs'] })
       .then(builds => {
         if (!builds) {
           reject();

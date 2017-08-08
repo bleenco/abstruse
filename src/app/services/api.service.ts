@@ -12,8 +12,8 @@ export class ApiService {
     this.url = `${loc.protocol}//${loc.hostname}${port}/api`;
   }
 
-  getBuilds(): Observable<any> {
-    return this.get(`${this.url}/builds`);
+  getBuilds(limit: number, offset: number): Observable<any> {
+    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`);
   }
 
   getBuild(id: string): Observable<any> {
