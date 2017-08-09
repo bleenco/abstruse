@@ -8,8 +8,17 @@ function randomNumber(minimum: number, maximum: number): number {
 }
 
 describe('Build Details', () => {
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  let originalTimeout = 120000;
+  beforeAll(() => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;
+    login().then(() => browser.waitForAngularEnabled(false));
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    logout().then(() => browser.waitForAngularEnabled(true));
+  });
 
   it('should restart existing build', () => {
     return browser.get('/build/1')
@@ -138,6 +147,50 @@ describe('Build Details', () => {
       .then((num): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 0));
+      });
+  });
+
+  it('should see progress bar after second job restart', () => {
+    return browser.get('/build/1')
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt > 5;
+      })))
+      .then(() => element.all(by.css('.list-item')).then(els => els[2]).then(el => el.click()))
+      .then((): any => {
+        return browser
+          .wait(() => element(by.css('[name="btn-restart"]')).isPresent());
+      })
+      .then((): any => element(by.css('[name="btn-restart"]')).click())
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.yellow')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then(() => element.all(by.css('.progress')).count())
+      .then(progress => progress === 0)
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.green')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser
+          .wait(() => element(by.css('[name="btn-restart"]')).isPresent());
+      })
+      .then((): any => element(by.css('[name="btn-restart"]')).click())
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.yellow')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('value')
+          .then(value => Number(value) < 0.2));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('value')
+          .then(value => Number(value) > 0.4));
       });
   });
 
