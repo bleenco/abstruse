@@ -9,18 +9,18 @@
     <div class="column is-12">
       <div class="content">
         <div class="columns is-multiline">
-          <div class="column is-12" *ngIf="job">
-            <div class="build-top-container" [ngClass]="{ green: job?.status === 'success', yellow: job?.status === 'running', red: job?.status === 'failed' }">
+          <div class="column is-12" *ngIf="jobRun">
+            <div class="build-top-container" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
                   <div class="column is-7">
                     <h1 class="bold">
                       <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.head_full_name }}</a></span>
                       <span class="build-icon">
-                        <img src="images/icons/clock.svg" *ngIf="job?.status === 'queued'">
-                        <img src="images/icons/flickr.svg" *ngIf="job?.status === 'running'">
-                        <img src="images/icons/check-true.svg" *ngIf="job?.status === 'success'">
-                        <img src="images/icons/check-false.svg" *ngIf="job?.status === 'failed'">
+                        <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
+                        <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
+                        <img src="images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
+                        <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
                       </span>
                     </h1>
                   </div>
@@ -41,7 +41,7 @@
                         <span>Restart</span>
                       </div>
                     </button>
-                    <button class="button is-fullwidth" name="btn-stop" type="button" (click)="stopJob($event)" [class.is-hidden]="job.status !== 'running'" [disabled]="processing">
+                    <button class="button is-fullwidth" name="btn-stop" type="button" (click)="stopJob($event)" [class.is-hidden]="jobRun.status !== 'running'" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/stop.svg">
@@ -82,7 +82,7 @@
                         <span>{{ job?.time }}</span>
                       </p>
                     </div>
-                    <div class="column is-12" *ngIf="job.status === 'running' && job.lastJob">
+                    <div class="column is-12" *ngIf="jobRun.status === 'running' && previousRuntime">
                       <progress class="progress is-small" [value]="expectedProgress" max="1">{{expectedProgress}}%</progress>
                     </div>
                   </div>

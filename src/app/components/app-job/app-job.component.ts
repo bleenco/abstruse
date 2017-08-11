@@ -19,6 +19,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   sub: Subscription;
   id: number;
   job: any;
+  jobRun: any;
   status: string;
   terminalReady: boolean;
   terminalOptions:  { size: 'small' | 'large' };
@@ -65,20 +66,21 @@ export class AppJobComponent implements OnInit, OnDestroy {
       .filter(event => event.type === 'process')
       .filter(event => event.job_id === parseInt(<any>this.id, 10))
       .subscribe(event => {
-        if (!this.job) {
+        if (!this.jobRun) {
           return;
         }
 
         if (event.data === 'jobStarted') {
-          this.job.status = 'running';
-          this.job.end_time = null;
-          this.job.start_time = new Date().getTime();
+          this.jobRun.status = 'running';
+          this.jobRun.end_time = null;
+          this.jobRun.start_time = new Date().getTime();
         } else if (event.data === 'jobSucceded') {
-          this.job.status = 'success';
-          this.job.end_time = new Date().getTime();
+          this.jobRun.status = 'success';
+          this.jobRun.end_time = new Date().getTime();
+          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
         } else if (event.data == 'jobFailed') {
-          this.job.status = 'failed';
-          this.job.end_time = new Date().getTime();
+          this.jobRun.status = 'failed';
+          this.jobRun.end_time = new Date().getTime();
         }
       });
 
@@ -87,10 +89,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
       this.apiService.getJob(this.id).subscribe(job => {
         this.job = job;
-        this.terminalInput = job.log;
+        this.jobRun = job.runs[job.runs.length - 1];
+        this.terminalInput = this.jobRun.log;
         this.timeWords = distanceInWordsToNow(job.build.start_time);
         this.loading = false;
-        if (this.job.lastJob) {
+        if (this.job.lastJob && this.job.lastJob.end_time) {
           this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
         }
 
@@ -109,13 +112,13 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
   updateJobTime(): void {
     let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-    if (!this.job.end_time || this.job.status === 'running') {
-      this.job.time = format(currentTime - this.job.start_time, 'mm:ss');
+    if (!this.jobRun.end_time || this.jobRun.status === 'running') {
+      this.job.time = format(currentTime - this.jobRun.start_time, 'mm:ss');
     } else {
-      this.job.time = format(this.job.end_time - this.job.start_time, 'mm:ss');
+      this.job.time = format(this.jobRun.end_time - this.jobRun.start_time, 'mm:ss');
     }
     if (this.previousRuntime) {
-      this.expectedProgress = (currentTime - this.job.start_time) / this.previousRuntime;
+      this.expectedProgress = (currentTime - this.jobRun.start_time) / this.previousRuntime;
     }
   }
 

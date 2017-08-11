@@ -2,7 +2,6 @@ import * as express from 'express';
 import * as crypto from 'crypto';
 import { getConfig } from './utils';
 import { pingRepository, createPullRequest, synchronizePullRequest } from './db/repository';
-import { insertBuild } from './db/build';
 import { startBuild } from './process-manager';
 
 const config: any = getConfig();

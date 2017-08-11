@@ -17,10 +17,24 @@ export class Build extends Bookshelf.Model<any> {
   get hasTimestamps() { return true; }
   repository() { return this.belongsTo(Repository, 'repositories_id'); }
   jobs() { return this.hasMany(Job, 'builds_id'); }
+  runs() { return this.hasMany(BuildRun, 'builds_id'); }
+}
+
+export class BuildRun extends Bookshelf.Model<any> {
+  get tableName() { return 'build_runs'; }
+  get hasTimestamps() { return true; }
+  build() { return this.belongsTo(Build, 'build_id'); }
 }
 
 export class Job extends Bookshelf.Model<any> {
   get tableName() { return 'jobs'; }
   get hasTimestamps() { return true; }
   build() { return this.belongsTo(Build, 'builds_id'); }
+  runs() { return this.hasMany(JobRun, 'job_id'); }
+}
+
+export class JobRun extends Bookshelf.Model<any> {
+  get tableName() { return 'job_runs'; }
+  get hasTimestamps() { return true; }
+  job() { return this.belongsTo(Job, 'job_id'); }
 }

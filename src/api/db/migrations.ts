@@ -66,18 +66,56 @@ export function create(): Promise<null> {
       t.foreign('repositories_id').references('repositories.id');
       t.timestamps();
     }))
+    .then(() => schema.createTableIfNotExists('build_runs', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.string('label');
+      t.string('ref');
+      t.string('sha');
+      t.string('head_label');
+      t.string('head_ref');
+      t.string('head_sha');
+      t.string('message');
+      t.string('user');
+      t.string('author');
+      t.integer('head_github_id');
+      t.string('head_clone_url');
+      t.string('head_html_url');
+      t.string('head_default_branch');
+      t.string('head_name');
+      t.string('head_full_name');
+      t.string('head_description');
+      t.boolean('head_private');
+      t.boolean('head_fork');
+      t.string('head_user_login');
+      t.string('head_user_id');
+      t.string('head_user_avatar_url');
+      t.string('head_user_url');
+      t.string('head_user_html_url');
+      t.dateTime('start_time');
+      t.dateTime('end_time');
+      t.integer('build_id').notNullable();
+      t.foreign('build_id').references('builds.id');
+      t.timestamps();
+    }))
     .then(() => schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.dateTime('start_time').notNullable();
-      t.dateTime('end_time');
-      t.enum('status', ['queued', 'running', 'success', 'failed']).notNullable().defaultTo('queue');
       t.string('commands').notNullable();
       t.string('language');
       t.string('language_version');
       t.string('test_script');
-      t.text('log');
       t.integer('builds_id').notNullable();
       t.foreign('builds_id').references('builds.id');
+      t.timestamps();
+    }))
+    .then(() => schema.createTableIfNotExists('job_runs', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.dateTime('start_time').notNullable();
+      t.dateTime('end_time');
+      t.enum('status', ['queued', 'running', 'success', 'failed'])
+        .notNullable().defaultTo('queue');
+      t.text('log');
+      t.integer('job_id').notNullable();
+      t.foreign('job_id').references('job.id');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
