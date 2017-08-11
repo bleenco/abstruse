@@ -198,6 +198,105 @@ describe('Build Details', () => {
       });
   });
 
+  it('should start new build (D3), and see progress bar in first job run', () => {
+    return Promise.resolve()
+      .then(() => browser.get('/'))
+      .then(() => sendGitHubRequest(requestD3, header))
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt === 5;
+      })))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt === 1;
+      })))
+      .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.yellow')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('value')
+          .then(value => Number(value) < 0.4));
+      })
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('value')
+          .then(value => Number(value) > 0.6));
+      })
+      .then((): any => {
+        return browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent());
+      })
+      .then((): any => {
+        return element.all(by.css(`[name="btn-stop"]`)).first().click();
+      })
+      .then((num): any => {
+        return browser.wait(() => element.all(by.css('.is-running')).count()
+          .then(cnt => cnt === 0));
+      });
+  });
+
+  it('should restart last build and see approximately time remaining', () => {
+    return browser.get('/build/5')
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt > 0;
+      })))
+      .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === 0;
+      })))
+      .then((): any => browser.wait(() => element(by.css('[name="restart-build"]')).isPresent()))
+      .then((): any => element(by.css('[name="restart-build"]')).click())
+      .then((): any => element.all(by.css('.list-item')).count())
+      .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === num;
+      })))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('[name="time-left"]')).count()
+          .then(cnt => cnt === 1));
+      })
+      .then((): any => {
+        return browser.wait(() => element(by.css('[name="time-left"]')).getAttribute('innerHTML')
+          .then(html => html === 'approximately 00:30 remaining'));
+      })
+      .then((): any => {
+        return browser.wait(() => element(by.css('[name="time-left"]')).getAttribute('innerHTML')
+          .then(html => html === 'approximately 00:26 remaining'));
+      })
+      .then(() => element.all(by.css('[name="stop-job"]')).each(el => el.click()))
+      .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === 0;
+      })));
+  });
+
+  it(`should restart first build but don't see approximately time remaining`, () => {
+    return browser.get('/build/1')
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt > 0;
+      })))
+      .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === 0;
+      })))
+      .then((): any => browser.wait(() => element(by.css('[name="restart-build"]')).isPresent()))
+      .then((): any => element(by.css('[name="restart-build"]')).click())
+      .then((): any => element.all(by.css('.list-item')).count())
+      .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === num;
+      })))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('[name="time-left"]')).count()
+          .then(cnt => cnt === 0));
+      })
+      .then(() => element.all(by.css('[name="stop-job"]')).each(el => el.click()))
+      .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+        return cnt === 0;
+      })));
+  });
+
   // it('should restart all jobs', () => {
   //   return Promise.resolve()
   //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
