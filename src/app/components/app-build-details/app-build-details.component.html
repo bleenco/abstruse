@@ -66,8 +66,8 @@
                         <span>{{ totalTime }}</span>
                       </p>
                     </div>
-                    <div class="column is-12" *ngIf="status === 'running' && build.lastBuild">
-                      <span>approximately {{ approximatelyRemainingTime }} remaining</span>
+                    <div class="column is-12" *ngIf="status === 'running' && approximatelyRemainingTime">
+                      <span name="time-left">approximately {{ approximatelyRemainingTime }} remaining</span>
                     </div>
                   </div>
                 </div>

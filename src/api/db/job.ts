@@ -54,6 +54,20 @@ export function getLastRunId(jobId: number): Promise<any> {
   });
 }
 
+export function getLastRun(jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Job({ id: jobId }).fetch({ withRelated: ['runs'] })
+      .then(job => {
+        if (!job) {
+          reject();
+        }
+        const runs = job.related('runs').toJSON();
+
+        resolve (runs[runs.length - 1]);
+      });
+  });
+}
+
 export function insertJob(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new Job(data).save(null, { method: 'insert' }).then(job => {

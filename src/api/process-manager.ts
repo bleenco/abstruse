@@ -1,7 +1,7 @@
 import { startDockerImageSetupJob, startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { insertBuild, updateBuild, getBuild } from './db/build';
-import { insertBuildRun } from './db/build-run';
+import { insertBuild, updateBuild, getBuild, getBuildStatus, getLastRunId } from './db/build';
+import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
 import { getRepositoryOnly } from './db/repository';
@@ -315,10 +315,20 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
           });
         });
       }, () => {
-
         dbJob.getLastRunId(jobId)
         .then(runId => dbJobRuns.updateJobRun(
           {id: runId, end_time: new Date(), status: 'success', log: process.log.join('')}))
+        .then(() => getBuildStatus(buildId))
+        .then(status => {
+          if (status) {
+            updateBuild({ id: buildId, end_time: new Date()});
+            getLastRunId(buildId)
+              .then(id => {
+                updateBuildRun({ id: id, end_time: new Date()});
+              });
+          }
+          Promise.resolve();
+        })
         .then(() => {
           processes = processes.filter(proc => proc.job_id !== jobId);
           jobProcesses.next(processes);
