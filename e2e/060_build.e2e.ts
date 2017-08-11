@@ -1,6 +1,6 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded, login, logout, waitForUrlToChangeTo, delay } from './utils';
-import { request, header } from '../tests/e2e/webhooks/github/PushEvent';
+import { requestD3, header } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 function randomNumber(minimum: number, maximum: number): number {
@@ -8,7 +8,7 @@ function randomNumber(minimum: number, maximum: number): number {
 }
 
 describe('Build Details', () => {
-  let originalTimeout = 120000;
+  let originalTimeout: number;
   beforeAll(() => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;
@@ -150,22 +150,26 @@ describe('Build Details', () => {
       });
   });
 
-  it('should see progress bar after second job restart', () => {
-    return browser.get('/build/1')
+  it('should start new build (D3), and see progress bar in second job run', () => {
+    return Promise.resolve()
+      .then(() => browser.get('/'))
+      .then(() => sendGitHubRequest(requestD3, header))
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt > 5;
+        return cnt === 4;
       })))
-      .then(() => element.all(by.css('.list-item')).then(els => els[2]).then(el => el.click()))
-      .then((): any => {
-        return browser
-          .wait(() => element(by.css('[name="btn-restart"]')).isPresent());
-      })
-      .then((): any => element(by.css('[name="btn-restart"]')).click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
+      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt === 1;
+      })))
+      .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.yellow')).count()
           .then(cnt => cnt === 1));
       })
-      .then(() => element.all(by.css('.progress')).count())
+      .then((): any => element.all(by.css('.progress')).count())
       .then(progress => progress === 0)
       .then((): any => {
         return browser.wait(() => element.all(by.css('.green')).count()
