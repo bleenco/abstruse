@@ -17,7 +17,7 @@ export class Build extends Bookshelf.Model<any> {
   get hasTimestamps() { return true; }
   repository() { return this.belongsTo(Repository, 'repositories_id'); }
   jobs() { return this.hasMany(Job, 'builds_id'); }
-  runs() { return this.hasMany(BuildRun, 'builds_id'); }
+  runs() { return this.hasMany(BuildRun, 'build_id'); }
 }
 
 export class BuildRun extends Bookshelf.Model<any> {

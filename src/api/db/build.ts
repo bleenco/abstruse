@@ -1,4 +1,5 @@
-import { Build, BuildRun } from './model';
+import { Build, BuildRun, Job } from './model';
+import { getLastRun } from './job';
 
 export function getBuilds(limit: number, offset: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -64,6 +65,20 @@ export function getBuild(id: number): Promise<any> {
   });
 }
 
+export function getLastRunId(buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build({ id: buildId }).fetch({ withRelated: ['runs'] })
+      .then(build => {
+        if (!build) {
+          reject();
+        }
+        const runs = build.related('runs').toJSON();
+
+        resolve (runs[runs.length - 1].id);
+      });
+  });
+}
+
 export function insertBuild(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build().save(data, { method: 'insert' }).then(build => {
@@ -90,4 +105,16 @@ export function updateBuild(data: any): Promise<boolean> {
       }
     });
   });
+}
+
+export function getBuildStatus(buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Job()
+      .query(q => q.where('builds_id', buildId))
+      .fetchAll()
+      .then(jobs => {
+        Promise.all(jobs.map(j => getLastRun(j.id).then(r => r.status === 'success')))
+          .then(data => resolve(data.reduce((curr, prev) => !curr ? curr : prev)));
+      });
+    });
 }

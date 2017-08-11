@@ -95,7 +95,7 @@ export class AppBuildDetailsComponent implements OnInit {
     });
 
     let runningTime = Math.max(...this.build.jobs.map(job => {
-      let date = new Date();
+      let date = new Date(0);
       let splitted = job.time.split(':');
       date.setUTCMinutes(splitted[0]);
       date.setUTCSeconds(splitted[1]);
@@ -144,6 +144,11 @@ export class AppBuildDetailsComponent implements OnInit {
     e.preventDefault();
     e.stopPropagation();
 
+    if (this.getBuildStatus() === 'success') {
+      let minJobStartTime = Math.min(...this.build.jobs.map(job => job.start_time));
+      let maxJobEndTime = Math.max(...this.build.jobs.map(job => job.end_time));
+      this.previousRuntime = maxJobEndTime - minJobStartTime;
+    }
     this.processingBuild = true;
     this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
   }
