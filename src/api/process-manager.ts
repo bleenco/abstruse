@@ -1,7 +1,9 @@
 import { startDockerImageSetupJob, startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild } from './db/build';
+import { insertBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
+import * as dbJobRuns from './db/job-run';
 import { getRepositoryOnly } from './db/repository';
 import { getRepositoryDetails, generateCommands } from './config';
 import { killContainer } from './docker';
@@ -126,6 +128,9 @@ export function startBuild(data: any): Promise<any> {
 
           return insertBuild(data)
             .then(build => {
+              data.build_id = build.id;
+              delete data.repositories_id;
+              insertBuildRun(data);
               const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
               return jobsCommands.reduce((prev, commands, i) => {
@@ -134,27 +139,32 @@ export function startBuild(data: any): Promise<any> {
                   const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
                   const testScript = repoDetails.config.matrix[i].env;
 
-                  const data = {
-                    start_time: new Date(),
-                    end_time: null,
-                    status: 'queued',
+                  const jobData = {
                     commands: JSON.stringify(commands),
-                    log: '',
                     language: lang,
                     language_version: langVersion,
                     test_script: testScript,
                     builds_id: build.id
                   };
 
-                  return dbJob.insertJob(data).then(job => {
-                    jobEvents.next({
-                      type: 'process',
-                      build_id: build.id,
-                      job_id: job.id,
-                      data: 'jobAdded'
-                    });
+                  return dbJob.insertJob(jobData).then(job => {
+                    const jobRunData = {
+                      start_time: new Date(),
+                      end_time: null,
+                      status: 'queued',
+                      log: '',
+                      job_id: job.id
+                    };
+                    return dbJobRuns.insertJobRun(jobRunData).then(() => {
+                      jobEvents.next({
+                        type: 'process',
+                        build_id: build.id,
+                        job_id: job.id,
+                        data: 'jobAdded'
+                      });
 
-                    return queueJob(build.id, job.id);
+                      return queueJob(build.id, job.id);
+                    });
                   });
                 });
               }, Promise.resolve());
@@ -181,14 +191,18 @@ export function startJob(buildId: number, jobId: number): Promise<void> {
           }
         });
 
-      return dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'running', log: '' })
-        .then(jobData => {
-          jobEvents.next({
-            type: 'process',
-            build_id: buildId,
-            job_id: jobId,
-            data: 'jobStarted'
-          });
+      return dbJob.getLastRunId(jobId)
+        .then(runId => {
+          const jobRunData = { id: runId, start_time: new Date(), status: 'running', log: '' };
+          return dbJobRuns.updateJobRun(jobRunData)
+            .then(() => {
+              jobEvents.next({
+                type: 'process',
+                build_id: buildId,
+                job_id: jobId,
+                data: 'jobStarted'
+              });
+            });
         });
     });
 }
@@ -198,14 +212,25 @@ export function stopJob(jobId: number): Promise<void> {
     const job = processes.find(proc => proc.job_id == jobId);
     if (!job) {
       return Promise.resolve()
-        .then(() => dbJob.resetJob(jobId))
+        .then(() => dbJob.getLastRunId(jobId))
+        .then(runId => dbJobRuns.getRun(runId))
+        .then(jobRun => {
+          if (jobRun.status !== 'success') {
+            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed'});
+          }
+        })
+        .then(() => dbJob.getJob(jobId))
         .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`));
     } else {
       return Promise.resolve()
         .then(() => killContainer(`abstruse_${job.build_id}_${job.job_id}`))
-        .then(() => dbJob.updateJob({
-          id: job.job_id, end_time: new Date(), status: 'failed', log: job.log.join('')
-        }))
+        .then(() => dbJob.getLastRunId(jobId))
+        .then(runId => dbJobRuns.getRun(runId))
+        .then(jobRun => {
+          if (jobRun.status !== 'success') {
+            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed'});
+          }
+        })
         .then(() => {
           jobEvents.next({
             type: 'process',
@@ -238,7 +263,7 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         return Promise.resolve();
       }
     })
-    .then(() => dbJob.updateJob({ id: jobId, start_time: new Date(), status: 'queued' }))
+    .then(() => dbJob.getJob(jobId))
     .then(job => commands = JSON.parse(job.commands))
     .then(() => {
       const jobProcess: JobProcess = {
@@ -276,14 +301,10 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
       }, err => {
         observer.complete();
 
-        const job = {
-          id: jobId,
-          end_time: new Date(),
-          status: 'failed',
-          log: process.log.join('')
-        };
-
-        dbJob.updateJob(job).then(() => {
+        dbJob.getLastRunId(jobId)
+        .then(runId => dbJobRuns.updateJobRun(
+          {id: runId, end_time: new Date(), status: 'failed', log: process.log.join('')}))
+        .then(() => {
           processes = processes.filter(proc => proc.job_id !== jobId);
           jobProcesses.next(processes);
           jobEvents.next({
@@ -294,14 +315,11 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
           });
         });
       }, () => {
-        const job = {
-          id: jobId,
-          end_time: new Date(),
-          status: 'success',
-          log: process.log.join('')
-        };
 
-        dbJob.updateJob(job).then(() => {
+        dbJob.getLastRunId(jobId)
+        .then(runId => dbJobRuns.updateJobRun(
+          {id: runId, end_time: new Date(), status: 'success', log: process.log.join('')}))
+        .then(() => {
           processes = processes.filter(proc => proc.job_id !== jobId);
           jobProcesses.next(processes);
           jobEvents.next({
@@ -318,17 +336,23 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
   });
 }
 
-
 export function restartBuild(buildId: number): Promise<any> {
   return stopBuild(buildId)
     .then(() => getBuild(buildId))
     .then(build => {
+      let jobs = build.jobs;
       build.start_time = new Date();
       build.end_time = null;
 
       return updateBuild(build)
-        .then(() => dbJob.resetJobs(buildId))
-        .then(jobs => {
+        .then(() => {
+          jobs.forEach(job => {
+            dbJobRuns.insertJobRun(
+              { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: job.id }
+            );
+          });
+        })
+        .then(() => {
           return jobs.reduce((prev, curr) => {
             return prev.then(() => queueJob(buildId, curr.id));
           }, Promise.resolve());
@@ -348,7 +372,8 @@ export function stopBuild(buildId: number): Promise<any> {
 export function restartJob(jobId: number): Promise<void> {
   let jobData = null;
   return stopJob(jobId)
-    .then(() => dbJob.resetJob(jobId))
+    .then(() => dbJobRuns.insertJobRun(
+      { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: jobId }))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId))
     .then(() => {
@@ -364,7 +389,8 @@ export function restartJob(jobId: number): Promise<void> {
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
   let jobData = null;
   return stopJob(jobId)
-    .then(() => dbJob.resetJob(jobId))
+    .then(() => dbJobRuns.insertJobRun(
+      { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: jobId }))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId, true))
     .then(() => {

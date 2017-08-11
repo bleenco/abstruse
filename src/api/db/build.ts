@@ -1,10 +1,10 @@
-import { Build } from './model';
+import { Build, BuildRun } from './model';
 
 export function getBuilds(limit: number, offset: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
       .query(q => q.orderBy('id', 'DESC').offset(offset).limit(limit))
-      .fetchAll({ withRelated: ['repository', 'jobs'] })
+      .fetchAll({ withRelated: ['repository', 'jobs.runs'] })
       .then(builds => {
         if (!builds) {
           reject();
@@ -13,7 +13,9 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
         builds = builds.toJSON();
         builds = builds.map(build => {
           build.jobs = build.jobs.map(job => {
-            delete job.log;
+            job.end_time = job.runs[job.runs.length - 1].end_time;
+            job.start_time = job.runs[job.runs.length - 1].start_time;
+            job.status = job.runs[job.runs.length - 1].status;
             return job;
           });
 
@@ -27,27 +29,30 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
 
 export function getBuild(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs'] }).then(build => {
+    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs'] }).then(build => {
       if (!build) {
         reject();
       }
 
       build = build.toJSON();
       build.jobs = build.jobs.map(job => {
-        delete job.log;
+        job.end_time = job.runs[job.runs.length - 1].end_time;
+        job.start_time = job.runs[job.runs.length - 1].start_time;
+        job.status = job.runs[job.runs.length - 1].status;
         return job;
       });
 
       return build;
     })
     .then(build => {
-      new Build()
+      new BuildRun()
         .query(q => {
-          q.where('head_github_id', build.head_github_id)
-          .andWhere('id', '<', build.id)
-          .whereNotNull('start_time')
-          .whereNotNull('end_time')
-          .orderBy('id', 'desc');
+          q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
+          .where('builds.head_github_id', build.head_github_id)
+          .andWhere('builds.id', '<=', build.id)
+          .whereNotNull('build_runs.start_time')
+          .whereNotNull('build_runs.end_time')
+          .orderBy('build_runs.id', 'desc');
         })
         .fetch()
         .then(lastBuild => {

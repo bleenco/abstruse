@@ -1,21 +1,9 @@
-import { Job } from './model';
+import { Job, JobRun } from './model';
 import { getBuild } from './build';
-
-export function getJobs(buildId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new Job().where({ builds_id: buildId }).fetchAll().then(jobs => {
-      if (!jobs) {
-        reject();
-      } else {
-        resolve(jobs.toJSON());
-      }
-    });
-  });
-}
 
 export function getJob(jobId: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ id: jobId }).fetch({ withRelated: ['build.repository'] })
+    new Job({ id: jobId }).fetch({ withRelated: ['build.repository', 'runs'] })
       .then(job => {
         if (!job) {
           reject();
@@ -26,25 +14,42 @@ export function getJob(jobId: number): Promise<any> {
       .then(job => {
         getBuild(job.builds_id)
           .then(build => {
-            new Job()
+            new JobRun()
               .query(q => {
-                q.innerJoin('builds', 'jobs.builds_id', 'builds.id')
+                q.innerJoin('jobs', 'jobs.id', 'job_runs.job_id')
+                .innerJoin('builds', 'jobs.builds_id', 'builds.id')
                 .where('builds.head_github_id', build.head_github_id)
                 .andWhere('jobs.id', '<=', job.id)
-                .andWhere('jobs.status', 'success')
+                .andWhere('job_runs.status', 'success')
                 .andWhere('jobs.test_script', job.test_script)
                 .andWhere('jobs.language_version', job.language_version)
-                .whereNotNull('jobs.start_time')
-                .whereNotNull('jobs.end_time')
-                .orderBy('jobs.id', 'desc');
+                .whereNotNull('job_runs.start_time')
+                .whereNotNull('job_runs.end_time')
+                .orderBy('job_runs.id', 'desc');
               })
               .fetch()
-              .then(lastJob => {
-                job.lastJob = lastJob;
+              .then(lastJobRun => {
+                if (lastJobRun) {
+                  job.lastJob = lastJobRun.toJSON();
+                }
 
                 resolve(job);
               });
           });
+      });
+  });
+}
+
+export function getLastRunId(jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Job({ id: jobId }).fetch({ withRelated: ['runs'] })
+      .then(job => {
+        if (!job) {
+          reject();
+        }
+        const runs = job.related('runs').toJSON();
+
+        resolve (runs[runs.length - 1].id);
       });
   });
 }
@@ -63,12 +68,8 @@ export function insertJob(data: any): Promise<any> {
 
 export function updateJob(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ id: data.id }).save(data, { method: 'update', require: false }).then(job => {
-      const jobId = data.id;
-      new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
-        getJob(jobId).then(job => resolve(job));
-      });
-    });
+    new Job({ id: data.id }).save(data, { method: 'update', require: false })
+      .then(job => resolve(job.toJSON()));
   });
 }
 
@@ -102,8 +103,7 @@ export function resetJob(jobId: number): Promise<any> {
       log: ''
     };
 
-    new Job({ id: jobId }).save(data, { method: 'update', require: false }).then(() => {
-      getJob(jobId).then(job => resolve(job));
-    });
+    new Job({ id: jobId }).save(data, { method: 'update', require: false })
+      .then(job => resolve(job.toJSON()));
   });
 }

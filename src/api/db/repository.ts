@@ -1,5 +1,4 @@
 import { Repository } from './model';
-import { insertBuild, updateBuild } from './build';
 import { getHttpJsonResponse } from '../utils';
 
 export function getRepository(id: number): Promise<any> {
