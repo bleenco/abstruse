@@ -175,11 +175,7 @@ describe('Build Details', () => {
         return browser.wait(() => element.all(by.css('.green')).count()
           .then(cnt => cnt === 1));
       })
-      .then((): any => {
-        return browser
-          .wait(() => element(by.css('[name="btn-restart"]')).isPresent());
-      })
-      .then((): any => element(by.css('[name="btn-restart"]')).click())
+      .then((): any => element(by.css(`[name="btn-restart"]`)).click())
       .then((): any => {
         return browser.wait(() => element.all(by.css('.yellow')).count()
           .then(cnt => cnt === 1));
