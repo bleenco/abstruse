@@ -30,20 +30,21 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
 
 export function getBuild(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs'] }).then(build => {
-      if (!build) {
-        reject();
-      }
+    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs', 'runs'] })
+      .then(build => {
+        if (!build) {
+          reject();
+        }
 
-      build = build.toJSON();
-      build.jobs = build.jobs.map(job => {
-        job.end_time = job.runs[job.runs.length - 1].end_time;
-        job.start_time = job.runs[job.runs.length - 1].start_time;
-        job.status = job.runs[job.runs.length - 1].status;
-        return job;
-      });
+        build = build.toJSON();
+        build.jobs = build.jobs.map(job => {
+          job.end_time = job.runs[job.runs.length - 1].end_time;
+          job.start_time = job.runs[job.runs.length - 1].start_time;
+          job.status = job.runs[job.runs.length - 1].status;
+          return job;
+        });
 
-      return build;
+        return build;
     })
     .then(build => {
       new BuildRun()
@@ -96,6 +97,7 @@ export function updateBuild(data: any): Promise<boolean> {
     delete data.jobs;
     delete data.repository;
     delete data.lastBuild;
+    delete data.runs;
 
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {

@@ -31,17 +31,3 @@ export function updateJobRun(data: any): Promise<any> {
       .then(job => resolve(job.toJSON()));
   });
 }
-
-export function resetJobRun(runId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const data = {
-      start_time: new Date(),
-      end_time: null,
-      status: 'queued',
-      log: '',
-      id: runId
-    };
-
-    updateJobRun(data);
-  });
-}

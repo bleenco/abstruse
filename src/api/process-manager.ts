@@ -147,25 +147,30 @@ export function startBuild(data: any): Promise<any> {
                     builds_id: build.id
                   };
 
-                  return dbJob.insertJob(jobData).then(job => {
-                    const jobRunData = {
-                      start_time: new Date(),
-                      end_time: null,
-                      status: 'queued',
-                      log: '',
-                      job_id: job.id
-                    };
-                    return dbJobRuns.insertJobRun(jobRunData).then(() => {
-                      jobEvents.next({
-                        type: 'process',
-                        build_id: build.id,
-                        job_id: job.id,
-                        data: 'jobAdded'
-                      });
+                  return dbJob.insertJob(jobData)
+                    .then(job => {
+                      getLastRunId(build.id).then(buildRunId => {
+                        const jobRunData = {
+                          start_time: new Date(),
+                          end_time: null,
+                          status: 'queued',
+                          log: '',
+                          build_run_id: buildRunId,
+                          job_id: job.id
+                        };
 
-                      return queueJob(build.id, job.id);
+                        return dbJobRuns.insertJobRun(jobRunData).then(() => {
+                          jobEvents.next({
+                            type: 'process',
+                            build_id: build.id,
+                            job_id: job.id,
+                            data: 'jobAdded'
+                          });
+
+                          return queueJob(build.id, job.id);
+                        });
+                      });
                     });
-                  });
                 });
               }, Promise.resolve());
             });
@@ -356,10 +361,22 @@ export function restartBuild(buildId: number): Promise<any> {
 
       return updateBuild(build)
         .then(() => {
-          jobs.forEach(job => {
-            dbJobRuns.insertJobRun(
-              { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: job.id }
-            );
+          build.build_id = buildId;
+          delete build.repositories_id;
+          delete build.jobs;
+          insertBuildRun(build);
+        })
+        .then(() => getLastRunId(build.id))
+        .then(buildRunId => {
+          return jobs.forEach(job => {
+            dbJobRuns.insertJobRun({
+              start_time: new Date(),
+              end_time: null,
+              status: 'queued',
+              log: '',
+              build_run_id: buildRunId,
+              job_id: job.id
+            });
           });
         })
         .then(() => {
@@ -382,8 +399,14 @@ export function stopBuild(buildId: number): Promise<any> {
 export function restartJob(jobId: number): Promise<void> {
   let jobData = null;
   return stopJob(jobId)
-    .then(() => dbJobRuns.insertJobRun(
-      { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: jobId }))
+    .then(() => dbJob.getLastRun(jobId))
+    .then(lastRun => dbJobRuns.insertJobRun({
+      start_time: new Date(),
+      end_time: null,
+      status: 'queued',
+      log: '',
+      build_run_id: lastRun.build_run_id,
+      job_id: jobId }))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId))
     .then(() => {
@@ -399,8 +422,14 @@ export function restartJob(jobId: number): Promise<void> {
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
   let jobData = null;
   return stopJob(jobId)
-    .then(() => dbJobRuns.insertJobRun(
-      { start_time: new Date(), end_time: null, status: 'queued', log: '', job_id: jobId }))
+    .then(() => dbJob.getLastRun(jobId))
+    .then(lastRun => dbJobRuns.insertJobRun({
+      start_time: new Date(),
+      end_time: null,
+      status: 'queued',
+      log: '',
+      build_run_id: lastRun.build_run_id,
+      job_id: jobId }))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId, true))
     .then(() => {

@@ -104,6 +104,23 @@
           <div class="column is-12">
             <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
           </div>
+          <div class="column is-12" *ngIf="job.runs && job.runs.length > 1">
+            <div class="build-top-container">
+              <div class="build-top-content">
+                <h1 class="bold">
+                  <span>Previous Runs:</span>
+                </h1>
+                <hr/>
+                  <div class="columns list-item"
+                    *ngFor="let run of job.runs; let i = index;"
+                    [ngClass]="{ 'is-queued': run.status === 'queued', 'is-success': run.status === 'success', 'is-running': run.status === 'running', 'is-errored': run.status === 'failed' }">
+                    <div class="column is-8">
+                      <span>{{ run.start_time | date:'dd MM yyyy hh:mm:ss' }} - {{ run.end_time | date:'dd MM yyyy hh:mm:ss' }}</span>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

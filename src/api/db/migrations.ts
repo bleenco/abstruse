@@ -116,6 +116,8 @@ export function create(): Promise<null> {
       t.text('log');
       t.integer('job_id').notNullable();
       t.foreign('job_id').references('job.id');
+      t.integer('build_run_id').notNullable();
+      t.foreign('build_run_id').references('build_run.id');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
