@@ -22,7 +22,7 @@ module.exports = function (options, webpackOptions) {
       rules: [
         { test: /\.html$/, loader: 'raw-loader' },
         { test: /\.json$/, loader: 'json-loader' },
-        { test: /\.(jp?g|png|gif)$/, loader: 'file-loader', options: { hash: 'sha512', digest: 'hex', name: 'images/[hash].[ext]' } },
+        { test: /\.(jp?g|png|gif|ico)$/, loader: 'file-loader', options: { hash: 'sha512', digest: 'hex', name: 'images/[hash].[ext]' } },
         { test: /\.(eot|woff2?|svg|ttf|otf)([\?]?.*)$/, loader: 'file-loader', options: { hash: 'sha512', digest: 'hex', name: 'fonts/[hash].[ext]' } }
       ]
     },
@@ -58,6 +58,7 @@ module.exports = function (options, webpackOptions) {
     config = webpackMerge({}, config, getProdStylesConfig());
   } else {
     config = webpackMerge({}, config, getDevStylesConfig());
+    config = webpackMerge({}, config, { devtool: 'cheap-module-inline-source-map' });
   }
 
   if (options.aot) {
