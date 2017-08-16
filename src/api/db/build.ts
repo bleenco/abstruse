@@ -14,9 +14,12 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
         builds = builds.toJSON();
         builds = builds.map(build => {
           build.jobs = build.jobs.map(job => {
-            job.end_time = job.runs[job.runs.length - 1].end_time;
-            job.start_time = job.runs[job.runs.length - 1].start_time;
-            job.status = job.runs[job.runs.length - 1].status;
+            if (job.runs.length > 0) {
+              job.end_time = job.runs[job.runs.length - 1].end_time;
+              job.start_time = job.runs[job.runs.length - 1].start_time;
+              job.status = job.runs[job.runs.length - 1].status;
+            }
+
             return job;
           });
 
@@ -30,7 +33,7 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
 
 export function getBuild(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs', 'runs'] })
+    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs', 'runs.job_runs'] })
       .then(build => {
         if (!build) {
           reject();
@@ -42,6 +45,22 @@ export function getBuild(id: number): Promise<any> {
           job.start_time = job.runs[job.runs.length - 1].start_time;
           job.status = job.runs[job.runs.length - 1].status;
           return job;
+        });
+
+        build.runs = build.runs.map(run => {
+          if (run.job_runs) {
+            if (run.job_runs.findIndex(j => j.status === 'queued') !== -1) {
+              run.status = 'queued';
+            } else if (run.job_runs.findIndex(j => j.status === 'running') !== -1) {
+              run.status = 'running';
+            } else if (run.job_runs.findIndex(j => j.status === 'failed') !== -1) {
+              run.status = 'failed';
+            } else if (run.job_runs.findIndex(j => j.status === 'success') !== -1) {
+              run.status = 'success';
+            }
+          }
+
+          return run;
         });
 
         return build;
@@ -75,7 +94,7 @@ export function getLastRunId(buildId: number): Promise<any> {
         }
         const runs = build.related('runs').toJSON();
 
-        resolve (runs[runs.length - 1].id);
+        resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
       });
   });
 }

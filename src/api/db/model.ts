@@ -24,6 +24,7 @@ export class BuildRun extends Bookshelf.Model<any> {
   get tableName() { return 'build_runs'; }
   get hasTimestamps() { return true; }
   build() { return this.belongsTo(Build, 'build_id'); }
+  job_runs() { return this.hasMany(JobRun, 'build_run_id'); }
 }
 
 export class Job extends Bookshelf.Model<any> {

@@ -49,7 +49,7 @@ export function getLastRunId(jobId: number): Promise<any> {
         }
         const runs = job.related('runs').toJSON();
 
-        resolve (runs[runs.length - 1].id);
+        resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
       });
   });
 }
@@ -97,14 +97,7 @@ export function resetJobs(buildId: number): Promise<any> {
     };
 
     new Job().where({ builds_id: buildId }).save(data, { method: 'update', require: false })
-      .then(jobs => {
-        if (!jobs) {
-          reject();
-        } else {
-          new Job().where({ builds_id: buildId }).fetchAll()
-            .then(jobs => jobs ? resolve(jobs.toJSON()) : reject(jobs));
-        }
-    });
+      .then(jobs => !jobs ? reject() : resolve(jobs.toJSON()));
   });
 }
 

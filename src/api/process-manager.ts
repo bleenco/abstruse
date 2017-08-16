@@ -130,6 +130,7 @@ export function startBuild(data: any): Promise<any> {
             .then(build => {
               data.build_id = build.id;
               delete data.repositories_id;
+              delete data.pr;
               insertBuildRun(data);
               const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 

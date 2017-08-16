@@ -140,7 +140,7 @@
                 <hr/>
                   <div class="columns list-item"
                     *ngFor="let run of build.runs; let i = index;"
-                    [ngClass]="{ 'is-queued': run.status === 'queued', 'is-success': run.status === 'success', 'is-running': run.status === 'running', 'is-errored': true }">
+                    [ngClass]="{ 'is-queued': run.status === 'queued', 'is-success': run.status === 'success', 'is-running': run.status === 'running', 'is-errored': run.status === 'failed' }">
                     <div class="column is-4">
                       <span>{{ run.start_time | date:'dd MM yyyy hh:mm:ss' }} - {{ run.end_time | date:'dd MM yyyy hh:mm:ss' }}</span>
                     </div>
