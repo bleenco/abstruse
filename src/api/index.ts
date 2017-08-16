@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const minimist = require('minimist');
 const utils = require('./utils');
 const os = require('os');

@@ -7,9 +7,8 @@
     "sourceMap": false,
     "declaration": false,
     "outDir": "./dist/api",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "types": ["node"],
+    "skipLibCheck": true
   },
   "formatCodeOptions": {
     "indentSize": 2,
@@ -17,5 +16,8 @@
   },
   "files": [
     "src/api/index.ts"
-  ]
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "silent": true
+  }
 }
