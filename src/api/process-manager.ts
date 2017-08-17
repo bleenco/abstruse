@@ -387,6 +387,7 @@ export function restartBuild(buildId: number): Promise<any> {
           build.build_id = buildId;
           delete build.repositories_id;
           delete build.jobs;
+          delete build.pr;
           insertBuildRun(build);
         })
         .then(() => getLastRunId(build.id))
