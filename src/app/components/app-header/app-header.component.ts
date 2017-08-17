@@ -26,7 +26,7 @@ export class AppHeaderComponent implements OnInit {
 
   ngOnInit() {
     this.user = this.authService.getData();
-    this.user.avatar = this.config.url + '/' + this.user.avatar;
+    this.user.avatar = this.config.url + this.user.avatar;
   }
 
   toggleMenu() {
