@@ -5,9 +5,9 @@ export function info(msg: string): void {
   console.log(`${green('[' + time + ']')} ${white(msg)}`);
 }
 
-export function error(msg: string): void {
+export function error(msg: string | any): void {
   const time = getDateTime();
-  console.log(`${green('[' + time + ']')} ${red(msg)}`);
+  console.log(`${green('[' + time + ']')} ${red(msg.toString())}`);
 }
 
 export function warning(msg: string): void {

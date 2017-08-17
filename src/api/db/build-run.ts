@@ -3,24 +3,29 @@ import { BuildRun } from './model';
 export function getRun(runId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new BuildRun({ id: runId }).fetch()
-      .then(job => {
-        if (!job) {
+      .then(buildRun => {
+        if (!buildRun) {
           reject();
         }
 
-        resolve(job.toJSON());
+        resolve(buildRun.toJSON());
       });
   });
 }
 
 export function insertBuildRun(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new BuildRun(data).save(null, { method: 'insert' }).then(job => {
-      if (!job) {
+    delete data.id;
+    delete data.repositories_id;
+    delete data.jobs;
+    delete data.pr;
+
+    new BuildRun().save(data, { method: 'insert' }).then(buildRun => {
+      if (!buildRun) {
         reject();
       }
 
-      resolve(job.toJSON());
+      resolve(buildRun.toJSON());
     });
   });
 }
