@@ -10,8 +10,12 @@ import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse } from './utils';
-import { setGitHubStatusError, setGitHubStatusFailure,
-  setGitHubStatusPending, setGitHubStatusSuccess } from './github-commit-status';
+import {
+  setGitHubStatusError,
+  setGitHubStatusFailure,
+  setGitHubStatusPending,
+  setGitHubStatusSuccess
+} from './github-commit-status';
 
 export interface BuildMessage {
   type: string;
@@ -135,56 +139,62 @@ export function startBuild(data: any): Promise<any> {
               delete data.pr;
               insertBuildRun(data)
                 .then(() => {
-                  let gitUrl =
-                    `https://api.github.com/repos/${data.head_full_name}/statuses/${data.sha}`;
-                  let abstruseUrl = `${config.url}/build/${build.id}`;
-                  return setGitHubStatusPending(gitUrl, abstruseUrl, repository.token);
-                });
-              const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
+                  if (repository.access_token) {
+                    const gitUrl =
+                      `https://api.github.com/repos/${data.head_full_name}/statuses/${data.sha}`;
+                    const abstruseUrl = `${config.url}/build/${build.id}`;
+                    return setGitHubStatusPending(gitUrl, abstruseUrl, repository.access_token);
+                  } else {
+                    return Promise.resolve();
+                  }
+                })
+                .then(() => {
+                  const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
-              return jobsCommands.reduce((prev, commands, i) => {
-                return prev.then(() => {
-                  const lang = repoDetails.config.language;
-                  const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
-                  const testScript = repoDetails.config.matrix[i].env;
+                  return jobsCommands.reduce((prev, commands, i) => {
+                    return prev.then(() => {
+                      const lang = repoDetails.config.language;
+                      const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
+                      const testScript = repoDetails.config.matrix[i].env;
 
-                  const jobData = {
-                    commands: JSON.stringify(commands),
-                    language: lang,
-                    language_version: langVersion,
-                    test_script: testScript,
-                    builds_id: build.id
-                  };
+                      const jobData = {
+                        commands: JSON.stringify(commands),
+                        language: lang,
+                        language_version: langVersion,
+                        test_script: testScript,
+                        builds_id: build.id
+                      };
 
-                  return dbJob.insertJob(jobData)
-                    .then(job => {
-                      getLastRunId(build.id).then(buildRunId => {
-                        const jobRunData = {
-                          start_time: new Date(),
-                          end_time: null,
-                          status: 'queued',
-                          log: '',
-                          build_run_id: buildRunId,
-                          job_id: job.id
-                        };
+                      return dbJob.insertJob(jobData)
+                        .then(job => {
+                          getLastRunId(build.id).then(buildRunId => {
+                            const jobRunData = {
+                              start_time: new Date(),
+                              end_time: null,
+                              status: 'queued',
+                              log: '',
+                              build_run_id: buildRunId,
+                              job_id: job.id
+                            };
 
-                        return dbJobRuns.insertJobRun(jobRunData).then(() => {
-                          jobEvents.next({
-                            type: 'process',
-                            build_id: build.id,
-                            job_id: job.id,
-                            data: 'jobAdded'
+                            return dbJobRuns.insertJobRun(jobRunData).then(() => {
+                              jobEvents.next({
+                                type: 'process',
+                                build_id: build.id,
+                                job_id: job.id,
+                                data: 'jobAdded'
+                              });
+
+                              return queueJob(build.id, job.id);
+                            });
                           });
-
-                          return queueJob(build.id, job.id);
-                        });
-                      });
+                        }).catch(err => logger.error(err));
                     });
-                });
-              }, Promise.resolve());
+                  }, Promise.resolve());
             });
         });
     });
+  });
 }
 
 export function startJob(buildId: number, jobId: number): Promise<void> {
@@ -234,7 +244,8 @@ export function stopJob(jobId: number): Promise<void> {
           }
         })
         .then(() => dbJob.getJob(jobId))
-        .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`));
+        .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`))
+        .catch(err => logger.error(err));
     } else {
       return Promise.resolve()
         .then(() => killContainer(`abstruse_${job.build_id}_${job.job_id}`))
@@ -255,7 +266,8 @@ export function stopJob(jobId: number): Promise<void> {
 
           processes = processes.filter(proc => proc.job_id !== jobId);
           jobProcesses.next(processes);
-        });
+        })
+        .catch(err => logger.error(err));
     }
   });
 }
@@ -291,7 +303,8 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
       processes.push(jobProcess);
       jobProcesses.next(processes);
       jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobQueued' });
-    });
+    })
+    .catch(err => logger.error(err));
 }
 
 function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false):
@@ -313,95 +326,121 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
 
         observer.next(msg);
       }, err => {
+        logger.error(err);
         observer.complete();
 
         dbJob.getLastRunId(jobId)
-        .then(runId => dbJobRuns.updateJobRun(
-          {id: runId, end_time: new Date(), status: 'failed', log: process.log.join('')}))
-        .then(() => {
-          processes = processes.filter(proc => proc.job_id !== jobId);
-          jobProcesses.next(processes);
-          jobEvents.next({
-            type: 'process',
-            build_id: buildId,
-            job_id: jobId,
-            data: 'jobFailed'
-          });
-        })
-        .then(() => getBuild(buildId))
-        .then(build => {
-          let gitUrl =
-            `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
-          let abstruseUrl = `${config.url}/build/${buildId}`;
-          return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.token);
-        });
+          .then(runId => {
+            const data = {
+              id: runId,
+              end_time: new Date(),
+              status: 'failed',
+              log: process.log.join('')
+            };
+
+            return dbJobRuns.updateJobRun(data);
+          })
+          .then(() => {
+            processes = processes.filter(proc => proc.job_id !== jobId);
+            jobProcesses.next(processes);
+            jobEvents.next({
+              type: 'process',
+              build_id: buildId,
+              job_id: jobId,
+              data: 'jobFailed'
+            });
+          })
+          .then(() => getBuild(buildId))
+          .then(build => {
+            if (build.repository.access_token) {
+              const gitUrl =
+                `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+              const abstruseUrl = `${config.url}/build/${buildId}`;
+              return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
+            } else {
+              return Promise.resolve();
+            }
+          }).catch(err => logger.error(err));
       }, () => {
-        dbJob.getLastRunId(jobId)
-        .then(runId => dbJobRuns.updateJobRun(
-          {id: runId, end_time: new Date(), status: 'success', log: process.log.join('')}))
-        .then(() => getBuildStatus(buildId))
-        .then(status => {
-          if (status) {
-            updateBuild({ id: buildId, end_time: new Date()});
-            getLastRunId(buildId)
-              .then(id => {
-                updateBuildRun({ id: id, end_time: new Date()});
-              })
-              .then(() => getBuild(buildId))
-              .then(build => {
-                let gitUrl =
-                  `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
-                let abstruseUrl = `${config.url}/build/${buildId}`;
-                return setGitHubStatusSuccess(gitUrl, abstruseUrl, build.repository.token);
-              });
-          }
-          Promise.resolve();
-        })
-        .then(() => {
-          processes = processes.filter(proc => proc.job_id !== jobId);
-          jobProcesses.next(processes);
-          jobEvents.next({
-            type: 'process',
-            build_id: buildId,
-            job_id: jobId,
-            data: 'jobSucceded'
-          });
-        });
-
         observer.complete();
+
+        dbJob.getLastRunId(jobId)
+          .then(runId => {
+            const data = {
+              id: runId,
+              end_time: new Date(),
+              status: 'success',
+              log: process.log.join('')
+            };
+
+            return dbJobRuns.updateJobRun(data);
+          })
+          .then(() => getBuildStatus(buildId))
+          .then(status => {
+            if (status) {
+              return updateBuild({ id: buildId, end_time: new Date()})
+                .then(() => getLastRunId(buildId))
+                .then(id => updateBuildRun({ id: id, end_time: new Date()}))
+                .then(() => getBuild(buildId))
+                .then(build => {
+                  if (build.repository.access_token) {
+                    const gitUrl =
+                      `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+                    const abstruseUrl = `${config.url}/build/${buildId}`;
+                    return setGitHubStatusSuccess(gitUrl, abstruseUrl,
+                      build.repository.access_token);
+                  } else {
+                    return Promise.resolve();
+                  }
+                })
+                .catch(err => logger.error(err));
+            } else {
+              return Promise.resolve();
+            }
+          })
+          .then(() => {
+            processes = processes.filter(proc => proc.job_id !== jobId);
+            jobProcesses.next(processes);
+            jobEvents.next({
+              type: 'process',
+              build_id: buildId,
+              job_id: jobId,
+              data: 'jobSucceded'
+            });
+          }).catch(err => logger.error(err));
       });
     });
   });
 }
 
 export function restartBuild(buildId: number): Promise<any> {
+  let buildData;
+  let accessToken;
   return stopBuild(buildId)
     .then(() => getBuild(buildId))
-    .then(build => {
-      let jobs = build.jobs;
-      build.start_time = new Date();
-      build.end_time = null;
+    .then(build => buildData = build)
+    .then(() => accessToken = buildData.repository.access_token || null)
+    .then(() => {
+      let jobs = buildData.jobs;
+      buildData.start_time = new Date();
+      buildData.end_time = null;
 
-      return updateBuild(build)
+      return updateBuild(buildData)
         .then(() => {
-          build.build_id = buildId;
-          delete build.repositories_id;
-          delete build.jobs;
-          delete build.pr;
-          insertBuildRun(build);
+          buildData.build_id = buildId;
+          return insertBuildRun(buildData);
         })
-        .then(() => getLastRunId(build.id))
-        .then(buildRunId => {
-          return jobs.forEach(job => {
+        .then(buildRun => {
+          return Promise.all(jobs.map(job => {
             dbJobRuns.insertJobRun({
               start_time: new Date(),
               end_time: null,
               status: 'queued',
               log: '',
-              build_run_id: buildRunId,
+              build_run_id: buildRun.id,
               job_id: job.id
             });
-          });
+          }));
         })
         .then(() => {
           return jobs.reduce((prev, curr) => {
@@ -409,11 +448,16 @@ export function restartBuild(buildId: number): Promise<any> {
           }, Promise.resolve());
         })
         .then(() => {
-          let gitUrl =
-            `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
-          let abstruseUrl = `${config.url}/build/${build.id}`;
-          return setGitHubStatusPending(gitUrl, abstruseUrl, build.repository.token);
-        });
+          if (accessToken) {
+            const gitUrl =
+              `https://api.github.com/repos/${buildData.head_full_name}/statuses/${buildData.sha}`;
+            const abstruseUrl = `${config.url}/build/${buildData.id}`;
+            return setGitHubStatusPending(gitUrl, abstruseUrl, accessToken);
+          } else {
+            return Promise.resolve();
+          }
+        })
+        .catch(err => logger.error(err));
     });
 }
 

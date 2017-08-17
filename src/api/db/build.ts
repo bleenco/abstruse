@@ -77,7 +77,7 @@ export function getBuild(id: number): Promise<any> {
         })
         .fetch()
         .then(lastBuild => {
-          build.lastBuild = lastBuild;
+          build.lastBuild = lastBuild.toJSON();
 
           resolve(build);
         });
