@@ -10,6 +10,8 @@ import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse } from './utils';
+import { setGitHubStatusError, setGitHubStatusFailure,
+  setGitHubStatusPending, setGitHubStatusSuccess } from './github-commit-status';
 
 export interface BuildMessage {
   type: string;
@@ -131,7 +133,13 @@ export function startBuild(data: any): Promise<any> {
               data.build_id = build.id;
               delete data.repositories_id;
               delete data.pr;
-              insertBuildRun(data);
+              insertBuildRun(data)
+                .then(() => {
+                  let gitUrl =
+                    `https://api.github.com/repos/${data.head_full_name}/statuses/${data.sha}`;
+                  let abstruseUrl = `${config.url}/build/${build.id}`;
+                  return setGitHubStatusPending(gitUrl, abstruseUrl, repository.token);
+                });
               const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
               return jobsCommands.reduce((prev, commands, i) => {
@@ -319,6 +327,13 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
             job_id: jobId,
             data: 'jobFailed'
           });
+        })
+        .then(() => getBuild(buildId))
+        .then(build => {
+          let gitUrl =
+            `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+          return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.token);
         });
       }, () => {
         dbJob.getLastRunId(jobId)
@@ -331,6 +346,13 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
             getLastRunId(buildId)
               .then(id => {
                 updateBuildRun({ id: id, end_time: new Date()});
+              })
+              .then(() => getBuild(buildId))
+              .then(build => {
+                let gitUrl =
+                  `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+                let abstruseUrl = `${config.url}/build/${buildId}`;
+                return setGitHubStatusSuccess(gitUrl, abstruseUrl, build.repository.token);
               });
           }
           Promise.resolve();
@@ -384,6 +406,12 @@ export function restartBuild(buildId: number): Promise<any> {
           return jobs.reduce((prev, curr) => {
             return prev.then(() => queueJob(buildId, curr.id));
           }, Promise.resolve());
+        })
+        .then(() => {
+          let gitUrl =
+            `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+          let abstruseUrl = `${config.url}/build/${build.id}`;
+          return setGitHubStatusPending(gitUrl, abstruseUrl, build.repository.token);
         });
     });
 }
