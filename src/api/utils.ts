@@ -8,6 +8,7 @@ import * as uuid from 'uuid';
 import * as request from 'request';
 
 const defaultConfig = {
+  url: null,
   secret: 'thisIsSecret',
   port: 6500,
   wsport: 6501,

@@ -1,8 +1,9 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
-import { getConfig } from './utils';
+import { getConfig, getFilePath  } from './utils';
 import { pingRepository, createPullRequest, synchronizePullRequest } from './db/repository';
 import { startBuild } from './process-manager';
+import { writeJsonFile } from './fs';
 
 const config: any = getConfig();
 export const webhooks = express.Router();
@@ -35,7 +36,10 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
 
   switch (ev) {
     case 'ping':
-      pingRepository(payload)
+      let config: any = getConfig();
+      config.url = req.headers.host;
+      writeJsonFile(getFilePath('config.json'), config)
+        .then(() => pingRepository(payload))
         .then(repo => res.status(200).json({ msg: 'ok' }))
         .catch(err => res.status(400).json(err));
     break;

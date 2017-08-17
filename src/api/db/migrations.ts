@@ -32,6 +32,7 @@ export function create(): Promise<null> {
       t.string('user_html_url');
       t.string('username');
       t.string('password');
+      t.string('access_token');
       t.timestamps();
     }))
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
