@@ -42,7 +42,8 @@ export function getRepositoryBadge(id: number): Promise<string> {
       .fetch({
         withRelated: [
           { 'builds': query => query.where('pr', null).orderBy('id', 'desc').limit(1) },
-          'builds.jobs'
+          { 'builds.runs': query => query.orderBy('id', 'desc').limit(1) },
+          'builds.runs.job_runs'
         ]
       } as any)
       .then(repo => {
@@ -52,17 +53,17 @@ export function getRepositoryBadge(id: number): Promise<string> {
           repo = repo.toJSON();
           let status = 'queued';
 
-          if (repo.builds[0] && repo.builds[0].jobs) {
-            if (repo.builds[0].jobs.findIndex(job => job.status === 'failed') !== -1) {
+          if (repo.builds[0] &&  repo.builds[0].runs[0]) {
+            if (repo.builds[0].runs[0].job_runs.findIndex(run => run.status === 'failed') !== -1) {
               status = 'failing';
             }
 
-            if (repo.builds[0].jobs.findIndex(job => job.status === 'running') !== -1) {
+            if (repo.builds[0].runs[0].job_runs.findIndex(run => run.status === 'running') !== -1) {
               status = 'running';
             }
 
-            if (repo.builds[0].jobs.length ===
-                repo.builds[0].jobs.filter(job => job.status === 'success').length) {
+            if (repo.builds[0].runs[0].job_runs.length ===
+              repo.builds[0].runs[0].job_runs.filter(run => run.status === 'success').length) {
               status = 'passing';
             }
           }
@@ -101,6 +102,13 @@ export function getRepositories(userId: string, keyword: string): Promise<any[]>
 
       resolve(repos.toJSON());
     });
+  });
+}
+
+export function getRepositoryId(owner: string, repository: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Repository().query(q => q.where('full_name', `${owner}/${repository}`))
+    .fetch().then(repo => !repo ? reject() : resolve(repo.toJSON().id));
   });
 }
 
