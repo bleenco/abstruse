@@ -18,6 +18,7 @@ import { AppLoginComponent } from './components/app-login';
 import { AppHeaderComponent } from './components/app-header';
 import { AppBuildsComponent } from './components/app-builds';
 import { AppBuildDetailsComponent } from './components/app-build-details';
+import { AppBuildItemComponent } from './components/app-build-item';
 import { AppRepositoriesComponent } from './components/app-repositories';
 import { AppRepositoryComponent } from './components/app-repository';
 import { AppJobComponent } from './components/app-job';
@@ -34,6 +35,7 @@ import { AppTeamComponent } from './components/app-team';
     AppHeaderComponent,
     AppBuildsComponent,
     AppBuildDetailsComponent,
+    AppBuildItemComponent,
     AppRepositoriesComponent,
     AppRepositoryComponent,
     AppJobComponent,

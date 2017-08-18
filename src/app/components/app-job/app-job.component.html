@@ -15,7 +15,7 @@
                 <div class="columns is-multiline">
                   <div class="column is-7">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.base_full_name }}</a></span>
+                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.repository.full_name }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
@@ -54,23 +54,23 @@
                   <hr/>
 
                   <div class="column is-3">
-                    <h2>{{ job?.build?.message }}</h2>
+                    <h2>{{ job?.build?.data?.pull_request?.title }}</h2>
                   </div>
                   <div class="column is-3">
                     <p>
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
                       </span>
-                      <span *ngIf="job?.build?.head_sha">{{ job?.build?.head_sha.slice(0, 7) }}</span>
-                      <span *ngIf="!job?.build?.head_sha">{{ job?.build?.sha.slice(0, 7) }}</span>
+                      <span *ngIf="job?.build?.data?.pull_request?.head?.sha">{{ job?.build?.data?.pull_request?.head.sha.slice(0, 7) }}</span>
+                      <!-- <span *ngIf="!job?.build?.data?.pull_request?.head?.sh">{{ job?.build?.sha.slice(0, 7) }}</span> -->
                     </p>
                   </div>
                   <div class="column is-4">
                     <p>
                       <span class="icon">
-                        <img [src]="job?.build?.head_user_avatar_url" class="avatar-img">
+                        <img [src]="job?.build?.data?.sender?.avatar_url" class="avatar-img">
                       </span>
-                      <span>{{ job?.build?.author }} commited {{ timeWords }} ago</span>
+                      <span>{{ job?.build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>
                   <div class="column is-2">
@@ -111,7 +111,7 @@
                               <span *ngIf="run.end_time">{{ run.end_time | date:'dd.MM.yyyy hh:mm:ss' }}</span>
                             </div>
                             <div class="column is-4">
-                              <span *ngIf="run.status">{{ run.status.charAt(0).toUpperCase() + run.status.slice(1) }}</span>
+                              <span *ngIf="run?.status">{{ run.status.charAt(0).toUpperCase() + run.status.slice(1) }}</span>
                               <span *ngIf="!run.status">Cancelled</span>
                             </div>
                           </div>

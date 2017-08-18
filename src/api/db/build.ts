@@ -69,7 +69,7 @@ export function getBuild(id: number): Promise<any> {
         new BuildRun()
           .query(q => {
             q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
-            .where('builds.head_github_id', build.head_github_id)
+            .where('builds.github_id', build.data.repository.id)
             .andWhere('builds.id', '<=', build.id)
             .whereNotNull('build_runs.start_time')
             .whereNotNull('build_runs.end_time')

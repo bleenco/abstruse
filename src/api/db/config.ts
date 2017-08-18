@@ -1,6 +1,7 @@
 import * as bookshelf from 'bookshelf';
 import * as knex from 'knex';
 import { configExists, writeDefaultConfig, getConfig, getFilePath } from '../utils';
+import * as jsonColumns from 'bookshelf-json-columns';
 
 if (!configExists()) {
   writeDefaultConfig();
@@ -20,3 +21,5 @@ if (dbConfig.connection.filename) {
 
 export let Knex: knex = knex(dbConfig);
 export let Bookshelf: bookshelf = bookshelf(Knex);
+
+Bookshelf.plugin(jsonColumns);

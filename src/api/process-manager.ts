@@ -89,16 +89,6 @@ export function startBuild(data: any): Promise<any> {
             repoDetails.config.git.pr = data.pr;
           } else if (!sha) {
             repoDetails.config.git.sha = repoDetails.log.commit_hash;
-            data.sha = repoDetails.log.commit_hash;
-            data.head_sha = repoDetails.log.commit_hash;
-            data.label = repository.full_name;
-            data.head_label = repository.full_name;
-            data.ref = repository.default_branch;
-            data.head_ref = repository.default_branch;
-            data.author = repoDetails.log.commit_author;
-            data.user = repoDetails.log.commit_author.split('<')[0];
-            data.message = repoDetails.log.commit_message;
-            data.start_time = repoDetails.log.commit_date;
           }
         })
         .then(() => {
@@ -112,25 +102,6 @@ export function startBuild(data: any): Promise<any> {
         })
         .then(commit => {
           if (commit) {
-            data = Object.assign(data, {
-              user: commit.author.login,
-              author: commit.commit.author.name,
-              head_github_id: repository.github_id,
-              head_clone_url: repository.clone_url,
-              head_html_url: repository.html_url,
-              head_default_branch: repository.default_branch,
-              head_name: repository.name,
-              head_full_name: repository.full_name,
-              head_description: repository.description,
-              head_private: repository.private,
-              head_fork: repository.fork,
-              head_user_login: commit.author.login,
-              head_user_id: commit.author.id,
-              head_user_avatar_url: commit.author.avatar_url,
-              head_user_url: commit.author.url,
-              head_user_html_url: commit.author.html_url
-            });
-
             sha = sha || repoDetails.log.commit_hash;
           }
 

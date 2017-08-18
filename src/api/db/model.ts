@@ -15,6 +15,7 @@ export class Repository extends Bookshelf.Model<any> {
 export class Build extends Bookshelf.Model<any> {
   get tableName() { return 'builds'; }
   get hasTimestamps() { return true; }
+  static jsonColumns = ['data'];
   repository() { return this.belongsTo(Repository, 'repositories_id'); }
   jobs() { return this.hasMany(Job, 'builds_id'); }
   runs() { return this.hasMany(BuildRun, 'build_id'); }
@@ -23,6 +24,7 @@ export class Build extends Bookshelf.Model<any> {
 export class BuildRun extends Bookshelf.Model<any> {
   get tableName() { return 'build_runs'; }
   get hasTimestamps() { return true; }
+  static jsonColumns = ['data'];
   build() { return this.belongsTo(Build, 'build_id'); }
   job_runs() { return this.hasMany(JobRun, 'build_run_id'); }
 }

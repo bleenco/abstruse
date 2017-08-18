@@ -19,6 +19,7 @@ export function insertBuildRun(data: any): Promise<any> {
     delete data.repositories_id;
     delete data.jobs;
     delete data.pr;
+    data.github_id = data.data.repository.id;
 
     new BuildRun().save(data, { method: 'insert' }).then(buildRun => {
       if (!buildRun) {
