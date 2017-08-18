@@ -71,6 +71,15 @@ function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
     let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'queued' };
     observer.next(msg);
 
+    let buildMsg: TTYMessage = {
+      id: id,
+      type: 'data',
+      data: '==> Build Docker Image',
+      status: 'running'
+    };
+
+    observer.next(buildMsg);
+
     ps.on('data', data => {
       let msg: TTYMessage = { id: id, type: 'data', data: data, status: 'running' };
       observer.next(msg);
