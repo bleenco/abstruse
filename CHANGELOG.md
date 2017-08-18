@@ -1,3 +1,57 @@
+<a name="0.8.8"></a>
+## [0.8.8](https://github.com/bleenco/abstruse/compare/v0.6.0...v0.8.8) (2017-08-18)
+
+
+### Bug Fixes
+
+* **avatar:** fix path to default user avatarr ([d7b4380](https://github.com/bleenco/abstruse/commit/d7b4380))
+* **console:** fix console output ([612a98e](https://github.com/bleenco/abstruse/commit/612a98e))
+* **job:** fix job socket events ([788517f](https://github.com/bleenco/abstruse/commit/788517f))
+* **process-manager:** catch promises, fix unworking things in pm ([a032e35](https://github.com/bleenco/abstruse/commit/a032e35))
+* **regex:** fix terminal output regex ([547203b](https://github.com/bleenco/abstruse/commit/547203b))
+* **setup:** docker image build fix ([59c9630](https://github.com/bleenco/abstruse/commit/59c9630))
+* **terminal:** fix terminal output ([102ad37](https://github.com/bleenco/abstruse/commit/102ad37))
+* **terminal:** fix terminal output ([f02d004](https://github.com/bleenco/abstruse/commit/f02d004))
+* **terminal:** update terminal code ([35c073f](https://github.com/bleenco/abstruse/commit/35c073f))
+* **tests:** fix e2e tests for protractor ([8f3600f](https://github.com/bleenco/abstruse/commit/8f3600f))
+* **tests:** fix tests ([866d959](https://github.com/bleenco/abstruse/commit/866d959))
+* bugfix, delete pr field before saveing build run ([fdcb60f](https://github.com/bleenco/abstruse/commit/fdcb60f))
+* bugfixes ([e7768d0](https://github.com/bleenco/abstruse/commit/e7768d0))
+* multiple fixes ([2da8c56](https://github.com/bleenco/abstruse/commit/2da8c56))
+* **ui:** update ui accordingly ([099406f](https://github.com/bleenco/abstruse/commit/099406f))
+* package-lock fix ([3ebba85](https://github.com/bleenco/abstruse/commit/3ebba85))
+* show correct status of previous build run ([79009b4](https://github.com/bleenco/abstruse/commit/79009b4))
+* status badges ([db34b0e](https://github.com/bleenco/abstruse/commit/db34b0e))
+* update build end_time field when last job finish successfully and fix build time issue ([e0eb1df](https://github.com/bleenco/abstruse/commit/e0eb1df))
+
+
+### Features
+
+* **avatar:** default user avatar ([a07621e](https://github.com/bleenco/abstruse/commit/a07621e))
+* **kill-container:** use more aggresive strategy to kill containers ([f95661b](https://github.com/bleenco/abstruse/commit/f95661b))
+* **repositories:** search implementation ([613d1d6](https://github.com/bleenco/abstruse/commit/613d1d6))
+* **sshd:** enable ssh into containers ([5dd7698](https://github.com/bleenco/abstruse/commit/5dd7698))
+* **status-badges:** status badges ([9a40e91](https://github.com/bleenco/abstruse/commit/9a40e91))
+* **team:** team component and route ([84ce5e0](https://github.com/bleenco/abstruse/commit/84ce5e0))
+* **terminal:** scroller ([18a10f9](https://github.com/bleenco/abstruse/commit/18a10f9))
+* **ui:** job details modifications and features ([714985f](https://github.com/bleenco/abstruse/commit/714985f))
+* **ui:** terminal themes ([9fd48a3](https://github.com/bleenco/abstruse/commit/9fd48a3))
+* **ui:** updated styles for build details ([ce51290](https://github.com/bleenco/abstruse/commit/ce51290))
+* **vnc:** enables VNC for debugging ([f9cd1bd](https://github.com/bleenco/abstruse/commit/f9cd1bd))
+* adjustable terminal height ([633b030](https://github.com/bleenco/abstruse/commit/633b030))
+* calculated time of previous build ([abc7cec](https://github.com/bleenco/abstruse/commit/abc7cec))
+* collapse/expand commands log in terminal ([1544fb1](https://github.com/bleenco/abstruse/commit/1544fb1))
+* list of previous build and job runs ([fd87f07](https://github.com/bleenco/abstruse/commit/fd87f07))
+* update commit status on github ([ea00cf0](https://github.com/bleenco/abstruse/commit/ea00cf0))
+
+
+### Performance Improvements
+
+* **docker:** update default Dockerfile for abstruse image ([a23acf3](https://github.com/bleenco/abstruse/commit/a23acf3))
+* **kill-container:** swithc from observable to promise when killing docker container ([d37a837](https://github.com/bleenco/abstruse/commit/d37a837))
+
+
+
 <a name="0.6.0"></a>
 # 0.6.0 (2017-07-30)
 
