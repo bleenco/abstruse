@@ -85,6 +85,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   fetch(): void {
     this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
+      console.log(builds);
       this.builds = builds;
       this.updateJobs();
       setInterval(() => this.updateJobs(), 1000);

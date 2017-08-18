@@ -140,10 +140,10 @@ export function updateRepository(data: any): Promise<boolean> {
 export function pingRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const saveData = generateRepositoryData(data);
-    new Repository().where({ github_id: data.github_id }).fetch()
+    new Repository().where({ github_id: saveData.github_id }).fetch()
       .then(repo => {
         if (!repo) {
-          new Repository().save(data, { method: 'insert' })
+          new Repository().save(saveData, { method: 'insert' })
             .then(result => {
               if (!result) {
                 reject(result);
@@ -153,7 +153,7 @@ export function pingRepository(data: any): Promise<any> {
             })
             .catch(err => reject(err));
         } else {
-          repo.save(data, { method: 'update', require: false })
+          repo.save(saveData, { method: 'update', require: false })
             .then(result => {
               if (!result) {
                 reject(result);
