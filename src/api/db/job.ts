@@ -18,7 +18,7 @@ export function getJob(jobId: number): Promise<any> {
               .query(q => {
                 q.innerJoin('jobs', 'jobs.id', 'job_runs.job_id')
                 .innerJoin('builds', 'jobs.builds_id', 'builds.id')
-                .where('builds.head_github_id', build.head_github_id)
+                .where('builds.github_id', build.github_id)
                 .andWhere('jobs.id', '<=', job.id)
                 .andWhere('job_runs.status', 'success')
                 .andWhere('jobs.test_script', job.test_script)

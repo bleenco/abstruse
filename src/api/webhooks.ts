@@ -47,25 +47,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
       pingRepository(payload)
         .then(repo => {
           const buildData = {
-            ref: payload.base_ref,
-            sha: payload.after,
-            message: payload.head_commit.message,
-            user: payload.head_commit.author.login,
-            author: payload.head_commit.author.name,
-            head_github_id: payload.repository.id,
-            head_clone_url: payload.repository.clone_url,
-            head_html_url: payload.repository.html_url,
-            head_default_branch: payload.repository.default_branch,
-            head_name: payload.repository.name,
-            head_full_name: payload.repository.full_name,
-            head_description: payload.repository.description,
-            head_private: payload.repository.private,
-            head_fork: payload.repository.fork,
-            head_user_login: payload.sender.login,
-            head_user_id: payload.sender.id,
-            head_user_avatar_url: payload.sender.avatar_url,
-            head_user_url: payload.sender.url,
-            head_user_html_url: payload.sender.html_url,
+            data: payload,
             start_time: new Date(),
             repositories_id: repo.id
           };
@@ -81,7 +63,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
     case 'pull_request':
       switch (payload.action) {
         case 'opened':
-          createPullRequest(payload.pull_request)
+          createPullRequest(payload)
             .then(build => startBuild(build))
             .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => {
@@ -94,7 +76,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           res.status(200).json({ msg: 'ok' });
         break;
         case 'reopened':
-          synchronizePullRequest(payload.pull_request)
+          synchronizePullRequest(payload)
             .then(build => startBuild(build))
             .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => {
@@ -124,7 +106,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           res.status(200).json({ msg: 'ok' });
         break;
         case 'synchronize':
-          synchronizePullRequest(payload.pull_request)
+          synchronizePullRequest(payload)
             .then(build => startBuild(build))
             .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => {

@@ -15,7 +15,7 @@
                 <div class="columns is-multiline">
                   <div class="column is-10">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', build?.repository.id]">{{ build?.base_full_name }}</a></span>
+                      <span><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
@@ -38,23 +38,23 @@
                   <hr/>
 
                   <div class="column is-3">
-                    <h2>{{ build?.message }}</h2>
+                    <h2>{{ build?.data?.pull_request?.title }}</h2>
                   </div>
                   <div class="column is-3">
                     <p>
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
                       </span>
-                      <span *ngIf="build?.head_sha">{{ build?.head_sha.slice(0, 7) }}</span>
-                      <span *ngIf="!build?.head_sha">{{ build?.sha.slice(0, 7) }}</span>
+                      <span *ngIf="build?.data?.pull_request.head.sha">{{ build?.data?.pull_request.head.sha.slice(0, 7) }}</span>
+                      <span *ngIf="!build?.data?.pull_request.head.sha">{{ build?.sha.slice(0, 7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">
                     <p>
                       <span class="icon">
-                        <img [src]="build?.head_user_avatar_url" class="avatar-img">
+                        <img [src]="build?.data?.sender?.avatar_url" class="avatar-img">
                       </span>
-                      <span>{{ build?.author }} commited {{ timeWords }} ago</span>
+                      <span>{{ build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>
                   <div class="column is-2">
