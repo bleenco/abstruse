@@ -39,14 +39,12 @@ describe('Builds', () => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.build-time'))
-          .then(times => times[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
+        return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
+      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
@@ -76,15 +74,13 @@ describe('Builds', () => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.build-time'))
-          .then(times => times[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
+        return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isPresent();
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
       .then((): any => {
         return browser.wait(() => {
@@ -107,9 +103,7 @@ describe('Builds', () => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.build-time'))
-          .then(times => times[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05'));
+        return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
@@ -142,9 +136,7 @@ describe('Builds', () => {
         return element.all(by.css('.is-running')).count().then(count => count > 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.build-time'))
-          .then(times => times[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:15'));
+        return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
