@@ -65,6 +65,16 @@ export class AppTerminalComponent implements OnInit {
         return cmd;
       });
     }
+
+    this.checkScrollBottom();
+  }
+
+  checkScrollBottom(): void {
+    // TODO: make this work actually
+    // const element = window.document.documentElement;
+    // if (element.scrollTop + element.clientHeight == element.scrollHeight) {
+      window.scrollTo(0, document.body.scrollHeight);
+    // }
   }
 
   toogleCommand(index: number) {
