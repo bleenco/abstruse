@@ -64,24 +64,26 @@ export function getBuild(id: number): Promise<any> {
         });
 
         return build;
-    })
-    .then(build => {
-      new BuildRun()
-        .query(q => {
-          q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
-          .where('builds.head_github_id', build.head_github_id)
-          .andWhere('builds.id', '<=', build.id)
-          .whereNotNull('build_runs.start_time')
-          .whereNotNull('build_runs.end_time')
-          .orderBy('build_runs.id', 'desc');
-        })
-        .fetch()
-        .then(lastBuild => {
-          build.lastBuild = lastBuild.toJSON();
+      })
+      .then(build => {
+        new BuildRun()
+          .query(q => {
+            q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
+            .where('builds.head_github_id', build.head_github_id)
+            .andWhere('builds.id', '<=', build.id)
+            .whereNotNull('build_runs.start_time')
+            .whereNotNull('build_runs.end_time')
+            .orderBy('build_runs.id', 'desc');
+          })
+          .fetch()
+          .then(lastBuild => {
+            if (lastBuild) {
+              build.lastBuild = lastBuild.toJSON();
+            }
 
-          resolve(build);
-        });
-    });
+            resolve(build);
+          });
+      });
   });
 }
 
