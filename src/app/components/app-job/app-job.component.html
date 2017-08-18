@@ -15,7 +15,7 @@
                 <div class="columns is-multiline">
                   <div class="column is-7">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.head_full_name }}</a></span>
+                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.base_full_name }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
