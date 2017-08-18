@@ -77,7 +77,7 @@ jobProcesses
 export function startBuild(data: any): Promise<any> {
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
-      const sha = data && data.sha ? data.sha : null;
+      let sha = data && data.sha ? data.sha : null;
       const pr = data && data.pr ? data.pr : null;
       let repoDetails = null;
 
@@ -130,6 +130,8 @@ export function startBuild(data: any): Promise<any> {
               head_user_url: commit.author.url,
               head_user_html_url: commit.author.html_url
             });
+
+            sha = sha || repoDetails.log.commit_hash;
           }
 
           return insertBuild(data)
@@ -140,8 +142,8 @@ export function startBuild(data: any): Promise<any> {
               insertBuildRun(data)
                 .then(() => {
                   if (repository.access_token) {
-                    const gitUrl =
-                      `https://api.github.com/repos/${data.head_full_name}/statuses/${data.sha}`;
+                    const name = data.base_full_name;
+                    const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
                     const abstruseUrl = `${config.url}/build/${build.id}`;
                     return setGitHubStatusPending(gitUrl, abstruseUrl, repository.access_token);
                   } else {
@@ -253,7 +255,7 @@ export function stopJob(jobId: number): Promise<void> {
         .then(runId => dbJobRuns.getRun(runId))
         .then(jobRun => {
           if (jobRun.status !== 'success') {
-            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed'});
+            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed' });
           }
         })
         .then(() => {
@@ -353,8 +355,9 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
           .then(() => getBuild(buildId))
           .then(build => {
             if (build.repository.access_token) {
-              const gitUrl =
-                `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+              const sha = build.sha;
+              const name = build.base_full_name;
+              const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
               const abstruseUrl = `${config.url}/build/${buildId}`;
               return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
             } else {
@@ -378,14 +381,15 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
           .then(() => getBuildStatus(buildId))
           .then(status => {
             if (status) {
-              return updateBuild({ id: buildId, end_time: new Date()})
+              return updateBuild({ id: buildId, end_time: new Date() })
                 .then(() => getLastRunId(buildId))
-                .then(id => updateBuildRun({ id: id, end_time: new Date()}))
+                .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                 .then(() => getBuild(buildId))
                 .then(build => {
                   if (build.repository.access_token) {
-                    const gitUrl =
-                      `https://api.github.com/repos/${build.head_full_name}/statuses/${build.sha}`;
+                    const sha = build.sha;
+                    const name = build.base_full_name;
+                    const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
                     const abstruseUrl = `${config.url}/build/${buildId}`;
                     return setGitHubStatusSuccess(gitUrl, abstruseUrl,
                       build.repository.access_token);
@@ -449,9 +453,10 @@ export function restartBuild(buildId: number): Promise<any> {
         })
         .then(() => {
           if (accessToken) {
-            const gitUrl =
-              `https://api.github.com/repos/${buildData.head_full_name}/statuses/${buildData.sha}`;
-            const abstruseUrl = `${config.url}/build/${buildData.id}`;
+            const sha = buildData.sha;
+            const name = buildData.base_full_name;
+            const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+            const abstruseUrl = `${config.url}/build/${buildId}`;
             return setGitHubStatusPending(gitUrl, abstruseUrl, accessToken);
           } else {
             return Promise.resolve();
@@ -467,6 +472,16 @@ export function stopBuild(buildId: number): Promise<any> {
         return procs.filter(job => job.build_id === buildId).reduce((prev, current) => {
           return prev.then(() => stopJob(current.job_id));
         }, Promise.resolve());
+    })
+    .then(() => getBuild(buildId))
+    .then(buildData => {
+      if (buildData.repository.access_token) {
+        const sha = buildData.sha;
+        const name = buildData.base_full_name;
+        const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        const abstruseUrl = `${config.url}/build/${buildId}`;
+        return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+      }
     });
 }
 
@@ -481,6 +496,7 @@ export function restartJob(jobId: number): Promise<void> {
       log: '',
       build_run_id: lastRun.build_run_id,
       job_id: jobId }))
+    .then(() => dbJob.getJob(jobId))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId))
     .then(() => {
@@ -490,6 +506,19 @@ export function restartJob(jobId: number): Promise<void> {
         job_id: jobData.id,
         data: 'jobRestarted'
       });
+    })
+    .then(() => getBuild(jobData.builds_id))
+    .then(build => {
+      if (build.repository.access_token) {
+        const sha = build.sha;
+        const name = build.base_full_name;
+        const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        const abstruseUrl = `${config.url}/build/${jobData.build_id}`;
+        return setGitHubStatusPending(gitUrl, abstruseUrl,
+          build.repository.access_token);
+      } else {
+        return Promise.resolve();
+      }
     });
 }
 
@@ -504,6 +533,7 @@ export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
       log: '',
       build_run_id: lastRun.build_run_id,
       job_id: jobId }))
+    .then(() => dbJob.getJob(jobId))
     .then(job => jobData = job)
     .then(() => queueJob(jobData.builds_id, jobId, true))
     .then(() => {
@@ -513,6 +543,19 @@ export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
         job_id: jobData.id,
         data: 'jobRestarted'
       });
+    })
+    .then(() => getBuild(jobData.builds_id))
+    .then(build => {
+      if (build.repository.access_token) {
+        const sha = build.sha;
+        const name = build.base_full_name;
+        const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        const abstruseUrl = `${config.url}/build/${jobData.build_id}`;
+        return setGitHubStatusPending(gitUrl, abstruseUrl,
+          build.repository.access_token);
+      } else {
+        return Promise.resolve();
+      }
     });
 }
 

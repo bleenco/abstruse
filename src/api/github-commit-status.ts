@@ -48,7 +48,7 @@ export function setGitHubStatusPending(
   let data = {
     'state': 'pending',
     'target_url': abstruseUrl,
-    'description': 'The Abstruse CI build succeeded',
+    'description': 'The Abstruse CI build is running',
     'context': 'continuous-integration/abstruse'
   };
 
@@ -65,7 +65,7 @@ export function setGitHubStatusError(
   let data = {
     'state': 'error',
     'target_url': abstruseUrl,
-    'description': 'The Abstruse CI build succeeded',
+    'description': 'The Abstruse CI build errored',
     'context': 'continuous-integration/abstruse'
   };
 
@@ -82,7 +82,7 @@ export function setGitHubStatusFailure(
   let data = {
     'state': 'failure',
     'target_url': abstruseUrl,
-    'description': 'The Abstruse CI build succeeded',
+    'description': 'The Abstruse CI build failed',
     'context': 'continuous-integration/abstruse'
   };
 
