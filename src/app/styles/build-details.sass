@@ -3,6 +3,7 @@
   border: 3px solid $divider
   border-radius: 4px
   margin-bottom: 30px
+  margin-top: 30px
 
   &.green
     border-bottom: 3px solid $green
@@ -123,3 +124,21 @@
     padding: 5px 10px
     border-radius: 4px
     margin: 0 5px
+
+.build-history-btn-container
+  display: flex
+  justify-content: flex-end
+
+  .build-history-btn
+    width: 180px
+    display: block
+    text-align: center
+    background: $green
+    margin: 0
+    border-radius: 5px
+    border: 1px solid $divider
+    padding: 5px 20px
+    cursor: pointer
+
+    &.hide
+      background: linear-gradient(to bottom, #F95359, #DD151C)
