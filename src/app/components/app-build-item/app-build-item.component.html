@@ -25,7 +25,7 @@
     <span class="build-time">{{ build?.totalTime }}</span>
   </div>
   <div class="column is-1 justify-end">
-    <span class="icon restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="build.processingRequest">
+    <span class="icon restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
       <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="icon" fill-rule="nonzero" fill="#FFFFFF">
@@ -34,7 +34,7 @@
         </g>
       </svg>
     </span>
-    <span class="icon stop-build" (click)="stopBuild($event, build.id)" [class.disabled]="build.processingRequest">
+    <span class="icon stop-build" (click)="stopBuild($event, build.id)" [class.disabled]="processingRequest">
       <svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
           <g id="cancel-2" fill-rule="nonzero" fill="#FFFFFF">

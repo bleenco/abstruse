@@ -36,11 +36,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.type === 'buildRestarted' || event.type === 'buildStopped') {
-          const buildIndex = this.builds.findIndex(build => build.id === event.data);
-          this.builds[buildIndex].processingRequest = false;
-        }
-
         if (event.data === 'jobAdded') {
           this.show = 5;
           this.offset = 0;
@@ -85,7 +80,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   fetch(): void {
     this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
-      console.log(builds);
       this.builds = builds;
       this.updateJobs();
       setInterval(() => this.updateJobs(), 1000);
@@ -145,22 +139,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         build.timeInWords = distanceInWordsToNow(build.created_at);
         return build;
       });
-  }
-
-  restartBuild(e: MouseEvent, id: number): void {
-    e.preventDefault();
-    e.stopPropagation();
-    const buildIndex = this.builds.findIndex(build => build.id === id);
-    this.builds[buildIndex].processingRequest = true;
-    this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
-  }
-
-  stopBuild(e: MouseEvent, id: number): void {
-    e.preventDefault();
-    e.stopPropagation();
-    const buildIndex = this.builds.findIndex(build => build.id === id);
-    this.builds[buildIndex].processingRequest = true;
-    this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
   gotoBuild(buildId: number) {
