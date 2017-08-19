@@ -13,6 +13,7 @@ import { format, distanceInWordsToNow } from 'date-fns';
 export class AppRepositoryComponent implements OnInit, OnDestroy {
   loading: boolean;
   sub: Subscription;
+  tab: 'builds' | 'settings';
   id: string;
   repo: any;
   url: string;
@@ -29,6 +30,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.tab = 'settings';
     this.url = this.config.url;
 
     this.route.params.subscribe(params => {
