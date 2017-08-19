@@ -17,6 +17,11 @@ export interface IUserPass {
   repeat_password;
 }
 
+export interface IAccessToken {
+  token: string;
+  description: string;
+}
+
 @Component({
   selector: 'app-settings',
   templateUrl: 'app-settings.component.html'
@@ -28,6 +33,7 @@ export class AppSettingsComponent implements OnInit {
   userPasswordSaved: boolean;
   userPass: IUserPass;
   avatarUrl: string;
+  token: IAccessToken;
 
   constructor(private api: ApiService, private auth: AuthService, private config: ConfigService) { }
 
@@ -47,7 +53,9 @@ export class AppSettingsComponent implements OnInit {
       repeat_password: ''
     };
 
-    this.avatarUrl = this.config.url + '/' + data.avatar;
+    this.avatarUrl = this.config.url + data.avatar;
+
+    this.token = { token: '', description: '' };
   }
 
   updateProfile(e: MouseEvent): void {
