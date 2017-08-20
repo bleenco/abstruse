@@ -1,3 +1,26 @@
+<a name="0.8.11"></a>
+## [0.8.11](https://github.com/bleenco/abstruse/compare/v0.8.9...v0.8.11) (2017-08-20)
+
+
+### Bug Fixes
+
+* minor hotfix ([8d4c85f](https://github.com/bleenco/abstruse/commit/8d4c85f))
+* **builds:** add condition to check if jobs are present ([3ce43eb](https://github.com/bleenco/abstruse/commit/3ce43eb))
+
+
+### Features
+
+* **build-details:** stop build functionality ([be5b65a](https://github.com/bleenco/abstruse/commit/be5b65a))
+* **favicon:** change favicon on build status ([3dbf648](https://github.com/bleenco/abstruse/commit/3dbf648))
+* **tags:** show git tag data ([9e14668](https://github.com/bleenco/abstruse/commit/9e14668))
+
+
+### Performance Improvements
+
+* **build-details:** clear update times interval ([22c8ea2](https://github.com/bleenco/abstruse/commit/22c8ea2))
+
+
+
 <a name="0.8.10"></a>
 ## [0.8.10](https://github.com/bleenco/abstruse/compare/v0.8.9...v0.8.10) (2017-08-20)
 

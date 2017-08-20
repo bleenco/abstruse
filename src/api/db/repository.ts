@@ -4,28 +4,8 @@ import { getHttpJsonResponse } from '../utils';
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository({ id: id }).fetch({ withRelated: ['access_token'] })
-      .then(repo => {
-        if (!repo) {
-          reject(repo);
-        } else {
-          repo = repo.toJSON();
-          repo.builds = repo.builds.map(build => {
-            build.jobs = build.jobs.map(job => {
-              if (job.runs.length > 0) {
-                job.end_time = job.runs[job.runs.length - 1].end_time;
-                job.start_time = job.runs[job.runs.length - 1].start_time;
-                job.status = job.runs[job.runs.length - 1].status;
-              }
-
-              return job;
-            });
-
-            return build;
-          });
-
-          resolve(repo);
-        }
-      }).catch(err => reject(err));
+      .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()))
+      .catch(err => reject(err));
   });
 }
 

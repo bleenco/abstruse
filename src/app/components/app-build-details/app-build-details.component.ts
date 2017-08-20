@@ -47,7 +47,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.build = build;
 
-        if (this.build.data.ref.startsWith('refs/tags/')) {
+        if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags')) {
           this.tag = this.build.data.ref.replace('refs/tags/', '');
         }
 
@@ -154,19 +154,21 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     let status = 'queued';
     let favicon = 'images/favicon-queued.png';
 
-    if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
-      status = 'failed';
-      favicon = 'images/favicon-error.png';
-    }
+    if (this.build && this.build.jobs) {
+      if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+        status = 'failed';
+        favicon = 'images/favicon-error.png';
+      }
 
-    if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
-      status = 'running';
-      favicon = 'images/favicon-running.png';
-    }
+      if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
+        status = 'running';
+        favicon = 'images/favicon-running.png';
+      }
 
-    if (this.build.jobs.length === this.build.jobs.filter(job => job.status === 'success').length) {
-      status = 'success';
-      favicon = 'images/favicon.png';
+      if (this.build.jobs.length === this.build.jobs.filter(j => j.status === 'success').length) {
+        status = 'success';
+        favicon = 'images/favicon.png';
+      }
     }
 
     const name = this.build.repository.full_name;

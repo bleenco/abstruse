@@ -125,6 +125,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       e.stopPropagation();
     }
 
+    this.fetching = true;
     this.api.getRepositoryBuilds(this.id, this.limit, this.offset).subscribe(builds => {
       if (!this.repo.builds) {
         this.repo.builds = [];
@@ -203,9 +204,6 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           return date;
         })), 'mm:ss');
 
-        return build;
-      })
-      .map(build => {
         let status = 'queued';
         if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
           status = 'failed';

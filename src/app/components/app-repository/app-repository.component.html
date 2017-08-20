@@ -51,13 +51,13 @@
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="!repo?.builds.length && tab === 'builds'">
+          <div class="column is-12" *ngIf="!repo?.builds?.length && tab === 'builds'">
             <div class="notification is-info">
               No builds has been runned yet.
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="repo?.builds.length && tab === 'builds'">
+          <div class="column is-12" *ngIf="repo?.builds?.length && tab === 'builds'">
             <div class="columns list-item" *ngFor="let build of repo.builds; let i = index;" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }" (click)="gotoBuild(build.id)">
               <app-build-item [build]="build"></app-build-item>
             </div>
