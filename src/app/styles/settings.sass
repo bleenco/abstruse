@@ -16,8 +16,15 @@
 
   h2
     display: block
-    margin-bottom: 10px
+    margin-bottom: 20px
     font-weight: 700
+    padding: 0
+
+  .token-icon
+    display: block
+    width: 12px
+    margin: 0 10px 0 10px
+    float: left
 
   .tokens
     width: 100%
@@ -27,14 +34,9 @@
     .token-item
       display: block
       padding: 10px 5px
-      background: linear-gradient(to bottom, $background, $background-secondary)
-      border: 1px solid $divider
+      background: $red-secondary
+      border: 1px solid $white
       border-radius: 10px
-
-      .token-icon
-        display: block
-        width: 12px
-        margin: 0 auto
 
       .column
         display: flex
@@ -42,6 +44,9 @@
 
         .icon
           display: block
+          width: 20px
+          cursor: pointer
+          margin-top: 5px
 
       p
         font-size: 14px

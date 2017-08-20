@@ -38,9 +38,8 @@ export function create(): Promise<null> {
       t.string('user_avatar_url');
       t.string('user_url');
       t.string('user_html_url');
-      t.string('username');
-      t.string('password');
-      t.string('access_token');
+      t.integer('access_tokens_id');
+      t.foreign('access_tokens_id').references('access_tokens.id');
       t.json('data');
       t.timestamps();
     }))

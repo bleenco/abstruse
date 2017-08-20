@@ -1,6 +1,7 @@
 import { Injectable, Provider } from '@angular/core';
 import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { IAccessToken } from '../components/app-settings';
 
 @Injectable()
 export class ApiService {
@@ -45,6 +46,10 @@ export class ApiService {
     return this.post(`${this.url}/repositories/add`, data);
   }
 
+  saveRepositorySettings(data: any): Observable<any> {
+    return this.post(`${this.url}/repositories/save`, data);
+  }
+
   isAppReady(): Observable<any> {
     return this.get(`${this.url}/setup/ready`);
   }
@@ -63,6 +68,14 @@ export class ApiService {
 
   initializeDatabase(): Observable<any> {
     return this.post(`${this.url}/setup/db/init`, {});
+  }
+
+  getAllTokens(): Observable<any> {
+    return this.get(`${this.url}/tokens`);
+  }
+
+  addToken(data: IAccessToken): Observable<any> {
+    return this.post(`${this.url}/user/add-token`, data);
   }
 
   getUsers(): Observable<any> {

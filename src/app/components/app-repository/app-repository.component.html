@@ -64,14 +64,23 @@
           </div>
 
           <div class="column is-12" *ngIf="tab === 'settings'">
-            <div class="columns is-multiline">
+            <div class="columns">
               <div class="column is-12">
-                <h2>Settings</h2>
-              </div>
-              <div class="column is-12">
-                <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
-
-                </form>
+                <div class="settings-container">
+                  <h2>Settings</h2>
+                  <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
+                    <div class="form-field">
+                      <label class="form-label">Access Token</label>
+                      <select class="form-input form-select" [(ngModel)]="form.access_tokens_id" name="access_tokens_id">
+                        <option *ngFor="let t of tokens" [value]="t.id">{{ t.user.fullname }}`s {{ t.description }}</option>
+                      </select>
+                    </div>
+                    <input type="hidden" name="id" [(ngModel)]="form.id">
+                    <div class="form-field">
+                      <button type="submit" class="button green float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Repository Settings</button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

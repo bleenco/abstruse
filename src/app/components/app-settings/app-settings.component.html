@@ -21,7 +21,7 @@
       </div>
   </div>
 
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="!loading">
     <div class="columns is-multiline">
       <div class="column is-4">
         <figure class="image profile-image">
@@ -55,17 +55,22 @@
         <div class="settings-container">
           <h2>Access Tokens</h2>
 
-          <div class="tokens">
-            <div class="token-item">
+          <div class="notification is-info" *ngIf="!tokens?.length">
+            <img src="images/icons/key.svg" class="token-icon">
+            <strong>No Access Tokens saved.</strong>
+          </div>
+
+          <div class="tokens" *ngIf="tokens?.length">
+            <div class="token-item" *ngFor="let token of tokens; let i = index;">
               <div class="columns">
                 <div class="column is-1">
                   <img src="images/icons/key.svg" class="token-icon">
                 </div>
                 <div class="column is-10">
-                  <p>GitHub Access Token</p>
+                  <p>{{ token.description }}</p>
                 </div>
                 <div class="column is-1">
-                  <span class="icon" title="Delete Token">
+                  <span class="icon">
                     <img src="images/icons/remove.svg">
                   </span>
                 </div>
@@ -73,7 +78,7 @@
             </div>
           </div>
 
-          <form #tokenForm="ngForm" (ngSubmit)="updateToken($event)">
+          <form #tokenForm="ngForm" (ngSubmit)="addToken($event)">
             <h2>Add New Access Token</h2>
             <div class="form-field">
               <label class="form-label">Token Description</label>
@@ -83,7 +88,7 @@
               <label class="form-label">Token</label>
               <input class="form-input" type="password" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
             </div>
-            <input type="hidden" name="id" [(ngModel)]="user.id">
+            <input type="hidden" name="id" [(ngModel)]="token.users_id">
             <div class="form-field">
               <button type="submit" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
             </div>

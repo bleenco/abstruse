@@ -131,12 +131,14 @@ export function generateBadgeHtml(status: string): string {
     background = '#ffd43b';
   } else if (status === 'queued') {
     background = '#ffd43b';
+  } else if (status === 'unknown') {
+    background = '#3A7EE1';
   } else {
     background = '#39B54A';
   }
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="97" height="20" style="shape-rendering:
+    <svg xmlns="http://www.w3.org/2000/svg" width="110" height="20" style="shape-rendering:
       geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd;
       clip-rule:evenodd">
       <linearGradient id="b" x2="0" y2="100%">
@@ -144,7 +146,7 @@ export function generateBadgeHtml(status: string): string {
         <stop offset="1" stop-opacity=".1"/>
       </linearGradient>
       <mask id="a">
-        <rect width="97" height="20" rx="3" fill="#fff"/>
+        <rect width="110" height="20" rx="3" fill="#fff"/>
       </mask>
       <g mask="url(#a)">
         <path fill="#333" d="M0 0h53v20H0z"/>
@@ -171,7 +173,7 @@ c-0.02-0.32,0.12-0.66-0.02-0.98c-0.75-0.04-1.5,
 c0.46-0.82,1.25-1.45,2.16-1.67c0.7-0.06,1.41-0.01,2.1-0.02c-0.01-1.6,
 0-3.2-0.01-4.81C18.09,13.33,18.42,12.27,19.18,11.57z"/>
       </g>
-      <g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="9">
+      <g fill="#fff" font-family="Verdana,Geneva,sans-serif" font-size="9">
         <text x="22" y="15" fill="#010101" fill-opacity=".3">build</text>
         <text x="22" y="14">build</text>
         <text x="58" y="15" fill="#010101" fill-opacity=".3">` + status + `</text>

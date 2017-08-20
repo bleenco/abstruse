@@ -21,10 +21,12 @@ import {
   getRepositories,
   getRepository,
   getRepositoryBadge,
-  getRepositoryId
+  getRepositoryId,
+  saveRepositorySettings
 } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
+import { insertAccessToken, getAccessTokens } from './db/access-token';
 import { imageExists } from './docker';
 
 export function webRoutes(): express.Router {
@@ -120,6 +122,24 @@ export function userRoutes(): express.Router {
       .catch(err => res.status(400).json({ err: err }));
   });
 
+  router.post('/add-token', (req: express.Request, res: express.Response) => {
+    insertAccessToken(req.body)
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
+  });
+
+  return router;
+}
+
+export function tokenRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/', (req: express.Request, res: express.Response) => {
+    getAccessTokens()
+      .then(tokens => res.status(200).json({ data: tokens }))
+      .catch(() => res.status(200).json({ data: false }));
+  });
+
   return router;
 }
 
@@ -144,6 +164,12 @@ export function repositoryRoutes(): express.Router {
     }).catch(err => res.status(200).json({ status: false }));
   });
 
+  router.post('/save', (req: express.Request, res: express.Response) => {
+    saveRepositorySettings(req.body)
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
+  });
+
   return router;
 }
 
@@ -160,12 +186,12 @@ export function badgeRoutes(): express.Router {
 
   router.get('/:owner/:repository', (req: express.Request, res: express.Response) => {
     getRepositoryId(req.params.owner, req.params.repository)
-    .then(id => getRepositoryBadge(id))
-    .then(status => {
-      res.writeHead(200, {'Content-Type': 'image/svg+xml'});
-      res.write(generateBadgeHtml(status));
-      res.end();
-    });
+      .then(id => getRepositoryBadge(id))
+      .then(status => {
+        res.writeHead(200, {'Content-Type': 'image/svg+xml'});
+        res.write(generateBadgeHtml(status));
+        res.end();
+      });
   });
 
   return router;
