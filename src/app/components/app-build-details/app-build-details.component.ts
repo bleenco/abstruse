@@ -18,6 +18,7 @@ export class AppBuildDetailsComponent implements OnInit {
   previousRuntime: number;
   processingBuild: boolean;
   approximatelyRemainingTime: string;
+  tag: string;
 
   constructor(
     private socketService: SocketService,
@@ -37,6 +38,11 @@ export class AppBuildDetailsComponent implements OnInit {
       this.apiService.getBuild(this.id).subscribe(build => {
         this.loading = false;
         this.build = build;
+
+        if (this.build.data.ref.startsWith('refs/tags/')) {
+          this.tag = this.build.data.ref.replace('refs/tags/', '');
+        }
+
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.start_time);
         if (this.build.lastBuild) {

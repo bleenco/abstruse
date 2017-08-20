@@ -1,8 +1,9 @@
 <div class="columns">
   <div class="column is-2">
     <img class="avatar-icon" [src]="build?.data?.sender?.avatar_url" *ngIf="build?.data?.sender?.avatar_url">
-    <span *ngIf="!build?.pr" class="bold larger">#{{ build?.id }}</span>
-    <span *ngIf="build?.pr" class="bold larger">PR #{{ build?.pr }}</span>
+    <span *ngIf="!build?.pr && !tag" class="bold larger">#{{ build?.id }}</span>
+    <span *ngIf="build?.pr && !tag" class="bold larger">PR #{{ build?.pr }}</span>
+    <span *ngIf="tag" class="bold larger">{{ tag }}</span>
   </div>
   <div class="column is-2">
     <span class="larger">{{ build?.repository?.full_name }}</span>
@@ -11,15 +12,19 @@
     <span class="icon">
       <img src="images/icons/git-commit.svg">
     </span>
-    <span class="bold" *ngIf="build?.data?.pull_request?.head.sha">{{ build?.data?.pull_request.head.sha }}</span>
+    <span class="bold" *ngIf="build?.data?.pull_request?.head.sha && !tag">{{ build?.data?.pull_request.head.sha }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head.sha">{{ build?.data?.after }}</span>
-    <span *ngIf="build?.data?.commits">{{ build?.data?.commits[0]?.message }}</span>
-    <span *ngIf="!build?.data?.commits">{{ build?.data?.pull_request?.title }}</span>
+
+    <span *ngIf="build?.data?.commits && !tag">{{ build?.data?.commits[build?.data?.commits.length - 1]?.message }}</span>
+    <span *ngIf="!build?.data?.commits && !tag">{{ build?.data?.pull_request?.title }}</span>
+    <span *ngIf="tag">{{ build?.data?.head_commit?.message }}</span>
+
     <span class="smaller">{{ build?.timeInWords }} ago</span>
   </div>
   <div class="column is-2">
-    <span *ngIf="build?.data?.commits">{{ build?.data?.commits[0]?.committer?.name }}</span>
-    <span *ngIf="!build?.data?.commits">{{ build?.data?.sender.login }}</span>
+    <span *ngIf="build?.data?.commits && !tag">{{ build?.data?.commits[0]?.committer?.name }}</span>
+    <span *ngIf="!build?.data?.commits && !tag">{{ build?.data?.sender.login }}</span>
+    <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
   </div>
   <div class="column is-1">
     <span class="build-time">{{ build?.totalTime }}</span>

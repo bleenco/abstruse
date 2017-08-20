@@ -30,6 +30,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   sshd: string;
   vnc: string;
   expectedProgress: number;
+  tag: string;
 
   constructor(
     private socketService: SocketService,
@@ -89,6 +90,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
       this.apiService.getJob(this.id).subscribe(job => {
         this.job = job;
+
+        if (this.job.build.data.ref.startsWith('refs/tags/')) {
+          this.tag = this.job.build.data.ref.replace('refs/tags/', '');
+        }
+
         this.jobRun = job.runs[job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
         this.timeWords = distanceInWordsToNow(job.build.start_time);

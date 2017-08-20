@@ -10,10 +10,15 @@ export class AppBuildItemComponent {
   @HostBinding('class') classes = 'column is-12';
 
   processingRequest: boolean;
+  tag: string;
 
   constructor(private socketService: SocketService) { }
 
   ngOnInit() {
+    if (this.build.data.ref.startsWith('refs/tags/')) {
+      this.tag = this.build.data.ref.replace('refs/tags/', '');
+    }
+
     this.socketService.outputEvents
       .filter(x => x.type === 'buildRestarted' || x.type === 'buildStopped')
       .subscribe(e => this.processingRequest = false);

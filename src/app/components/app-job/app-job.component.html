@@ -54,8 +54,9 @@
                   <hr/>
 
                   <div class="column is-4">
-                    <h2 *ngIf="job?.build?.data?.pull_request">{{ job?.build?.data?.pull_request?.title }}</h2>
-                    <h2 *ngIf="!job?.build?.data?.pull_request">{{ job?.build?.data?.commits[0]?.message }}</h2>
+                    <h2 *ngIf="job?.build?.data?.pull_request && !tag">{{ build?.job?.data?.pull_request?.title }}</h2>
+                    <h2 *ngIf="!job?.build?.data?.pull_request && !tag">{{ build?.job?.data?.commits[build?.data?.commits.length - 1]?.message }}</h2>
+                    <h2 *ngIf="tag">{{ job?.build?.data?.head_commit?.message }}</h2>
                   </div>
                   <div class="column is-2">
                     <p>

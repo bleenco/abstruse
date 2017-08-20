@@ -5,10 +5,10 @@ import { pingRepository, createPullRequest, synchronizePullRequest } from './db/
 import { startBuild } from './process-manager';
 import { writeJsonFile } from './fs';
 
-const config: any = getConfig();
 export const webhooks = express.Router();
 
 webhooks.post('/github', (req: express.Request, res: express.Response) => {
+  let config: any = getConfig();
   const headers = req.headers;
   const payload = req.body;
 
@@ -32,19 +32,22 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
     return res.status(400).json({ error: 'X-Hub-Signature does not match blob signature' });
   }
 
-  // return res.status(200).json({ msg: 'ok' });
+  if (req.secure) {
+    config.url = 'https://' + req.headers.host;
+  } else {
+    config.url = 'http://' + req.headers.host;
+  }
 
   switch (ev) {
     case 'ping':
-      let config: any = getConfig();
-      config.url = req.headers.host;
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingRepository(payload))
         .then(repo => res.status(200).json({ msg: 'ok' }))
         .catch(err => res.status(400).json(err));
     break;
     case 'push':
-      pingRepository(payload)
+      writeJsonFile(getFilePath('config.json'), config)
+        .then(() => pingRepository(payload))
         .then(repo => {
           const buildData = {
             data: payload,
@@ -63,20 +66,22 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
     case 'pull_request':
       switch (payload.action) {
         case 'opened':
-          createPullRequest(payload)
-            .then(build => startBuild(build))
-            .then(() => res.status(200).json({ msg: 'ok' }))
-            .catch(err => {
-              console.error(err);
-              res.status(400).json({ error: err });
-            });
+        writeJsonFile(getFilePath('config.json'), config)
+          .then(() => createPullRequest(payload))
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => {
+            console.error(err);
+            res.status(400).json({ error: err });
+          });
         break;
         case 'closed':
           // should kill all jobs related to this PR?
           res.status(200).json({ msg: 'ok' });
         break;
         case 'reopened':
-          synchronizePullRequest(payload)
+          writeJsonFile(getFilePath('config.json'), config)
+            .then(() => synchronizePullRequest(payload))
             .then(build => startBuild(build))
             .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => {
@@ -106,7 +111,8 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           res.status(200).json({ msg: 'ok' });
         break;
         case 'synchronize':
-          synchronizePullRequest(payload)
+          writeJsonFile(getFilePath('config.json'), config)
+            .then(() => synchronizePullRequest(payload))
             .then(build => startBuild(build))
             .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => {

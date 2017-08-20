@@ -38,8 +38,9 @@
                   <hr/>
 
                   <div class="column is-4">
-                    <h2 *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.title }}</h2>
-                    <h2 *ngIf="!build?.data?.pull_request">{{ build?.data?.commits[0]?.message }}</h2>
+                    <h2 *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.pull_request?.title }}</h2>
+                    <h2 *ngIf="!build?.data?.pull_request && !tag">{{ build?.data?.commits[build?.data?.commits.length - 1]?.message }}</h2>
+                    <h2 *ngIf="tag">{{ build?.data?.head_commit?.message }}</h2>
                   </div>
                   <div class="column is-2">
                     <p>
@@ -55,8 +56,9 @@
                       <span class="icon">
                         <img [src]="build?.data?.sender?.avatar_url" class="avatar-img">
                       </span>
-                      <span *ngIf="build?.data?.pull_request">{{ build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
-                      <span *ngIf="!build?.data?.pull_request">{{ build?.data?.commits[0]?.committer?.name }} commited {{ timeWords }} ago</span>
+                      <span *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
+                      <span *ngIf="!build?.data?.pull_request && !tag">{{ build?.data?.commits[0]?.committer?.name }} commited {{ timeWords }} ago</span>
+                      <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>
                   <div class="column is-2">
