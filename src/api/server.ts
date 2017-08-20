@@ -29,6 +29,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/webhooks', webhooks);
       app.use('/api/setup', routes.setupRoutes());
       app.use('/api/user', routes.userRoutes());
+      app.use('/api/tokens', routes.tokenRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());
       app.use('/api/builds', routes.buildRoutes());
       app.use('/api/jobs', routes.jobRoutes());

@@ -14,6 +14,14 @@ export function create(): Promise<null> {
       t.string('avatar').notNullable().defaultTo('/avatars/user.svg');
       t.timestamps();
     })
+    .then(() => schema.createTableIfNotExists('access_tokens', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.string('description').notNullable();
+      t.string('token').notNullable();
+      t.integer('users_id').notNullable();
+      t.foreign('users_id').references('users.id');
+      t.timestamps();
+    }))
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
@@ -30,9 +38,8 @@ export function create(): Promise<null> {
       t.string('user_avatar_url');
       t.string('user_url');
       t.string('user_html_url');
-      t.string('username');
-      t.string('password');
-      t.string('access_token');
+      t.integer('access_tokens_id');
+      t.foreign('access_tokens_id').references('access_tokens.id');
       t.json('data');
       t.timestamps();
     }))

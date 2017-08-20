@@ -11,8 +11,8 @@
     <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button is-active">Builds</button>
-        <button class="group-button">Settings</button>
+        <button class="group-button" [class.is-active]="tab === 'builds'" (click)="tab = 'builds'">Builds</button>
+        <button class="group-button" [class.is-active]="tab === 'settings'" (click)="tab = 'settings'">Settings</button>
       </div>
     </div>
   </div>
@@ -51,15 +51,37 @@
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="!repo?.builds.length">
+          <div class="column is-12" *ngIf="!repo?.builds.length && tab === 'builds'">
             <div class="notification is-info">
               No builds has been runned yet.
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="repo?.builds.length">
+          <div class="column is-12" *ngIf="repo?.builds.length && tab === 'builds'">
             <div class="columns list-item" *ngFor="let build of repo.builds; let i = index;" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }" (click)="gotoBuild(build.id)">
               <app-build-item [build]="build"></app-build-item>
+            </div>
+          </div>
+
+          <div class="column is-12" *ngIf="tab === 'settings'">
+            <div class="columns">
+              <div class="column is-12">
+                <div class="settings-container">
+                  <h2>Settings</h2>
+                  <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
+                    <div class="form-field">
+                      <label class="form-label">Access Token</label>
+                      <select class="form-input form-select" [(ngModel)]="form.access_tokens_id" name="access_tokens_id">
+                        <option *ngFor="let t of tokens" [value]="t.id">{{ t.user.fullname }}`s {{ t.description }}</option>
+                      </select>
+                    </div>
+                    <input type="hidden" name="id" [(ngModel)]="form.id">
+                    <div class="form-field">
+                      <button type="submit" class="button green float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Repository Settings</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
 

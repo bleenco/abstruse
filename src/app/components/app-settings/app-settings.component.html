@@ -21,7 +21,7 @@
       </div>
   </div>
 
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="!loading">
     <div class="columns is-multiline">
       <div class="column is-4">
         <figure class="image profile-image">
@@ -29,45 +29,94 @@
         </figure>
       </div>
       <div class="column is-8">
-        <form method="post" #profileForm="ngForm" (ngSubmit)="updateProfile($event)">
-          <div class="notification is-success" *ngIf="userSaved">
-            <button class="delete" (click)="userSaved = false"></button>
-            Data successfully updated.
-          </div>
-          <h2>User Settings</h2>
-          <div class="form-field">
-            <label class="form-label">Email (Username)</label>
-            <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
-          </div>
-          <div class="form-field">
-            <label class="form-label">Full Name</label>
-            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
-          </div>
-          <input type="hidden" name="id" [(ngModel)]="user.id">
-          <div class="form-field">
-            <button type="submit" class="button green float-right" [disabled]="!profileForm.form.valid">Save Details</button>
-          </div>
-        </form>
 
-        <form method="post" #passwordForm="ngForm" (ngSubmit)="updatePassword($event)">
-          <div class="notification is-success" *ngIf="userPasswordSaved">
-            <button class="delete" (click)="userPasswordSaved = false"></button>
-            Password successfully updated.
+        <div class="settings-container">
+          <h2>User Settings</h2>
+          <form method="post" #profileForm="ngForm" (ngSubmit)="updateProfile($event)">
+            <div class="notification is-success" *ngIf="userSaved">
+              <button class="delete" (click)="userSaved = false"></button>
+              Data successfully updated.
+            </div>
+            <div class="form-field">
+              <label class="form-label">Email (Username)</label>
+              <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
+            </div>
+            <input type="hidden" name="id" [(ngModel)]="user.id">
+            <div class="form-field">
+              <button type="submit" class="button green float-right" [disabled]="!profileForm.form.valid">Save Details</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="settings-container">
+          <h2>Access Tokens</h2>
+
+          <div class="notification is-info" *ngIf="!tokens?.length">
+            <img src="images/icons/key.svg" class="token-icon">
+            <strong>No Access Tokens saved.</strong>
           </div>
+
+          <div class="tokens" *ngIf="tokens?.length">
+            <div class="token-item" *ngFor="let token of tokens; let i = index;">
+              <div class="columns">
+                <div class="column is-1">
+                  <img src="images/icons/key.svg" class="token-icon">
+                </div>
+                <div class="column is-10">
+                  <p>{{ token.description }}</p>
+                </div>
+                <div class="column is-1">
+                  <span class="icon">
+                    <img src="images/icons/remove.svg">
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form #tokenForm="ngForm" (ngSubmit)="addToken($event)">
+            <h2>Add New Access Token</h2>
+            <div class="form-field">
+              <label class="form-label">Token Description</label>
+              <input class="form-input" type="text" placeholder="Access Token Description" name="token_description" required [(ngModel)]="token.description">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Token</label>
+              <input class="form-input" type="password" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
+            </div>
+            <input type="hidden" name="id" [(ngModel)]="token.users_id">
+            <div class="form-field">
+              <button type="submit" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="settings-container">
           <h2>Password Update</h2>
-          <div class="form-field">
-            <label class="form-label">New Password</label>
-            <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userPass.password">
-          </div>
-          <div class="form-field">
-            <label class="form-label">Repeat New Password</label>
-            <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required [(ngModel)]="userPass.repeat_password" validateEqual="password">
-          </div>
-          <input type="hidden" name="id" [(ngModel)]="userPass.id">
-          <div class="form-field">
-            <button type="submit" class="button green float-right" [disabled]="!passwordForm.form.valid">Save Details</button>
-          </div>
-        </form>
+          <form method="post" #passwordForm="ngForm" (ngSubmit)="updatePassword($event)">
+            <div class="notification is-success" *ngIf="userPasswordSaved">
+              <button class="delete" (click)="userPasswordSaved = false"></button>
+              Password successfully updated.
+            </div>
+            <div class="form-field">
+              <label class="form-label">New Password</label>
+              <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userPass.password">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Repeat New Password</label>
+              <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required [(ngModel)]="userPass.repeat_password" validateEqual="password">
+            </div>
+            <input type="hidden" name="id" [(ngModel)]="userPass.id">
+            <div class="form-field">
+              <button type="submit" class="button green float-right" [disabled]="!passwordForm.form.valid">Update Password</button>
+            </div>
+          </form>
+        </div>
+
       </div>
     </div>
   </div>

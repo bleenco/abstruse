@@ -5,6 +5,12 @@ import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
+import 'rxjs/add/operator/delay';
+
+export interface IRepoForm {
+  id: number;
+  access_tokens_id: any;
+}
 
 @Component({
   selector: 'app-repository',
@@ -13,10 +19,14 @@ import { format, distanceInWordsToNow } from 'date-fns';
 export class AppRepositoryComponent implements OnInit, OnDestroy {
   loading: boolean;
   sub: Subscription;
+  tab: 'builds' | 'settings';
   id: string;
   repo: any;
   url: string;
   statusBadge: string;
+  tokens: any[];
+  saving: boolean;
+  form: IRepoForm;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,6 +39,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.tab = 'builds';
     this.url = this.config.url;
 
     this.route.params.subscribe(params => {
@@ -38,6 +49,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       } else {
         this.fetch();
         this.fetchBadge();
+        this.fetchTokens();
       }
     });
 
@@ -92,6 +104,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   fetch(): void {
     this.api.getRepository(this.id).subscribe(event => {
       this.repo = event;
+      this.form = { id: parseInt(this.id, 10), access_tokens_id: event.access_tokens_id };
       this.loading = false;
       this.updateJobs();
       setInterval(() => this.updateJobs(), 1000);
@@ -103,6 +116,12 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       if (event.ok) {
         this.statusBadge = event._body.replace(/ \r/g, '').trim();
       }
+    });
+  }
+
+  fetchTokens(): void {
+    this.api.getAllTokens().subscribe(tokens => {
+      this.tokens = tokens;
     });
   }
 
@@ -152,5 +171,17 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
+  }
+
+  saveRepoSettings(e: MouseEvent): void {
+    this.saving = true;
+
+    this.api.saveRepositorySettings(this.form)
+      .delay(1000)
+      .subscribe(saved => {
+        if (saved) {
+          this.saving = false;
+        }
+      });
   }
 }

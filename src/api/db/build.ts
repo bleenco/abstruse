@@ -33,7 +33,8 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
 
 export function getBuild(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: id }).fetch({ withRelated: ['repository', 'jobs.runs', 'runs.job_runs'] })
+    new Build({ id: id })
+      .fetch({ withRelated: ['repository.access_token', 'jobs.runs', 'runs.job_runs'] })
       .then(build => {
         if (!build) {
           reject();
@@ -62,6 +63,12 @@ export function getBuild(id: number): Promise<any> {
 
           return run;
         });
+
+        if (build.repository.access_token && build.repository.access_token) {
+          build.repository.access_token = build.repository.access_token.token;
+        } else {
+          build.repository.access_token = null;
+        }
 
         return build;
       })

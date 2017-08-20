@@ -17,6 +17,12 @@ export interface IUserPass {
   repeat_password;
 }
 
+export interface IAccessToken {
+  token: string;
+  description: string;
+  users_id: number;
+}
+
 @Component({
   selector: 'app-settings',
   templateUrl: 'app-settings.component.html'
@@ -28,26 +34,35 @@ export class AppSettingsComponent implements OnInit {
   userPasswordSaved: boolean;
   userPass: IUserPass;
   avatarUrl: string;
+  token: IAccessToken;
+  tokens: IAccessToken[];
 
-  constructor(private api: ApiService, private auth: AuthService, private config: ConfigService) { }
+  constructor(private api: ApiService, private auth: AuthService, private config: ConfigService) {
+    this.loading = true;
+  }
 
   ngOnInit() {
-    const data: any = this.auth.getData();
-    this.user = {
-      id: data.id,
-      email: data.email,
-      fullname: data.fullname,
-      admin: data.admin,
-      avatar: data.avatar
-    };
+    this.fetchUser();
+  }
 
-    this.userPass = {
-      id: data.id,
-      password: '',
-      repeat_password: ''
-    };
+  fetchUser(): void {
+    this.loading = true;
+    const user: any = this.auth.getData();
+    this.api.getUser(user.id).subscribe(data => {
+      this.user = {
+        id: data.id,
+        email: data.email,
+        fullname: data.fullname,
+        admin: data.admin,
+        avatar: data.avatar
+      };
+      this.userPass = { id: data.id, password: '', repeat_password: '' };
+      this.avatarUrl = this.config.url + data.avatar;
+      this.token = { token: '', description: '', users_id: data.id };
+      this.tokens = data.access_tokens;
 
-    this.avatarUrl = this.config.url + '/' + data.avatar;
+      this.loading = false;
+    });
   }
 
   updateProfile(e: MouseEvent): void {
@@ -70,6 +85,16 @@ export class AppSettingsComponent implements OnInit {
         setTimeout(() => this.userPasswordSaved = false, 3000);
         this.userPass.password = '';
         this.userPass.repeat_password = '';
+      }
+    });
+  }
+
+  addToken(e: MouseEvent): void {
+    e.preventDefault();
+
+    this.api.addToken(this.token).subscribe(event => {
+      if (event) {
+        this.fetchUser();
       }
     });
   }

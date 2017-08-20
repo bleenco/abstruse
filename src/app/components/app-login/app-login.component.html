@@ -5,6 +5,11 @@
         <div class="container" *ngIf="loading">
           <img src="images/icons/flickr.svg" class="main-loader">
         </div>
+        <div class="column is-4 is-offset-4" *ngIf="!loading">
+          <div class="setup-logo">
+            <img src="images/abstruse-text-logo.svg">
+          </div>
+        </div>
         <div class="column is-4 is-offset-4">
           <form class="login-form" *ngIf="!loading" #loginForm="ngForm" (ngSubmit)="doLogin()">
             <h1>Sign In</h1>
