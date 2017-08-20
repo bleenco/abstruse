@@ -326,7 +326,7 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
           .then(() => getBuild(buildId))
           .then(build => {
             if (build.repository.access_token) {
-              const sha = build.data.after;
+              const sha = build.data.after || build.data.pull_request.head.sha;
               const name = build.data.repository.full_name;
               const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
               const abstruseUrl = `${config.url}/build/${buildId}`;
@@ -358,7 +358,7 @@ function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false
                 .then(() => getBuild(buildId))
                 .then(build => {
                   if (build.repository.access_token) {
-                    const sha = build.data.after;
+                    const sha = build.data.after || build.data.pull_request.head.sha;
                     const name = build.data.repository.full_name;
                     const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
                     const abstruseUrl = `${config.url}/build/${buildId}`;
@@ -453,7 +453,7 @@ export function stopBuild(buildId: number): Promise<any> {
         const abstruseUrl = `${config.url}/build/${buildId}`;
         return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
       }
-    });
+    }).catch(err => console.error(err));
 }
 
 export function restartJob(jobId: number): Promise<void> {
@@ -481,7 +481,7 @@ export function restartJob(jobId: number): Promise<void> {
     .then(() => getBuild(jobData.builds_id))
     .then(build => {
       if (build.repository.access_token) {
-        const sha = build.data.after;
+        const sha = build.data.after || build.data.pull_request.head.sha;
         const name = build.data.repository.full_name;
         const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
         const abstruseUrl = `${config.url}/build/${jobData.build_id}`;
@@ -490,7 +490,7 @@ export function restartJob(jobId: number): Promise<void> {
       } else {
         return Promise.resolve();
       }
-    });
+    }).catch(err => console.error(err));
 }
 
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
@@ -518,7 +518,7 @@ export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
     .then(() => getBuild(jobData.builds_id))
     .then(build => {
       if (build.repository.access_token) {
-        const sha = build.data.after;
+        const sha = build.data.after || build.data.pull_request.head.sha;
         const name = build.data.repository.full_name;
         const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
         const abstruseUrl = `${config.url}/build/${jobData.build_id}`;
