@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -20,7 +22,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
   id: number;
   job: any;
   jobRun: any;
-  status: string;
   terminalReady: boolean;
   terminalOptions:  { size: 'small' | 'large' };
   terminalInput: any;
@@ -36,10 +37,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
     private socketService: SocketService,
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    @Inject(DOCUMENT) private document: any,
+    private titleService: Title
   ) {
     this.loading = true;
-    this.status = 'queued';
     this.terminalOptions = { size: 'large' };
     this.id = null;
     this.expectedProgress = 0;
@@ -83,6 +85,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.jobRun.status = 'failed';
           this.jobRun.end_time = new Date().getTime();
         }
+
+        this.setFavicon();
       });
 
     this.route.params.subscribe(params => {
@@ -91,13 +95,14 @@ export class AppJobComponent implements OnInit, OnDestroy {
       this.apiService.getJob(this.id).subscribe(job => {
         this.job = job;
 
-        if (this.job.build.data.ref.startsWith('refs/tags/')) {
+        if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {
           this.tag = this.job.build.data.ref.replace('refs/tags/', '');
         }
 
         this.jobRun = job.runs[job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
         this.timeWords = distanceInWordsToNow(job.build.start_time);
+        this.setFavicon();
         this.loading = false;
         if (this.job.lastJob && this.job.lastJob.end_time) {
           this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
@@ -114,6 +119,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.termSub.unsubscribe();
     this.sub.unsubscribe();
+    this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    this.titleService.setTitle('Abstruse CI');
   }
 
   updateJobTime(): void {
@@ -126,6 +133,21 @@ export class AppJobComponent implements OnInit, OnDestroy {
     if (this.previousRuntime) {
       this.expectedProgress = (currentTime - this.jobRun.start_time) / this.previousRuntime;
     }
+  }
+
+  setFavicon(): void {
+    let favicon;
+    switch (this.jobRun.status) {
+      case 'queued': favicon = 'images/favicon-queued.png'; break;
+      case 'failed': favicon = 'images/favicon-error.png'; break;
+      case 'running': favicon = 'images/favicon-running.png'; break;
+      case 'success': favicon = 'images/favicon.png'; break;
+      default: favicon = 'images/favicon.png'; break;
+    }
+
+    const status = this.jobRun.status.charAt(0).toUpperCase() + this.jobRun.status.slice(1);
+    this.titleService.setTitle(`Abstruse CI - Job ${status}`);
+    this.document.getElementById('favicon').setAttribute('href', favicon);
   }
 
   restartJob(e: MouseEvent): void {

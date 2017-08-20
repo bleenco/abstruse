@@ -15,7 +15,7 @@ export class AppBuildItemComponent implements OnInit {
   constructor(private socketService: SocketService) { }
 
   ngOnInit() {
-    if (this.build.data.ref && this.build.data.ref.startsWith('refs/tags/')) {
+    if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags/')) {
       this.tag = this.build.data.ref.replace('refs/tags/', '');
     }
 
