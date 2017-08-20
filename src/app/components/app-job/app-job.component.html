@@ -53,11 +53,11 @@
 
                   <hr/>
 
-                  <div class="column is-3">
+                  <div class="column is-4">
                     <h2 *ngIf="job?.build?.data?.pull_request">{{ job?.build?.data?.pull_request?.title }}</h2>
                     <h2 *ngIf="!job?.build?.data?.pull_request">{{ job?.build?.data?.commits[0]?.message }}</h2>
                   </div>
-                  <div class="column is-3">
+                  <div class="column is-2">
                     <p>
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
@@ -66,7 +66,7 @@
                       <span *ngIf="!job?.build?.data?.pull_request">{{ job?.build?.data?.after.slice(0, 7) }}</span>
                     </p>
                   </div>
-                  <div class="column is-4">
+                  <div class="column is-3">
                     <p>
                       <span class="icon">
                         <img [src]="job?.build?.data?.sender?.avatar_url" class="avatar-img">
@@ -76,17 +76,15 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <div class="column is-12">
-                      <p class="total-time">
-                        <span class="icon">
-                          <img src="images/icons/clock.svg">
-                        </span>
-                        <span>{{ job?.time }}</span>
-                      </p>
-                    </div>
-                    <div class="column is-12" *ngIf="jobRun.status === 'running' && previousRuntime">
-                      <progress class="progress is-small" [value]="expectedProgress" max="1">{{ expectedProgress }}%</progress>
-                    </div>
+                    <p *ngIf="jobRun.status === 'running' && previousRuntime">
+                      <progress class="progress is-success is-small" [value]="expectedProgress" max="1">{{ expectedProgress }}%</progress>
+                    </p>
+                  </div>
+                  <div class="column is-1">
+                    <p class="total-time">
+                      <img src="images/icons/clock.svg">
+                      <span>{{ job?.time }}</span>
+                    </p>
                   </div>
 
                 </div>
