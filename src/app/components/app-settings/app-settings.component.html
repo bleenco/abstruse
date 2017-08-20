@@ -79,14 +79,13 @@
           </div>
 
           <form #tokenForm="ngForm" (ngSubmit)="addToken($event)">
-            <h2>Add New Access Token</h2>
             <div class="form-field">
               <label class="form-label">Token Description</label>
               <input class="form-input" type="text" placeholder="Access Token Description" name="token_description" required [(ngModel)]="token.description">
             </div>
             <div class="form-field">
               <label class="form-label">Token</label>
-              <input class="form-input" type="password" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
+              <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
             </div>
             <input type="hidden" name="id" [(ngModel)]="token.users_id">
             <div class="form-field">
