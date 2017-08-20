@@ -1,16 +1,17 @@
 @import 'terminal/material-dark-ansi'
 @import 'terminal/batman-ansi'
+@import 'terminal/dracula-ansi'
 
 .window-terminal-container
   position: relative
   display: block
-  color: #F0F0F0
+  color: #f8f8f2
   margin: 0
   font-family: monaco, monospace
   padding: 10px 0
   height: 100%
-  background: #1D2021
-  border-radius: 4px
+  background: #000000
+  border-radius: 10px
   box-shadow: 1px 2px 10px rgba($background, 0.7)
   border: 1px solid $divider
 
@@ -25,7 +26,7 @@
     .command-line
       display: flex
       align-items: center
-      background: #1F2326
+      background: lighten(#000000, 3)
       margin: 2px 5px
       padding: 0px
       border-radius: 2px
@@ -41,22 +42,22 @@
 
       .command
         font-size: 12px
-        color: #FFEE58
+        color: #f1fa8c
         font-weight: bold
 
         span
           font-size: 12px
-          color: #FFEE58
+          color: #f1fa8c
           font-weight: bold
 
     .output
       display: inline-block
       width: 100%
-      color: #F0F0F0
+      color: #f8f8f2
       margin: 0 !important
-      font-family: Monaco, monospace
+      font-family: monaco, monospace
       font-size: 12px
-      padding: 10px 20px !important
-      background: #1D2021
+      padding: 0 10px 5px !important
+      background: #000000
       white-space: pre-wrap
       word-wrap: break-word
