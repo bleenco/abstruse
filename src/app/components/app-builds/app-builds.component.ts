@@ -45,7 +45,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
     this.socketService.outputEvents
       .filter(x => {
-        x = x.data.toString() || '';
+        x = x.data ? x.data.toString() : '';
         return x.startsWith('job');
       })
       .subscribe(e => {
