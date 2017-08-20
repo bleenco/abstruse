@@ -89,39 +89,6 @@
                     </div>
                   </div>
 
-                  <div *ngIf="job.runs && job.runs.length > 1" class="column is-12">
-                    <hr/>
-                    <div class="columns">
-                      <div class="column is-12">
-                        <div class="build-history-btn-container">
-                          <span *ngIf="!showBuildHistory" (click)="showBuildHistory = true" class="build-history-btn">
-                            Show build history
-                          </span>
-                          <span *ngIf="showBuildHistory" (click)="showBuildHistory = false" class="build-history-btn hide">
-                            Hide build history
-                          </span>
-                        </div>
-                        <div *ngIf="showBuildHistory" class="mtop-20">
-                          <div class="columns list-item list-item-mini"
-                            *ngFor="let run of job.runs; let i = index;"
-                            [ngClass]="{ 'is-queued': run.status === 'queued', 'is-success': run.status === 'success', 'is-running': run.status === 'running', 'is-errored': run.status === 'failed' || !run.status }"
-                            >
-                            <div class="column is-4">
-                              <span>{{ run.start_time | date:'dd.MM.yyyy hh:mm:ss' }}</span>
-                            </div>
-                            <div class="column is-4">
-                              <span *ngIf="run.end_time">{{ run.end_time | date:'dd.MM.yyyy hh:mm:ss' }}</span>
-                            </div>
-                            <div class="column is-4">
-                              <span *ngIf="run?.status">{{ run.status.charAt(0).toUpperCase() + run.status.slice(1) }}</span>
-                              <span *ngIf="!run.status">Cancelled</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
               </div>
             </div>
