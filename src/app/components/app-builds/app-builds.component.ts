@@ -50,6 +50,10 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       })
       .subscribe(e => {
         const build = this.builds.findIndex(build => build.id === e.build_id);
+        if (build === -1) {
+          return;
+        }
+
         const index = this.builds[build].jobs.findIndex(job => job.id === e.job_id);
         if (index !== -1) {
           switch (e.data) {
@@ -87,8 +91,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     const currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
 
     this.builds = this.builds.map(build => {
-      console.log(build);
-
       build.jobs = build.jobs.map(job => {
         if (!job.end_time || job.status === 'running') {
           job.time = format(currentTime - job.start_time, 'mm:ss');
