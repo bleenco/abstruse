@@ -18,7 +18,7 @@ export class AppBuildDetailsComponent implements OnInit {
   previousRuntime: number;
   processingBuild: boolean;
   approximatelyRemainingTime: string;
-  tag: string;
+  tag: string = null;
 
   constructor(
     private socketService: SocketService,

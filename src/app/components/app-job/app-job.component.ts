@@ -30,7 +30,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   sshd: string;
   vnc: string;
   expectedProgress: number;
-  tag: string;
+  tag: string = null;
 
   constructor(
     private socketService: SocketService,

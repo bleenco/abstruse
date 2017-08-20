@@ -10,7 +10,7 @@ export class AppBuildItemComponent {
   @HostBinding('class') classes = 'column is-12';
 
   processingRequest: boolean;
-  tag: string;
+  tag: string = null;
 
   constructor(private socketService: SocketService) { }
 
