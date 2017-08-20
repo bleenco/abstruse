@@ -45,10 +45,7 @@
     "test automation",
     "ci integration"
   ],
-  "authors": [
-    "Jan Kuri <jan@bleenco.com>",
-    "Izak Lipnik <izak.lipnik@gmail.com>"
-  ],
+  "author": "Bleenco OSS Team <oss@bleenco.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/bleenco/abstruse/issues"
