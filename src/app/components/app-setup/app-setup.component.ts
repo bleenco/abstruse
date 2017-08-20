@@ -97,7 +97,7 @@ export class AppSetupComponent implements OnInit {
       this.loading = false;
       if (!exists) {
         this.step = 'docker';
-        this.socketService.onMessage().subscribe(event => {
+        this.socketService.outputEvents.subscribe(event => {
           if (event.type === 'terminalOutput') {
             if (event.data.type === 'exit') {
               if (event.data.data === 0) {
