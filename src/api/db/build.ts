@@ -64,7 +64,12 @@ export function getBuild(id: number): Promise<any> {
           return run;
         });
 
-        build.repository.access_token = build.repository.access_token.token || null;
+        if (build.repository.access_token && build.repository.access_token) {
+          build.repository.access_token = build.repository.access_token.token;
+        } else {
+          build.repository.access_token = null;
+        }
+
         return build;
       })
       .then(build => {
