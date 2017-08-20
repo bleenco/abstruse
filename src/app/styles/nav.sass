@@ -10,6 +10,9 @@
     font-size: 15px
     margin-right: 10px
 
+    &.user-item
+      margin-right: 0
+
     img.nav-item-icon
       width: 20px
       height: 20px
@@ -38,9 +41,6 @@
     &:hover, &.is-active
       color: $white !important
 
-      .nav-avatar
-        border-color: $grey-light
-
       .nav-item-arrow
         path
           fill: $grey-light
@@ -49,8 +49,8 @@
     position: absolute
     z-index: 100
     width: 180px
-    top: 90px
-    right: -10px
+    top: 75px
+    right: -12px
     border-radius: 5px
     padding-top: 12px
     background: $border

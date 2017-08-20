@@ -28,14 +28,18 @@
 
   .tokens
     width: 100%
-    margin: 10px 0 20px 0
+    margin: 5px 0 20px 0
     display: inline-block
+    padding: 20px
+    background: $background
+    border: 1px solid $divider
+    border-radius: 4px
 
     .token-item
       display: block
       padding: 10px 5px
-      background: $red-secondary
-      border: 1px solid $white
+      background: linear-gradient(to bottom, $background, $background-secondary)
+      border: 1px solid $divider
       border-radius: 10px
 
       .column
