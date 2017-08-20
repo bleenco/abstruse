@@ -453,7 +453,7 @@ export function stopBuild(buildId: number): Promise<any> {
         const abstruseUrl = `${config.url}/build/${buildId}`;
         return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
       }
-    }).catch(err => console.error(err));
+    }).catch(err => logger.error(err));
 }
 
 export function restartJob(jobId: number): Promise<void> {
@@ -490,7 +490,7 @@ export function restartJob(jobId: number): Promise<void> {
       } else {
         return Promise.resolve();
       }
-    }).catch(err => console.error(err));
+    }).catch(err => logger.error(err));
 }
 
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
@@ -568,7 +568,7 @@ export function queueSetupDockerImage(name: string): Observable<any> {
           });
       }
     }, err => {
-      console.error(err);
+      logger.error(err);
     }, () => {
       observer.complete();
     });
