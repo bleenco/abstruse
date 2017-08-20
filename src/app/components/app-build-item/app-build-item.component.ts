@@ -5,7 +5,7 @@ import { SocketService } from '../../services/socket.service';
   selector: 'app-build-item',
   templateUrl: 'app-build-item.component.html',
 })
-export class AppBuildItemComponent {
+export class AppBuildItemComponent implements OnInit {
   @Input() build: any;
   @HostBinding('class') classes = 'column is-12';
 
@@ -15,7 +15,7 @@ export class AppBuildItemComponent {
   constructor(private socketService: SocketService) { }
 
   ngOnInit() {
-    if (this.build.data.ref.startsWith('refs/tags/')) {
+    if (this.build.data.ref && this.build.data.ref.startsWith('refs/tags/')) {
       this.tag = this.build.data.ref.replace('refs/tags/', '');
     }
 

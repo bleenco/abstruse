@@ -30,17 +30,17 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
 
-          <div class="column is-12" *ngIf="!builds || !builds.length">
+          <div class="column is-12" *ngIf="!builds?.length">
             <div class="notification is-info">
               No builds has been runned yet.
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="builds && builds.length">
+          <div class="column is-12" *ngIf="builds?.length">
             <div class="columns list-item" *ngFor="let build of builds; let i = index;" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }" (click)="gotoBuild(build.id)">
               <app-build-item [build]="build"></app-build-item>
             </div>
-            <div layout-align="center" *ngIf="builds.length" align="center" class="more-button-container">
+            <div layout-align="center" *ngIf="builds?.length" align="center" class="more-button-container">
               <button class="button" name="btn-loadmore" (click)="showPreviousBuilds($event)">Show Previous Builds</button>
             </div>
           </div>
