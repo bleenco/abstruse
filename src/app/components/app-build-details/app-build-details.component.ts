@@ -21,6 +21,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   processingBuild: boolean;
   approximatelyRemainingTime: string;
   tag: string = null;
+  updateInterval: any;
 
   constructor(
     private socketService: SocketService,
@@ -54,9 +55,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         }
 
         this.status = this.getBuildStatus();
-
-        this.updateJobTimes();
-        setInterval(() => this.updateJobTimes(), 1000);
+        this.startUpdating();
 
         this.socketService.outputEvents
           .filter(event => event.type === 'process')
@@ -93,6 +92,22 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
     this.titleService.setTitle('Abstruse CI');
+    this.stopUpdating();
+  }
+
+  startUpdating(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+
+    this.updateJobTimes();
+    this.updateInterval = setInterval(() => this.updateJobTimes(), 1000);
+  }
+
+  stopUpdating(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   }
 
   updateJobTimes(): void {
