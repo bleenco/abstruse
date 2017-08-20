@@ -16,8 +16,8 @@ export class AccessToken extends Bookshelf.Model<any> {
 export class Repository extends Bookshelf.Model<any> {
   get tableName() { return 'repositories'; }
   get hasTimestamps() { return true; }
-  builds() { return this.hasMany(Build, 'repositories_id'); }
   access_token() { return this.belongsTo(AccessToken, 'access_tokens_id'); }
+  builds() { return this.hasMany(Build, 'repositories_id'); }
 }
 
 export class Build extends Bookshelf.Model<any> {

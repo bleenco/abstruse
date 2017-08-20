@@ -42,12 +42,14 @@ export function getRepository(id: number): Promise<any> {
 
 export function getRepositoryOnly(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository({ id: id }).fetch({ withRelated: ['access_token.user'] }).then(repo => {
+    new Repository({ id: id }).fetch({ withRelated: ['access_token'] }).then(repo => {
       if (!repo) {
         reject(repo);
       } else {
         repo = repo.toJSON();
-        repo.access_token = repo.access_token.token || null;
+
+        repo.access_token = repo.access_token && repo.access_token.token ?
+          repo.access_token.token : null;
 
         resolve(repo);
       }
