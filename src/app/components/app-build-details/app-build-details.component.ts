@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-build-details',
@@ -22,6 +23,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   approximatelyRemainingTime: string;
   tag: string = null;
   updateInterval: any;
+  subStatus: Subscription;
+  sub: Subscription;
 
   constructor(
     private socketService: SocketService,
@@ -57,7 +60,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.status = this.getBuildStatus();
         this.startUpdating();
 
-        this.socketService.outputEvents
+        this.subStatus = this.socketService.outputEvents
           .filter(event => event.type === 'process')
           .subscribe(event => {
             let index = this.build.jobs.findIndex(job => job.id === event.job_id);
@@ -76,11 +79,12 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
                 this.build.jobs[index].status = 'queued';
               }
 
+              this.build.jobs[index].processing = false;
               this.status = this.getBuildStatus();
             }
           });
 
-        this.socketService.outputEvents
+        this.sub = this.socketService.outputEvents
           .filter(event => event.type === 'buildRestarted' || event.type === 'buildStopped')
           .subscribe(event => {
             this.processingBuild = false;
@@ -90,6 +94,14 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.subStatus) {
+      this.subStatus.unsubscribe();
+    }
+
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
     this.titleService.setTitle('Abstruse CI');
     this.stopUpdating();
@@ -157,9 +169,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       favicon = 'images/favicon.png';
     }
 
+    const name = this.build.repository.full_name;
     this.document.getElementById('favicon').setAttribute('href', favicon);
-    const titleStatus = status.charAt(0).toUpperCase() + status.slice(1);
-    this.titleService.setTitle(`Abstruse CI - Build ${titleStatus}`);
+    this.titleService.setTitle(`${name} - ${status}`);
 
     return status;
   }
@@ -168,6 +180,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
+    const index = this.build.jobs.findIndex(job => job.id === jobId);
+    this.build.jobs[index].processing = true;
     this.socketService.emit({ type: 'restartJob', data: { jobId: jobId } });
   }
 
@@ -175,6 +189,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
+    const index = this.build.jobs.findIndex(job => job.id === jobId);
+    this.build.jobs[index].processing = true;
     this.socketService.emit({ type: 'stopJob', data: { jobId: jobId } });
   }
 

@@ -13,6 +13,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   loading: boolean;
   fetching: boolean;
   hideMoreButton: boolean;
+  subAdded: Subscription;
   sub: Subscription;
   builds: any[];
   limit: number;
@@ -33,7 +34,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fetch();
 
-    this.sub = this.socketService.outputEvents
+    this.subAdded = this.socketService.outputEvents
       .filter(x => x.type !== 'data')
       .subscribe(event => {
         if (!this.builds || !event.data) {
@@ -45,7 +46,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.socketService.outputEvents
+    this.sub = this.socketService.outputEvents
       .filter(x => {
         x = x.data ? x.data.toString() : '';
         return x.startsWith('job');
@@ -85,7 +86,14 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    if (this.subAdded) {
+      this.subAdded.unsubscribe();
+    }
+
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
     this.stopUpdating();
   }
 

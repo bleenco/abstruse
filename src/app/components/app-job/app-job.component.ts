@@ -117,8 +117,14 @@ export class AppJobComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.termSub.unsubscribe();
-    this.sub.unsubscribe();
+    if (this.termSub) {
+      this.termSub.unsubscribe();
+    }
+
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
     this.titleService.setTitle('Abstruse CI');
   }
@@ -145,8 +151,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
       default: favicon = 'images/favicon.png'; break;
     }
 
-    const status = this.jobRun.status.charAt(0).toUpperCase() + this.jobRun.status.slice(1);
-    this.titleService.setTitle(`Abstruse CI - Job ${status}`);
+    const name = this.job.build.repository.full_name;
+    const status = this.jobRun.status;
+    this.titleService.setTitle(`${name} - ${status}`);
     this.document.getElementById('favicon').setAttribute('href', favicon);
   }
 
