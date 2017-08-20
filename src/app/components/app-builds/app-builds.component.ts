@@ -44,7 +44,10 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       });
 
     this.socketService.outputEvents
-      .filter(x => x.data.toString().startsWith('job'))
+      .filter(x => {
+        x = x.data.toString() || '';
+        return x.startsWith('job');
+      })
       .subscribe(e => {
         const build = this.builds.findIndex(build => build.id === e.build_id);
         const index = this.builds[build].jobs.findIndex(job => job.id === e.job_id);

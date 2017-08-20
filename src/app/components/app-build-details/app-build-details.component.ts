@@ -1,4 +1,6 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, Inject, OnDestroy } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
@@ -8,7 +10,7 @@ import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
   selector: 'app-build-details',
   templateUrl: 'app-build-details.component.html'
 })
-export class AppBuildDetailsComponent implements OnInit {
+export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   loading: boolean;
   id: string;
   build: any;
@@ -25,7 +27,9 @@ export class AppBuildDetailsComponent implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
-    private router: Router
+    private router: Router,
+    @Inject(DOCUMENT) private document: any,
+    private titleService: Title
   ) {
     this.loading = true;
     this.status = 'queued';
@@ -86,6 +90,11 @@ export class AppBuildDetailsComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    this.titleService.setTitle('Abstruse CI');
+  }
+
   updateJobTimes(): void {
     let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
     this.build.jobs = this.build.jobs.map(job => {
@@ -116,18 +125,26 @@ export class AppBuildDetailsComponent implements OnInit {
 
   getBuildStatus(): string {
     let status = 'queued';
+    let favicon = 'images/favicon-queued.png';
 
     if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
       status = 'failed';
+      favicon = 'images/favicon-error.png';
     }
 
     if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
       status = 'running';
+      favicon = 'images/favicon-running.png';
     }
 
     if (this.build.jobs.length === this.build.jobs.filter(job => job.status === 'success').length) {
       status = 'success';
+      favicon = 'images/favicon.png';
     }
+
+    this.document.getElementById('favicon').setAttribute('href', favicon);
+    const titleStatus = status.charAt(0).toUpperCase() + status.slice(1);
+    this.titleService.setTitle(`Abstruse CI - Build ${titleStatus}`);
 
     return status;
   }
