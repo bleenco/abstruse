@@ -46,7 +46,10 @@ export function getRepositoryOnly(id: number): Promise<any> {
       if (!repo) {
         reject(repo);
       } else {
-        resolve(repo.toJSON());
+        repo = repo.toJSON();
+        repo.access_token = repo.access_token.token || null;
+
+        resolve(repo);
       }
     }).catch(err => reject(err));
   });
