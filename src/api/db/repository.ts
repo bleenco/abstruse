@@ -11,14 +11,30 @@ export function getRepository(id: number): Promise<any> {
             }
           },
           'builds.repository',
-          'builds.jobs'
+          'builds.jobs.runs',
+          'access_token.user'
         ]
       } as any)
       .then(repo => {
         if (!repo) {
           reject(repo);
         } else {
-          resolve(repo.toJSON());
+          repo = repo.toJSON();
+          repo.builds = repo.builds.map(build => {
+            build.jobs = build.jobs.map(job => {
+              if (job.runs.length > 0) {
+                job.end_time = job.runs[job.runs.length - 1].end_time;
+                job.start_time = job.runs[job.runs.length - 1].start_time;
+                job.status = job.runs[job.runs.length - 1].status;
+              }
+
+              return job;
+            });
+
+            return build;
+          });
+
+          resolve(repo);
         }
       }).catch(err => reject(err));
   });
@@ -26,7 +42,7 @@ export function getRepository(id: number): Promise<any> {
 
 export function getRepositoryOnly(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository({ id: id }).fetch().then(repo => {
+    new Repository({ id: id }).fetch({ withRelated: ['access_token.user'] }).then(repo => {
       if (!repo) {
         reject(repo);
       } else {
@@ -51,9 +67,13 @@ export function getRepositoryBadge(id: number): Promise<string> {
           resolve('unknown');
         } else {
           repo = repo.toJSON();
-          let status = 'queued';
+          let status = 'unknown';
 
-          if (repo.builds[0] &&  repo.builds[0].runs[0]) {
+          if (repo.builds[0] && repo.builds[0].runs[0]) {
+            if (repo.builds[0].runs[0].job_runs.findIndex(run => run.status === 'queued') !== -1) {
+              status = 'queued';
+            }
+
             if (repo.builds[0].runs[0].job_runs.findIndex(run => run.status === 'failed') !== -1) {
               status = 'failing';
             }
@@ -107,8 +127,8 @@ export function getRepositories(userId: string, keyword: string): Promise<any[]>
 
 export function getRepositoryId(owner: string, repository: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository().query(q => q.where('full_name', `${owner}/${repository}`))
-    .fetch().then(repo => !repo ? reject() : resolve(repo.toJSON().id));
+    new Repository().query(q => q.where('full_name', `${owner}/${repository}`)).fetch()
+      .then(repo => !repo ? reject() : resolve(repo.toJSON().id));
   });
 }
 
@@ -121,6 +141,13 @@ export function addRepository(data: any): Promise<any> {
         resolve(result.toJSON());
       }
     }).catch(err => reject(err));
+  });
+}
+
+export function saveRepositorySettings(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Repository({ id: data.id }).save(data, { method: 'update', require: false })
+      .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()));
   });
 }
 

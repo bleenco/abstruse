@@ -4,12 +4,20 @@ import { Bookshelf } from './config';
 export class User extends Bookshelf.Model<any> {
   get tableName() { return 'users'; }
   get hasTimestamps() { return true; }
+  access_tokens() { return this.hasMany(AccessToken, 'users_id'); }
+}
+
+export class AccessToken extends Bookshelf.Model<any> {
+  get tableName() { return 'access_tokens'; }
+  get hasTimestamps() { return true; }
+  user() { return this.belongsTo(User, 'users_id'); }
 }
 
 export class Repository extends Bookshelf.Model<any> {
   get tableName() { return 'repositories'; }
   get hasTimestamps() { return true; }
   builds() { return this.hasMany(Build, 'repositories_id'); }
+  access_token() { return this.belongsTo(AccessToken, 'access_tokens_id'); }
 }
 
 export class Build extends Bookshelf.Model<any> {

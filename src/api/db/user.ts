@@ -3,13 +3,20 @@ import { generatePassword, comparePassword, generateJwt } from '../security';
 
 export function getUser(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new User({ id: id }).fetch().then(user => {
-      if (!user) {
-        reject(user);
-      } else {
-        resolve(user.toJSON());
-      }
-    });
+    new User({ id: id }).fetch({ withRelated: ['access_tokens'] })
+      .then(user => {
+        if (!user) {
+          reject(user);
+        } else {
+          let result = user.toJSON();
+          result.access_tokens = result.access_tokens.map(token => {
+            delete token.token;
+            return token;
+          });
+
+          resolve(result);
+        }
+      });
   });
 }
 
