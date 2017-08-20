@@ -94,6 +94,34 @@ export function getBuild(id: number): Promise<any> {
   });
 }
 
+export function getLastBuild(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build().query(qb => {
+      qb.orderBy('id', 'desc');
+      qb.limit(1);
+    })
+    .fetch({ withRelated: ['repository', 'jobs.runs'] })
+    .then(build => {
+      if (!build) {
+        reject(build);
+      }
+
+      build = build.toJSON();
+      build.jobs = build.jobs.map(job => {
+        if (job.runs.length > 0) {
+          job.end_time = job.runs[job.runs.length - 1].end_time;
+          job.start_time = job.runs[job.runs.length - 1].start_time;
+          job.status = job.runs[job.runs.length - 1].status;
+        }
+
+        return job;
+      });
+
+      resolve(build);
+    });
+  });
+}
+
 export function getLastRunId(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build({ id: buildId }).fetch({ withRelated: ['runs'] })

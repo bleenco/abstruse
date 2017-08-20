@@ -61,6 +61,12 @@
             <div class="columns list-item" *ngFor="let build of repo.builds; let i = index;" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-success': build.status === 'success', 'is-running': build.status === 'running', 'is-errored': build.status === 'failed' }" (click)="gotoBuild(build.id)">
               <app-build-item [build]="build"></app-build-item>
             </div>
+            <div layout-align="center" *ngIf="repo?.builds?.length" align="center" class="more-button-container">
+              <button type="button" class="button dark" name="btn-loadmore" (click)="fetchBuilds($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
+                <img src="images/icons/more.svg">
+                Load more builds
+              </button>
+            </div>
           </div>
 
           <div class="column is-12" *ngIf="tab === 'settings'">

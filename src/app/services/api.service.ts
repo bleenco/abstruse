@@ -24,6 +24,10 @@ export class ApiService {
     return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
   }
 
+  getLastBuild(): Observable<any> {
+    return this.get(`${this.url}/builds/last`, null, true);
+  }
+
   getBuild(id: string): Observable<any> {
     return this.get(`${this.url}/builds/${id}`, null, true);
   }
@@ -41,6 +45,10 @@ export class ApiService {
 
   getRepository(id: string): Observable<any> {
     return this.get(`${this.url}/repositories/${id}`, null, true);
+  }
+
+  getRepositoryBuilds(id: string, limit: number, offset: number): Observable<any> {
+    return this.get(`${this.url}/repositories/${id}/builds/${limit}/${offset}`, null, true);
   }
 
   addRepository(data: any): Observable<any> {
@@ -136,7 +144,7 @@ export class ApiService {
     }
   }
 
-  private handleError (error: Response | any) {
+  private handleError(error: Response | any) {
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';

@@ -42,6 +42,7 @@ export interface JobProcess {
 export interface JobProcessEvent {
   build_id?: number;
   job_id?: number;
+  repository_id?: number;
   type?: string;
   data?: string;
 }
@@ -165,6 +166,14 @@ export function startBuild(data: any): Promise<any> {
                         }).catch(err => logger.error(err));
                     });
                   }, Promise.resolve());
+            })
+            .then(() => {
+              jobEvents.next({
+                type: 'process',
+                build_id: build.id,
+                repository_id: data.repositories_id,
+                data: 'buildAdded'
+              });
             }).catch(err => logger.error(err));
         });
       });

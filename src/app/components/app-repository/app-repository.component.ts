@@ -18,6 +18,7 @@ export interface IRepoForm {
 })
 export class AppRepositoryComponent implements OnInit, OnDestroy {
   loading: boolean;
+  fetching: boolean;
   sub: Subscription;
   tab: 'builds' | 'settings';
   id: string;
@@ -27,6 +28,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   tokens: any[];
   saving: boolean;
   form: IRepoForm;
+  limit: number;
+  offset: number;
+  updateInterval: any;
+  hideMoreButton: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,6 +41,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     private config: ConfigService
   ) {
     this.loading = true;
+    this.fetching = false;
+    this.limit = 5;
+    this.offset = 0;
   }
 
   ngOnInit() {
@@ -60,8 +68,8 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'jobAdded') {
-          this.fetch();
+        if (event.data === 'buildAdded' && event.repository_id && event.repository_id === this.id) {
+          this.fetchLastBuild();
         }
 
         const index = this.repo.builds.findIndex(build => build.id === event.build_id);
@@ -99,6 +107,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.sub.unsubscribe();
+    this.stopInterval();
   }
 
   fetch(): void {
@@ -106,8 +115,40 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       this.repo = event;
       this.form = { id: parseInt(this.id, 10), access_tokens_id: event.access_tokens_id };
       this.loading = false;
-      this.updateJobs();
-      setInterval(() => this.updateJobs(), 1000);
+      this.fetchBuilds();
+    });
+  }
+
+  fetchBuilds(e?: MouseEvent): void {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    this.api.getRepositoryBuilds(this.id, this.limit, this.offset).subscribe(builds => {
+      if (!this.repo.builds) {
+        this.repo.builds = [];
+      }
+
+      this.repo.builds = this.repo.builds.concat(builds);
+      this.fetching = false;
+      if (builds.length === this.limit) {
+        this.offset += 5;
+      } else {
+        this.hideMoreButton = true;
+      }
+
+      this.startInterval();
+    });
+  }
+
+  fetchLastBuild(): void {
+    this.api.getLastBuild().subscribe(build => {
+      if (!this.repo.builds) {
+        this.repo.builds = [];
+      }
+
+      this.repo.builds.unshift(build);
     });
   }
 
@@ -123,6 +164,21 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.api.getAllTokens().subscribe(tokens => {
       this.tokens = tokens;
     });
+  }
+
+  startInterval(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+
+    this.updateJobs();
+    this.updateInterval = setInterval(() => this.updateJobs(), 1000);
+  }
+
+  stopInterval(): void {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
   }
 
   updateJobs(): void {

@@ -11,10 +11,12 @@ import { format, distanceInWordsToNow } from 'date-fns';
 })
 export class AppBuildsComponent implements OnInit, OnDestroy {
   loading: boolean;
+  fetching: boolean;
+  hideMoreButton: boolean;
   sub: Subscription;
   builds: any[];
-  show = 5;
-  offset = 0;
+  limit: number;
+  offset: number;
   updateInterval: any;
 
   constructor(
@@ -24,6 +26,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   ) {
     this.builds = [];
     this.loading = true;
+    this.limit = 5;
+    this.offset = 0;
   }
 
   ngOnInit() {
@@ -36,10 +40,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'jobAdded') {
-          this.show = 5;
-          this.offset = 0;
-          this.fetch();
+        if (event.data === 'buildAdded') {
+          this.fetchLastBuild();
         }
       });
 
@@ -135,7 +137,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     }
 
     this.update();
-    this.updateInterval = setInterval(() => this.update, 1000);
+    this.updateInterval = setInterval(() => this.update(), 1000);
   }
 
   stopUpdating(): void {
@@ -144,33 +146,39 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     }
   }
 
-  fetch(): void {
-    this.loading = true;
-    this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
-      this.builds = builds;
+  fetch(e?: MouseEvent): void {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    this.fetching = true;
+    this.apiService.getBuilds(this.limit, this.offset).subscribe(builds => {
+      this.builds = this.builds.concat(builds);
       this.loading = false;
-      this.offset = this.show;
+      this.fetching = false;
+      if (builds.length === this.limit) {
+        this.offset += 5;
+      } else {
+        this.hideMoreButton = true;
+      }
+
       this.startUpdating();
     });
   }
 
-  fetchAndConcat(): void {
-    this.apiService.getBuilds(this.show, this.offset).subscribe(builds => {
-      this.builds = this.builds.concat(builds);
-      this.loading = false;
+  fetchLastBuild(): void {
+    this.apiService.getLastBuild().subscribe(build => {
+      if (!this.builds) {
+        this.builds = [];
+      }
+
+      this.builds.unshift(build);
       this.startUpdating();
     });
   }
 
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
-  }
-
-  showPreviousBuilds(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.fetchAndConcat();
-    this.show = this.show * 2;
-    this.offset = this.show;
   }
 }

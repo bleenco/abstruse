@@ -22,9 +22,10 @@ import {
   getRepository,
   getRepositoryBadge,
   getRepositoryId,
+  getRepositoryBuilds,
   saveRepositorySettings
 } from './db/repository';
-import { getBuilds, getBuild } from './db/build';
+import { getBuilds, getBuild, getLastBuild } from './db/build';
 import { getJob } from './db/job';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
 import { imageExists } from './docker';
@@ -53,6 +54,12 @@ export function buildRoutes(): express.Router {
     getBuilds(req.params.limit, req.params.offset).then(builds => {
       return res.status(200).json({ data: builds });
     });
+  });
+
+  router.get('/last', (req: express.Request, res: express.Response) => {
+    getLastBuild()
+      .then(build => res.status(200).json({ data: build }))
+      .catch(err => res.status(200).json({ err: err }));
   });
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
@@ -180,6 +187,15 @@ export function repositoryRoutes(): express.Router {
         getRepository(req.params.id).then(repo => {
           return res.status(200).json({ data: repo });
         }).catch(err => res.status(200).json({ status: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.get('/:id/builds/:limit/:offset', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req)
+      .then(() => {
+        getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset)
+          .then(builds => res.status(200).json({ data: builds }))
+          .catch(err => res.status(200).json({ status: false }));
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 

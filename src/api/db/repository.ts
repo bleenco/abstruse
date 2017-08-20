@@ -1,20 +1,9 @@
-import { Repository } from './model';
+import { Repository, Build } from './model';
 import { getHttpJsonResponse } from '../utils';
 
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository({ id: id })
-      .fetch({
-        withRelated: [
-          { 'builds': (query) => {
-              query.orderBy('id', 'desc');
-            }
-          },
-          'builds.repository',
-          'builds.jobs.runs',
-          'access_token.user'
-        ]
-      } as any)
+    new Repository({ id: id }).fetch({ withRelated: ['access_token'] })
       .then(repo => {
         if (!repo) {
           reject(repo);
@@ -37,6 +26,40 @@ export function getRepository(id: number): Promise<any> {
           resolve(repo);
         }
       }).catch(err => reject(err));
+  });
+}
+
+export function getRepositoryBuilds(id: number, limit: number, offset: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build().query(qb => {
+      qb.where('repositories_id', id);
+      qb.orderBy('id', 'desc');
+      qb.limit(limit);
+      qb.offset(offset);
+    })
+    .fetchAll({ withRelated: ['jobs.runs'] })
+    .then(builds => {
+      if (!builds) {
+        reject();
+      }
+
+      builds = builds.toJSON();
+      builds = builds.map(build => {
+        build.jobs = build.jobs.map(job => {
+          if (job.runs.length > 0) {
+            job.end_time = job.runs[job.runs.length - 1].end_time;
+            job.start_time = job.runs[job.runs.length - 1].start_time;
+            job.status = job.runs[job.runs.length - 1].status;
+          }
+
+          return job;
+        });
+
+        return build;
+      });
+
+      resolve(builds);
+    }).catch(err => reject(err));
   });
 }
 

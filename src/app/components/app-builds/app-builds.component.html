@@ -41,7 +41,10 @@
               <app-build-item [build]="build"></app-build-item>
             </div>
             <div layout-align="center" *ngIf="builds?.length" align="center" class="more-button-container">
-              <button class="button" name="btn-loadmore" (click)="showPreviousBuilds($event)">Show Previous Builds</button>
+              <button type="button" class="button dark" name="btn-loadmore" (click)="fetch($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
+                <img src="images/icons/more.svg">
+                Load more builds
+              </button>
             </div>
           </div>
 

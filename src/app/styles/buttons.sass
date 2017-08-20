@@ -109,6 +109,9 @@
     background: linear-gradient(to bottom, #F7981C, #F76B1C)
     border-color: #F7981C
 
+  &.dark
+    background: $background
+
   &:hover
     color: $white
     background: linear-gradient(to bottom, #415061, #303D4C)
@@ -128,6 +131,10 @@
     &.yellow
       background: linear-gradient(to bottom, #F09219, #E96012)
       border-color: #F09219
+
+    &.dark
+      background: $background
+      box-shadow: 1px 2px 5px rgba($background, .7)
 
   &.is-active
     background: linear-gradient(to bottom, #354353, #232E3B)
