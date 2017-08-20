@@ -1,5 +1,6 @@
 import { Injectable, Provider } from '@angular/core';
 import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angular/http';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { IAccessToken } from '../components/app-settings';
 
@@ -9,7 +10,7 @@ export class ApiService {
   loc: Location;
   port: string;
 
-  constructor(private http: Http) {
+  constructor(private http: Http, private router: Router) {
     this.loc = window.location;
     this.port = this.loc.port === '8000' ? ':6500' : `:${this.loc.port}`; // dev mode
     this.url = `${this.loc.protocol}//${this.loc.hostname}${this.port}/api`;
@@ -20,34 +21,34 @@ export class ApiService {
   }
 
   getBuilds(limit: number, offset: number): Observable<any> {
-    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`);
+    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
   }
 
   getBuild(id: string): Observable<any> {
-    return this.get(`${this.url}/builds/${id}`);
+    return this.get(`${this.url}/builds/${id}`, null, true);
   }
 
   getJob(id: number): Observable<any> {
-    return this.get(`${this.url}/jobs/${id}`);
+    return this.get(`${this.url}/jobs/${id}`, null, true);
   }
 
   getRepositories(userId: string, keyword: string): Observable<any> {
     const params = new URLSearchParams();
     params.append('userId', userId);
     params.append('keyword', keyword);
-    return this.get(`${this.url}/repositories`, params);
+    return this.get(`${this.url}/repositories`, params, true);
   }
 
   getRepository(id: string): Observable<any> {
-    return this.get(`${this.url}/repositories/${id}`);
+    return this.get(`${this.url}/repositories/${id}`, null, true);
   }
 
   addRepository(data: any): Observable<any> {
-    return this.post(`${this.url}/repositories/add`, data);
+    return this.post(`${this.url}/repositories/add`, data, true);
   }
 
   saveRepositorySettings(data: any): Observable<any> {
-    return this.post(`${this.url}/repositories/save`, data);
+    return this.post(`${this.url}/repositories/save`, data, true);
   }
 
   isAppReady(): Observable<any> {
@@ -71,45 +72,53 @@ export class ApiService {
   }
 
   getAllTokens(): Observable<any> {
-    return this.get(`${this.url}/tokens`);
+    return this.get(`${this.url}/tokens`, null, true);
   }
 
   addToken(data: IAccessToken): Observable<any> {
-    return this.post(`${this.url}/user/add-token`, data);
+    return this.post(`${this.url}/user/add-token`, data, true);
   }
 
   getUsers(): Observable<any> {
-    return this.get(`${this.url}/user`);
+    return this.get(`${this.url}/user`, null, true);
   }
 
   getUser(id: number): Observable<any> {
-    return this.get(`${this.url}/user/${id}`);
+    return this.get(`${this.url}/user/${id}`, null, true);
   }
 
   updateUser(data: any): Observable<any> {
-    return this.post(`${this.url}/user/save`, data);
+    return this.post(`${this.url}/user/save`, data, true);
   }
 
   updatePassword(data: any): Observable<any> {
-    return this.post(`${this.url}/user/update-password`, data);
+    return this.post(`${this.url}/user/update-password`, data, true);
   }
 
   createUser(data: any): Observable<any> {
-    return this.post(`${this.url}/user/create`, data);
+    return this.post(`${this.url}/user/create`, data, true);
   }
 
   login(data: any): Observable<any> {
     return this.post(`${this.url}/user/login`, data);
   }
 
-  private get(url: string, searchParams: URLSearchParams = null): Observable<any> {
-    return this.http.get(url, { search: searchParams })
+  private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
+    let headers = new Headers();
+    if (auth) {
+      headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
+    }
+
+    return this.http.get(url, { search: searchParams, headers: headers })
       .map(this.extractData)
       .catch(this.handleError);
   }
 
-  private post(url: string, data: any): Observable<any> {
+  private post(url: string, data: any, auth = false): Observable<any> {
     let headers = new Headers({ 'Content-Type': 'application/json' });
+    if (auth) {
+      headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
+    }
     let options = new RequestOptions({ headers: headers });
 
     return this.http.post(url, data, options)
@@ -118,8 +127,13 @@ export class ApiService {
   }
 
   private extractData(res: Response) {
-    let body = res.json();
-    return body && typeof body.data !== 'undefined' ? body.data : {};
+    if (res.status !== 200) {
+      localStorage.removeItem('abs-token');
+      this.router.navigate(['/login']);
+    } else {
+      let body = res.json();
+      return body && typeof body.data !== 'undefined' ? body.data : {};
+    }
   }
 
   private handleError (error: Response | any) {

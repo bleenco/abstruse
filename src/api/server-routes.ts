@@ -28,6 +28,7 @@ import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
 import { imageExists } from './docker';
+import { checkApiRequestAuth } from './security';
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -79,11 +80,14 @@ export function userRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
-    getUsers().then(users => {
-      return res.status(200).json({ data: users });
-    }).catch(err => {
-      return res.status(200).json({ err: err });
-    });
+    checkApiRequestAuth(req)
+      .then(() => {
+        getUsers().then(users => {
+          return res.status(200).json({ data: users });
+        }).catch(err => {
+          return res.status(200).json({ err: err });
+        });
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/login', (req: express.Request, res: express.Response) => {
@@ -101,31 +105,43 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {
-    updateUser(req.body).then(() => {
-      return res.status(200).json({ data: true });
-    }).catch(err => {
-      return res.status(200).json({ data: false });
-    });
+    checkApiRequestAuth(req)
+      .then(() => {
+        updateUser(req.body).then(() => {
+          return res.status(200).json({ data: true });
+        }).catch(err => {
+          return res.status(200).json({ data: false });
+        });
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/update-password', (req: express.Request, res: express.Response) => {
-    updateUserPassword(req.body).then(() => {
-      return res.status(200).json({ data: true });
-    }).catch(err => {
-      return res.status(200).json({ data: false });
-    });
+    checkApiRequestAuth(req)
+      .then(() => {
+        updateUserPassword(req.body).then(() => {
+          return res.status(200).json({ data: true });
+        }).catch(err => {
+          return res.status(200).json({ data: false });
+        });
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
-    getUser(req.params.id)
-      .then(user => res.status(200).json({ data: user }))
-      .catch(err => res.status(400).json({ err: err }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        getUser(req.params.id)
+          .then(user => res.status(200).json({ data: user }))
+          .catch(err => res.status(400).json({ err: err }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/add-token', (req: express.Request, res: express.Response) => {
-    insertAccessToken(req.body)
-      .then(() => res.status(200).json({ data: true }))
-      .catch(() => res.status(200).json({ data: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        insertAccessToken(req.body)
+          .then(() => res.status(200).json({ data: true }))
+          .catch(() => res.status(200).json({ data: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -135,9 +151,12 @@ export function tokenRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
-    getAccessTokens()
-      .then(tokens => res.status(200).json({ data: tokens }))
-      .catch(() => res.status(200).json({ data: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        getAccessTokens()
+          .then(tokens => res.status(200).json({ data: tokens }))
+          .catch(() => res.status(200).json({ data: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -147,27 +166,39 @@ export function repositoryRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
-    getRepositories(req.query.userId, req.query.keyword).then(repos => {
-      return res.status(200).json({ data: repos });
-    }).catch(err => res.status(200).json({ status: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        getRepositories(req.query.userId, req.query.keyword).then(repos => {
+          return res.status(200).json({ data: repos });
+        }).catch(err => res.status(200).json({ status: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
-    getRepository(req.params.id).then(repo => {
-      return res.status(200).json({ data: repo });
-    }).catch(err => res.status(200).json({ status: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        getRepository(req.params.id).then(repo => {
+          return res.status(200).json({ data: repo });
+        }).catch(err => res.status(200).json({ status: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/add', (req: express.Request, res: express.Response) => {
-    addRepository(req.body).then(result => {
-      return res.status(200).json({ status: true });
-    }).catch(err => res.status(200).json({ status: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        addRepository(req.body).then(result => {
+          return res.status(200).json({ status: true });
+        }).catch(err => res.status(200).json({ status: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {
-    saveRepositorySettings(req.body)
-      .then(() => res.status(200).json({ data: true }))
-      .catch(() => res.status(200).json({ data: false }));
+    checkApiRequestAuth(req)
+      .then(() => {
+        saveRepositorySettings(req.body)
+          .then(() => res.status(200).json({ data: true }))
+          .catch(() => res.status(200).json({ data: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
