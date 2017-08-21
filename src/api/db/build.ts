@@ -35,12 +35,9 @@ export function getBuilds(limit: number, offset: number, userId?: number): Promi
 
             return job;
           });
-          build.hasPermission = false;
-          if (build.repository
-            && build.repository.permissions
-            && build.repository.permissions[0].permission) {
-              build.hasPermission = true;
-          }
+
+          build.hasPermission = build.repository.permissions &&
+            build.repository.permissions[0].permission;
 
           return build;
         });
@@ -100,12 +97,9 @@ export function getBuild(id: number, userId?: number): Promise<any> {
         } else {
           build.repository.access_token = null;
         }
-        build.hasPermission = false;
-        if (build.repository
-          && build.repository.permissions
-          && build.repository.permissions[0].permission) {
-            build.hasPermission = true;
-        }
+
+        build.hasPermission = build.repository.permissions &&
+          build.repository.permissions[0].permission;
 
         return build;
       })
@@ -158,12 +152,9 @@ export function getLastBuild(userId?: number): Promise<any> {
 
         return job;
       });
-      build.hasPermission = false;
-      if (build.repository
-        && build.repository.permissions
-        && build.repository.permissions[0].permission) {
-          build.hasPermission = true;
-      }
+
+      build.hasPermission = build.repository.permissions &&
+        build.repository.permissions[0].permission;
 
       resolve(build);
     });
@@ -202,6 +193,7 @@ export function updateBuild(data: any): Promise<boolean> {
     delete data.repository;
     delete data.lastBuild;
     delete data.runs;
+    delete data.hasPermission;
 
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
