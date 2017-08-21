@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
@@ -32,10 +33,12 @@ export class AppJobComponent implements OnInit, OnDestroy {
   vnc: string;
   expectedProgress: number;
   tag: string = null;
+  userData: any;
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
     @Inject(DOCUMENT) private document: any,
@@ -48,6 +51,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userData = this.authService.getData();
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
         if (event.type === 'data') {
@@ -92,7 +96,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.id = params.id;
 
-      this.apiService.getJob(this.id).subscribe(job => {
+      this.apiService.getJob(this.id, this.userData.id).subscribe(job => {
         this.job = job;
 
         if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
@@ -19,10 +20,12 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   limit: number;
   offset: number;
   updateInterval: any;
+  userData: any;
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
+    private authService: AuthService,
     private router: Router
   ) {
     this.builds = [];
@@ -32,6 +35,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userData = this.authService.getData();
     this.fetch();
 
     this.subAdded = this.socketService.outputEvents
@@ -161,7 +165,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     }
 
     this.fetching = true;
-    this.apiService.getBuilds(this.limit, this.offset).subscribe(builds => {
+    this.apiService.getBuilds(this.limit, this.offset, this.userData.id).subscribe(builds => {
       this.builds = this.builds.concat(builds);
       this.loading = false;
       this.fetching = false;

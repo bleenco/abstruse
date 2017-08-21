@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
 import { Subscription } from 'rxjs/Subscription';
@@ -25,10 +26,12 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   updateInterval: any;
   subStatus: Subscription;
   sub: Subscription;
+  userData: any;
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
     private router: Router,
@@ -40,10 +43,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userData = this.authService.getData();
     this.route.params.subscribe(params => {
       this.id = params.id;
 
-      this.apiService.getBuild(this.id).subscribe(build => {
+      this.apiService.getBuild(this.id, this.userData.id).subscribe(build => {
         this.loading = false;
         this.build = build;
 

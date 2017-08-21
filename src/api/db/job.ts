@@ -1,9 +1,18 @@
 import { Job, JobRun } from './model';
 import { getBuild } from './build';
 
-export function getJob(jobId: number): Promise<any> {
+export function getJob(jobId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Job({ id: jobId }).fetch({ withRelated: ['build.repository', 'runs'] })
+    new Job()
+      .query(q => q.where('id', jobId))
+      .fetch({ withRelated: [{'build.repository.permissions': (query) => {
+        if (userId) {
+          query.where('permissions.users_id', userId)
+          .andWhere('permissions.permission', true)
+          .orWhere('private', false);
+        }
+      }},
+      'runs']})
       .then(job => {
         if (!job) {
           reject();

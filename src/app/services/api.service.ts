@@ -20,20 +20,26 @@ export class ApiService {
     return this.http.get(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
   }
 
-  getBuilds(limit: number, offset: number): Observable<any> {
-    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
+  getBuilds(limit: number, offset: number, userId?: string): Observable<any> {
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, params, true);
   }
 
   getLastBuild(): Observable<any> {
     return this.get(`${this.url}/builds/last`, null, true);
   }
 
-  getBuild(id: string): Observable<any> {
-    return this.get(`${this.url}/builds/${id}`, null, true);
+  getBuild(id: string, userId?: string): Observable<any> {
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    return this.get(`${this.url}/builds/${id}`, params, true);
   }
 
-  getJob(id: number): Observable<any> {
-    return this.get(`${this.url}/jobs/${id}`, null, true);
+  getJob(id: number, userId?: string): Observable<any> {
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    return this.get(`${this.url}/jobs/${id}`, params, true);
   }
 
   getRepositories(userId: string, keyword: string): Observable<any> {

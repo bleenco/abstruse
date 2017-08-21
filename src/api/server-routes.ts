@@ -51,7 +51,7 @@ export function buildRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/limit/:limit/offset/:offset', (req: express.Request, res: express.Response) => {
-    getBuilds(req.params.limit, req.params.offset).then(builds => {
+    getBuilds(req.params.limit, req.params.offset, req.query.userId).then(builds => {
       return res.status(200).json({ data: builds });
     });
   });
@@ -63,7 +63,7 @@ export function buildRoutes(): express.Router {
   });
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
-    getBuild(req.params.id).then(build => {
+    getBuild(req.params.id, req.query.userId).then(build => {
       return res.status(200).json({ data: build });
     });
   });
@@ -75,7 +75,7 @@ export function jobRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
-    getJob(req.params.id).then(job => {
+    getJob(req.params.id, req.query.userId).then(job => {
       return res.status(200).json({ data: job });
     });
   });
