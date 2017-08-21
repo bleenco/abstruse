@@ -1,11 +1,19 @@
 import { Build, BuildRun, Job } from './model';
 import { getLastRun } from './job';
 
-export function getBuilds(limit: number, offset: number): Promise<any> {
+export function getBuilds(limit: number, offset: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
       .query(q => q.orderBy('id', 'DESC').offset(offset).limit(limit))
-      .fetchAll({ withRelated: ['repository', 'jobs.runs'] })
+      .fetchAll({ withRelated: [{'repository.permissions': (query) => {
+            if (userId) {
+              query.where('permissions.users_id', userId)
+              .andWhere('permissions.permission', true)
+              .orWhere('private', false);
+            }
+          }
+        },
+        'jobs.runs']})
       .then(builds => {
         if (!builds) {
           reject();
@@ -31,10 +39,21 @@ export function getBuilds(limit: number, offset: number): Promise<any> {
   });
 }
 
-export function getBuild(id: number): Promise<any> {
+export function getBuild(id: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build({ id: id })
-      .fetch({ withRelated: ['repository.access_token', 'jobs.runs', 'runs.job_runs'] })
+    new Build()
+      .query(q => q.where('id', id))
+      .fetch({ withRelated: [{'repository.permissions': (query) => {
+            if (userId) {
+              query.where('permissions.users_id', userId)
+              .andWhere('permissions.permission', true)
+              .orWhere('private', false);
+            }
+          }
+        },
+        'repository.access_token',
+        'jobs.runs',
+        'runs.job_runs']})
       .then(build => {
         if (!build) {
           reject();

@@ -18,6 +18,7 @@ export class Repository extends Bookshelf.Model<any> {
   get hasTimestamps() { return true; }
   access_token() { return this.belongsTo(AccessToken, 'access_tokens_id'); }
   builds() { return this.hasMany(Build, 'repositories_id'); }
+  permissions() { return this.hasMany(Permission, 'repositories_id'); }
 }
 
 export class Build extends Bookshelf.Model<any> {
@@ -49,4 +50,9 @@ export class JobRun extends Bookshelf.Model<any> {
   get hasTimestamps() { return true; }
   job() { return this.belongsTo(Job, 'job_id'); }
   build_run() { return this.belongsTo(BuildRun, 'build_run_id'); }
+}
+
+export class Permission extends Bookshelf.Model<any> {
+  get tableName() { return 'permissions'; }
+  get hasTimestamps() { return true; }
 }

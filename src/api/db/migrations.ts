@@ -31,7 +31,7 @@ export function create(): Promise<null> {
       t.string('name');
       t.string('full_name');
       t.string('description');
-      t.boolean('private');
+      t.boolean('private').notNullable().defaultTo(false);
       t.boolean('fork');
       t.string('user_login');
       t.string('user_id');
@@ -93,9 +93,7 @@ export function create(): Promise<null> {
       t.foreign('repositories_id').references('repositories.id');
       t.integer('users_id').notNullable();
       t.foreign('users_id').references('users.id');
-      t.boolean('read').notNullable().defaultTo(true);
-      t.boolean('write').notNullable().defaultTo(true);
-      t.boolean('execute').notNullable().defaultTo(true);
+      t.boolean('permission').notNullable().defaultTo(true);
       t.timestamps();
     }))
     .then(() => resolve())

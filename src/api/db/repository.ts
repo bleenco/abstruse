@@ -1,5 +1,6 @@
 import { Repository, Build } from './model';
 import { getHttpJsonResponse } from '../utils';
+import { addRepositoryPermissionToEveryone } from './permission';
 
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -123,12 +124,18 @@ export function getRepositories(userId: string, keyword: string): Promise<any[]>
       if (keyword !== '') {
         qb.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
       }
-    }).fetchAll().then(repos => {
+    }).fetchAll({ withRelated: [{'permissions': (query) => {
+      query.where('users_id', userId).andWhere('permission', true); }}] })
+    .then(repos => {
       if (!repos) {
         reject();
       }
+      repos = repos.toJSON();
+      repos = repos.filter(r => {
+        return !r.private || (r.permissions && r.permissions.length > 0);
+      });
 
-      resolve(repos.toJSON());
+      resolve(repos);
     });
   });
 }
@@ -142,13 +149,18 @@ export function getRepositoryId(owner: string, repository: string): Promise<any>
 
 export function addRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository().save(data, { method: 'insert' }).then(result => {
-      if (!result) {
-        reject(result);
-      } else {
-        resolve(result.toJSON());
-      }
-    }).catch(err => reject(err));
+    new Repository().save(data, { method: 'insert' })
+      .then(result => {
+        if (!result) {
+          reject(result);
+        } else {
+          let repository = result.toJSON();
+          return addRepositoryPermissionToEveryone(result.id)
+            .then(() => resolve(repository))
+            .catch(err => reject(err));
+        }
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -179,24 +191,27 @@ export function pingRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-            .then(result => {
-              if (!result) {
-                reject(result);
-              } else {
-                resolve(result.toJSON());
-              }
-            })
-            .catch(err => reject(err));
-        } else {
-          repo.save(saveData, { method: 'update', require: false })
-            .then(result => {
-              if (!result) {
-                reject(result);
-              } else {
-                resolve(result.toJSON());
-              }
-            })
-            .catch(err => reject(err));
+          .then(result => {
+            if (!result) {
+              reject(result);
+            } else {
+              let repository = result.toJSON();
+              return addRepositoryPermissionToEveryone(result.id)
+                .then(() => resolve(repository))
+                .catch(err => reject(err));
+            }
+          })
+          .catch(err => reject(err));
+      } else {
+        repo.save(saveData, { method: 'update', require: false })
+          .then(result => {
+            if (!result) {
+              reject(result);
+            } else {
+              resolve(result.toJSON());
+            }
+          })
+          .catch(err => reject(err));
         }
       });
   });
