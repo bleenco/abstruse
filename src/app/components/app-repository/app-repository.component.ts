@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
@@ -32,12 +33,14 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   offset: number;
   updateInterval: any;
   hideMoreButton: boolean;
+  userData: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private socketService: SocketService,
     private api: ApiService,
+    private authService: AuthService,
     private config: ConfigService
   ) {
     this.loading = true;
@@ -47,6 +50,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userData = this.authService.getData();
     this.tab = 'builds';
     this.url = this.config.url;
 
@@ -144,7 +148,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   fetchLastBuild(): void {
-    this.api.getLastBuild().subscribe(build => {
+    this.api.getLastBuild(this.userData.id).subscribe(build => {
       if (!this.repo.builds) {
         this.repo.builds = [];
       }

@@ -4,16 +4,21 @@ import { getLastRun } from './job';
 export function getBuilds(limit: number, offset: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
-      .query(q => q.orderBy('id', 'DESC').offset(offset).limit(limit))
-      .fetchAll({ withRelated: [{'repository.permissions': (query) => {
-            if (userId) {
-              query.where('permissions.users_id', userId)
-              .andWhere('permissions.permission', true)
-              .orWhere('private', false);
-            }
-          }
-        },
-        'jobs.runs']})
+      .query(q => {
+        if (userId) {
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+          .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+          .where('permissions.users_id', userId)
+          .andWhere('permissions.permission', true)
+          .orWhere('repositories.private', false)
+          .orderBy('id', 'DESC')
+          .offset(offset)
+          .limit(limit);
+        } else {
+          q.orderBy('id', 'DESC').offset(offset).limit(limit);
+        }
+      })
+      .fetchAll({ withRelated: ['repository.permissions', 'jobs.runs' ]})
       .then(builds => {
         if (!builds) {
           reject();
@@ -30,6 +35,12 @@ export function getBuilds(limit: number, offset: number, userId?: number): Promi
 
             return job;
           });
+          build.hasPermission = false;
+          if (build.reposiotory
+            && build.repository.permissions
+            && build.repository.permissions[0].permission) {
+              build.hasPermission = true;
+          }
 
           return build;
         });
@@ -53,7 +64,8 @@ export function getBuild(id: number, userId?: number): Promise<any> {
         },
         'repository.access_token',
         'jobs.runs',
-        'runs.job_runs']})
+        'runs.job_runs']
+      })
       .then(build => {
         if (!build) {
           reject();
@@ -88,6 +100,12 @@ export function getBuild(id: number, userId?: number): Promise<any> {
         } else {
           build.repository.access_token = null;
         }
+        build.hasPermission = false;
+        if (build.reposiotory
+          && build.repository.permissions
+          && build.repository.permissions[0].permission) {
+            build.hasPermission = true;
+        }
 
         return build;
       })
@@ -113,13 +131,18 @@ export function getBuild(id: number, userId?: number): Promise<any> {
   });
 }
 
-export function getLastBuild(): Promise<any> {
+export function getLastBuild(userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build().query(qb => {
-      qb.orderBy('id', 'desc');
-      qb.limit(1);
-    })
-    .fetch({ withRelated: ['repository', 'jobs.runs'] })
+    new Build().query(q => q.orderBy('id', 'desc'))
+    .fetch({ withRelated: [{'repository.permissions': (query) => {
+          if (userId) {
+            query.where('permissions.users_id', userId)
+            .andWhere('permissions.permission', true)
+            .orWhere('private', false);
+          }
+        }
+      },
+      'jobs.runs']})
     .then(build => {
       if (!build) {
         reject(build);
@@ -135,6 +158,12 @@ export function getLastBuild(): Promise<any> {
 
         return job;
       });
+      build.hasPermission = false;
+      if (build.reposiotory
+        && build.repository.permissions
+        && build.repository.permissions[0].permission) {
+          build.hasPermission = true;
+      }
 
       resolve(build);
     });

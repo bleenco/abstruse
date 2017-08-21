@@ -17,8 +17,17 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
         if (!job) {
           reject();
         }
+        job = job.toJSON();
+        job.hasPermission = false;
+        if (job.build
+          && job.build.reposiotory
+          && job.build.repository.permissions
+          && job.build.repository.permissions[0].permission) {
+            job.hasPermission = true;
+        }
+        job.hasPermission = true;
 
-        return job.toJSON();
+        return job;
       })
       .then(job => {
         getBuild(job.builds_id)

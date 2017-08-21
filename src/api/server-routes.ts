@@ -50,22 +50,41 @@ export function webRoutes(): express.Router {
 export function buildRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/limit/:limit/offset/:offset', (req: express.Request, res: express.Response) => {
-    getBuilds(req.params.limit, req.params.offset, req.query.userId).then(builds => {
-      return res.status(200).json({ data: builds });
-    });
+  router.get('/limit/:limit/offset/:offset/:userid?',
+    (req: express.Request, res: express.Response) => {
+      if (req.params.userid) {
+        getBuilds(req.params.limit, req.params.offset, req.params.userid).then(builds => {
+          return res.status(200).json({ data: builds });
+        });
+      } else {
+        getBuilds(req.params.limit, req.params.offset).then(builds => {
+          return res.status(200).json({ data: builds });
+        });
+      }
   });
 
-  router.get('/last', (req: express.Request, res: express.Response) => {
-    getLastBuild()
-      .then(build => res.status(200).json({ data: build }))
-      .catch(err => res.status(200).json({ err: err }));
+  router.get('/last/:userid?', (req: express.Request, res: express.Response) => {
+    if (req.params.userid) {
+      getLastBuild(req.params.userid)
+        .then(build => res.status(200).json({ data: build }))
+        .catch(err => res.status(200).json({ err: err }));
+    } else {
+      getLastBuild()
+        .then(build => res.status(200).json({ data: build }))
+        .catch(err => res.status(200).json({ err: err }));
+    }
   });
 
-  router.get('/:id', (req: express.Request, res: express.Response) => {
-    getBuild(req.params.id, req.query.userId).then(build => {
-      return res.status(200).json({ data: build });
-    });
+  router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
+    if (req.params.userid) {
+      getBuild(req.params.id, req.params.userId).then(build => {
+        return res.status(200).json({ data: build });
+      });
+    } else {
+      getBuild(req.params.id).then(build => {
+        return res.status(200).json({ data: build });
+      });
+    }
   });
 
   return router;
@@ -74,10 +93,16 @@ export function buildRoutes(): express.Router {
 export function jobRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/:id', (req: express.Request, res: express.Response) => {
-    getJob(req.params.id, req.query.userId).then(job => {
-      return res.status(200).json({ data: job });
-    });
+  router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
+    if (req.params.userid) {
+      getJob(req.params.id, req.params.userid).then(job => {
+        return res.status(200).json({ data: job });
+      });
+    } else {
+      getJob(req.params.id, req.params.userid).then(job => {
+        return res.status(200).json({ data: job });
+      });
+    }
   });
 
   return router;
@@ -172,12 +197,18 @@ export function tokenRoutes(): express.Router {
 export function repositoryRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/', (req: express.Request, res: express.Response) => {
+  router.get('/:userid?', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
       .then(() => {
-        getRepositories(req.query.userId, req.query.keyword).then(repos => {
-          return res.status(200).json({ data: repos });
-        }).catch(err => res.status(200).json({ status: false }));
+        if (req.params.userid) {
+          getRepositories(req.query.keyword, req.params.userid).then(repos => {
+            return res.status(200).json({ data: repos });
+          }).catch(err => res.status(200).json({ status: false }));
+        } else {
+          getRepositories(req.query.keyword).then(repos => {
+            return res.status(200).json({ data: repos });
+          }).catch(err => res.status(200).json({ status: false }));
+        }
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 

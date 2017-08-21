@@ -118,7 +118,7 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
   });
 }
 
-export function getRepositories(userId: string, keyword: string): Promise<any[]> {
+export function getRepositories(keyword: string, userId?: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     new Repository().query(qb => {
       if (keyword !== '') {

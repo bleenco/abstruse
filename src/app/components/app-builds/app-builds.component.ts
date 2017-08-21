@@ -180,7 +180,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   fetchLastBuild(): void {
-    this.apiService.getLastBuild().subscribe(build => {
+    this.apiService.getLastBuild(this.userData.id).subscribe(build => {
       if (!this.builds) {
         this.builds = [];
       }
