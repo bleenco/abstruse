@@ -141,16 +141,16 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isPresent();
+      }))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.list-item:nth-child(1) .stop-build'));
+          const el = element(by.css('.stop-build'));
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isPresent();
-      }))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
+      .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
