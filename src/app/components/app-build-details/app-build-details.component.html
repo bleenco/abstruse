@@ -24,7 +24,7 @@
                       </span>
                     </h1>
                   </div>
-                  <div class="column is-2">
+                  <div class="column is-2" *ngIf="build?.hasPermission">
                     <button class="button is-fullwidth dark" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
@@ -34,7 +34,7 @@
                       </div>
                     </button>
                   </div>
-                  <div class="column is-2">
+                  <div class="column is-2" *ngIf="build?.hasPermission">
                     <button class="button is-fullwidth dark" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
@@ -121,7 +121,7 @@
               <div class="column is-1">
                 <span class="job-time">{{ job.time }}</span>
               </div>
-              <div class="column is-1">
+              <div class="column is-1" *ngIf="build?.hasPermission">
                 <span class="icon" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">
                   <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

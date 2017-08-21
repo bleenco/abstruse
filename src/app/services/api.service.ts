@@ -21,31 +21,39 @@ export class ApiService {
   }
 
   getBuilds(limit: number, offset: number, userId?: string): Observable<any> {
-    const params = new URLSearchParams();
-    params.append('userId', userId);
-    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, params, true);
+    if (userId) {
+      return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
   }
 
-  getLastBuild(): Observable<any> {
+  getLastBuild(userId?: string): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/builds/last/${userId}`, null, true);
+    }
     return this.get(`${this.url}/builds/last`, null, true);
   }
 
   getBuild(id: string, userId?: string): Observable<any> {
-    const params = new URLSearchParams();
-    params.append('userId', userId);
-    return this.get(`${this.url}/builds/${id}`, params, true);
+    if (userId) {
+      return this.get(`${this.url}/builds/${id}/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/builds/${id}`, null, true);
   }
 
   getJob(id: number, userId?: string): Observable<any> {
-    const params = new URLSearchParams();
-    params.append('userId', userId);
-    return this.get(`${this.url}/jobs/${id}`, params, true);
+    if (userId) {
+      return this.get(`${this.url}/jobs/${id}/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/jobs/${id}`, null, true);
   }
 
   getRepositories(userId: string, keyword: string): Observable<any> {
     const params = new URLSearchParams();
-    params.append('userId', userId);
     params.append('keyword', keyword);
+    if (userId) {
+      return this.get(`${this.url}/repositories/${userId}`, params, true);
+    }
     return this.get(`${this.url}/repositories`, params, true);
   }
 
