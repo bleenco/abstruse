@@ -36,7 +36,7 @@ export function getBuilds(limit: number, offset: number, userId?: number): Promi
             return job;
           });
           build.hasPermission = false;
-          if (build.reposiotory
+          if (build.repository
             && build.repository.permissions
             && build.repository.permissions[0].permission) {
               build.hasPermission = true;
@@ -101,7 +101,7 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           build.repository.access_token = null;
         }
         build.hasPermission = false;
-        if (build.reposiotory
+        if (build.repository
           && build.repository.permissions
           && build.repository.permissions[0].permission) {
             build.hasPermission = true;
@@ -159,7 +159,7 @@ export function getLastBuild(userId?: number): Promise<any> {
         return job;
       });
       build.hasPermission = false;
-      if (build.reposiotory
+      if (build.repository
         && build.repository.permissions
         && build.repository.permissions[0].permission) {
           build.hasPermission = true;
