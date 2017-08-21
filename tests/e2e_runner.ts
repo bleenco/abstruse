@@ -78,7 +78,13 @@ testsToRun.reduce((previous, relativeName) => {
     let previousDir = null;
     return Promise.resolve()
       .then(() => printHeader(currentFileName))
-      .then(() => allSetups.indexOf(relativeName) === -1 ? abstruse() : Promise.resolve(null))
+      .then(() => {
+        if (allSetups.indexOf(relativeName) === -1) {
+          return abstruse('abstruse', argv['debug']);
+        } else {
+          return Promise.resolve(null);
+        }
+      })
       .then(() => previousDir = process.cwd())
       .then(() => fn())
       .then(() => console.log('----'))
@@ -100,16 +106,6 @@ testsToRun.reduce((previous, relativeName) => {
   }, err => {
     console.log('\n');
     console.error(red(`Test "${currentFileName}" failed...`));
-
-    if (argv.debug) {
-      console.log(`Current directory: ${process.cwd()}`);
-      console.log('Will loop forever while you debug... CTRL-C to quit.');
-
-      while (1) {
-        // That's right!
-      }
-    }
-
     process.exit(1);
   });
 

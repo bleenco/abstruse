@@ -202,6 +202,6 @@ export function executeSilent(cmd: string): Promise<any> {
   return execute({ silent: true }, cmd);
 }
 
-export function abstruse(tempDir = 'abstruse') {
-  return _run({ silent: true }, 'abstruse', ['--dir', tempDir]);
+export function abstruse(tempDir = 'abstruse', verbose = false) {
+  return _run({ silent: !verbose }, 'abstruse', ['--dir', tempDir]);
 }

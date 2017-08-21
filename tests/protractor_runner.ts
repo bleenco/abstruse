@@ -8,7 +8,7 @@ let tempRoot = null;
 let exitCode = null;
 
 const argv = minimist(process.argv.slice(2), {
-  boolean: ['nolink', 'nobuild']
+  boolean: ['nolink', 'nobuild', 'debug']
 });
 
 Promise.resolve()
@@ -31,7 +31,7 @@ Promise.resolve()
     tempRoot = temp.mkdirSync('abstruse-e2e-protractor');
     console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
   })
-  .then(() => abstruse(tempRoot))
+  .then(() => abstruse(tempRoot, argv['debug']))
   .then(() => exec('npm', ['run', 'protractor:ci']))
   .then(result => {
     exitCode = result.code;
