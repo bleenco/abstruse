@@ -58,7 +58,7 @@ export class ApiService {
   }
 
   getRepository(id: string): Observable<any> {
-    return this.get(`${this.url}/repositories/${id}`, null, true);
+    return this.get(`${this.url}/repositories/id/${id}`, null, true);
   }
 
   getRepositoryBuilds(id: string, limit: number, offset: number): Observable<any> {

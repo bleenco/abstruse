@@ -212,7 +212,7 @@ export function repositoryRoutes(): express.Router {
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
-  router.get('/:id', (req: express.Request, res: express.Response) => {
+  router.get('/id/:id', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
       .then(() => {
         getRepository(req.params.id).then(repo => {
