@@ -173,20 +173,28 @@ export function saveRepositorySettings(data: any): Promise<any> {
 
 export function updateRepository(data: any): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    new Repository().where({ github_id: data.github_id })
-      .save(data, { method: 'update', require: false }).then(result => {
-        if (!result) {
-          reject(result);
-        } else {
-          resolve(result.toJSON());
-        }
-      }).catch(err => reject(err));
+    let repository: Repository;
+    if (data.github_id) {
+      repository = new Repository().where({ github_id: data.github_id });
+    } else if (data.bitbucket_id) {
+      repository = new Repository().where({ bitbucket_id: data.bitbucket_id });
+    } else {
+      reject('Repository Id missing');
+    }
+
+    repository.save(data, { method: 'update', require: false }).then(result => {
+      if (!result) {
+        reject(result);
+      } else {
+        resolve(result.toJSON());
+      }
+    }).catch(err => reject(err));
   });
 }
 
-export function pingRepository(data: any): Promise<any> {
+export function pingGitHubRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    const saveData = generateRepositoryData(data);
+    const saveData = generateGitHubRepositoryData(data);
     new Repository().where({ github_id: saveData.github_id }).fetch()
       .then(repo => {
         if (!repo) {
@@ -217,7 +225,40 @@ export function pingRepository(data: any): Promise<any> {
   });
 }
 
-export function createPullRequest(data: any): Promise<any> {
+export function pingBitbucketRepository(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const saveData = generateBitbucketRepositoryData(data);
+    new Repository().where({ bitbucket_id: saveData.bitbucket_id }).fetch()
+      .then(repo => {
+        if (!repo) {
+          new Repository().save(saveData, { method: 'insert' })
+          .then(result => {
+            if (!result) {
+              reject(result);
+            } else {
+              let repository = result.toJSON();
+              return addRepositoryPermissionToEveryone(result.id)
+                .then(() => resolve(repository))
+                .catch(err => reject(err));
+            }
+          })
+          .catch(err => reject(err));
+      } else {
+        repo.save(saveData, { method: 'update', require: false })
+          .then(result => {
+            if (!result) {
+              reject(result);
+            } else {
+              resolve(result.toJSON());
+            }
+          })
+          .catch(err => reject(err));
+        }
+      });
+  });
+}
+
+export function createGitHubPullRequest(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
     new Repository().where({ github_id: ghid }).fetch()
@@ -230,7 +271,7 @@ export function createPullRequest(data: any): Promise<any> {
       })
       .then(repoData => {
         if (!repoData) {
-          const repoData = generateRepositoryData(data);
+          const repoData = generateGitHubRepositoryData(data);
           return addRepository(repoData);
         } else {
           return Promise.resolve(repoData);
@@ -250,14 +291,14 @@ export function createPullRequest(data: any): Promise<any> {
   });
 }
 
-export function synchronizePullRequest(data: any): Promise<any> {
+export function synchronizeGitHubPullRequest(data: any): Promise<any> {
   let repoId;
   return new Promise((resolve, reject) => {
     const ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
     new Repository().where({ github_id: ghid }).fetch()
       .then(repository => {
         if (!repository) {
-          const repoData = generateRepositoryData(data);
+          const repoData = generateGitHubRepositoryData(data);
           return addRepository(repoData).then(repo => {
             repoId = repo.id;
           });
@@ -268,7 +309,7 @@ export function synchronizePullRequest(data: any): Promise<any> {
         }
       })
       .then(() => {
-        const repoData = generateRepositoryData(data);
+        const repoData = generateGitHubRepositoryData(data);
         return updateRepository(repoData);
       })
       .then(() => {
@@ -285,7 +326,38 @@ export function synchronizePullRequest(data: any): Promise<any> {
   });
 }
 
-function generateRepositoryData(data: any): any {
+export function synchronizeBitbucketPullRequest(data: any): Promise<any> {
+  let repoId;
+  return new Promise((resolve, reject) => {
+    new Repository().where({ bitbucket_id: data.repository.uuid }).fetch()
+      .then(repository => {
+        if (!repository) {
+          const repoData = generateBitbucketRepositoryData(data);
+          return addRepository(repoData).then(repo => {
+            repoId = repo.id;
+          });
+        } else {
+          const repoJson = repository.toJSON();
+          repoId = repoJson.id;
+          const repoData = generateBitbucketRepositoryData(data);
+          return updateRepository(repoData);
+        }
+      })
+      .then(() => {
+        const buildData = {
+          pr: data.pull_request ? data.pull_request.id : null,
+          data: data,
+          start_time: new Date(),
+          repositories_id: repoId
+        };
+
+        resolve(buildData);
+      })
+      .catch(err => reject(err));
+  });
+}
+
+function generateGitHubRepositoryData(data: any): any {
   return {
     github_id: data.repository.id,
     clone_url: data.repository.clone_url,
@@ -301,6 +373,25 @@ function generateRepositoryData(data: any): any {
     user_avatar_url: data.repository.owner.avatar_url,
     user_url: data.repository.owner.url,
     user_html_url: data.repository.owner.html_url,
+    data: data
+  };
+}
+
+function generateBitbucketRepositoryData(data: any): any {
+  return {
+    bitbucket_id: data.repository.uuid,
+    clone_url: `${data.repository.links.html.href}.git`,
+    html_url: data.repository.links.html.href,
+    default_branch: data.changes && data.changes[0].new.name ? data.changes[0].new.name
+      : data.pullrequest ? data.pullrequest.destination.branch.name : '',
+    name: data.repository.name,
+    full_name: data.repository.full_name,
+    private: data.repository.is_private,
+    user_login: data.actor.username,
+    user_id: data.actor.uuid,
+    user_avatar_url: data.actor.links.avatar.href,
+    user_url: data.actor.links.self.href,
+    user_html_url: data.actor.links.html.href,
     data: data
   };
 }

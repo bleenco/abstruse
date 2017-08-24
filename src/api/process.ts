@@ -1,6 +1,5 @@
 import * as docker from './docker';
 import { PtyInstance } from './pty';
-import { getRepositoryDetails } from './config';
 import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';

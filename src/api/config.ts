@@ -1,4 +1,4 @@
-import { createTempDir } from './utils';
+import { createTempDir, getBitBucketAccessToken } from './utils';
 import { spawn } from './process';
 import * as sh from 'shelljs';
 import { existsSync, rmdir } from './fs';
@@ -90,7 +90,7 @@ export function generateCommands(repositoryUrl: string, config: Config): any[] {
   return matrix;
 }
 
-export function getRepositoryDetails(url: string, sha = null, pr = null): Promise<RepositoryInfo> {
+export function getRepositoryDetails(repository, sha = null, pr = null): Promise<RepositoryInfo> {
   return new Promise((resolve, reject) => {
     let cloneDir = null;
     let configPath = null;
@@ -100,7 +100,18 @@ export function getRepositoryDetails(url: string, sha = null, pr = null): Promis
     createTempDir()
       .then(tempDir => {
         cloneDir = tempDir;
-        return spawn('git', ['clone', url, '--depth', '1', cloneDir]);
+        if (repository.bitbucket_id && repository.private && repository.access_token) {
+          return getBitBucketAccessToken(repository.access_token)
+            .then(response => {
+              let access_token = JSON.parse(response).access_token;
+              let cloneUrl =
+                repository.clone_url.replace('https://', `https://x-token-auth:${access_token}@`);
+
+              return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
+            }).catch(err => Promise.reject(err));
+        }
+
+        return spawn('git', ['clone', repository.clone_url, '--depth', '1', cloneDir]);
       })
       .then(cloned => cloned.exit === 0 ? Promise.resolve() : Promise.reject(''))
       .then(() => {

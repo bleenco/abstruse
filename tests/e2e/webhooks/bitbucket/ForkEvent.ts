@@ -148,7 +148,7 @@ export let request = {
     'is_private': false,
     'uuid': '{555997f5-1f4c-4afa-9c63-71e3ee5d725b}'
   }
-}
+};
 
 export let header = {
   'X-Request-UUID':	'69c56047-577b-46f9-a1dd-9c4e27273bc1',

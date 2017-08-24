@@ -76,7 +76,8 @@
                   <h2>Settings</h2>
                   <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
                     <div class="form-field">
-                      <label class="form-label">Access Token</label>
+                      <label class="form-label" *ngIf="!repo?.bitbucket_id">Access Token</label>
+                      <label class="form-label" *ngIf="repo?.bitbucket_id">Access Token (OAuth consumers pair key:secret)</label>
                       <select class="form-input form-select" [(ngModel)]="form.access_tokens_id" name="access_tokens_id">
                         <option *ngFor="let t of tokens" [value]="t.id">{{ t.user.fullname }}`s {{ t.description }}</option>
                       </select>
