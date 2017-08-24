@@ -107,7 +107,11 @@ export function getBuild(id: number, userId?: number): Promise<any> {
         new BuildRun()
           .query(q => {
             q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
+<<<<<<< HEAD
             .where('builds.repositories_id', build.repositories_id)
+=======
+            .where('builds.repositories_id', build.repository.id)
+>>>>>>> feat(): bitbucket integration
             .andWhere('builds.id', '<=', build.id)
             .whereNotNull('build_runs.start_time')
             .whereNotNull('build_runs.end_time')

@@ -25,6 +25,7 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
+      t.string('bitbucket_id');
       t.string('clone_url');
       t.string('html_url');
       t.string('default_branch');
@@ -46,7 +47,7 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('pr');
-      t.integer('github_id');
+      t.integer('head_id');
       t.json('data');
       t.dateTime('start_time');
       t.dateTime('end_time');
@@ -56,7 +57,7 @@ export function create(): Promise<null> {
     }))
     .then(() => schema.createTableIfNotExists('build_runs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.integer('github_id');
+      t.integer('head_id');
       t.json('data');
       t.dateTime('start_time');
       t.dateTime('end_time');
