@@ -169,7 +169,7 @@ describe('Build Details', () => {
         return browser.wait(() => element.all(by.css('.yellow')).count()
           .then(cnt => cnt === 1));
       })
-      .then((): any => element.all(by.css('.progress')).count())
+      .then((): any => element.all(by.css('.progress-bar')).count())
       .then(progress => progress === 0)
       .then((): any => {
         return browser.wait(() => element.all(by.css('.green')).count()
@@ -180,21 +180,17 @@ describe('Build Details', () => {
         return browser.wait(() => element.all(by.css('.yellow')).count()
           .then(cnt => cnt === 1));
       })
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).count()
-          .then(cnt => cnt === 1));
-      })
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.progress')).count().then(cnt => cnt === 1);
+        return element.all(by.css('.progress-bar')).count().then(cnt => cnt === 1);
       }))
-      /* .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('innerHTML')
-          .then(value => value && Number(value) < 0.2));
+      /*.then((): any => {
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
+          .then(value => value && parseFloat(value) < 0.2));
       })
       .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('innerHTML')
-          .then(value => value && Number(value) < 0.4));
-      }) */;
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
+          .then(value => value && parseFloat(value) < 0.4));
+      })*/;
   });
 
   it('should start new build (D3) and see progress bar in first job run', () => {
@@ -217,17 +213,17 @@ describe('Build Details', () => {
           .then(cnt => cnt === 1));
       })
       .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).count()
+        return browser.wait(() => element.all(by.css('.progress-bar')).count()
           .then(cnt => cnt === 1));
       })
-      /* .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('innerHTML')
-          .then(value => value && Number(value) < 0.4));
+      /*.then((): any => {
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
+          .then(value => value && parseFloat(value) < 0.4));
       })
       .then((): any => {
-        return browser.wait(() => element.all(by.css('.progress')).first().getAttribute('innerHTML')
-          .then(value => value && Number(value) > 0.6));
-      }) */
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
+          .then(value => value && parseFloat(value) > 0.6));
+      })*/
       .then((): any => {
         return browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent());
       })
