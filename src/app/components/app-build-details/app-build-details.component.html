@@ -24,7 +24,7 @@
                       </span>
                     </h1>
                   </div>
-                  <div class="column is-2" *ngIf="build?.hasPermission">
+                  <div class="column is-2" *ngIf="build?.hasPermission" [class.is-offset-2]="status === 'success' || status === 'failed'">
                     <button class="button is-fullwidth dark" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
@@ -34,7 +34,7 @@
                       </div>
                     </button>
                   </div>
-                  <div class="column is-2" *ngIf="build?.hasPermission">
+                  <div class="column is-2" *ngIf="build?.hasPermission" [class.is-hidden]="status === 'success' || status === 'failed'">
                     <button class="button is-fullwidth dark" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
@@ -131,7 +131,7 @@
                     </g>
                   </svg>
                 </span>
-                <span class="icon" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing">
+                <span class="icon" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing" [class.is-hidden]="status === 'success' || status === 'failed'">
                   <svg width="44px" height="44px" viewBox="0 0 44 44" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                       <g id="cancel-2" fill-rule="nonzero" fill="#FFFFFF">
