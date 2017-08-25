@@ -15,7 +15,7 @@ describe('Job Details', () => {
     logout().then(() => browser.waitForAngularEnabled(true));
   });
 
-  xit('should restart job watch console log until it matches expected output', () => {
+  it('should restart job watch console log until it matches expected output', () => {
     return browser.get('/job/15')
       .then((): any => {
         return browser
@@ -43,7 +43,7 @@ describe('Job Details', () => {
       }));
   });
 
-  xit('should restart build and watch job output', () => {
+  it('should restart build and watch job output', () => {
     return browser.get('/build/4')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
