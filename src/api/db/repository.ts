@@ -178,6 +178,8 @@ export function updateRepository(data: any): Promise<boolean> {
       repository = new Repository().where({ github_id: data.github_id });
     } else if (data.bitbucket_id) {
       repository = new Repository().where({ bitbucket_id: data.bitbucket_id });
+    } else if (data.gitlab_id) {
+      repository = new Repository().where({ gitlab_id: data.gitlab_id });
     } else {
       reject('Repository Id missing');
     }
@@ -229,7 +231,40 @@ export function pingBitbucketRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const saveData = generateBitbucketRepositoryData(data);
     new Repository().where({ bitbucket_id: saveData.bitbucket_id }).fetch()
-      .then(repo => {
+    .then(repo => {
+      if (!repo) {
+        new Repository().save(saveData, { method: 'insert' })
+        .then(result => {
+          if (!result) {
+            reject(result);
+          } else {
+            let repository = result.toJSON();
+            return addRepositoryPermissionToEveryone(result.id)
+              .then(() => resolve(repository))
+              .catch(err => reject(err));
+          }
+        })
+        .catch(err => reject(err));
+    } else {
+      repo.save(saveData, { method: 'update', require: false })
+        .then(result => {
+          if (!result) {
+            reject(result);
+          } else {
+            resolve(result.toJSON());
+          }
+        })
+        .catch(err => reject(err));
+      }
+    });
+});
+}
+
+export function pingGitLabRepository(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const saveData = generateGitLabRepositoryData(data);
+    new Repository().where({ gitlab_id: saveData.gitlab_id }).fetch()
+    .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
           .then(result => {
@@ -357,6 +392,38 @@ export function synchronizeBitbucketPullRequest(data: any): Promise<any> {
   });
 }
 
+export function synchronizeGitLabPullRequest(data: any): Promise<any> {
+  let repoId;
+  return new Promise((resolve, reject) => {
+    const gitlabId = data.project_id ? data.project_id : data.object_attributes.target_project_id;
+    new Repository().where({ gitlab_id: gitlabId }).fetch()
+      .then(repository => {
+        if (!repository) {
+          const repoData = generateGitLabRepositoryData(data);
+          return addRepository(repoData).then(repo => {
+            repoId = repo.id;
+          });
+        } else {
+          const repoJson = repository.toJSON();
+          repoId = repoJson.id;
+          const repoData = generateGitLabRepositoryData(data);
+          return updateRepository(repoData);
+        }
+      })
+      .then(() => {
+        const buildData = {
+          pr: data.object_attributes.iid,
+          data: data,
+          start_time: new Date(),
+          repositories_id: repoId
+        };
+
+        resolve(buildData);
+      })
+      .catch(err => reject(err));
+  });
+}
+
 function generateGitHubRepositoryData(data: any): any {
   return {
     github_id: data.repository.id,
@@ -392,6 +459,24 @@ function generateBitbucketRepositoryData(data: any): any {
     user_avatar_url: data.actor.links.avatar.href,
     user_url: data.actor.links.self.href,
     user_html_url: data.actor.links.html.href,
+    data: data
+  };
+}
+
+function generateGitLabRepositoryData(data: any): any {
+  return {
+    gitlab_id: data.project_id ? data.project_id : data.object_attributes.target_project_id,
+    clone_url: data.repository.git_http_url ? data.repository.git_http_url : data.project.http_url,
+    html_url: data.repository.homepage,
+    default_branch: data.project.default_branch,
+    name: data.repository.name,
+    full_name: data.project.path_with_namespace,
+    description: data.repository.description,
+    private: data.repository.visibility_level > 0 ? false : true,
+    fork: data.repository.fork,
+    user_login: data.user_username ? data.user_username : data.user.username,
+    user_id: data.user_id ? data.user_id : data.object_attributes.author_id,
+    user_avatar_url: data.user_avatar ? data.user_avatar : data.user.avatar_url,
     data: data
   };
 }

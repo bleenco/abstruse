@@ -68,6 +68,70 @@ export function setGitHubStatusFailure(
   return sendRequest(gitUrl, data, header);
 }
 
+export function setGitLabStatusSuccess(
+  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  let data = {
+    'state': 'success',
+    'target_url': abstruseUrl,
+    'description': 'The Abstruse CI build succeeded',
+    'context': 'continuous-integration/abstruse'
+  };
+
+  let header = {
+    'PRIVATE-TOKEN': token
+  };
+
+  return sendRequest(gitUrl, data, header);
+}
+
+export function setGitLabStatusPending(
+  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  let data = {
+    'state': 'pending',
+    'target_url': abstruseUrl,
+    'description': 'The Abstruse CI build is running',
+    'context': 'continuous-integration/abstruse'
+  };
+
+  let header = {
+    'PRIVATE-TOKEN': token
+  };
+
+  return sendRequest(gitUrl, data, header);
+}
+
+export function setGitLabStatusError(
+  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  let data = {
+    'state': 'error',
+    'target_url': abstruseUrl,
+    'description': 'The Abstruse CI build errored',
+    'context': 'continuous-integration/abstruse'
+  };
+
+  let header = {
+    'PRIVATE-TOKEN': token
+  };
+
+  return sendRequest(gitUrl, data, header);
+}
+
+export function setGitLabStatusFailure(
+  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  let data = {
+    'state': 'failure',
+    'target_url': abstruseUrl,
+    'description': 'The Abstruse CI build failed',
+    'context': 'continuous-integration/abstruse'
+  };
+
+  let header = {
+    'PRIVATE-TOKEN': token
+  };
+
+  return sendRequest(gitUrl, data, header);
+}
+
 export function setBitbucketStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)

@@ -15,7 +15,8 @@
                 <div class="columns is-multiline">
                   <div class="column is-7">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.repository.full_name }}</a></span>
+                      <span *ngIf="job?.build?.data?.repository?.full_name"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.repository?.full_name }}</a></span>
+                      <span *ngIf="!job?.build?.data?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
@@ -57,6 +58,7 @@
                     <h2 *ngIf="job?.build?.data?.pull_request && !tag">{{ job?.build?.data?.pull_request?.title }}</h2>
                     <h2 *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.commits && !tag">{{ job?.build?.data?.commits[job?.build?.data?.commits.length - 1]?.message }}</h2>
                     <h2 *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.commits && job?.build?.data?.message && !tag">{{ job?.build?.data?.message }}</h2>
+                    <h2 *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.commits && !job?.build?.data?.message && job?.build?.data?.object_attributes?.last_commit?.message && !tag">{{ job?.build?.data?.object_attributes?.last_commit?.message }}</h2>
                     <h2 *ngIf="tag">{{ job?.build?.data?.head_commit?.message }}</h2>
                   </div>
                   <div class="column is-1">
@@ -67,17 +69,21 @@
                       <span *ngIf="job?.build?.data?.pull_request?.head?.sha">{{ job?.build?.data?.pull_request?.head.sha.slice(0, 7) }}</span>
                       <span *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.after">{{ job?.build?.data?.after.slice(0, 7) }}</span>
                       <span *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.after && job?.build?.data?.sha">{{ job?.build?.data?.sha.slice(0, 7) }}</span>
+                      <span *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.after && !job?.build?.data?.sha && job?.build?.data?.object_attributes?.last_commit?.id">{{ job?.build?.data?.object_attributes?.last_commit?.id.slice(0, 7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">
                     <p>
                       <span class="icon">
                         <img *ngIf="job?.build?.data?.sender?.avatar_url" [src]="job?.build?.data?.sender?.avatar_url" class="avatar-img">
-                        <img *ngIf="!job?.build?.data?.sender?.avatar_ur && job?.build?.data?.actor?.links?.avatar?.href" [src]="job?.build?.data?.actor?.links?.avatar?.href" class="avatar-img">
+                        <img *ngIf="!job?.build?.data?.sender?.avatar_url && job?.build?.data?.actor?.links?.avatar?.href" [src]="job?.build?.data?.actor?.links?.avatar?.href" class="avatar-img">
+                        <img *ngIf="!job?.build?.data?.sender?.avatar_url && !job?.build?.data?.actor?.links?.avatar?.href && job?.build?.data?.user_avatar" [src]="job?.build?.data?.user_avatar" class="avatar-img">
+                        <img *ngIf="!job?.build?.data?.sender?.avatar_url && !job?.build?.data?.actor?.links?.avatar?.href && !job?.build?.data?.user_avatar && job?.build?.data?.user?.avatar_url" class="avatar-img" [src]="job?.build?.data?.user?.avatar_url">
                       </span>
                       <span *ngIf="job?.build?.data?.pull_request">{{ job?.build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.commits">{{ job?.build?.data?.commits[0]?.committer?.name }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.commits && job?.build?.data?.actor?.display_name && !tag">{{ job?.build?.data?.actor?.display_name }} commited {{ timeWords }} ago</span>
+                      <span *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.commits && !job?.build?.data?.actor?.display_name && job?.build?.data?.user?.name && !tag">{{ job?.build?.data?.user?.name }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>
                   <div class="column is-2">
