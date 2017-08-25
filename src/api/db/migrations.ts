@@ -26,6 +26,7 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
       t.string('bitbucket_id');
+      t.integer('gitlab_id');
       t.string('clone_url');
       t.string('html_url');
       t.string('default_branch');

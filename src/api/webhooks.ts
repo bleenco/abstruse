@@ -4,9 +4,11 @@ import { getConfig, getFilePath  } from './utils';
 import {
   pingGitHubRepository,
   pingBitbucketRepository,
+  synchronizeBitbucketPullRequest,
+  pingGitLabRepository,
   createGitHubPullRequest,
   synchronizeGitHubPullRequest,
-  synchronizeBitbucketPullRequest } from './db/repository';
+  synchronizeGitLabPullRequest } from './db/repository';
 import { startBuild } from './process-manager';
 import { writeJsonFile } from './fs';
 
@@ -245,7 +247,80 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
 });
 
 webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
-  res.status(200).json({ msg: 'ok' });
+  let config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
+  const ev = headers['x-gitlab-event'] as string;
+  const sig = headers['x-gitlab-token'] as string;
+
+  if (!sig) {
+    return res.status(400).json({ error: 'No X-GitLab-Token found on request' });
+  }
+
+  if (!ev) {
+    return res.status(400).json({ error: 'No X-GitLab-Event found on request' });
+  }
+
+  if (sig !== config.secret) {
+    return res.status(400).json({ error: 'X-GitLab-Token does not match' });
+  }
+
+  if (req.secure) {
+    config.url = 'https://' + req.headers.host;
+  } else {
+    config.url = 'http://' + req.headers.host;
+  }
+
+  switch (ev) {
+    case 'Push Hook':
+      writeJsonFile(getFilePath('config.json'), config)
+      .then(() => pingGitLabRepository(payload))
+      .then(repo => {
+        const buildData = {
+          data: payload,
+          start_time: new Date(),
+          repositories_id: repo.id
+        };
+
+        return startBuild(buildData);
+      })
+      .then(() => res.status(200).json({ msg: 'ok' }))
+      .catch(err => {
+        console.error(err);
+        res.status(400).json({ error: err });
+      });
+      break;
+    case 'Wiki Page Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'Build Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'Note Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'Issue Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'Merge Request Hook':
+      writeJsonFile(getFilePath('config.json'), config)
+      .then(() => synchronizeGitLabPullRequest(payload))
+      .then(build => startBuild(build))
+      .then(() => res.status(200).json({ msg: 'ok' }))
+      .catch(err => {
+        console.error(err);
+        res.status(400).json({ error: err });
+      });
+      break;
+    case 'Tag Push Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'Pipeline Hook':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    default:
+      break;
+  }
 });
 
 webhooks.post('/gogs', (req: express.Request, res: express.Response) => {

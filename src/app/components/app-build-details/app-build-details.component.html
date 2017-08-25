@@ -15,7 +15,8 @@
                 <div class="columns is-multiline">
                   <div class="column is-8">
                     <h1 class="bold">
-                      <span><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
+                      <span *ngIf="build?.data?.repository?.full_name"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
+                      <span *ngIf="!build?.data?.repository?.full_name && build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.project?.path_with_namespace }}</a></span>
                       <span class="build-icon">
                         <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
                         <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
@@ -56,12 +57,14 @@
                       <span *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request?.head?.sha.slice(0, 7) }}</span>
                       <span *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after.slice(0, 7) }}</span>
                       <span *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha.slice(0, 7) }}</span>
+                      <span *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id.slice(0,7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">
                     <p *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.pull_request?.title }}</p>
                     <p *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[build?.data?.commits.length - 1]?.message }}</p>
                     <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.message && !tag">{{ build?.data?.message }}</p>
+                    <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</p>
                     <p *ngIf="tag">{{ build?.data?.head_commit?.message }}</p>
                   </div>
                   <div class="column is-4">
@@ -69,10 +72,13 @@
                       <span class="icon">
                         <img *ngIf="build?.data?.sender?.avatar_url" [src]="build?.data?.sender?.avatar_url" class="avatar-img">
                         <img *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href" [src]="build?.data?.actor?.links?.avatar?.href" class="avatar-img">
+                        <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar" [src]="build?.data?.user_avatar" class="avatar-img">
+                        <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url" class="avatar-img" [src]="build?.data?.user?.avatar_url">
                       </span>
                       <span *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[0]?.committer?.name }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }} commited {{ timeWords }} ago</span>
+                      <span *ngIf="!build?.data?.pull_request && !build?.data?.commits && !build?.data?.actor?.display_name && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }} commited {{ timeWords }} ago</span>
                       <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }} commited {{ timeWords }} ago</span>
                     </p>
                   </div>

@@ -99,7 +99,13 @@ export function getRepositoryDetails(repository, sha = null, pr = null): Promise
 
     createTempDir()
       .then(tempDir => {
+        let cloneUrl = repository.clone_url;
         cloneDir = tempDir;
+        if (repository.private && repository.gitlab_id && repository.access_token) {
+          cloneUrl =
+            cloneUrl.replace('https://', `https://gitlab-ci-token:${repository.access_token}@`);
+        }
+
         if (repository.bitbucket_id && repository.private && repository.access_token) {
           return getBitBucketAccessToken(repository.access_token)
             .then(response => {
@@ -111,7 +117,7 @@ export function getRepositoryDetails(repository, sha = null, pr = null): Promise
             }).catch(err => Promise.reject(err));
         }
 
-        return spawn('git', ['clone', repository.clone_url, '--depth', '1', cloneDir]);
+        return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
       })
       .then(cloned => cloned.exit === 0 ? Promise.resolve() : Promise.reject(''))
       .then(() => {

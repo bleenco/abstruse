@@ -65,6 +65,6 @@ export let request = {
 
 export let header = {
   'Content-Type': 'application/json',
-  'X-Gitlab-Event': 'Push Hook',
+  'X-Gitlab-Event': 'Tag Push Hook',
   'X-Gitlab-Token': 'thisIsSecret'
 };
