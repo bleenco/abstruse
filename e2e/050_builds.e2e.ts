@@ -56,13 +56,8 @@ describe('Builds', () => {
       .then((): any => element(by.css('.list-item')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/1'))
       .then(() => browser.navigate().back())
-      .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
-      }))
-      .then((): any => element(by.css('.list-item:nth-child(1) .stop-build')).click())
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.is-running')).count().then(count => count === 0);
-      }));
+      .then((): any => browser.getCurrentUrl())
+      .then(url => expect(url).toEqual('http://localhost:6500/'));
   });
 
   it('should start new build (send reopen_pull_request event)', () => {
