@@ -182,15 +182,7 @@ describe('Build Details', () => {
       })
       .then((): any => browser.wait(() => {
         return element.all(by.css('.progress-bar')).count().then(cnt => cnt === 1);
-      }))
-      /*.then((): any => {
-        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
-          .then(value => value && parseFloat(value) < 0.2));
-      })
-      .then((): any => {
-        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
-          .then(value => value && parseFloat(value) < 0.4));
-      })*/;
+      }));
   });
 
   it('should start new build (D3) and see progress bar in first job run', () => {
@@ -216,14 +208,14 @@ describe('Build Details', () => {
         return browser.wait(() => element.all(by.css('.progress-bar')).count()
           .then(cnt => cnt === 1));
       })
-      /*.then((): any => {
+      .then((): any => {
         return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
           .then(value => value && parseFloat(value) < 0.4));
       })
       .then((): any => {
         return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
           .then(value => value && parseFloat(value) > 0.6));
-      })*/
+      })
       .then((): any => {
         return browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent());
       })
@@ -250,23 +242,9 @@ describe('Build Details', () => {
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === num;
       })))
-      /*.then((): any => {
+      .then((): any => {
         return browser.wait(() => element(by.css('[name="time-left"]')).isPresent());
       })
-       .then((): any => {
-        return browser.wait(() => {
-          return element(by.css('[name="time-left"]'))
-            .getAttribute('innerHTML')
-            .then(html => html === 'approximately 00:30 remaining');
-        });
-      })
-      .then((): any => {
-        return browser.wait(() => {
-          return element.all(by.css('[name="time-left"]'))
-            .first().getAttribute('innerHTML')
-            .then(html => html === 'approximately 00:26 remaining');
-        });
-      }) */
       .then(() => element.all(by.css('[name="stop-job"]')).each(el => el.click()))
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;

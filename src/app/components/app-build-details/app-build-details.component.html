@@ -24,7 +24,8 @@
                       </span>
                     </h1>
                   </div>
-                  <div class="column is-2" *ngIf="build?.hasPermission" [class.is-offset-2]="status === 'success' || status === 'failed'">
+                  <div class="column is-2" [class.is-hidden]="status !== 'success' && status !== 'failed'"></div>
+                  <div class="column is-2" *ngIf="build?.hasPermission">
                     <button class="button is-fullwidth dark" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
