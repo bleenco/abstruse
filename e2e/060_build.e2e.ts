@@ -209,14 +209,6 @@ describe('Build Details', () => {
           .then(cnt => cnt === 1));
       })
       .then((): any => {
-        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
-          .then(value => value && parseFloat(value) < 0.4));
-      })
-      .then((): any => {
-        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('innerHTML')
-          .then(value => value && parseFloat(value) > 0.6));
-      })
-      .then((): any => {
         return browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent());
       })
       .then((): any => {
