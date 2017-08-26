@@ -104,9 +104,9 @@ export function getRepositoryDetails(repository, sha = null, pr = null): Promise
         if (repository.private && repository.gitlab_id && repository.access_token) {
           cloneUrl =
             cloneUrl.replace('https://', `https://gitlab-ci-token:${repository.access_token}@`);
-        }
-
-        if (repository.bitbucket_id && repository.private && repository.access_token) {
+        } else if (repository.private && repository.gogs_id && repository.access_token) {
+          cloneUrl = cloneUrl.replace('https://', `https://${repository.access_token}@`);
+        } else if (repository.bitbucket_id && repository.private && repository.access_token) {
           return getBitBucketAccessToken(repository.access_token)
             .then(response => {
               let access_token = JSON.parse(response).access_token;

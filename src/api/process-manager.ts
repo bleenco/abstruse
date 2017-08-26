@@ -102,7 +102,6 @@ export function startBuild(data: any): Promise<any> {
       return getRepositoryDetails(repository, sha, pr)
         .then(details => {
           repoDetails = details;
-
           if (pr) {
             repoDetails.config.git.pr = data.pr;
           } else if (!sha) {
