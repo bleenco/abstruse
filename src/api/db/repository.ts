@@ -180,6 +180,8 @@ export function updateRepository(data: any): Promise<boolean> {
       repository = new Repository().where({ bitbucket_id: data.bitbucket_id });
     } else if (data.gitlab_id) {
       repository = new Repository().where({ gitlab_id: data.gitlab_id });
+    } else if (data.gogs_id) {
+      repository = new Repository().where({ gogs_id: data.gogs_id });
     } else {
       reject('Repository Id missing');
     }
@@ -265,6 +267,40 @@ export function pingGitLabRepository(data: any): Promise<any> {
     const saveData = generateGitLabRepositoryData(data);
     new Repository().where({ gitlab_id: saveData.gitlab_id }).fetch()
     .then(repo => {
+      if (!repo) {
+        new Repository().save(saveData, { method: 'insert' })
+        .then(result => {
+          if (!result) {
+            reject(result);
+          } else {
+            let repository = result.toJSON();
+
+            return addRepositoryPermissionToEveryone(repository.id)
+            .then(() => resolve(repository))
+            .catch(err => reject(err));
+        }
+      })
+      .catch(err => reject(err));
+    } else {
+      repo.save(saveData, { method: 'update', require: false })
+        .then(result => {
+          if (!result) {
+            reject(result);
+          } else {
+            resolve(result.toJSON());
+          }
+        })
+        .catch(err => reject(err));
+      }
+    });
+  });
+}
+
+export function pingGogsRepository(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const saveData = generateGogsRepositoryData(data);
+    new Repository().where({ gogs_id: saveData.gogs_id }).fetch()
+      .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
           .then(result => {
@@ -272,7 +308,8 @@ export function pingGitLabRepository(data: any): Promise<any> {
               reject(result);
             } else {
               let repository = result.toJSON();
-              return addRepositoryPermissionToEveryone(result.id)
+
+              return addRepositoryPermissionToEveryone(repository.id)
                 .then(() => resolve(repository))
                 .catch(err => reject(err));
             }
@@ -310,6 +347,32 @@ export function createGitHubPullRequest(data: any): Promise<any> {
           return addRepository(repoData);
         } else {
           return Promise.resolve(repoData);
+        }
+      })
+      .then(repo => {
+        const buildData = {
+          pr: data.number,
+          data: data,
+          start_time: new Date(),
+          repositories_id: repo.id
+        };
+
+        resolve(buildData);
+      })
+      .catch(err => reject(err));
+  });
+}
+
+export function createGogsPullRequest(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let repoId = data.repository.id;
+    new Repository().where({ gogs_id: repoId }).fetch()
+      .then(repo => {
+        if (!repo) {
+          const repoData = generateGogsRepositoryData(data);
+          return addRepository(repoData);
+        } else {
+          return Promise.resolve(repo.toJSON());
         }
       })
       .then(repo => {
@@ -375,6 +438,38 @@ export function synchronizeBitbucketPullRequest(data: any): Promise<any> {
           const repoJson = repository.toJSON();
           repoId = repoJson.id;
           const repoData = generateBitbucketRepositoryData(data);
+          return updateRepository(repoData);
+        }
+      })
+      .then(() => {
+        const buildData = {
+          pr: data.pull_request ? data.pull_request.id : null,
+          data: data,
+          start_time: new Date(),
+          repositories_id: repoId
+        };
+
+        resolve(buildData);
+      })
+      .catch(err => reject(err));
+  });
+}
+
+export function synchronizeGogsPullRequest(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let repoId = data.repository.id;
+    new Repository().where({ gogs_id: repoId }).fetch()
+      .then(repository => {
+        if (!repository) {
+          const repoData = generateGogsRepositoryData(data);
+          return addRepository(repoData).then(repo => {
+            repoId = repo.id;
+          });
+        } else {
+          const repoJson = repository.toJSON();
+          repoId = repoJson.id;
+          const repoData = generateGogsRepositoryData(data);
+
           return updateRepository(repoData);
         }
       })
@@ -477,6 +572,24 @@ function generateGitLabRepositoryData(data: any): any {
     user_login: data.user_username ? data.user_username : data.user.username,
     user_id: data.user_id ? data.user_id : data.object_attributes.author_id,
     user_avatar_url: data.user_avatar ? data.user_avatar : data.user.avatar_url,
+    data: data
+  };
+}
+
+function generateGogsRepositoryData(data: any): any {
+  return {
+    gogs_id: data.repository.id,
+    clone_url: data.repository.clone_url,
+    html_url: data.repository.html_url,
+    default_branch: data.repository.default_branch,
+    name: data.repository.name,
+    full_name: data.repository.full_name,
+    description: data.repository.description,
+    private: data.repository.private,
+    fork: data.repository.fork,
+    user_login: data.repository.owner.login,
+    user_id: data.repository.owner.id,
+    user_avatar_url: data.repository.owner.avatar_url,
     data: data
   };
 }

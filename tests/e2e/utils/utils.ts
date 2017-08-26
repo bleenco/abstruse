@@ -86,6 +86,10 @@ export function sendGitLabRequest(data: any, headers: any): Promise<any> {
 
 export function sendGogsRequest(data: any, headers: any): Promise<any> {
   return new Promise((resolve, reject) => {
+    let secret = 'thisIsSecret';  // todo, read that from config
+    let sig = crypto.createHmac('sha256', secret).update(JSON.stringify(data)).digest('hex');
+    headers['x-gogs-signature'] = sig;
+
     let options = {
       url: 'http://localhost:6500/webhooks/gogs',
       method: 'POST',

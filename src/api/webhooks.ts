@@ -6,9 +6,12 @@ import {
   pingBitbucketRepository,
   synchronizeBitbucketPullRequest,
   pingGitLabRepository,
+  synchronizeGitLabPullRequest,
+  pingGogsRepository,
   createGitHubPullRequest,
+  createGogsPullRequest,
   synchronizeGitHubPullRequest,
-  synchronizeGitLabPullRequest } from './db/repository';
+  synchronizeGogsPullRequest } from './db/repository';
 import { startBuild } from './process-manager';
 import { writeJsonFile } from './fs';
 
@@ -324,11 +327,144 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
 });
 
 webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
-  res.status(200).json({ msg: 'ok' });
+  let config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
+
+  const ev = headers['x-gogs-event'] as string;
+  const sig = headers['x-gogs-signature'] as string;
+  const id = headers['x-gogs-delivery'] as string;
+
+  if (!sig) {
+    return res.status(400).json({ error: 'No X-Gogs-Signature found on request' });
+  }
+
+  if (!ev) {
+    return res.status(400).json({ error: 'No X-Gogs-Event found on request' });
+  }
+
+  if (!id) {
+    return res.status(400).json({ error: 'No X-Gogs-Delivery found on request' });
+  }
+
+  if (!verifyGogsWebhook(sig, payload, config.secret)) {
+    return res.status(400).json({ error: 'X-Gogs-Signature does not match blob signature' });
+  }
+
+  if (req.secure) {
+    config.url = 'https://' + req.headers.host;
+  } else {
+    config.url = 'http://' + req.headers.host;
+  }
+
+  switch (ev) {
+    case 'push':
+      writeJsonFile(getFilePath('config.json'), config)
+      .then(() => pingGogsRepository(payload))
+      .then(repo => {
+        const buildData = {
+          data: payload,
+          start_time: new Date(),
+          repositories_id: repo.id
+        };
+
+        return startBuild(buildData);
+      })
+      .then(() => res.status(200).json({ msg: 'ok' }))
+      .catch(err => {
+        console.error(err);
+        res.status(400).json({ error: err });
+      });
+      break;
+    case 'create':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'delete':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'fork':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'issues':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'issue_comment':
+      res.status(200).json({ msg: 'ok' });
+      break;
+    case 'release':
+      res.status(200).json({ msg: 'ok' });
+    case 'pull_request':
+      switch (payload.action) {
+        case 'opened':
+          writeJsonFile(getFilePath('config.json'), config)
+          .then(() => createGogsPullRequest(payload))
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => {
+            console.error(err);
+            res.status(400).json({ error: err });
+          });
+          break;
+        case 'closed':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'reopened':
+          writeJsonFile(getFilePath('config.json'), config)
+          .then(() => synchronizeGogsPullRequest(payload))
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => {
+            console.error(err);
+            res.status(400).json({ error: err });
+          });
+          break;
+        case 'label_updated':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'milestoned':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'assigned':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'unassigned':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'demilestoned':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'label_cleared':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'edited':
+          res.status(200).json({ msg: 'ok' });
+          break;
+        case 'synchronized':
+          writeJsonFile(getFilePath('config.json'), config)
+          .then(() => synchronizeGogsPullRequest(payload))
+          .then(build => startBuild(build))
+          .then(() => res.status(200).json({ msg: 'ok' }))
+          .catch(err => {
+            console.error(err);
+            res.status(400).json({ error: err });
+          });
+          break;
+        default:
+          break;
+      }
+    default:
+    break;
+  }
 });
 
 function verifyGithubWebhook(signature: string, payload: any, secret: string): boolean {
   const computedSig =
     `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')}`;
+  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(computedSig));
+}
+
+function verifyGogsWebhook(signature: string, payload: any, secret: string): boolean {
+  const computedSig =
+    `${crypto.createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex')}`;
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(computedSig));
 }
