@@ -31,7 +31,6 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   form: IRepoForm;
   limit: number;
   offset: number;
-  updateInterval: any;
   hideMoreButton: boolean;
   userData: any;
 
@@ -104,14 +103,17 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
             }
 
             this.repo.builds[index].jobs[jobIndex].status = status;
+
+            this.updateJobs();
           }
         }
       });
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
-    this.stopInterval();
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   fetch(): void {
@@ -143,7 +145,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         this.hideMoreButton = true;
       }
 
-      this.startInterval();
+      this.updateJobs();
     });
   }
 
@@ -154,6 +156,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       }
 
       this.repo.builds.unshift(build);
+      this.updateJobs();
     });
   }
 
@@ -171,43 +174,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  startInterval(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-
-    this.updateJobs();
-    this.updateInterval = setInterval(() => this.updateJobs(), 1000);
-  }
-
-  stopInterval(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-  }
-
   updateJobs(): void {
-    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-
     this.repo.builds = this.repo.builds
       .map(build => {
-        build.jobs = build.jobs.map(job => {
-          if (!job.end_time || job.status === 'running') {
-            job.time = format(currentTime - job.start_time, 'mm:ss');
-          } else {
-            job.time = format(job.end_time - job.start_time, 'mm:ss');
-          }
-          return job;
-        });
-
-        build.totalTime = format(Math.max(...build.jobs.map(job => {
-          let date = new Date();
-          let splitted = job.time.split(':');
-          date.setUTCMinutes(splitted[0]);
-          date.setUTCSeconds(splitted[1]);
-          return date;
-        })), 'mm:ss');
-
         let status = 'queued';
         if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
           status = 'failed';
@@ -221,8 +190,13 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           status = 'success';
         }
 
+        if (status !== 'running') {
+          build.maxTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+        } else {
+          build.maxTime = Math.max(...build.jobs.map(job => job.start_time));
+        }
+
         build.status = status;
-        build.timeInWords = distanceInWordsToNow(build.created_at);
         return build;
       });
   }

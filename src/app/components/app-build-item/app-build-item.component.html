@@ -18,7 +18,7 @@
     <span class="bold" *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request.head.sha }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha }}</span>
-    <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.afte && !build?.data?.shar && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
+    <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
 
     <span *ngIf="build?.data?.commits && !tag">{{ build?.data?.commits[build?.data?.commits.length - 1]?.message }}</span>
     <span *ngIf="!build?.data?.commits && !tag && build?.data?.pull_request?.title">{{ build?.data?.pull_request?.title }}</span>
@@ -26,7 +26,7 @@
     <span *ngIf="!build?.data?.commits && !build?.data?.pull_request?.title && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message && !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</span>
     <span *ngIf="tag">{{ build?.data?.head_commit?.message }}</span>
 
-    <span class="smaller">{{ build?.timeInWords }} ago</span>
+    <span class="smaller">{{ build?.created_at | timeToNow }} ago</span>
   </div>
   <div class="column is-2">
     <span *ngIf="build?.data?.user_name && !tag">{{ build?.data?.user_name }}</span>
@@ -37,7 +37,8 @@
     <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
   </div>
   <div class="column is-1">
-    <span class="build-time">{{ build?.totalTime }}</span>
+    <span class="build-time" *ngIf="build?.status === 'running'">{{ build?.maxTime | timeDuration }}</span>
+    <span class="build-time" *ngIf="build?.status !== 'running'">{{ build?.maxTime | toTime }}</span>
   </div>
   <div class="column is-1 justify-end" *ngIf="build?.hasPermission">
     <span class="icon restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">

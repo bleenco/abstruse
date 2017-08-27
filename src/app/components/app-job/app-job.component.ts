@@ -112,10 +112,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
         }
 
-        this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
-
         this.updateJobTime();
-        setInterval(() => this.updateJobTime(), 1000);
+        this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
       });
     });
   }
@@ -134,14 +132,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
   }
 
   updateJobTime(): void {
-    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-    if (!this.jobRun.end_time || this.jobRun.status === 'running') {
-      this.job.time = format(currentTime - this.jobRun.start_time, 'mm:ss');
-    } else {
-      this.job.time = format(this.jobRun.end_time - this.jobRun.start_time, 'mm:ss');
-    }
     if (this.previousRuntime) {
-      this.expectedProgress = (currentTime - this.jobRun.start_time) / this.previousRuntime;
+      this.expectedProgress =
+        (new Date().getTime() - this.jobRun.start_time) / this.previousRuntime;
     }
   }
 

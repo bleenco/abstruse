@@ -90,7 +90,8 @@
                   <div class="column is-1">
                     <p class="total-time">
                       <img src="images/icons/clock.svg">
-                      <span>{{ totalTime }}</span>
+                      <span *ngIf="status !== 'running'">{{ totalTime | toTime }}</span>
+                      <span *ngIf="status === 'running'">{{ totalTime | timeDuration }}</span>
                     </p>
                   </div>
                 </div>
@@ -130,7 +131,8 @@
                 </div>
               </div>
               <div class="column is-1">
-                <span class="job-time">{{ job.time }}</span>
+                <span class="job-time" *ngIf="job?.status === 'running'">{{ job.start_time | timeDuration }}</span>
+                <span class="job-time" *ngIf="job?.status !== 'running'">{{ job.end_time - job.start_time | toTime }}</span>
               </div>
               <div class="column is-1" *ngIf="build?.hasPermission">
                 <span class="icon" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">

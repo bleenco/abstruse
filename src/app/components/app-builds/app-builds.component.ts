@@ -19,7 +19,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   builds: any[];
   limit: number;
   offset: number;
-  updateInterval: any;
   userData: any;
 
   constructor(
@@ -85,6 +84,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
               this.builds[build].jobs[index].end_time = new Date();
               break;
           }
+
+          this.update();
         }
       });
   }
@@ -97,32 +98,10 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
-
-    this.stopUpdating();
   }
 
   update(): void {
-    const currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-
     this.builds = this.builds.map(build => {
-      build.jobs = build.jobs.map(job => {
-        if (!job.end_time || job.status === 'running') {
-          job.time = format(currentTime - job.start_time, 'mm:ss');
-        } else {
-          job.time = format(job.end_time - job.start_time, 'mm:ss');
-        }
-
-        return job;
-      });
-
-      build.totalTime = format(Math.max(...build.jobs.map(job => {
-        let date = new Date();
-        let splitted = job.time.split(':');
-        date.setUTCMinutes(splitted[0]);
-        date.setUTCSeconds(splitted[1]);
-        return date;
-      })), 'mm:ss');
-
       let status = 'queued';
       if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
         status = 'failed';
@@ -136,26 +115,15 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         status = 'success';
       }
 
-      build.status = status;
-      build.timeInWords = distanceInWordsToNow(build.created_at);
+      if (status !== 'running') {
+        build.maxTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+      } else {
+        build.maxTime = Math.max(...build.jobs.map(job => job.start_time));
+      }
 
+      build.status = status;
       return build;
     });
-  }
-
-  startUpdating(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-
-    this.update();
-    this.updateInterval = setInterval(() => this.update(), 1000);
-  }
-
-  stopUpdating(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
   }
 
   fetch(e?: MouseEvent): void {
@@ -175,7 +143,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         this.hideMoreButton = true;
       }
 
-      this.startUpdating();
+      this.update();
     });
   }
 
@@ -186,7 +154,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       }
 
       this.builds.unshift(build);
-      this.startUpdating();
+      this.update();
     });
   }
 

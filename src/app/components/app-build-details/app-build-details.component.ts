@@ -18,7 +18,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   build: any;
   status: string;
   timeWords: string;
-  totalTime: string;
+  totalTime: number;
   previousRuntime: number;
   processingBuild: boolean;
   approximatelyRemainingTime: string;
@@ -62,7 +62,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         }
 
         this.status = this.getBuildStatus();
-        this.startUpdating();
+        this.updateJobTimes();
 
         this.subStatus = this.socketService.outputEvents
           .filter(event => event.type === 'process')
@@ -85,6 +85,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
               this.build.jobs[index].processing = false;
               this.status = this.getBuildStatus();
+              this.updateJobTimes();
             }
           });
 
@@ -108,49 +109,19 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
     this.titleService.setTitle('Abstruse CI');
-    this.stopUpdating();
-  }
-
-  startUpdating(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-
-    this.updateJobTimes();
-    this.updateInterval = setInterval(() => this.updateJobTimes(), 1000);
-  }
-
-  stopUpdating(): void {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
   }
 
   updateJobTimes(): void {
     let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-    this.build.jobs = this.build.jobs.map(job => {
-      if (job.status === 'queued') {
-        job.time = '00:00';
-      } else if (!job.end_time || job.status === 'running') {
-        job.time = format(currentTime - job.start_time, 'mm:ss');
-      } else {
-        job.time = format(job.end_time - job.start_time, 'mm:ss');
-      }
 
-      return job;
-    });
+    if (this.status !== 'running') {
+      this.totalTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    } else {
+      this.totalTime = Math.max(...this.build.jobs.map(job => job.start_time));
+    }
 
-    let runningTime = Math.max(...this.build.jobs.map(job => {
-      let date = new Date(0);
-      let splitted = job.time.split(':');
-      date.setUTCMinutes(splitted[0]);
-      date.setUTCSeconds(splitted[1]);
-      return date;
-    }));
-    this.totalTime = format(runningTime, 'mm:ss');
-
-    if (this.previousRuntime && this.previousRuntime > runningTime) {
-      this.approximatelyRemainingTime = format(this.previousRuntime - runningTime, 'mm:ss');
+    if (this.previousRuntime && this.previousRuntime > this.totalTime) {
+      this.approximatelyRemainingTime = format(this.previousRuntime - this.totalTime, 'mm:ss');
     }
   }
 

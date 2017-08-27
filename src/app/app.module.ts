@@ -11,6 +11,9 @@ import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
+import { TimeDurationPipe } from './pipes/time-duration.pipe';
+import { ToTimePipe } from './pipes/to-time.pipe';
+import { TimeToNowPipe } from './pipes/time-to-now.pipe';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
@@ -42,7 +45,10 @@ import { AppTeamComponent } from './components/app-team';
     AppSettingsComponent,
     AppTeamComponent,
     EqualValidator,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    TimeDurationPipe,
+    ToTimePipe,
+    TimeToNowPipe
   ],
   imports: [
     BrowserModule,
