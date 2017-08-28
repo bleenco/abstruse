@@ -229,14 +229,14 @@ export function startJob(p: JobProcess): Promise<void> {
     .then(() => {
       startBuildProcess(p.build_id, p.job_id, p.commands, 'abstruse', p.sshAndVnc)
         .subscribe(event => {
-          const msg: JobMessage = {
+          const msg: JobProcessEvent = {
             build_id: p.build_id,
             job_id: p.job_id,
             type: event.type,
             data: event.data
           };
 
-          terminalEvents.next(event);
+          terminalEvents.next(msg);
           if (event.data && event.type === 'data') {
             p.log.push(event.data);
           } else if (event.type === 'container') {
