@@ -1,4 +1,4 @@
-import { startDockerImageSetupJob, startBuildProcess } from './process';
+import { startDockerImageSetupJob, startBuildProcess, stopContainer } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { insertBuild, updateBuild, getBuild, getBuildStatus, getLastRunId } from './db/build';
 import { insertBuildRun, updateBuildRun } from './db/build-run';
@@ -10,11 +10,7 @@ import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
-import {
-  sendFailureStatus,
-  sendPendingStatus,
-  sendSuccessStatus
-} from './commit-status';
+import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 
 export interface BuildMessage {
   type: string;
@@ -32,7 +28,7 @@ export interface JobMessage {
 export interface JobProcess {
   build_id?: number;
   job_id?: number;
-  status?: 'queued' | 'running' | 'completed';
+  status?: 'queued' | 'running' | 'cancelled';
   image_name?: string;
   log?: string[];
   commands?: string[];
@@ -70,6 +66,7 @@ jobEvents
 const concurrency = config.concurrency || 10;
 jobProcesses
   .mergeMap(procs => {
+    procs = procs.filter(proc => proc.status !== 'cancelled');
     const running = procs.filter(proc => proc.status === 'running');
     if (running.length < concurrency) {
       let inQueue = procs.length - running.length;
@@ -327,7 +324,7 @@ export function startJob(p: JobProcess): Promise<void> {
     .catch(err => logger.error(err));
 }
 
-export function stopJob(jobId: number): Promise<void> {
+export function stopJob(jobId: number): Promise<any> {
   return getJobProcesses().then(processes => {
     const job = processes.find(proc => proc.job_id == jobId);
     if (!job) {
@@ -340,11 +337,12 @@ export function stopJob(jobId: number): Promise<void> {
           }
         })
         .then(() => dbJob.getJob(jobId))
-        .then(job => killContainer(`abstruse_${job.build_id}_${job.job_id}`))
+        .then(job => stopContainer(`abstruse_${job.builds_id}_${job.id}`).toPromise())
         .catch(err => logger.error(err));
     } else {
       return Promise.resolve()
-        .then(() => killContainer(`abstruse_${job.build_id}_${job.job_id}`))
+        .then(() => dbJob.getJob(jobId))
+        .then(job => stopContainer(`abstruse_${job.builds_id}_${job.id}`).toPromise())
         .then(() => dbJob.getLastRunId(jobId))
         .then(runId => dbJobRuns.getRun(runId))
         .then(jobRun => {
@@ -444,9 +442,18 @@ export function restartBuild(buildId: number): Promise<any> {
 export function stopBuild(buildId: number): Promise<any> {
   return getJobProcesses()
     .then(procs => {
-        return procs.filter(job => job.build_id === buildId).reduce((prev, current) => {
+        const processes = procs.slice();
+        procs = procs.map(job => {
+          if (job.build_id === buildId) {
+            job.status = 'cancelled';
+          }
+          return job;
+        });
+        jobProcesses.next(procs);
+
+        return processes.filter(job => job.build_id === buildId).reduce((prev, current) => {
           return prev.then(() => stopJob(current.job_id));
-        }, Promise.resolve());
+        }, Promise.resolve()).then(() => procs);
     })
     .then(() => getBuild(buildId))
     .then(buildData => sendFailureStatus(buildData, buildData.id))
