@@ -4,7 +4,7 @@ import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
-import { green, red, bold, yellow } from 'chalk';
+import { green, red, bold, yellow, blue } from 'chalk';
 const nodePty = require('node-pty');
 
 export interface Job {
@@ -79,7 +79,14 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
 
     start.on('exit', startCode => {
       if (startCode !== 0) {
-        observer.error(red('Container errored with exit code ' + startCode));
+        const msg = [
+          yellow('['),
+          blue(name),
+          yellow(']'),
+          ' --- ',
+          'Container errored with exit code ' + red(startCode)
+        ].join('');
+        observer.error(msg);
       }
 
 
@@ -115,7 +122,14 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
       attach.on('exit', code => {
         code = (detachKey === 'D') ? exitCode : code;
         if (exitCode !== 0) {
-          observer.error(red(`Executed command returned exit code ${bold(exitCode.toString())}`));
+          const msg = [
+            yellow('['),
+            blue(name),
+            yellow(']'),
+            ' --- ',
+            `Executed command returned exit code ${red(exitCode.toString())}`
+          ].join('');
+          observer.error(msg);
         } else {
           observer.next({ type: 'exit', data: exitCode.toString() });
           observer.complete();
@@ -151,7 +165,7 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
   });
 }
 
-function stopContainer(name: string): Observable<ProcessOutput> {
+export function stopContainer(name: string): Observable<ProcessOutput> {
   return new Observable(observer => {
     const process = nodePty.spawn('docker', [
       'rm',
