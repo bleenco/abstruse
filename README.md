@@ -24,6 +24,10 @@ After install is done running a server is as easy as running below command
 $ abstruse
 ```
 
+## Requirements
+
+`abstruse` requires `SQLite3` and `Docker` to be installed on your configuration.
+
 ## Tests
 
 ### Server E2E Tests
