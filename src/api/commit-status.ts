@@ -1,6 +1,115 @@
-import { sendRequest, getBitBucketAccessToken } from './utils';
+import { sendRequest, getBitBucketAccessToken, getConfig } from './utils';
 
-export function setGitHubStatusSuccess(
+export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
+  const config: any = getConfig();
+  if (build.repository && build.repository.access_token) {
+    if (build.repository.github_id) {
+      const sha = build.data.after || build.data.pull_request.head.sha;
+      const name = build.data.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitHubStatusSuccess(gitUrl, abstruseUrl,
+        build.repository.access_token);
+    } else if (build.repository.bitbucket_id) {
+      const sha = build.data.sha;
+      const name = build.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
+        + `/${name}/commit/${sha}/statuses/build`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
+        build.repository.access_token);
+    } else if (build.repository.gitlab_id) {
+      const id = build.data.project_id ?
+        build.data.project_id : build.data.object_attributes.target_project_id;
+      const sha = build.data.checkout_sha
+        || build.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitLabStatusSuccess(gitUrl, abstruseUrl,
+        build.repository.access_token);
+    } else {
+      return Promise.resolve();
+    }
+  } else {
+    return Promise.resolve();
+  }
+}
+
+export function sendPendingStatus(buildData: any, buildId: number): Promise<void> {
+  const config: any = getConfig();
+  if (buildData.repository && buildData.repository.accessToken) {
+    if (buildData.repository.github_id) {
+      const sha = buildData.data.after;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
+    } else if (buildData.repository.bitbucket_id) {
+      const sha = buildData.data.sha;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
+        + `/${name}/commit/${sha}/statuses/build`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setBitbucketStatusPending(gitUrl, abstruseUrl,
+        buildData.repository.access_token);
+    } else if (buildData.repository.gitlab_id) {
+      const id = buildData.data.project_id ?
+      buildData.data.project_id : buildData.data.object_attributes.target_project_id;
+      const sha = buildData.data.checkout_sha
+        || buildData.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
+    } else {
+      return Promise.resolve();
+    }
+  } else {
+    return Promise.resolve();
+  }
+}
+
+export function sendFailureStatus(buildData: any, buildId: number): Promise<void> {
+  const config: any = getConfig();
+  if (buildData.repository && buildData.repository.access_token) {
+    if (buildData.repository.github_id) {
+      const sha = buildData.data.after;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+    } else if (buildData.repository.bitbucket_id) {
+      const sha = buildData.data.sha;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
+        + `/${name}/commit/${sha}/statuses/build`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+    } else if (buildData.repository.gitlab_id) {
+      const id = buildData.data.project_id ?
+      buildData.data.project_id : buildData.data.object_attributes.target_project_id;
+      const sha = buildData.data.checkout_sha
+        || buildData.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
+
+      return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+    } else {
+      return Promise.resolve();
+    }
+  } else {
+    return Promise.resolve();
+  }
+}
+
+function setGitHubStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'success',
@@ -17,7 +126,7 @@ export function setGitHubStatusSuccess(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitHubStatusPending(
+function setGitHubStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'pending',
@@ -34,7 +143,7 @@ export function setGitHubStatusPending(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitHubStatusError(
+function setGitHubStatusError(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'error',
@@ -51,7 +160,7 @@ export function setGitHubStatusError(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitHubStatusFailure(
+function setGitHubStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'failure',
@@ -68,7 +177,7 @@ export function setGitHubStatusFailure(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitLabStatusSuccess(
+function setGitLabStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'success',
@@ -84,7 +193,7 @@ export function setGitLabStatusSuccess(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitLabStatusPending(
+function setGitLabStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'pending',
@@ -100,7 +209,7 @@ export function setGitLabStatusPending(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitLabStatusError(
+function setGitLabStatusError(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'error',
@@ -116,7 +225,7 @@ export function setGitLabStatusError(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setGitLabStatusFailure(
+function setGitLabStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   let data = {
     'state': 'failure',
@@ -132,7 +241,7 @@ export function setGitLabStatusFailure(
   return sendRequest(gitUrl, data, header);
 }
 
-export function setBitbucketStatusSuccess(
+function setBitbucketStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
@@ -155,7 +264,7 @@ export function setBitbucketStatusSuccess(
     .catch(err => Promise.reject(err));
 }
 
-export function setBitbucketStatusPending(
+function setBitbucketStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
     return getBitBucketAccessToken(token)
     .then(response => {
@@ -178,7 +287,7 @@ export function setBitbucketStatusPending(
     .catch(err => Promise.reject(err));
 }
 
-export function setBitbucketStatusFailure(
+function setBitbucketStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
     return getBitBucketAccessToken(token)
     .then(response => {

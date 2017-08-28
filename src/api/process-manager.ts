@@ -11,17 +11,9 @@ import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import {
-  setGitHubStatusError,
-  setGitHubStatusFailure,
-  setGitHubStatusPending,
-  setGitHubStatusSuccess,
-  setBitbucketStatusFailure,
-  setBitbucketStatusPending,
-  setBitbucketStatusSuccess,
-  setGitLabStatusError,
-  setGitLabStatusFailure,
-  setGitLabStatusPending,
-  setGitLabStatusSuccess
+  sendFailureStatus,
+  sendPendingStatus,
+  sendSuccessStatus
 } from './commit-status';
 
 export interface BuildMessage {
@@ -174,36 +166,7 @@ export function startBuild(data: any): Promise<any> {
               delete data.repositories_id;
               delete data.pr;
               insertBuildRun(data)
-                .then(() => {
-                  if (repository.access_token) {
-                    if (repository.github_id) {
-                      const name = data.data.repository.full_name;
-                      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-                      const abstruseUrl = `${config.url}/build/${build.id}`;
-
-                      return setGitHubStatusPending(gitUrl, abstruseUrl, repository.access_token);
-                    } else if (repository.bitbucket_id) {
-                      const name = data.data.repository.full_name;
-                      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                        + `/${name}/commit/${sha}/statuses/build`;
-                      const abstruseUrl = `${config.url}/build/${build.id}`;
-
-                      return setBitbucketStatusPending(gitUrl, abstruseUrl,
-                        repository.access_token);
-                    } else if (repository.gitlab_id) {
-                      const id = data.data.project_id ?
-                        data.data.project_id : data.data.object_attributes.target_project_id;
-                      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-                      const abstruseUrl = `${config.url}/build/${build.id}`;
-
-                      return setGitLabStatusPending(gitUrl, abstruseUrl, repository.access_token);
-                    } else {
-                      return Promise.resolve();
-                    }
-                  } else {
-                    return Promise.resolve();
-                  }
-                })
+                .then(() => sendPendingStatus(build, build.id))
                 .then(() => {
                   const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
@@ -312,39 +275,8 @@ export function startJob(p: JobProcess): Promise<void> {
               });
             })
             .then(() => getBuild(p.build_id))
-            .then(build => {
-              if (build.repository.access_token) {
-                if (build.repository.github_id) {
-                  const sha = build.data.after || build.data.pull_request.head.sha;
-                  const name = build.data.repository.full_name;
-                  const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
-
-                  return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
-                } else if (build.repository.bitbucket_id) {
-                  const sha = build.data.sha;
-                  const name = build.data.repository.full_name;
-                  const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                    + `/${name}/commit/${sha}/statuses/build`;
-                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
-
-                  return setBitbucketStatusFailure(gitUrl, abstruseUrl,
-                    build.repository.access_token);
-                } else if (build.repository.gitlab_id) {
-                  const id = build.data.project_id ?
-                    build.data.project_id : build.data.object_attributes.target_project_id;
-                  const sha = build.data.checkout_sha ||
-                    build.data.object_attributes.last_commit.id;
-                  const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
-                  return setGitLabStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
-                } else {
-                  return Promise.resolve();
-                }
-              } else {
-                return Promise.resolve();
-              }
-            }).catch(err => logger.error(err));
+            .then(build => sendFailureStatus(build, build.id))
+            .catch(err => logger.error(err));
         }, () => {
           dbJob.getLastRunId(p.job_id)
             .then(runId => {
@@ -364,42 +296,7 @@ export function startJob(p: JobProcess): Promise<void> {
                   .then(() => getLastRunId(p.build_id))
                   .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                   .then(() => getBuild(p.build_id))
-                  .then(build => {
-                    if (build.repository.access_token) {
-                      if (build.repository.github_id) {
-                        const sha = build.data.after || build.data.pull_request.head.sha;
-                        const name = build.data.repository.full_name;
-                        const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
-
-                        return setGitHubStatusSuccess(gitUrl, abstruseUrl,
-                          build.repository.access_token);
-                      } else if (build.repository.bitbucket_id) {
-                        const sha = build.data.sha;
-                        const name = build.data.repository.full_name;
-                        const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                          + `/${name}/commit/${sha}/statuses/build`;
-                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
-
-                        return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
-                          build.repository.access_token);
-                      } else if (build.repository.gitlab_id) {
-                        const id = build.data.project_id ?
-                          build.data.project_id : build.data.object_attributes.target_project_id;
-                        const sha = build.data.checkout_sha
-                          || build.data.object_attributes.last_commit.id;
-                        const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
-
-                        return setGitLabStatusSuccess(gitUrl, abstruseUrl,
-                          build.repository.access_token);
-                      } else {
-                        return Promise.resolve();
-                      }
-                    } else {
-                      return Promise.resolve();
-                    }
-                  })
+                  .then(build => sendSuccessStatus(build, build.id))
                   .catch(err => logger.error(err));
               } else {
                 return Promise.resolve();
@@ -539,40 +436,8 @@ export function restartBuild(buildId: number): Promise<any> {
             return prev.then(() => queueJob(buildId, curr.id));
           }, Promise.resolve());
         })
-        .then(() => {
-          if (accessToken) {
-            if (buildData.repository.github_id) {
-              const sha = buildData.data.after;
-              const name = buildData.data.repository.full_name;
-              const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-              const abstruseUrl = `${config.url}/build/${buildData.id}`;
-
-              return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
-            } else if (buildData.repository.bitbucket_id) {
-              const sha = buildData.data.sha;
-              const name = buildData.data.repository.full_name;
-              const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                + `/${name}/commit/${sha}/statuses/build`;
-              const abstruseUrl = `${config.url}/build/${buildData.id}`;
-
-              return setBitbucketStatusPending(gitUrl, abstruseUrl,
-                buildData.repository.access_token);
-            } else if (buildData.repository.gitlab_id) {
-              const id = buildData.data.project_id ?
-              buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-              const sha = buildData.data.checkout_sha
-                || buildData.data.object_attributes.last_commit.id;
-              const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-              const abstruseUrl = `${config.url}/build/${buildId}`;
-
-              return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
-            } else {
-              return Promise.resolve();
-            }
-          } else {
-            return Promise.resolve();
-          }
-        }).catch(err => logger.error(err));
+        .then(() => sendPendingStatus(buildData, buildData.id))
+        .catch(err => logger.error(err));
     }).catch(err => logger.error(err));
 }
 
@@ -584,37 +449,8 @@ export function stopBuild(buildId: number): Promise<any> {
         }, Promise.resolve());
     })
     .then(() => getBuild(buildId))
-    .then(buildData => {
-      if (buildData.repository.access_token && buildData.repository.github_id) {
-        if (buildData.repository.github_id) {
-          const sha = buildData.data.after;
-          const name = buildData.data.repository.full_name;
-          const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${buildId}`;
-
-          return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-        } else if (buildData.repository.bitbucket_id) {
-          const sha = buildData.data.sha;
-          const name = buildData.data.repository.full_name;
-          const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-            + `/${name}/commit/${sha}/statuses/build`;
-          const abstruseUrl = `${config.url}/build/${buildId}`;
-
-          return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-        } else if (buildData.repository.gitlab_id) {
-          const id = buildData.data.project_id ?
-          buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-          const sha = buildData.data.checkout_sha
-            || buildData.data.object_attributes.last_commit.id;
-          const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${buildId}`;
-
-          return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-        } else {
-          return Promise.resolve();
-        }
-      }
-    }).catch(err => logger.error(err));
+    .then(buildData => sendFailureStatus(buildData, buildData.id))
+    .catch(err => logger.error(err));
 }
 
 export function restartJob(jobId: number): Promise<void> {
@@ -640,39 +476,8 @@ export function restartJob(jobId: number): Promise<void> {
       });
     })
     .then(() => getBuild(jobData.builds_id))
-    .then(build => {
-      if (build.repository.access_token) {
-        if (build.repository.github_id) {
-          const sha = build.data.data.after;
-          const name = build.data.repository.full_name;
-          const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setGitHubStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else if (build.repository.bitbucket_id) {
-          const sha = build.data.sha;
-          const name = build.data.repository.full_name;
-          const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-            + `/${name}/commit/${sha}/statuses/build`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setBitbucketStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else if (build.repository.gitlab_id) {
-          const id = build.data.project_id ?
-          build.data.project_id : build.data.object_attributes.target_project_id;
-          const sha = build.data.checkout_sha
-            || build.data.object_attributes.last_commit.id;
-          const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setGitLabStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else {
-          return Promise.resolve();
-        }
-      } else {
-        return Promise.resolve();
-      }
-    }).catch(err => logger.error(err));
+    .then(build => sendPendingStatus(build, build.id))
+    .catch(err => logger.error(err));
 }
 
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
@@ -698,39 +503,8 @@ export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
       });
     })
     .then(() => getBuild(jobData.builds_id))
-    .then(build => {
-      if (build.repository.access_token) {
-        if (build.repository.github_id) {
-          const sha = build.data.data.after;
-          const name = build.data.repository.full_name;
-          const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setGitHubStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else if (build.repository.bitbucket_id) {
-          const sha = build.data.sha;
-          const name = build.data.repository.full_name;
-          const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-            + `/${name}/commit/${sha}/statuses/build`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setBitbucketStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else if (build.repository.gitlab_id) {
-          const id = build.data.project_id ?
-          build.data.project_id : build.data.object_attributes.target_project_id;
-          const sha = build.data.checkout_sha
-            || build.data.object_attributes.last_commit.id;
-          const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-          const abstruseUrl = `${config.url}/build/${build.id}`;
-
-          return setGitLabStatusPending(gitUrl, abstruseUrl, build.repository.access_token);
-        } else {
-          return Promise.resolve();
-        }
-      } else {
-        return Promise.resolve();
-      }
-    }).catch(err => logger.error(err));
+    .then(build => sendPendingStatus(build, build.id))
+    .catch(err => logger.error(err));
 }
 
 export function startSetup(name: string): Promise<void> {
