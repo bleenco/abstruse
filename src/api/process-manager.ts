@@ -42,8 +42,10 @@ export interface JobProcess {
   job_id?: number;
   status?: 'queued' | 'running' | 'completed';
   image_name?: string;
-  job?: Subject<JobMessage> | Observable<JobMessage> | any;
   log?: string[];
+  commands?: string[];
+  sshAndVnc?: boolean;
+  job?: Observable<any>;
 }
 
 export interface JobProcessEvent {
@@ -62,22 +64,33 @@ export let terminalEvents: Subject<JobProcessEvent> = new Subject();
 jobEvents
   .filter(event => !!event.build_id && !!event.job_id)
   .subscribe(event => {
-    let msg = `${blue('build:')} ${event.build_id} ${blue('job:')} ${event.job_id} - ` +
-      yellow(event.data);
+    let msg = [
+      yellow('['),
+      blue('abstruse_' + event.build_id + '_' + event.job_id),
+      yellow(']'),
+      ' --- ',
+      yellow(event.data)
+    ].join('');
     logger.info(msg);
   });
 
 // main scheduler
 const concurrency = config.concurrency || 10;
 jobProcesses
-  .mergeMap((jobProcesses: JobProcess[]) => {
-    return Observable.from(
-      jobProcesses
-        .filter(process => process.status === 'queued')
-        .map(process => Observable.fromPromise(startJob(process.build_id, process.job_id)))
-      );
+  .mergeMap(procs => {
+    const running = procs.filter(proc => proc.status === 'running');
+    if (running.length < concurrency) {
+      let inQueue = procs.length - running.length;
+      inQueue = inQueue >= concurrency ? concurrency : inQueue;
+      procs = procs.filter(proc => proc.status !== 'running').slice(0, inQueue);
+      return Observable.from(procs.map(proc => {
+        proc.status = 'running';
+        return Observable.fromPromise(startJob(proc));
+      }));
+    } else {
+      return Observable.of([]);
+    }
   })
-  .mergeAll(concurrency)
   .subscribe();
 
 // inserts new build into db and queue related jobs.
@@ -248,38 +261,173 @@ export function startBuild(data: any): Promise<any> {
   }).catch(err => logger.error(err));
 }
 
-export function startJob(buildId: number, jobId: number): Promise<void> {
-  return getJobProcesses()
-    .then(procs => {
-      const procIndex = procs.findIndex(job => job.job_id === jobId && job.build_id === buildId);
-      procs[procIndex].status = 'running';
-      jobProcesses.next(procs);
-      const process = procs[procIndex];
-
-      process.job
+export function startJob(p: JobProcess): Promise<void> {
+  return Promise.resolve()
+    .then(() => {
+      startBuildProcess(p.build_id, p.job_id, p.commands, 'abstruse', p.sshAndVnc)
         .subscribe(event => {
+          const msg: JobMessage = {
+            build_id: p.build_id,
+            job_id: p.job_id,
+            type: event.type,
+            data: event.data
+          };
+
           terminalEvents.next(event);
           if (event.data && event.type === 'data') {
-            process.log.push(event.data);
-            procs[procIndex] = process;
-            jobProcesses.next(procs);
+            p.log.push(event.data);
+          } else if (event.type === 'container') {
+            let msg = [
+              yellow('['),
+              blue('abstruse_' + p.build_id + '_' + p.job_id),
+              yellow(']'),
+              ' --- ',
+              yellow(event.data)
+            ].join('');
+            logger.info(msg);
           }
-        });
+        }, err => {
+          logger.error(err);
 
-      return dbJob.getLastRunId(jobId)
-        .then(runId => {
-          const jobRunData = { id: runId, start_time: new Date(), status: 'running', log: '' };
-          return dbJobRuns.updateJobRun(jobRunData)
-            .then(() => {
+          dbJob.getLastRunId(p.job_id)
+            .then(runId => {
+              const data = {
+                id: runId,
+                end_time: new Date(),
+                status: 'failed',
+                log: p.log.join('')
+              };
+
+              return dbJobRuns.updateJobRun(data);
+            })
+            .then(() => getJobProcesses())
+            .then(processes => {
+              processes = processes.filter(proc => proc.job_id !== p.job_id);
+              jobProcesses.next(processes);
               jobEvents.next({
                 type: 'process',
-                build_id: buildId,
-                job_id: jobId,
-                data: 'jobStarted'
+                build_id: p.build_id,
+                job_id: p.job_id,
+                data: 'jobFailed'
               });
-            });
-          }).catch(err => logger.error(err));
-    }).catch(err => logger.error(err));
+            })
+            .then(() => getBuild(p.build_id))
+            .then(build => {
+              if (build.repository.access_token) {
+                if (build.repository.github_id) {
+                  const sha = build.data.after || build.data.pull_request.head.sha;
+                  const name = build.data.repository.full_name;
+                  const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
+
+                  return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
+                } else if (build.repository.bitbucket_id) {
+                  const sha = build.data.sha;
+                  const name = build.data.repository.full_name;
+                  const gitUrl = `https://api.bitbucket.org/2.0/repositories`
+                    + `/${name}/commit/${sha}/statuses/build`;
+                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
+
+                  return setBitbucketStatusFailure(gitUrl, abstruseUrl,
+                    build.repository.access_token);
+                } else if (build.repository.gitlab_id) {
+                  const id = build.data.project_id ?
+                    build.data.project_id : build.data.object_attributes.target_project_id;
+                  const sha = build.data.checkout_sha ||
+                    build.data.object_attributes.last_commit.id;
+                  const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+                  const abstruseUrl = `${config.url}/build/${p.build_id}`;
+                  return setGitLabStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
+                } else {
+                  return Promise.resolve();
+                }
+              } else {
+                return Promise.resolve();
+              }
+            }).catch(err => logger.error(err));
+        }, () => {
+          dbJob.getLastRunId(p.job_id)
+            .then(runId => {
+              const data = {
+                id: runId,
+                end_time: new Date(),
+                status: 'success',
+                log: p.log.join('')
+              };
+
+              return dbJobRuns.updateJobRun(data);
+            })
+            .then(() => getBuildStatus(p.build_id))
+            .then(status => {
+              if (status) {
+                return updateBuild({ id: p.build_id, end_time: new Date() })
+                  .then(() => getLastRunId(p.build_id))
+                  .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                  .then(() => getBuild(p.build_id))
+                  .then(build => {
+                    if (build.repository.access_token) {
+                      if (build.repository.github_id) {
+                        const sha = build.data.after || build.data.pull_request.head.sha;
+                        const name = build.data.repository.full_name;
+                        const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
+
+                        return setGitHubStatusSuccess(gitUrl, abstruseUrl,
+                          build.repository.access_token);
+                      } else if (build.repository.bitbucket_id) {
+                        const sha = build.data.sha;
+                        const name = build.data.repository.full_name;
+                        const gitUrl = `https://api.bitbucket.org/2.0/repositories`
+                          + `/${name}/commit/${sha}/statuses/build`;
+                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
+
+                        return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
+                          build.repository.access_token);
+                      } else if (build.repository.gitlab_id) {
+                        const id = build.data.project_id ?
+                          build.data.project_id : build.data.object_attributes.target_project_id;
+                        const sha = build.data.checkout_sha
+                          || build.data.object_attributes.last_commit.id;
+                        const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+                        const abstruseUrl = `${config.url}/build/${p.build_id}`;
+
+                        return setGitLabStatusSuccess(gitUrl, abstruseUrl,
+                          build.repository.access_token);
+                      } else {
+                        return Promise.resolve();
+                      }
+                    } else {
+                      return Promise.resolve();
+                    }
+                  })
+                  .catch(err => logger.error(err));
+              } else {
+                return Promise.resolve();
+              }
+            })
+            .then(() => getJobProcesses())
+            .then(processes => {
+              processes = processes.filter(proc => proc.job_id !== p.job_id);
+              jobProcesses.next(processes);
+              jobEvents.next({
+                type: 'process',
+                build_id: p.build_id,
+                job_id: p.job_id,
+                data: 'jobSucceded'
+              });
+            }).catch(err => logger.error(err));
+        });
+    })
+    .then(() => dbJob.getLastRunId(p.job_id))
+    .then(runId => {
+      const data = { id: runId, start_time: new Date(), status: 'running', log: '' };
+      return dbJobRuns.updateJobRun(data);
+    })
+    .then(() => {
+      const data = { type: 'process', build_id: p.build_id, job_id: p.job_id, data: 'jobStarted' };
+      jobEvents.next(data);
+    })
+    .catch(err => logger.error(err));
 }
 
 export function stopJob(jobId: number): Promise<void> {
@@ -346,7 +494,8 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         build_id: buildId,
         job_id: jobId,
         status: 'queued',
-        job: prepareJob(buildId, jobId, commands, sshAndVnc),
+        commands: commands,
+        sshAndVnc: sshAndVnc,
         log: []
       };
 
@@ -354,159 +503,6 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
       jobProcesses.next(processes);
       jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobQueued' });
     }).catch(err => logger.error(err));
-}
-
-function prepareJob(buildId: number, jobId: number, cmds: any, sshAndVnc = false):
-  Observable<JobMessage> {
-  return new Observable(observer => {
-    getJobProcesses().then(processes => {
-      const index = processes.findIndex(job => job.job_id === jobId && job.build_id === buildId);
-      processes[index].status = 'completed';
-      jobProcesses.next(processes);
-      const process = processes[index];
-
-      startBuildProcess(buildId, jobId, cmds, 'abstruse', sshAndVnc).subscribe(event => {
-        const msg: JobMessage = {
-          build_id: buildId,
-          job_id: jobId,
-          type: event.type,
-          data: event.data
-        };
-
-        observer.next(msg);
-      }, err => {
-        logger.error(err);
-        observer.complete();
-
-        dbJob.getLastRunId(jobId)
-          .then(runId => {
-            const data = {
-              id: runId,
-              end_time: new Date(),
-              status: 'failed',
-              log: process.log.join('')
-            };
-
-            return dbJobRuns.updateJobRun(data);
-          })
-          .then(() => {
-            processes = processes.filter(proc => proc.job_id !== jobId);
-            jobProcesses.next(processes);
-            jobEvents.next({
-              type: 'process',
-              build_id: buildId,
-              job_id: jobId,
-              data: 'jobFailed'
-            });
-          })
-          .then(() => getBuild(buildId))
-          .then(build => {
-            if (build.repository.access_token) {
-              if (build.repository.github_id) {
-                const sha = build.data.after || build.data.pull_request.head.sha;
-                const name = build.data.repository.full_name;
-                const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-                const abstruseUrl = `${config.url}/build/${buildId}`;
-
-                return setGitHubStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
-              } else if (build.repository.bitbucket_id) {
-                const sha = build.data.sha;
-                const name = build.data.repository.full_name;
-                const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                  + `/${name}/commit/${sha}/statuses/build`;
-                const abstruseUrl = `${config.url}/build/${buildId}`;
-
-                return setBitbucketStatusFailure(gitUrl, abstruseUrl,
-                  build.repository.access_token);
-              } else if (build.repository.gitlab_id) {
-                const id = build.data.project_id ?
-                  build.data.project_id : build.data.object_attributes.target_project_id;
-                const sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
-                const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-                const abstruseUrl = `${config.url}/build/${buildId}`;
-                return setGitLabStatusFailure(gitUrl, abstruseUrl, build.repository.access_token);
-              } else {
-                return Promise.resolve();
-              }
-            } else {
-              return Promise.resolve();
-            }
-          }).catch(err => logger.error(err));
-      }, () => {
-        observer.complete();
-
-        dbJob.getLastRunId(jobId)
-          .then(runId => {
-            const data = {
-              id: runId,
-              end_time: new Date(),
-              status: 'success',
-              log: process.log.join('')
-            };
-
-            return dbJobRuns.updateJobRun(data);
-          })
-          .then(() => getBuildStatus(buildId))
-          .then(status => {
-            if (status) {
-              return updateBuild({ id: buildId, end_time: new Date() })
-                .then(() => getLastRunId(buildId))
-                .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
-                .then(() => getBuild(buildId))
-                .then(build => {
-                  if (build.repository.access_token) {
-                    if (build.repository.github_id) {
-                      const sha = build.data.after || build.data.pull_request.head.sha;
-                      const name = build.data.repository.full_name;
-                      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-                      const abstruseUrl = `${config.url}/build/${buildId}`;
-
-                      return setGitHubStatusSuccess(gitUrl, abstruseUrl,
-                        build.repository.access_token);
-                    } else if (build.repository.bitbucket_id) {
-                      const sha = build.data.sha;
-                      const name = build.data.repository.full_name;
-                      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
-                        + `/${name}/commit/${sha}/statuses/build`;
-                      const abstruseUrl = `${config.url}/build/${buildId}`;
-
-                      return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
-                        build.repository.access_token);
-                    } else if (build.repository.gitlab_id) {
-                      const id = build.data.project_id ?
-                        build.data.project_id : build.data.object_attributes.target_project_id;
-                      const sha = build.data.checkout_sha
-                        || build.data.object_attributes.last_commit.id;
-                      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-                      const abstruseUrl = `${config.url}/build/${buildId}`;
-
-                      return setGitLabStatusSuccess(gitUrl, abstruseUrl,
-                        build.repository.access_token);
-                    } else {
-                      return Promise.resolve();
-                    }
-                  } else {
-                    return Promise.resolve();
-                  }
-                })
-                .catch(err => logger.error(err));
-            } else {
-              return Promise.resolve();
-            }
-          })
-          .then(() => {
-            processes = processes.filter(proc => proc.job_id !== jobId);
-            jobProcesses.next(processes);
-            jobEvents.next({
-              type: 'process',
-              build_id: buildId,
-              job_id: jobId,
-              data: 'jobSucceded'
-            });
-          }).catch(err => logger.error(err));
-      });
-    }).catch(err => logger.error(err));
-  });
 }
 
 export function restartBuild(buildId: number): Promise<any> {
