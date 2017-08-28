@@ -132,7 +132,8 @@
               </div>
               <div class="column is-1">
                 <span class="job-time" *ngIf="job?.status === 'running'">{{ job.start_time | timeDuration }}</span>
-                <span class="job-time" *ngIf="job?.status !== 'running'">{{ job.end_time - job.start_time | toTime }}</span>
+                <span class="job-time" *ngIf="job?.status === 'success' || job?.status === 'failed'">{{ job.end_time - job.start_time | toTime }}</span>
+                <span class="job-time" *ngIf="job?.status === 'queued'">00:00</span>
               </div>
               <div class="column is-1" *ngIf="build?.hasPermission">
                 <span class="icon" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">
