@@ -6,22 +6,9 @@
 
 [![AbstruseCI](https://abstruse.bleenco.io/badge/1)](https://abstruse.bleenco.io/repo/1)
 
-Run Continuous Integration (CI) on your own servers.
-
-Built with latest techonologies using **Node.JS**, **Angular** and **RxJS**.
+Run Continuous Integration (CI) on your own servers with zero configuration.
 
 Provides safe and reliable testing & deployment environment using Docker containers.
-
-## Current Status
-
-abstruse is under heavy development and will be ready for serious use in a matter of weeks.
-
-We are already testing some of our repositories on abstruse, but currently we don't have a proper hosting so we unfortunatelly
-can't share the actual demo with you.
-
-In the meantime you can check out screenshots [here](https://github.com/bleenco/abstruse/wiki/Screenshots-(Preview)).
-
-You are welcome to install & test abstruse locally, but please do not open any issues yet.
 
 ## Installation
 
@@ -31,10 +18,24 @@ $ npm install abstruse -g
 
 ## Running abstruse
 
-After install is done running a server is as easy as running below command :-)
+After install is done running a server is as easy as running below command
 
 ```sh
 $ abstruse
+```
+
+## Tests
+
+### Server E2E Tests
+
+```sh
+npm run test:e2e
+```
+
+### Protractor E2E Tests
+
+```sh
+npm run test:protractor
 ```
 
 ## GitHub Integration
@@ -44,12 +45,6 @@ To integrate `abstruse` with GitHub go to `Settings -> Webhooks` and add URL whe
 Secret is defined in `~/.abstruse/config.json` and after updating the secret abstruse instance need to be restarted.
 
 Default secret is `thisIsSecret`.
-
-Check sample configuration on the screenshot below.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/28603956-a12a2b5a-71c7-11e7-89db-57f606513d57.png">
-</p>
 
 ## Sample Configuration
 
