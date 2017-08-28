@@ -1,3 +1,36 @@
+<a name="0.8.13"></a>
+## [0.8.13](https://github.com/bleenco/abstruse/compare/v0.8.11...v0.8.13) (2017-08-28)
+
+
+### Bug Fixes
+
+* approximately time remaining ([678fcd7](https://github.com/bleenco/abstruse/commit/678fcd7))
+* fix hasPermission issue ([b3c0014](https://github.com/bleenco/abstruse/commit/b3c0014))
+* fix permissions ([f5b10fc](https://github.com/bleenco/abstruse/commit/f5b10fc))
+* fixed server routes for repositories ([3a8c90e](https://github.com/bleenco/abstruse/commit/3a8c90e))
+* hide stop build/job button if there is no jobs/build to stop ([28b2640](https://github.com/bleenco/abstruse/commit/28b2640))
+* process-manager, send JobProcessEvent ([d644da4](https://github.com/bleenco/abstruse/commit/d644da4))
+* progress bar fix ([e68fdb3](https://github.com/bleenco/abstruse/commit/e68fdb3))
+* **pm:** concurrency in process-manager (cancelled processes) ([f55dbcf](https://github.com/bleenco/abstruse/commit/f55dbcf))
+
+
+### Features
+
+* **dracula:** dracula theme for terminal (as default also ([1a2b74d](https://github.com/bleenco/abstruse/commit/1a2b74d))
+* bitbucket integration ([20aedc8](https://github.com/bleenco/abstruse/commit/20aedc8))
+* gitlab integration ([b5429c6](https://github.com/bleenco/abstruse/commit/b5429c6))
+* gogs integration ([09b7949](https://github.com/bleenco/abstruse/commit/09b7949))
+* only user with permissions can restart or stop job/build ([25e958b](https://github.com/bleenco/abstruse/commit/25e958b))
+* user permissions ([9b702fb](https://github.com/bleenco/abstruse/commit/9b702fb))
+* **process-manager:** concurrency ([0a2ced4](https://github.com/bleenco/abstruse/commit/0a2ced4))
+
+
+### Performance Improvements
+
+* **times:** async pipe for updating live times ([6dbf019](https://github.com/bleenco/abstruse/commit/6dbf019))
+
+
+
 <a name="0.8.11"></a>
 ## [0.8.11](https://github.com/bleenco/abstruse/compare/v0.8.9...v0.8.11) (2017-08-20)
 
