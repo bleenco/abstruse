@@ -10,6 +10,8 @@ Run Continuous Integration (CI) on your own servers with zero configuration.
 
 Provides safe and reliable testing & deployment environment using Docker containers.
 
+
+
 ## Installation
 
 ```sh
@@ -85,7 +87,7 @@ test:
 ## Sneak Peek
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/28693241-05049a04-7324-11e7-9c8b-0b3132cdf21b.png">
+  <img src="https://user-images.githubusercontent.com/1796022/29797980-78c7a766-8c5a-11e7-87a7-98cebd085396.png">
 </p>
 
 ## Licence
