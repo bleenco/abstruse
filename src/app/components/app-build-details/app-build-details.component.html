@@ -62,7 +62,7 @@
                   </div>
                   <div class="column is-4">
                     <p *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.pull_request?.title }}</p>
-                    <p *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[build?.data?.commits.length - 1]?.message }}</p>
+                    <p *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[0]?.message }}</p>
                     <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.message && !tag">{{ build?.data?.message }}</p>
                     <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</p>
                     <p *ngIf="tag">{{ build?.data?.head_commit?.message }}</p>
