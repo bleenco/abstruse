@@ -39,7 +39,7 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
 
 export function sendPendingStatus(buildData: any, buildId: number): Promise<void> {
   const config: any = getConfig();
-  if (buildData.repository && buildData.repository.accessToken) {
+  if (buildData.repository && buildData.repository.access_token) {
     if (buildData.repository.github_id) {
       const sha = buildData.data.after;
       const name = buildData.data.repository.full_name;
