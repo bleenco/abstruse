@@ -37,6 +37,12 @@ export class AuthService {
   setLoginRequired(data: boolean): void {
     this.loginRequired = data;
   }
+
+  addNewUser(user: any): any {
+    return this.api.createUser(user)
+      .toPromise()
+      .then(data => data);
+  }
 }
 
 export const AuthServiceProvider: Provider = {
