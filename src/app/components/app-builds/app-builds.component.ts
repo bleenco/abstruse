@@ -21,6 +21,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   offset: number;
   userData: any;
   userId: string | null;
+  show: 'all' | 'pr' | 'commits';
 
   constructor(
     private socketService: SocketService,
@@ -32,6 +33,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.limit = 5;
     this.offset = 0;
+    this.show = 'all';
   }
 
   ngOnInit() {
@@ -139,6 +141,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     this.apiService.getBuilds(
       this.limit,
       this.offset,
+      this.show,
       this.userId
     ).subscribe(builds => {
       this.builds = this.builds.concat(builds);
@@ -146,6 +149,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       this.fetching = false;
       if (builds.length === this.limit) {
         this.offset += 5;
+        this.hideMoreButton = false;
       } else {
         this.hideMoreButton = true;
       }
@@ -167,5 +171,26 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
+  }
+
+  showAllBuilds(): void {
+    this.show = 'all';
+    this.builds = [];
+    this.offset = 0;
+    this.fetch();
+  }
+
+  showPullRequests(): void {
+    this.show = 'pr';
+    this.builds = [];
+    this.offset = 0;
+    this.fetch();
+  }
+
+  showCommits(): void {
+    this.show = 'commits';
+    this.builds = [];
+    this.offset = 0;
+    this.fetch();
   }
 }

@@ -4,6 +4,7 @@ import { getLastRun } from './job';
 export function getBuilds(
   limit: number,
   offset: number,
+  filter: string,
   userId?: number | null
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -13,17 +14,24 @@ export function getBuilds(
           q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
           .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
           .where('permissions.users_id', userId)
-          .andWhere('permissions.permission', true)
-          .orWhere('repositories.private', false)
-          .orderBy('id', 'DESC')
-          .offset(offset)
-          .limit(limit);
+          .andWhere(function() {
+            this.where('permissions.permission', true).orWhere('repositories.private', false);
+          });
         } else {
           q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
           .where('repositories.private', false)
-          .andWhere('repositories.public', true)
-          .orderBy('id', 'DESC').offset(offset).limit(limit);
+          .andWhere('repositories.public', true);
         }
+
+        if (filter === 'pr') {
+          q.whereNotNull('builds.pr');
+        } else if (filter === 'commits') {
+          q.whereNull('builds.pr');
+        }
+
+        q.orderBy('id', 'DESC')
+        .offset(offset)
+        .limit(limit);
       })
       .fetchAll({ withRelated: ['repository.permissions', 'jobs.runs' ]})
       .then(builds => {

@@ -67,14 +67,15 @@ export function webRoutes(): express.Router {
 export function buildRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/limit/:limit/offset/:offset/:userid?',
+  router.get('/limit/:limit/offset/:offset/:filter/:userid?',
     (req: express.Request, res: express.Response) => {
       if (req.params.userid) {
-        getBuilds(req.params.limit, req.params.offset, req.params.userid).then(builds => {
-          return res.status(200).json({ data: builds });
-        });
+        getBuilds(req.params.limit, req.params.offset, req.params.filter, req.params.userid)
+          .then(builds => {
+            return res.status(200).json({ data: builds });
+          });
       } else {
-        getBuilds(req.params.limit, req.params.offset).then(builds => {
+        getBuilds(req.params.limit, req.params.offset, req.params.filter).then(builds => {
           return res.status(200).json({ data: builds });
         });
       }

@@ -20,11 +20,13 @@ export class ApiService {
     return this.http.get(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
   }
 
-  getBuilds(limit: number, offset: number, userId?: string): Observable<any> {
+  getBuilds(limit: number, offset: number, buildTypes: string, userId?: string): Observable<any> {
     if (userId) {
-      return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}/${userId}`, null, true);
+      return this.get(
+        `${this.url}/builds/limit/${limit}/offset/${offset}/${buildTypes}/${userId}`, null, true);
     } else {
-      return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
+      return this.get(
+        `${this.url}/builds/limit/${limit}/offset/${offset}/${buildTypes}`, null, true);
     }
   }
 
