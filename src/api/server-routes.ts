@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
-import { resolve } from 'path';
+import { resolve, extname, relative } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { getFilePath, generateBadgeHtml } from './utils';
@@ -14,7 +14,8 @@ import {
   getUser,
   updateUser,
   updateUserPassword,
-  getUsers
+  getUsers,
+  getUserJwt
 } from './db/user';
 import {
   addRepository,
@@ -30,6 +31,19 @@ import { getJob } from './db/job';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
+import * as multer from 'multer';
+
+const storage: multer.StorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, utils.getFilePath('avatars'));
+  },
+  filename: (req, file, cb) => {
+    const ext = extname(file.originalname);
+    cb(null, `${Math.random().toString(36).substring(7)}${ext}`);
+  }
+});
+
+const upload: multer.Instance = multer({ storage: storage });
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -174,6 +188,17 @@ export function userRoutes(): express.Router {
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.post('/upload-avatar', upload.any(), (req: express.Request, res: express.Response) => {
+    const avatar = '/' + relative(utils.getRootDir(), req.files[0].path);
+    getUser(req.body.userId)
+      .then(user => {
+        user.avatar = avatar;
+        return updateUser(user);
+      })
+      .then(user => getUserJwt(user))
+      .then(jwt => res.status(200).json({ data: jwt }));
   });
 
   return router;

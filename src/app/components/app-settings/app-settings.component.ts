@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
+import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
 
 export interface IUser {
   id: number;
@@ -29,6 +30,9 @@ export interface IAccessToken {
 })
 export class AppSettingsComponent implements OnInit {
   loading: boolean;
+  uploading: boolean;
+  uploadProgress: number;
+  uploadInput: EventEmitter<UploadInput>;
   userSaved: boolean;
   user: IUser;
   userPasswordSaved: boolean;
@@ -37,8 +41,15 @@ export class AppSettingsComponent implements OnInit {
   token: IAccessToken;
   tokens: IAccessToken[];
 
-  constructor(private api: ApiService, private auth: AuthService, private config: ConfigService) {
+  constructor(
+    private api: ApiService,
+    private auth: AuthService,
+    private config: ConfigService
+  ) {
     this.loading = true;
+    this.uploading = false;
+    this.uploadProgress = 0;
+    this.uploadInput = new EventEmitter<UploadInput>();
   }
 
   ngOnInit() {
@@ -97,5 +108,31 @@ export class AppSettingsComponent implements OnInit {
         this.fetchUser();
       }
     });
+  }
+
+  onUploadOutput(output: UploadOutput): void {
+    if (output.type === 'allAddedToQueue') {
+      const event: UploadInput = {
+        type: 'uploadAll',
+        url: this.config.url + '/api/user/upload-avatar',
+        method: 'POST',
+        data: { userId: this.user.id.toString() }
+      };
+
+      this.uploadInput.emit(event);
+      this.uploading = true;
+      this.uploadProgress = 0;
+    } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
+      this.uploadProgress = output.file.progress.data.percentage;
+      if (this.uploadProgress === 100) {
+        this.uploading = false;
+        this.uploadProgress = 0;
+      }
+    } else if (output.file && output.file.responseStatus === 200) {
+      const jwt = output.file.response.data;
+      this.auth.login(jwt);
+      const user: any = this.auth.getData();
+      this.avatarUrl = this.config.url + user.avatar;
+    }
   }
 }

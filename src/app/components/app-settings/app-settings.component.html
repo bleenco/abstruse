@@ -24,8 +24,13 @@
   <div class="column is-12" *ngIf="!loading">
     <div class="columns is-multiline">
       <div class="column is-4">
-        <figure class="image profile-image">
+        <figure class="image profile-image" ngFileDrop (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
           <img [src]="avatarUrl">
+          <span class="label-blue">Change your avatar</span>
+          <label class="upload-label">
+            <input type="file" ngFileSelect (uploadOutput)="onUploadOutput($event)" [uploadInput]="uploadInput">
+          </label>
+          <progress min="0" max="100" [value]="uploadProgress" class="progress-blue" *ngIf="uploading"></progress>
         </figure>
       </div>
       <div class="column is-8">
