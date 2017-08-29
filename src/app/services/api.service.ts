@@ -52,7 +52,7 @@ export class ApiService {
     }
   }
 
-  getRepositories(userId: string, keyword: string): Observable<any> {
+  getRepositories(keyword: string, userId?: string): Observable<any> {
     const params = new URLSearchParams();
     params.append('keyword', keyword);
     if (userId) {
@@ -131,6 +131,10 @@ export class ApiService {
 
   login(data: any): Observable<any> {
     return this.post(`${this.url}/user/login`, data);
+  }
+
+  updateRepositoryPermission(data: any): Observable<any> {
+    return this.post(`${this.url}/repositories/permission`, data);
   }
 
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {

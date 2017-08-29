@@ -127,7 +127,7 @@ export function getRepositories(keyword: string, userId?: string): Promise<any[]
       }
     }).fetchAll({ withRelated: [{'permissions': (query) => {
       if (userId) {
-        query.where('users_id', userId).andWhere('permission', true);
+        query.where('users_id', userId);
       } else {
         query.where('private', false).andWhere('public', true);
       }
@@ -171,6 +171,13 @@ export function addRepository(data: any): Promise<any> {
 }
 
 export function saveRepositorySettings(data: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Repository({ id: data.id }).save(data, { method: 'update', require: false })
+      .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()));
+  });
+}
+
+export function updateRepositoryPermission(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository({ id: data.id }).save(data, { method: 'update', require: false })
       .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()));

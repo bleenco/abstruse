@@ -52,8 +52,9 @@ export class AppRepositoriesComponent implements OnInit {
   fetch(keyword = ''): void {
     this.loading = true;
     const userId = this.userData && this.userData.id || null;
-    this.apiService.getRepositories(userId, keyword).subscribe(event => {
-      this.repositories = event;
+    this.apiService.getRepositories(keyword, userId).subscribe(repositories => {
+      this.repositories =
+        repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);
       this.repositories.forEach((repo: any, i) => {
         this.apiService.getBadge(repo.id).subscribe(badge => {
           if (badge.ok) {

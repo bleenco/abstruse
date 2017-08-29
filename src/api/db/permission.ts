@@ -1,5 +1,6 @@
 import { Permission } from './model';
 import { getUsers } from './user';
+import { getRepositories } from './repository';
 
 export function getPermission(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -17,7 +18,11 @@ export function getRepositoryPermissions(repoId: number): Promise<any> {
 
 export function updatePermission(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Permission({ id: data.id }).save(data, { method: 'update', require: false })
+    let updateData = {
+      repositories_id: data.repository, users_id: data.user, permission: data.permission };
+    new Permission()
+      .query(q => q.where('repositories_id', data.repository).andWhere('users_id', data.user))
+      .save(updateData, { method: 'update', require: false })
       .then(permission => !permission ? reject(permission) : resolve(permission.toJSON()));
   });
 }
@@ -35,6 +40,18 @@ export function addRepositoryPermissionToEveryone(repoId): Promise<any> {
       return Promise.all(users.map(user => addPermission({
         repositories_id: repoId,
         users_id: user.id
+      })))
+      .then(() => resolve());
+    }).catch(err => reject(err));
+  });
+}
+
+export function addRepositoryPermissions(userId): Promise<any> {
+  return new Promise ((resolve, reject) => {
+    getRepositories('').then(repositories => {
+      return Promise.all(repositories.map(repo => addPermission({
+        repositories_id: repo.id,
+        users_id: userId
       })))
       .then(() => resolve());
     }).catch(err => reject(err));

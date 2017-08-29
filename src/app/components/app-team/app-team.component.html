@@ -84,7 +84,7 @@
           </div>
 
           <div class="column is-12" *ngIf="users && users.length">
-            <div class="columns list-item list-item-slim" *ngFor="let user of users; let i = index;">
+            <div class="columns list-item list-item-slim" *ngFor="let user of users; let i = index;" (click)="goToUser(user.id)">
               <div class="column is-3">
                 <span class="icon">
                   <img src="images/icons/git-repository.svg">
@@ -108,7 +108,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
