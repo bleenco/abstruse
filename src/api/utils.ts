@@ -138,7 +138,7 @@ export function generateBadgeHtml(status: string): string {
   }
 
   return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="110" height="20" style="shape-rendering:
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" style="shape-rendering:
       geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd;
       clip-rule:evenodd">
       <linearGradient id="b" x2="0" y2="100%">
@@ -146,7 +146,7 @@ export function generateBadgeHtml(status: string): string {
         <stop offset="1" stop-opacity=".1"/>
       </linearGradient>
       <mask id="a">
-        <rect width="110" height="20" rx="3" fill="#fff"/>
+        <rect width="100" height="20" rx="3" fill="#fff"/>
       </mask>
       <g mask="url(#a)">
         <path fill="#333" d="M0 0h53v20H0z"/>
