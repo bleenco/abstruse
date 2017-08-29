@@ -10,8 +10,6 @@ Run Continuous Integration (CI) on your own servers with zero configuration.
 
 Provides safe and reliable testing & deployment environment using Docker containers.
 
-
-
 ## Installation
 
 ```sh
@@ -32,13 +30,13 @@ $ abstruse
 
 ## Tests
 
-### Server E2E Tests
+#### server e2e tests
 
 ```sh
 npm run test:e2e
 ```
 
-### Protractor E2E Tests
+#### protractor e2e tests
 
 ```sh
 npm run test:protractor

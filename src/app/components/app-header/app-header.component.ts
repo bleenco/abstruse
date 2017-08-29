@@ -27,6 +27,13 @@ export class AppHeaderComponent implements OnInit {
   ngOnInit() {
     this.user = this.authService.getData();
     this.user.avatar = this.config.url + this.user.avatar;
+
+    this.authService.userEvents.subscribe(event => {
+      if (event === 'login') {
+        this.user = this.authService.getData();
+        this.user.avatar = this.config.url + this.user.avatar;
+      }
+    });
   }
 
   toggleMenu() {

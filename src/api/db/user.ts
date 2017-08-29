@@ -40,6 +40,8 @@ export function getUsers(): Promise<any> {
 
 export function updateUser(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
+    delete data.access_tokens;
+
     new User({ id: data.id }).save(data, { method: 'update', require: false })
       .then(user => {
         if (!user) {
@@ -84,6 +86,10 @@ export function login(data: any): Promise<boolean | string> {
       }
     }).catch(err => resolve(false));
   });
+}
+
+export function getUserJwt(user: any): Promise<string> {
+  return generateJwt(user);
 }
 
 export function usersExists(): Promise<boolean> {
