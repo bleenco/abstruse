@@ -1,4 +1,5 @@
 import { User } from './model';
+import { addRepositoryPermissions } from './permission';
 import { generatePassword, comparePassword, generateJwt } from '../security';
 
 export function getUser(id: number): Promise<any> {
@@ -114,8 +115,11 @@ export function createUser(data: any): Promise<boolean> {
         if (!result) {
           reject(result);
         }
+        let user = result.toJSON();
 
-        resolve(true);
+        return addRepositoryPermissions(user.id)
+          .then(() => resolve(true))
+          .catch(err => reject(err));
       });
     })
     .catch(err => {

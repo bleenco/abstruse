@@ -26,6 +26,7 @@ import { AppBuildItemComponent } from './components/app-build-item';
 import { AppRepositoriesComponent } from './components/app-repositories';
 import { AppRepositoryComponent } from './components/app-repository';
 import { AppJobComponent } from './components/app-job';
+import { AppUserComponent } from './components/app-user';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
 
@@ -45,6 +46,7 @@ import { AppTeamComponent } from './components/app-team';
     AppJobComponent,
     AppSettingsComponent,
     AppTeamComponent,
+    AppUserComponent,
     EqualValidator,
     SafeHtmlPipe,
     TimeDurationPipe,
@@ -89,6 +91,11 @@ import { AppTeamComponent } from './components/app-team';
       {
         path: 'team',
         component: AppTeamComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'user/:id',
+        component: AppUserComponent,
         canActivate: [AuthGuard]
       },
       {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -19,12 +20,11 @@ export class AppTeamComponent implements OnInit {
   email: string;
   admin: boolean;
 
-  constructor(private api: ApiService, private auth: AuthService) {
+  constructor(private api: ApiService, private auth: AuthService, private router: Router) {
     this.loading = true;
     this.addUser = false;
     this.users = [];
     this.user = auth.getData();
-    console.log(this.user);
   }
 
   ngOnInit() {
@@ -64,5 +64,9 @@ export class AppTeamComponent implements OnInit {
         this.success = false;
       }
     });
+  }
+
+  goToUser(id: number): void {
+    this.router.navigate(['user', id]);
   }
 }

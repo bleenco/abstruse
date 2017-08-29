@@ -29,6 +29,7 @@ import {
 import { getBuilds, getBuild, getLastBuild } from './db/build';
 import { getJob } from './db/job';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
+import { updatePermission } from './db/permission';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
@@ -264,6 +265,12 @@ export function repositoryRoutes(): express.Router {
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.post('/permission', (req: express.Request, res: express.Response) => {
+    updatePermission(req.body)
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
   });
 
   return router;
