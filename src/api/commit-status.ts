@@ -23,8 +23,7 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
     } else if (build.repository.gitlab_id) {
       const id = build.data.project_id ?
         build.data.project_id : build.data.object_attributes.target_project_id;
-      const sha = build.data.checkout_sha
-        || build.data.object_attributes.last_commit.id;
+      const sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
       const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
@@ -55,13 +54,11 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
         + `/${name}/commit/${sha}/statuses/build`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
-      return setBitbucketStatusPending(gitUrl, abstruseUrl,
-        buildData.repository.access_token);
+      return setBitbucketStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else if (buildData.repository.gitlab_id) {
       const id = buildData.data.project_id ?
       buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      const sha = buildData.data.checkout_sha
-        || buildData.data.object_attributes.last_commit.id;
+      const sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
       const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
@@ -95,8 +92,7 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
     } else if (buildData.repository.gitlab_id) {
       const id = buildData.data.project_id ?
       buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      const sha = buildData.data.checkout_sha
-        || buildData.data.object_attributes.last_commit.id;
+      const sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
       const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
