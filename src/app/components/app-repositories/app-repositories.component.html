@@ -64,8 +64,8 @@
                 </span>
                 <span>{{ repo.default_branch }}</span>
               </div>
-              <div class="column is-2 justify-end">
-                <span *ngIf="repo.status_badge" [innerHTML]="repo.status_badge | safeHtml" class="status-badge"></span>
+              <div class="column is-2 justify-center">
+                <span *ngIf="repo.status_badge" [innerHTML]="repo.status_badge | safeHtml" class="status-badge-repositories"></span>
               </div>
             </div>
           </div>

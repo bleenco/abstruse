@@ -4,8 +4,8 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>{{ repo?.full_name }}</h1>
-        <span *ngIf="statusBadge" [innerHTML]="statusBadge | safeHtml" class="status-badge"></span>
+        <h1 class="mr15">{{ repo?.full_name }}</h1>
+        <span *ngIf="statusBadge" [innerHTML]="statusBadge | safeHtml" class="status-badge-repo"></span>
       </span>
     </div>
     <div class="nav-center"></div>
