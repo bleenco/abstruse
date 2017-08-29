@@ -163,7 +163,8 @@ export function startBuild(data: any): Promise<any> {
               delete data.repositories_id;
               delete data.pr;
               insertBuildRun(data)
-                .then(() => sendPendingStatus(build, build.id))
+                .then(() => getBuild(build.id))
+                .then(buildData => sendPendingStatus(buildData, build.id))
                 .then(() => {
                   const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
 
