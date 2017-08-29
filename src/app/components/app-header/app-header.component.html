@@ -4,7 +4,7 @@
       <a class="nav-item nav-logo" routerLink="/">
         <img src="images/abstruse-text-logo.svg">
       </a>
-      <a class="nav-item" routerLink="/team" routerLinkActive="is-active">
+      <a class="nav-item" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
         <img src="images/icons/team.svg" class="nav-item-icon">
         Team
       </a>
@@ -14,7 +14,7 @@
       </a>
     </div>
     <div class="nav-right">
-      <a class="nav-item user-item" (click)="toggleMenu()">
+      <a class="nav-item user-item" (click)="toggleMenu()" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
         <div class="nav-dropdown" *ngIf="menuDropped">
           <a class="nav-dropdown-item" routerLink="/settings">
@@ -24,6 +24,10 @@
             Logout
           </a>
         </div>
+      </a>
+      <a class="nav-item" *ngIf="!user" routerLink="/login">
+        <img src="images/icons/login.svg" class="nav-item-icon">
+        Login
       </a>
     </div>
   </div>

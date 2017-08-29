@@ -20,6 +20,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   limit: number;
   offset: number;
   userData: any;
+  userId: string | null;
 
   constructor(
     private socketService: SocketService,
@@ -35,6 +36,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userData = this.authService.getData();
+    this.userId = this.userData && this.userData.id || null;
     this.fetch();
 
     this.subAdded = this.socketService.outputEvents
@@ -122,6 +124,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       }
 
       build.status = status;
+      build.userId = this.userId;
       return build;
     });
   }
@@ -133,7 +136,11 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     }
 
     this.fetching = true;
-    this.apiService.getBuilds(this.limit, this.offset, this.userData.id).subscribe(builds => {
+    this.apiService.getBuilds(
+      this.limit,
+      this.offset,
+      this.userId
+    ).subscribe(builds => {
       this.builds = this.builds.concat(builds);
       this.loading = false;
       this.fetching = false;
@@ -148,7 +155,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   fetchLastBuild(): void {
-    this.apiService.getLastBuild(this.userData.id).subscribe(build => {
+    this.apiService.getLastBuild(this.userId).subscribe(build => {
       if (!this.builds) {
         this.builds = [];
       }

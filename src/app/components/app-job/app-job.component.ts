@@ -34,6 +34,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   expectedProgress: number;
   tag: string = null;
   userData: any;
+  userId: string | null;
 
   constructor(
     private socketService: SocketService,
@@ -52,6 +53,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userData = this.authService.getData();
+    this.userId = this.userData && this.userData.id || null;
+
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
         if (event.type === 'data') {
@@ -96,7 +99,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.route.params.subscribe(params => {
       this.id = params.id;
 
-      this.apiService.getJob(this.id, this.userData.id).subscribe(job => {
+      this.apiService.getJob(this.id, this.userId).subscribe(job => {
         this.job = job;
 
         if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {

@@ -10,7 +10,7 @@
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
-      <div class="group-buttons">
+      <div class="group-buttons" *ngIf="userId">
         <button class="group-button" [class.is-active]="tab === 'builds'" (click)="tab = 'builds'">Builds</button>
         <button class="group-button" [class.is-active]="tab === 'settings'" (click)="tab = 'settings'">Settings</button>
       </div>

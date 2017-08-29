@@ -33,6 +33,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   offset: number;
   hideMoreButton: boolean;
   userData: any;
+  userId: string | null;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,6 +51,8 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userData = this.authService.getData();
+    this.userId = this.userData && this.userData.id || null;
+
     this.tab = 'builds';
     this.url = this.config.url;
 
@@ -60,7 +63,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       } else {
         this.fetch();
         this.fetchBadge();
-        this.fetchTokens();
+
+        if (this.userId) {
+          this.fetchTokens();
+        }
       }
     });
 
@@ -150,7 +156,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   fetchLastBuild(): void {
-    this.api.getLastBuild(this.userData.id).subscribe(build => {
+    this.api.getLastBuild(this.userId).subscribe(build => {
       if (!this.repo.builds) {
         this.repo.builds = [];
       }

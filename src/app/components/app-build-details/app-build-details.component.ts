@@ -27,6 +27,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   subStatus: Subscription;
   sub: Subscription;
   userData: any;
+  userId: string | null;
 
   constructor(
     private socketService: SocketService,
@@ -46,10 +47,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     this.userData = this.authService.getData();
     this.route.params.subscribe(params => {
       this.id = params.id;
+      this.userId = this.userData && this.userData.id || null;
 
-      this.apiService.getBuild(this.id, this.userData.id).subscribe(build => {
+      this.apiService.getBuild(this.id, this.userId).subscribe(build => {
         this.loading = false;
         this.build = build;
+
+        console.log(this.build);
 
         if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags')) {
           this.tag = this.build.data.ref.replace('refs/tags/', '');

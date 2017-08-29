@@ -23,29 +23,33 @@ export class ApiService {
   getBuilds(limit: number, offset: number, userId?: string): Observable<any> {
     if (userId) {
       return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}/${userId}`, null, true);
+    } else {
+      return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
     }
-    return this.get(`${this.url}/builds/limit/${limit}/offset/${offset}`, null, true);
   }
 
   getLastBuild(userId?: string): Observable<any> {
     if (userId) {
       return this.get(`${this.url}/builds/last/${userId}`, null, true);
+    } else {
+      return this.get(`${this.url}/builds/last`, null, true);
     }
-    return this.get(`${this.url}/builds/last`, null, true);
   }
 
-  getBuild(id: string, userId?: string): Observable<any> {
+  getBuild(id: string, userId?: string | null): Observable<any> {
     if (userId) {
       return this.get(`${this.url}/builds/${id}/${userId}`, null, true);
+    } else {
+      return this.get(`${this.url}/builds/${id}`, null, true);
     }
-    return this.get(`${this.url}/builds/${id}`, null, true);
   }
 
   getJob(id: number, userId?: string): Observable<any> {
     if (userId) {
       return this.get(`${this.url}/jobs/${id}/${userId}`, null, true);
+    } else {
+      return this.get(`${this.url}/jobs/${id}`, null, true);
     }
-    return this.get(`${this.url}/jobs/${id}`, null, true);
   }
 
   getRepositories(userId: string, keyword: string): Observable<any> {
@@ -91,6 +95,10 @@ export class ApiService {
 
   initializeDatabase(): Observable<any> {
     return this.post(`${this.url}/setup/db/init`, {});
+  }
+
+  loginRequired(): Observable<any> {
+    return this.get(`${this.url}/setup/login-required`);
   }
 
   getAllTokens(): Observable<any> {

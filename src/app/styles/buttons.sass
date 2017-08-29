@@ -72,6 +72,13 @@
   align-items: center
   outline: none !important
   flex: 1
+  font-weight: $weight-semibold
+
+  &.centered-anonymous
+    display: block
+    margin: 0 auto
+    width: 210px
+    padding: 8px 20px
 
   &:focus, &:active
     box-shadow: none !important
@@ -86,7 +93,7 @@
     width: 100%
 
   &.green
-    background: $green
+    background-image: linear-gradient(-180deg, #39B54A 0%, #34AA44 98%)
 
   &.red
     background: linear-gradient(to bottom, #F95359, #DD151C)
@@ -102,7 +109,7 @@
     border-color: $white
 
   &.blue
-    background: linear-gradient(to bottom, #1991EB, #2DA1F8)
+    background-image: linear-gradient(-1deg, #1991EB 2%, #2DA1F8 98%)
     border-color: #1991EB
 
   &.yellow
@@ -118,14 +125,14 @@
     border: 1px solid $border
 
     &.green
-      background: darken($green, 3)
+      background-image: linear-gradient(-1deg, #1E930B 3%, #1E9D09 100%)
 
     &.red
       background: linear-gradient(to bottom, #EC4249, #BD0C13)
       border: 1px solid #BD0C13
 
     &.blue
-      background: linear-gradient(to bottom, #0C73C1, #196BAA)
+      background-image: linear-gradient(-180deg, #1584D7 5%, #2184CF 98%);
       border-color: #0C73C1
 
     &.yellow

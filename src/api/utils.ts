@@ -16,6 +16,7 @@ const defaultConfig = {
   ssl: false,
   sslcert: null,
   sslkey: null,
+  requireLogin: false,
   db: {
     client: 'sqlite3',
     connection: {
