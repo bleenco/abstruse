@@ -15,6 +15,7 @@ export interface UserLogin {
 export class AppLoginComponent implements OnInit {
   loading: boolean;
   user: UserLogin;
+  required: boolean;
 
   constructor(
     private router: Router,
@@ -22,6 +23,7 @@ export class AppLoginComponent implements OnInit {
     private authService: AuthService
   ) {
     this.loading = true;
+    this.required = true;
   }
 
   ngOnInit() {
@@ -30,17 +32,22 @@ export class AppLoginComponent implements OnInit {
     }
 
     this.user = { email: '', password: '' };
-    this.apiService.isAppReady().delay(1500).subscribe(event => {
+    this.apiService.isAppReady().subscribe(event => {
       this.loading = false;
       if (!event) {
         this.router.navigate(['/setup']);
+      } else {
+        this.apiService.loginRequired().subscribe(required => {
+          this.authService.setLoginRequired(required);
+          this.required = required;
+        });
       }
     });
   }
 
   doLogin(): void {
     this.loading = true;
-    this.apiService.login(this.user).delay(1500).subscribe(jwt => {
+    this.apiService.login(this.user).delay(1000).subscribe(jwt => {
       if (jwt) {
         this.authService.login(jwt);
         this.router.navigate(['/']);

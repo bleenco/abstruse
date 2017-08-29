@@ -25,6 +25,7 @@
               <button type="submit" class="button green login-button" [disabled]="!loginForm.valid">Sign In</button>
             </div>
           </form>
+          <a *ngIf="!loading && !required" class="button blue centered-anonymous" routerLink="/">Continue as anonymous</a>
         </div>
       </div>
     </div>

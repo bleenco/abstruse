@@ -51,7 +51,8 @@ export class AppRepositoriesComponent implements OnInit {
 
   fetch(keyword = ''): void {
     this.loading = true;
-    this.apiService.getRepositories(this.userData.id, keyword).subscribe(event => {
+    const userId = this.userData && this.userData.id || null;
+    this.apiService.getRepositories(userId, keyword).subscribe(event => {
       this.repositories = event;
       this.repositories.forEach((repo: any, i) => {
         this.apiService.getBadge(repo.id).subscribe(badge => {
@@ -70,18 +71,6 @@ export class AppRepositoriesComponent implements OnInit {
     e.stopPropagation();
 
     this.router.navigate(['repo', id]);
-  }
-
-  runBuild(e: MouseEvent, repositoryId: number, branch: string): void {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const data = { repositoryId, branch };
-    this.socketService.emit({ type: 'startBuild', data: data });
-    this.dropdowns = this.dropdowns.map(() => false);
-
-    this.buildTriggered = true;
-    setTimeout(() => this.buildTriggered = false, 5000);
   }
 
   onKeywordChanged(text: string): void {

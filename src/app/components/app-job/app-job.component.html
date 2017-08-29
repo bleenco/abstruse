@@ -25,7 +25,7 @@
                       </span>
                     </h1>
                   </div>
-                  <div class="column is-5 justify-end right-buttons-top" *ngIf="job?.hasPermission">
+                  <div class="column is-5 justify-end right-buttons-top" *ngIf="userId && job?.hasPermission">
                     <button class="button is-fullwidth" name="btn-restart-ssh" type="button" (click)="restartJobWithSSH($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">

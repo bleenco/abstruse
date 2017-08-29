@@ -10,6 +10,7 @@ export class AppTerminalComponent implements OnInit {
   @Input() options: { size: 'normal' | 'large' };
   au: any;
   commands: { command: string, visible: boolean, output: string }[];
+  noData: boolean;
 
   constructor(private elementRef: ElementRef) {
     this.commands = [];
@@ -23,8 +24,11 @@ export class AppTerminalComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChange) {
     if (!this.data) {
+      this.noData = true;
       return;
     }
+
+    this.noData = false;
 
     if (typeof this.data.clear !== 'undefined') {
       this.commands = [];

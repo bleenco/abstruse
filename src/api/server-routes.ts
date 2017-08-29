@@ -5,7 +5,7 @@ import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
-import { getFilePath, generateBadgeHtml } from './utils';
+import { getFilePath, generateBadgeHtml, getConfig } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import {
   usersExists,
@@ -32,6 +32,8 @@ import { insertAccessToken, getAccessTokens } from './db/access-token';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
+
+const config: any = getConfig();
 
 const storage: multer.StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -223,36 +225,27 @@ export function repositoryRoutes(): express.Router {
   const router = express.Router();
 
   router.get('/:userid?', (req: express.Request, res: express.Response) => {
-    checkApiRequestAuth(req)
-      .then(() => {
-        if (req.params.userid) {
-          getRepositories(req.query.keyword, req.params.userid).then(repos => {
-            return res.status(200).json({ data: repos });
-          }).catch(err => res.status(200).json({ status: false }));
-        } else {
-          getRepositories(req.query.keyword).then(repos => {
-            return res.status(200).json({ data: repos });
-          }).catch(err => res.status(200).json({ status: false }));
-        }
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    if (req.params.userid) {
+      getRepositories(req.query.keyword, req.params.userid).then(repos => {
+        return res.status(200).json({ data: repos });
+      }).catch(err => res.status(200).json({ status: false }));
+    } else {
+      getRepositories(req.query.keyword).then(repos => {
+        return res.status(200).json({ data: repos });
+      }).catch(err => res.status(200).json({ status: false }));
+    }
   });
 
   router.get('/id/:id', (req: express.Request, res: express.Response) => {
-    checkApiRequestAuth(req)
-      .then(() => {
-        getRepository(req.params.id).then(repo => {
-          return res.status(200).json({ data: repo });
-        }).catch(err => res.status(200).json({ status: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    getRepository(req.params.id).then(repo => {
+      return res.status(200).json({ data: repo });
+    }).catch(err => res.status(200).json({ status: false }));
   });
 
   router.get('/:id/builds/:limit/:offset', (req: express.Request, res: express.Response) => {
-    checkApiRequestAuth(req)
-      .then(() => {
-        getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset)
-          .then(builds => res.status(200).json({ data: builds }))
-          .catch(err => res.status(200).json({ status: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset)
+      .then(builds => res.status(200).json({ data: builds }))
+      .catch(err => res.status(200).json({ status: false }));
   });
 
   router.post('/add', (req: express.Request, res: express.Response) => {
@@ -361,6 +354,10 @@ export function setupRoutes(): express.Router {
     imageExists('abstruse').subscribe(exists => {
       return res.status(200).json({ data: exists });
     });
+  });
+
+  router.get('/login-required', (req: express.Request, res: express.Response) => {
+    return res.status(200).json({ data: config.requireLogin });
   });
 
   return router;

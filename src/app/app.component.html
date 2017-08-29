@@ -3,7 +3,7 @@
 <div class="disconnected" *ngIf="!connected || routing">
   <div *ngIf="!routing">
     <p *ngIf="state === 2">Connection closed. Please check your internet connection.</p>
-    <p *ngIf="state === 3 || state === 0">Retrying to connect ...</p>
+    <p *ngIf="state === 3 || state === 0">Reconnecting ...</p>
   </div>
   <div *ngIf="routing">
     <p>Loading, please wait ...</p>

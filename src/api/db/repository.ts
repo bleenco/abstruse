@@ -4,7 +4,8 @@ import { addRepositoryPermissionToEveryone } from './permission';
 
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Repository({ id: id }).fetch({ withRelated: ['access_token'] })
+    new Repository({ id: id })
+      .fetch({ withRelated: ['access_token'] })
       .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()))
       .catch(err => reject(err));
   });
@@ -125,7 +126,12 @@ export function getRepositories(keyword: string, userId?: string): Promise<any[]
         qb.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
       }
     }).fetchAll({ withRelated: [{'permissions': (query) => {
-      query.where('users_id', userId).andWhere('permission', true); }}] })
+      if (userId) {
+        query.where('users_id', userId).andWhere('permission', true);
+      } else {
+        query.where('private', false).andWhere('public', true);
+      }
+    }}] })
     .then(repos => {
       if (!repos) {
         reject();

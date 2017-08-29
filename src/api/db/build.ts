@@ -1,7 +1,11 @@
 import { Build, BuildRun, Job } from './model';
 import { getLastRun } from './job';
 
-export function getBuilds(limit: number, offset: number, userId?: number): Promise<any> {
+export function getBuilds(
+  limit: number,
+  offset: number,
+  userId?: number | null
+): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
       .query(q => {
@@ -15,7 +19,10 @@ export function getBuilds(limit: number, offset: number, userId?: number): Promi
           .offset(offset)
           .limit(limit);
         } else {
-          q.orderBy('id', 'DESC').offset(offset).limit(limit);
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+          .where('repositories.private', false)
+          .andWhere('repositories.public', true)
+          .orderBy('id', 'DESC').offset(offset).limit(limit);
         }
       })
       .fetchAll({ withRelated: ['repository.permissions', 'jobs.runs' ]})

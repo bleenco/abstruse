@@ -41,7 +41,7 @@
     <span class="build-time" *ngIf="build?.status === 'running'">{{ build?.maxTime | timeDuration }}</span>
     <span class="build-time" *ngIf="build?.status !== 'running'">{{ build?.maxTime | toTime }}</span>
   </div>
-  <div class="column is-1 justify-end" *ngIf="build?.hasPermission">
+  <div class="column is-1 justify-end" *ngIf="build?.userId && build?.hasPermission">
     <span class="icon restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
       <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

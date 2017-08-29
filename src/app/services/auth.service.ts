@@ -6,6 +6,7 @@ import { ApiService } from './api.service';
 export class AuthService {
   jwtHelper: JwtHelper;
   userEvents: EventEmitter<string>;
+  loginRequired: boolean;
 
   constructor(private api: ApiService) {
     this.jwtHelper = new JwtHelper();
@@ -26,7 +27,15 @@ export class AuthService {
   }
 
   getData(): Object {
-    return this.jwtHelper.decodeToken(localStorage.getItem('abs-token'));
+    if (this.isLoggedIn()) {
+      return this.jwtHelper.decodeToken(localStorage.getItem('abs-token'));
+    } else {
+      return null;
+    }
+  }
+
+  setLoginRequired(data: boolean): void {
+    this.loginRequired = data;
   }
 }
 
