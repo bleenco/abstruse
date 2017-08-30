@@ -87,9 +87,7 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <p *ngIf="jobRun.status === 'running' && previousRuntime">
-                      <progress class="progress-bar is-success is-small" [value]="expectedProgress" max="1">{{ expectedProgress }}%</progress>
-                    </p>
+                    <progress *ngIf="jobRun.status === 'running' && previousRuntime" class="progress-bar is-success is-small" [value]="(jobRun.start_time | timeDurationRaw) / previousRuntime" max="1" min="0"></progress>
                   </div>
                   <div class="column is-1">
                     <p class="total-time">

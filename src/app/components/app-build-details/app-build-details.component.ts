@@ -21,7 +21,6 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   totalTime: number;
   previousRuntime: number;
   processingBuild: boolean;
-  approximatelyRemainingTime: string;
   tag: string = null;
   updateInterval: any;
   subStatus: Subscription;
@@ -114,16 +113,10 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateJobTimes(): void {
-    let currentTime = new Date().getTime() - this.socketService.timeSyncDiff;
-
     if (this.status !== 'running') {
       this.totalTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
     } else {
       this.totalTime = Math.max(...this.build.jobs.map(job => job.start_time));
-    }
-
-    if (this.previousRuntime && this.previousRuntime > this.totalTime) {
-      this.approximatelyRemainingTime = format(this.previousRuntime - this.totalTime, 'mm:ss');
     }
 
     this.build.jobs = this.build.jobs.map(job => {

@@ -31,7 +31,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
   processing: boolean;
   sshd: string;
   vnc: string;
-  expectedProgress: number;
   tag: string = null;
   userData: any;
   userId: string | null;
@@ -48,7 +47,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.terminalOptions = { size: 'large' };
     this.id = null;
-    this.expectedProgress = 0;
   }
 
   ngOnInit() {
@@ -116,7 +114,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
         }
 
-        this.updateJobTime();
         this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
       });
     });
@@ -133,13 +130,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
     this.titleService.setTitle('Abstruse CI');
-  }
-
-  updateJobTime(): void {
-    if (this.previousRuntime) {
-      this.expectedProgress =
-        (new Date().getTime() - this.jobRun.start_time) / this.previousRuntime;
-    }
   }
 
   setFavicon(): void {

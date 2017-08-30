@@ -83,8 +83,8 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <p *ngIf="status === 'running' && approximatelyRemainingTime">
-                      <span name="time-left">approximately {{ approximatelyRemainingTime }} remaining</span>
+                    <p *ngIf="status === 'running' && previousRuntime && previousRuntime >= (totalTime | timeDurationRaw)">
+                      <span name="time-left">approximately {{ previousRuntime - (totalTime | timeDurationRaw) | date:'mm:ss' }} remaining</span>
                     </p>
                   </div>
                   <div class="column is-1">

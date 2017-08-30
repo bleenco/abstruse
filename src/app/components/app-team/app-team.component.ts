@@ -36,7 +36,8 @@ export class AppTeamComponent implements OnInit {
     this.users = [];
     this.user = auth.getData();
     this.userForm = {
-      email: null, fullname: null, password: null, confirmPassword: null, admin: 0 };
+      email: null, fullname: null, password: null, confirmPassword: null, admin: 0
+    };
   }
 
   ngOnInit() {
@@ -79,7 +80,8 @@ export class AppTeamComponent implements OnInit {
     });
 
     this.userForm = {
-      email: null, fullname: null, password: null, confirmPassword: null, admin: 0 };
+      email: null, fullname: null, password: null, confirmPassword: null, admin: 0
+    };
   }
 
   goToUser(id: number): void {
