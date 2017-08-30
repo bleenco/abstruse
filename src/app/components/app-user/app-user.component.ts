@@ -21,8 +21,10 @@ export class AppUserComponent implements OnInit {
     private auth: AuthService,
     private route: ActivatedRoute,
     private router: Router,
-    private config: ConfigService) {
-      this.loading = true;
+    private config: ConfigService
+  ) {
+    this.loading = true;
+    this.user = {};
   }
 
   ngOnInit() {

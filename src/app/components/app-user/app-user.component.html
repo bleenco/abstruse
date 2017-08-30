@@ -8,7 +8,7 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>{{ user.fullname }}</h1>
+        <h1>{{ user?.fullname }}</h1>
       </span>
     </div>
   </div>
@@ -25,7 +25,7 @@
         </div>
         <div class="column is-8">
           <div class="settings-container">
-            <h2>{{ user.fullname }}</h2>
+            <h2>{{ user?.fullname }}</h2>
             <div class="form-field">
               <label class="form-label">Email (Username)</label>
               <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
