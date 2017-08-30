@@ -1,6 +1,7 @@
 const path = require('path');
 const root = path.resolve(__dirname);
 const webpack = require('webpack');
+const uglify = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -14,11 +15,12 @@ module.exports = {
     filename: '[name].js'
   },
   plugins: [
-    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true })
+    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
+    new uglify()
   ],
   module: {
     rules: [
-      { test: /\.ts$/, loaders: ['awesome-typescript-loader'] }
+      { test: /\.ts$/, loaders: ['ts-loader?silent=true'] },
     ]
   },
   stats: {
