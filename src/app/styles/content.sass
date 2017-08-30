@@ -50,7 +50,7 @@
       font-family: $font-family-bold
 
     &.larger
-      font-size: 18px
+      font-size: 15px
 
     &.smaller
       font-size: 12px
@@ -283,13 +283,33 @@ progress
     background-image: linear-gradient(-90deg, #FDC018 2%, #F8CF5D 98%);
     border-radius: 10px
 
-.avatar-img
+.avatar-img-container
   display: block
   width: 40px
   height: 40px
+  margin-right: 20px !important
+  position: relative
+  overflow: visible !important
+
+  img
+    width: 40px
+    height: 40px
+
+  .avatar-small
+    position: absolute
+    top: -12px
+    right: -12px
+    width: 30px
+    height: 30px
+    border: 1px solid $border
+    border-radius: 50%
+    z-index: 11
+
+.avatar-img
+  display: block
+  max-width: 50px
+  height: 50px
   border-radius: 50%
-  margin: 0 auto
-  border: 1px solid $border
 
 
 .data-label

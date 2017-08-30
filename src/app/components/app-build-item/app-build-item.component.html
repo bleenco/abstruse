@@ -1,9 +1,12 @@
 <div class="columns">
   <div class="column is-2">
-    <img class="avatar-icon" [src]="build?.data?.sender?.avatar_url" *ngIf="build?.data?.sender?.avatar_url">
-    <img class="avatar-icon" [src]="build?.data?.actor?.links?.avatar?.href" *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href">
-    <img class="avatar-icon" [src]="build?.data?.user_avatar" *ngIf="!build?.data?.sender?.avatar_url &&  !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar">
-    <img class="avatar-icon" [src]="build?.data?.user?.avatar_url" *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url">
+    <span class="avatar-img-container">
+      <img *ngIf="build?.data?.sender?.avatar_url && authorAvatar" [src]="authorAvatar" class="avatar-img">
+      <img *ngIf="build?.data?.sender?.avatar_url && authorAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
+      <img *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href" [src]="build?.data?.actor?.links?.avatar?.href" class="avatar-img">
+      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar" [src]="build?.data?.user_avatar" class="avatar-img">
+      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url" class="avatar-img" [src]="build?.data?.user?.avatar_url">
+    </span>
     <span *ngIf="!build?.pr && !tag" class="bold larger">#{{ build?.id }}</span>
     <span *ngIf="build?.pr && !tag" class="bold larger">PR #{{ build?.pr }}</span>
     <span *ngIf="tag" class="bold larger">{{ tag }}</span>
