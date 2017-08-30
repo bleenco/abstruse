@@ -34,6 +34,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
   tag: string = null;
   userData: any;
   userId: string | null;
+  committerAvatar: string;
+  authorAvatar: string;
 
   constructor(
     private socketService: SocketService,
@@ -100,6 +102,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
       this.apiService.getJob(this.id, this.userId).subscribe(job => {
         this.job = job;
+
+        this.setAvatars();
 
         if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {
           this.tag = this.job.build.data.ref.replace('refs/tags/', '');
@@ -180,6 +184,23 @@ export class AppJobComponent implements OnInit, OnDestroy {
   terminalOutput(e: any): void {
     if (e === 'ready') {
       this.terminalReady = true;
+    }
+  }
+
+  setAvatars(): void {
+    if (this.job.build.data.head_commit) {
+      const commit = this.job.build.data.head_commit;
+      this.committerAvatar = this.job.build.data.sender.avatar_url;
+      if (commit.author.username !== commit.committer.username) {
+        this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+          if (evt.status === 200) {
+            const body = JSON.parse(evt._body);
+            this.authorAvatar = body.avatar_url;
+          }
+        });
+      } else {
+        this.authorAvatar = this.committerAvatar;
+      }
     }
   }
 }

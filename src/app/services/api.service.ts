@@ -139,6 +139,10 @@ export class ApiService {
     return this.post(`${this.url}/repositories/permission`, data);
   }
 
+  getGithubUserData(username: string): Observable<any> {
+    return this.http.get(`https://api.github.com/users/${username}`);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

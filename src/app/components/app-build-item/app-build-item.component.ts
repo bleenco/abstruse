@@ -1,5 +1,6 @@
 import { Component, Input, HostBinding, OnInit } from '@angular/core';
 import { SocketService } from '../../services/socket.service';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-build-item',
@@ -11,10 +12,14 @@ export class AppBuildItemComponent implements OnInit {
 
   processingRequest: boolean;
   tag: string = null;
+  committerAvatar: string;
+  authorAvatar: string;
 
-  constructor(private socketService: SocketService) { }
+  constructor(private socketService: SocketService, private apiService: ApiService) { }
 
   ngOnInit() {
+    this.setAvatars();
+
     if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags/')) {
       this.tag = this.build.data.ref.replace('refs/tags/', '');
     }
@@ -36,5 +41,22 @@ export class AppBuildItemComponent implements OnInit {
     e.stopPropagation();
     this.processingRequest = true;
     this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
+  }
+
+  setAvatars(): void {
+    if (this.build.data.head_commit) {
+      const commit = this.build.data.head_commit;
+      this.committerAvatar = this.build.data.sender.avatar_url;
+      if (commit.author.username !== commit.committer.username) {
+        this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+          if (evt.status === 200) {
+            const body = JSON.parse(evt._body);
+            this.authorAvatar = body.avatar_url;
+          }
+        });
+      } else {
+        this.authorAvatar = this.committerAvatar;
+      }
+    }
   }
 }
