@@ -7,8 +7,17 @@ import { sendBitBucketRequest } from '../tests/e2e/utils/utils';
 
 
 describe('Bitbucket repositories', () => {
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  let originalTimeout: number;
+  beforeAll(() => {
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 150000;
+    login().then(() => browser.waitForAngularEnabled(false));
+  });
+
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    logout().then(() => browser.waitForAngularEnabled(true));
+  });
 
   it('should add bitbucket repository and start new build (send push event)', () => {
     return browser.wait(() => {
