@@ -122,13 +122,16 @@
                   <span class="version">{{ job.language_version }}</span>
                 </div>
               </div>
-              <div class="column is-5">
+              <div class="column is-3">
                 <div class="icon-and-text">
                   <span class="icon script">
                     <img src="images/icons/computing-script.svg">
                   </span>
                   <span>{{ job.test_script }}</span>
                 </div>
+              </div>
+              <div class="column is-2">
+                <progress min="0" max="1" [value]="(job.start_time | timeDurationRaw) / job.lastRunTime" *ngIf="job?.status === 'running' && job?.lastRunTime"></progress>
               </div>
               <div class="column is-1">
                 <span class="job-time" *ngIf="job?.status === 'running'">{{ job.start_time | timeDuration }}</span>

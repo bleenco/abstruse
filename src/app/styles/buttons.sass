@@ -58,9 +58,9 @@
 
 .button
   height: 40px
-  background: linear-gradient(to bottom, #516173, #3A4857)
+  background-image: linear-gradient(-180deg, #516173 3%, #3B4857 98%)
   font-family: $font-family-semibold
-  color: $color
+  color: $white
   font-size: 14px
   padding: 0 20px
   text-align: center
@@ -116,12 +116,9 @@
     background: linear-gradient(to bottom, #F7981C, #F76B1C)
     border-color: #F7981C
 
-  &.dark
-    background: $background
-
   &:hover
     color: $white
-    background: linear-gradient(to bottom, #415061, #303D4C)
+    background-image: linear-gradient(-180deg, #415061 3%, #303D4C 98%)
     border: 1px solid $border
 
     &.green
@@ -138,10 +135,6 @@
     &.yellow
       background: linear-gradient(to bottom, #F09219, #E96012)
       border-color: #F09219
-
-    &.dark
-      background: $background
-      box-shadow: 1px 2px 5px rgba($background, .7)
 
   &.is-active
     background: linear-gradient(to bottom, #354353, #232E3B)

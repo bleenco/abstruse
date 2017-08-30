@@ -13,6 +13,7 @@ import { AuthServiceProvider } from './services/auth.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TimeDurationPipe } from './pipes/time-duration.pipe';
+import { TimeDurationRawPipe } from './pipes/time-duration-raw.pipe';
 import { ToTimePipe } from './pipes/to-time.pipe';
 import { TimeToNowPipe } from './pipes/time-to-now.pipe';
 import { AppComponent } from './app.component';
@@ -50,6 +51,7 @@ import { AppTeamComponent } from './components/app-team';
     EqualValidator,
     SafeHtmlPipe,
     TimeDurationPipe,
+    TimeDurationRawPipe,
     ToTimePipe,
     TimeToNowPipe
   ],

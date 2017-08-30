@@ -91,6 +91,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
         } else if (event.data == 'jobFailed') {
           this.jobRun.status = 'failed';
           this.jobRun.end_time = new Date().getTime();
+          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
         }
 
         this.setFavicon();

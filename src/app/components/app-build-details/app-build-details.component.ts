@@ -53,8 +53,6 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.build = build;
 
-        console.log(this.build);
-
         if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags')) {
           this.tag = this.build.data.ref.replace('refs/tags/', '');
         }
@@ -127,6 +125,16 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     if (this.previousRuntime && this.previousRuntime > this.totalTime) {
       this.approximatelyRemainingTime = format(this.previousRuntime - this.totalTime, 'mm:ss');
     }
+
+    this.build.jobs = this.build.jobs.map(job => {
+      const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+      if (lastRun) {
+        job.lastRunTime = lastRun.end_time - lastRun.start_time;
+      }
+
+      return job;
+    });
   }
 
   getBuildStatus(): string {
