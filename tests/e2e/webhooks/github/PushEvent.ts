@@ -166,21 +166,21 @@ export let header = {
 
 export let requestD3 = {
   'ref': 'refs/heads/master',
-  'before': '01e7e2412b73aec952f1afe40e7c714f51a1ecb3',
-  'after': '90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+  'before': '90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+  'after': '465c60339851dde5ac1c323a71d2354fded45165',
   'created': false,
   'deleted': false,
-  'forced': false,
+  'forced': true,
   'base_ref': null,
-  'compare': 'https://github.com/Izak88/d3-bundle/compare/01e7e2412b73...90e50fa073ef',
+  'compare': 'https://github.com/Izak88/d3-bundle/compare/90e50fa073ef...465c60339851',
   'commits': [
     {
-      'id': '90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+      'id': '465c60339851dde5ac1c323a71d2354fded45165',
       'tree_id': 'fefcd12b4f69d01d917abd119d1fd2ae77ad2ba9',
       'distinct': true,
-      'message': 'test(): do not merge that',
-      'timestamp': '2017-08-10T16:54:43+02:00',
-      'url': 'https://github.com/Izak88/d3-bundle/commit/90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+      'message': 'chore(): init commit',
+      'timestamp': '2017-08-30T14:34:04+02:00',
+      'url': 'https://github.com/Izak88/d3-bundle/commit/465c60339851dde5ac1c323a71d2354fded45165',
       'author': {
         'name': 'Izak Lipnik',
         'email': 'izak.lipnik@gmail.com',
@@ -192,23 +192,42 @@ export let requestD3 = {
         'username': 'Izak88'
       },
       'added': [
-
+        '.abstruse.yml',
+        '.gitignore',
+        '.npmignore',
+        'API.md',
+        'CHANGES.md',
+        'ISSUE_TEMPLATE.md',
+        'LICENSE',
+        'README.md',
+        'd3.sublime-project',
+        'img/axis-v3.png',
+        'img/axis-v4.png',
+        'img/pack-v3.png',
+        'img/pack-v4.png',
+        'img/stratify.png',
+        'index.js',
+        'package.json',
+        'rollup.config.js',
+        'rollup.node.js',
+        'test/d3-test.js',
+        'test/test-exports.js'
       ],
       'removed': [
 
       ],
       'modified': [
-        'package.json'
+
       ]
     }
   ],
   'head_commit': {
-    'id': '90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+    'id': '465c60339851dde5ac1c323a71d2354fded45165',
     'tree_id': 'fefcd12b4f69d01d917abd119d1fd2ae77ad2ba9',
     'distinct': true,
-    'message': 'test(): do not merge that',
-    'timestamp': '2017-08-10T16:54:43+02:00',
-    'url': 'https://github.com/Izak88/d3-bundle/commit/90e50fa073ef2e7a606207844ffea2e76f0ea7cb',
+    'message': 'chore(): init commit',
+    'timestamp': '2017-08-30T14:34:04+02:00',
+    'url': 'https://github.com/Izak88/d3-bundle/commit/465c60339851dde5ac1c323a71d2354fded45165',
     'author': {
       'name': 'Izak Lipnik',
       'email': 'izak.lipnik@gmail.com',
@@ -220,13 +239,32 @@ export let requestD3 = {
       'username': 'Izak88'
     },
     'added': [
-
+      '.abstruse.yml',
+      '.gitignore',
+      '.npmignore',
+      'API.md',
+      'CHANGES.md',
+      'ISSUE_TEMPLATE.md',
+      'LICENSE',
+      'README.md',
+      'd3.sublime-project',
+      'img/axis-v3.png',
+      'img/axis-v4.png',
+      'img/pack-v3.png',
+      'img/pack-v4.png',
+      'img/stratify.png',
+      'index.js',
+      'package.json',
+      'rollup.config.js',
+      'rollup.node.js',
+      'test/d3-test.js',
+      'test/test-exports.js'
     ],
     'removed': [
 
     ],
     'modified': [
-      'package.json'
+
     ]
   },
   'repository': {
@@ -299,13 +337,13 @@ export let requestD3 = {
     'deployments_url': 'https://api.github.com/repos/Izak88/d3-bundle/deployments',
     'created_at': 1502376699,
     'updated_at': '2017-08-10T14:51:46Z',
-    'pushed_at': 1502376897,
+    'pushed_at': 1504096480,
     'git_url': 'git://github.com/Izak88/d3-bundle.git',
     'ssh_url': 'git@github.com:Izak88/d3-bundle.git',
     'clone_url': 'https://github.com/Izak88/d3-bundle.git',
     'svn_url': 'https://github.com/Izak88/d3-bundle',
     'homepage': null,
-    'size': 34612,
+    'size': 34611,
     'stargazers_count': 0,
     'watchers_count': 0,
     'language': 'JavaScript',
