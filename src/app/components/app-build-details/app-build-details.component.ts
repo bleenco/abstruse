@@ -29,6 +29,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   userId: string | null;
   committerAvatar: string;
   authorAvatar: string;
+  nameAuthor: string;
+  nameCommitter: string;
 
   constructor(
     private socketService: SocketService,
@@ -212,7 +214,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     if (this.build.data.head_commit) {
       const commit = this.build.data.head_commit;
       this.committerAvatar = this.build.data.sender.avatar_url;
+      this.nameAuthor = this.build.data.head_commit.author.name;
+
       if (commit.author.username !== commit.committer.username) {
+        this.nameCommitter = commit.committer.name;
+
         this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
           if (evt.status === 200) {
             const body = JSON.parse(evt._body);
@@ -221,7 +227,18 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         });
       } else {
         this.authorAvatar = this.committerAvatar;
+        this.nameCommitter = this.nameAuthor;
       }
+    } else if (this.build.data.pull_request) {
+      this.authorAvatar = this.build.data.sender.avatar_url;
+      this.committerAvatar = this.authorAvatar;
+
+      this.apiService.getGithubUserData(this.build.data.sender.login).subscribe((evt: any) => {
+        if (evt.status === 200) {
+          const body = JSON.parse(evt._body);
+          this.nameAuthor = body.name;
+        }
+      });
     }
   }
 }

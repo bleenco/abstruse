@@ -14,6 +14,7 @@ export class AppBuildItemComponent implements OnInit {
   tag: string = null;
   committerAvatar: string;
   authorAvatar: string;
+  name: string;
 
   constructor(private socketService: SocketService, private apiService: ApiService) { }
 
@@ -47,6 +48,8 @@ export class AppBuildItemComponent implements OnInit {
     if (this.build.data.head_commit) {
       const commit = this.build.data.head_commit;
       this.committerAvatar = this.build.data.sender.avatar_url;
+      this.name = this.build.data.head_commit.author.name;
+
       if (commit.author.username !== commit.committer.username) {
         this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
           if (evt.status === 200) {
@@ -57,6 +60,16 @@ export class AppBuildItemComponent implements OnInit {
       } else {
         this.authorAvatar = this.committerAvatar;
       }
+    } else if (this.build.data.pull_request) {
+      this.authorAvatar = this.build.data.sender.avatar_url;
+      this.committerAvatar = this.authorAvatar;
+
+      this.apiService.getGithubUserData(this.build.data.sender.login).subscribe((evt: any) => {
+        if (evt.status === 200) {
+          const body = JSON.parse(evt._body);
+          this.name = body.name;
+        }
+      });
     }
   }
 }
