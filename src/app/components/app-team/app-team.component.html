@@ -85,26 +85,20 @@
 
           <div class="column is-12" *ngIf="users && users.length">
             <div class="columns list-item list-item-slim" *ngFor="let user of users; let i = index;" (click)="goToUser(user.id)">
-              <div class="column is-3">
-                <span class="icon">
-                  <img src="images/icons/git-repository.svg">
-                </span>
+              <div class="column is-1">
+                <img [src]="user.avatarUrl" class="avatar-img">
+              </div>
+              <div class="column is-2">
                 <span class="bold">{{ user.fullname }}</span>
               </div>
               <div class="column is-5">
-                <span class="icon">
-                  <img src="images/icons/github-white.svg">
-                </span>
                 <span>{{ user.email }}</span>
               </div>
-              <div class="column is-2">
-                <span class="icon">
-                  <img src="images/icons/git-branch.svg">
-                </span>
-                <span>{{ user.id }}</span>
+              <div class="column is-3">
+                {{ user.created_at | date:'medium' }}
               </div>
-              <div class="column is-2 justify-end">
-                <!-- <img [src]="repo.status_badge"> -->
+              <div class="column is-1">
+                <button class="button">Edit</button>
               </div>
             </div>
           </div>

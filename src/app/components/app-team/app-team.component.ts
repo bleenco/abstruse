@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-team',
@@ -20,7 +21,12 @@ export class AppTeamComponent implements OnInit {
   email: string;
   admin: boolean;
 
-  constructor(private api: ApiService, private auth: AuthService, private router: Router) {
+  constructor(
+    private api: ApiService,
+    private auth: AuthService,
+    private router: Router,
+    private config: ConfigService
+  ) {
     this.loading = true;
     this.addUser = false;
     this.users = [];
@@ -33,8 +39,14 @@ export class AppTeamComponent implements OnInit {
 
   fetch(): void {
     this.loading = true;
-    this.api.getUsers().subscribe(event => {
-      this.users = event;
+    this.api.getUsers().subscribe(users => {
+      this.users = users;
+
+      this.users = this.users.map(user => {
+        user.avatarUrl = this.config.url + user.avatar;
+        return user;
+      });
+
       this.loading = false;
     });
   }
