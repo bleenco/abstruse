@@ -174,6 +174,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   showAllBuilds(): void {
+    this.loading = true;
     this.show = 'all';
     this.builds = [];
     this.offset = 0;
@@ -181,6 +182,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   showPullRequests(): void {
+    this.loading = true;
     this.show = 'pr';
     this.builds = [];
     this.offset = 0;
@@ -188,6 +190,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   }
 
   showCommits(): void {
+    this.loading = true;
     this.show = 'commits';
     this.builds = [];
     this.offset = 0;
