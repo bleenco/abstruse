@@ -36,28 +36,26 @@
         <form class="control-form" (ngSubmit)="addNewUser($event)" #addForm="ngForm">
           <div class="form-field">
             <label class="form-label">Email (Username)</label>
-            <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="email">
+            <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="userForm.email">
           </div>
           <div class="form-field">
             <label class="form-label">Full Name</label>
-            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="fullname">
+            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="userForm.fullname">
           </div>
           <div class="form-field">
             <label class="form-label">New Password</label>
-            <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="password">
+            <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userForm.password">
           </div>
           <div class="form-field">
             <label class="form-label">Repeat New Password</label>
-            <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required validateEqual="password" [(ngModel)]="password2">
+            <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required validateEqual="password" [(ngModel)]="userForm.confirmPassword">
           </div>
           <div class="form-field">
             <label class="form-label">Admin</label>
-            <div class="form-input">
-              <select>
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </div>
+            <select class="form-input" name="admin" required [(ngModel)]="userForm.admin">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
           </div>
           <div class="form-field">
             <button type="submit" class="button green float-right" name="btn-saveNewUser" [disabled]="!addForm.form.valid" required>Add New User</button>

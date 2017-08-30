@@ -4,6 +4,14 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 
+export interface AddUserForm {
+  email: string;
+  fullname: string;
+  password: string;
+  confirmPassword: string;
+  admin: number;
+}
+
 @Component({
   selector: 'app-team',
   templateUrl: 'app-team.component.html'
@@ -15,11 +23,7 @@ export class AppTeamComponent implements OnInit {
   addUser: boolean;
   users: any[];
   user: any;
-  password: string;
-  password2: string;
-  fullname: string;
-  email: string;
-  admin: boolean;
+  userForm: AddUserForm;
 
   constructor(
     private api: ApiService,
@@ -31,6 +35,8 @@ export class AppTeamComponent implements OnInit {
     this.addUser = false;
     this.users = [];
     this.user = auth.getData();
+    this.userForm = {
+      email: null, fullname: null, password: null, confirmPassword: null, admin: 0 };
   }
 
   ngOnInit() {
@@ -58,12 +64,7 @@ export class AppTeamComponent implements OnInit {
   addNewUser(e: Event) {
     e.preventDefault();
 
-    this.auth.addNewUser({
-      email: this.email,
-      fullname: this.fullname,
-      password: this.password,
-      confirmPassword: this.password2,
-      admin: this.admin })
+    this.auth.addNewUser(this.userForm)
     .then(res => {
       if (res) {
         this.success = true;
@@ -76,6 +77,9 @@ export class AppTeamComponent implements OnInit {
         this.success = false;
       }
     });
+
+    this.userForm = {
+      email: null, fullname: null, password: null, confirmPassword: null, admin: 0 };
   }
 
   goToUser(id: number): void {
