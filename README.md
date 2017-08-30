@@ -44,11 +44,41 @@ npm run test:protractor
 
 ## GitHub Integration
 
-To integrate `abstruse` with GitHub go to `Settings -> Webhooks` and add URL where you deployed abstruse with `/webhooks/github` suffix.
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/1796022/29858646-a6ba0772-8d5e-11e7-9280-ef5a9d4ca0f4.png" width="700">
+</p>
 
-Secret is defined in `~/.abstruse/config.json` and after updating the secret abstruse instance need to be restarted.
+#### 1. Set secret in configuration
 
-Default secret is `thisIsSecret`.
+Your configuration file is located in **~/.abstruse/config.json**
+
+Set `secret` you want to use for integration Github webhooks with your abstruse instance. The default secret is **thisIsSecret**.
+
+**After you change your secret keyword abstruse needs to be restarted.**
+
+#### 2. Set Webhooks on Github
+
+Under repository `Settings` navigate to `Webhooks` section. Click on `Add Webhooks`, then fill the form with appropriate data.
+
+After you filled you data, form should look something like form below, but instead of `https://abstruse.bleenco.io` your URL must be entered.
+
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/1796022/29858741-220462f6-8d5f-11e7-8b3b-b6418b46684c.png" width="700">
+</p>
+
+#### 3. Make a commit on your repository
+
+To initiate creation of repository under abstruse make a commit on your repository on Github. Pull Request will work too.
+
+**Note: you repository should include .abstruse.yml file.**
+
+#### 4. Set up protected branches
+
+On Github navigate to `Branches` section under `Settings`. Edit branch you want to mark as protected and check `continuous-integration/abstruse` as required.
+
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/1796022/29859098-d90d5682-8d60-11e7-92ff-b089daf4f7a8.png" width="700">
+</p>
 
 ## Sample Configuration
 
