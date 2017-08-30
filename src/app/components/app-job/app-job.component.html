@@ -75,7 +75,7 @@
                   <div class="column is-4">
                     <p>
                       <span class="avatar-img-container">
-                        <img *ngIf="job?.build?.data?.sender?.avatar_url && authorAvatar" [src]="authorAvatar" class="avatar-img">
+                        <img *ngIf="job?.build?.data?.sender?.avatar_url && commiterAvatar" [src]="commiterAvatar" class="avatar-img">
                         <img *ngIf="job?.build?.data?.sender?.avatar_url && authorAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
                         <img *ngIf="!job?.build?.data?.sender?.avatar_url && job?.build?.data?.actor?.links?.avatar?.href" [src]="job?.build?.data?.actor?.links?.avatar?.href" class="avatar-img">
                         <img *ngIf="!job?.build?.data?.sender?.avatar_url && !job?.build?.data?.actor?.links?.avatar?.href && job?.build?.data?.user_avatar" [src]="job?.build?.data?.user_avatar" class="avatar-img">
