@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout } from './utils';
+import { isLoaded, login, logout, waitForUrlToChangeTo } from './utils';
 import { request, header } from '../tests/e2e/webhooks/gogs/PushEvents';
 import { pullRequestOpened, header as prHead } from '../tests/e2e/webhooks/gogs/PullRequestEvents';
 import { sendGogsRequest } from '../tests/e2e/utils/utils';
@@ -29,6 +29,38 @@ describe('Teams', () => {
       .then(() => element(by.css('[name="btn-saveNewUser"]')).click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
+      }));
+  });
+
+  it('should redirect to team, user and then grant, revoke repository permission', () => {
+    return browser.get('/')
+      .then((): any => browser.wait(() => element(by.css('.nav-team')).isPresent()))
+      .then((): any => element(by.css('.nav-team')).click())
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/team'))
+      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
+      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/1'))
+      .then(() => expect(element.all(by.css('h1')).first().getText()).toContain('John Wayne'))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 6);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
+      }))
+      .then((): any => element.all(by.css('[name="btn-removePermisison"]')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restricted-repositories .list-item')).count()
+          .then(count => count === 1);
+      }))
+      .then((): any => element.all(by.css('[name="btn-addPermisison"]')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 6);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
       }));
   });
 });
