@@ -5,6 +5,7 @@ const compression = require('compression-webpack-plugin');
 const html = require('html-webpack-plugin');
 const copy = require('copy-webpack-plugin');
 const extract = require('extract-text-webpack-plugin');
+const uglify = require('uglifyjs-webpack-plugin');
 const portfinder = require('portfinder');
 
 module.exports = function (options, webpackOptions) {
@@ -53,7 +54,7 @@ module.exports = function (options, webpackOptions) {
     }
   });
 
-  if (webpackOptions.p) {
+  if (options.prod) {
     config = webpackMerge({}, config, getProductionPlugins());
     config = webpackMerge({}, config, getProdStylesConfig());
   } else {
@@ -62,7 +63,7 @@ module.exports = function (options, webpackOptions) {
   }
 
   if (options.aot) {
-    console.log(`Running build for with AoT compilation...`)
+    console.log(`Running build with AoT compilation...`)
 
     config = webpackMerge({}, config, {
       module: {
@@ -113,7 +114,8 @@ function getEntry(options) {
 function getProductionPlugins() {
   return {
     plugins: [
-      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 })
+      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 }),
+      new uglify()
     ]
   }
 }
