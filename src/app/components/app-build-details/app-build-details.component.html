@@ -27,7 +27,7 @@
                   </div>
                   <div class="column is-2" [class.is-hidden]="status !== 'success' && status !== 'failed'"></div>
                   <div class="column is-2" *ngIf="userId && build?.hasPermission">
-                    <button class="button is-fullwidth dark" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
+                    <button class="button is-fullwidth" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/restart.svg">
@@ -37,7 +37,7 @@
                     </button>
                   </div>
                   <div class="column is-2" *ngIf="build?.hasPermission" [class.is-hidden]="status === 'success' || status === 'failed'">
-                    <button class="button is-fullwidth dark" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
+                    <button class="button is-fullwidth" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/stop.svg">
@@ -69,12 +69,10 @@
                   </div>
                   <div class="column is-4">
                     <p>
-                      <span class="icon">
-                        <img *ngIf="build?.data?.sender?.avatar_url" [src]="build?.data?.sender?.avatar_url" class="avatar-img">
-                        <img *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href" [src]="build?.data?.actor?.links?.avatar?.href" class="avatar-img">
-                        <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar" [src]="build?.data?.user_avatar" class="avatar-img">
-                        <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url" class="avatar-img" [src]="build?.data?.user?.avatar_url">
-                      </span>
+                      <img *ngIf="build?.data?.sender?.avatar_url" [src]="build?.data?.sender?.avatar_url" class="avatar-img">
+                      <img *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href" [src]="build?.data?.actor?.links?.avatar?.href" class="avatar-img">
+                      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar" [src]="build?.data?.user_avatar" class="avatar-img">
+                      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url" class="avatar-img" [src]="build?.data?.user?.avatar_url">
                       <span *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.sender?.login }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[0]?.committer?.name }} commited {{ timeWords }} ago</span>
                       <span *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }} commited {{ timeWords }} ago</span>
@@ -130,7 +128,7 @@
                   <span>{{ job.test_script }}</span>
                 </div>
               </div>
-              <div class="column is-2">
+              <div class="column is-2 justify-center">
                 <progress min="0" max="1" [value]="(job.start_time | timeDurationRaw) / job.lastRunTime" *ngIf="job?.status === 'running' && job?.lastRunTime"></progress>
                 <span class="data-label green" *ngIf="job?.status === 'success'">Success</span>
                 <span class="data-label red" *ngIf="job?.status === 'failed'">Failed</span>

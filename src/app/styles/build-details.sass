@@ -33,6 +33,10 @@
       display: block
       float: left
 
+      +mobile
+        width: 24px
+        height: 24px
+
     hr
       margin: 5px 0
 
@@ -52,20 +56,23 @@
         font-family: $font-family-bold
 
     h2
-      font-size: 16px
+      font-size: 13px
+      font-weight: $weight-bold
       text-overflow: ellipsis
-      white-space: nowrap
+      white-space: wrap
       overflow: hidden
-      padding: 10px 20px 5px 0
+      padding: 0 5px 0 0
+      margin: 0
 
     .column
       display: flex
       align-items: center
 
     p
-      font-size: 14px
+      width: 100%
+      font-size: 13px
       color: $white
-      padding: 0 20px
+      padding: 0 5px
       display: flex
       align-items: center
 
