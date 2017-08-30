@@ -57,6 +57,9 @@
     box-shadow: 0 2px 10px rgba(10, 10, 10, 0.3)
     border: 1px solid $border
 
+    +mobile
+      right: 10px
+
     &:after
       content: ''
       position: absolute
@@ -68,6 +71,9 @@
       transform: rotate(-45deg)
       border-top: 1px solid $border
       border-right: 1px solid $border
+
+      +mobile
+        right: 13px
 
     .nav-dropdown-item
       display: block
@@ -92,6 +98,11 @@
     border-bottom: none
     padding-top: 20px
 
+    +mobile
+      padding-top: 5px
+      height: 55px
+      margin: 0 10px
+
     .nav-left
 
       .nav-item
@@ -99,6 +110,10 @@
         h1
           color: $white
           font-size: 23px
+
+          +mobile
+            font-size: 16px
+            font-weight: $weight-semibold
 
         span
           margin-left: 20px

@@ -34,7 +34,7 @@ describe('Build Details', () => {
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === num;
       })))
-      .then(() => element.all(by.css('[name="stop-job"]')).each(el => el.click()))
+      .then(() => element.all(by.css('[name="stop-build"]')).first().click())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;
       })));

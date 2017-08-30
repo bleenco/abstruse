@@ -72,7 +72,7 @@
 .list-item
   display: flex
   align-items: center
-  height: 100px
+  min-height: 100px
   color: $white
   font-size: 14px
   cursor: pointer
@@ -82,6 +82,7 @@
 
   &.list-item-mini
     height: 35px
+    min-height: 35px
 
     &:hover
       cursor: default
@@ -89,9 +90,13 @@
 
   &.list-item-slim
     height: 70px
+    min-height: 35px
 
   &.columns
     margin: 5px 0
+
+    +mobile
+      margin: 10px
 
   span
     display: block
@@ -107,9 +112,25 @@
     padding: 0 10px !important
     display: flex
     align-items: center
+    max-width: 100%
+
+    +mobile
+      padding: 5px 0 !important
+
+    span
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
+
+      +mobile
+        padding: 1px 5px
+        display: block
+        width: 100%
+        text-align: center
 
     .columns
       width: 100%
+      margin: 0
 
     &.commit-column
       display: inline-block
@@ -122,6 +143,9 @@
           float: left
           margin-top: 20px
           margin-right: 20px
+
+          +mobile
+            margin-right: 5px
 
           img
             width: 16px
@@ -166,6 +190,9 @@
     height: 50px
     border-radius: 50px
     margin: 0 15px 0 5px
+
+    +mobile
+      display: none
 
   span
     display: block
@@ -297,10 +324,9 @@ progress
   font-size: 12px
   color: $white
   padding: 5px 20px
-  width: 100px
-  margin: 0 auto
   text-align: center
   font-weight: $weight-semibold
+  min-width: 120px
 
   &.green
     background: #36AF47

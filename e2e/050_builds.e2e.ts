@@ -39,12 +39,15 @@ describe('Builds', () => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.build-time')).isPresent();
+        return element.all(by.css('.stop-build:not(.is-hidden)')).first().isPresent();
       }))
-      .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
-      }))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
+      .then((): any => {
+        return browser.wait(() => {
+          const el = element(by.css('.stop-build:not(.is-hidden)'));
+          return ExpectedConditions.elementToBeClickable(el);
+        });
+      })
+      .then((): any => element.all(by.css('.stop-build:not(.is-hidden)')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
@@ -75,15 +78,15 @@ describe('Builds', () => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+        return element.all(by.css('.stop-build:not(.is-hidden)')).first().isPresent();
       }))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.list-item:nth-child(1) .stop-build'));
+          const el = element(by.css('.stop-build:not(.is-hidden)'));
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
-      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => element.all(by.css('.stop-build:not(.is-hidden)')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
@@ -104,15 +107,15 @@ describe('Builds', () => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.stop-build')).first().isPresent();
+        return element.all(by.css('.stop-build:not(.is-hidden)')).first().isPresent();
       }))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.stop-build'));
+          const el = element(by.css('.stop-build:not(.is-hidden)'));
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
-      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => element.all(by.css('.stop-build:not(.is-hidden)')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
@@ -137,15 +140,15 @@ describe('Builds', () => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.stop-build')).first().isPresent();
+        return element.all(by.css('.stop-build:not(.is-hidden)')).first().isPresent();
       }))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.stop-build'));
+          const el = element(by.css('.stop-build:not(.is-hidden)'));
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
-      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => element.all(by.css('.stop-build:not(.is-hidden)')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));

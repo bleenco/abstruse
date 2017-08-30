@@ -4,11 +4,11 @@
       <a class="nav-item nav-logo" routerLink="/">
         <img src="images/abstruse-text-logo.svg">
       </a>
-      <a class="nav-item" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+      <a class="nav-item is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
         <img src="images/icons/team.svg" class="nav-item-icon">
         Team
       </a>
-      <a class="nav-item" routerLink="/repositories" routerLinkActive="is-active">
+      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
         <img src="images/icons/assets.svg" class="nav-item-icon">
         Repositories
       </a>
@@ -17,6 +17,12 @@
       <a class="nav-item user-item" (click)="toggleMenu()" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
         <div class="nav-dropdown" *ngIf="menuDropped">
+          <a class="nav-dropdown-item is-hidden-tablet" routerLink="/team">
+            Team
+          </a>
+          <a class="nav-dropdown-item is-hidden-tablet" routerLink="/repositories">
+            Repositories
+          </a>
           <a class="nav-dropdown-item" routerLink="/settings">
             Settings
           </a>
