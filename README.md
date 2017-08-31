@@ -2,13 +2,15 @@
   <img src="https://user-images.githubusercontent.com/1796022/28603921-79363332-71c7-11e7-811f-e5079f1b9f9c.png">
 </p>
 
-# abstruse
+# Abstruse
 
 [![AbstruseCI](https://abstruse.bleenco.io/badge/1)](https://abstruse.bleenco.io/repo/1)
 
-Run Continuous Integration (CI) on your own servers with zero configuration.
+[Abstruse](https://abstruse.bleenco.io/) is a continuous integration platform requiring zero or minimal configuration to get started, providing safe testing and deployment environment using [Docker](https://docker.github.io/) containers. It integrates seamlessly with all git hosted services as [GitHub](https://github.com/), [BitBucket](https://bitbucket.org/), [GitLab](https://about.gitlab.com/) and [gogs](https://gogs.io/).
 
-Provides safe and reliable testing & deployment environment using Docker containers.
+## Prerequirements
+
+`Abstruse` requires `SQLite3` and `Docker` to be installed.
 
 ## Installation
 
@@ -18,25 +20,21 @@ $ npm install abstruse -g
 
 ## Running abstruse
 
-After install is done running a server is as easy as running below command
+After the installation, running a server is as easy as running the following command:
 
 ```sh
 $ abstruse
 ```
 
-## Requirements
-
-`abstruse` requires `SQLite3` and `Docker` to be installed on your configuration.
-
 ## Tests
 
-#### server e2e tests
+#### Server e2e tests
 
 ```sh
 npm run test:e2e
 ```
 
-#### protractor e2e tests
+#### Protractor e2e tests
 
 ```sh
 npm run test:protractor
@@ -48,39 +46,40 @@ npm run test:protractor
   <img src="https://user-images.githubusercontent.com/1796022/29858646-a6ba0772-8d5e-11e7-9280-ef5a9d4ca0f4.png" width="700">
 </p>
 
-#### 1. Set secret in configuration
+#### 1. Configuring secret token
 
-Your configuration file is located in **~/.abstruse/config.json**
+Abstruse configuration file is located in **~/.abstruse/config.json**.
 
-Set `secret` you want to use for integration Github webhooks with your abstruse instance. The default secret is **thisIsSecret**.
+The integration of GitHub webhooks and Abstruse is done using `secret` token. The default `secret` is set to **thisIsSecret**.
 
-**After you change your secret keyword abstruse needs to be restarted.**
+**It is recommended to change the default `secret` token and restart abstruse to apply changes.**
 
-#### 2. Set Webhooks on Github
+#### 2. Setting up Github Webhooks
 
-Under repository `Settings` navigate to `Webhooks` section. Click on `Add Webhooks`, then fill the form with appropriate data.
+In repository `Settings` navigate to `Webhooks` section in the menu. Click `Add Webhooks` and fill in the required information.
 
-After you filled you data, form should look something like form below, but instead of `https://abstruse.bleenco.io` your URL must be entered.
+An example of a successful webhook entry can be seen in a screenshot below. Instead of `https://abstruse.bleenco.io` the URL of your choice has to be entered.
 
 <p align="left">
   <img src="https://user-images.githubusercontent.com/1796022/29858741-220462f6-8d5f-11e7-8b3b-b6418b46684c.png" width="700">
 </p>
 
-#### 3. Make a commit on your repository
+#### 3. Initiating Abstruse repositories
 
-To initiate creation of repository under abstruse make a commit on your repository on Github. Pull Request will work too.
+Your new code repositories will automatically appear in Abstruse
+after the first commit or pull request.
 
-**Note: you repository should include .abstruse.yml file.**
+**Note: Please make sure your local repository includes .abstruse.yml file.**
 
-#### 4. Set up protected branches
+#### 4. Setting up protected branches
 
-On Github navigate to `Branches` section under `Settings`. Edit branch you want to mark as protected and check `continuous-integration/abstruse` as required.
+In repository `Settings` navigate to `Branches` section in the menu. Click `Edit` next to the branch you want to protect and select the checkbox `continuous-integration/abstruse` as required.
 
 <p align="left">
   <img src="https://user-images.githubusercontent.com/1796022/29859098-d90d5682-8d60-11e7-92ff-b089daf4f7a8.png" width="700">
 </p>
 
-## Sample Configuration
+## Sample .abstruse.yml configuration
 
 ```yml
 language: node_js
@@ -112,7 +111,7 @@ test:
   - if [[ "$NODE_SCRIPT" ]]; then node ./$NODE_SCRIPT; fi
 ```
 
-## Sneak Peek
+## Sneak peek
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/1796022/29797980-78c7a766-8c5a-11e7-87a7-98cebd085396.png">
@@ -120,4 +119,24 @@ test:
 
 ## Licence
 
-MIT
+The MIT License
+
+Copyright (c) 2017 Bleenco GmbH http://bleenco.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
