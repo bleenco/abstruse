@@ -271,9 +271,11 @@ export function startJob(p: JobProcess): Promise<void> {
                 job_id: p.job_id,
                 data: 'jobFailed'
               });
+
+              if (processes.findIndex(proc => proc.build_id === p.build_id) === -1) {
+                getBuild(p.build_id).then(build => sendFailureStatus(build, build.id));
+              }
             })
-            .then(() => getBuild(p.build_id))
-            .then(build => sendFailureStatus(build, build.id))
             .catch(err => logger.error(err));
         }, () => {
           dbJob.getLastRunId(p.job_id)
@@ -289,13 +291,16 @@ export function startJob(p: JobProcess): Promise<void> {
             })
             .then(() => getBuildStatus(p.build_id))
             .then(status => {
-              if (status) {
+              if (status === 'success') {
                 return updateBuild({ id: p.build_id, end_time: new Date() })
                   .then(() => getLastRunId(p.build_id))
                   .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                   .then(() => getBuild(p.build_id))
                   .then(build => sendSuccessStatus(build, build.id))
                   .catch(err => logger.error(err));
+              } else if (status === 'failed') {
+                getBuild(p.build_id)
+                .then(build => sendFailureStatus(build, build.id));
               } else {
                 return Promise.resolve();
               }
@@ -338,12 +343,36 @@ export function stopJob(jobId: number): Promise<any> {
           }
         })
         .then(() => dbJob.getJob(jobId))
-        .then(job => stopContainer(`abstruse_${job.builds_id}_${job.id}`).toPromise())
+        .then(job => {
+          return stopContainer(`abstruse_${job.builds_id}_${jobId}`).toPromise()
+            .then(() => getBuildStatus(job.builds_id))
+            .then(status => {
+              if (status === 'success') {
+                getBuild(job.builds_id)
+                  .then(build => sendSuccessStatus(build, build.id));
+              } else if (status === 'failed') {
+                getBuild(job.builds_id)
+                .then(build => sendFailureStatus(build, build.id));
+              }
+            });
+        })
         .catch(err => logger.error(err));
     } else {
       return Promise.resolve()
         .then(() => dbJob.getJob(jobId))
-        .then(job => stopContainer(`abstruse_${job.builds_id}_${job.id}`).toPromise())
+        .then(job => {
+          return stopContainer(`abstruse_${job.builds_id}_${jobId}`).toPromise()
+            .then(() => getBuildStatus(job.builds_id))
+            .then(status => {
+              if (status === 'success') {
+                getBuild(job.builds_id)
+                  .then(build => sendSuccessStatus(build, build.id));
+              } else if (status === 'failed') {
+                getBuild(job.builds_id)
+                .then(build => sendFailureStatus(build, build.id));
+              }
+            });
+        })
         .then(() => dbJob.getLastRunId(jobId))
         .then(runId => dbJobRuns.getRun(runId))
         .then(jobRun => {
@@ -456,8 +485,6 @@ export function stopBuild(buildId: number): Promise<any> {
           return prev.then(() => stopJob(current.job_id));
         }, Promise.resolve()).then(() => procs);
     })
-    .then(() => getBuild(buildId))
-    .then(buildData => sendFailureStatus(buildData, buildData.id))
     .catch(err => logger.error(err));
 }
 

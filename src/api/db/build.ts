@@ -226,8 +226,21 @@ export function getBuildStatus(buildId: number): Promise<any> {
       .query(q => q.where('builds_id', buildId))
       .fetchAll()
       .then(jobs => {
-        Promise.all(jobs.map(j => getLastRun(j.id).then(r => r.status === 'success')))
-          .then(data => resolve(data.reduce((curr, prev) => !curr ? curr : prev)));
+        Promise.all(jobs.map(j => getLastRun(j.id).then(r => r.status)))
+          .then(data => resolve(data.reduce((accu, curr) => {
+            if (curr === 'queued') {
+              return curr;
+            } else if (curr === 'running' && accu !== 'queued') {
+              return curr;
+            } else if (curr === 'failed' && accu !== 'running' && accu !== 'queued') {
+              return curr;
+            } else if (curr === 'success' && accu !== 'failed'
+              && accu !== 'running' && accu !== 'queued') {
+                return curr;
+            }
+
+            return accu;
+          })));
       });
     });
 }
