@@ -33,6 +33,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/repositories', routes.repositoryRoutes());
       app.use('/api/builds', routes.buildRoutes());
       app.use('/api/jobs', routes.jobRoutes());
+      app.use('/api/permissions', routes.permissionRoutes());
       app.use('/badge', routes.badgeRoutes());
       app.use(routes.webRoutes());
       app.listen(this.config.port, () => {

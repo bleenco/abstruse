@@ -132,3 +132,10 @@ export function resetJob(jobId: number): Promise<any> {
       .then(job => resolve(job.toJSON()));
   });
 }
+
+export function getJobRepositoryId(jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Job({ id: jobId }).fetch({ withRelated: ['build'] })
+      .then(job => !job ? reject(job) : resolve(job.toJSON().build.repositories_id));
+  });
+}

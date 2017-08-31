@@ -1,6 +1,8 @@
 import { Permission } from './model';
 import { getUsers } from './user';
 import { getRepositories } from './repository';
+import { getBuildRepositoryId } from './build';
+import { getJobRepositoryId } from './job';
 
 export function getPermission(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -13,6 +15,37 @@ export function getRepositoryPermissions(repoId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Permission({ repositories_id: repoId }).fetchAll()
     .then(permissions => !permissions ? reject(permissions) : resolve(permissions.toJSON()));
+  });
+}
+
+export function getUserRepositoryPermissions(userId: number, repoId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Permission({ repositories_id: repoId, users_id: userId })
+      .fetch({ withRelated: ['repository'] })
+      .then(permission => {
+        if (permission) {
+          permission = permission.toJSON();
+          permission.repository.private ? resolve(permission.permission) : resolve(true);
+        }
+
+        reject(permission);
+      });
+  });
+}
+
+export function getUserBuildPermissions(userId: number, buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getBuildRepositoryId(buildId)
+      .then(repoId => resolve(getUserRepositoryPermissions(userId, repoId)))
+      .catch(() => resolve(false));
+  });
+}
+
+export function getUserJobPermissions(userId: number, jobId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    getJobRepositoryId(jobId)
+      .then(repoId => resolve(getUserRepositoryPermissions(userId, repoId)))
+      .catch(() => resolve(false));
   });
 }
 

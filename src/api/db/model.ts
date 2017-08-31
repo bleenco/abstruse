@@ -55,4 +55,6 @@ export class JobRun extends Bookshelf.Model<any> {
 export class Permission extends Bookshelf.Model<any> {
   get tableName() { return 'permissions'; }
   get hasTimestamps() { return true; }
+  repository() { return this.belongsTo(Repository, 'repositories_id'); }
+  user() { return this.belongsTo(User, 'users_id'); }
 }

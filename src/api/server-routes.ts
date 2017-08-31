@@ -29,7 +29,12 @@ import {
 import { getBuilds, getBuild, getLastBuild } from './db/build';
 import { getJob } from './db/job';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
-import { updatePermission } from './db/permission';
+import {
+  updatePermission,
+  getUserRepositoryPermissions,
+  getUserBuildPermissions,
+  getUserJobPermissions
+} from './db/permission';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
@@ -366,6 +371,30 @@ export function setupRoutes(): express.Router {
 
   router.get('/login-required', (req: express.Request, res: express.Response) => {
     return res.status(200).json({ data: config.requireLogin });
+  });
+
+  return router;
+}
+
+export function permissionRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/repository/:repoId/user/:userId', (req: express.Request, res: express.Response) => {
+    getUserRepositoryPermissions(req.params.userId, req.params.repoId).then(perm => {
+      return res.status(200).json({ data: perm });
+    }).catch(err => res.status(200).json({ status: false }));
+  });
+
+  router.get('/build/:buildId/user/:userId', (req: express.Request, res: express.Response) => {
+    getUserBuildPermissions(req.params.userId, req.params.buildId).then(perm => {
+      return res.status(200).json({ data: perm });
+    }).catch(err => res.status(200).json({ status: false }));
+  });
+
+  router.get('/job/:jobId/user/:userId', (req: express.Request, res: express.Response) => {
+    getUserJobPermissions(req.params.userId, req.params.jobId).then(perm => {
+      return res.status(200).json({ data: perm });
+    }).catch(err => res.status(200).json({ status: false }));
   });
 
   return router;

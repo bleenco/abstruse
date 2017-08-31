@@ -220,6 +220,13 @@ export function updateBuild(data: any): Promise<boolean> {
   });
 }
 
+export function getBuildRepositoryId(buildId: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build({ id: buildId }).fetch()
+    .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id));
+  });
+}
+
 export function getBuildStatus(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Job()
