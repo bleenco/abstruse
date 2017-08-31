@@ -122,7 +122,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       if (status !== 'running') {
         build.maxTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
       } else {
-        build.maxTime = Math.max(...build.jobs.map(job => job.start_time));
+        build.maxTime = Math.min(...build.jobs
+          .filter(job => job.status === 'running').map(job => job.start_time));
       }
 
       build.status = status;

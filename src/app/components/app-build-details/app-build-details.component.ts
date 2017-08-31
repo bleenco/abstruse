@@ -122,7 +122,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     if (this.status !== 'running') {
       this.totalTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
     } else {
-      this.totalTime = Math.max(...this.build.jobs.map(job => job.start_time));
+      this.totalTime = Math.min(...this.build.jobs
+        .filter(job => job.status === 'running').map(job => job.start_time));
     }
 
     this.build.jobs = this.build.jobs.map(job => {
