@@ -139,6 +139,18 @@ export class ApiService {
     return this.post(`${this.url}/repositories/permission`, data);
   }
 
+  getUserRepositoryPermission(repoId: string, userId: number): Observable<any> {
+    return this.get(`${this.url}/permissions/repository/${repoId}/user/${userId}`, null, true);
+  }
+
+  getUserBuildPermission(buildId: string, userId: number): Observable<any> {
+    return this.get(`${this.url}/permissions/build/${buildId}/user/${userId}`, null, true);
+  }
+
+  getUserJobPermission(jobId: string, userId: number): Observable<any> {
+    return this.get(`${this.url}/permissions/job/${jobId}/user/${userId}`, null, true);
+  }
+
   getGithubUserData(username: string): Observable<any> {
     return this.http.get(`https://api.github.com/users/${username}`);
   }
