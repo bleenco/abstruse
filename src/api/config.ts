@@ -101,20 +101,22 @@ export function getRepositoryDetails(repository, sha = null, pr = null): Promise
       .then(tempDir => {
         let cloneUrl = repository.clone_url;
         cloneDir = tempDir;
-        if (repository.private && repository.gitlab_id && repository.access_token) {
-          cloneUrl =
-            cloneUrl.replace('https://', `https://gitlab-ci-token:${repository.access_token}@`);
-        } else if (repository.private && repository.gogs_id && repository.access_token) {
-          cloneUrl = cloneUrl.replace('https://', `https://${repository.access_token}@`);
-        } else if (repository.bitbucket_id && repository.private && repository.access_token) {
-          return getBitBucketAccessToken(repository.access_token)
-            .then(response => {
-              let access_token = JSON.parse(response).access_token;
-              let cloneUrl =
-                repository.clone_url.replace('https://', `https://x-token-auth:${access_token}@`);
+        if (repository.private && repository.access_token) {
+          if (repository.github_id || repository.gogs_id) {
+            cloneUrl = cloneUrl.replace('https://', `https://${repository.access_token}@`);
+          } else if (repository.gitlab_id) {
+            cloneUrl =
+              cloneUrl.replace('https://', `https://gitlab-ci-token:${repository.access_token}@`);
+          } else if (repository.bitbucket_id && repository.private && repository.access_token) {
+            return getBitBucketAccessToken(repository.access_token)
+              .then(response => {
+                let access_token = JSON.parse(response).access_token;
+                let cloneUrl =
+                  repository.clone_url.replace('https://', `https://x-token-auth:${access_token}@`);
 
-              return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
-            }).catch(err => Promise.reject(err));
+                return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
+              }).catch(err => Promise.reject(err));
+          }
         }
 
         return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
