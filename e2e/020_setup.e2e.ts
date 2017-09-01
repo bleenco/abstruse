@@ -1,4 +1,4 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
+import { browser, by, element } from 'protractor';
 import { isLoaded } from './utils';
 
 describe('User Registration', () => {
