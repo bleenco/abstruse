@@ -5,16 +5,31 @@ import { existsSync, rmdir } from './fs';
 import { join } from 'path';
 import * as yaml from 'yamljs';
 
+export enum Languages {
+  Android = 'android',
+  NodeJS = 'node_js'
+}
+
 export interface Config {
-  language?: string;
-  git: { depth: number, pr?: number, sha?: string };
-  matrix?: { node_js?: string; env: string }[];
-  preinstall?: string[];
-  install?: string[];
-  postinstall?: string[];
-  pretest?: string[];
-  test?: string[];
-  posttest?: string[];
+  language?: Languages;
+  git: { repository_url: string, depth?: number, pr?: number, sha?: string };
+  cache?: string[];
+  before_install?: string[];
+  install: string[] | true;
+  before_script?: string[];
+  script: string[];
+  before_cache?: string[];
+  after_success?: string[];
+  after_failure?: string[];
+  before_deploy?: string[];
+  deploy?: string[];
+  after_deploy?: string[];
+  after_script?: string[];
+  matrix?: {
+    node_js?: string;
+    env: string;
+  }[];
+  android?: { components: string[] };
 }
 
 export interface GitLog {
@@ -28,6 +43,13 @@ export interface RepositoryInfo {
   config: Config;
   log?: GitLog;
 }
+
+export function parseConfig()
+
+
+
+
+
 
 export function generateCommands(repositoryUrl: string, config: Config): any[] {
   let matrix = [];
