@@ -110,7 +110,7 @@ export function getRepositoryDetails(repository, sha = null, pr = null): Promise
           } else if (repository.bitbucket_id && repository.private && repository.access_token) {
             return getBitBucketAccessToken(repository.access_token)
               .then(response => {
-                let access_token = JSON.parse(response).access_token;
+                let access_token = response.access_token;
                 let cloneUrl =
                   repository.clone_url.replace('https://', `https://x-token-auth:${access_token}@`);
 

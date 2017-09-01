@@ -241,7 +241,7 @@ function setBitbucketStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = JSON.parse(response).access_token;
+      let access_token = response.access_token;
       let statusData = {
         'state': 'SUCCESSFUL',
         'url': abstruseUrl,
@@ -264,7 +264,7 @@ function setBitbucketStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
     return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = JSON.parse(response).access_token;
+      let access_token = response.access_token;
       let statusData = {
         'state': 'INPROGRESS',
         'url': abstruseUrl,
@@ -287,7 +287,7 @@ function setBitbucketStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
     return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = JSON.parse(response).access_token;
+      let access_token = response.access_token;
       let statusData = {
         'state': 'FAILED',
         'url': abstruseUrl,
