@@ -128,7 +128,7 @@ export function startBuild(data: any): Promise<any> {
                 if (repository.access_token) {
                   return getBitBucketAccessToken(repository.access_token)
                     .then(response => {
-                      let access_token = JSON.parse(response).access_token;
+                      let access_token = response.access_token;
                       url = url + `?access_token=${access_token}`;
 
                       return getHttpJsonResponse(url);

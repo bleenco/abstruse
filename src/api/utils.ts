@@ -197,7 +197,7 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
           reject(err);
         } else {
           if (response.statusCode < 300 && response.statusCode >= 200) {
-            resolve(body);
+            resolve(JSON.parse(body));
           } else {
             reject({
               statusCode: response.statusCode,
