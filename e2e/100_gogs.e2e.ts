@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout } from './utils';
+import { isLoaded, login, logout, delay } from './utils';
 import { request, header } from '../tests/e2e/webhooks/gogs/PushEvents';
 import { pullRequestOpened, header as prHead } from '../tests/e2e/webhooks/gogs/PullRequestEvents';
 import { sendGogsRequest } from '../tests/e2e/utils/utils';
@@ -25,6 +25,7 @@ describe('Gogs repositories', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
+      .then(() => delay(2000))
       .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
@@ -45,6 +46,7 @@ describe('Gogs repositories', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
+      .then(() => delay(2000))
       .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
@@ -59,6 +61,7 @@ describe('Gogs repositories', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restart-build')).first().isPresent();
       }))
+      .then(() => delay(2000))
       .then((): any => element.all(by.css('.restart-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count > 0);
@@ -78,6 +81,7 @@ describe('Gogs repositories', () => {
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
+      .then(() => delay(2000))
       .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);

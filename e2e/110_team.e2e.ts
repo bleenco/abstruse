@@ -1,8 +1,5 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout, waitForUrlToChangeTo } from './utils';
-import { request, header } from '../tests/e2e/webhooks/gogs/PushEvents';
-import { pullRequestOpened, header as prHead } from '../tests/e2e/webhooks/gogs/PullRequestEvents';
-import { sendGogsRequest } from '../tests/e2e/utils/utils';
+import { browser, by, element } from 'protractor';
+import { login, logout, waitForUrlToChangeTo } from './utils';
 
 
 describe('Teams', () => {
@@ -42,14 +39,14 @@ describe('Teams', () => {
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/1'))
       .then(() => expect(element.all(by.css('h1')).first().getText()).toContain('John Wayne'))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 6);
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
       }))
       .then((): any => element.all(by.css('[name="btn-removePermisison"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 4);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restricted-repositories .list-item')).count()
@@ -57,7 +54,7 @@ describe('Teams', () => {
       }))
       .then((): any => element.all(by.css('[name="btn-addPermisison"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 6);
+        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
