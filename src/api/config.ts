@@ -8,7 +8,8 @@ import * as yaml from 'yamljs';
 export enum Language {
   android,
   java,
-  node_js
+  node_js,
+  python
 }
 
 export enum CacheType {
@@ -46,6 +47,25 @@ export interface Matrix {
   include: Build[];
   exclude: Build[];
   allow_failures: Build[];
+}
+
+export interface Command {
+  command: string;
+  type: CommandType;
+  env?: string[];
+}
+
+export interface CommandsAndEnv {
+  commands: Command[];
+  env: string[];
+}
+
+export interface Repository {
+  url: string;
+  branch?: string;
+  clone_depth?: number;
+  pull_request?: number;
+  sha?: string;
 }
 
 export interface Config {
@@ -285,6 +305,81 @@ function parseMatrix(matrix: any | null): Matrix | null {
     }
   }
 }
+
+export function generateCommandsAndEnv(repo: Repository, config: Config): CommandsAndEnv[] {
+  let data: CommandsAndEnv[] = [];
+
+  // global environment variables
+  const globalEnv = config.env && config.env.global || [];
+
+  // 1. clone repository
+  const splitted = repo.url.split('/');
+  const name = splitted[splitted.length - 1].replace(/\.git/, '');
+  // TODO: update to ${ABSTRUSE_BUILD_DIR}, private repos also
+  const clone = `git clone -q ${repo.url} -b ${repo.branch} .`;
+
+  // 2. fetch & checkout
+  let fetch = null;
+  let checkout = null;
+
+  if (repo.pull_request) {
+    fetch = `git fetch origin pull/${repo.pull_request}/head:pr${repo.pull_request}`;
+    checkout = `git checkout pr${repo.pull_request}`;
+  } else if (repo.sha) {
+    fetch = `git fetch origin`;
+    checkout = `git checkout ${repo.sha} .`;
+  }
+
+  const beforeInstall = config.before_install || [];
+  const install = config.install || []; // TODO: specific languages
+  const beforeScript = config.before_script || [];
+  const script = config.script || []; // TODO: specific languages
+  const beforeCache = config.before_cache || [];
+  const afterSuccess = config.after_success || [];
+  const afterFailure = config.after_failure || [];
+  const beforeDeploy = config.before_deploy || [];
+  const deploy = config.deploy || [];
+  const afterDeploy = config.after_deploy || [];
+  const afterScript = config.after_script || [];
+
+  if (config.matrix) {
+    data = config.matrix.include.map(i => {
+      const env = globalEnv.concat(i.env);
+      const commands = []
+        .concat(beforeInstall)
+        .concat(install)
+        .concat(beforeScript)
+        .concat(script)
+        .concat(beforeCache)
+        .concat(afterSuccess)
+        .concat(afterFailure)
+        .concat(beforeDeploy)
+        .concat(deploy)
+        .concat(afterDeploy)
+        .concat(afterScript);
+
+      return { commands, env  };
+    });
+  } else {
+    const commands = []
+      .concat(beforeInstall)
+      .concat(install)
+      .concat(beforeScript)
+      .concat(script)
+      .concat(beforeCache)
+      .concat(afterSuccess)
+      .concat(afterFailure)
+      .concat(beforeDeploy)
+      .concat(deploy)
+      .concat(afterDeploy)
+      .concat(afterScript);
+
+    data.push({ commands: commands, env: globalEnv });
+  }
+
+  return data;
+}
+
 
 // export function generateCommands(repositoryUrl: string, config: Config): any[] {
 //   let matrix = [];
