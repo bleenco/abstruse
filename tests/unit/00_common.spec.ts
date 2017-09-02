@@ -311,4 +311,165 @@ describe('Common Configuration Options', () => {
     });
   });
 
+  describe(`Build Matrix`, () => {
+    beforeEach(() => {
+      data = { language: null, cache: null, branches: null, env: null };
+      data = Object.assign(data, {
+        matrix: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ]
+      });
+    });
+
+    it(`should not throw an error when matrix is null`, () => {
+      data = Object.assign(data, { matrix: null });
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw an error when matrix is empty string`, () => {
+      data = Object.assign(data, { matrix: '' });
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should throw an error when matrix is defined as string`, () => {
+      data = Object.assign(data, { matrix: 'build' });
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should not throw an error when matrix is defined as array`, () => {
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should parse data properly when matrix is defined as array`, () => {
+      const parsed = parseConfig(data);
+      const expected = {
+        include: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ],
+        exclude: [],
+        allow_failures: []
+      };
+
+      expect(parsed.matrix).to.deep.equal(expected);
+    });
+
+    it(`should parse data properly when matrix is defined as array in include`, () => {
+      data = Object.assign(data, { matrix: {
+        include: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ],
+        exclude: [],
+        allow_failures: []
+      }});
+      const parsed = parseConfig(data);
+      const expected = {
+        include: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ],
+        exclude: [],
+        allow_failures: []
+      };
+
+      expect(parsed.matrix).to.deep.equal(expected);
+    });
+
+    it(`should parse data properly when matrix is defined as array in exclude`, () => {
+      data = Object.assign(data, { matrix: {
+        include: [],
+        exclude: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ],
+        allow_failures: []
+      }});
+      const parsed = parseConfig(data);
+      const expected = {
+        include: [],
+        exclude: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ],
+        allow_failures: []
+      };
+
+      expect(parsed.matrix).to.deep.equal(expected);
+    });
+
+    it(`should parse data properly when matrix is defined as array in allow_failures`, () => {
+      data = Object.assign(data, { matrix: {
+        include: [],
+        exclude: [],
+        allow_failures: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ]
+      }});
+      const parsed = parseConfig(data);
+      const expected = {
+        include: [],
+        exclude: [],
+        allow_failures: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ]
+      };
+
+      expect(parsed.matrix).to.deep.equal(expected);
+    });
+
+    it(`should parse data properly when matrix is defined in all properties`, () => {
+      data = Object.assign(data, { matrix: {
+        include: [
+          { node_js: '7', env: 'SCRIPT=lint' }
+        ],
+        exclude: [
+          { node_js: '6', env: 'SCRIPT=test:protractor' }
+        ],
+        allow_failures: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ]
+      }});
+      const parsed = parseConfig(data);
+      const expected = {
+        include: [
+          { node_js: '7', env: 'SCRIPT=lint' }
+        ],
+        exclude: [
+          { node_js: '6', env: 'SCRIPT=test:protractor' }
+        ],
+        allow_failures: [
+          { node_js: '8', env: 'SCRIPT=lint' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
+          { node_js: '8', env: 'SCRIPT=test:protractor' },
+          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+        ]
+      };
+
+      expect(parsed.matrix).to.deep.equal(expected);
+    });
+  });
+
 });

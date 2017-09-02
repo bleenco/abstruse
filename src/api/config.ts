@@ -34,6 +34,20 @@ export enum CommandType {
   after_script
 }
 
+export interface Build {
+  env?: string;
+  rvm?: string;
+  gemfile?: string;
+  python?: string;
+  node_js?: string;
+}
+
+export interface Matrix {
+  include: Build[];
+  exclude: Build[];
+  allow_failures: Build[];
+}
+
 export interface Config {
   language?: Language;
   os?: string;
@@ -52,10 +66,7 @@ export interface Config {
   deploy?: { command: string, type: CommandType }[];
   after_deploy?: { command: string, type: CommandType }[];
   after_script?: { command: string, type: CommandType }[];
-  matrix?: {
-    node_js?: string;
-    env: string;
-  }[];
+  matrix?: Matrix;
   android?: { components: string[] };
   node_js?: string[];
 }
@@ -112,6 +123,8 @@ export function parseConfig(data: any): Config {
   config.deploy = parseCommands(data.deploy || null, CommandType.deploy);
   config.after_deploy = parseCommands(data.after_deploy || null, CommandType.after_deploy);
   config.after_script = parseCommands(data.after_script || null, CommandType.after_script);
+
+  config.matrix = parseMatrix(data.matrix || null);
 
   return config;
 }
@@ -238,6 +251,37 @@ function parseCommands(
       return commands.map(cmd => ({ command: cmd, type: type }));
     } else {
       throw new Error(`Unknown or invalid type of commands specified.`);
+    }
+  }
+}
+
+function parseMatrix(matrix: any | null): Matrix | null {
+  if (!matrix) {
+    return null;
+  } else {
+    if (Array.isArray(matrix)) {
+      const include = matrix.map((m: Build) => m);
+      return { include: include, exclude: [], allow_failures: [] };
+    } else if (typeof matrix === 'object') {
+      let include = [];
+      let exclude = [];
+      let allowFailures = [];
+
+      if (matrix.include && Array.isArray(matrix.include)) {
+        include = matrix.include;
+      }
+
+      if (matrix.exclude && Array.isArray(matrix.exclude)) {
+        exclude = matrix.exclude;
+      }
+
+      if (matrix.allow_failures && Array.isArray(matrix.allow_failures)) {
+        allowFailures = matrix.allow_failures;
+      }
+
+      return { include: include, exclude: exclude, allow_failures: allowFailures };
+    } else {
+      throw new Error(`Unknown or invalid matrix format.`);
     }
   }
 }
