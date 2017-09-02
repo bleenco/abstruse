@@ -139,6 +139,16 @@ describe('Common Configuration Options', () => {
       expect(parsed.cache).to.deep.equal(expected);
     });
 
+    it(`should throw an error when directories property is not an array`, () => {
+      data.cache = { directories: null };
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should throw an error when directories property is not defined`, () => {
+      data.cache = {};
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
   });
 
 });
