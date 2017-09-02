@@ -5,7 +5,8 @@ let config: Config;
 
 let data = {
   language: null,
-  cache: null
+  cache: null,
+  branches: null
 };
 
 describe('Common Configuration Options', () => {
@@ -149,6 +150,70 @@ describe('Common Configuration Options', () => {
       expect(() => parseConfig(data)).to.throw(Error);
     });
 
+  });
+
+  describe('Branches property', () => {
+    beforeEach(() => {
+      data = {
+        language: null,
+        cache: null,
+        branches: null
+      };
+    });
+
+    it(`should not throw if property is null`, () => {
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw if property is empty string`, () => {
+      data.branches = '';
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should throw if property is string`, () => {
+      data.branches = 'master';
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should not throw if property is array of branches`, () => {
+      data.branches = ['master', 'dev'];
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should parse appropriate object when branches is defined as array`, () => {
+      data.branches = ['master', 'dev'];
+      const parsed = parseConfig(data);
+      const expected = {
+        test: ['master', 'dev'],
+        ignore: []
+      };
+      expect(parsed.branches).to.deep.equal(expected);
+    });
+
+    it(`should not throw error when only and except are defined with empty arrays`, () => {
+      data.branches = { only: [], except: [] };
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should parse appropriate object when only and except are defined with empty arrays`, () => {
+      data.branches = { only: [], except: [] };
+      const parsed = parseConfig(data);
+      const expected = {
+        test: [],
+        ignore: []
+      };
+      expect(parsed.branches).to.deep.equal(expected);
+    });
+
+    it(`should parse appropriate object when only and except are defined with data`, () => {
+      data.branches = { only: ['master'], except: ['dev'] };
+      const parsed = parseConfig(data);
+      const expected = {
+        test: ['master'],
+        ignore: ['dev']
+      };
+      expect(parsed.branches).to.deep.equal(expected);
+    });
   });
 
 });
