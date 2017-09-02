@@ -1,12 +1,13 @@
 import { expect } from 'chai';
-import { Config, parseConfig, CacheType } from '../../src/api/config';
+import { Config, parseConfig, CacheType, CommandType } from '../../src/api/config';
 
 let config: Config;
 
 let data = {
   language: null,
   cache: null,
-  branches: null
+  branches: null,
+  env: null
 };
 
 describe('Common Configuration Options', () => {
@@ -154,11 +155,7 @@ describe('Common Configuration Options', () => {
 
   describe('Branches property', () => {
     beforeEach(() => {
-      data = {
-        language: null,
-        cache: null,
-        branches: null
-      };
+      data = { language: null, cache: null, branches: null, env: null };
     });
 
     it(`should not throw if property is null`, () => {
@@ -213,6 +210,104 @@ describe('Common Configuration Options', () => {
         ignore: ['dev']
       };
       expect(parsed.branches).to.deep.equal(expected);
+    });
+  });
+
+  describe(`Env property`, () => {
+    beforeEach(() => {
+      data = { language: null, cache: null, branches: null, env: null };
+    });
+
+    it(`should now throw an error if env is not specified`, () => {
+      delete data.env;
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should now throw an error if env is null`, () => {
+      data.env = null;
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw an error if env is empty string`, () => {
+      data.env = '';
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should throw an error if env is string`, () => {
+      data.env = 'FOO=bar';
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should throw an error if env.global is string`, () => {
+      data.env = { global: 'FOO=bar' };
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should not throw an error if env.global is null`, () => {
+      data.env = { global: null };
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should throw an error if env.matrix is string`, () => {
+      data.env = { matrix: 'FOO=bar' };
+      expect(() => parseConfig(data)).to.throw(Error);
+    });
+
+    it(`should not throw an error if env.matrix is null`, () => {
+      data.env = { matrix: null };
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should return appropriate values when data is specified`, () => {
+      data.env = {
+        global: ['FOO=bar'],
+        matrix: ['DB=production', 'DB=testing']
+      };
+      const parsed = parseConfig(data);
+      expect(parsed.env).to.deep.equal(data.env);
+    });
+  });
+
+  describe(`Commands properties`, () => {
+    beforeEach(() => {
+      data = { language: null, cache: null, branches: null, env: null };
+      data = Object.assign(data, { script: 'npm install' });
+    });
+
+    it(`should not throw an error when command is specified as string`, () => {
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw an error when command is null`, () => {
+      data = Object.assign(data, { script: null });
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw an error when command is empty string`, () => {
+      data = Object.assign(data, { script: '' });
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should not throw an error when command is array of strings`, () => {
+      data = Object.assign(data, { script: ['npm install', 'npm rebuild'] });
+      expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should parse commands appropriately when command is specified as string`, () => {
+      data = Object.assign(data, { script: 'npm install' });
+      const parsed = parseConfig(data);
+      const expected = [{ command: 'npm install', type: CommandType.script }];
+      expect(parsed.script).to.deep.equal(expected);
+    });
+
+    it(`should parse commands appropriately when command is specified as array of strings`, () => {
+      data = Object.assign(data, { script: ['npm install', 'npm rebuild'] });
+      const parsed = parseConfig(data);
+      const expected = [
+        { command: 'npm install', type: CommandType.script },
+        { command: 'npm rebuild', type: CommandType.script }
+      ];
+      expect(parsed.script).to.deep.equal(expected);
     });
   });
 
