@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 OPENJDK8_JAVA_HOME="/usr/lib/jvm/java-1.8.0-openjdk-amd64"
 ORACLEJDK8_JAVA_HOME="/usr/lib/jvm/java-8-oracle"
@@ -13,14 +13,14 @@ switch_to_openjdk8() {
 
 switch_to_oraclejdk8() {
   local ALIAS=`echo $ORACLEJDK8_JAVA_HOME | awk -F '/' '{print $NF}'`
-  echo "Switching to OpenJDK8 ($ALIAS) ..."
+  echo "Switching to OracleJDK8  ($ALIAS) ..."
   sudo update-java-alternatives --set $ALIAS
   export JAVA_HOME="$ORACLEJDK8_JAVA_HOME"
 }
 
 switch_to_oraclejdk9() {
   local ALIAS=`echo $ORACLEJDK9_JAVA_HOME | awk -F '/' '{print $NF}'`
-  echo "Switching to OpenJDK8 ($ALIAS) ..."
+  echo "Switching to OracleJDK9 ($ALIAS) ..."
   sudo update-java-alternatives --set $ALIAS
   export JAVA_HOME="$ORACLEJDK9_JAVA_HOME"
 }
