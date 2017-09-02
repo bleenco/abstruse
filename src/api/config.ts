@@ -20,23 +20,38 @@ export enum CacheType {
   cargo
 }
 
+export enum CommandType {
+  before_install,
+  install,
+  before_script,
+  script,
+  before_cache,
+  after_success,
+  after_failure,
+  before_deploy,
+  deploy,
+  after_deploy,
+  after_script
+}
+
 export interface Config {
   language?: Language;
   os?: string;
   // git: { repository_url: string, depth?: number, pr?: number, sha?: string };
   cache?: { [key: string]: string }[] | null;
   branches?: { test: string[], ignore: string[] };
-  before_install?: string[];
-  install: string[] | true;
-  before_script?: string[];
-  script: string[];
-  before_cache?: string[];
-  after_success?: string[];
-  after_failure?: string[];
-  before_deploy?: string[];
-  deploy?: string[];
-  after_deploy?: string[];
-  after_script?: string[];
+  env?: { global: string[], matrix: string[] };
+  before_install?: { command: string, type: CommandType }[];
+  install: { command: string, type: CommandType }[];
+  before_script?: { command: string, type: CommandType }[];
+  script: { command: string, type: CommandType }[];
+  before_cache?: { command: string, type: CommandType }[];
+  after_success?: { command: string, type: CommandType }[];
+  after_failure?: { command: string, type: CommandType }[];
+  before_deploy?: { command: string, type: CommandType }[];
+  deploy?: { command: string, type: CommandType }[];
+  after_deploy?: { command: string, type: CommandType }[];
+  after_script?: { command: string, type: CommandType }[];
   matrix?: {
     node_js?: string;
     env: string;
@@ -63,6 +78,7 @@ export function parseConfig(data: any): Config {
     os: null,
     cache: null,
     branches: null,
+    env: null,
     before_install: null,
     install: null,
     before_script: null,
@@ -83,6 +99,19 @@ export function parseConfig(data: any): Config {
   config.os = parseOS(data.os || null);
   config.cache = parseCache(data.cache || null);
   config.branches = parseBranches(data.branches || null);
+  config.env = parseEnv(data.env || null);
+
+  config.before_install = parseCommands(data.before_install || null, CommandType.before_install);
+  config.install = parseCommands(data.install || null, CommandType.install);
+  config.before_script = parseCommands(data.before_script || null, CommandType.before_script);
+  config.script = parseCommands(data.script || null, CommandType.script);
+  config.before_cache = parseCommands(data.before_cache || null, CommandType.before_cache);
+  config.after_success = parseCommands(data.after_success || null, CommandType.after_success);
+  config.after_failure = parseCommands(data.after_failure || null, CommandType.after_failure);
+  config.before_deploy = parseCommands(data.before_deploy || null, CommandType.before_deploy);
+  config.deploy = parseCommands(data.deploy || null, CommandType.deploy);
+  config.after_deploy = parseCommands(data.after_deploy || null, CommandType.after_deploy);
+  config.after_script = parseCommands(data.after_script || null, CommandType.after_script);
 
   return config;
 }
@@ -159,6 +188,56 @@ function parseBranches(branches: any | null): { test: string[], ignore: string[]
       return { test: only, ignore: except };
     } else {
       throw new Error(`Unknown format for property branches.`);
+    }
+  }
+}
+
+function parseEnv(env: any | null): { global: string[], matrix: string[] } | null {
+  if (!env) {
+    return null;
+  } else {
+    if (typeof env === 'object') {
+      let global = [];
+      let matrix = [];
+      if (env.global) {
+        if (Array.isArray(env.global)) {
+          global = env.global;
+        } else {
+          throw new Error(`Unknown format for property env.global.`);
+        }
+      }
+
+      if (env.matrix) {
+        if (Array.isArray(env.matrix)) {
+          matrix = env.matrix;
+        } else {
+          throw new Error(`Unknown format for property env.matrix.`);
+        }
+      }
+
+      return { global, matrix };
+    } else {
+      throw new Error(`Unknown format for property env.`);
+    }
+  }
+}
+
+function parseCommands(
+  commands: any | null, type: CommandType
+): { command: string, type: CommandType }[] {
+  if (!(type in CommandType)) {
+    throw new Error(`Command type must enum of CommandType.`);
+  }
+
+  if (!commands) {
+    return [];
+  } else {
+    if (typeof commands === 'string') {
+      return [{ command: commands, type: type }];
+    } else if (Array.isArray(commands)) {
+      return commands.map(cmd => ({ command: cmd, type: type }));
+    } else {
+      throw new Error(`Unknown or invalid type of commands specified.`);
     }
   }
 }
