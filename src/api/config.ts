@@ -25,6 +25,7 @@ export interface Config {
   os?: string;
   // git: { repository_url: string, depth?: number, pr?: number, sha?: string };
   cache?: { [key: string]: string }[] | null;
+  branches?: { test: string[], ignore: string[] };
   before_install?: string[];
   install: string[] | true;
   before_script?: string[];
@@ -61,6 +62,7 @@ export function parseConfig(data: any): Config {
     language: null,
     os: null,
     cache: null,
+    branches: null,
     before_install: null,
     install: null,
     before_script: null,
@@ -80,6 +82,7 @@ export function parseConfig(data: any): Config {
   config.language = parseLanguage(data.language || null);
   config.os = parseOS(data.os || null);
   config.cache = parseCache(data.cache || null);
+  config.branches = parseBranches(data.branches || null);
 
   return config;
 }
@@ -133,6 +136,29 @@ function parseCache(cache: any | null): { [key: string]: string }[] | null {
       } else {
         throw new Error(`Property directories must be defined.`);
       }
+    }
+  }
+}
+
+function parseBranches(branches: any | null): { test: string[], ignore: string[] } | null {
+  if (!branches) {
+    return null;
+  } else {
+    if (Array.isArray(branches)) {
+      return { test: branches, ignore: [] };
+    } else if (typeof branches === 'object') {
+      let only = [], except = [];
+      if (branches && branches.only) {
+        only = branches.only;
+      }
+
+      if (branches && branches.except) {
+        except = branches.except;
+      }
+
+      return { test: only, ignore: except };
+    } else {
+      throw new Error(`Unknown format for property branches.`);
     }
   }
 }
