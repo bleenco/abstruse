@@ -4,8 +4,8 @@ import { Config } from '../../src/api/config';
 
 let config: Config;
 
-describe('Android Configuration', () => {
+describe('Java Configuration', () => {
   beforeEach(() => {
-    return readConfig('android.yml').then(cfg => config = cfg);
+    return readConfig('java.yml').then(cfg => config = cfg);
   });
 });
