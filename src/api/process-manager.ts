@@ -88,6 +88,7 @@ export function startBuild(data: any): Promise<any> {
   let config: JobsAndEnv[];
   let pr = null;
   let sha = null;
+  let branch = null;
 
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
@@ -101,12 +102,16 @@ export function startBuild(data: any): Promise<any> {
         if (data.data.pull_request) {
           pr = data.data.pull_request.number;
           sha = data.data.pull_request.head.sha;
+          branch = data.data.pull_request.base.ref;
         } else {
           sha = data.data.after;
+          branch = data.data.ref.split('/').pop();
         }
       }
 
-      const repo = { clone_url: repository.clone_url, branch: 'master', pr: pr, sha: sha };
+      branch = branch || 'master';
+
+      const repo = { clone_url: repository.clone_url, branch: branch, pr: pr, sha: sha };
       return getRemoteParsedConfig(repo);
     })
     .then(parsedConfig => config = parsedConfig)
