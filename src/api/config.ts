@@ -66,6 +66,7 @@ export interface JobsAndEnv {
   stage: JobStage;
   display_env: string | null;
   language: Language;
+  version?: string;
 }
 
 export interface Repository {
@@ -170,7 +171,23 @@ function parseJob(data: any): Config {
   config.after_deploy = parseCommands(data.after_deploy || null, CommandType.after_deploy);
   config.after_script = parseCommands(data.after_script || null, CommandType.after_script);
 
+  config.node_js = parseVersions(data.node_js || null);
+
   return config;
+}
+
+function parseVersions(data: any): string[] {
+  if (!data) {
+    return null;
+  } else {
+    if (typeof data === 'string') {
+      return [data];
+    } else if (Array.isArray(data)) {
+      return data;
+    } else {
+      throw new Error(`Unknown data format for language specific config.`);
+    }
+  }
 }
 
 function parseLanguage(lang: Language | null): Language | null {
@@ -362,29 +379,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     checkout = `git checkout ${repo.sha} .`;
   }
 
-  // 3. concat commands
-  let install = null;
-  let script = null;
-
-  if (config.install && config.install.length) {
-    install = config.install;
-  } else {
-    install = getDefaultJobCommands(config.language, repo.file_tree).install;
-  }
-
-  if (config.script && config.script.length) {
-    script = config.script;
-  } else {
-    script = getDefaultJobCommands(config.language, repo.file_tree).script;
-  }
-
+  // 3. generate commands
   const installCommands = []
     .concat(config.before_install || [])
-    .concat(install);
+    .concat(config.install || []);
 
   const testCommands = []
     .concat(config.before_script || [])
-    .concat(script)
+    .concat(config.script || [])
     .concat(config.before_cache || [])
     .concat(config.after_success || [])
     .concat(config.after_failure || []);
@@ -407,12 +409,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     };
   })).concat(config.matrix.include.map(i => {
     const env = globalEnv.concat(i.env || []);
+    const version = i.node_js || null;
     return {
       commands: installCommands.concat(testCommands),
       env: env,
       stage: JobStage.test,
       display_env: env[env.length - 1] || null,
-      language: config.language
+      language: config.language,
+      version: version
     };
   })).concat(config.jobs.include.map(job => {
     const env = globalEnv.concat(job.env && job.env.global || []);
@@ -444,24 +448,62 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }));
 
   if (!data.length) {
-    data.push({
+    const scriptCommand = {
       commands: installCommands.concat(testCommands),
       env: globalEnv,
       stage: JobStage.test,
       display_env: globalEnv[globalEnv.length - 1] || null,
-      language: config.language
-    });
+      language: config.language,
+      version: null
+    };
 
-    if (deployCommands.length) {
-      data.push({
-        commands: installCommands.concat(deployCommands),
-        env: globalEnv,
-        stage: JobStage.deploy,
-        display_env: globalEnv[globalEnv.length - 1] || null,
-        language: config.language
+    if (config.node_js) {
+      config.node_js.forEach(version => {
+        scriptCommand.version = version;
+        data.push(scriptCommand);
       });
+    } else {
+      data.push(scriptCommand);
+
+      if (deployCommands.length) {
+        data.push({
+          commands: installCommands.concat(deployCommands),
+          env: globalEnv,
+          stage: JobStage.deploy,
+          display_env: globalEnv[globalEnv.length - 1] || null,
+          language: config.language
+        });
+      }
     }
   }
+
+  data = data.map(d => {
+    if (!d.commands.length) {
+      const def = getDefaultJobCommands(config.language, repo.file_tree, d.version || null);
+      const install = def.install[0].command;
+      const script = def.script[0].command;
+      d.commands.push({ command: install, type: CommandType.install, env: globalEnv });
+      d.commands.push({ command: script, type: CommandType.script, env: globalEnv });
+    } else {
+      const install = d.commands.find(cmd => cmd.type === CommandType.install);
+      const script = d.commands.find(cmd => cmd.type === CommandType.script);
+      if (!install || !script) {
+        const def = getDefaultJobCommands(config.language, repo.file_tree, d.version || null);
+
+        if (!install && def.install.length) {
+          const i = def.install[0].command || null;
+          d.commands.push({ command: i, type: CommandType.install, env: globalEnv });
+        }
+
+        if (!script && def.script.length) {
+          const s = def.script[0].command || null;
+          d.commands.push({ command: s, type: CommandType.script, env: globalEnv });
+        }
+      }
+    }
+
+    return d;
+  });
 
   return data;
 }
@@ -500,13 +542,16 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 }
 
 function getDefaultJobCommands(
-  lang: Language, fileTree: string[]
+  lang: Language, fileTree: string[], version: string
 ): { install: Command[], script: Command[] } {
   let def: { install: Command[], script: Command[] };
 
   switch (lang) {
     case 'java':
       def = getJavaDefaultCommands(fileTree);
+    break;
+    case 'node_js':
+      def = getNodeJSDefaultCommands(fileTree, version);
     break;
     default:
       def = { install: [], script: [] };
@@ -545,14 +590,36 @@ function getJavaDefaultCommands(fileTree: string[]): { install: Command[], scrip
     } else {
       return {
         install: [{ command: './gradlew assemble', type: CommandType.install }],
-        script: [{ command: './gradlew check', type: CommandType.install }],
+        script: [{ command: './gradlew check', type: CommandType.script }],
       };
     }
   } else {
     return {
       install: [], // there's no standard way of installing deps using Ant
-      script: [{ command: 'ant test', type: CommandType.install }],
+      script: [{ command: 'ant test', type: CommandType.script }],
     };
+  }
+}
+
+// default commands for language 'node_js'
+function getNodeJSDefaultCommands(
+  fileTree: string[],
+  version: string
+): { install: Command[], script: Command[] } {
+  if (inTree(fileTree, 'package.json')) {
+    if (inTree(fileTree, 'yarn.lock') && parseInt(version, 10) >= 4) {
+      return {
+        install: [{ command: 'yarn', type: CommandType.install }],
+        script: [{ command: 'yarn test', type: CommandType.script }]
+      };
+    } else {
+      return {
+        install: [{ command: 'npm install', type: CommandType.install }],
+        script: [{ command: 'npm test', type: CommandType.script }]
+      };
+    }
+  } else {
+    return { install: [], script: [] };
   }
 }
 

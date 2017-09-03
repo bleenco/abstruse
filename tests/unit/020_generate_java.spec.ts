@@ -15,7 +15,7 @@ let repo: Repository = {
 };
 let config: Config;
 
-describe('Commands generation (Java)', () => {
+describe('Generate (Java)', () => {
 
   describe(`'example_java_jruby.yml'`, () => {
     beforeEach(() => {
