@@ -1,6 +1,5 @@
 ---
 language: java
-sudo: false # Use container based builds. They are faster and we do not need sudo.
 
 cache:
   directories:
@@ -56,7 +55,6 @@ jobs:
       before_script:
         - android-wait-for-emulator
       script:
-        # Run Android tests without put. Travis will stop the build if it receives no output for 10 minutes.
         - mvn install --activate-profiles android-examples --projects examples/android --also-make-dependents -Dandroid.device=test
 
     # Stage Deploy - Job 1: Builds and deploys all artifacts with java 8.
