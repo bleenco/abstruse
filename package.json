@@ -17,7 +17,7 @@
     "start": "webpack-dev-server --env.dev --env.serve --progress --hot",
     "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress --hot",
     "lint": "tslint ./src/**/*.ts",
-    "test:unit": "node ./tests/run_unit.js",
+    "test": "node ./tests/run_unit.js",
     "test:e2e": "node ./tests/run_e2e.js",
     "test:protractor": "node ./tests/run_protractor.js",
     "preprotractor": "npm run webdriver",
