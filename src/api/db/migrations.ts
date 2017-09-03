@@ -49,9 +49,11 @@ export function create(): Promise<null> {
     }))
     .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
+      t.string('branch');
       t.integer('pr');
       t.integer('head_id');
       t.json('data');
+      t.json('parsed_config');
       t.dateTime('start_time');
       t.dateTime('end_time');
       t.integer('repositories_id').notNullable();
@@ -70,10 +72,7 @@ export function create(): Promise<null> {
     }))
     .then(() => schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.string('commands').notNullable();
-      t.string('language');
-      t.string('language_version');
-      t.string('test_script');
+      t.json('data');
       t.integer('builds_id').notNullable();
       t.foreign('builds_id').references('builds.id');
       t.timestamps();

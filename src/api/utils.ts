@@ -6,6 +6,7 @@ import { ensureDirSync } from 'fs-extra';
 import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 import * as request from 'request';
+import * as temp from 'temp';
 
 const defaultConfig = {
   url: null,

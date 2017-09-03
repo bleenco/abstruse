@@ -9,7 +9,7 @@ import {
 } from '../../src/api/config';
 
 let repo: Repository = {
-  url: 'https://github.com/bleenco/abstruse.git',
+  clone_url: 'https://github.com/bleenco/abstruse.git',
   branch: 'master',
   file_tree: []
 };
@@ -109,6 +109,22 @@ describe('Generate (Node.JS)', () => {
       const index = cmds[0].commands.findIndex(cmd => cmd.command === expected);
       expect(index).to.not.equal(-1);
     });
+
+    it(`should generate correct displayed env vars for each build in matrix`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      const expected = config.matrix.include.map(m => m.env);
+      cmds.forEach((cmd, i) => expect(cmd.display_env).to.equal(expected[i]));
+    });
+
+    it(`should parse version and display_version for each job`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      const expected = config.matrix.include.map(m => m.node_js);
+
+      cmds.forEach((cmd, i) => {
+        expect(cmd.version).to.equal(expected[i]);
+        expect(cmd.display_version).to.equal(`NodeJS: ${expected[i]}`);
+      });
+    });
   });
 
   describe(`'example_nodejs_default.yml'`, () => {
@@ -128,6 +144,40 @@ describe('Generate (Node.JS)', () => {
     it(`should parse example with result of 2 jobs`, () => {
       const cmds = generateJobsAndEnv(repo, config);
       expect(cmds.length).to.equal(2);
+    });
+
+    it(`should auto-generate deps and test commands for each job`, () => {
+      repo.file_tree = ['package.json'];
+      const cmds = generateJobsAndEnv(repo, config);
+      const deps = 'npm install';
+      const script = 'npm test';
+
+      cmds.forEach(cmd => {
+        expect(cmd.commands.findIndex(c => c.command === deps) !== -1).to.equal(true);
+        expect(cmd.commands.findIndex(c => c.command === script) !== -1).to.equal(true);
+      });
+    });
+
+    it(`should auto-generate deps and test commands for each job (yarn)`, () => {
+      repo.file_tree = ['package.json', 'yarn.lock'];
+      const cmds = generateJobsAndEnv(repo, config);
+      const deps = 'yarn';
+      const script = 'yarn test';
+
+      cmds.forEach(cmd => {
+        expect(cmd.commands.findIndex(c => c.command === deps) !== -1).to.equal(true);
+        expect(cmd.commands.findIndex(c => c.command === script) !== -1).to.equal(true);
+      });
+    });
+
+    it(`should parse version and display_version for each job`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      const expected = config.node_js;
+
+      cmds.forEach((cmd, i) => {
+        expect(cmd.version).to.equal(expected[i]);
+        expect(cmd.display_version).to.equal(`NodeJS: ${expected[i]}`);
+      });
     });
   });
 

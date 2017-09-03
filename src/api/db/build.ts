@@ -113,8 +113,10 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           build.repository.access_token = null;
         }
 
-        build.hasPermission = build.repository.permissions &&
-          build.repository.permissions[0].permission;
+        build.hasPermission = true;
+
+        // build.hasPermission = build.repository.permissions &&
+        //   build.repository.permissions[0].permission;
 
         return build;
       })
