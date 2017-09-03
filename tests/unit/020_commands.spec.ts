@@ -1,21 +1,89 @@
 import { expect } from 'chai';
 import { readConfig } from '../helpers/utils';
-import { Config, generateCommandsAndEnv, parseConfig, Repository } from '../../src/api/config';
+import {
+  Config,
+  generateJobsAndEnv,
+  parseConfig,
+  Repository,
+  JobStage
+} from '../../src/api/config';
 
-let repo: Repository = { url: 'https://github.com/jruby/jruby.git' };
+let repo: Repository = { url: 'https://github.com/jruby/jruby.git', branch: 'master' };
 let config: Config;
 
 describe('Commands generation', () => {
-  beforeEach(() => {
-    return readConfig('jruby.yml').then(cfg => config = parseConfig(cfg));
+
+  describe(`'example_java_jruby.yml'`, () => {
+    beforeEach(() => {
+      return readConfig('example_java_jruby.yml').then(cfg => config = parseConfig(cfg));
+    });
+
+    it(`should not throw an error on parse`, () => {
+      expect(() => generateJobsAndEnv(repo, config)).to.not.throw(Error);
+    });
+
+    it(`should parse example with result of 29 jobs`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      expect(cmds.length).to.equal(29);
+    });
+
+    it(`should parse example with result of 29 test jobs`, () => {
+      const cmds = generateJobsAndEnv(repo, config)
+        .filter(cmd => cmd.stage === JobStage.test);
+      expect(cmds.length).to.equal(29);
+    });
+
+    it(`should parse example with result of none deploy jobs`, () => {
+      const cmds = generateJobsAndEnv(repo, config)
+        .filter(cmd => cmd.stage === JobStage.deploy);
+      expect(cmds.length).to.equal(0);
+    });
+
+    it(`should parse matrix with 3 env variables for each job`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      cmds.forEach(cmd => {
+        expect(cmd.env.length).to.equal(3);
+      });
+    });
+
+    it(`should display correct UI display_env variables`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      const expected = []
+        .concat(config.env.matrix)
+        .concat(config.matrix.include.map(job => job.env));
+
+      cmds.forEach((cmd, i) => {
+        expect(cmd.display_env).to.equal(expected[i]);
+      });
+    });
   });
 
-  it(`should not throw an error when generating 'jruby.yml' example`, () => {
-    expect(() => generateCommandsAndEnv(repo, config)).to.not.throw(Error);
+  describe(`'example_java_cucumber_jvm.yml'`, () => {
+    beforeEach(() => {
+      return readConfig('example_java_cucumber_jvm.yml')
+        .then(cfg => config = parseConfig(cfg));
+    });
+
+    it(`should not throw an error on parse`, () => {
+      expect(() => generateJobsAndEnv(repo, config)).to.not.throw(Error);
+    });
+
+    it(`should parse example with result of 5 jobs`, () => {
+      const cmds = generateJobsAndEnv(repo, config);
+      expect(cmds.length).to.equal(5);
+    });
+
+    it(`should parse example with result of 4 test jobs`, () => {
+      const cmds = generateJobsAndEnv(repo, config)
+        .filter(cmd => cmd.stage === JobStage.test);
+      expect(cmds.length).to.equal(4);
+    });
+
+    it(`should parse example with result of single deploy job`, () => {
+      const cmds = generateJobsAndEnv(repo, config)
+        .filter(cmd => cmd.stage === JobStage.deploy);
+      expect(cmds.length).to.equal(1);
+    });
   });
 
-  it(`should parse 'jruby.yml' example with result of 10 jobs`, () => {
-    const cmds = generateCommandsAndEnv(repo, config);
-    expect(cmds.length).to.equal(10);
-  });
 });

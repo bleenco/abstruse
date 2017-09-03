@@ -22,17 +22,22 @@ export enum CacheType {
 }
 
 export enum CommandType {
-  before_install,
-  install,
-  before_script,
-  script,
-  before_cache,
-  after_success,
-  after_failure,
-  before_deploy,
-  deploy,
-  after_deploy,
-  after_script
+  before_install = 'before_install',
+  install = 'install',
+  before_script = 'before_script',
+  script = 'script',
+  before_cache = 'before_cache',
+  after_success = 'after_success',
+  after_failure = 'after_failure',
+  before_deploy = 'before_deploy',
+  deploy = 'deploy',
+  after_deploy = 'after_deploy',
+  after_script = 'after_script'
+}
+
+export enum JobStage {
+  test = 'test',
+  deploy = 'deploy'
 }
 
 export interface Build {
@@ -55,9 +60,11 @@ export interface Command {
   env?: string[];
 }
 
-export interface CommandsAndEnv {
+export interface JobsAndEnv {
   commands: Command[];
   env: string[];
+  display_env: string | null;
+  stage: JobStage;
 }
 
 export interface Repository {
@@ -72,6 +79,7 @@ export interface Config {
   language?: Language;
   os?: string;
   // git: { repository_url: string, depth?: number, pr?: number, sha?: string };
+  stage?: JobStage;
   cache?: { [key: string]: string }[] | null;
   branches?: { test: string[], ignore: string[] };
   env?: { global: string[], matrix: string[] };
@@ -86,6 +94,7 @@ export interface Config {
   deploy?: { command: string, type: CommandType }[];
   after_deploy?: { command: string, type: CommandType }[];
   after_script?: { command: string, type: CommandType }[];
+  jobs?: { include?: Config[], exclude?: Config[] };
   matrix?: Matrix;
   android?: { components: string[] };
   node_js?: string[];
@@ -104,9 +113,22 @@ export interface RepositoryInfo {
 }
 
 export function parseConfig(data: any): Config {
-  let config: Config = {
+  const main = parseJob(data);
+  main.matrix = parseMatrix(data.matrix || null);
+
+  if (data.jobs) {
+    main.jobs.include = data.jobs.include ? data.jobs.include.map(job => parseJob(job)) : [];
+    main.jobs.exclude = data.jobs.exclude ? data.jobs.exclude.map(job => parseJob(job)) : [];
+  }
+
+  return main;
+}
+
+function parseJob(data: any): Config {
+  const config: Config = {
     language: null,
     os: null,
+    stage: data.stage || 'test',
     cache: null,
     branches: null,
     env: null,
@@ -121,6 +143,7 @@ export function parseConfig(data: any): Config {
     deploy: null,
     after_deploy: null,
     after_script: null,
+    jobs: { include: [], exclude: [] },
     matrix: null,
     android: null,
     node_js: null
@@ -143,8 +166,6 @@ export function parseConfig(data: any): Config {
   config.deploy = parseCommands(data.deploy || null, CommandType.deploy);
   config.after_deploy = parseCommands(data.after_deploy || null, CommandType.after_deploy);
   config.after_script = parseCommands(data.after_script || null, CommandType.after_script);
-
-  config.matrix = parseMatrix(data.matrix || null);
 
   return config;
 }
@@ -225,7 +246,7 @@ function parseBranches(branches: any | null): { test: string[], ignore: string[]
   }
 }
 
-function parseEnv(env: any | null): { global: string[], matrix: string[] } | null {
+function parseEnv(env: any | null): { global: string[], matrix: string[] } {
   if (!env) {
     return null;
   } else {
@@ -249,6 +270,8 @@ function parseEnv(env: any | null): { global: string[], matrix: string[] } | nul
       }
 
       return { global, matrix };
+    } else if (typeof env === 'string') {
+      return { global: [env], matrix: [] };
     } else {
       throw new Error(`Unknown format for property env.`);
     }
@@ -275,9 +298,9 @@ function parseCommands(
   }
 }
 
-function parseMatrix(matrix: any | null): Matrix | null {
+function parseMatrix(matrix: any | null): Matrix {
   if (!matrix) {
-    return null;
+    return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
       const include = matrix.map((m: Build) => m);
@@ -306,11 +329,17 @@ function parseMatrix(matrix: any | null): Matrix | null {
   }
 }
 
-export function generateCommandsAndEnv(repo: Repository, config: Config): CommandsAndEnv[] {
-  let data: CommandsAndEnv[] = [];
+export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv[] {
+  let data: JobsAndEnv[] = [];
 
-  // global environment variables
+  // check if it's branch that we want to build
+  if (!checkBranches(repo.branch, config.branches)) {
+    return [];
+  }
+
+  // global and matrix environment variables
   const globalEnv = config.env && config.env.global || [];
+  const matrixEnv = config.env && config.env.matrix || [];
 
   // 1. clone repository
   const splitted = repo.url.split('/');
@@ -337,49 +366,109 @@ export function generateCommandsAndEnv(repo: Repository, config: Config): Comman
   const beforeCache = config.before_cache || [];
   const afterSuccess = config.after_success || [];
   const afterFailure = config.after_failure || [];
+
   const beforeDeploy = config.before_deploy || [];
   const deploy = config.deploy || [];
   const afterDeploy = config.after_deploy || [];
   const afterScript = config.after_script || [];
 
-  if (config.matrix) {
-    data = config.matrix.include.map(i => {
-      const env = globalEnv.concat(i.env);
-      const commands = []
-        .concat(beforeInstall)
-        .concat(install)
-        .concat(beforeScript)
-        .concat(script)
-        .concat(beforeCache)
-        .concat(afterSuccess)
-        .concat(afterFailure)
-        .concat(beforeDeploy)
-        .concat(deploy)
-        .concat(afterDeploy)
-        .concat(afterScript);
+  const installCommands = []
+    .concat(beforeInstall)
+    .concat(install);
 
-      return { commands, env  };
-    });
-  } else {
-    const commands = []
-      .concat(beforeInstall)
-      .concat(install)
-      .concat(beforeScript)
-      .concat(script)
-      .concat(beforeCache)
-      .concat(afterSuccess)
-      .concat(afterFailure)
-      .concat(beforeDeploy)
-      .concat(deploy)
-      .concat(afterDeploy)
-      .concat(afterScript);
+  const testCommands = []
+    .concat(beforeScript)
+    .concat(script)
+    .concat(beforeCache)
+    .concat(afterSuccess)
+    .concat(afterFailure);
 
-    data.push({ commands: commands, env: globalEnv });
-  }
+  const deployCommands = []
+    .concat(beforeDeploy)
+    .concat(deploy)
+    .concat(afterDeploy)
+    .concat(afterScript);
+
+  // stage: test
+  data = data.concat(matrixEnv.map(menv => {
+    const env = globalEnv.concat(menv);
+    return {
+      commands: installCommands.concat(testCommands),
+      env: env,
+      display_env: env[env.length - 1] || null,
+      stage: JobStage.test
+    };
+  })).concat(config.matrix.include.map(i => {
+    const env = globalEnv.concat(i.env || []);
+    return {
+      commands: installCommands.concat(testCommands),
+      env: env,
+      display_env: env[env.length - 1] || null,
+      stage: JobStage.test
+    };
+  })).concat(config.jobs.include.map(job => {
+    const env = globalEnv.concat(job.env && job.env.global || []);
+
+    const jobInstallCommands = []
+      .concat(job.before_install || [])
+      .concat(job.install || []);
+
+    const jobTestCommands = []
+      .concat(job.before_script || [])
+      .concat(job.script || [])
+      .concat(job.before_cache || [])
+      .concat(job.after_success || [])
+      .concat(job.after_failure || []);
+
+    const jobDeployCommands = []
+      .concat(job.before_deploy || [])
+      .concat(job.deploy || [])
+      .concat(job.after_deploy || [])
+      .concat(job.after_script || []);
+
+    return {
+      commands: jobInstallCommands.concat(jobTestCommands).concat(jobDeployCommands),
+      env: env,
+      display_env: env[env.length - 1] || null,
+      stage: job.stage
+    };
+  }));
 
   return data;
 }
 
+function checkBranches(branch: string, branches: { test: string[], ignore: string[] }): boolean {
+  if (!branches) {
+    return true;
+  } else {
+    let ignore = false;
+    let test = false;
+
+    branches.ignore.forEach(ignored => {
+      const regex: RegExp = new RegExp(ignored);
+      if (regex.test(branch)) {
+        if (!ignore) {
+          ignore = true;
+        }
+      }
+    });
+
+    if (ignore) {
+      return false;
+    }
+
+    branches.test.forEach(tested => {
+      const regex: RegExp = new RegExp(tested);
+      if (regex.test(branch)) {
+        if (!test) {
+          test = true;
+        }
+      }
+    });
+
+    return test;
+  }
+}
 
 // export function generateCommands(repositoryUrl: string, config: Config): any[] {
 //   let matrix = [];

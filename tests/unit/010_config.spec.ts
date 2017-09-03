@@ -233,9 +233,9 @@ describe('Common Configuration Options', () => {
       expect(() => parseConfig(data)).to.not.throw(Error);
     });
 
-    it(`should throw an error if env is string`, () => {
+    it(`should not throw an error if env is string`, () => {
       data.env = 'FOO=bar';
-      expect(() => parseConfig(data)).to.throw(Error);
+      expect(() => parseConfig(data)).to.not.throw(Error);
     });
 
     it(`should throw an error if env.global is string`, () => {
@@ -256,6 +256,12 @@ describe('Common Configuration Options', () => {
     it(`should not throw an error if env.matrix is null`, () => {
       data.env = { matrix: null };
       expect(() => parseConfig(data)).to.not.throw(Error);
+    });
+
+    it(`should return appropriate values when env is string`, () => {
+      data.env = 'FOO=bar';
+      const parse = parseConfig(data);
+      expect(parse.env.global).to.include(data.env);
     });
 
     it(`should return appropriate values when data is specified`, () => {
