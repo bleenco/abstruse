@@ -5,7 +5,7 @@ import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
 import { getRepositoryOnly } from './db/repository';
-import { getRemoteParsedConfig, JobsAndEnv } from './config';
+import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
@@ -31,7 +31,7 @@ export interface JobProcess {
   status?: 'queued' | 'running' | 'cancelled';
   image_name?: string;
   log?: string[];
-  commands?: string[];
+  commands?: { command: string, type: CommandType }[];
   sshAndVnc?: boolean;
   job?: Observable<any>;
 }
@@ -85,6 +85,7 @@ jobProcesses
 // inserts new build into db and queue related jobs.
 // returns inserted build id
 export function startBuild(data: any): Promise<any> {
+  let config: JobsAndEnv[];
   let pr = null;
   let sha = null;
 
@@ -105,10 +106,11 @@ export function startBuild(data: any): Promise<any> {
         }
       }
 
-      const repo = { clone_url: repository.clone_url }; // TOOD: add pr and sha here
+      const repo = { clone_url: repository.clone_url, branch: 'master', pr: pr, sha: sha };
       return getRemoteParsedConfig(repo);
     })
-    .then(parsedConfig => data.parsed_config = parsedConfig)
+    .then(parsedConfig => config = parsedConfig)
+    .then(() => data.parsed_config = config)
     .then(() => insertBuild(data))
     .then(build => {
       data = Object.assign(data, { build_id: build.id });
@@ -120,14 +122,11 @@ export function startBuild(data: any): Promise<any> {
     .then(() => getBuild(data.build_id))
     .then(buildData => sendPendingStatus(buildData, buildData.id))
     .then(() => {
-      const parsedConfig: JobsAndEnv[] = data.parsed_config;
-
-      return parsedConfig.reduce((prev, config, i) => {
+      return config.reduce((prev, cfg, i) => {
         return prev.then(() => {
           let dataJob = null;
-          const job = { data: config, builds_id: data.build_id };
 
-          return dbJob.insertJob(job)
+          return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
             .then(job => dataJob = job)
             .then(() => getLastRunId(data.build_id))
             .then(lastRunId => {
@@ -152,6 +151,14 @@ export function startBuild(data: any): Promise<any> {
             });
         });
       }, Promise.resolve());
+    })
+    .then(() => {
+      jobEvents.next({
+        type: 'process',
+        build_id: data.build_id,
+        repository_id: data.repositories_id,
+        data: 'buildAdded'
+      });
     }).catch(err => logger.error(err));
 }
 
@@ -346,13 +353,14 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
       }
     })
     .then(() => dbJob.getJob(jobId))
-    .then(job => commands = JSON.parse(job.commands))
-    .then(() => {
+    .then(job => {
+      const jobData = JSON.parse(job.data);
+
       const jobProcess: JobProcess = {
         build_id: buildId,
         job_id: jobId,
         status: 'queued',
-        commands: commands,
+        commands: jobData.commands,
         sshAndVnc: sshAndVnc,
         log: []
       };

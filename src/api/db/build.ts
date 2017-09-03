@@ -51,8 +51,9 @@ export function getBuilds(
             return job;
           });
 
-          build.hasPermission = build.repository.permissions &&
-            build.repository.permissions[0].permission;
+          // build.hasPermission = build.repository.permissions &&
+          //   build.repository.permissions[0].permission;
+          build.hasPermission = true;
 
           return build;
         });
@@ -136,6 +137,10 @@ export function getBuild(id: number, userId?: number): Promise<any> {
               build.lastBuild = lastBuild.toJSON();
             }
 
+            build.jobs = build.jobs.map(job => {
+              job.data = JSON.parse(job.data);
+              return job;
+            });
             resolve(build);
           });
       });

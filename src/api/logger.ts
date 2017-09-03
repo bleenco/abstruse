@@ -7,10 +7,6 @@ export function info(msg: string): void {
 
 export function error(msg: string | any): void {
   const time = getDateTime();
-  if (typeof msg !== 'string') {
-    msg = JSON.stringify(msg);
-  }
-
   console.log(`${green('[' + time + ']')} ${red(msg)}`);
 }
 
