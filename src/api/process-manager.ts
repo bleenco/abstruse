@@ -5,7 +5,7 @@ import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
 import { getRepositoryOnly } from './db/repository';
-import { getRepositoryDetails, generateCommands } from './config';
+import { getRemoteParsedConfig, JobsAndEnv } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
@@ -85,141 +85,74 @@ jobProcesses
 // inserts new build into db and queue related jobs.
 // returns inserted build id
 export function startBuild(data: any): Promise<any> {
+  let pr = null;
+  let sha = null;
+
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
-      let sha = null;
-      if (data) {
-        if (data.sha) {
-          sha = data.sha;
-        }  else if (data.data.checkout_sha) {
-          sha = data.data.checkout_sha;
-        } else if (data.data.object_attributes && data.data.object_attributes.last_commit) {
-            sha = data.data.object_attributes.last_commit.id;
+      const isGithub = repository.github_id || false;
+      const isBitbucket = repository.bitbucket_id || false;
+      const isGitlab = repository.gitlab_id || false;
+      const isGogs = repository.gogs_id || false;
+
+      // TODO: add other git providers
+      if (isGithub) {
+        if (data.data.pull_request) {
+          pr = data.data.pull_request.number;
+          sha = data.data.pull_request.head.sha;
+        } else {
+          sha = data.data.after;
         }
       }
 
-      const pr = data && data.pr ? data.pr : null;
-      let repoDetails = null;
+      const repo = { clone_url: repository.clone_url }; // TOOD: add pr and sha here
+      return getRemoteParsedConfig(repo);
+    })
+    .then(parsedConfig => data.parsed_config = parsedConfig)
+    .then(() => insertBuild(data))
+    .then(build => {
+      data = Object.assign(data, { build_id: build.id });
+      delete data.repositories_id;
+      delete data.pr;
+      delete data.parsed_config;
+      return insertBuildRun(data);
+    })
+    .then(() => getBuild(data.build_id))
+    .then(buildData => sendPendingStatus(buildData, buildData.id))
+    .then(() => {
+      const parsedConfig: JobsAndEnv[] = data.parsed_config;
 
-      return getRepositoryDetails(repository, sha, pr)
-        .then(details => {
-          repoDetails = details;
-          if (pr) {
-            repoDetails.config.git.pr = data.pr;
-          } else if (!sha) {
-            repoDetails.config.git.sha = repoDetails.log.commit_hash;
-          }
-        })
-        .then(() => {
-          if (!sha && repository.github_id) {
-            const url = 'https://api.github.com/repos/' +
-              repository.full_name + '/commits/' + repoDetails.log.commit_hash;
+      return parsedConfig.reduce((prev, config, i) => {
+        return prev.then(() => {
+          let dataJob = null;
+          const job = { data: config, builds_id: data.build_id };
 
-            return getHttpJsonResponse(url);
-          } else if (!sha && repository.bitbucket_id) {
-            let url;
-            if (data.data.pullrequest) {
-              url = data.data.pullrequest.destination.commit.links.self.href;
-            } else if (data.data.push) {
-              url = data.data.push.changes[0].new.target.links.self.href;
-            }
-            if (url) {
-              if (repository.private) {
-                if (repository.access_token) {
-                  return getBitBucketAccessToken(repository.access_token)
-                    .then(response => {
-                      let access_token = response.access_token;
-                      url = url + `?access_token=${access_token}`;
+          return dbJob.insertJob(job)
+            .then(job => dataJob = job)
+            .then(() => getLastRunId(data.build_id))
+            .then(lastRunId => {
+              const jobRun = {
+                start_time: new Date,
+                status: 'queued',
+                build_run_id: lastRunId,
+                job_id: dataJob.id
+              };
 
-                      return getHttpJsonResponse(url);
-                    })
-                    .catch(err => Promise.reject(err));
-                }
-
-                return Promise.reject({ error: 'Repository access token is not provided.' });
-              }
-
-              return getHttpJsonResponse(url);
-            }
-            return Promise.resolve(null);
-          } else {
-            return Promise.resolve(null);
-          }
-        })
-        .then(commit => {
-          if (commit) {
-            if (commit.hash) {
-              data.data.sha = commit.hash;
-            }
-            if (commit.message) {
-              data.data.message = commit.message;
-            }
-            sha = sha || repoDetails.log.commit_hash || commit.hash;
-          }
-
-          return insertBuild(data)
-            .then(build => {
-              data.build_id = build.id;
-              delete data.repositories_id;
-              delete data.pr;
-              insertBuildRun(data)
-                .then(() => getBuild(build.id))
-                .then(buildData => sendPendingStatus(buildData, build.id))
-                .then(() => {
-                  const jobsCommands = generateCommands(repository.clone_url, repoDetails.config);
-
-                  return jobsCommands.reduce((prev, commands, i) => {
-                    return prev.then(() => {
-                      const lang = repoDetails.config.language;
-                      const langVersion = repoDetails.config.matrix[i].node_js; // TODO: update
-                      const testScript = repoDetails.config.matrix[i].env;
-
-                      const jobData = {
-                        commands: JSON.stringify(commands),
-                        language: lang,
-                        language_version: langVersion,
-                        test_script: testScript,
-                        builds_id: build.id
-                      };
-
-                      return dbJob.insertJob(jobData)
-                        .then(job => {
-                          getLastRunId(build.id).then(buildRunId => {
-                            const jobRunData = {
-                              start_time: new Date(),
-                              end_time: null,
-                              status: 'queued',
-                              log: '',
-                              build_run_id: buildRunId,
-                              job_id: job.id
-                            };
-
-                            return dbJobRuns.insertJobRun(jobRunData).then(() => {
-                              jobEvents.next({
-                                type: 'process',
-                                build_id: build.id,
-                                job_id: job.id,
-                                data: 'jobAdded'
-                              });
-
-                              return queueJob(build.id, job.id);
-                            });
-                          });
-                        }).catch(err => logger.error(err));
-                    });
-                  }, Promise.resolve());
+              return dbJobRuns.insertJobRun(jobRun);
             })
             .then(() => {
               jobEvents.next({
                 type: 'process',
-                build_id: build.id,
-                repository_id: data.repositories_id,
-                data: 'buildAdded'
+                build_id: data.build_id,
+                job_id: dataJob.id,
+                data: 'jobAdded'
               });
-            }).catch(err => logger.error(err));
+
+              return queueJob(data.build_id, dataJob.id);
+            });
         });
-      });
-  }).catch(err => logger.error(err));
+      }, Promise.resolve());
+    }).catch(err => logger.error(err));
 }
 
 export function startJob(p: JobProcess): Promise<void> {

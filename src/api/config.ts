@@ -1,9 +1,7 @@
-import { createTempDir, getBitBucketAccessToken } from './utils';
-import { spawn } from './process';
-import * as sh from 'shelljs';
-import { existsSync, rmdir } from './fs';
-import { join } from 'path';
+import { spawn } from 'child_process';
+import { readdir, readFile } from 'fs';
 import * as yaml from 'yamljs';
+import * as temp from 'temp';
 
 export enum Language {
   android = 'android',
@@ -46,6 +44,7 @@ export interface Build {
   gemfile?: string;
   python?: string;
   node_js?: string;
+  jdk?: string;
 }
 
 export interface Matrix {
@@ -65,12 +64,13 @@ export interface JobsAndEnv {
   env: string[];
   stage: JobStage;
   display_env: string | null;
+  display_version: string | null;
   language: Language;
   version?: string;
 }
 
 export interface Repository {
-  url: string;
+  clone_url: string;
   branch?: string;
   clone_depth?: number;
   pull_request?: number;
@@ -102,18 +102,35 @@ export interface Config {
   matrix?: Matrix;
   android?: { components: string[] };
   node_js?: string[];
+  jdk?: string[];
 }
 
-export interface GitLog {
-  commit_hash: string;
-  commit_author: string;
-  commit_date: Date;
-  commit_message: string;
-}
+export function getRemoteParsedConfig(repository: any): Promise<JobsAndEnv[]> {
+  return new Promise((resolve, reject) => {
+    let cloneUrl = repository.clone_url;
+    let cloneDir = null;
+    let fileTree: string[];
 
-export interface RepositoryInfo {
-  config: Config;
-  log?: GitLog;
+    createGitTmpDir()
+      .then(dir => cloneDir = dir)
+      .then(() => spawnGit(['clone', cloneUrl, '--depth', '1', cloneDir]))
+      .then(() => readGitDir(cloneDir))
+      .then(files => repository.file_tree = files)
+      .then(() => {
+        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
+          const err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
+          return Promise.reject(err);
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .then(() => readAbstruseConfigFile(cloneDir))
+      .then(config => yaml.parse(config))
+      .then(json => parseConfig(json))
+      .then(parsed => generateJobsAndEnv(repository, parsed))
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
 }
 
 export function parseConfig(data: any): Config {
@@ -150,7 +167,8 @@ function parseJob(data: any): Config {
     jobs: { include: [], exclude: [] },
     matrix: null,
     android: null,
-    node_js: null
+    node_js: null,
+    jdk: null
   };
 
   config.language = parseLanguage(data.language || null);
@@ -172,6 +190,7 @@ function parseJob(data: any): Config {
   config.after_script = parseCommands(data.after_script || null, CommandType.after_script);
 
   config.node_js = parseVersions(data.node_js || null);
+  config.jdk = parseVersions(data.jdk || null);
 
   return config;
 }
@@ -362,10 +381,10 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   const matrixEnv = config.env && config.env.matrix || [];
 
   // 1. clone repository
-  const splitted = repo.url.split('/');
+  const splitted = repo.clone_url.split('/');
   const name = splitted[splitted.length - 1].replace(/\.git/, '');
   // TODO: update to ${ABSTRUSE_BUILD_DIR}, private repos also
-  const clone = `git clone -q ${repo.url} -b ${repo.branch} .`;
+  const clone = `git clone -q ${repo.clone_url} -b ${repo.branch} .`;
 
   // 2. fetch & checkout
   let fetch = null;
@@ -405,21 +424,24 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       env: env,
       stage: JobStage.test,
       display_env: env[env.length - 1] || null,
+      display_version: null,
       language: config.language
     };
   })).concat(config.matrix.include.map(i => {
     const env = globalEnv.concat(i.env || []);
-    const version = i.node_js || null;
+    const version = i.node_js || i.jdk || null;
     return {
       commands: installCommands.concat(testCommands),
       env: env,
       stage: JobStage.test,
       display_env: env[env.length - 1] || null,
+      display_version: null,
       language: config.language,
       version: version
     };
-  })).concat(config.jobs.include.map(job => {
+  })).concat(config.jobs.include.map((job, i) => {
     const env = globalEnv.concat(job.env && job.env.global || []);
+    const version = job.node_js || job.jdk || null;
 
     const jobInstallCommands = []
       .concat(job.before_install || [])
@@ -443,26 +465,36 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       env: env,
       stage: job.stage,
       display_env: env[env.length - 1] || null,
-      language: config.language
+      display_version: null,
+      language: config.language,
+      version: version[i]
     };
   }));
 
   if (!data.length) {
-    const scriptCommand = {
-      commands: installCommands.concat(testCommands),
-      env: globalEnv,
-      stage: JobStage.test,
-      display_env: globalEnv[globalEnv.length - 1] || null,
-      language: config.language,
-      version: null
-    };
-
     if (config.node_js) {
       config.node_js.forEach(version => {
-        scriptCommand.version = version;
+        const scriptCommand = {
+          commands: installCommands.concat(testCommands),
+          env: globalEnv,
+          stage: JobStage.test,
+          display_env: globalEnv[globalEnv.length - 1] || null,
+          display_version: null,
+          language: config.language,
+          version: version
+        };
         data.push(scriptCommand);
       });
     } else {
+      const scriptCommand = {
+        commands: installCommands.concat(testCommands),
+        env: globalEnv,
+        stage: JobStage.test,
+        display_env: globalEnv[globalEnv.length - 1] || null,
+        display_version: null,
+        language: config.language,
+        version: null
+      };
       data.push(scriptCommand);
 
       if (deployCommands.length) {
@@ -471,6 +503,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
           env: globalEnv,
           stage: JobStage.deploy,
           display_env: globalEnv[globalEnv.length - 1] || null,
+          display_version: null,
           language: config.language
         });
       }
@@ -500,6 +533,12 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
           d.commands.push({ command: s, type: CommandType.script, env: globalEnv });
         }
       }
+    }
+
+    if (d.language === 'java' && d.version) {
+      d.display_version = `JDK: ${d.version}`;
+    } else if (d.language === 'node_js' && d.version) {
+      d.display_version = `NodeJS: ${d.version}`;
     }
 
     return d;
@@ -627,171 +666,59 @@ function inTree(fileTree: string[], search: string): boolean {
   return fileTree.indexOf(search) !== -1 ? true : false;
 }
 
-// export function generateCommands(repositoryUrl: string, config: Config): any[] {
-//   let matrix = [];
+function spawnGit(args: string[]): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const git = spawn('git', args, { detached: true });
 
-//   // 1. clone
-//   const splitted = repositoryUrl.split('/');
-//   const name = splitted[splitted.length - 1].replace(/\.git/, '');
-//   let cloneCommand = `git clone -q ${repositoryUrl} .`;
+    git.stdout.on('data', data => {
+      data = data.toString();
+      if (/Username/.test(data)) {
+        reject('Not authorized');
+      }
+    });
 
-//   // 2. fetch & checkout commands
-//   let fetchCommand = '';
-//   let checkoutCommand = '';
-//   if (config.git && config.git.pr) {
-//     fetchCommand = `git fetch origin pull/${config.git.pr}/head:pr${config.git.pr}`;
-//     checkoutCommand = `git checkout pr${config.git.pr}`;
-//   } else if (config.git && config.git.sha) {
-//     fetchCommand = `git fetch origin`;
-//     checkoutCommand = `git checkout ${config.git.sha} .`;
-//   }
+    git.on('close', code => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(code);
+      }
+    });
+  });
+}
 
-//   // 3. environment
-//   if (config.matrix) {
-//     matrix = config.matrix.map(mat => {
-//       let install = '';
-//       let env = '';
+function readAbstruseConfigFile(dirPath: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    readFile(dirPath + '/.abstruse.yml', (err, contents) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(contents.toString());
+      }
+    });
+  });
+}
 
-//       if (mat.node_js) {
-//         install = `nvm install ${mat.node_js}`;
-//       }
+function readGitDir(dirPath: string): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    readdir(dirPath, (err, files) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(files);
+      }
+    });
+  });
+}
 
-//       if (mat.env) {
-//         env = `export ${mat.env}`;
-//       }
-
-//       return [cloneCommand, fetchCommand, checkoutCommand, install, env]
-//         .filter(cmd => cmd !== '');
-//     });
-//   }
-
-//   // 4. commands
-//   const preinstall = config.preinstall || [];
-//   const install = config.install || [];
-//   const postinstall = config.postinstall || [];
-//   const pretest = config.pretest || [];
-//   const test = config.test || [];
-//   const posttest = config.posttest || [];
-
-//   const commonCommands = []
-//     .concat(preinstall)
-//     .concat(install)
-//     .concat(postinstall)
-//     .concat(pretest)
-//     .concat(test)
-//     .concat(posttest);
-
-//   matrix = matrix.map(mat => {
-//     return mat.concat(commonCommands);
-//   });
-
-//   return matrix;
-// }
-
-// export function getRepositoryDetails(repository, sha = null, pr = null): Promise<RepositoryInfo> {
-//   return new Promise((resolve, reject) => {
-//     let cloneDir = null;
-//     let configPath = null;
-//     let yml = null;
-//     let log = null;
-
-//     createTempDir()
-//       .then(tempDir => {
-//         let cloneUrl = repository.clone_url;
-//         cloneDir = tempDir;
-//         if (repository.private && repository.access_token) {
-//           if (repository.github_id || repository.gogs_id) {
-//             cloneUrl = cloneUrl.replace('https://', `https://${repository.access_token}@`);
-//           } else if (repository.gitlab_id) {
-//             cloneUrl =
-//               cloneUrl.replace('https://', `https://gitlab-ci-token:${repository.access_token}@`);
-//           } else if (repository.bitbucket_id && repository.private && repository.access_token) {
-//             return getBitBucketAccessToken(repository.access_token)
-//               .then(response => {
-//                 let access_token = response.access_token;
-//                 let cloneUrl =
-//                   repository.clone_url.replace('https://', `https://x-token-auth:${access_token}@`);
-
-//                 return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
-//               }).catch(err => Promise.reject(err));
-//           }
-//         }
-
-//         return spawn('git', ['clone', cloneUrl, '--depth', '1', cloneDir]);
-//       })
-//       .then(cloned => cloned.exit === 0 ? Promise.resolve() : Promise.reject(''))
-//       .then(() => {
-//         if (existsSync(cloneDir) && existsSync(join(cloneDir, '.git'))) {
-//           return Promise.resolve();
-//         } else {
-//           return Promise.reject(`${cloneDir} does not exists`);
-//         }
-//       })
-//       .then(() => {
-//         if (pr) {
-//           return spawn('git', [
-//               '--git-dir',
-//               join(cloneDir, '.git'),
-//               '--work-tree',
-//               cloneDir,
-//               'fetch',
-//               'origin',
-//               `pull/${pr}/head:pr${pr}`
-//             ])
-//             .then(() => spawn('git', [
-//               '--git-dir',
-//               join(cloneDir, '.git'),
-//               '--work-tree',
-//               cloneDir,
-//               'checkout',
-//               `pr${pr}`
-//             ]))
-//             .then(() => Promise.resolve());
-//         } else if (sha) {
-//           return spawn('git', [
-//               '--git-dir',
-//               join(cloneDir, '.git'),
-//               '--work-tree',
-//               cloneDir,
-//               'fetch',
-//               'origin'
-//             ])
-//             .then(() => spawn('git', [
-//               '--git-dir',
-//               join(cloneDir, '.git'),
-//               '--work-tree',
-//               cloneDir,
-//               'checkout',
-//               sha
-//             ]))
-//             .then(() => Promise.resolve());
-//         } else {
-//           return Promise.resolve();
-//         }
-//       })
-//       .then(() => {
-//         let configPath = join(cloneDir, '.abstruse.yml');
-//         if (!existsSync(configPath)) {
-//           return Promise.reject(`${configPath} does not exists`);
-//         } else {
-//           return Promise.resolve(sh.cat(configPath));
-//         }
-//       })
-//       .then(configYml => yml = yaml.parse(configYml))
-//       .then(() => spawn('git', ['--git-dir', join(cloneDir, '.git'), '--no-pager', 'log', '-1']))
-//       .then(gitLog => log = parseGitLog(gitLog.stdout))
-//       .then(() => rmdir(cloneDir))
-//       .then(() => resolve({ config: yml, log: log }))
-//       .catch(err => reject(err));
-//   });
-// }
-
-// function parseGitLog(str: string): GitLog {
-//   let splitted = str.split('\n');
-//   return {
-//     commit_hash: splitted[0].replace(/commit/, '').replace(/\(.*\)/, '').trim(),
-//     commit_author: splitted[1].replace(/Author:/, '').trim(),
-//     commit_date: new Date(splitted[2].replace(/Date:/, '').trim()),
-//     commit_message: splitted[4].trim()
-//   };
-// }
+function createGitTmpDir(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    temp.mkdir('abstruse-git', (err, dirPath) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(dirPath);
+      }
+    });
+  });
+}

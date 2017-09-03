@@ -9,7 +9,7 @@ import {
 } from '../../src/api/config';
 
 let repo: Repository = {
-  url: 'https://github.com/jruby/jruby.git',
+  clone_url: 'https://github.com/jruby/jruby.git',
   branch: 'master',
   file_tree: []
 };
