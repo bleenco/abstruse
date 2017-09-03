@@ -6,10 +6,10 @@ import { join } from 'path';
 import * as yaml from 'yamljs';
 
 export enum Language {
-  android,
-  java,
-  node_js,
-  python
+  android = 'android',
+  java = 'java',
+  node_js = 'node_js',
+  python = 'python'
 }
 
 export enum CacheType {
@@ -63,8 +63,9 @@ export interface Command {
 export interface JobsAndEnv {
   commands: Command[];
   env: string[];
-  display_env: string | null;
   stage: JobStage;
+  display_env: string | null;
+  language: Language;
 }
 
 export interface Repository {
@@ -73,6 +74,8 @@ export interface Repository {
   clone_depth?: number;
   pull_request?: number;
   sha?: string;
+  file_tree?: string[];
+  access_token?: string;
 }
 
 export interface Config {
@@ -359,52 +362,57 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     checkout = `git checkout ${repo.sha} .`;
   }
 
-  const beforeInstall = config.before_install || [];
-  const install = config.install || []; // TODO: specific languages
-  const beforeScript = config.before_script || [];
-  const script = config.script || []; // TODO: specific languages
-  const beforeCache = config.before_cache || [];
-  const afterSuccess = config.after_success || [];
-  const afterFailure = config.after_failure || [];
+  // 3. concat commands
+  let install = null;
+  let script = null;
 
-  const beforeDeploy = config.before_deploy || [];
-  const deploy = config.deploy || [];
-  const afterDeploy = config.after_deploy || [];
-  const afterScript = config.after_script || [];
+  if (config.install && config.install.length) {
+    install = config.install;
+  } else {
+    install = getDefaultJobCommands(config.language, repo.file_tree).install;
+  }
+
+  if (config.script && config.script.length) {
+    script = config.script;
+  } else {
+    script = getDefaultJobCommands(config.language, repo.file_tree).script;
+  }
 
   const installCommands = []
-    .concat(beforeInstall)
+    .concat(config.before_install || [])
     .concat(install);
 
   const testCommands = []
-    .concat(beforeScript)
+    .concat(config.before_script || [])
     .concat(script)
-    .concat(beforeCache)
-    .concat(afterSuccess)
-    .concat(afterFailure);
+    .concat(config.before_cache || [])
+    .concat(config.after_success || [])
+    .concat(config.after_failure || []);
 
   const deployCommands = []
-    .concat(beforeDeploy)
-    .concat(deploy)
-    .concat(afterDeploy)
-    .concat(afterScript);
+    .concat(config.before_deploy || [])
+    .concat(config.deploy || [])
+    .concat(config.after_deploy || [])
+    .concat(config.after_script || []);
 
-  // stage: test
+  // 4. generate jobs outta commands
   data = data.concat(matrixEnv.map(menv => {
     const env = globalEnv.concat(menv);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
+      stage: JobStage.test,
       display_env: env[env.length - 1] || null,
-      stage: JobStage.test
+      language: config.language
     };
   })).concat(config.matrix.include.map(i => {
     const env = globalEnv.concat(i.env || []);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
+      stage: JobStage.test,
       display_env: env[env.length - 1] || null,
-      stage: JobStage.test
+      language: config.language
     };
   })).concat(config.jobs.include.map(job => {
     const env = globalEnv.concat(job.env && job.env.global || []);
@@ -429,10 +437,31 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     return {
       commands: jobInstallCommands.concat(jobTestCommands).concat(jobDeployCommands),
       env: env,
+      stage: job.stage,
       display_env: env[env.length - 1] || null,
-      stage: job.stage
+      language: config.language
     };
   }));
+
+  if (!data.length) {
+    data.push({
+      commands: installCommands.concat(testCommands),
+      env: globalEnv,
+      stage: JobStage.test,
+      display_env: globalEnv[globalEnv.length - 1] || null,
+      language: config.language
+    });
+
+    if (deployCommands.length) {
+      data.push({
+        commands: installCommands.concat(deployCommands),
+        env: globalEnv,
+        stage: JobStage.deploy,
+        display_env: globalEnv[globalEnv.length - 1] || null,
+        language: config.language
+      });
+    }
+  }
 
   return data;
 }
@@ -468,6 +497,67 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 
     return test;
   }
+}
+
+function getDefaultJobCommands(
+  lang: Language, fileTree: string[]
+): { install: Command[], script: Command[] } {
+  let def: { install: Command[], script: Command[] };
+
+  switch (lang) {
+    case 'java':
+      def = getJavaDefaultCommands(fileTree);
+    break;
+    default:
+      def = { install: [], script: [] };
+    break;
+  }
+
+  return def;
+}
+
+// default commands for language 'java'
+function getJavaDefaultCommands(fileTree: string[]): { install: Command[], script: Command[] } {
+  if (inTree(fileTree, 'pom.xml') && !inTree(fileTree, 'build.gradle')) {
+    if (inTree(fileTree, 'mvnw')) {
+      return {
+        install: [{
+          command: './mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V',
+          type: CommandType.install
+        }],
+        script: [{ command: './mvnw test -B', type: CommandType.script }]
+      };
+    } else {
+      return {
+        install: [{
+          command: 'mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V',
+          type: CommandType.install
+        }],
+        script: [{ command: 'mvn test -B', type: CommandType.script }]
+      };
+    }
+  } else if (inTree(fileTree, 'build.gradle')) {
+    if (!inTree(fileTree, 'gradlew')) {
+      return {
+        install: [{ command: 'gradle assemble', type: CommandType.install }],
+        script: [{ command: 'gradle check', type: CommandType.script }]
+      };
+    } else {
+      return {
+        install: [{ command: './gradlew assemble', type: CommandType.install }],
+        script: [{ command: './gradlew check', type: CommandType.install }],
+      };
+    }
+  } else {
+    return {
+      install: [], // there's no standard way of installing deps using Ant
+      script: [{ command: 'ant test', type: CommandType.install }],
+    };
+  }
+}
+
+function inTree(fileTree: string[], search: string): boolean {
+  return fileTree.indexOf(search) !== -1 ? true : false;
 }
 
 // export function generateCommands(repositoryUrl: string, config: Config): any[] {
