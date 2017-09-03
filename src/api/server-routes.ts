@@ -78,11 +78,13 @@ export function buildRoutes(): express.Router {
         getBuilds(req.params.limit, req.params.offset, req.params.filter, req.params.userid)
           .then(builds => {
             return res.status(200).json({ data: builds });
-          });
+          })
+          .catch(err => res.status(200).json({ err: err }));
       } else {
         getBuilds(req.params.limit, req.params.offset, req.params.filter).then(builds => {
           return res.status(200).json({ data: builds });
-        });
+        })
+        .catch(err => res.status(200).json({ err: err }));
       }
   });
 

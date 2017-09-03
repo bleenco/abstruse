@@ -5,6 +5,7 @@ import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue } from 'chalk';
+import { CommandType } from './config';
 const nodePty = require('node-pty');
 
 export interface Job {
@@ -26,16 +27,21 @@ export interface ProcessOutput {
   data: string;
 }
 
-export function startBuildProcess(buildId: number, jobId: number,
-  commands: string[], image: string, sshAndVnc = false): Observable<ProcessOutput> {
+export function startBuildProcess(
+  buildId: number,
+  jobId: number,
+  commands: { command: string, type: CommandType }[],
+  image: string,
+  sshAndVnc = false
+): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + buildId + '_' + jobId;
-    const vars = commands.filter(cmd => cmd.startsWith('export'))
-      .map(cmd => cmd.replace('export', '-e'))
+    const vars = commands.filter(cmd => cmd.command.startsWith('export'))
+      .map(cmd => cmd.command.replace('export', '-e'))
       .reduce((acc, curr) => {
         return acc.concat(curr.split(' '));
       }, []);
-    commands = commands.filter(cmd => !cmd.startsWith('export'));
+    commands = commands.filter(cmd => !cmd.command.startsWith('export'));
 
     let debug: Observable<any> = Observable.empty();
     if (sshAndVnc) {
@@ -53,7 +59,7 @@ export function startBuildProcess(buildId: number, jobId: number,
 
     const sub = startContainer(name, image, vars)
       .concat(debug)
-      .concat(...commands.map(command => executeInContainer(name, command)))
+      .concat(...commands.map(cmd => executeInContainer(name, cmd.command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {

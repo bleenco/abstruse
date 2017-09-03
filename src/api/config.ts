@@ -20,6 +20,7 @@ export enum CacheType {
 }
 
 export enum CommandType {
+  git = 'git',
   before_install = 'before_install',
   install = 'install',
   before_script = 'before_script',
@@ -73,7 +74,7 @@ export interface Repository {
   clone_url: string;
   branch?: string;
   clone_depth?: number;
-  pull_request?: number;
+  pr?: number;
   sha?: string;
   file_tree?: string[];
   access_token?: string;
@@ -390,9 +391,9 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   let fetch = null;
   let checkout = null;
 
-  if (repo.pull_request) {
-    fetch = `git fetch origin pull/${repo.pull_request}/head:pr${repo.pull_request}`;
-    checkout = `git checkout pr${repo.pull_request}`;
+  if (repo.pr) {
+    fetch = `git fetch origin pull/${repo.pr}/head:pr${repo.pr}`;
+    checkout = `git checkout pr${repo.pr}`;
   } else if (repo.sha) {
     fetch = `git fetch origin`;
     checkout = `git checkout ${repo.sha} .`;
@@ -540,6 +541,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     } else if (d.language === 'node_js' && d.version) {
       d.display_version = `NodeJS: ${d.version}`;
     }
+
+    d.commands.unshift(...[
+      { command: clone, type: CommandType.git },
+      { command: fetch, type: CommandType.git },
+      { command: checkout, type: CommandType.git }
+    ]);
+
+    d.commands = d.commands.filter(cmd => !!cmd.command);
 
     return d;
   });

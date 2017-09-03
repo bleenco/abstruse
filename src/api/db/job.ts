@@ -39,8 +39,7 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
                 .where('builds.repositories_id', build.repositories_id)
                 .andWhere('jobs.id', '<=', job.id)
                 .andWhere('job_runs.status', 'success')
-                .andWhere('jobs.test_script', job.test_script)
-                .andWhere('jobs.language_version', job.language_version)
+                .andWhere('jobs.data', job.data)
                 .whereNotNull('job_runs.start_time')
                 .whereNotNull('job_runs.end_time')
                 .orderBy('job_runs.id', 'desc');
