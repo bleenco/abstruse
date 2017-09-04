@@ -45,6 +45,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/jobs', routes.jobRoutes());
       app.use('/api/permissions', routes.permissionRoutes());
       app.use('/api/variables', routes.environmentVariableRoutes());
+      app.use('/api/logs', routes.logsRoutes());
       app.use('/badge', routes.badgeRoutes());
       app.use(routes.webRoutes());
 
@@ -55,7 +56,7 @@ export class ExpressServer implements IExpressServer {
           cyan('http'),
           yellow(']'),
           ' --- ',
-          `server running on port ${this.config.port}`
+          `server running on port ${yellow(this.config.port.toString())}`
         ].join('');
         observer.next(msg);
       });
