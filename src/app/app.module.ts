@@ -9,7 +9,6 @@ import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
 import { SocketServiceProvider } from './services/socket.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
-import { AccessGuardProvider, AccessGuard } from './services/access-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
@@ -69,12 +68,12 @@ import { AppTeamComponent } from './components/app-team';
       {
         path: 'build/:id',
         component: AppBuildDetailsComponent,
-        canActivate: [AuthGuard, AccessGuard]
+        canActivate: [AuthGuard]
       },
       {
         path: 'job/:id',
         component: AppJobComponent,
-        canActivate: [AuthGuard, AccessGuard]
+        canActivate: [AuthGuard]
       },
       {
         path: 'repositories',
@@ -84,7 +83,7 @@ import { AppTeamComponent } from './components/app-team';
       {
         path: 'repo/:id',
         component: AppRepositoryComponent,
-        canActivate: [AuthGuard, AccessGuard]
+        canActivate: [AuthGuard]
       },
       {
         path: 'settings',
@@ -116,8 +115,7 @@ import { AppTeamComponent } from './components/app-team';
     ApiServiceProvider,
     SocketServiceProvider,
     AuthServiceProvider,
-    AuthGuardProvider,
-    AccessGuardProvider
+    AuthGuardProvider
   ],
   bootstrap: [ AppComponent ]
 })

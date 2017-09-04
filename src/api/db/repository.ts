@@ -161,7 +161,7 @@ export function addRepository(data: any): Promise<any> {
           reject(result);
         } else {
           let repository = result.toJSON();
-          return addRepositoryPermissionToEveryone(result.id)
+          return addRepositoryPermissionToEveryone(repository.id)
             .then(() => resolve(repository))
             .catch(err => reject(err));
         }
