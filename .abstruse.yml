@@ -1,15 +1,14 @@
 language: node_js
 
-git:
-  depth: 3
-
 matrix:
   - node_js: "8"
     env: SCRIPT=lint
   - node_js: "8"
-    env: NODE_SCRIPT=./tests/run_e2e.js
+    env: SCRIPT=test
   - node_js: "8"
-    env: SCRIPT=protractor:abstruse
+    env: SCRIPT=test:e2e
+  - node_js: "8"
+    env: SCRIPT=test:protractor
 
 preinstall:
   - npm config set spin false
@@ -31,4 +30,3 @@ postinstall:
 
 test:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
-  - if [[ "$NODE_SCRIPT" ]]; then node ./$NODE_SCRIPT; fi
