@@ -136,7 +136,7 @@ export class ApiService {
   }
 
   updateRepositoryPermission(data: any): Observable<any> {
-    return this.post(`${this.url}/repositories/permission`, data);
+    return this.post(`${this.url}/repositories/permission`, data, true);
   }
 
   getUserRepositoryPermission(repoId: string, userId: number): Observable<any> {
