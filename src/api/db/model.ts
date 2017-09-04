@@ -58,3 +58,8 @@ export class Permission extends Bookshelf.Model<any> {
   repository() { return this.belongsTo(Repository, 'repositories_id'); }
   user() { return this.belongsTo(User, 'users_id'); }
 }
+
+export class Log extends Bookshelf.Model<any> {
+  get tableName() { return 'logs'; }
+  get hasTimestamps() { return true; }
+}

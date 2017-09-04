@@ -1,6 +1,7 @@
-import { sendRequest, getBitBucketAccessToken, getConfig } from './utils';
+import { getBitBucketAccessToken, getConfig } from './utils';
 import * as logger from './logger';
-import { yellow, red, blue, bold } from 'chalk';
+import { yellow, red, blue, bold, cyan } from 'chalk';
+import * as request from 'request';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
   const config: any = getConfig();
@@ -330,4 +331,65 @@ function setBitbucketStatusFailure(
       return sendRequest(gitUrl, statusData, header);
     })
     .catch(err => Promise.reject(err));
+}
+
+function sendRequest(url: string, data: any, headers: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let options = {
+      url: url,
+      method: 'POST',
+      headers: headers,
+      json: data
+    };
+
+    let msg = [
+      yellow('['),
+      cyan('http'),
+      yellow(']'),
+      ' --- ',
+      yellow(`sending ${options.method} request to ${bold(url)}...`)
+    ].join('');
+    logger.info(msg);
+
+    request(options, (err, response, body) => {
+      if (err) {
+        let msg = [
+          yellow('['),
+          cyan('http'),
+          yellow(']'),
+          ' --- ',
+          red(`sending request to ${bold(url)} failed (${err})`)
+        ].join('');
+        logger.error(msg);
+
+        reject(err);
+      } else {
+        if (response.statusCode < 300 && response.statusCode >= 200) {
+          let msg = [
+            yellow('['),
+            cyan('http'),
+            yellow(']'),
+            ' --- ',
+            yellow(`sending request to ${bold(url)} successful (${response.statusCode})`)
+          ].join('');
+          logger.info(msg);
+          resolve(body);
+        } else {
+          let msg = [
+            yellow('['),
+            cyan('http'),
+            yellow(']'),
+            ' --- ',
+            red(`sending request to ${bold(url)} failed (${response.statusCode})`)
+          ].join('');
+          logger.error(msg);
+
+          reject({
+            statusCode: response.statusCode,
+            response: body
+          });
+        }
+      }
+    });
+  });
 }

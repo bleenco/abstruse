@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 import * as request from 'request';
 import * as temp from 'temp';
-import * as logger from './logger';
 import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
 
 const defaultConfig = {
@@ -210,65 +209,4 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
         }
       });
     });
-}
-
-export function sendRequest(url: string, data: any, headers: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let options = {
-      url: url,
-      method: 'POST',
-      headers: headers,
-      json: data
-    };
-
-    let msg = [
-      yellow('['),
-      blue('http'),
-      yellow(']'),
-      ' --- ',
-      yellow(`sending ${options.method} request to ${bold(url)}...`)
-    ].join('');
-    logger.info(msg);
-
-    request(options, (err, response, body) => {
-      if (err) {
-        let msg = [
-          yellow('['),
-          blue('http'),
-          yellow(']'),
-          ' --- ',
-          red(`sending request to ${bold(url)} failed (${err})`)
-        ].join('');
-        logger.error(msg);
-
-        reject(err);
-      } else {
-        if (response.statusCode < 300 && response.statusCode >= 200) {
-          let msg = [
-            yellow('['),
-            blue('http'),
-            yellow(']'),
-            ' --- ',
-            yellow(`sending request to ${bold(url)} successful (${response.statusCode})`)
-          ].join('');
-          logger.info(msg);
-          resolve(body);
-        } else {
-          let msg = [
-            yellow('['),
-            blue('http'),
-            yellow(']'),
-            ' --- ',
-            red(`sending request to ${bold(url)} failed (${response.statusCode})`)
-          ].join('');
-          logger.error(msg);
-
-          reject({
-            statusCode: response.statusCode,
-            response: body
-          });
-        }
-      }
-    });
-  });
 }

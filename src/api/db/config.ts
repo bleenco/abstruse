@@ -1,22 +1,22 @@
 import * as bookshelf from 'bookshelf';
 import * as knex from 'knex';
-import { configExists, writeDefaultConfig, getConfig, getFilePath } from '../utils';
+import * as utils from '../utils';
 import * as jsonColumns from 'bookshelf-json-columns';
 
-if (!configExists()) {
-  writeDefaultConfig();
+if (!utils.configExists()) {
+  utils.writeDefaultConfig();
 }
 
-let config: any = getConfig();
+let config: any = utils.getConfig();
 let dbConfig = Object.assign({}, config.db, {
   migrations: {
     tableName: 'knex_migrations',
-    directory: getFilePath('migrations')
+    directory: utils.getFilePath('migrations')
   }
 });
 
 if (dbConfig.connection.filename) {
-  dbConfig.connection.filename = getFilePath(dbConfig.connection.filename);
+  dbConfig.connection.filename = utils.getFilePath(dbConfig.connection.filename);
 }
 
 export let Knex: knex = knex(dbConfig);

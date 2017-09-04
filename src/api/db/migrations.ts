@@ -98,6 +98,13 @@ export function create(): Promise<null> {
       t.boolean('permission').notNullable().defaultTo(true);
       t.timestamps();
     }))
+    .then(() => schema.createTableIfNotExists('logs', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.enum('type', ['info', 'warning', 'error']).notNullable();
+      t.text('message').notNullable();
+      t.boolean('read').notNullable().defaultTo(false);
+      t.timestamps();
+    }))
     .then(() => resolve())
     .catch(err => {
       console.error(err);
