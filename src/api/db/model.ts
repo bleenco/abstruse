@@ -19,6 +19,7 @@ export class Repository extends Bookshelf.Model<any> {
   access_token() { return this.belongsTo(AccessToken, 'access_tokens_id'); }
   builds() { return this.hasMany(Build, 'repositories_id'); }
   permissions() { return this.hasMany(Permission, 'repositories_id'); }
+  variables() { return this.hasMany(EnvironmentVariable, 'repositories_id'); }
 }
 
 export class Build extends Bookshelf.Model<any> {
@@ -62,4 +63,10 @@ export class Permission extends Bookshelf.Model<any> {
 export class Log extends Bookshelf.Model<any> {
   get tableName() { return 'logs'; }
   get hasTimestamps() { return true; }
+}
+
+export class EnvironmentVariable extends Bookshelf.Model<any> {
+  get tableName() { return 'environment_variables'; }
+  get hasTimestamps() { return true; }
+  repository() { return this.belongsTo(Repository, 'repositories_id'); }
 }

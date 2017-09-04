@@ -5,7 +5,7 @@ import { addRepositoryPermissionToEveryone } from './permission';
 export function getRepository(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository({ id: id })
-      .fetch({ withRelated: ['access_token'] })
+      .fetch({ withRelated: ['access_token', 'variables'] })
       .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()))
       .catch(err => reject(err));
   });
@@ -109,7 +109,7 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
     new Repository().query(qb => {
       qb.leftJoin('builds', 'repositories.id', 'builds.repositories_id');
       qb.where('builds.id', '=', buildId);
-    }).fetch().then(repo => {
+    }).fetch({ withRelated: ['access_token', 'variables'] }).then(repo => {
       if (!repo) {
         reject();
       } else {

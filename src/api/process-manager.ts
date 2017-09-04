@@ -4,7 +4,7 @@ import { insertBuild, updateBuild, getBuild, getBuildStatus, getLastRunId } from
 import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
-import { getRepositoryOnly } from './db/repository';
+import { getRepositoryOnly, getRepositoryByBuildId } from './db/repository';
 import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
 import * as logger from './logger';
@@ -170,8 +170,10 @@ export function startBuild(data: any): Promise<any> {
 
 export function startJob(proc: JobProcess): Promise<void> {
   return Promise.resolve()
-    .then(() => {
-      startBuildProcess(proc, 'abstruse')
+    .then(() => getRepositoryByBuildId(proc.build_id))
+    .then(repo => {
+      let envVariables = repo.variables.map(v => `${v.name}=${v.value}`);
+      startBuildProcess(proc, 'abstruse', envVariables)
         .subscribe(event => {
           const msg: JobProcessEvent = {
             build_id: proc.build_id,

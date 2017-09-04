@@ -11,8 +11,8 @@
     <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons" *ngIf="userId">
-        <button class="group-button" [class.is-active]="tab === 'builds'" (click)="tab = 'builds'">Builds</button>
-        <button class="group-button" [class.is-active]="tab === 'settings'" (click)="tab = 'settings'">Settings</button>
+        <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="tab = 'builds'">Builds</button>
+        <button class="group-button" name="btn-settings" [class.is-active]="tab === 'settings'" (click)="tab = 'settings'">Settings</button>
       </div>
     </div>
   </div>
@@ -87,6 +87,48 @@
                       <button type="submit" class="button green float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Repository Settings</button>
                     </div>
                   </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column is-12" *ngIf="tab === 'settings'">
+            <div class="columns">
+              <div class="column is-12">
+                <div class="settings-container">
+                  <h2>Environment Variables</h2>
+
+                  <div class="add-variable">
+                    <h3>Add New Variable:</h3>
+                    <form class="control-form" (ngSubmit)="addEnvironmentVariable()" #addForm="ngForm">
+                      <div class="form-field">
+                        <label class="form-label">Name</label>
+                        <input class="form-input" type="text" placeholder="Name" name="name" required [(ngModel)]="environmentVariableForm.name">
+                      </div>
+                      <div class="form-field">
+                        <label class="form-label">Value</label>
+                        <input class="form-input" type="text" placeholder="Value" name="value" required [(ngModel)]="environmentVariableForm.value">
+                      </div>
+                      <div class="form-field">
+                        <button type="submit" class="button green float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add New Variable</button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div class="variables" *ngIf="repo?.variables?.length">
+                    <h3>Repository Environment Variables:</h3>
+                    <div class="columns list-item list-item-slim" *ngFor="let v of repo?.variables; let i = index;">
+                      <div class="column is-10">
+                        <span class="bold">{{ v.name }}: {{ v.value }}</span>
+                      </div>
+                      <div class="column is-2 justify-center">
+                          <span class="icon" name="remove-variable" (click)="removeVariable(v.id)">
+                            <img src="images/icons/remove.svg">
+                          </span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
