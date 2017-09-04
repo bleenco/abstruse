@@ -1,3 +1,32 @@
+<a name="0.9.2"></a>
+## [0.9.2](https://github.com/bleenco/abstruse/compare/v0.8.16...v0.9.2) (2017-09-04)
+
+
+### Bug Fixes
+
+* **avatars:** hotfix for non PRs ([3e8b291](https://github.com/bleenco/abstruse/commit/3e8b291))
+* **github-status:** fix sending statuses to Github (closes [#102](https://github.com/bleenco/abstruse/issues/102)) ([0c2ec11](https://github.com/bleenco/abstruse/commit/0c2ec11))
+* **hotfix:** hot hot hot ([e98d75f](https://github.com/bleenco/abstruse/commit/e98d75f))
+* fixed build running time ([83dd607](https://github.com/bleenco/abstruse/commit/83dd607))
+* fixed progress bar ([38cee0e](https://github.com/bleenco/abstruse/commit/38cee0e))
+* fixed sending commit status ([66cb7f2](https://github.com/bleenco/abstruse/commit/66cb7f2))
+* restricted access to private repositories, builds and jobs ([40f5ca7](https://github.com/bleenco/abstruse/commit/40f5ca7))
+* **pm:** fix some process and pm related stuff ([7cf2c0b](https://github.com/bleenco/abstruse/commit/7cf2c0b))
+* **ui:** ui style updates ([646926f](https://github.com/bleenco/abstruse/commit/646926f))
+
+
+### Features
+
+* **avatars:** double avatars where needed (closes [#109](https://github.com/bleenco/abstruse/issues/109)) ([cb5cc88](https://github.com/bleenco/abstruse/commit/cb5cc88))
+* cloning of github private repository ([704fe27](https://github.com/bleenco/abstruse/commit/704fe27))
+* **config:** branches property ([2d80141](https://github.com/bleenco/abstruse/commit/2d80141))
+* **config:** build config - generate jobs and envs ([f297a42](https://github.com/bleenco/abstruse/commit/f297a42))
+* **docker:** bash script for switching JDKs ([c8b5b23](https://github.com/bleenco/abstruse/commit/c8b5b23))
+* **ui:** progress bar ([110bf6a](https://github.com/bleenco/abstruse/commit/110bf6a))
+* **ui-labels:** data-labels ([a1af711](https://github.com/bleenco/abstruse/commit/a1af711))
+
+
+
 <a name="0.8.14"></a>
 ## [0.8.14](https://github.com/bleenco/abstruse/compare/v0.8.11...v0.8.14) (2017-08-29)
 
