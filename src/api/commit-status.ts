@@ -1,4 +1,6 @@
 import { sendRequest, getBitBucketAccessToken, getConfig } from './utils';
+import * as logger from './logger';
+import { yellow, red, blue, bold } from 'chalk';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
   const config: any = getConfig();
@@ -33,6 +35,14 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
       return Promise.resolve();
     }
   } else {
+    let msg = [
+      yellow('['),
+      red('error'),
+      yellow(']'),
+      ' --- ',
+      `access_token is not set for repository ${bold(build.repository.full_name)}!`
+    ].join('');
+    logger.error(msg);
     return Promise.resolve();
   }
 }
@@ -67,6 +77,14 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
       return Promise.resolve();
     }
   } else {
+    let msg = [
+      yellow('['),
+      red('error'),
+      yellow(']'),
+      ' --- ',
+      `access_token is not set for repository ${bold(buildData.repository.full_name)}!`
+    ].join('');
+    logger.error(msg);
     return Promise.resolve();
   }
 }
@@ -101,6 +119,14 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
       return Promise.resolve();
     }
   } else {
+    let msg = [
+      yellow('['),
+      red('error'),
+      yellow(']'),
+      ' --- ',
+      `access_token is not set for repository ${bold(buildData.repository.full_name)}!`
+    ].join('');
+    logger.error(msg);
     return Promise.resolve();
   }
 }

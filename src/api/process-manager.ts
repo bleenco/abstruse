@@ -32,6 +32,7 @@ export interface JobProcess {
   image_name?: string;
   log?: string[];
   commands?: { command: string, type: CommandType }[];
+  env?: string[];
   sshAndVnc?: boolean;
   job?: Observable<any>;
 }
@@ -167,25 +168,25 @@ export function startBuild(data: any): Promise<any> {
     }).catch(err => logger.error(err));
 }
 
-export function startJob(p: JobProcess): Promise<void> {
+export function startJob(proc: JobProcess): Promise<void> {
   return Promise.resolve()
     .then(() => {
-      startBuildProcess(p.build_id, p.job_id, p.commands, 'abstruse', p.sshAndVnc)
+      startBuildProcess(proc, 'abstruse')
         .subscribe(event => {
           const msg: JobProcessEvent = {
-            build_id: p.build_id,
-            job_id: p.job_id,
+            build_id: proc.build_id,
+            job_id: proc.job_id,
             type: event.type,
             data: event.data
           };
 
           terminalEvents.next(msg);
           if (event.data && event.type === 'data') {
-            p.log.push(event.data);
+            proc.log.push(event.data);
           } else if (event.type === 'container') {
             let msg = [
               yellow('['),
-              blue('abstruse_' + p.build_id + '_' + p.job_id),
+              blue('abstruse_' + proc.build_id + '_' + proc.job_id),
               yellow(']'),
               ' --- ',
               yellow(event.data)
@@ -195,56 +196,56 @@ export function startJob(p: JobProcess): Promise<void> {
         }, err => {
           logger.error(err);
 
-          dbJob.getLastRunId(p.job_id)
+          dbJob.getLastRunId(proc.job_id)
             .then(runId => {
               const data = {
                 id: runId,
                 end_time: new Date(),
                 status: 'failed',
-                log: p.log.join('')
+                log: proc.log.join('')
               };
 
               return dbJobRuns.updateJobRun(data);
             })
             .then(() => getJobProcesses())
             .then(processes => {
-              processes = processes.filter(proc => proc.job_id !== p.job_id);
+              processes = processes.filter(p => p.job_id !== proc.job_id);
               jobProcesses.next(processes);
               jobEvents.next({
                 type: 'process',
-                build_id: p.build_id,
-                job_id: p.job_id,
+                build_id: proc.build_id,
+                job_id: proc.job_id,
                 data: 'jobFailed'
               });
 
-              if (processes.findIndex(proc => proc.build_id === p.build_id) === -1) {
-                getBuild(p.build_id).then(build => sendFailureStatus(build, build.id));
+              if (processes.findIndex(proc => proc.build_id === proc.build_id) === -1) {
+                getBuild(proc.build_id).then(build => sendFailureStatus(build, build.id));
               }
             })
             .catch(err => logger.error(err));
         }, () => {
-          dbJob.getLastRunId(p.job_id)
+          dbJob.getLastRunId(proc.job_id)
             .then(runId => {
               const data = {
                 id: runId,
                 end_time: new Date(),
                 status: 'success',
-                log: p.log.join('')
+                log: proc.log.join('')
               };
 
               return dbJobRuns.updateJobRun(data);
             })
-            .then(() => getBuildStatus(p.build_id))
+            .then(() => getBuildStatus(proc.build_id))
             .then(status => {
               if (status === 'success') {
-                return updateBuild({ id: p.build_id, end_time: new Date() })
-                  .then(() => getLastRunId(p.build_id))
+                return updateBuild({ id: proc.build_id, end_time: new Date() })
+                  .then(() => getLastRunId(proc.build_id))
                   .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
-                  .then(() => getBuild(p.build_id))
+                  .then(() => getBuild(proc.build_id))
                   .then(build => sendSuccessStatus(build, build.id))
                   .catch(err => logger.error(err));
               } else if (status === 'failed') {
-                getBuild(p.build_id)
+                getBuild(proc.build_id)
                 .then(build => sendFailureStatus(build, build.id));
               } else {
                 return Promise.resolve();
@@ -252,24 +253,29 @@ export function startJob(p: JobProcess): Promise<void> {
             })
             .then(() => getJobProcesses())
             .then(processes => {
-              processes = processes.filter(proc => proc.job_id !== p.job_id);
+              processes = processes.filter(p => p.job_id !== proc.job_id);
               jobProcesses.next(processes);
               jobEvents.next({
                 type: 'process',
-                build_id: p.build_id,
-                job_id: p.job_id,
+                build_id: proc.build_id,
+                job_id: proc.job_id,
                 data: 'jobSucceded'
               });
             }).catch(err => logger.error(err));
         });
     })
-    .then(() => dbJob.getLastRunId(p.job_id))
+    .then(() => dbJob.getLastRunId(proc.job_id))
     .then(runId => {
       const data = { id: runId, start_time: new Date(), status: 'running', log: '' };
       return dbJobRuns.updateJobRun(data);
     })
     .then(() => {
-      const data = { type: 'process', build_id: p.build_id, job_id: p.job_id, data: 'jobStarted' };
+      const data = {
+        type: 'process',
+        build_id: proc.build_id,
+        job_id: proc.job_id,
+        data: 'jobStarted'
+      };
       jobEvents.next(data);
     })
     .catch(err => logger.error(err));
@@ -366,6 +372,7 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         job_id: jobId,
         status: 'queued',
         commands: jobData.commands,
+        env: jobData.env,
         sshAndVnc: sshAndVnc,
         log: []
       };

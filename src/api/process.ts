@@ -6,6 +6,7 @@ import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue } from 'chalk';
 import { CommandType } from './config';
+import { JobProcess } from './process-manager';
 const nodePty = require('node-pty');
 
 export interface Job {
@@ -28,23 +29,21 @@ export interface ProcessOutput {
 }
 
 export function startBuildProcess(
-  buildId: number,
-  jobId: number,
-  commands: { command: string, type: CommandType }[],
-  image: string,
-  sshAndVnc = false
+  proc: JobProcess,
+  image: string
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const name = 'abstruse_' + buildId + '_' + jobId;
-    const vars = commands.filter(cmd => cmd.command.startsWith('export'))
+    const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
+    const vars = proc.commands.filter(cmd => cmd.command.startsWith('export'))
       .map(cmd => cmd.command.replace('export', '-e'))
       .reduce((acc, curr) => {
         return acc.concat(curr.split(' '));
-      }, []);
-    commands = commands.filter(cmd => !cmd.command.startsWith('export'));
+      }, [])
+      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []));
+    proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
 
     let debug: Observable<any> = Observable.empty();
-    if (sshAndVnc) {
+    if (proc.sshAndVnc) {
       debug = Observable.concat(...[
         executeInContainer(name, 'sudo /etc/init.d/ssh start'),
         getContainerExposedPort(name, 22),
@@ -59,7 +58,7 @@ export function startBuildProcess(
 
     const sub = startContainer(name, image, vars)
       .concat(debug)
-      .concat(...commands.map(cmd => executeInContainer(name, cmd.command)))
+      .concat(...proc.commands.map(cmd => executeInContainer(name, cmd.command)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {
