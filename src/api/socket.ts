@@ -76,7 +76,7 @@ export class SocketServer {
                 green('socket'),
                 yellow(']'),
                 ' --- ',
-                `session cleared after user ${session.userId}`
+                `session cleared after user ${yellow(session.userId)}`
               ].join('');
               logger.info(msg);
             }
@@ -184,7 +184,7 @@ export class SocketServer {
         green('socket'),
         yellow(']'),
         ' --- ',
-        `socket server running at port ${options.port}`
+        `socket server running at port ${yellow(options.port.toString())}`
       ].join('');
       logger.info(msg);
 
@@ -197,7 +197,7 @@ export class SocketServer {
             green('socket'),
             yellow(']'),
             ' --- ',
-            `updating session for user ${id} (${ip})`
+            `updating session for user ${yellow(id)} (${yellow(ip)})`
           ].join('');
           logger.info(msg);
 
@@ -218,7 +218,7 @@ export class SocketServer {
           green('socket'),
           yellow(']'),
           ' --- ',
-          `socket connection established ${req.session.userId}`
+          `socket connection established ${yellow(req.session.userId)}`
         ].join('');
         logger.info(msg);
       });

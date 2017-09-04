@@ -36,6 +36,7 @@ import {
   getUserJobPermissions
 } from './db/permission';
 import { insertEnvironmentVariable, removeEnvironmentVariable } from './db/environment-variable';
+import { getLogs } from './db/log';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
@@ -443,6 +444,18 @@ export function environmentVariableRoutes(): express.Router {
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
     }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  return router;
+}
+
+export function logsRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get(`/:limit/:offset/:type`, (req: express.Request, res: express.Response) => {
+    getLogs(req.params.limit, req.params.offset, req.params.type)
+      .then(logs => res.status(200).json({ data: logs }))
+      .catch(err => res.status(200).json({ status: false }));
   });
 
   return router;

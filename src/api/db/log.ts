@@ -15,11 +15,11 @@ export function insertLog(data: LogType): Promise<any> {
 export function getLogs(
   limit: number,
   offset: number,
-  type?: 'info' | 'warning' | 'error'
+  type?: 'all' | 'info' | 'warning' | 'error'
 ): Promise<any[]> {
   return new Promise((resolve, reject) => {
     new Log().query(q => {
-      if (type) {
+      if (type !== 'all') {
         q.where('type', type);
       }
 

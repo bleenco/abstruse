@@ -1,0 +1,61 @@
+<app-header></app-header>
+
+<nav class="nav sub-nav">
+  <div class="container">
+    <div class="nav-left">
+      <span class="nav-item">
+        <h1>System Logs</h1>
+      </span>
+    </div>
+    <div class="nav-center">
+
+    </div>
+    <div class="nav-right">
+      <div class="group-buttons">
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="showAllBuilds()">All Logs</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'info' }" (click)="showCommits()">Info</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'warning' }" (click)="showPullRequests()">Warnings</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'error' }" (click)="showPullRequests()">Errors</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-12">
+      <div class="content">
+        <div class="container" *ngIf="loading">
+          <img src="images/icons/flickr.svg" class="main-loader">
+        </div>
+
+        <div class="columns is-multiline" *ngIf="!loading">
+          <div class="column is-12">
+            <div class="log-lines dracula-ansi-theme">
+              <div class="columns log-line" *ngFor="let line of logs; let i = index;">
+                <div class="column is-2 data-label-container">
+                  <span class="data-label" [ngClass]="{ green: line.type === 'info', red: line.type === 'error', yellow: line.type === 'warning' }">
+                    {{ line.type }}
+                  </span>
+                </div>
+                <div class="column is-9">
+                  <span [innerHTML]="line.message"></span>
+                </div>
+                <div class="column is-1">
+                  <span class="time">{{ line.created_at | date:'shortTime' }}</span>
+                </div>
+              </div>
+            </div>
+            <div layout-align="center" *ngIf="logs?.length" align="center" class="more-button-container">
+              <button type="button" class="button dark" name="btn-loadmore" (click)="fetch($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
+                <img src="images/icons/more.svg">
+                Load more
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,6 +20,10 @@ export class ApiService {
     return this.http.get(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
   }
 
+  getLogs(limit: number, offset: number, type: string): Observable<any> {
+    return this.get(`${this.url}/logs/${limit}/${offset}/${type}`, null, true);
+  }
+
   getBuilds(limit: number, offset: number, buildTypes: string, userId?: string): Observable<any> {
     if (userId) {
       return this.get(

@@ -31,6 +31,7 @@ import { AppJobComponent } from './components/app-job';
 import { AppUserComponent } from './components/app-user';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
+import { AppLogsComponent } from './components/app-logs';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import { AppTeamComponent } from './components/app-team';
     AppSettingsComponent,
     AppTeamComponent,
     AppUserComponent,
+    AppLogsComponent,
     EqualValidator,
     SafeHtmlPipe,
     TimeDurationPipe,
@@ -102,10 +104,18 @@ import { AppTeamComponent } from './components/app-team';
         canActivate: [AuthGuard]
       },
       {
+        path: 'logs',
+        component: AppLogsComponent,
+        canActivate: [AuthGuard]
+      },
+      {
         path: 'login',
         component: AppLoginComponent
       },
-      { path: 'setup', component: AppSetupComponent }
+      {
+        path: 'setup',
+        component: AppSetupComponent
+      }
     ]),
     HttpModule,
     FormsModule,
