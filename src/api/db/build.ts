@@ -51,9 +51,8 @@ export function getBuilds(
             return job;
           });
 
-          // build.hasPermission = build.repository.permissions &&
-          //   build.repository.permissions[0].permission;
-          build.hasPermission = true;
+          build.hasPermission = build.repository.permissions
+            &&  !!build.repository.permissions[0].permission;
 
           return build;
         });
