@@ -40,6 +40,7 @@ export function getBuilds(
         }
 
         builds = builds.toJSON();
+
         builds = builds.map(build => {
           build.jobs = build.jobs.map(job => {
             if (job.runs.length > 0) {
@@ -51,9 +52,16 @@ export function getBuilds(
             return job;
           });
 
-          // build.hasPermission = build.repository.permissions &&
-          //   build.repository.permissions[0].permission;
-          build.hasPermission = true;
+          userId = parseInt(<any>userId, 10);
+          if (build.repository.permissions && build.repository.permissions.length) {
+            if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+              build.hasPermission = true;
+            } else {
+              build.hasPermission = false;
+            }
+          } else {
+            build.hasPermission = false;
+          }
 
           return build;
         });
@@ -114,10 +122,16 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           build.repository.access_token = null;
         }
 
-        build.hasPermission = true;
-
-        // build.hasPermission = build.repository.permissions &&
-        //   build.repository.permissions[0].permission;
+        userId = parseInt(<any>userId, 10);
+        if (build.repository.permissions && build.repository.permissions.length) {
+          if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+            build.hasPermission = true;
+          } else {
+            build.hasPermission = false;
+          }
+        } else {
+          build.hasPermission = false;
+        }
 
         return build;
       })
@@ -175,8 +189,16 @@ export function getLastBuild(userId?: number): Promise<any> {
         return job;
       });
 
-      build.hasPermission = build.repository.permissions &&
-        build.repository.permissions[0].permission;
+      userId = parseInt(<any>userId, 10);
+      if (build.repository.permissions && build.repository.permissions.length) {
+        if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+          build.hasPermission = true;
+        } else {
+          build.hasPermission = false;
+        }
+      } else {
+        build.hasPermission = false;
+      }
 
       resolve(build);
     });

@@ -53,8 +53,7 @@ export class AppRepositoriesComponent implements OnInit {
     this.loading = true;
     const userId = this.userData && this.userData.id || null;
     this.apiService.getRepositories(keyword, userId).subscribe(repositories => {
-      this.repositories =
-        repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);
+      this.repositories = repositories;
       this.repositories.forEach((repo: any, i) => {
         this.apiService.getBadge(repo.id).subscribe(badge => {
           if (badge.ok) {

@@ -102,7 +102,7 @@ export function buildRoutes(): express.Router {
 
   router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
     if (req.params.userid) {
-      getBuild(req.params.id, req.params.userId).then(build => {
+      getBuild(req.params.id, req.params.userid).then(build => {
         return res.status(200).json({ data: build });
       });
     } else {
