@@ -4,8 +4,10 @@ import * as temp from 'temp';
 import * as minimist from 'minimist';
 import { killAllContainers } from '../src/api/docker';
 
+Error.stackTraceLimit = Infinity;
+
 let tempRoot = null;
-let exitCode = null;
+process.exitCode = 255;
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ['nolink', 'nobuild', 'debug']
@@ -34,8 +36,11 @@ Promise.resolve()
   .then(() => abstruse(tempRoot, argv['debug']))
   .then(() => exec('npm', ['run', 'protractor:ci']))
   .then(result => {
-    exitCode = result.code;
+    process.exitCode = result.code;
     return killAllProcesses();
   })
   .then(() => killAllContainers())
-  .then(() => process.exit(exitCode));
+  .then(() => process.exit(process.exitCode))
+  .catch(err => {
+    killAllProcesses().then(() => killAllContainers()).then(() => process.exit(process.exitCode));
+  });
