@@ -22,10 +22,9 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
         if (job.build
           && job.build.reposiotory
           && job.build.repository.permissions
-          && job.build.repository.permissions[0].permission) {
+          && !!job.build.repository.permissions[0].permission) {
             job.hasPermission = true;
         }
-        job.hasPermission = true;
 
         return job;
       })
