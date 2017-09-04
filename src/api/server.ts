@@ -4,6 +4,9 @@ import * as bodyParser from 'body-parser';
 import { Observable } from 'rxjs';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
+import { yellow, cyan } from 'chalk';
+import * as session from 'express-session';
+import * as uuid from 'uuid';
 
 export interface ServerConfig {
   port: number;
@@ -13,6 +16,12 @@ export interface IExpressServer {
   config: ServerConfig;
   start(): Observable<string>;
 }
+
+export const sessionParser = session({
+  saveUninitialized: false,
+  secret: 'sessionSecret',
+  resave: false
+});
 
 export class ExpressServer implements IExpressServer {
   config: ServerConfig;
@@ -26,6 +35,7 @@ export class ExpressServer implements IExpressServer {
       const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
+      app.use(sessionParser);
       app.use('/webhooks', webhooks);
       app.use('/api/setup', routes.setupRoutes());
       app.use('/api/user', routes.userRoutes());
@@ -36,8 +46,17 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/permissions', routes.permissionRoutes());
       app.use('/badge', routes.badgeRoutes());
       app.use(routes.webRoutes());
+
+
       app.listen(this.config.port, () => {
-        observer.next(`Server running on port ${this.config.port}`);
+        let msg = [
+          yellow('['),
+          cyan('http'),
+          yellow(']'),
+          ' --- ',
+          `server running on port ${this.config.port}`
+        ].join('');
+        observer.next(msg);
       });
     });
   }

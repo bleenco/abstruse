@@ -22,6 +22,8 @@ import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
 import * as express from 'express';
+import { yellow, red, blue, green } from 'chalk';
+import { sessionParser } from './server';
 
 export interface ISocketServerOptions {
   port: number;
@@ -31,6 +33,7 @@ export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
   clients: any[];
+  connectingClient: any;
 
   constructor(options: ISocketServerOptions) {
     this.options = options;
@@ -40,10 +43,12 @@ export class SocketServer {
   start(): Observable<string> {
     return new Observable(observer => {
       this.createRxServer(this.options)
-        .map(this.createRxSocket)
+        .map(data => {
+          this.connectingClient = data.session;
+          return this.createRxSocket(data.conn);
+        })
         .subscribe(conn => {
-          const client = { connection: conn, sub: null };
-          this.clients.push(client);
+          this.clients.push({ connection: conn, sub: null, session: this.connectingClient });
 
           // send server time for sync
           conn.next({ type: 'time', data: new Date().getTime() });
@@ -53,11 +58,27 @@ export class SocketServer {
 
           conn.subscribe(event => {
             if (event.type === 'disconnected') {
-              const connIndex = this.clients.findIndex(client => client.connection === conn);
-              if (connIndex !== -1) {
-                this.clients.splice(connIndex, 1);
-                logger.info(`client ${connIndex + 1} disconnected`);
-              }
+              const index = this.clients.findIndex(client => client.connection === conn);
+              const session = this.clients[index].session;
+              let msg = [
+                yellow('['),
+                green('socket'),
+                yellow(']'),
+                ' --- ',
+                `user ${session.userId} disconnected. clearing session ...`
+              ].join('');
+              logger.info(msg);
+
+              this.clients.splice(index, 1);
+
+              msg = [
+                yellow('['),
+                green('socket'),
+                yellow(']'),
+                ' --- ',
+                `session cleared after user ${session.userId}`
+              ].join('');
+              logger.info(msg);
             }
 
             switch (event.type) {
@@ -158,12 +179,48 @@ export class SocketServer {
       }
 
       server.listen(options.port);
-      logger.info(`Socket server running at port ${options.port}`);
+      let msg = [
+        yellow('['),
+        green('socket'),
+        yellow(']'),
+        ' --- ',
+        `socket server running at port ${options.port}`
+      ].join('');
+      logger.info(msg);
 
-      let wss: ws.Server = new ws.Server({ server: server });
-      wss.on('connection', (connection: ws) => {
-        observer.next(connection);
-        logger.info(`socket connection established.`);
+      let wss: ws.Server = new ws.Server({
+        verifyClient: (info: any, done) => {
+          const id = uuid();
+          const ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
+          let msg = [
+            yellow('['),
+            green('socket'),
+            yellow(']'),
+            ' --- ',
+            `updating session for user ${id} (${ip})`
+          ].join('');
+          logger.info(msg);
+
+          sessionParser(info.req, {} as any, () => {
+            info.req.session.userId = id;
+            info.req.session.ip = ip;
+            done(info.req.session.userId);
+          });
+        },
+        server
+      });
+
+      wss.on('connection', (connection: any, req: any) => {
+        observer.next({ conn: connection, session: req.session });
+
+        let msg = [
+          yellow('['),
+          green('socket'),
+          yellow(']'),
+          ' --- ',
+          `socket connection established ${req.session.userId}`
+        ].join('');
+        logger.info(msg);
       });
 
       return () => {
