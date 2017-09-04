@@ -1,6 +1,6 @@
 {
   "name": "abstruse",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Abstruse CI",
   "bin": {
     "abstruse": "./dist/api/index.js"
@@ -145,7 +145,7 @@
     "ts-node": "^3.3.0",
     "tsc-watch": "1.0.7",
     "tslint": "^5.7.0",
-    "typescript": "^2.4.2",
+    "typescript": "^2.5.2",
     "uglify-es": "^3.0.28",
     "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.5.5",
