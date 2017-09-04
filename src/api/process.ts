@@ -30,7 +30,8 @@ export interface ProcessOutput {
 
 export function startBuildProcess(
   proc: JobProcess,
-  image: string
+  image: string,
+  variables: string[]
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
@@ -39,7 +40,8 @@ export function startBuildProcess(
       .reduce((acc, curr) => {
         return acc.concat(curr.split(' '));
       }, [])
-      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []));
+      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
+      .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
     proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
 
     let debug: Observable<any> = Observable.empty();
@@ -51,7 +53,7 @@ export function startBuildProcess(
           'sleep 3 && sudo /etc/init.d/openbox start'),
         executeInContainer(name, 'export DISPLAY=:99 && ' +
         'x11vnc -xkb -noxrecord -noxfixes -noxdamage -display :99 ' +
-         '-forever -bg -rfbauth /etc/x11vnc.pass -rfbport 5900'),
+          '-forever -bg -rfbauth /etc/x11vnc.pass -rfbport 5900'),
         getContainerExposedPort(name, 5900)
       ]);
     }
@@ -73,8 +75,21 @@ export function startBuildProcess(
         observer.complete();
         stopContainer(name).subscribe((event: ProcessOutput) => {
           observer.next(event);
+        }, err => {
+          sub.unsubscribe();
+          observer.error(err);
+          stopContainer(name).subscribe((event: ProcessOutput) => {
+            observer.next(event);
+            observer.next({ type: 'data', data: err });
+          });
+        }, () => {
+          sub.unsubscribe();
+          observer.complete();
+          stopContainer(name).subscribe((event: ProcessOutput) => {
+            observer.next(event);
+          });
         });
-      });
+    });
   });
 }
 

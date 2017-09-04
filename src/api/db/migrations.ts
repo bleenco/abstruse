@@ -105,6 +105,14 @@ export function create(): Promise<null> {
       t.boolean('read').notNullable().defaultTo(false);
       t.timestamps();
     }))
+    .then(() => schema.createTableIfNotExists('environment_variables', (t: knex.TableBuilder) => {
+      t.increments('id').unsigned().primary();
+      t.integer('repositories_id').notNullable();
+      t.foreign('repositories_id').references('repositories.id');
+      t.string('name').notNullable();
+      t.string('value').notNullable();
+      t.timestamps();
+    }))
     .then(() => resolve())
     .catch(err => {
       console.error(err);

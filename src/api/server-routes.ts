@@ -35,6 +35,7 @@ import {
   getUserBuildPermissions,
   getUserJobPermissions
 } from './db/permission';
+import { insertEnvironmentVariable, removeEnvironmentVariable } from './db/environment-variable';
 import { imageExists } from './docker';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
@@ -154,11 +155,9 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/create', (req: express.Request, res: express.Response) => {
-    createUser(req.body).then(() => {
-      return res.status(200).json({ status: true });
-    }).catch(err => {
-      return res.status(200).json({ status: false });
-    });
+    createUser(req.body)
+      .then(() => res.status(200).json({ status: true }))
+      .catch(err => res.status(200).json({ status: false }));
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {
@@ -276,9 +275,11 @@ export function repositoryRoutes(): express.Router {
   });
 
   router.post('/permission', (req: express.Request, res: express.Response) => {
-    updatePermission(req.body)
-      .then(() => res.status(200).json({ data: true }))
-      .catch(() => res.status(200).json({ data: false }));
+    checkApiRequestAuth(req).then(() => {
+      updatePermission(req.body)
+        .then(() => res.status(200).json({ data: true }))
+        .catch(() => res.status(200).json({ data: false }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -397,6 +398,28 @@ export function permissionRoutes(): express.Router {
     getUserJobPermissions(req.params.userId, req.params.jobId).then(perm => {
       return res.status(200).json({ data: perm });
     }).catch(err => res.status(200).json({ status: false }));
+  });
+
+  return router;
+}
+
+export function environmentVariableRoutes(): express.Router {
+  const router = express.Router();
+
+  router.post('/add', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req).then(() => {
+      insertEnvironmentVariable(req.body)
+        .then(() => res.status(200).json({ data: true }))
+        .catch(() => res.status(200).json({ data: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.get('/remove/:id', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req).then(() => {
+      removeEnvironmentVariable(req.params.id)
+        .then(() => res.status(200).json({ data: true }))
+        .catch(() => res.status(200).json({ data: false }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;

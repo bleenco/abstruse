@@ -13,6 +13,12 @@ export interface IRepoForm {
   access_tokens_id: any;
 }
 
+export interface VariableForm {
+  name: string;
+  value: string;
+  repositories_id: number;
+}
+
 @Component({
   selector: 'app-repository',
   templateUrl: 'app-repository.component.html'
@@ -34,6 +40,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   hideMoreButton: boolean;
   userData: any;
   userId: string | null;
+  environmentVariableForm: VariableForm;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +54,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.fetching = false;
     this.limit = 5;
     this.offset = 0;
+    this.environmentVariableForm = { name: null, value: null, repositories_id: null };
   }
 
   ngOnInit() {
@@ -221,5 +229,18 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           this.saving = false;
         }
       });
+  }
+
+  addEnvironmentVariable(): void {
+    this.environmentVariableForm.repositories_id = this.repo.id;
+    this.api.addNewEnvironmentVariable(this.environmentVariableForm)
+      .subscribe(() => this.fetch());
+
+    this.environmentVariableForm = { name: null, value: null, repositories_id: null };
+  }
+
+  removeVariable(id: number): void {
+    this.api.removeNewEnvironmentVariable(id)
+      .subscribe(() => this.fetch());
   }
 }

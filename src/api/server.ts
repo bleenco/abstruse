@@ -44,6 +44,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/builds', routes.buildRoutes());
       app.use('/api/jobs', routes.jobRoutes());
       app.use('/api/permissions', routes.permissionRoutes());
+      app.use('/api/variables', routes.environmentVariableRoutes());
       app.use('/badge', routes.badgeRoutes());
       app.use(routes.webRoutes());
 

@@ -155,6 +155,14 @@ export class ApiService {
     return this.http.get(`https://api.github.com/users/${username}`);
   }
 
+  addNewEnvironmentVariable(data: any): Observable<any> {
+    return this.post(`${this.url}/variables/add`, data, true);
+  }
+
+  removeNewEnvironmentVariable(id: number): Observable<any> {
+    return this.get(`${this.url}/variables/remove/${id}`, null, true);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {
