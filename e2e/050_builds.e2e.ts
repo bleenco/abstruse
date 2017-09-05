@@ -118,6 +118,39 @@ describe('Builds', () => {
       }));
   });
 
+  it('should restart last build and send same push event, the old build should stop', () => {
+    return Promise.resolve()
+    .then((): any => browser.wait(() => {
+      return element.all(by.css('.is-running')).count().then(count => count === 0);
+    }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restart-build')).first().isPresent();
+      }))
+      .then(() => delay(2000))
+      .then((): any => element.all(by.css('.restart-build')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then(() => sendGitHubRequest(pushEventRequest, pushEventHeader))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 1);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isPresent();
+      }))
+      .then((): any => {
+        return browser.wait(() => {
+          const el = element(by.css('.stop-build'));
+          return ExpectedConditions.elementToBeClickable(el);
+        });
+      })
+      .then(() => delay(2000))
+      .then((): any => element.all(by.css('.stop-build')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.is-running')).count().then(count => count === 0);
+      }));
+  });
+
   it('should restart last build', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
