@@ -20,11 +20,11 @@ export class AppTerminalComponent implements OnInit {
     this.au = new AnsiUp.default();
     this.au.use_classes = true;
     this.commands = [];
+    this.noData = true;
   }
 
   ngOnChanges(changes: SimpleChange) {
     if (!this.data) {
-      this.noData = true;
       return;
     }
 

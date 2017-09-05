@@ -79,6 +79,7 @@ export function startBuildProcess(
         sub.unsubscribe();
         stopContainer(name).subscribe((event: ProcessOutput) => {
           observer.next(event);
+          observer.complete();
         });
       });
   });
