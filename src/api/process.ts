@@ -5,7 +5,7 @@ import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue } from 'chalk';
-import { CommandType } from './config';
+import { CommandType, Command } from './config';
 import { JobProcess } from './process-manager';
 const nodePty = require('node-pty');
 
@@ -35,8 +35,13 @@ export function startBuildProcess(
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const envs = proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), [])
+    const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
+      .map(cmd => cmd.command.replace('export', '-e'))
+      .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
+      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
       .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
+
+    console.log(envs);
 
     let debug: Observable<any> = Observable.empty();
     if (proc.sshAndVnc) {
@@ -54,17 +59,17 @@ export function startBuildProcess(
       ].join(' ');
 
       debug = Observable.concat(...[
-        executeInContainer(name, ssh),
+        executeInContainer(name, { command: ssh, type: CommandType.before_install }),
         getContainerExposedPort(name, 22),
-        executeInContainer(name, xvfb),
-        executeInContainer(name, vnc),
+        executeInContainer(name, { command: xvfb, type: CommandType.before_install }),
+        executeInContainer(name, { command: vnc, type: CommandType.before_install }),
         getContainerExposedPort(name, 5900)
       ]);
     }
 
     const sub = startContainer(name, image, envs)
       .concat(debug)
-      .concat(...proc.commands.map(cmd => executeInContainer(name, cmd.command)))
+      .concat(...proc.commands.map(cmd => executeInContainer(name, cmd)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {
@@ -85,66 +90,54 @@ export function startBuildProcess(
   });
 }
 
-function executeInContainer(name: string, command: string): Observable<ProcessOutput> {
+function executeInContainer(name: string, cmd: Command): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const start = nodePty.spawn('docker', ['start', name], { name: 'xterm-color' });
+    let executed = false;
+    let attach = null;
+    let detachKey = 'D';
+    let success = false;
 
-    start.on('exit', startCode => {
-      if (startCode !== 0) {
+    attach = nodePty.spawn('docker', ['attach', `--detach-keys=${detachKey}`, name]);
+
+    attach.on('data', data => {
+      if (!executed) {
+        const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
+        attach.write(exec);
+        observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
+        executed = true;
+      } else {
+        if (data.includes('[success]')) {
+          if (cmd.type === CommandType.script) {
+            observer.next({ type: 'data', data: green(data.replace(/\n\r/g, '')) });
+          }
+
+          success = true;
+          attach.write(detachKey);
+        } else if (data.includes('[error]')) {
+          attach.kill();
+          observer.error(red(data.replace(/\n\r/g, '')));
+        } else if (!data.includes('/usr/bin/abstruse') &&
+          !data.includes('exit $?') && !data.includes('logout') &&
+          !data.includes('read escape sequence')) {
+          observer.next({ type: 'data', data: data.replace('> ', '') });
+        }
+      }
+    });
+
+    attach.on('exit', code => {
+      if (code !== 0 && !success) {
         const msg = [
           yellow('['),
           blue(name),
           yellow(']'),
           ' --- ',
-          'Container errored with exit code ' + red(startCode)
+          `Executed command returned exit code ${red(code.toString())}`
         ].join('');
         observer.error(msg);
+      } else {
+        observer.next({ type: 'exit', data: '0' });
+        observer.complete();
       }
-
-      let exitCode = 255;
-      let executed = false;
-      let attach = null;
-      let detachKey = 'D';
-
-      attach = nodePty.spawn('docker', ['attach', `--detach-keys=${detachKey}`, name]);
-
-      attach.on('data', data => {
-        if (!executed) {
-          const cmd = `/usr/bin/abstruse '${command}'\r`;
-          attach.write(cmd);
-          observer.next({ type: 'data', data: yellow('==> ' + command) + '\r' });
-          executed = true;
-        } else {
-          if (data.includes('[success]')) {
-            exitCode = 0;
-            attach.kill();
-          } else if (data.includes('[error]')) {
-            attach.kill();
-            observer.error(red(data.replace('[error]', '')));
-            observer.complete();
-          } else if (!data.includes('/usr/bin/abstruse') &&
-            !data.includes('exit $?') && !data.includes('logout') &&
-            !data.includes('read escape sequence')) {
-            observer.next({ type: 'data', data: data.replace('> ', '') });
-          }
-        }
-      });
-
-      attach.on('exit', code => {
-        if (code !== 0) {
-          const msg = [
-            yellow('['),
-            blue(name),
-            yellow(']'),
-            ' --- ',
-            `Executed command returned exit code ${red(exitCode.toString())}`
-          ].join('');
-          observer.error(msg);
-        } else {
-          observer.next({ type: 'exit', data: exitCode.toString() });
-          observer.complete();
-        }
-      });
     });
   });
 }
@@ -153,7 +146,7 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
   return new Observable(observer => {
     docker.killContainer(name)
       .then(() => {
-        const args = ['run', '-dit', '-P']
+        const args = ['run', '-dit', '--security-opt=seccomp:unconfined', '-P']
           .concat('-m=2048M', '--cpus=2')
           .concat(vars)
           .concat('--name', name, image);
