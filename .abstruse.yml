@@ -22,11 +22,12 @@ install:
   - sudo apt-get install sqlite3 -y
 
 before_script:
-  - sudo $(which node) ./tests/postinstall_ci.js
   - sudo usermod -aG docker abstruse
+  - newgrp docker
   - sudo /etc/init.d/docker start
-  - sudo /etc/init.d/xvfb start
+  - sudo /etc/init.d/xvfb start && sleep 5
   - export DISPLAY=:99
+  - ps aux
 
 script:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
