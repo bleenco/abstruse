@@ -4,7 +4,7 @@ import * as child_process from 'child_process';
 import { generateRandomId } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
-import { green, red, bold, yellow, blue } from 'chalk';
+import { green, red, bold, yellow, blue, cyan } from 'chalk';
 import { CommandType, Command } from './config';
 import { JobProcess } from './process-manager';
 const nodePty = require('node-pty');
@@ -90,52 +90,76 @@ export function startBuildProcess(
 
 function executeInContainer(name: string, cmd: Command): Observable<ProcessOutput> {
   return new Observable(observer => {
-    let executed = false;
-    let attach = null;
-    let detachKey = 'D';
-    let success = false;
+    const startTime = new Date().getTime();
+    const start = nodePty.spawn('docker', ['start', name], { name: 'xterm-color' });
 
-    attach = nodePty.spawn('docker', ['attach', `--detach-keys=${detachKey}`, name]);
-
-    attach.on('data', data => {
-      if (!executed) {
-        const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
-        attach.write(exec);
-        observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
-        executed = true;
-      } else {
-        if (data.includes('[success]')) {
-          if (cmd.type === CommandType.script) {
-            observer.next({ type: 'data', data: green(data.replace(/\n\r/g, '')) });
-          }
-
-          success = true;
-          attach.write(detachKey);
-        } else if (data.includes('[error]')) {
-          attach.kill();
-          observer.error(red(data.replace(/\n\r/g, '')));
-        } else if (!data.includes('/usr/bin/abstruse') &&
-          !data.includes('exit $?') && !data.includes('logout') &&
-          !data.includes('read escape sequence')) {
-          observer.next({ type: 'data', data: data.replace('> ', '') });
-        }
-      }
-    });
-
-    attach.on('exit', code => {
-      if (code !== 0 && !success) {
+    start.on('exit', startCode => {
+      if (startCode !== 0) {
         const msg = [
-          yellow('['),
-          blue(name),
-          yellow(']'),
-          ' --- ',
-          `Executed command returned exit code ${red(code.toString())}`
+          yellow('['), cyan(name), yellow(']'), ' --- ',
+          'Container errored with exit code ' + red(startCode)
         ].join('');
         observer.error(msg);
-      } else {
-        observer.next({ type: 'exit', data: '0' });
-        observer.complete();
       }
+
+      let executed = false;
+      let success = false;
+      let dk = null;
+      let attach = null;
+
+      if (cmd.command.includes('init.d') && cmd.command.includes('start')) {
+        dk = 'Q';
+        attach = nodePty.spawn('docker', ['attach', `--detach-keys=${dk}`, name]);
+      } else {
+        attach = nodePty.spawn('docker', ['exec', `-it`, name, 'bash', '-l']);
+      }
+
+      attach.on('data', data => {
+        if (!executed) {
+          const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
+          attach.write(exec);
+          observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
+          executed = true;
+        } else {
+          if (data.includes('[success]')) {
+            if (cmd.type === CommandType.script) {
+              observer.next({ type: 'data', data: green(data.replace(/\n\r/g, '')) });
+            }
+
+            success = true;
+            if (dk) {
+              attach.write(dk);
+            } else {
+              attach.write('pkill -9 sleep && exit 100\r');
+            }
+          } else if (data.includes('[error]')) {
+            attach.kill();
+            observer.error(red(data.replace(/\n\r/g, '')));
+          } else if (!data.includes('/usr/bin/abstruse') &&
+            !data.includes('exit 100') && !data.includes('logout') &&
+            !data.includes('read escape sequence')) {
+            observer.next({ type: 'data', data: data.replace('> ', '') });
+          }
+        }
+      });
+
+      attach.on('exit', code => {
+        const endTime = new Date().getTime();
+        const totalTime = endTime - startTime;
+
+        if (code !== 0 && !success) {
+          const msg = [
+            yellow('['), cyan(name), yellow(']'), ' --- ',
+            `Executed command returned exit code ${red(code.toString())}`
+          ].join('');
+          observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
+          observer.error(msg);
+        } else {
+          observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
+          observer.next({ type: 'exit', data: '0' });
+          observer.complete();
+        }
+      });
     });
   });
 }

@@ -27,7 +27,6 @@ before_script:
   - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
   - export DISPLAY=:99
-  - sudo su abstruse
 
 script:
-  - if [[ "$SCRIPT" ]]; then newgrp docker && npm run-script $SCRIPT; fi
+  - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi

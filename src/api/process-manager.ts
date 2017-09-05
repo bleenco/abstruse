@@ -62,7 +62,7 @@ jobEvents
   .subscribe(event => {
     let msg = [
       yellow('['),
-      blue('abstruse_' + event.build_id + '_' + event.job_id),
+      cyan('abstruse_' + event.build_id + '_' + event.job_id),
       yellow(']'),
       ' --- ',
       yellow(event.data)
@@ -200,7 +200,7 @@ export function startJob(proc: JobProcess): Promise<void> {
           } else if (event.type === 'container') {
             let msg = [
               yellow('['),
-              blue('abstruse_' + proc.build_id + '_' + proc.job_id),
+              cyan('abstruse_' + proc.build_id + '_' + proc.job_id),
               yellow(']'),
               ' --- ',
               yellow(event.data)
