@@ -24,6 +24,7 @@ install:
 
 before_script:
   - sudo usermod -aG docker abstruse
+  - newgrp docker
   - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
   - export DISPLAY=:99
