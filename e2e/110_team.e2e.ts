@@ -1,5 +1,5 @@
 import { browser, by, element } from 'protractor';
-import { login, logout, waitForUrlToChangeTo } from './utils';
+import { login, logout, waitForUrlToChangeTo, isLoaded, delay } from './utils';
 
 
 describe('Teams', () => {
@@ -58,6 +58,42 @@ describe('Teams', () => {
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
+      }));
+  });
+
+  it(`should logout, access page as annonymous, see public build, job, but can't restart it`,
+  () => {
+    return browser.get('/')
+      .then(() => isLoaded())
+      .then(() => browser.wait(() => element(by.css('.user-item')).isPresent()))
+      .then(() => element(by.css('.user-item')).click())
+      .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
+      .then(() => isLoaded())
+      .then(() => browser.getCurrentUrl())
+      .then(url => expect(url).toEqual('http://localhost:6500/login'))
+      .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isPresent()))
+      .then((): any => element(by.css('.centered-anonymous')).click())
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/'))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item')).count().then(count => count > 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item .restart-build')).count().then(count => count === 0);
+      }))
+      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item')).count().then(count => count > 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('[name="restart-build"]')).count().then(count => count === 0);
+      }))
+      .then(() => delay(1000))
+      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('app-terminal')).count().then(count => count > 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('[name="btn-restart"]')).count().then(count => count === 0);
       }));
   });
 });
