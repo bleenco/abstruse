@@ -7,7 +7,7 @@ describe('Job Details', () => {
   beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
   afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should restart job watch console log until it matches expected output', () => {
+  xit('should restart job watch console log until it matches expected output', () => {
     return browser.get('/job/5')
       .then((): any => browser.wait(() => element(by.css(`[name="btn-restart"]`)).isPresent()))
       .then((): any => browser.wait(() => {
