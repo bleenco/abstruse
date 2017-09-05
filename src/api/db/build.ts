@@ -282,3 +282,42 @@ export function getBuildStatus(buildId: number): Promise<any> {
       });
     });
 }
+
+export function getDepracatedBuilds(build: any): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new Build({ repositories_id: build.repositories_id })
+    .query(q => {
+      q.whereNull('end_time')
+      .andWhereNot('id', build.id);
+
+      if (build.pr) {
+        q.where('pr', build.pr);
+      }
+    })
+    .fetchAll()
+    .then(builds => {
+      if (!builds) {
+        reject();
+      }
+
+      builds = builds.toJSON();
+      if (!build.pr) {
+        builds = builds.filter(b => {
+          if (build.data.before) {
+            return build.data.before === b.data.before;
+          } else if (build.data.before_sha) {
+            return build.data.before_sha === b.data.before_sha;
+          } else if (build.data.object_attributes && build.data.object_attirbutes.before_sha) {
+            return build.data.object_attirbutes.before_sha
+              === b.data.object_attirbutes.before_sha;
+          }
+
+          return false;
+        });
+      }
+      builds = builds.map(b => b.id);
+
+      resolve(builds);
+    });
+  });
+}

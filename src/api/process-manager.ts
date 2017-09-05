@@ -1,6 +1,13 @@
 import { startDockerImageSetupJob, startBuildProcess, stopContainer } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { insertBuild, updateBuild, getBuild, getBuildStatus, getLastRunId } from './db/build';
+import {
+  insertBuild,
+  updateBuild,
+  getBuild,
+  getBuildStatus,
+  getLastRunId,
+  getDepracatedBuilds
+} from './db/build';
 import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
@@ -126,46 +133,51 @@ export function startBuild(data: any): Promise<any> {
       return insertBuildRun(data);
     })
     .then(() => getBuild(data.build_id))
-    .then(buildData => sendPendingStatus(buildData, buildData.id))
-    .then(() => {
-      return config.reduce((prev, cfg, i) => {
-        return prev.then(() => {
-          let dataJob = null;
+    .then(buildData => {
+      sendPendingStatus(buildData, buildData.id)
+      .then(() => {
+        return config.reduce((prev, cfg, i) => {
+          return prev.then(() => {
+            let dataJob = null;
 
-          return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
-            .then(job => dataJob = job)
-            .then(() => getLastRunId(data.build_id))
-            .then(lastRunId => {
-              const jobRun = {
-                start_time: new Date,
-                status: 'queued',
-                build_run_id: lastRunId,
-                job_id: dataJob.id
-              };
+            return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
+              .then(job => dataJob = job)
+              .then(() => getLastRunId(data.build_id))
+              .then(lastRunId => {
+                const jobRun = {
+                  start_time: new Date,
+                  status: 'queued',
+                  build_run_id: lastRunId,
+                  job_id: dataJob.id
+                };
 
-              return dbJobRuns.insertJobRun(jobRun);
-            })
-            .then(() => {
-              jobEvents.next({
-                type: 'process',
-                build_id: data.build_id,
-                job_id: dataJob.id,
-                data: 'jobAdded'
+                return dbJobRuns.insertJobRun(jobRun);
+              })
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: data.build_id,
+                  job_id: dataJob.id,
+                  data: 'jobAdded'
+                });
+
+                return queueJob(data.build_id, dataJob.id);
               });
-
-              return queueJob(data.build_id, dataJob.id);
-            });
+          });
+        }, Promise.resolve());
+      })
+      .then(() => {
+        jobEvents.next({
+          type: 'process',
+          build_id: data.build_id,
+          repository_id: data.repositories_id,
+          data: 'buildAdded'
         });
-      }, Promise.resolve());
+      })
+      .then(() => getDepracatedBuilds(buildData))
+      .then(builds => Promise.all(builds.map(build => stopBuild(build))));
     })
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: data.build_id,
-        repository_id: data.repositories_id,
-        data: 'buildAdded'
-      });
-    }).catch(err => logger.error(err));
+    .catch(err => logger.error(err));
 }
 
 export function startJob(proc: JobProcess): Promise<void> {

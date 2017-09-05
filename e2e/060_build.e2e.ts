@@ -162,7 +162,7 @@ describe('Build Details', () => {
       .then(() => browser.get('/'))
       .then(() => sendGitHubRequest(requestD3, header))
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt === 4;
+        return cnt === 5;
       })))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
