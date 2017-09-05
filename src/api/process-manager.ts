@@ -232,8 +232,14 @@ export function startJob(proc: JobProcess): Promise<void> {
                 data: 'jobFailed'
               });
 
-              if (processes.findIndex(proc => proc.build_id === proc.build_id) === -1) {
-                getBuild(proc.build_id).then(build => sendFailureStatus(build, build.id));
+              if (processes.findIndex(p => p.build_id === proc.build_id) === -1) {
+                getBuild(proc.build_id)
+                  .then(build => {
+                    return updateBuild({ id: proc.build_id, end_time: new Date() })
+                      .then(() => getLastRunId(proc.build_id))
+                      .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                      .then(() => sendFailureStatus(build, build.id));
+                  });
               }
             })
             .catch(err => logger.error(err));
@@ -256,11 +262,15 @@ export function startJob(proc: JobProcess): Promise<void> {
                   .then(() => getLastRunId(proc.build_id))
                   .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                   .then(() => getBuild(proc.build_id))
-                  .then(build => sendSuccessStatus(build, build.id))
-                  .catch(err => logger.error(err));
+                  .then(build => sendSuccessStatus(build, build.id));
               } else if (status === 'failed') {
                 getBuild(proc.build_id)
-                .then(build => sendFailureStatus(build, build.id));
+                .then(build => {
+                  return updateBuild({ id: proc.build_id, end_time: new Date() })
+                    .then(() => getLastRunId(proc.build_id))
+                    .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                    .then(() => sendFailureStatus(build, build.id));
+                });
               } else {
                 return Promise.resolve();
               }
@@ -314,10 +324,20 @@ export function stopJob(jobId: number): Promise<any> {
             .then(status => {
               if (status === 'success') {
                 getBuild(job.builds_id)
-                  .then(build => sendSuccessStatus(build, build.id));
+                  .then(build => {
+                    return updateBuild({ id: build.id, end_time: new Date() })
+                      .then(() => getLastRunId(build.id))
+                      .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                      .then(() => sendSuccessStatus(build, build.id));
+                  });
               } else if (status === 'failed') {
                 getBuild(job.builds_id)
-                .then(build => sendFailureStatus(build, build.id));
+                .then(build => {
+                  return updateBuild({ id: build.id, end_time: new Date() })
+                    .then(() => getLastRunId(build.id))
+                    .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                    .then(() =>  sendFailureStatus(build, build.id));
+                });
               }
             });
         })
@@ -331,10 +351,20 @@ export function stopJob(jobId: number): Promise<any> {
             .then(status => {
               if (status === 'success') {
                 getBuild(job.builds_id)
-                  .then(build => sendSuccessStatus(build, build.id));
+                  .then(build => {
+                    return updateBuild({ id: build.id, end_time: new Date() })
+                      .then(() => getLastRunId(build.id))
+                      .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                      .then(() => sendSuccessStatus(build, build.id));
+                  });
               } else if (status === 'failed') {
                 getBuild(job.builds_id)
-                .then(build => sendFailureStatus(build, build.id));
+                .then(build => {
+                  return updateBuild({ id: build.id, end_time: new Date() })
+                    .then(() => getLastRunId(build.id))
+                    .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                    .then(() =>  sendFailureStatus(build, build.id));
+                });
               }
             });
         })
