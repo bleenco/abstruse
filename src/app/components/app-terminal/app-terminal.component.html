@@ -7,6 +7,9 @@
       </span>
       <span class="command" [innerHTML]="cmd.command"></span>
       <span class="time" *ngIf="cmd.time">{{ cmd.time }}</span>
+      <span class="time" *ngIf="!cmd.time">
+        <img src="images/icons/oval-loader.svg" class="command-loader">
+      </span>
     </div>
     <pre class="output" [class.is-hidden]="!cmd.visible" [innerHTML]="cmd.output"></pre>
   </div>

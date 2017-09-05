@@ -1,5 +1,4 @@
 const { SpecReporter } = require('jasmine-spec-reporter');
-const failFast = require('protractor-fail-fast');
 
 exports.config = {
   allScriptsTimeout: 300000,
@@ -28,9 +27,5 @@ exports.config = {
   },
   onPrepare() {
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
-    jasmine.getEnv().addReporter(failFast.init());
-  },
-  afterLaunch() {
-    failFast.clean();
   }
 };

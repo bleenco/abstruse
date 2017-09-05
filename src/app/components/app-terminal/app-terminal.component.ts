@@ -66,17 +66,25 @@ export class AppTerminalComponent implements OnInit {
           let t = times[i] ? parseFloat(<any>(times[i] / 10)).toFixed(0) : null;
           let time = t && parseInt(<any>t, 10);
 
+          let out = output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : '';
+          out = out.replace(/\[exectime\]: [0-9.,]+/g, '');
+
           return acc.concat({
             command: curr.trim(),
             visible: i === commands.length - 1 ? true : false,
-            output: output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : '',
+            output: out,
             time: times[i] ? this.getDuration(time) : null
           });
         }, this.commands);
       } else {
         if (output.includes('[exectime]')) {
-          const time = parseInt(output.replace('[exectime]', ''), 10);
-          console.log(time);
+          let retime = new RegExp('exectime.*(\\d)', 'igm');
+          let match = output.match(retime);
+          let t = match[0].replace('exectime]: ', '').replace(/<span.*/, '');
+          t = t ? parseFloat(<any>(<any>t / 10)).toFixed(0) : null;
+          let time = t && parseInt(<any>t, 10);
+
+          this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : null;
         } else {
           this.commands[this.commands.length - 1].output += output;
         }
@@ -106,11 +114,11 @@ export class AppTerminalComponent implements OnInit {
   getDuration(millis: number): string {
     const dur = {};
     const units = [
-      {label: 'millis', mod: 100 }, // millis
-      {label: 'seconds', mod: 60 },
-      {label: 'minutes', mod: 60 },
-      {label: 'hours', mod: 24 },
-      {label: 'days', mod: 31 }
+      {label: 'ms', mod: 100 }, // millis
+      {label: 'sec', mod: 60 },
+      {label: 'min', mod: 60 },
+      {label: 'h', mod: 24 },
+      {label: 'd', mod: 31 }
     ];
     units.forEach(u => millis = (millis - (dur[u.label] = (millis % u.mod))) / u.mod);
     const nonZero = (u) => { return dur[u.label]; };
@@ -118,7 +126,7 @@ export class AppTerminalComponent implements OnInit {
       return units
         .reverse()
         .filter(nonZero)
-        .map(u => dur[u.label] + ' ' + (dur[u.label] === 1 ? u.label.slice(0, -1) : u.label))
+        .map(u => dur[u.label] + u.label)
         .join(', ');
     };
 
