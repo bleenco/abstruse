@@ -1,4 +1,4 @@
-import { Build, BuildRun, Job } from './model';
+import { Build, BuildRun, Job, JobRun } from './model';
 import { getLastRun } from './job';
 
 export function getBuilds(
@@ -15,12 +15,11 @@ export function getBuilds(
           .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
           .where('permissions.users_id', userId)
           .andWhere(function() {
-            this.where('permissions.permission', true).orWhere('repositories.private', false);
+            this.where('permissions.permission', true).orWhere('repositories.public', true);
           });
         } else {
           q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
-          .where('repositories.private', false)
-          .andWhere('repositories.public', true);
+          .where('repositories.public', true);
         }
 
         if (filter === 'pr') {
@@ -54,7 +53,8 @@ export function getBuilds(
 
           userId = parseInt(<any>userId, 10);
           if (build.repository.permissions && build.repository.permissions.length) {
-            if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+            let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+            if (index !== -1 && build.repository.permissions[index].permission) {
               build.hasPermission = true;
             } else {
               build.hasPermission = false;
@@ -79,7 +79,7 @@ export function getBuild(id: number, userId?: number): Promise<any> {
             if (userId) {
               query.where('permissions.users_id', userId)
               .andWhere('permissions.permission', true)
-              .orWhere('private', false);
+              .orWhere('public', true);
             }
           }
         },
@@ -124,7 +124,8 @@ export function getBuild(id: number, userId?: number): Promise<any> {
 
         userId = parseInt(<any>userId, 10);
         if (build.repository.permissions && build.repository.permissions.length) {
-          if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+          let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+          if (index !== -1 && build.repository.permissions[index].permission) {
             build.hasPermission = true;
           } else {
             build.hasPermission = false;
@@ -168,7 +169,7 @@ export function getLastBuild(userId?: number): Promise<any> {
           if (userId) {
             query.where('permissions.users_id', userId)
             .andWhere('permissions.permission', true)
-            .orWhere('private', false);
+            .orWhere('public', true);
           }
         }
       },
@@ -191,7 +192,8 @@ export function getLastBuild(userId?: number): Promise<any> {
 
       userId = parseInt(<any>userId, 10);
       if (build.repository.permissions && build.repository.permissions.length) {
-        if (build.repository.permissions.findIndex(p => p.users_id === userId) !== -1) {
+        let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+        if (index !== -1 && build.repository.permissions[index].permission) {
           build.hasPermission = true;
         } else {
           build.hasPermission = false;

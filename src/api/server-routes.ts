@@ -244,10 +244,16 @@ export function repositoryRoutes(): express.Router {
     }
   });
 
-  router.get('/id/:id', (req: express.Request, res: express.Response) => {
-    getRepository(req.params.id).then(repo => {
-      return res.status(200).json({ data: repo });
-    }).catch(err => res.status(200).json({ status: false }));
+  router.get('/id/:id/:userid?', (req: express.Request, res: express.Response) => {
+    if (req.params.userid) {
+      getRepository(req.params.id, req.params.userid).then(repo => {
+        return res.status(200).json({ data: repo });
+      }).catch(err => res.status(200).json({ status: false }));
+    } else {
+      getRepository(req.params.id).then(repo => {
+        return res.status(200).json({ data: repo });
+      }).catch(err => res.status(200).json({ status: false }));
+    }
   });
 
   router.get('/:id/builds/:limit/:offset', (req: express.Request, res: express.Response) => {
@@ -382,22 +388,39 @@ export function setupRoutes(): express.Router {
 export function permissionRoutes(): express.Router {
   const router = express.Router();
 
-  router.get('/repository/:repoId/user/:userId', (req: express.Request, res: express.Response) => {
-    getUserRepositoryPermissions(req.params.userId, req.params.repoId).then(perm => {
-      return res.status(200).json({ data: perm });
-    }).catch(err => res.status(200).json({ status: false }));
+  router.get('/repository/:repoId/user/:userId?', (req: express.Request, res: express.Response) => {
+    if (req.params.userId) {
+      getUserRepositoryPermissions(req.params.repoId, req.params.userId).then(perm => {
+        return res.status(200).json({ data: perm });
+      }).catch(err => res.status(200).json({ status: false }));
+    } else {
+      getUserRepositoryPermissions(req.params.repoId).then(perm => {
+        return res.status(200).json({ data: perm });
+      }).catch(err => res.status(200).json({ status: false }));
+    }
   });
 
-  router.get('/build/:buildId/user/:userId', (req: express.Request, res: express.Response) => {
-    getUserBuildPermissions(req.params.userId, req.params.buildId).then(perm => {
-      return res.status(200).json({ data: perm });
-    }).catch(err => res.status(200).json({ status: false }));
+  router.get('/build/:buildId/user/:userId?', (req: express.Request, res: express.Response) => {
+    if (req.params.userId) {
+      getUserBuildPermissions(req.params.buildId, req.params.userId).then(perm => {
+        return res.status(200).json({ data: perm });
+      }).catch(err => res.status(200).json({ status: false }));
+    } else {
+      getUserBuildPermissions(req.params.buildId).then(perm => res.status(200).json({ data: perm }))
+      .catch(err => res.status(200).json({ status: false }));
+    }
   });
 
-  router.get('/job/:jobId/user/:userId', (req: express.Request, res: express.Response) => {
-    getUserJobPermissions(req.params.userId, req.params.jobId).then(perm => {
-      return res.status(200).json({ data: perm });
-    }).catch(err => res.status(200).json({ status: false }));
+  router.get('/job/:jobId/user/:userId?', (req: express.Request, res: express.Response) => {
+    if (req.params.userId) {
+      getUserJobPermissions(req.params.jobId, req.params.userId).then(perm => {
+        return res.status(200).json({ data: perm });
+      }).catch(err => res.status(200).json({ status: false }));
+    } else {
+      getUserJobPermissions(req.params.jobId).then(perm => {
+        return res.status(200).json({ data: perm });
+      }).catch(err => res.status(200).json({ status: false }));
+    }
   });
 
   return router;

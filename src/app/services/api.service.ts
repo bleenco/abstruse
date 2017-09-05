@@ -63,7 +63,11 @@ export class ApiService {
     return this.get(`${this.url}/repositories`, params, true);
   }
 
-  getRepository(id: string): Observable<any> {
+  getRepository(id: string, userId?: string): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/repositories/id/${id}/${userId}`, null, true);
+    }
+
     return this.get(`${this.url}/repositories/id/${id}`, null, true);
   }
 
@@ -139,16 +143,25 @@ export class ApiService {
     return this.post(`${this.url}/repositories/permission`, data, true);
   }
 
-  getUserRepositoryPermission(repoId: string, userId: number): Observable<any> {
-    return this.get(`${this.url}/permissions/repository/${repoId}/user/${userId}`, null, true);
+  getUserRepositoryPermission(repoId: string, userId?: number): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/permissions/repository/${repoId}/user/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/permissions/repository/${repoId}/user`, null, true);
   }
 
-  getUserBuildPermission(buildId: string, userId: number): Observable<any> {
-    return this.get(`${this.url}/permissions/build/${buildId}/user/${userId}`, null, true);
+  getUserBuildPermission(buildId: string, userId?: number): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/permissions/build/${buildId}/user/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/permissions/build/${buildId}/user`, null, true);
   }
 
-  getUserJobPermission(jobId: string, userId: number): Observable<any> {
-    return this.get(`${this.url}/permissions/job/${jobId}/user/${userId}`, null, true);
+  getUserJobPermission(jobId: string, userId?: number): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/permissions/job/${jobId}/user/${userId}`, null, true);
+    }
+    return this.get(`${this.url}/permissions/job/${jobId}/user`, null, true);
   }
 
   getGithubUserData(username: string): Observable<any> {
