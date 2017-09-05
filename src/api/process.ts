@@ -46,14 +46,24 @@ export function startBuildProcess(
 
     let debug: Observable<any> = Observable.empty();
     if (proc.sshAndVnc) {
+      const ssh = `sudo /etc/init.d/ssh start`;
+      const xvfb = [
+        'export DISPLAY=:99 &&',
+        'sudo /etc/init.d/xvfb start &&',
+        'sleep 3',
+        'sudo /etc/init.d/fluxbox start'
+      ].join(' ');
+      const vnc = [
+        'x11vnc -xkb -noxrecord -noxfixes -noxdamage',
+        '-display :99 -forever -bg -rfbauth /etc/x11vnc.pass',
+        '-rfbport 5900'
+      ].join(' ');
+
       debug = Observable.concat(...[
-        executeInContainer(name, 'sudo /etc/init.d/ssh start'),
+        executeInContainer(name, ssh),
         getContainerExposedPort(name, 22),
-        executeInContainer(name, 'export DISPLAY=:99 && sudo /etc/init.d/xvfb start && ' +
-          'sleep 3 && sudo /etc/init.d/openbox start'),
-        executeInContainer(name, 'export DISPLAY=:99 && ' +
-        'x11vnc -xkb -noxrecord -noxfixes -noxdamage -display :99 ' +
-          '-forever -bg -rfbauth /etc/x11vnc.pass -rfbport 5900'),
+        executeInContainer(name, xvfb),
+        executeInContainer(name, vnc),
         getContainerExposedPort(name, 5900)
       ]);
     }
@@ -69,27 +79,14 @@ export function startBuildProcess(
         stopContainer(name).subscribe((event: ProcessOutput) => {
           observer.next(event);
           observer.next({ type: 'data', data: err });
+          observer.complete();
         });
       }, () => {
         sub.unsubscribe();
-        observer.complete();
         stopContainer(name).subscribe((event: ProcessOutput) => {
           observer.next(event);
-        }, err => {
-          sub.unsubscribe();
-          observer.error(err);
-          stopContainer(name).subscribe((event: ProcessOutput) => {
-            observer.next(event);
-            observer.next({ type: 'data', data: err });
-          });
-        }, () => {
-          sub.unsubscribe();
-          observer.complete();
-          stopContainer(name).subscribe((event: ProcessOutput) => {
-            observer.next(event);
-          });
         });
-    });
+      });
   });
 }
 
@@ -119,7 +116,7 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
         attach = nodePty.spawn('docker', ['attach', '--detach-keys=D', name]);
         detachKey = 'D';
       } else {
-        attach = nodePty.spawn('docker', ['exec', '-it', '--privileged', name, 'bash', '-l']);
+        attach = nodePty.spawn('docker', ['exec', '-it', name, 'bash', '-l']);
       }
 
       attach.on('data', data => {
