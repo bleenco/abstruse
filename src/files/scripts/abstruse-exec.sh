@@ -2,15 +2,10 @@
 
 set -e
 
-SCRIPT="${0##*/}"
+ABSTRUSE_RUN_SCRIPT="${0##*/}"
 
 declare -i DEFAULT_TIMEOUT=3600
-declare -i DEFAULT_INTERVAL=1
-declare -i DEFAULT_DELAY=1
-
 declare -i timeout=DEFAULT_TIMEOUT
-declare -i interval=DEFAULT_INTERVAL
-declare -i delay=DEFAULT_DELAY
 
 COLOR_NC="\e[0m"
 COLOR_GREEN="\e[0;32m"
@@ -23,7 +18,7 @@ print_usage() {
 Abstruse CI command execution script
 
 Synopsis
-  $SCRIPT [-t timeout] command
+  $ABSTRUSE_RUN_SCRIPT [-t timeout] command
   Execute a command with a time-out.
   Upon time-out expiration SIGKILL (0) is sent to the process.
 
@@ -36,10 +31,10 @@ EOF
 }
 
 while getopts ":t:" option; do
-  case "$option" in
-    t) timeout=$OPTARG ;;
-    *) print_usage && exit 1 ;;
-  esac
+ case "$option" in
+   t) timeout=$OPTARG ;;
+   *) print_usage && exit 1 ;;
+ esac
 done
 shift $((OPTIND - 1))
 
@@ -63,7 +58,7 @@ if (($# == 0)); then
   exit 1
 fi
 
-( $@ ) & pid=$!
+( eval $@ ) & pid=$!
 ( sleep $timeout && kill -s KILL $pid ) 2>/dev/null & watcher=$!
 
 if wait $pid 2>/dev/null; then

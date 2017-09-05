@@ -35,14 +35,8 @@ export function startBuildProcess(
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const vars = proc.commands.filter(cmd => cmd.command.startsWith('export'))
-      .map(cmd => cmd.command.replace('export', '-e'))
-      .reduce((acc, curr) => {
-        return acc.concat(curr.split(' '));
-      }, [])
-      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
+    const envs = proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), [])
       .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
-    proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
 
     let debug: Observable<any> = Observable.empty();
     if (proc.sshAndVnc) {
@@ -50,8 +44,8 @@ export function startBuildProcess(
       const xvfb = [
         'export DISPLAY=:99 &&',
         'sudo /etc/init.d/xvfb start &&',
-        'sleep 3',
-        'sudo /etc/init.d/fluxbox start'
+        'sleep 3 &&',
+        'sudo /etc/init.d/openbox start'
       ].join(' ');
       const vnc = [
         'x11vnc -xkb -noxrecord -noxfixes -noxdamage',
@@ -68,7 +62,7 @@ export function startBuildProcess(
       ]);
     }
 
-    const sub = startContainer(name, image, vars)
+    const sub = startContainer(name, image, envs)
       .concat(debug)
       .concat(...proc.commands.map(cmd => executeInContainer(name, cmd.command)))
       .subscribe((event: ProcessOutput) => {
@@ -106,39 +100,37 @@ function executeInContainer(name: string, command: string): Observable<ProcessOu
         observer.error(msg);
       }
 
-
       let exitCode = 255;
       let executed = false;
       let attach = null;
-      let detachKey = null;
+      let detachKey = 'D';
 
-      if (command.includes('init.d') && command.includes('start')) {
-        attach = nodePty.spawn('docker', ['attach', '--detach-keys=D', name]);
-        detachKey = 'D';
-      } else {
-        attach = nodePty.spawn('docker', ['exec', '-it', name, 'bash', '-l']);
-      }
+      attach = nodePty.spawn('docker', ['attach', `--detach-keys=${detachKey}`, name]);
 
       attach.on('data', data => {
         if (!executed) {
-          attach.write(command + ' && echo EXECOK || echo EXECNOK\r');
+          const cmd = `/usr/bin/abstruse '${command}'\r`;
+          attach.write(cmd);
           observer.next({ type: 'data', data: yellow('==> ' + command) + '\r' });
           executed = true;
-        } else if (data.includes('EXECOK')) {
-          exitCode = 0;
-          attach.write(detachKey ? detachKey : 'exit $?\r');
-        } else if (data.includes('EXECNOK')) {
-          observer.error(red(`Last executed command returned error.`));
-          attach.write(detachKey ? detachKey : 'exit $?\r');
-        } else if (!data.includes(command) && !data.includes('exit $?') &&
-          !data.includes('logout') && !data.includes('read escape sequence')) {
-          observer.next({ type: 'data', data: data.replace('> ', '') });
+        } else {
+          if (data.includes('[success]')) {
+            exitCode = 0;
+            attach.kill();
+          } else if (data.includes('[error]')) {
+            attach.kill();
+            observer.error(red(data.replace('[error]', '')));
+            observer.complete();
+          } else if (!data.includes('/usr/bin/abstruse') &&
+            !data.includes('exit $?') && !data.includes('logout') &&
+            !data.includes('read escape sequence')) {
+            observer.next({ type: 'data', data: data.replace('> ', '') });
+          }
         }
       });
 
       attach.on('exit', code => {
-        code = (detachKey === 'D') ? exitCode : code;
-        if (exitCode !== 0) {
+        if (code !== 0) {
           const msg = [
             yellow('['),
             blue(name),
@@ -160,10 +152,11 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
   return new Observable(observer => {
     docker.killContainer(name)
       .then(() => {
-        const args = ['run', '--privileged', '-dit', '-P']
-          .concat('-m=2048M', '--cpuset-cpus=0-1')
+        const args = ['run', '-dit', '-P']
+          .concat('-m=2048M', '--cpus=2')
           .concat(vars)
           .concat('--name', name, image);
+
         const process = nodePty.spawn('docker', args);
 
         process.on('exit', exitCode => {
