@@ -144,7 +144,7 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
   return new Observable(observer => {
     docker.killContainer(name)
       .then(() => {
-        const args = ['run', '-dit', '--security-opt=seccomp:unconfined', '-P']
+        const args = ['run', '-dit', '--privileged', '-P']
           .concat('-m=2048M', '--cpus=2')
           .concat(vars)
           .concat('--name', name, image);
