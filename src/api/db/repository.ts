@@ -2,11 +2,30 @@ import { Repository, Build } from './model';
 import { getHttpJsonResponse } from '../utils';
 import { addRepositoryPermissionToEveryone } from './permission';
 
-export function getRepository(id: number): Promise<any> {
+export function getRepository(id: number, userId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository({ id: id })
-      .fetch({ withRelated: ['access_token', 'variables'] })
-      .then(repo => !repo ? reject(repo) : resolve(repo.toJSON()))
+      .fetch({ withRelated: [ 'access_token', 'variables', 'permissions' ] })
+      .then(repo => {
+        if (!repo) {
+          reject(repo);
+        }
+
+        repo = repo.toJSON();
+        let id = parseInt(<any>userId, 10);
+        if (repo.permissions && repo.permissions.length) {
+          let index = repo.permissions.findIndex(p => p.users_id === id);
+          if (index !== -1 && repo.permissions[index].permission) {
+            repo.hasPermission = true;
+          } else {
+            repo.hasPermission = false;
+          }
+        } else {
+          repo.hasPermission = false;
+        }
+
+        resolve(repo);
+      })
       .catch(err => reject(err));
   });
 }
@@ -121,15 +140,25 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
 
 export function getRepositories(keyword: string, userId?: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
-    new Repository().query(qb => {
+    new Repository().query(q => {
       if (keyword !== '') {
-        qb.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
+        q.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
+      }
+
+      if (userId) {
+        q.innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+        .where('permissions.users_id', userId)
+        .andWhere(function() {
+          this.where('permissions.permission', true).orWhere('public', true);
+        });
+      } else {
+        q.where('repositories.public', true);
       }
     }).fetchAll({ withRelated: [{'permissions': (query) => {
       if (userId) {
-        query.where('users_id', userId);
+        query.where('permissions.users_id', userId);
       } else {
-        query.where('private', false).andWhere('public', true);
+        return false;
       }
     }}] })
     .then(repos => {
@@ -137,9 +166,6 @@ export function getRepositories(keyword: string, userId?: string): Promise<any[]
         reject();
       }
       repos = repos.toJSON();
-      repos = repos.filter(r => {
-        return !r.private || (r.permissions && r.permissions.length > 0);
-      });
 
       resolve(repos);
     });

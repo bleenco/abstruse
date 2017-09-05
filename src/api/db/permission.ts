@@ -1,4 +1,4 @@
-import { Permission } from './model';
+import { Permission, Repository } from './model';
 import { getUsers } from './user';
 import { getRepositories } from './repository';
 import { getBuildRepositoryId } from './build';
@@ -18,33 +18,54 @@ export function getRepositoryPermissions(repoId: number): Promise<any> {
   });
 }
 
-export function getUserRepositoryPermissions(userId: number, repoId: number): Promise<any> {
+export function getUserRepositoryPermissions(repoId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Permission({ repositories_id: repoId, users_id: userId })
+    if (userId) {
+      new Permission({ repositories_id: repoId, users_id: userId })
       .fetch({ withRelated: ['repository'] })
       .then(permission => {
         if (permission) {
           permission = permission.toJSON();
-          permission.repository.private ? resolve(permission.permission) : resolve(true);
+          permission.repository.public ? resolve(true) : resolve(permission.permission);
         }
 
         reject(permission);
       });
+    } else {
+      new Repository({ id: repoId }).fetch().then(repo => {
+        if (!repo) {
+          reject(repo);
+        }
+
+        repo = repo.toJSON();
+        resolve(repo.public);
+      });
+    }
   });
 }
 
-export function getUserBuildPermissions(userId: number, buildId: number): Promise<any> {
+export function getUserBuildPermissions(buildId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     getBuildRepositoryId(buildId)
-      .then(repoId => resolve(getUserRepositoryPermissions(userId, repoId)))
+      .then(repoId => {
+        if (userId) {
+          resolve(getUserRepositoryPermissions(repoId, userId));
+        }
+        resolve(getUserRepositoryPermissions(repoId));
+      })
       .catch(() => resolve(false));
   });
 }
 
-export function getUserJobPermissions(userId: number, jobId: number): Promise<any> {
+export function getUserJobPermissions(jobId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     getJobRepositoryId(jobId)
-      .then(repoId => resolve(getUserRepositoryPermissions(userId, repoId)))
+      .then(repoId => {
+        if (userId) {
+          resolve(getUserRepositoryPermissions(repoId, userId));
+        }
+        resolve(getUserRepositoryPermissions(repoId));
+      })
       .catch(() => resolve(false));
   });
 }

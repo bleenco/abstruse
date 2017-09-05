@@ -131,7 +131,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   fetch(): void {
-    this.api.getRepository(this.id).subscribe(event => {
+    this.api.getRepository(this.id, this.userId).subscribe(event => {
       this.repo = event;
       this.form = { id: parseInt(this.id, 10), access_tokens_id: event.access_tokens_id };
       this.loading = false;

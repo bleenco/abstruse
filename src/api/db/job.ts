@@ -9,7 +9,7 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
         if (userId) {
           query.where('permissions.users_id', userId)
           .andWhere('permissions.permission', true)
-          .orWhere('private', false);
+          .orWhere('public', true);
         }
       }},
       'runs']})
@@ -18,14 +18,21 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
           reject();
         }
         job = job.toJSON();
-        job.hasPermission = false;
+
+        userId = parseInt(<any>userId, 10);
         if (job.build
-          && job.build.reposiotory
+          && job.build.repository
           && job.build.repository.permissions
-          && job.build.repository.permissions[0].permission) {
-            job.hasPermission = true;
+          && job.build.repository.permissions.length) {
+            let index = job.build.repository.permissions.findIndex(p => p.users_id === userId);
+            if (index !== -1 && job.build.repository.permissions[index].permission) {
+              job.hasPermission = true;
+            } else {
+              job.hasPermission = false;
+            }
+        } else {
+          job.hasPermission = false;
         }
-        job.hasPermission = true;
 
         return job;
       })
