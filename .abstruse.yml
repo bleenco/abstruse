@@ -16,10 +16,11 @@ before_install:
 
 install:
   - npm install
-  - curl -fsSL get.docker.com -o get-docker.sh
-  - chmod +x get-docker.sh
-  - sudo ./get-docker.sh
-  - sudo apt-get install sqlite3 -y
+  - sudo apt-get install apt-transport-https ca-certificates curl software-properties-common -y
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo apt-key fingerprint 0EBFCD88
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable"
+  - sudo apt-get update && sudo apt-get install -y docker-ce sqlite3
 
 before_script:
   - sudo usermod -aG docker abstruse
@@ -27,6 +28,7 @@ before_script:
   - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
   - export DISPLAY=:99
+  - id
 
 script:
-  - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
+  - if [[ "$SCRIPT" ]]; then newgrp docker && npm run-script $SCRIPT; fi
