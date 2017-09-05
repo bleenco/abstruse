@@ -1,4 +1,5 @@
 const { SpecReporter } = require('jasmine-spec-reporter');
+const failFast = require('protractor-fail-fast');
 
 exports.config = {
   allScriptsTimeout: 300000,
@@ -17,15 +18,19 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 120000,
-    print: function() {}
+    print: () => {}
   },
   useAllAngular2AppRoots: true,
-  beforeLaunch: function() {
+  beforeLaunch() {
     require('ts-node').register({
       project: 'e2e'
     });
   },
   onPrepare() {
     jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
+    jasmine.getEnv().addReporter(failFast.init());
+  },
+  afterLaunch() {
+    failFast.clean();
   }
 };

@@ -28,13 +28,13 @@
                 </h2>
                 <div class="setup-list">
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.docker ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Installed
+                    <img class="icon" [src]="serverStatus.docker ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'" name="docker-installed-icon"> Docker Installed
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.dockerRunning ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> Docker Running
+                    <img class="icon" [src]="serverStatus.dockerRunning ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'" name="docker-running-icon"> Docker Running
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.sqlite ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'"> SQLite3 Installed
+                    <img class="icon" [src]="serverStatus.sqlite ? 'images/icons/check-true.svg' : 'images/icons/check-false.svg'" name="sqlite3-installed-icon"> SQLite3 Installed
                   </div>
                 </div>
                 <hr/>
