@@ -12,10 +12,10 @@
     </div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="showAllBuilds()">All Logs</button>
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'info' }" (click)="showCommits()">Info</button>
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'warning' }" (click)="showPullRequests()">Warnings</button>
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'error' }" (click)="showPullRequests()">Errors</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="changeShowType('all')">All Logs</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'info' }" (click)="changeShowType('info')">Info</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'warning' }" (click)="changeShowType('warning')">Warnings</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'error' }" (click)="changeShowType('error')">Errors</button>
       </div>
     </div>
   </div>
@@ -31,18 +31,26 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
           <div class="column is-12">
-            <div class="log-lines dracula-ansi-theme">
+            <div class="columns" *ngIf="!logs?.length">
+              <div class="column is-4 is-offset-4">
+                <div class="message blue">
+                  <p class="has-text-centered">No logs found.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="log-lines dracula-ansi-theme" *ngIf="logs?.length">
               <div class="columns log-line" *ngFor="let line of logs; let i = index;">
                 <div class="column is-2 data-label-container">
                   <span class="data-label" [ngClass]="{ green: line.type === 'info', red: line.type === 'error', yellow: line.type === 'warning' }">
                     {{ line.type }}
                   </span>
                 </div>
-                <div class="column is-9">
+                <div class="column is-8">
                   <span [innerHTML]="line.message"></span>
                 </div>
-                <div class="column is-1">
-                  <span class="time">{{ line.created_at | date:'shortTime' }}</span>
+                <div class="column is-2">
+                  <span class="time">{{ line.created_at | date:'y MMM d, HH:mm:ss' }}</span>
                 </div>
               </div>
             </div>
