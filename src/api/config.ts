@@ -409,13 +409,13 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     .concat(config.script || [])
     .concat(config.before_cache || [])
     .concat(config.after_success || [])
-    .concat(config.after_failure || []);
+    .concat(config.after_failure || [])
+    .concat(config.after_script || []);
 
   const deployCommands = []
     .concat(config.before_deploy || [])
     .concat(config.deploy || [])
-    .concat(config.after_deploy || [])
-    .concat(config.after_script || []);
+    .concat(config.after_deploy || []);
 
   // 4. generate jobs outta commands
   data = data.concat(matrixEnv.map(menv => {
@@ -453,13 +453,13 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       .concat(job.script || [])
       .concat(job.before_cache || [])
       .concat(job.after_success || [])
-      .concat(job.after_failure || []);
+      .concat(job.after_failure || [])
+      .concat(job.after_script || []);
 
     const jobDeployCommands = []
       .concat(job.before_deploy || [])
       .concat(job.deploy || [])
-      .concat(job.after_deploy || [])
-      .concat(job.after_script || []);
+      .concat(job.after_deploy || []);
 
     return {
       commands: jobInstallCommands.concat(jobTestCommands).concat(jobDeployCommands),
@@ -536,12 +536,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       }
     }
 
+    // language specific configs
     if (d.language === 'java' && d.version) {
       d.display_version = `JDK: ${d.version}`;
     } else if (d.language === 'node_js' && d.version) {
       d.display_version = `NodeJS: ${d.version}`;
     }
 
+    // add git commands in front
     d.commands.unshift(...[
       { command: clone, type: CommandType.git },
       { command: fetch, type: CommandType.git },
@@ -552,6 +554,17 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
 
     return d;
   });
+
+  if (deployCommands.length) {
+    data.push({
+      commands: installCommands.concat(deployCommands),
+      env: globalEnv,
+      stage: JobStage.deploy,
+      display_env: globalEnv[globalEnv.length - 1] || null,
+      display_version: null,
+      language: config.language
+    });
+  }
 
   return data;
 }
