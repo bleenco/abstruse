@@ -1,4 +1,13 @@
-import { Component, ElementRef, OnInit, Input, SimpleChange, EventEmitter } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Input,
+  SimpleChange,
+  EventEmitter,
+  Inject
+} from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import * as AnsiUp from 'ansi_up';
 
 @Component({
@@ -11,9 +20,14 @@ export class AppTerminalComponent implements OnInit {
   au: any;
   commands: { command: string, visible: boolean, output: string, time: string }[];
   noData: boolean;
+  initScroll: boolean;
 
-  constructor(private elementRef: ElementRef) {
+  constructor(
+    private elementRef: ElementRef,
+    @Inject(DOCUMENT) private document: any
+  ) {
     this.commands = [];
+    this.initScroll = true;
   }
 
   ngOnInit() {
@@ -91,20 +105,33 @@ export class AppTerminalComponent implements OnInit {
       }
 
       this.commands = this.commands.map((cmd, i) => {
-        cmd.visible = i === this.commands.length - 1 ? true : false;
+        const v = i === this.commands.length - 1 || cmd.visible;
+        cmd.visible = v ? true : false;
         return cmd;
       });
     }
 
-    this.checkScrollBottom();
+    setTimeout(() => this.checkScrollBottom());
   }
 
   checkScrollBottom(): void {
-    // TODO: make this work actually
-    // const element = window.document.documentElement;
-    // if (element.scrollTop + element.clientHeight == element.scrollHeight) {
-      window.scrollTo(0, document.body.scrollHeight);
-    // }
+    const body = this.document.body;
+
+    if (this.initScroll) {
+      window.scrollTo(0, body.scrollHeight);
+      this.initScroll = false;
+    } else {
+      const top = window.pageYOffset || this.document.documentElement.scrollTop ||
+        this.document.body.scrollTop || 0;
+      const scrollHeight = this.document.body.scrollHeight;
+      const clientHeight = this.document.body.clientHeight;
+      const height = scrollHeight - clientHeight;
+      const diff = 250;
+
+      if (height - diff < top) {
+        window.scrollTo(0, body.scrollHeight);
+      }
+    }
   }
 
   toogleCommand(index: number) {
