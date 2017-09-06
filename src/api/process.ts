@@ -24,7 +24,7 @@ export interface SpawnedProcessOutput {
 }
 
 export interface ProcessOutput {
-  type: 'data' | 'exit' | 'container' | 'exposedPort';
+  type: 'data' | 'exit' | 'container' | 'exposed port';
   data: string;
 }
 
@@ -93,12 +93,13 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
     const startTime = new Date().getTime();
     const start = nodePty.spawn('docker', ['start', name], { name: 'xterm-color' });
 
+    const splitted = name.split('_');
+    const build = splitted[1] || null;
+    const job = splitted[2] || null;
+
     start.on('exit', startCode => {
       if (startCode !== 0) {
-        const msg = [
-          yellow('['), cyan(name), yellow(']'), ' --- ',
-          'Container errored with exit code ' + red(startCode)
-        ].join('');
+        const msg = `build: ${build} job: ${job} => errored with exit code ${startCode}`;
         observer.error(msg);
       }
 
@@ -148,12 +149,9 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
         const totalTime = endTime - startTime;
 
         if (code !== 0 && !success) {
-          const msg = [
-            yellow('['), cyan(name), yellow(']'), ' --- ',
-            `Executed command returned exit code ${red(code.toString())}`
-          ].join('');
           observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
-          observer.error(msg);
+          observer.next({ type: 'exit', data: code });
+          observer.complete();
         } else {
           observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
           observer.next({ type: 'exit', data: '0' });
@@ -177,11 +175,11 @@ function startContainer(name: string, image: string, vars = []): Observable<Proc
 
         process.on('exit', exitCode => {
           if (exitCode !== 0) {
-            observer.error(`Error starting container (${exitCode})`);
+            observer.error(`error starting container ${exitCode}`);
           } else {
             observer.next({
               type: 'container',
-              data: `Container ${bold(name)} succesfully started.`
+              data: `container ${name} succesfully started`
             });
           }
 
@@ -202,7 +200,7 @@ export function stopContainer(name: string): Observable<ProcessOutput> {
     process.on('exit', exitCode => {
       observer.next({
         type: 'container',
-        data: `Container ${bold(name)} succesfully stopped.`
+        data: `container ${name} succesfully stopped.`
       });
 
       observer.complete();
@@ -219,7 +217,7 @@ function getContainerExposedPort(name: string, port: number): Observable<Process
     ]);
 
     process.on('data', data => {
-      return observer.next({ type: 'exposedPort', data: port + ':' + data.split(':')[1] });
+      return observer.next({ type: 'exposed port', data: port + ':' + data.split(':')[1] });
     });
     process.on('exit', () => observer.complete());
   });

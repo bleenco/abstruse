@@ -11,7 +11,7 @@ utils.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
-import * as logger from './logger';
+import { logger, LogMessageType } from './logger';
 import { initSetup } from './utils';
 import * as db from './db/migrations';
 
@@ -23,8 +23,10 @@ initSetup()
   .then(() => {
     Observable.merge(...[server.start(), socket.start()])
       .subscribe(data => {
-        logger.info(data);
-      }, err => logger.error(err), () => {
-        logger.info('done');
+        const msg: LogMessageType = { message: data, type: 'info', notify: false };
+        logger.next(msg);
+      }, err => {
+        const msg: LogMessageType = { message: err, type: 'error', notify: false };
+        logger.next(msg);
       });
   });

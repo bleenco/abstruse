@@ -7,6 +7,7 @@ import { webhooks } from './webhooks';
 import { yellow, cyan } from 'chalk';
 import * as session from 'express-session';
 import * as uuid from 'uuid';
+import { logger, LogMessageType } from './logger';
 
 export interface ServerConfig {
   port: number;
@@ -51,14 +52,12 @@ export class ExpressServer implements IExpressServer {
 
 
       app.listen(this.config.port, () => {
-        let msg = [
-          yellow('['),
-          cyan('http'),
-          yellow(']'),
-          ' --- ',
-          `server running on port ${yellow(this.config.port.toString())}`
-        ].join('');
-        observer.next(msg);
+        const msg: LogMessageType = {
+          message: `[http]: server running on port ${this.config.port}`,
+          type: 'info',
+          notify: false
+        };
+        logger.next(msg);
       });
     });
   }

@@ -26,7 +26,7 @@ export class AppBuildItemComponent implements OnInit {
     }
 
     this.socketService.outputEvents
-      .filter(x => x.type === 'buildRestarted' || x.type === 'buildStopped')
+      .filter(x => x.type === 'build restarted' || x.type === 'build stopped')
       .subscribe(e => this.processingRequest = false);
   }
 

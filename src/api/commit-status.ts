@@ -1,5 +1,5 @@
 import { getBitBucketAccessToken, getConfig } from './utils';
-import * as logger from './logger';
+import { logger, LogMessageType } from './logger';
 import { yellow, red, blue, bold, cyan } from 'chalk';
 import * as request from 'request';
 
@@ -36,14 +36,15 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
       return Promise.resolve();
     }
   } else {
-    let msg = [
-      yellow('['),
-      red('error'),
-      yellow(']'),
-      ' --- ',
-      `access_token is not set for repository ${bold(build.repository.full_name)}!`
-    ].join('');
-    logger.error(msg);
+    const name = build.repository && build.repository.full_name ||
+      build.data.repository.full_name;
+    const msg: LogMessageType = {
+      message: `[error]: repository: ${name} => access token is not set`,
+      type: 'error',
+      notify: true
+    };
+    logger.next(msg);
+
     return Promise.resolve();
   }
 }
@@ -78,14 +79,16 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
       return Promise.resolve();
     }
   } else {
-    let msg = [
-      yellow('['),
-      red('error'),
-      yellow(']'),
-      ' --- ',
-      `access_token is not set for repository ${bold(buildData.repository.full_name)}!`
-    ].join('');
-    logger.error(msg);
+
+    const name = buildData.repository && buildData.repository.full_name ||
+      buildData.data.repository.full_name;
+    const msg: LogMessageType = {
+      message: `[error]: repository: ${name} => access token is not set`,
+      type: 'error',
+      notify: true
+    };
+    logger.next(msg);
+
     return Promise.resolve();
   }
 }
@@ -120,14 +123,15 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
       return Promise.resolve();
     }
   } else {
-    let msg = [
-      yellow('['),
-      red('error'),
-      yellow(']'),
-      ' --- ',
-      `access_token is not set for repository ${bold(buildData.repository.full_name)}!`
-    ].join('');
-    logger.error(msg);
+    const name = buildData.repository && buildData.repository.full_name ||
+      buildData.data.repository.full_name;
+    const msg: LogMessageType = {
+      message: `[error]: repository: ${name} => access token is not set`,
+      type: 'error',
+      notify: true
+    };
+    logger.next(msg);
+
     return Promise.resolve();
   }
 }
@@ -342,47 +346,33 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
       json: data
     };
 
-    let msg = [
-      yellow('['),
-      cyan('http'),
-      yellow(']'),
-      ' --- ',
-      yellow(`sending ${options.method} request to ${bold(url)}...`)
-    ].join('');
-    logger.info(msg);
-
     request(options, (err, response, body) => {
       if (err) {
-        let msg = [
-          yellow('['),
-          cyan('http'),
-          yellow(']'),
-          ' --- ',
-          red(`sending request to ${bold(url)} failed (${err})`)
-        ].join('');
-        logger.error(msg);
+        const msg: LogMessageType = {
+          message: `[http]: request to ${url} failed with code ${err}`,
+          type: 'error',
+          notify: false
+        };
+        logger.next(msg);
 
         reject(err);
       } else {
         if (response.statusCode < 300 && response.statusCode >= 200) {
-          let msg = [
-            yellow('['),
-            cyan('http'),
-            yellow(']'),
-            ' --- ',
-            yellow(`sending request to ${bold(url)} successful (${response.statusCode})`)
-          ].join('');
-          logger.info(msg);
+          const msg: LogMessageType = {
+            message: `[http]: request to ${url} successful`,
+            type: 'info',
+            notify: false
+          };
+          logger.next(msg);
+
           resolve(body);
         } else {
-          let msg = [
-            yellow('['),
-            cyan('http'),
-            yellow(']'),
-            ' --- ',
-            red(`sending request to ${bold(url)} failed (${response.statusCode})`)
-          ].join('');
-          logger.error(msg);
+          const msg: LogMessageType = {
+            message: `[http]: request to ${url} failed with error code ${response.statusCode}`,
+            type: 'error',
+            notify: false
+          };
+          logger.next(msg);
 
           reject({
             statusCode: response.statusCode,

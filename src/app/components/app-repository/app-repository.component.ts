@@ -85,7 +85,8 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'buildAdded' && event.repository_id && event.repository_id === this.id) {
+        if (event.data === 'build added' && event.repository_id && event.repository_id === this.id)
+        {
           this.fetchLastBuild();
         }
 
@@ -95,22 +96,22 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           if (jobIndex !== -1) {
             let status = null;
             switch (event.data) {
-              case 'jobSucceded':
+              case 'job succeded':
                 status = 'success';
                 this.repo.builds[index].jobs[jobIndex].end_time = new Date();
               break;
-              case 'jobQueued':
+              case 'job queued':
                 status = 'queued';
               break;
-              case 'jobStarted':
+              case 'job started':
                 status = 'running';
                 this.repo.builds[index].jobs[jobIndex].start_time = new Date();
               break;
-              case 'jobFailed':
+              case 'job failed':
                 status = 'failed';
                 this.repo.builds[index].jobs[jobIndex].start_time = new Date();
               break;
-              case 'jobStopped':
+              case 'job stopped':
                 status = 'failed';
                 this.repo.builds[index].jobs[jobIndex].end_time = new Date();
               break;
