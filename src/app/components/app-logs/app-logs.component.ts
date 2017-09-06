@@ -16,7 +16,7 @@ export interface LogType {
 })
 export class AppLogsComponent implements OnInit {
   loading: boolean;
-  show: 'all' | 'info' | 'warnings' | 'errors';
+  show: 'all' | 'info' | 'warning' | 'error';
   limit: number;
   offset: number;
   logs: LogType[];
@@ -74,7 +74,7 @@ export class AppLogsComponent implements OnInit {
       });
   }
 
-  changeShowType(type: 'all' | 'info' | 'warnings' | 'errors') {
+  changeShowType(type: 'all' | 'info' | 'warning' | 'error') {
     this.show = type;
     this.offset = 0;
     this.fetch(null, true);

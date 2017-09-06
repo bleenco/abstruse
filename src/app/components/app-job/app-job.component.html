@@ -81,8 +81,8 @@
                         <img *ngIf="!job?.build?.data?.sender?.avatar_url && !job?.build?.data?.actor?.links?.avatar?.href && job?.build?.data?.user_avatar" [src]="job?.build?.data?.user_avatar" class="avatar-img">
                         <img *ngIf="!job?.build?.data?.sender?.avatar_url && !job?.build?.data?.actor?.links?.avatar?.href && !job?.build?.data?.user_avatar && job?.build?.data?.user?.avatar_url" class="avatar-img" [src]="job?.build?.data?.user?.avatar_url">
                       </span>
-                      <span *ngIf="(job?.build?.data?.pull_request || job?.build?.data?.head_commit) && !tag && job?.build?.data.head_commit.author.username === job?.build?.data.head_commit.committer.username">{{ nameAuthor }} commited</span>
-                      <span *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.head_commit && !tag && job?.build?.data.head_commit.author.username !== job?.build?.data.head_commit.committer.username">
+                      <span *ngIf="(job?.build?.data?.pull_request || job?.build?.data?.head_commit) && !tag && job?.build?.data?.head_commit?.author?.username === job?.build?.data?.head_commit?.committer?.username">{{ nameAuthor }} commited</span>
+                      <span *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.head_commit && !tag && job?.build?.data?.head_commit?.author?.username !== job?.build?.data?.head_commit?.committer?.username">
                         {{ nameAuthor }} committed with {{ nameCommitter }}
                       </span>
                       <span *ngIf="!job?.build?.data?.pull_request && !job?.build?.data?.commits && job?.build?.data?.actor?.display_name && !tag">{{ job?.build?.data?.actor?.display_name }} committed</span>
