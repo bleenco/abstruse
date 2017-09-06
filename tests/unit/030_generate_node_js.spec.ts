@@ -31,9 +31,9 @@ describe('Generate (Node.JS)', () => {
       cmds.forEach(cmd => expect(cmd.language).to.equal('node_js'));
     });
 
-    it(`should parse example with result of 3 jobs`, () => {
+    it(`should parse example with result of 4 jobs`, () => {
       const cmds = generateJobsAndEnv(repo, config);
-      expect(cmds.length).to.equal(3);
+      expect(cmds.length).to.equal(4);
     });
 
     it(`should parse example with result of 3 test jobs`, () => {
@@ -45,7 +45,7 @@ describe('Generate (Node.JS)', () => {
     it(`should parse example with result of none deploy jobs`, () => {
       const cmds = generateJobsAndEnv(repo, config)
         .filter(cmd => cmd.stage === JobStage.deploy);
-      expect(cmds.length).to.equal(0);
+      expect(cmds.length).to.equal(1);
     });
 
     it(`should auto-generate default dependency script if not specified`, () => {
@@ -113,17 +113,21 @@ describe('Generate (Node.JS)', () => {
     it(`should generate correct displayed env vars for each build in matrix`, () => {
       const cmds = generateJobsAndEnv(repo, config);
       const expected = config.matrix.include.map(m => m.env);
-      cmds.forEach((cmd, i) => expect(cmd.display_env).to.equal(expected[i]));
+      cmds
+        .filter(cmd => cmd.stage === JobStage.test)
+        .forEach((cmd, i) => expect(cmd.display_env).to.equal(expected[i]));
     });
 
     it(`should parse version and display_version for each job`, () => {
       const cmds = generateJobsAndEnv(repo, config);
       const expected = config.matrix.include.map(m => m.node_js);
 
-      cmds.forEach((cmd, i) => {
-        expect(cmd.version).to.equal(expected[i]);
-        expect(cmd.display_version).to.equal(`NodeJS: ${expected[i]}`);
-      });
+      cmds
+        .filter(cmd => cmd.stage === JobStage.test)
+        .forEach((cmd, i) => {
+          expect(cmd.version).to.equal(expected[i]);
+          expect(cmd.display_version).to.equal(`NodeJS: ${expected[i]}`);
+        });
     });
   });
 
