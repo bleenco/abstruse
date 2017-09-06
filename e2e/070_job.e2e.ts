@@ -37,7 +37,7 @@ describe('Job Details', () => {
       .then((): any => element(by.css(`[name="btn-stop"]`)).click());
   });
 
-  it('should restart build and watch job output', () => {
+  xit('should restart build and watch job output', () => {
     return browser.get('/build/4')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
