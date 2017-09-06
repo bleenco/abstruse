@@ -13,7 +13,7 @@
     "dev": "tsc-watch -p tsconfig.json --onSuccess \"node ./dist/api/index.js\"",
     "build:prod": "npm run build && npm run build:app:prod",
     "build:app": "webpack --env.dev --progress --hide-modules",
-    "build:app:prod": "webpack --env.aot --env.prod --hide-modules",
+    "build:app:prod": "webpack --env.aot --env.prod -p --hide-modules",
     "start": "webpack-dev-server --env.dev --env.serve --progress --hot",
     "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress --hot",
     "lint": "tslint ./src/**/*.ts",

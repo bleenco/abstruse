@@ -5,7 +5,6 @@ const compression = require('compression-webpack-plugin');
 const html = require('html-webpack-plugin');
 const copy = require('copy-webpack-plugin');
 const extract = require('extract-text-webpack-plugin');
-const uglify = require('uglifyjs-webpack-plugin');
 const portfinder = require('portfinder');
 
 module.exports = function (options, webpackOptions) {
@@ -114,8 +113,7 @@ function getEntry(options) {
 function getProductionPlugins() {
   return {
     plugins: [
-      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 }),
-      new uglify()
+      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 })
     ]
   }
 }
