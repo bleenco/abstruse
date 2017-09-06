@@ -41,7 +41,7 @@ export class AppLogsComponent implements OnInit {
     this.fetch();
   }
 
-  fetch(e?: MouseEvent): void {
+  fetch(e?: MouseEvent, reset = false): void {
     if (e && e.preventDefault) {
       e.preventDefault();
       e.stopPropagation();
@@ -50,10 +50,17 @@ export class AppLogsComponent implements OnInit {
     this.fetching = true;
     this.apiService.getLogs(this.limit, this.offset, this.show)
       .subscribe(logs => {
-        this.logs = this.logs.concat(logs.map(log => {
-          log.message = this.au.ansi_to_html(log.message);
-          return log;
-        }));
+        if (!reset) {
+          this.logs = this.logs.concat(logs.map(log => {
+            log.message = this.au.ansi_to_html(log.message);
+            return log;
+          }));
+        } else {
+          this.logs = logs.map(log => {
+            log.message = this.au.ansi_to_html(log.message);
+            return log;
+          });
+        }
 
         this.fetching = false;
         this.loading = false;
@@ -65,5 +72,11 @@ export class AppLogsComponent implements OnInit {
           this.hideMoreButton = true;
         }
       });
+  }
+
+  changeShowType(type: 'all' | 'info' | 'warnings' | 'errors') {
+    this.show = type;
+    this.offset = 0;
+    this.fetch(null, true);
   }
 }
