@@ -48,7 +48,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'buildAdded') {
+        if (event.data === 'build added') {
           this.fetchLastBuild();
         }
       });
@@ -67,23 +67,23 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         const index = this.builds[build].jobs.findIndex(job => job.id === e.job_id);
         if (index !== -1) {
           switch (e.data) {
-            case 'jobSucceded':
+            case 'job succeded':
               this.builds[build].jobs[index].status = 'success';
               this.builds[build].jobs[index].end_time = new Date();
               break;
-            case 'jobQueued':
+            case 'job queued':
               this.builds[build].jobs[index].status = 'queued';
               break;
-            case 'jobStarted':
+            case 'job started':
               this.builds[build].jobs[index].status = 'running';
               this.builds[build].jobs[index].start_time = new Date();
               this.builds[build].jobs[index].end_time = null;
               break;
-            case 'jobFailed':
+            case 'job failed':
               this.builds[build].jobs[index].status = 'failed';
               this.builds[build].jobs[index].end_time = new Date();
               break;
-            case 'jobStopped':
+            case 'job stopped':
               this.builds[build].jobs[index].status = 'failed';
               this.builds[build].jobs[index].end_time = new Date();
               break;

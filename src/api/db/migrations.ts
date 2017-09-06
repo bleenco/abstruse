@@ -102,6 +102,7 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.enum('type', ['info', 'warning', 'error']).notNullable();
       t.text('message').notNullable();
+      t.boolean('notify').notNullable().defaultTo(false);
       t.boolean('read').notNullable().defaultTo(false);
       t.timestamps();
     }))

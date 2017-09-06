@@ -39,6 +39,19 @@ export class AppLogsComponent implements OnInit {
     this.au = new AnsiUp.default();
     this.au.use_classes = true;
     this.fetch();
+
+    this.socketService.outputEvents
+      .filter(msg => !!msg.message && !!msg.type)
+      .subscribe(msg => {
+        msg.created_at = new Date().getTime();
+        msg.message = this.au.ansi_to_html(msg.message);
+
+        if (this.show === 'all' || this.show === msg.type) {
+          this.logs.unshift(msg);
+        }
+      });
+
+    this.socketService.emit({ type: 'subscribeToLogs' });
   }
 
   fetch(e?: MouseEvent, reset = false): void {

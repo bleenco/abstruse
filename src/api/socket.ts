@@ -2,7 +2,7 @@ import * as ws from 'ws';
 import * as uuid from 'uuid';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { PtyInstance } from './pty';
-import * as logger from './logger';
+import { logger, LogMessageType } from './logger';
 import * as docker from './docker';
 import {
   startBuild,
@@ -60,25 +60,14 @@ export class SocketServer {
             if (event.type === 'disconnected') {
               const index = this.clients.findIndex(client => client.connection === conn);
               const session = this.clients[index].session;
-              let msg = [
-                yellow('['),
-                green('socket'),
-                yellow(']'),
-                ' --- ',
-                `user ${session.userId} disconnected. clearing session ...`
-              ].join('');
-              logger.info(msg);
-
               this.clients.splice(index, 1);
 
-              msg = [
-                yellow('['),
-                green('socket'),
-                yellow(']'),
-                ' --- ',
-                `session cleared after user ${yellow(session.userId)}`
-              ].join('');
-              logger.info(msg);
+              const msg: LogMessageType = {
+                message: `[socket]: user ${session.userId} disconnected`,
+                type: 'info',
+                notify: false
+              };
+              logger.next(msg);
             }
 
             switch (event.type) {
@@ -113,31 +102,31 @@ export class SocketServer {
               case 'stopBuild':
                 stopBuild(event.data.buildId)
                   .then(() => {
-                    conn.next({ type: 'buildStopped', data: event.data.buildId });
+                    conn.next({ type: 'build stopped', data: event.data.buildId });
                   });
               break;
               case 'restartBuild':
                 restartBuild(event.data.buildId)
                   .then(() => {
-                    conn.next({ type: 'buildRestarted', data: event.data.buildId });
+                    conn.next({ type: 'build restarted', data: event.data.buildId });
                   });
               break;
               case 'restartJob':
                 restartJob(parseInt(event.data.jobId, 10))
                   .then(() => {
-                    conn.next({ type: 'jobRestarted', data: event.data.jobId });
+                    conn.next({ type: 'job restarted', data: event.data.jobId });
                   });
               break;
               case 'restartJobWithSshAndVnc':
                 restartJobWithSshAndVnc(parseInt(event.data.jobId, 10))
                   .then(() => {
-                    conn.next({ type: 'jobRestarted', data: event.data.jobId });
+                    conn.next({ type: 'job restarted', data: event.data.jobId });
                   });
               break;
               case 'stopJob':
                 stopJob(event.data.jobId)
                   .then(() => {
-                    conn.next({ type: 'jobStopped', data: event.data.jobId });
+                    conn.next({ type: 'job stopped', data: event.data.jobId });
                   });
               break;
               case 'subscribeToJobOutput':
@@ -157,6 +146,9 @@ export class SocketServer {
                 this.clients[index].sub = terminalEvents
                   .filter(e => e.job_id === parseInt(event.data.jobId, 10))
                   .subscribe(output => conn.next(output));
+              break;
+              case 'subscribeToLogs':
+                logger.subscribe(msg => conn.next(msg));
               break;
             }
           });
@@ -179,27 +171,23 @@ export class SocketServer {
       }
 
       server.listen(options.port);
-      let msg = [
-        yellow('['),
-        green('socket'),
-        yellow(']'),
-        ' --- ',
-        `socket server running at port ${yellow(options.port.toString())}`
-      ].join('');
-      logger.info(msg);
+      const msg: LogMessageType = {
+        message: `[socket]: server running at port ${options.port}`,
+        type: 'info',
+        notify: false
+      };
+      logger.next(msg);
 
       let wss: ws.Server = new ws.Server({
         verifyClient: (info: any, done) => {
           const id = uuid();
           const ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
-          let msg = [
-            yellow('['),
-            green('socket'),
-            yellow(']'),
-            ' --- ',
-            `updating session for user ${yellow(id)} (${yellow(ip)})`
-          ].join('');
-          logger.info(msg);
+          const msg: LogMessageType = {
+            message: `[socket]: user ${id} connected from ${ip}`,
+            type: 'info',
+            notify: false
+          };
+          logger.next(msg);
 
           sessionParser(info.req, {} as any, () => {
             info.req.session.userId = id;
@@ -213,14 +201,12 @@ export class SocketServer {
       wss.on('connection', (connection: any, req: any) => {
         observer.next({ conn: connection, session: req.session });
 
-        let msg = [
-          yellow('['),
-          green('socket'),
-          yellow(']'),
-          ' --- ',
-          `socket connection established ${yellow(req.session.userId)}`
-        ].join('');
-        logger.info(msg);
+        const msg: LogMessageType = {
+          message: `[socket]: user ${req.session.userId} succesfully connected`,
+          type: 'info',
+          notify: false
+        };
+        logger.next(msg);
       });
 
       return () => {

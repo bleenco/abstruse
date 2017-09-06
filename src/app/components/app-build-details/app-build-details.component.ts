@@ -76,17 +76,17 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           .subscribe(event => {
             let index = this.build.jobs.findIndex(job => job.id === event.job_id);
             if (index !== -1) {
-              if (event.data === 'jobStarted') {
+              if (event.data === 'job started') {
                 this.build.jobs[index].status = 'running';
                 this.build.jobs[index].end_time = null;
                 this.build.jobs[index].start_time = new Date().getTime();
-              } else if (event.data === 'jobSucceded') {
+              } else if (event.data === 'job succeded') {
                 this.build.jobs[index].status = 'success';
                 this.build.jobs[index].end_time = new Date().getTime();
-              } else if (event.data === 'jobFailed' || event.data === 'jobStopped') {
+              } else if (event.data === 'job failed' || event.data === 'job stopped') {
                 this.build.jobs[index].status = 'failed';
                 this.build.jobs[index].end_time = new Date().getTime();
-              } else if (event.data === 'jobQueued') {
+              } else if (event.data === 'job queued') {
                 this.build.jobs[index].status = 'queued';
               }
 
@@ -97,7 +97,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           });
 
         this.sub = this.socketService.outputEvents
-          .filter(event => event.type === 'buildRestarted' || event.type === 'buildStopped')
+          .filter(event => event.type === 'build restarted' || event.type === 'build stopped')
           .subscribe(event => {
             this.processingBuild = false;
           });

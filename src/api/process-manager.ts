@@ -14,7 +14,7 @@ import * as dbJobRuns from './db/job-run';
 import { getRepositoryOnly, getRepositoryByBuildId } from './db/repository';
 import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
-import * as logger from './logger';
+import { logger, LogMessageType } from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
@@ -60,14 +60,13 @@ export let terminalEvents: Subject<JobProcessEvent> = new Subject();
 jobEvents
   .filter(event => !!event.build_id && !!event.job_id)
   .subscribe(event => {
-    let msg = [
-      yellow('['),
-      cyan('abstruse_' + event.build_id + '_' + event.job_id),
-      yellow(']'),
-      ' --- ',
-      yellow(event.data)
-    ].join('');
-    logger.info(msg);
+    const msg: LogMessageType = {
+      message: `[build]: build: ${event.build_id} job: ${event.job_id} => ${event.data}`,
+      type: 'info',
+      notify: false
+    };
+
+    logger.next(msg);
   });
 
 // main scheduler
@@ -158,7 +157,7 @@ export function startBuild(data: any): Promise<any> {
                   type: 'process',
                   build_id: data.build_id,
                   job_id: dataJob.id,
-                  data: 'jobAdded'
+                  data: 'job added'
                 });
 
                 return queueJob(data.build_id, dataJob.id);
@@ -171,13 +170,16 @@ export function startBuild(data: any): Promise<any> {
           type: 'process',
           build_id: data.build_id,
           repository_id: data.repositories_id,
-          data: 'buildAdded'
+          data: 'build added'
         });
       })
       .then(() => getDepracatedBuilds(buildData))
       .then(builds => Promise.all(builds.map(build => stopBuild(build))));
     })
-    .catch(err => logger.error(err));
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function startJob(proc: JobProcess): Promise<void> {
@@ -198,17 +200,17 @@ export function startJob(proc: JobProcess): Promise<void> {
           if (event.data && event.type === 'data') {
             proc.log.push(event.data);
           } else if (event.type === 'container') {
-            let msg = [
-              yellow('['),
-              cyan('abstruse_' + proc.build_id + '_' + proc.job_id),
-              yellow(']'),
-              ' --- ',
-              yellow(event.data)
-            ].join('');
-            logger.info(msg);
+            const ev: JobProcessEvent = {
+              type: 'process',
+              build_id: proc.build_id,
+              job_id: proc.job_id,
+              data: event.data
+            };
+            jobEvents.next(ev);
           }
         }, err => {
-          logger.error(err);
+          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          logger.next(msg);
 
           dbJob.getLastRunId(proc.job_id)
             .then(runId => {
@@ -229,7 +231,7 @@ export function startJob(proc: JobProcess): Promise<void> {
                 type: 'process',
                 build_id: proc.build_id,
                 job_id: proc.job_id,
-                data: 'jobFailed'
+                data: 'job failed'
               });
 
               if (processes.findIndex(p => p.build_id === proc.build_id) === -1) {
@@ -242,7 +244,12 @@ export function startJob(proc: JobProcess): Promise<void> {
                   });
               }
             })
-            .catch(err => logger.error(err));
+            .catch(err => {
+              const msg: LogMessageType = {
+                message: `[error]: ${err}`, type: 'error', notify: false
+              };
+              logger.next(msg);
+            });
         }, () => {
           dbJob.getLastRunId(proc.job_id)
             .then(runId => {
@@ -283,9 +290,14 @@ export function startJob(proc: JobProcess): Promise<void> {
                 type: 'process',
                 build_id: proc.build_id,
                 job_id: proc.job_id,
-                data: 'jobSucceded'
+                data: 'job succeded'
               });
-            }).catch(err => logger.error(err));
+            }).catch(err => {
+              const msg: LogMessageType = {
+                message: `[error]: ${err}`, type: 'error', notify: false
+              };
+              logger.next(msg);
+            });
         });
     })
     .then(() => dbJob.getLastRunId(proc.job_id))
@@ -298,11 +310,14 @@ export function startJob(proc: JobProcess): Promise<void> {
         type: 'process',
         build_id: proc.build_id,
         job_id: proc.job_id,
-        data: 'jobStarted'
+        data: 'job started'
       };
       jobEvents.next(data);
     })
-    .catch(err => logger.error(err));
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function stopJob(jobId: number): Promise<any> {
@@ -341,7 +356,10 @@ export function stopJob(jobId: number): Promise<any> {
               }
             });
         })
-        .catch(err => logger.error(err));
+        .catch(err => {
+          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          logger.next(msg);
+        });
     } else {
       return Promise.resolve()
         .then(() => dbJob.getJob(jobId))
@@ -380,14 +398,20 @@ export function stopJob(jobId: number): Promise<any> {
             type: 'process',
             build_id: job.build_id,
             job_id: job.job_id,
-            data: 'jobStopped'
+            data: 'job stopped'
           });
 
           processes = processes.filter(proc => proc.job_id !== jobId);
           jobProcesses.next(processes);
-        }).catch(err => logger.error(err));
+        }).catch(err => {
+          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          logger.next(msg);
+        });
     }
-  }).catch(err => logger.error(err));
+  }).catch(err => {
+    const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+    logger.next(msg);
+  });
 }
 
 function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<void> {
@@ -423,8 +447,11 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
 
       processes.push(jobProcess);
       jobProcesses.next(processes);
-      jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'jobQueued' });
-    }).catch(err => logger.error(err));
+      jobEvents.next({ type: 'process', build_id: buildId, job_id: jobId, data: 'job queued' });
+    }).catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function restartBuild(buildId: number): Promise<any> {
@@ -461,9 +488,16 @@ export function restartBuild(buildId: number): Promise<any> {
             return prev.then(() => queueJob(buildId, curr.id));
           }, Promise.resolve());
         })
-        .then(() => sendPendingStatus(buildData, buildData.id))
-        .catch(err => logger.error(err));
-    }).catch(err => logger.error(err));
+        .then(() => getBuild(buildId))
+        .then(build => sendPendingStatus(build, build.id))
+        .catch(err => {
+          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          logger.next(msg);
+        });
+    }).catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function stopBuild(buildId: number): Promise<any> {
@@ -482,7 +516,10 @@ export function stopBuild(buildId: number): Promise<any> {
           return prev.then(() => stopJob(current.job_id));
         }, Promise.resolve()).then(() => procs);
     })
-    .catch(err => logger.error(err));
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function restartJob(jobId: number): Promise<void> {
@@ -504,12 +541,15 @@ export function restartJob(jobId: number): Promise<void> {
         type: 'process',
         build_id: jobData.builds_id,
         job_id: jobData.id,
-        data: 'jobRestarted'
+        data: 'job restarted'
       });
     })
     .then(() => getBuild(jobData.builds_id))
     .then(build => sendPendingStatus(build, build.id))
-    .catch(err => logger.error(err));
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
@@ -531,12 +571,15 @@ export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
         type: 'process',
         build_id: jobData.builds_id,
         job_id: jobData.id,
-        data: 'jobRestarted'
+        data: 'job restarted'
       });
     })
     .then(() => getBuild(jobData.builds_id))
     .then(build => sendPendingStatus(build, build.id))
-    .catch(err => logger.error(err));
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
 }
 
 export function startSetup(name: string): Promise<void> {
@@ -577,7 +620,8 @@ export function queueSetupDockerImage(name: string): Observable<any> {
           });
       }
     }, err => {
-      logger.error(err);
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
     }, () => {
       observer.complete();
     });

@@ -7,9 +7,6 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import 'rxjs/add/observable/interval';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/takeWhile';
 import { format, distanceInWordsToNow, distanceInWordsStrict } from 'date-fns';
 
 @Component({
@@ -61,11 +58,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
       .subscribe(event => {
         if (event.type === 'data') {
           this.ngZone.run(() => this.terminalInput = event.data);
-        } else if (event.type === 'jobStopped' && event.data === this.id) {
+        } else if (event.type === 'job stopped' && event.data === this.id) {
           this.processing = false;
-        } else if (event.type === 'jobRestarted' && event.data === this.id) {
+        } else if (event.type === 'job restarted' && event.data === this.id) {
           this.processing = false;
-        } else if (event.type === 'exposedPort') {
+        } else if (event.type === 'exposed port') {
           if (parseInt(event.data.split(':')[0], 10) === 22) {
             this.sshd = `${document.location.hostname}:${event.data.split(':')[1]}`;
           } else if (parseInt(event.data.split(':')[0], 10) === 5900) {
@@ -82,15 +79,15 @@ export class AppJobComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'jobStarted') {
+        if (event.data === 'job started') {
           this.jobRun.status = 'running';
           this.jobRun.end_time = null;
           this.jobRun.start_time = new Date().getTime();
-        } else if (event.data === 'jobSucceded') {
+        } else if (event.data === 'job succeded') {
           this.jobRun.status = 'success';
           this.jobRun.end_time = new Date().getTime();
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
-        } else if (event.data == 'jobFailed') {
+        } else if (event.data == 'job failed') {
           this.jobRun.status = 'failed';
           this.jobRun.end_time = new Date().getTime();
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
