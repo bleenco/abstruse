@@ -15,8 +15,7 @@ module.exports = {
     filename: '[name].js'
   },
   plugins: [
-    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
-    new uglify()
+    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true })
   ],
   module: {
     rules: [

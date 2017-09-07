@@ -6,7 +6,7 @@
     "abstruse-cli": "./dist/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node tests/run_unit.js",
     "build": "webpack --config webpack.cli.js --hide-modules"
   },
   "keywords": [
@@ -14,5 +14,19 @@
     "cli"
   ],
   "author": "Bleenco OSS Team <oss@bleenco.com",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/minimist": "^1.2.0",
+    "@types/node-rsa": "^0.4.0",
+    "@types/request": "^2.0.3",
+    "@types/webpack": "^3.0.10",
+    "chalk": "^2.1.0",
+    "minimist": "^1.2.0",
+    "node-rsa": "^0.4.2",
+    "request": "^2.81.0",
+    "typescript": "^2.5.2",
+    "uglifyjs-webpack-plugin": "^0.4.6",
+    "webpack": "^3.5.6"
+  }
 }
