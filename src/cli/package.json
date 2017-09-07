@@ -7,7 +7,8 @@
   },
   "scripts": {
     "test": "node tests/run_unit.js",
-    "build": "webpack --config webpack.cli.js --hide-modules"
+    "build": "webpack --config webpack.cli.js --hide-modules",
+    "start": "tsc -w"
   },
   "keywords": [
     "abstruse",
@@ -16,17 +17,24 @@
   "author": "Bleenco OSS Team <oss@bleenco.com",
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/chalk": "^0.4.31",
     "@types/minimist": "^1.2.0",
+    "@types/mocha": "^2.2.42",
     "@types/node-rsa": "^0.4.0",
     "@types/request": "^2.0.3",
     "@types/webpack": "^3.0.10",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "chalk": "^2.1.0",
     "minimist": "^1.2.0",
+    "mocha": "^3.5.0",
     "node-rsa": "^0.4.2",
     "request": "^2.81.0",
     "typescript": "^2.5.2",
-    "uglifyjs-webpack-plugin": "^0.4.6",
+    "uglify-es": "^3.0.28",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta.2",
     "webpack": "^3.5.6"
   }
 }

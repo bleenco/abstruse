@@ -40,6 +40,7 @@ describe('Repositories', () => {
       .then((): any => element(by.css('[name="btn-settings"]')).click())
       .then(() => element(by.css('.form-input[name="name"]')).sendKeys('test'))
       .then(() => element(by.css('.form-input[name="value"]')).sendKeys('test'))
+      .then(() => element(by.cssContainingText('option', 'No')).click())
       .then(() => element(by.css('[name="btn-add-variable"]')).click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item-slim')).count().then(count => count === 1);

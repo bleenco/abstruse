@@ -17,6 +17,7 @@ export interface VariableForm {
   name: string;
   value: string;
   repositories_id: number;
+  encrypted: number;
 }
 
 @Component({
@@ -54,7 +55,8 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.fetching = false;
     this.limit = 5;
     this.offset = 0;
-    this.environmentVariableForm = { name: null, value: null, repositories_id: null };
+    this.environmentVariableForm
+      = { name: null, value: null, repositories_id: null, encrypted: null };
   }
 
   ngOnInit() {
@@ -237,7 +239,8 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.api.addNewEnvironmentVariable(this.environmentVariableForm)
       .subscribe(() => this.fetch());
 
-    this.environmentVariableForm = { name: null, value: null, repositories_id: null };
+    this.environmentVariableForm
+      = { name: null, value: null, repositories_id: null, encrypted: null };
   }
 
   removeVariable(id: number): void {

@@ -1,4 +1,5 @@
-const minimist = require('minimist');
+import * as minimist from 'minimist';
+
 const utils = require('./utils');
 const os = require('os');
 const path = require('path');

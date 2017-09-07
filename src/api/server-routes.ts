@@ -461,6 +461,21 @@ export function logsRoutes(): express.Router {
   return router;
 }
 
+export function keysRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get(`/public`, (req: express.Request, res: express.Response) => {
+    let config: any = getConfig();
+    if (config.publicKey) {
+      return res.status(200).json({ key: config.publicKey });
+    }
+
+    return res.status(200).json({ status: false });
+  });
+
+  return router;
+}
+
 function index(req: express.Request, res: express.Response): void {
   return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }

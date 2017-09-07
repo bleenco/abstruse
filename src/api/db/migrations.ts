@@ -112,6 +112,7 @@ export function create(): Promise<null> {
       t.foreign('repositories_id').references('repositories.id');
       t.string('name').notNullable();
       t.string('value').notNullable();
+      t.boolean('encrypted').notNullable().defaultTo(false);
       t.timestamps();
     }))
     .then(() => resolve())

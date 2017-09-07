@@ -16,7 +16,7 @@ import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
 import { logger, LogMessageType } from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
-import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
+import { getConfig, getHttpJsonResponse, getBitBucketAccessToken, decrypt } from './utils';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 
 export interface BuildMessage {
@@ -186,7 +186,14 @@ export function startJob(proc: JobProcess): Promise<void> {
   return Promise.resolve()
     .then(() => getRepositoryByBuildId(proc.build_id))
     .then(repo => {
-      let envVariables = repo.variables.map(v => `${v.name}=${v.value}`);
+      let envVariables: string[] = repo.variables.map(v => {
+        if (!!v.encrypted) {
+          return `${v.name}=${decrypt(v.value, config)}`;
+        } else {
+          return `${v.name}=${v.value}`;
+        }
+      });
+
       startBuildProcess(proc, 'abstruse', envVariables)
         .subscribe(event => {
           const msg: JobProcessEvent = {
