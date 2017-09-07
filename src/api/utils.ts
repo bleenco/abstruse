@@ -8,7 +8,9 @@ import * as uuid from 'uuid';
 import * as request from 'request';
 import * as temp from 'temp';
 import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
+import * as nodeRsa from 'node-rsa';
 
+const key = new nodeRsa({b: 3072});
 const defaultConfig = {
   url: null,
   secret: 'thisIsSecret',
@@ -18,6 +20,8 @@ const defaultConfig = {
   ssl: false,
   sslcert: null,
   sslkey: null,
+  publicKey: key.exportKey('public'),
+  privateKey: key.exportKey('private'),
   requireLogin: false,
   db: {
     client: 'sqlite3',
@@ -209,4 +213,16 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
         }
       });
     });
+}
+
+export function decrypt(str: string, config: any): string {
+  if (config.privateKey) {
+    const rsa = new nodeRsa();
+    rsa.importKey(config.privateKey, 'private');
+    const decrypted = rsa.decrypt(str, 'utf8');
+
+    return decrypted;
+  }
+
+  return null;
 }
