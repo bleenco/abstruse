@@ -6,11 +6,7 @@ export function encrypt(str: string, server: string): Promise<any> {
     .then(response => {
       if (response) {
         let key = response.key;
-        let rsa = new nodeRsa();
-        rsa.importKey(key, 'public');
-        let encrypted = rsa.encrypt(str, 'base64');
-
-        return encrypted;
+        publicEncrypt(str, key).then(encrypted => encrypted);
       }
 
       return null;
@@ -25,4 +21,14 @@ export function decrypt(str: string, privateKey: string): Promise<any> {
 
     resolve(decrypted);
   });
+}
+
+export function publicEncrypt(str: string, publicKey: string): Promise<any> {
+  return new Promise(resolve => {
+    let rsa = new nodeRsa();
+    rsa.importKey(publicKey, 'public');
+    let encrypted = rsa.encrypt(str, 'base64');
+
+    resolve(encrypted);
+  }).catch(err => Promise.reject(err));
 }

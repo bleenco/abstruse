@@ -110,6 +110,13 @@
                         <input class="form-input" type="text" placeholder="Value" name="value" required [(ngModel)]="environmentVariableForm.value">
                       </div>
                       <div class="form-field">
+                        <label class="form-label">Encrypted</label>
+                        <select class="form-input" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted">
+                          <option value="0">No</option>
+                          <option value="1">Yes</option>
+                        </select>
+                      </div>
+                      <div class="form-field">
                         <button type="submit" class="button green float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add New Variable</button>
                       </div>
                     </form>
@@ -118,10 +125,14 @@
                   <div class="variables" *ngIf="repo?.variables?.length">
                     <h3>Repository Environment Variables:</h3>
                     <div class="columns list-item list-item-slim" *ngFor="let v of repo?.variables; let i = index;">
-                      <div class="column is-10">
+                      <div class="column is-9">
                         <span class="bold">{{ v.name }}: {{ v.value }}</span>
                       </div>
-                      <div class="column is-2 justify-center">
+                      <div class="column is-2">
+                        <span *ngIf="v.encrypted">(encrypted)</span>
+                        <span *ngIf="!v.encrypted">(public)</span>
+                      </div>
+                      <div class="column is-1 justify-center">
                           <span class="icon" name="remove-variable" (click)="removeVariable(v.id)">
                             <img src="images/icons/remove.svg">
                           </span>
