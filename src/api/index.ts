@@ -14,12 +14,21 @@ import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import { initSetup } from './utils';
+import { generatePublicKey, generatePrivateKey } from './security';
 import * as db from './db/migrations';
 
 const server = new ExpressServer({ port: 6500 });
 const socket = new SocketServer({ port: 6501 });
 
+const msg: LogMessageType = {
+  message: '[server] starting Abstruse CI server...',
+  type: 'info',
+  notify: false
+};
+logger.next(msg);
+
 initSetup()
+  .then(() => Promise.all([generatePublicKey(), generatePrivateKey()]))
   .then(() => db.create())
   .then(() => {
     Observable.merge(...[server.start(), socket.start()])

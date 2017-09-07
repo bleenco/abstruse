@@ -1,6 +1,14 @@
 import { homedir } from 'os';
 import { join, resolve } from 'path';
-import { existsSync, exists, copyFile, writeJsonFile, readJsonFile, ensureDirectory } from './fs';
+import {
+  existsSync,
+  exists,
+  copyFile,
+  writeJsonFile,
+  readJsonFile,
+  ensureDirectory,
+  writeFile
+} from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { ensureDirSync } from 'fs-extra';
 import { Observable } from 'rxjs';
@@ -10,7 +18,6 @@ import * as temp from 'temp';
 import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
 import * as nodeRsa from 'node-rsa';
 
-const key = new nodeRsa({b: 3072});
 const defaultConfig = {
   url: null,
   secret: 'thisIsSecret',
@@ -20,8 +27,8 @@ const defaultConfig = {
   ssl: false,
   sslcert: null,
   sslkey: null,
-  publicKey: key.exportKey('public'),
-  privateKey: key.exportKey('private'),
+  publicKey: 'rsa.pub',
+  privateKey: 'rsa.key',
   requireLogin: false,
   db: {
     client: 'sqlite3',
@@ -213,16 +220,4 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
         }
       });
     });
-}
-
-export function decrypt(str: string, config: any): string {
-  if (config.privateKey) {
-    const rsa = new nodeRsa();
-    rsa.importKey(config.privateKey, 'private');
-    const decrypted = rsa.decrypt(str, 'utf8');
-
-    return decrypted;
-  }
-
-  return null;
 }
