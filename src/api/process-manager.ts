@@ -16,8 +16,9 @@ import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
 import { logger, LogMessageType } from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
-import { getConfig, getHttpJsonResponse, getBitBucketAccessToken, decrypt } from './utils';
+import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
+import { decrypt } from './security';
 
 export interface BuildMessage {
   type: string;

@@ -41,6 +41,8 @@ export function startBuildProcess(
       .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
       .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
 
+    proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
+
     let debug: Observable<any> = Observable.empty();
     if (proc.sshAndVnc) {
       const ssh = `sudo /etc/init.d/ssh start`;
