@@ -727,10 +727,10 @@ function checkoutShaOrPr(sha: string, pr: number, dir: string): Promise<void> {
 
     if (pr) {
       fetch = `${gitDir} fetch origin pull/${pr}/head:pr${pr}`;
-      checkout = `${gitDir} checkout pr${pr}`;
+      checkout = `${gitDir} --work-tree ${dir} checkout pr${pr}`;
     } else if (sha) {
       fetch = `${gitDir} fetch --unshallow`;
-      checkout = `${gitDir} checkout ${sha}`;
+      checkout = `${gitDir} --work-tree ${dir} checkout ${sha}`;
     }
 
     if (fetch && checkout) {
