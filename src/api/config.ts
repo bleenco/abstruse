@@ -109,12 +109,14 @@ export function getRemoteParsedConfig(repository: any): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch;
+    let sha = repository.sha || null;
+    let pr = repository.pr || null;
     let cloneDir = null;
-    let fileTree: string[];
 
     createGitTmpDir()
       .then(dir => cloneDir = dir)
       .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
+      .then(() => checkoutShaOrPr(sha, pr, cloneDir))
       .then(() => readGitDir(cloneDir))
       .then(files => repository.file_tree = files)
       .then(() => {
@@ -706,6 +708,31 @@ function spawnGit(args: string[]): Promise<void> {
         reject(code);
       }
     });
+  });
+}
+
+function checkoutShaOrPr(sha: string, pr: number, dir: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let fetch = null;
+    let checkout = null;
+    let gitDir = `--git-dir ${dir}/.git`;
+
+    if (pr) {
+      fetch = `${gitDir} fetch origin pull/${pr}/head:pr${pr}`;
+      checkout = `${gitDir} checkout pr${pr}`;
+    } else if (sha) {
+      fetch = `${gitDir} fetch --unshallow`;
+      checkout = `${gitDir} checkout ${sha} .`;
+    }
+
+    if (fetch && checkout) {
+      spawnGit(fetch.split(' '))
+        .then(() => spawnGit(checkout.split(' '))
+        .then(() => resolve())
+        .catch(err => reject(err)));
+    } else {
+      resolve();
+    }
   });
 }
 
