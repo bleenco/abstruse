@@ -121,6 +121,12 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
         if (!executed) {
           const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
           attach.write(exec);
+
+          // don't show access token
+          if (cmd.command.includes('http') && cmd.command.includes('@')) {
+            cmd.command = cmd.command.replace(/\/\/(.*)@/, '//');
+          }
+
           observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
           executed = true;
         } else {

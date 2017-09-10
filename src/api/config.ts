@@ -72,7 +72,7 @@ export interface JobsAndEnv {
 
 export interface Repository {
   clone_url: string;
-  branch?: string;
+  branch: string;
   clone_depth?: number;
   pr?: number;
   sha?: string;
@@ -105,13 +105,17 @@ export interface Config {
   jdk?: string[];
 }
 
-export function getRemoteParsedConfig(repository: any): Promise<JobsAndEnv[]> {
+export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch;
     let sha = repository.sha || null;
     let pr = repository.pr || null;
     let cloneDir = null;
+
+    if (repository.access_token) {
+      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+    }
 
     createGitTmpDir()
       .then(dir => cloneDir = dir)
@@ -386,7 +390,11 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   // 1. clone repository
   const splitted = repo.clone_url.split('/');
   const name = splitted[splitted.length - 1].replace(/\.git/, '');
-  // TODO: update to ${ABSTRUSE_BUILD_DIR}, private repos also
+  // TODO: update to ${ABSTRUSE_BUILD_DIR}
+  if (repo.access_token) {
+    repo.clone_url = repo.clone_url.replace('//', `//${repo.access_token}@`);
+  }
+
   const clone = `git clone -q ${repo.clone_url} -b ${repo.branch} .`;
 
   // 2. fetch & checkout
@@ -722,7 +730,7 @@ function checkoutShaOrPr(sha: string, pr: number, dir: string): Promise<void> {
       checkout = `${gitDir} checkout pr${pr}`;
     } else if (sha) {
       fetch = `${gitDir} fetch --unshallow`;
-      checkout = `${gitDir} checkout ${sha} .`;
+      checkout = `${gitDir} checkout ${sha}`;
     }
 
     if (fetch && checkout) {

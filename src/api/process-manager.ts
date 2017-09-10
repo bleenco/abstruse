@@ -119,7 +119,16 @@ export function startBuild(data: any): Promise<any> {
 
       branch = branch || 'master';
 
-      const repo = { clone_url: repository.clone_url, branch: branch, pr: pr, sha: sha };
+      const repo = {
+        clone_url: repository.clone_url,
+        branch: branch,
+        pr: pr,
+        sha: sha,
+        access_token: repository.access_token
+      };
+
+      console.log(repo);
+
       return getRemoteParsedConfig(repo);
     })
     .then(parsedConfig => config = parsedConfig)
