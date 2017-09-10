@@ -124,10 +124,8 @@ export function startBuild(data: any): Promise<any> {
         branch: branch,
         pr: pr,
         sha: sha,
-        access_token: repository.access_token
+        access_token: repository.access_token || null
       };
-
-      console.log(repo);
 
       return getRemoteParsedConfig(repo);
     })
