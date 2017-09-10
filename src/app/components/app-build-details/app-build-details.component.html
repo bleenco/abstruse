@@ -17,13 +17,19 @@
                     <h1 class="bold">
                       <span *ngIf="build?.data?.repository?.full_name"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
                       <span *ngIf="!build?.data?.repository?.full_name && build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.project?.path_with_namespace }}</a></span>
-                      <span class="build-icon">
-                        <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
-                        <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
-                        <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
-                        <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
-                      </span>
                     </h1>
+                    <div class="branch-container">
+                      <span class="icon is-small">
+                        <img src="images/icons/git-branch.svg">
+                      </span>
+                      <span *ngIf="build?.branch">{{ build?.branch }}</span>
+                    </div>
+                    <span class="build-icon">
+                      <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
+                      <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
+                      <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
+                      <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
+                    </span>
                   </div>
                   <div class="column is-2" [class.is-hidden]="status !== 'success' && status !== 'failed'"></div>
                   <div class="column is-2" *ngIf="userId && build?.hasPermission">
@@ -50,7 +56,7 @@
                   <hr/>
 
                   <div class="column is-1">
-                    <p>
+                    <p class="text-small">
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
                       </span>
@@ -61,10 +67,10 @@
                     </p>
                   </div>
                   <div class="column is-4">
-                    <p *ngIf="build?.data?.pull_request && !tag">{{ build?.data?.pull_request?.title }}</p>
-                    <p *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag">{{ build?.data?.commits[0]?.message }}</p>
-                    <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.message && !tag">{{ build?.data?.message }}</p>
-                    <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</p>
+                    <p *ngIf="build?.data?.pull_request && !tag" class="text-small">{{ build?.data?.pull_request?.title }}</p>
+                    <p *ngIf="!build?.data?.pull_request && build?.data?.commits && !tag" class="text-small">{{ build?.data?.commits[0]?.message }}</p>
+                    <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && build?.data?.message && !tag" class="text-small">{{ build?.data?.message }}</p>
+                    <p *ngIf="!build?.data?.pull_request && !build?.data?.commits && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message !tag" class="text-small">{{ build?.data?.object_attributes?.last_commit?.message }}</p>
                     <p *ngIf="tag">{{ build?.data?.head_commit?.message }}</p>
                   </div>
                   <div class="column is-4">

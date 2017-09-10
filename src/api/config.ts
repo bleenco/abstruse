@@ -83,7 +83,6 @@ export interface Repository {
 export interface Config {
   language?: Language;
   os?: string;
-  // git: { repository_url: string, depth?: number, pr?: number, sha?: string };
   stage?: JobStage;
   cache?: { [key: string]: string }[] | null;
   branches?: { test: string[], ignore: string[] };
@@ -109,12 +108,13 @@ export interface Config {
 export function getRemoteParsedConfig(repository: any): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
+    let branch = repository.branch;
     let cloneDir = null;
     let fileTree: string[];
 
     createGitTmpDir()
       .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '--depth', '1', cloneDir]))
+      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
       .then(() => readGitDir(cloneDir))
       .then(files => repository.file_tree = files)
       .then(() => {
