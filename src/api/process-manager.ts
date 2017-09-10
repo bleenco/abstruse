@@ -131,6 +131,7 @@ export function startBuild(data: any): Promise<any> {
     })
     .then(parsedConfig => config = parsedConfig)
     .then(() => data.parsed_config = config)
+    .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
     .then(() => insertBuild(data))
     .then(build => {
       data = Object.assign(data, { build_id: build.id });
