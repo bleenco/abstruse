@@ -134,6 +134,7 @@ export function startBuild(data: any): Promise<any> {
     .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
     .then(() => insertBuild(data))
     .then(build => {
+      console.log(config);
       data = Object.assign(data, { build_id: build.id });
       delete data.repositories_id;
       delete data.pr;
