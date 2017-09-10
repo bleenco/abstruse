@@ -17,13 +17,19 @@
                     <h1 class="bold">
                       <span *ngIf="job?.build?.data?.repository?.full_name"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.repository?.full_name }}</a></span>
                       <span *ngIf="!job?.build?.data?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
-                      <span class="build-icon">
-                        <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
-                        <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
-                        <img src="images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
-                        <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
-                      </span>
                     </h1>
+                    <div class="branch-container">
+                      <span class="icon is-small">
+                        <img src="images/icons/git-branch.svg">
+                      </span>
+                      <span *ngIf="job?.build?.branch">{{ job?.build?.branch }}</span>
+                    </div>
+                    <span class="build-icon">
+                      <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
+                      <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
+                      <img src="images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
+                      <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
+                    </span>
                   </div>
                   <div class="column is-5 justify-end right-buttons-top" *ngIf="userId && job?.hasPermission">
                     <button class="button is-fullwidth" name="btn-restart-ssh" type="button" (click)="restartJobWithSSH($event)" [disabled]="processing">

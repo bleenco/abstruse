@@ -6,7 +6,8 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 let repo = {
-  clone_url: 'https://github.com/bleenco/abstruse.git'
+  clone_url: 'https://github.com/bleenco/abstruse.git',
+  branch: 'master'
 };
 
 describe('Remote git configuration', () => {

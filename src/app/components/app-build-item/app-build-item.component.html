@@ -12,8 +12,15 @@
     <span *ngIf="tag" class="bold larger">{{ tag }}</span>
   </div>
   <div class="column is-2">
-    <span class="larger" *ngIf="build?.repository?.full_name">{{ build?.repository?.full_name }}</span>
-    <span class="larger" *ngIf="!build?.repository?.full_name">{{ build?.data?.repository?.full_name }}</span>
+    <div class="repo-branch-column">
+      <span class="larger bold" *ngIf="build?.repository?.full_name">{{ build?.repository?.full_name }}</span>
+      <span class="larger bold" *ngIf="!build?.repository?.full_name">{{ build?.data?.repository?.full_name }}</span>
+
+      <span *ngIf="build?.branch" class="span-branch">
+        <img src="images/icons/git-branch.svg">
+        {{ build?.branch }}
+      </span>
+    </div>
   </div>
   <div class="column is-4 commit-column">
     <span class="icon">
