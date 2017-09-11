@@ -127,8 +127,8 @@ export function startBuildProcess(
       .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .merge(Observable.timer(jobTimeout).timeInterval().mergeMap((): any => {
-        Observable.throw('job timeout');
+      .merge(Observable.timer(10000).timeInterval().mergeMap(() => {
+        return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
