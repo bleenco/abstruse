@@ -84,7 +84,7 @@ export class AppTerminalComponent implements OnInit {
           out = out.replace(/\[exectime\]: [0-9.,]+/g, '');
 
           return acc.concat({
-            command: curr.trim(),
+            command: curr.replace('==&gt;', '').trim(),
             visible: i === commands.length - 1 ? true : false,
             output: out,
             time: times[i] ? this.getDuration(time) : null
