@@ -119,7 +119,6 @@ export function startBuildProcess(
 
     const sub = startContainer(name, image, envs)
       .concat(debug)
-      // .concat(...proc.commands.map(cmd => executeInContainer(name, cmd)))
       .concat(...gitCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...[restoreCache])
       .concat(...installCommands.map(cmd => executeInContainer(name, cmd)))
@@ -127,7 +126,7 @@ export function startBuildProcess(
       .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .merge(Observable.timer(10000).timeInterval().mergeMap(() => {
+      .merge(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
