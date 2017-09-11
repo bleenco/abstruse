@@ -31,7 +31,8 @@ export interface ProcessOutput {
 export function startBuildProcess(
   proc: JobProcess,
   image: string,
-  variables: string[]
+  variables: string[],
+  timeout: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
@@ -115,6 +116,7 @@ export function startBuildProcess(
       ]);
     }
 
+    let commandTimeout;
     const sub = startContainer(name, image, envs)
       .concat(debug)
       // .concat(...proc.commands.map(cmd => executeInContainer(name, cmd)))
@@ -124,7 +126,22 @@ export function startBuildProcess(
       .concat(...[saveCache])
       .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
+      .distinctUntilChanged()
       .subscribe((event: ProcessOutput) => {
+        if (commandTimeout) {
+          clearTimeout(commandTimeout);
+        }
+        commandTimeout = setTimeout(() => {
+          const err = 'Error: Command Timed Out';
+          sub.unsubscribe();
+          observer.error(err);
+          stopContainer(name).subscribe((event: ProcessOutput) => {
+            observer.next(event);
+            observer.next({ type: 'data', data: err });
+            observer.complete();
+          });
+        }, timeout);
+
         observer.next(event);
       }, err => {
         sub.unsubscribe();
