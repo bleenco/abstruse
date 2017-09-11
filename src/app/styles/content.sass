@@ -147,6 +147,11 @@
             width: 12px
             height: 12px
 
+  .icon
+    svg
+      margin-top: 7px
+      margin-left: 1px
+
   &.is-success
     border-left: 10px solid $green
 
@@ -160,50 +165,6 @@
 
   &.is-queued
     border-left: 10px solid $white
-
-  .icon
-    margin-right: 5px
-    display: inline-flex
-    align-items: center
-    text-align: center
-    justify-content: center
-    width: 25px
-    height: 25px
-
-    &.circle
-      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
-      border: 1px solid #CED0DA
-      border-radius: 18px
-
-    img, svg
-      width: 14px
-      height: 14px
-
-      g
-        fill: $color-secondary
-
-    &:hover
-      background: #353C48
-      border-radius: 18px
-
-      svg
-        g
-          fill: $white
-
-    &.disabled
-      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%) !important
-      pointer-events: none
-
-      svg
-
-        g
-          fill: $color-disabled !important
-
-    &.is-medium
-
-      img, svg
-        width: 25px
-        height: 25px
 
   .avatar-icon
     width: 50px

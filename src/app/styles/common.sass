@@ -78,3 +78,45 @@ hr
 
 .mtop-20
   margin-top: 20px
+
+.icon
+  margin-right: 5px
+  align-items: center
+  text-align: center
+  justify-content: center
+  width: 30px
+  height: 30px
+
+  &.circle
+    background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+    border: 1px solid #CED0DA
+    border-radius: 18px
+
+    &:hover
+      background-image: linear-gradient(0deg, #EAEEF3 0%, #FFFFFF 100%)
+
+      svg
+        g
+          fill: $color-secondary
+
+  img, svg
+    width: 15px
+    height: 15px
+
+    g
+      fill: $color-secondary
+
+  &.disabled
+    background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%) !important
+    pointer-events: none
+
+    svg
+
+      g
+        fill: $color-disabled !important
+
+  &.is-medium
+
+    img, svg
+      width: 25px
+      height: 25px
