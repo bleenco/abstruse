@@ -1,6 +1,6 @@
 <svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-    <g transform="translate(-18.000000, -1.000000)" fill-rule="nonzero" fill="#FFFFFF">
+    <g transform="translate(-18.000000, -1.000000)" fill-rule="nonzero" fill="#7F8FA4">
       <g id="Group" transform="translate(18.000000, 0.637820)">
         <path d="M32,0.36219 C29.2385,0.36219 27,2.60079 27,5.36219 L27,27.36216 L5,27.36216 C2.2386,27.36216 0,29.60066 0,32.3622 C0,35.1237 2.2386,37.3622 5,37.3622 L27,37.3622 L27,59.3622 C27,62.1236 29.2385,64.3622 32,64.3622 C34.7615,64.3622 37,62.1236 37,59.3622 L37,37.3622 L59,37.3622 C61.7614,37.3622 64,35.1237 64,32.3622 C64,29.60067 61.7614,27.36216 59,27.36216 L37,27.36216 L37,5.3622 C37,2.6008 34.7615,0.3622 32,0.3622 L32,0.36219 Z" id="Shape"></path>
       </g>

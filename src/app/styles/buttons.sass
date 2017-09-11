@@ -58,14 +58,12 @@
 
 .button
   height: 40px
-  background-image: linear-gradient(-180deg, #516173 3%, #3B4857 98%)
-  font-family: $font-family-semibold
-  color: $white
+  font-family: $font-family-regular
+  color: $color-secondary
   font-size: 14px
   padding: 0 20px
   text-align: center
   text-transform: none
-  border: 1px solid $border
   transition: none
   display: flex
   justify-content: center
@@ -73,6 +71,10 @@
   outline: none !important
   flex: 1
   font-weight: $weight-semibold
+  border-radius: 8px
+  background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+  border: 1px solid $border
+  border-radius: 4px
 
   &.centered-anonymous
     display: flex
@@ -85,9 +87,8 @@
       height: 25px
 
   &:focus, &:active
-    box-shadow: none !important
-    border-color: transparent !important
-    color: $white
+    background-image: linear-gradient(-1deg, #E0E4E8 0%, #F2F7FA 97%);
+    border: 1px solid $border
 
   &.floated
     float: left
@@ -98,9 +99,11 @@
 
   &.green
     background-image: linear-gradient(-180deg, #39B54A 0%, #34AA44 98%)
+    color: $white
 
   &.red
     background: linear-gradient(to bottom, #F95359, #DD151C)
+    color: $white
     border-color: $red
 
     &[disabled]
@@ -121,33 +124,36 @@
     border-color: #F7981C
 
   &:hover
-    color: $white
-    background-image: linear-gradient(-180deg, #415061 3%, #303D4C 98%)
+    background-image: linear-gradient(0deg, #EAEEF3 0%, #FFFFFF 100%)
     border: 1px solid $border
+    border-radius: 4px
 
     &.green
       background-image: linear-gradient(-1deg, #1E930B 3%, #1E9D09 100%)
+      color: $white
 
     &.red
       background: linear-gradient(to bottom, #EC4249, #BD0C13)
       border: 1px solid #BD0C13
+      color: $white
 
     &.blue
       background-image: linear-gradient(-180deg, #1584D7 5%, #2184CF 98%);
       border-color: #0C73C1
+      color: $white
 
     &.yellow
       background: linear-gradient(to bottom, #F09219, #E96012)
       border-color: #F09219
+      color: $white
 
   &.is-active
     background: linear-gradient(to bottom, #354353, #232E3B)
 
   &[disabled]
-    background: $background-secondary
+    background: #E9EDF1
+    border: 1px solid #DFE3E9
     pointer-events: none
-    color: $color-disabled
-    border-color: $border
 
   img
     width: 14px
@@ -166,11 +172,11 @@
 
   .group-button
     height: 36px
-    border: 1px solid $border
-    background: $background-secondary
-    color: $color
+    background-image: linear-gradient(-1deg, #1991EB 2%, #2DA1F8 98%)
+    border: 1px solid #1585D8
+    color: $white
     padding: 6px  12px
-    font-family: $font-family-semibold
+    font-family: $font-family-regular
     text-transform: uppercase
     font-size: 13px
     outline: none
@@ -185,5 +191,5 @@
       border-bottom-right-radius: 4px
 
     &.is-active, &:hover
-      border: 1px solid $border-blue
-      background: rgba($blue-secondary, 0.4)
+      background-image: linear-gradient(-180deg, #0C73C1 2%, #196BAA 98%)
+      border: 1px solid #1468A7
