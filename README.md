@@ -79,44 +79,6 @@ In repository `Settings` navigate to `Branches` section in the menu. Click `Edit
   <img src="https://user-images.githubusercontent.com/1796022/29859098-d90d5682-8d60-11e7-92ff-b089daf4f7a8.png" width="700">
 </p>
 
-## Sample .abstruse.yml configuration
-
-```yml
-language: node_js
-
-git:
-  depth: 3
-
-matrix:
-  - node_js: "7"
-    env: SCRIPT=lint
-  - node_js: "7"
-    env: SCRIPT=test:unit
-  - node_js: "7"
-    env: NODE_SCRIPT=./tests/run_e2e.js
-  - node_js: "6"
-    env: SCRIPT=test:unit
-  - node_js: "6"
-    env: NODE_SCRIPT=./tests/run_e2e.js
-
-preinstall:
-  - npm config set spin false
-  - npm config set progress false
-
-install:
-  - npm install
-
-test:
-  - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
-  - if [[ "$NODE_SCRIPT" ]]; then node ./$NODE_SCRIPT; fi
-```
-
-## Sneak peek
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/29797980-78c7a766-8c5a-11e7-87a7-98cebd085396.png">
-</p>
-
 ## Licence
 
 The MIT License
