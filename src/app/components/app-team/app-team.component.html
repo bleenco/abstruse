@@ -20,9 +20,8 @@
     <div class="column is-12" *ngIf="user.admin">
       <div *ngIf="!addUser">
         <button type="button" class="button green float-right" name="btn-addUser" (click)="showAddUser()">
-            <img src="images/icons/plus.svg">
-            Add New User
-          </button>
+          Add New User
+        </button>
       </div>
       <div *ngIf="addUser">
         <div class="notification is-danger" *ngIf="error">

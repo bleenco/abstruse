@@ -4,8 +4,8 @@
   position: relative
   z-index: 10
   border-radius: 4px
-  margin-top: 20px
-  margin-bottom: 50px
+  margin-top: 10px
+  margin-bottom: 100px
 
   ul
     margin: 10px 0
@@ -93,7 +93,7 @@
     height: 70px
 
   &.columns
-    margin: 10px 0
+    margin: 5px 0
 
   span
     display: block
@@ -120,14 +120,16 @@
         display: block
 
         &.icon
-          display: inline-block
+          display: inline-flex
+          justify-content: center
+          align-content: center
           float: left
           margin-top: 20px
           margin-right: 20px
 
           img
-            width: 16px
-            height: 16px
+            width: 14px
+            height: 14px
 
     .repo-branch-column
 
@@ -163,21 +165,39 @@
     margin-right: 5px
     display: inline-flex
     align-items: center
+    text-align: center
+    justify-content: center
+    width: 25px
+    height: 25px
+
+    &.circle
+      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+      border: 1px solid #CED0DA
+      border-radius: 18px
 
     img, svg
-      width: 16px
-      height: 16px
+      width: 14px
+      height: 14px
 
       g
         fill: $color-secondary
 
+    &:hover
+      background: #353C48
+      border-radius: 18px
+
+      svg
+        g
+          fill: $white
+
     &.disabled
+      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%) !important
       pointer-events: none
 
       svg
 
         g
-          fill: $color-disabled
+          fill: $color-disabled !important
 
     &.is-medium
 
@@ -290,17 +310,17 @@
 progress
   width: 100%
   margin: 0 10px
-  height: 4px
+  height: 5px
   border-radius: 10px
 
   &::-webkit-progress-bar
     background: #313D4F
     border-radius: 10px
   &::-webkit-progress-value
-    background-image: linear-gradient(-90deg, #FDC018 2%, #F8CF5D 98%);
+    background-image: linear-gradient(-90deg, #2BB415 2%, #5AD946 98%)
     border-radius: 10px
   &::-moz-progress-bar
-    background-image: linear-gradient(-90deg, #FDC018 2%, #F8CF5D 98%);
+    background-image: linear-gradient(-90deg, #2BB415 2%, #5AD946 98%)
     border-radius: 10px
 
 .avatar-img-container
@@ -350,8 +370,8 @@ progress
     background: #ED1C24
 
   &.bright
-    background: #DFE1E5
-    color: #354052
+    background: #C2CAD4
+    color: $white
 
 .text-time
   display: block
