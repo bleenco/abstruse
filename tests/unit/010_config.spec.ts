@@ -94,35 +94,35 @@ describe('Common Configuration Options', () => {
     it(`should return array of single appropriate dir if 'bundler' is specified`, () => {
       data.cache = 'bundler';
       const parsed = parseConfig(data);
-      const expected = [ { bundler: 'vendor/bundle' } ];
+      const expected = [ 'vendor/bundle' ];
       expect(parsed.cache).to.deep.equal(expected);
     });
 
     it(`should return array of single appropriate dir if 'yarn' is specified`, () => {
       data.cache = 'yarn';
       const parsed = parseConfig(data);
-      const expected = [ { yarn: '$HOME/.cache/yarn' } ];
+      const expected = [ '$HOME/.cache/yarn' ];
       expect(parsed.cache).to.deep.equal(expected);
     });
 
     it(`should return array of single appropriate dir if 'pip' is specified`, () => {
       data.cache = 'pip';
       const parsed = parseConfig(data);
-      const expected = [ { pip: '$HOME/.cache/pip' } ];
+      const expected = [ '$HOME/.cache/pip' ];
       expect(parsed.cache).to.deep.equal(expected);
     });
 
     it(`should return array of single appropriate dir if 'packages' is specified`, () => {
       data.cache = 'packages';
       const parsed = parseConfig(data);
-      const expected = [ { packages: '$HOME/R/Library' } ];
+      const expected = [ '$HOME/R/Library' ];
       expect(parsed.cache).to.deep.equal(expected);
     });
 
     it(`should return array of single appropriate dir if 'cargo' is specified`, () => {
       data.cache = 'cargo';
       const parsed = parseConfig(data);
-      const expected = [ { cargo: '$HOME/.cargo' } ];
+      const expected = [ '$HOME/.cargo' ];
       expect(parsed.cache).to.deep.equal(expected);
     });
 
@@ -135,8 +135,8 @@ describe('Common Configuration Options', () => {
       data.cache = { directories: ['node_modules', 'vendor/packages'] };
       const parsed = parseConfig(data);
       const expected = [
-        { dir: 'node_modules' },
-        { dir: 'vendor/packages' }
+        'node_modules',
+        'vendor/packages'
       ];
       expect(parsed.cache).to.deep.equal(expected);
     });
