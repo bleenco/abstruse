@@ -40,6 +40,9 @@ export interface JobProcess {
   image_name?: string;
   log?: string[];
   commands?: { command: string, type: CommandType }[];
+  cache?: string[];
+  repo_name?: string;
+  branch?: string;
   env?: string[];
   sshAndVnc?: boolean;
   job?: Observable<any>;
@@ -134,7 +137,6 @@ export function startBuild(data: any): Promise<any> {
     .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
     .then(() => insertBuild(data))
     .then(build => {
-      console.log(config);
       data = Object.assign(data, { build_id: build.id });
       delete data.repositories_id;
       delete data.pr;
@@ -457,6 +459,9 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         job_id: jobId,
         status: 'queued',
         commands: jobData.commands,
+        cache: jobData.cache || null,
+        repo_name: job.build.repository.full_name || null,
+        branch: job.build.branch || null,
         env: jobData.env,
         sshAndVnc: sshAndVnc,
         log: []

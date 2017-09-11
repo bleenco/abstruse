@@ -1,7 +1,7 @@
 import * as docker from './docker';
 import { PtyInstance } from './pty';
 import * as child_process from 'child_process';
-import { generateRandomId } from './utils';
+import { generateRandomId, getFilePath } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue, cyan } from 'chalk';
@@ -43,6 +43,54 @@ export function startBuildProcess(
 
     proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
 
+    const gitCommands = proc.commands.filter(command => command.type === CommandType.git);
+    const installCommands = proc.commands.filter(command => {
+      return command.type === CommandType.before_install || command.type === CommandType.install;
+    });
+    const scriptCommands = proc.commands.filter(command => {
+      return command.type === CommandType.before_script || command.type === CommandType.script ||
+        command.type === CommandType.after_success || command.type === CommandType.after_failure;
+    });
+    const deployCommands = proc.commands.filter(command => {
+      return command.type === CommandType.before_deploy || command.type === CommandType.deploy ||
+        command.type === CommandType.after_deploy || command.type === CommandType.after_script;
+    });
+
+    let restoreCache: Observable<any> = Observable.empty();
+    let saveCache: Observable<any> = Observable.empty();
+    if (proc.repo_name && proc.branch && proc.cache) {
+      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tar.bz2`;
+      let cacheHostPath = getFilePath(`cache/${cacheFile}`);
+      let cacheContainerPath = `/home/abstruse/${cacheFile}`;
+      let copyRestoreCmd = [
+        `if [ -f ${cacheHostPath} ];`,
+        `then docker cp ${cacheHostPath} ${name}:/home/abstruse`,
+        `; fi`
+      ].join(' ');
+      let restoreCmd = [
+        `if [ -f /home/abstruse/${cacheFile} ];`,
+        `then tar xjf /home/abstruse/${cacheFile} -C .`,
+        `; fi`
+      ].join(' ');
+
+      restoreCache = Observable.concat(...[
+        executeOutsideContainer(copyRestoreCmd),
+        executeInContainer(name, { command: restoreCmd, type: CommandType.restore_cache })
+      ]);
+
+      let tarCmd = [
+        `if [ ! -f /home/abstruse/${cacheFile} ];`,
+        `then tar cjSf /home/abstruse/${cacheFile} ${proc.cache.join(' ')}`,
+        `; fi`
+      ].join(' ');
+      let saveTarCmd = `docker cp ${name}:/home/abstruse/${cacheFile} ${cacheHostPath}`;
+
+      saveCache = Observable.concat(...[
+        executeInContainer(name, { command: tarCmd, type: CommandType.store_cache }),
+        executeOutsideContainer(saveTarCmd)
+      ]);
+    }
+
     let debug: Observable<any> = Observable.empty();
     if (proc.sshAndVnc) {
       const ssh = `sudo /etc/init.d/ssh start`;
@@ -69,7 +117,13 @@ export function startBuildProcess(
 
     const sub = startContainer(name, image, envs)
       .concat(debug)
-      .concat(...proc.commands.map(cmd => executeInContainer(name, cmd)))
+      // .concat(...proc.commands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...gitCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...[restoreCache])
+      .concat(...installCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...[saveCache])
+      .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
       .subscribe((event: ProcessOutput) => {
         observer.next(event);
       }, err => {
@@ -122,12 +176,18 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
           const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
           attach.write(exec);
 
-          // don't show access token
+          // don't show access token on UI
           if (cmd.command.includes('http') && cmd.command.includes('@')) {
             cmd.command = cmd.command.replace(/\/\/(.*)@/, '//');
           }
 
-          observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
+          if (cmd.type === CommandType.store_cache) {
+            observer.next({ type: 'data', data: yellow('==> Storing cache ...') + '\r' });
+          } else if (cmd.type === CommandType.restore_cache) {
+            observer.next({ type: 'data', data: yellow('==> Restoring cache ...') + '\r' });
+          } else {
+            observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
+          }
           executed = true;
         } else {
           if (data.includes('[success]')) {
@@ -166,6 +226,20 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
           observer.complete();
         }
       });
+    });
+  });
+}
+
+function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
+  return new Observable(observer => {
+    const proc = child_process.exec(cmd);
+
+    proc.stdout.on('data', data => console.log(data.toString()));
+    proc.stderr.on('data', data => console.log(data.toString()));
+
+    proc.on('close', code => {
+      observer.next({ type: 'exit', data: code.toString() });
+      observer.complete();
     });
   });
 }

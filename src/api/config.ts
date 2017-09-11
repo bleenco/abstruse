@@ -26,6 +26,8 @@ export enum CommandType {
   before_script = 'before_script',
   script = 'script',
   before_cache = 'before_cache',
+  restore_cache = 'restore_cache',
+  store_cache = 'store_cache',
   after_success = 'after_success',
   after_failure = 'after_failure',
   before_deploy = 'before_deploy',
@@ -68,6 +70,7 @@ export interface JobsAndEnv {
   display_version: string | null;
   language: Language;
   version?: string;
+  cache?: string[];
 }
 
 export interface Repository {
@@ -84,7 +87,7 @@ export interface Config {
   language?: Language;
   os?: string;
   stage?: JobStage;
-  cache?: { [key: string]: string }[] | null;
+  cache?: string[] | null;
   branches?: { test: string[], ignore: string[] };
   env?: { global: string[], matrix: string[] };
   before_install?: { command: string, type: CommandType }[];
@@ -232,7 +235,7 @@ function parseOS(os: string | null): string {
   return 'linux'; // since we are compatible with travis configs, hardcode this to Linux
 }
 
-function parseCache(cache: any | null): { [key: string]: string }[] | null {
+function parseCache(cache: any | null): string[] | null {
   if (!cache) {
     return null;
   } else {
@@ -240,17 +243,17 @@ function parseCache(cache: any | null): { [key: string]: string }[] | null {
       if (cache in CacheType) {
         switch (cache) {
           case 'bundler':
-            return [ { bundler: 'vendor/bundle' } ];
+            return [ 'vendor/bundle' ];
           case 'yarn':
-            return [ { yarn: '$HOME/.cache/yarn' } ];
+            return [ '$HOME/.cache/yarn' ];
           case 'pip':
-            return [ { pip: '$HOME/.cache/pip' } ];
+            return [ '$HOME/.cache/pip' ];
           case 'ccache':
-            return [ { ccache: '$HOME/.ccache' } ];
+            return [ '$HOME/.ccache' ];
           case 'packages':
-            return [ { packages: '$HOME/R/Library' } ];
+            return [ '$HOME/R/Library' ];
           case 'cargo':
-            return [ { cargo: '$HOME/.cargo' } ];
+            return [ '$HOME/.cargo' ];
         }
       } else {
         throw new Error(`${cache} is not a known option for caching.`);
@@ -258,7 +261,7 @@ function parseCache(cache: any | null): { [key: string]: string }[] | null {
     } else if (typeof cache === 'object') {
       if (cache && cache.directories) {
         if (Array.isArray(cache.directories)) {
-          return cache.directories.map(dir => ({ dir }));
+          return cache.directories;
         } else {
           throw new Error(`${cache.directories} is not a type of array.`);
         }
@@ -559,6 +562,9 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       { command: fetch, type: CommandType.git },
       { command: checkout, type: CommandType.git }
     ]);
+
+    // apply cache to each job
+    d.cache = config.cache;
 
     d.commands = d.commands.filter(cmd => !!cmd.command);
 
