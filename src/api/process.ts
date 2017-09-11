@@ -67,12 +67,12 @@ export function startBuildProcess(
       let copyRestoreCmd = [
         `if [ -e ${cacheHostPath} ];`,
         `then docker cp ${cacheHostPath} ${name}:/home/abstruse`,
-        `; fi`
+        `; else exit 0; fi`
       ].join(' ');
       let restoreCmd = [
         `if [ -e /home/abstruse/${cacheFile} ];`,
         `then tar xjf /home/abstruse/${cacheFile} -C .`,
-        `; fi`
+        `; else exit 0; fi`
       ].join(' ');
 
       restoreCache = Observable.concat(...[
@@ -83,9 +83,13 @@ export function startBuildProcess(
       let tarCmd = [
         `if [ ! -e /home/abstruse/${cacheFile} ];`,
         `then tar cjSf /home/abstruse/${cacheFile} ${proc.cache.join(' ')}`,
-        `; fi`
+        `; else exit 0; fi`
       ].join(' ');
-      let saveTarCmd = `docker cp ${name}:/home/abstruse/${cacheFile} ${cacheHostPath}`;
+      let saveTarCmd = [,
+        `if [ ! -e ${cacheHostPath} ];`,
+        `then docker cp ${name}:/home/abstruse/${cacheFile} ${cacheHostPath}`,
+        '; else exit 0; fi'
+      ].join(' ');
 
       saveCache = Observable.concat(...[
         executeInContainer(name, { command: tarCmd, type: CommandType.store_cache }),
@@ -126,7 +130,7 @@ export function startBuildProcess(
       .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .merge(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
+      .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
