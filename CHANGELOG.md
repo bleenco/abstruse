@@ -11,6 +11,15 @@
 * **committer-name:** fix texts related to commiter and author name ([cc1281e](https://github.com/bleenco/abstruse/commit/cc1281e))
 * **encryption:** do not generate keys each time starting server ([c73dc2b](https://github.com/bleenco/abstruse/commit/c73dc2b))
 * add authentication token to update permission call ([60d0eec](https://github.com/bleenco/abstruse/commit/60d0eec))
+=======
+* add authentication token to update permission call ([60d0eec](https://github.com/bleenco/abstruse/commit/60d0eec))
+* **cache:** fix directory existence checking ([3a37186](https://github.com/bleenco/abstruse/commit/3a37186))
+* **chrome:** add security options and env vars so Google Chrome runs inside containers ([8631aac](https://github.com/bleenco/abstruse/commit/8631aac))
+* init db before starting server ([5ce3baa](https://github.com/bleenco/abstruse/commit/5ce3baa))
+* **committer-name:** fix texts related to commiter and author name ([cc1281e](https://github.com/bleenco/abstruse/commit/cc1281e))
+* **encryption:** do not generate keys each time starting server ([c73dc2b](https://github.com/bleenco/abstruse/commit/c73dc2b))
+* restricted access to private repositories, builds and jobs ([40f5ca7](https://github.com/bleenco/abstruse/commit/40f5ca7))
+>>>>>>> chore(release): 0.9.6
 * **github-status:** fix sending statuses to Github (closes [#102](https://github.com/bleenco/abstruse/issues/102)) ([0c2ec11](https://github.com/bleenco/abstruse/commit/0c2ec11))
 * **hotfix:** fix blinking terminal ([6b244c5](https://github.com/bleenco/abstruse/commit/6b244c5))
 * **hotfix:** hot hot hot ([e98d75f](https://github.com/bleenco/abstruse/commit/e98d75f))
@@ -27,7 +36,6 @@
 * fixed sending commit status ([66cb7f2](https://github.com/bleenco/abstruse/commit/66cb7f2))
 * init db before starting server ([5ce3baa](https://github.com/bleenco/abstruse/commit/5ce3baa))
 * update build's end_time ([783ac43](https://github.com/bleenco/abstruse/commit/783ac43))
-
 
 ### Features
 
