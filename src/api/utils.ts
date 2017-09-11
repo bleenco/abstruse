@@ -24,6 +24,8 @@ const defaultConfig = {
   port: 6500,
   wsport: 6501,
   concurrency: 10,
+  idleTimeout: 600,
+  jobTimeout: 3600,
   ssl: false,
   sslcert: null,
   sslkey: null,
