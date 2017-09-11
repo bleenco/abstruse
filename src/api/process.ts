@@ -63,12 +63,12 @@ export function startBuildProcess(
       let cacheHostPath = getFilePath(`cache/${cacheFile}`);
       let cacheContainerPath = `/home/abstruse/${cacheFile}`;
       let copyRestoreCmd = [
-        `if [ -f ${cacheHostPath} ];`,
+        `if [ -e ${cacheHostPath} ];`,
         `then docker cp ${cacheHostPath} ${name}:/home/abstruse`,
         `; fi`
       ].join(' ');
       let restoreCmd = [
-        `if [ -f /home/abstruse/${cacheFile} ];`,
+        `if [ -e /home/abstruse/${cacheFile} ];`,
         `then tar xjf /home/abstruse/${cacheFile} -C .`,
         `; fi`
       ].join(' ');
@@ -79,7 +79,7 @@ export function startBuildProcess(
       ]);
 
       let tarCmd = [
-        `if [ ! -f /home/abstruse/${cacheFile} ];`,
+        `if [ ! -e /home/abstruse/${cacheFile} ];`,
         `then tar cjSf /home/abstruse/${cacheFile} ${proc.cache.join(' ')}`,
         `; fi`
       ].join(' ');

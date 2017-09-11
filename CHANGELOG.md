@@ -1,3 +1,64 @@
+<a name="0.9.6"></a>
+## [0.9.6](https://github.com/bleenco/abstruse/compare/v0.8.16...v0.9.6) (2017-09-11)
+
+
+### Bug Fixes
+
+* **auto-scroll:** terminal output auto-scroll done right ([9855270](https://github.com/bleenco/abstruse/commit/9855270))
+* **avatars:** hotfix for non PRs ([3e8b291](https://github.com/bleenco/abstruse/commit/3e8b291))
+* **branch:** fix branch name ([1bf8b70](https://github.com/bleenco/abstruse/commit/1bf8b70))
+* **chrome:** add security options and env vars so Google Chrome runs inside containers ([8631aac](https://github.com/bleenco/abstruse/commit/8631aac))
+* **committer-name:** fix texts related to commiter and author name ([cc1281e](https://github.com/bleenco/abstruse/commit/cc1281e))
+* **encryption:** do not generate keys each time starting server ([c73dc2b](https://github.com/bleenco/abstruse/commit/c73dc2b))
+* add authentication token to update permission call ([60d0eec](https://github.com/bleenco/abstruse/commit/60d0eec))
+* **github-status:** fix sending statuses to Github (closes [#102](https://github.com/bleenco/abstruse/issues/102)) ([0c2ec11](https://github.com/bleenco/abstruse/commit/0c2ec11))
+* **hotfix:** fix blinking terminal ([6b244c5](https://github.com/bleenco/abstruse/commit/6b244c5))
+* **hotfix:** hot hot hot ([e98d75f](https://github.com/bleenco/abstruse/commit/e98d75f))
+* **permissions:** remove uneeded AuthGuard, fix all permissions on all routes ([f23f952](https://github.com/bleenco/abstruse/commit/f23f952))
+* **pm:** fix some process and pm related stuff ([7cf2c0b](https://github.com/bleenco/abstruse/commit/7cf2c0b))
+* **times:** fix times on console output ([4e574cd](https://github.com/bleenco/abstruse/commit/4e574cd))
+* restricted access to private repositories, builds and jobs ([40f5ca7](https://github.com/bleenco/abstruse/commit/40f5ca7))
+* **ui:** fix white ui ([1107122](https://github.com/bleenco/abstruse/commit/1107122))
+* fixed access guard ([ec4019f](https://github.com/bleenco/abstruse/commit/ec4019f))
+* **ui:** ui style updates ([646926f](https://github.com/bleenco/abstruse/commit/646926f))
+* **work-tree:** fix work-tree dir when checking out new sha/pr ([dd20c75](https://github.com/bleenco/abstruse/commit/dd20c75))
+* fixed build running time ([83dd607](https://github.com/bleenco/abstruse/commit/83dd607))
+* fixed progress bar ([38cee0e](https://github.com/bleenco/abstruse/commit/38cee0e))
+* fixed sending commit status ([66cb7f2](https://github.com/bleenco/abstruse/commit/66cb7f2))
+* init db before starting server ([5ce3baa](https://github.com/bleenco/abstruse/commit/5ce3baa))
+* update build's end_time ([783ac43](https://github.com/bleenco/abstruse/commit/783ac43))
+
+
+### Features
+
+* **avatars:** double avatars where needed (closes [#109](https://github.com/bleenco/abstruse/issues/109)) ([cb5cc88](https://github.com/bleenco/abstruse/commit/cb5cc88))
+* **branches:** get config from proper sha ([9e5dc03](https://github.com/bleenco/abstruse/commit/9e5dc03))
+* **cache:** enable caching files and directories (closes [#132](https://github.com/bleenco/abstruse/issues/132)) ([1610146](https://github.com/bleenco/abstruse/commit/1610146))
+* **config:** branches property ([2d80141](https://github.com/bleenco/abstruse/commit/2d80141))
+* **config:** build config - generate jobs and envs ([f297a42](https://github.com/bleenco/abstruse/commit/f297a42))
+* **console:** console command exec times ([2611e4f](https://github.com/bleenco/abstruse/commit/2611e4f))
+* **docker:** bash script for switching JDKs ([c8b5b23](https://github.com/bleenco/abstruse/commit/c8b5b23))
+* **exec-script:** bash script for executing commands in container with timeout ([60fac21](https://github.com/bleenco/abstruse/commit/60fac21))
+* **logger:** enable logger to database ([dced1fe](https://github.com/bleenco/abstruse/commit/dced1fe))
+* **logs:** system logs ([32af36a](https://github.com/bleenco/abstruse/commit/32af36a))
+* **process:** handling process with the new script ([5872b35](https://github.com/bleenco/abstruse/commit/5872b35))
+* **socket:** enable session parsing for socket connections ([31d6c1f](https://github.com/bleenco/abstruse/commit/31d6c1f))
+* stop old, deprecated builds ([284abcd](https://github.com/bleenco/abstruse/commit/284abcd))
+* **terminal:** roboto mono font ([353ae28](https://github.com/bleenco/abstruse/commit/353ae28))
+* **ui:** progress bar ([110bf6a](https://github.com/bleenco/abstruse/commit/110bf6a))
+* **ui:** show proper branch ([df0884f](https://github.com/bleenco/abstruse/commit/df0884f))
+* **ui:** show proper branch ([92cc505](https://github.com/bleenco/abstruse/commit/92cc505))
+* **ui:** white ([9510417](https://github.com/bleenco/abstruse/commit/9510417))
+* **ui-labels:** data-labels ([a1af711](https://github.com/bleenco/abstruse/commit/a1af711))
+* abstruse-cli ([e73ffda](https://github.com/bleenco/abstruse/commit/e73ffda))
+* added encrypt and decrypt functions to cli ([01a6888](https://github.com/bleenco/abstruse/commit/01a6888))
+* cloning of github private repository ([704fe27](https://github.com/bleenco/abstruse/commit/704fe27))
+* decrypt encrypted environment variables ([e96b95f](https://github.com/bleenco/abstruse/commit/e96b95f))
+* generates private and public rsa key and store them to config ([5715dd0](https://github.com/bleenco/abstruse/commit/5715dd0))
+* repository environment variables ([f6cdf8d](https://github.com/bleenco/abstruse/commit/f6cdf8d))
+
+
+
 <a name="0.9.5"></a>
 ## [0.9.5](https://github.com/bleenco/abstruse/compare/v0.8.16...v0.9.5) (2017-09-11)
 
