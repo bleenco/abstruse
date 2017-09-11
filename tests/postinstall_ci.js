@@ -3,7 +3,7 @@ const { join } = require('path');
 
 const filePath = join('/etc/docker/daemon.json');
 const obj = {
-  "storage-driver": "overlay2"
+  "storage-driver": "aufs"
 };
 
 mkdirSync(join('/etc/docker'));
