@@ -32,7 +32,3 @@ before_script:
 script:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
 
-cache:
-  directories:
-    - node_modules
-
