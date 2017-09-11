@@ -206,7 +206,7 @@ export function startJob(proc: JobProcess): Promise<void> {
         }
       });
 
-      startBuildProcess(proc, 'abstruse', envVariables)
+      startBuildProcess(proc, 'abstruse', envVariables, config.timeout)
         .subscribe(event => {
           const msg: JobProcessEvent = {
             build_id: proc.build_id,
