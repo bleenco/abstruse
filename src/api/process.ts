@@ -182,9 +182,9 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
           }
 
           if (cmd.type === CommandType.store_cache) {
-            observer.next({ type: 'data', data: yellow('==> Storing cache ...') + '\r' });
+            observer.next({ type: 'data', data: yellow('==> restoring cache ...') + '\r' });
           } else if (cmd.type === CommandType.restore_cache) {
-            observer.next({ type: 'data', data: yellow('==> Restoring cache ...') + '\r' });
+            observer.next({ type: 'data', data: yellow('==> saving cache ...') + '\r' });
           } else {
             observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
           }
