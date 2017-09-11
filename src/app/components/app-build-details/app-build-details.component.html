@@ -15,8 +15,8 @@
                 <div class="columns is-multiline">
                   <div class="column is-8">
                     <h1 class="bold">
-                      <span *ngIf="build?.data?.repository?.full_name"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
-                      <span *ngIf="!build?.data?.repository?.full_name && build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', build?.data?.repository.id]">{{ build?.data?.project?.path_with_namespace }}</a></span>
+                      <span *ngIf="build?.data?.repository?.full_name"><a [routerLink]="['/repo', build?.repository.id]">{{ build?.data?.repository.full_name }}</a></span>
+                      <span *ngIf="!build?.data?.repository?.full_name && build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', build?.repository.id]">{{ build?.data?.project?.path_with_namespace }}</a></span>
                     </h1>
                     <div class="branch-container">
                       <span class="icon is-small">
