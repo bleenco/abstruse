@@ -206,7 +206,9 @@ export function startJob(proc: JobProcess): Promise<void> {
         }
       });
 
-      startBuildProcess(proc, 'abstruse', envVariables)
+      const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
+      const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
+      startBuildProcess(proc, 'abstruse', envVariables, jobTimeout, idleTimeout)
         .subscribe(event => {
           const msg: JobProcessEvent = {
             build_id: proc.build_id,
