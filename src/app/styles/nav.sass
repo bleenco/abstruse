@@ -35,7 +35,7 @@
 
       .notification-dropdown
         position: absolute
-        width: 300px
+        width: 400px
         top: 75px
         right: 62px
         border-radius: 5px
@@ -62,9 +62,16 @@
           display: block
           color: $color-secondary
           padding: 10px
-          font-size: 12px
+          font-size: 13px
           position: relative
           text-align: left
+          font-weight: normal
+
+          .error
+            color: $red
+
+          .warning
+            color: $yellow
 
           &:last-child
             border-bottom-left-radius: 4px

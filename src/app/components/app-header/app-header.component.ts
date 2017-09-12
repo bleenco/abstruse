@@ -2,6 +2,7 @@ import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
+import { NotificationService, NotificationType } from '../../services/notification.service';
 
 @Component({
   selector: 'app-header',
@@ -11,18 +12,22 @@ export class AppHeaderComponent implements OnInit {
   menuDropped: boolean;
   notifyDropped: boolean;
   user: any;
+  notifications: NotificationType[];
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private elementRef: ElementRef,
-    private config: ConfigService
+    private config: ConfigService,
+    private notificationService: NotificationService
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.menuDropped = false;
       }
     });
+
+    this.notifications = [];
   }
 
   ngOnInit() {
@@ -37,6 +42,16 @@ export class AppHeaderComponent implements OnInit {
         this.user.avatar = this.config.url + this.user.avatar;
       }
     });
+
+    if (this.user) {
+      this.notificationService.notifications
+        .distinctUntilChanged()
+        .subscribe((notify: NotificationType) => {
+          this.notifications.push(notify);
+        });
+
+      this.notificationService.sub();
+    }
   }
 
   toggleMenu() {

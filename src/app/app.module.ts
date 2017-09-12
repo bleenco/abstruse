@@ -11,6 +11,7 @@ import { SocketServiceProvider } from './services/socket.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AccessGuardProvider, AccessGuard } from './services/access-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
+import { NotificationService } from './services/notification.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { TimeDurationPipe } from './pipes/time-duration.pipe';
@@ -127,7 +128,8 @@ import { AppLogsComponent } from './components/app-logs';
     SocketServiceProvider,
     AuthServiceProvider,
     AuthGuardProvider,
-    AccessGuardProvider
+    AccessGuardProvider,
+    NotificationService
   ],
   bootstrap: [ AppComponent ]
 })

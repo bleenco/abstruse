@@ -150,6 +150,12 @@ export class SocketServer {
               case 'subscribeToLogs':
                 logger.subscribe(msg => conn.next(msg));
               break;
+              case 'subscribeToNotifications':
+                logger.filter(msg => !!msg.notify).subscribe(msg => {
+                  const notify = { notification: msg, type: 'notification' };
+                  conn.next(notify);
+                });
+              break;
             }
           });
         });

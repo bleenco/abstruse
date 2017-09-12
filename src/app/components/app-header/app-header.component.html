@@ -14,12 +14,12 @@
     <div class="nav-right">
       <a class="nav-item notification-item" *ngIf="user" (click)="toggleNotify()">
         <img src="/images/icons/notification.svg">
-        <div class="notify-num-container">
-          <span>5</span>
+        <div class="notify-num-container" *ngIf="notifications?.length">
+          <span>{{ notifications?.length }}</span>
         </div>
         <div class="notification-dropdown" *ngIf="notifyDropped">
-          <div class="notification-item">
-            <span>[error]: bleenco/abstruse access_token not set</span>
+          <div class="notification-item" *ngFor="let notify of notifications; let i = index;">
+            <span [ngClass]="{ error: notify.type === 'error' }">{{ notify.message }}</span>
           </div>
         </div>
       </a>
