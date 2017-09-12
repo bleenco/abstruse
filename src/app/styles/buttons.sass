@@ -123,9 +123,10 @@
     background: linear-gradient(to bottom, #F7981C, #F76B1C)
     border-color: #F7981C
 
-  &:hover
+  &:hover, &.is-hovered
     background-image: linear-gradient(0deg, #EAEEF3 0%, #FFFFFF 100%)
     border: 1px solid $border
+    color: $color-secondary
     border-radius: 4px
 
     &.green
@@ -147,8 +148,8 @@
       border-color: #F09219
       color: $white
 
-  &.is-active
-    background: linear-gradient(to bottom, #354353, #232E3B)
+  &:active, &.is-active
+    color: $color-secondary
 
   &[disabled]
     background: #E9EDF1
@@ -193,3 +194,15 @@
     &.is-active, &:hover
       background-image: linear-gradient(-180deg, #0C73C1 2%, #196BAA 98%)
       border: 1px solid #1468A7
+
+  &.bright
+
+    .group-button
+      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+      border: 1px solid $border
+      color: $color-secondary
+
+      &.is-active, &:hover
+        background: $white
+        border: 1px solid $border
+        color: $color-secondary

@@ -61,19 +61,17 @@ export function startBuildProcess(
     let restoreCache: Observable<any> = Observable.empty();
     let saveCache: Observable<any> = Observable.empty();
     if (proc.repo_name && proc.branch && proc.cache) {
-      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tar.bz2`;
+      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
       let cacheHostPath = getFilePath(`cache/${cacheFile}`);
       let cacheContainerPath = `/home/abstruse/${cacheFile}`;
       let copyRestoreCmd = [
-        `if [ -e ${cacheHostPath} ];`,
-        `then docker cp ${cacheHostPath} ${name}:/home/abstruse`,
-        `; else exit 0; fi`
-      ].join(' ');
+        `if [ -e ${cacheHostPath} ]; `,
+        `then docker cp ${cacheHostPath} ${name}:/home/abstruse; fi`
+      ].join('');
       let restoreCmd = [
-        `if [ -e /home/abstruse/${cacheFile} ];`,
-        `then tar xjf /home/abstruse/${cacheFile} -C .`,
-        `; else exit 0; fi`
-      ].join(' ');
+        `if [ -e ${cacheContainerPath} ]; `,
+        `then tar xf ${cacheContainerPath} -C .; fi`
+      ].join('');
 
       restoreCache = Observable.concat(...[
         executeOutsideContainer(copyRestoreCmd),
@@ -81,15 +79,13 @@ export function startBuildProcess(
       ]);
 
       let tarCmd = [
-        `if [ ! -e /home/abstruse/${cacheFile} ];`,
-        `then tar cjSf /home/abstruse/${cacheFile} ${proc.cache.join(' ')}`,
-        `; else exit 0; fi`
-      ].join(' ');
+        `if [ ! -e ${cacheContainerPath} ];`,
+        `then tar cfz ${cacheContainerPath} ${proc.cache.join(' ')}; fi`,
+      ].join('');
       let saveTarCmd = [,
         `if [ ! -e ${cacheHostPath} ];`,
-        `then docker cp ${name}:/home/abstruse/${cacheFile} ${cacheHostPath}`,
-        '; else exit 0; fi'
-      ].join(' ');
+        `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
+      ].join('');
 
       saveCache = Observable.concat(...[
         executeInContainer(name, { command: tarCmd, type: CommandType.store_cache }),
@@ -124,9 +120,9 @@ export function startBuildProcess(
     const sub = startContainer(name, image, envs)
       .concat(debug)
       .concat(...gitCommands.map(cmd => executeInContainer(name, cmd)))
-      .concat(...[restoreCache])
+      .concat(restoreCache)
       .concat(...installCommands.map(cmd => executeInContainer(name, cmd)))
-      .concat(...[saveCache])
+      .concat(saveCache)
       .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
       .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
@@ -224,13 +220,12 @@ function executeInContainer(name: string, cmd: Command): Observable<ProcessOutpu
       attach.on('exit', code => {
         const endTime = new Date().getTime();
         const totalTime = endTime - startTime;
+        observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
 
         if (code !== 0 && !success) {
-          observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
           observer.next({ type: 'exit', data: code });
           observer.complete();
         } else {
-          observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
           observer.next({ type: 'exit', data: '0' });
           observer.complete();
         }
