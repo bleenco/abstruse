@@ -1,10 +1,6 @@
 <div class="window-terminal-container dracula-ansi-theme" *ngIf="!noData">
   <div class="terminal" *ngFor="let cmd of commands; let i = index;" [id]="i">
     <div class="command-line" (click)="toogleCommand(i)" [class.is-opened]="cmd.visible">
-      <span class="icon">
-        <img *ngIf="cmd.visible" src="images/icons/collapse.svg">
-        <img *ngIf="!cmd.visible" src="images/icons/expand.svg">
-      </span>
       <span class="command" [innerHTML]="cmd.command"></span>
       <span class="time" *ngIf="cmd.time">{{ cmd.time }}</span>
       <span class="time" *ngIf="!cmd.time">
