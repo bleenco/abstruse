@@ -9,16 +9,8 @@ function randomNumber(minimum: number, maximum: number): number {
 
 describe('Build Details', () => {
   let originalTimeout: number;
-  beforeAll(() => {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 300000;
-    login().then(() => browser.waitForAngularEnabled(false));
-  });
-
-  afterAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    logout().then(() => browser.waitForAngularEnabled(true));
-  });
+  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
+  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
   it('should restart existing build', () => {
     return browser.get('/build/1')
@@ -28,14 +20,14 @@ describe('Build Details', () => {
       .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;
       })))
-      .then((): any => browser.wait(() => element(by.css('[name="restart-build"]')).isPresent()))
-      .then((): any => element(by.css('[name="restart-build"]')).click())
+      .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
+      .then((): any => element(by.css(`[name="restart-build"]`)).click())
       .then((): any => element.all(by.css('.list-item')).count())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === num;
       })))
       .then(() => delay(2000))
-      .then(() => element.all(by.css('[name="stop-job"]')).each(el => el.click()))
+      .then(() => element.all(by.css(`[name="stop-job"]`)).each(el => el.click()))
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;
       })));
@@ -51,10 +43,10 @@ describe('Build Details', () => {
       })))
       .then((): any => {
         return browser
-          .wait(() => element.all(by.css('[name="restart-job"]')).first().isPresent());
+          .wait(() => element.all(by.css(`[name="restart-job"]`)).first().isPresent());
       })
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('[name="restart-job"]')).first().click())
+      .then((): any => element.all(by.css(`[name="restart-job"]`)).first().click())
       .then((): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 1));
@@ -65,10 +57,10 @@ describe('Build Details', () => {
       })
       .then((): any => {
         return browser
-          .wait(() => element.all(by.css('[name="stop-job"]')).first().isPresent());
+          .wait(() => element.all(by.css(`[name="stop-job"]`)).first().isPresent());
       })
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('[name="stop-job"]')).first().click())
+      .then((): any => element.all(by.css(`[name="stop-job"]`)).first().click())
       .then((num): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 0));
@@ -85,10 +77,10 @@ describe('Build Details', () => {
       })))
       .then((): any => {
         return browser
-          .wait(() => element.all(by.css('[name="restart-job"]')).last().isPresent());
+          .wait(() => element.all(by.css(`[name="restart-job"]`)).last().isPresent());
       })
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('[name="restart-job"]')).last().click())
+      .then((): any => element.all(by.css(`[name="restart-job"]`)).last().click())
       .then((): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 1));
@@ -99,10 +91,10 @@ describe('Build Details', () => {
       })
       .then((): any => {
         return browser
-          .wait(() => element.all(by.css('[name="stop-job"]')).last().isPresent());
+          .wait(() => element.all(by.css(`[name="stop-job"]`)).last().isPresent());
       })
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('[name="stop-job"]')).last().click())
+      .then((): any => element.all(by.css(`[name="stop-job"]`)).last().click())
       .then((num): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 0));
@@ -189,6 +181,23 @@ describe('Build Details', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.progress-bar')).count().then(cnt => cnt === 1);
       }))
+      .then((): any => {
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('value')
+          .then(value => parseFloat(value) < 0.2));
+      })
+      .then((): any => {
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('value')
+          .then(value => parseFloat(value) > 0.4));
+      })
+      .then((): any => browser.getCurrentUrl())
+      .then(url => browser.get(url))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.progress-bar')).count().then(cnt => cnt === 1);
+      }))
+      .then((): any => {
+        return browser.wait(() => element(by.css('.progress-bar')).getAttribute('value')
+          .then(value => parseFloat(value) > 0.5));
+      })
       .then((): any => browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent()))
       .then((): any => browser.wait(() => {
         return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-stop"]`)));
@@ -203,7 +212,7 @@ describe('Build Details', () => {
       });
   });
 
-  it(`should restart first build but don't see approximately time remaining`, () => {
+  it(`should restart first build and see approximately time remaining`, () => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
@@ -215,10 +224,20 @@ describe('Build Details', () => {
       .then((): any => browser.wait(() => {
         return ExpectedConditions.elementToBeClickable(element(by.css(`[name="restart-build"]`)));
       }))
-      .then((): any => element(by.css('[name="restart-build"]')).click())
+      .then((): any => element(by.css(`[name="restart-build"]`)).click())
       .then((): any => {
-        return browser.wait(() => element.all(by.css('[name="time-left"]')).count()
-          .then(cnt => cnt === 0));
+        return browser.wait(() => {
+          return element.all(by.css(`[name="approximately-remainig-time"]`)).count()
+            .then(cnt => cnt === 1);
+        });
+      })
+      .then((): any => browser.getCurrentUrl())
+      .then(url => browser.get(url))
+      .then((): any => {
+        return browser.wait(() => {
+          return element.all(by.css(`[name="approximately-remainig-time"]`)).count()
+            .then(cnt => cnt === 1);
+        });
       })
       .then((): any => browser.wait(() => element(by.css(`[name="stop-build"]`)).isPresent()))
       .then(() => browser.wait(
