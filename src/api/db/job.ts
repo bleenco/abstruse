@@ -34,32 +34,7 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
           job.hasPermission = false;
         }
 
-        return job;
-      })
-      .then(job => {
-        getBuild(job.builds_id)
-          .then(build => {
-            new JobRun()
-              .query(q => {
-                q.innerJoin('jobs', 'jobs.id', 'job_runs.job_id')
-                .innerJoin('builds', 'jobs.builds_id', 'builds.id')
-                .where('builds.repositories_id', build.repositories_id)
-                .andWhere('jobs.id', '<=', job.id)
-                .andWhere('job_runs.status', 'success')
-                .andWhere('jobs.data', job.data)
-                .whereNotNull('job_runs.start_time')
-                .whereNotNull('job_runs.end_time')
-                .orderBy('job_runs.id', 'desc');
-              })
-              .fetch()
-              .then(lastJobRun => {
-                if (lastJobRun) {
-                  job.lastJob = lastJobRun.toJSON();
-                }
-
-                resolve(job);
-              });
-          });
+        resolve(job);
       });
   });
 }

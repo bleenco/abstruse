@@ -126,6 +126,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           .filter(job => job.status === 'running').map(job => job.start_time));
       }
 
+      build.startTime = Math.min(...build.jobs.map(job => job.start_time));
       build.status = status;
       build.userId = this.userId;
       return build;
