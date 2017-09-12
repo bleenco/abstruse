@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { TimeService } from '../../services/time.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
@@ -35,16 +36,20 @@ export class AppJobComponent implements OnInit, OnDestroy {
   authorAvatar: string;
   nameAuthor: string;
   nameCommitter: string;
+  timerSubscription: any = null;
+  currentTime: number;
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
+    private timeService: TimeService,
     private authService: AuthService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
     @Inject(DOCUMENT) private document: any,
     private titleService: Title
   ) {
+    this.currentTime = new Date().getTime();
     this.loading = true;
     this.terminalOptions = { size: 'large' };
     this.id = null;
@@ -110,15 +115,21 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
         this.jobRun = job.runs[job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
-        this.timeWords = distanceInWordsToNow(job.build.start_time);
+        this.timeWords = distanceInWordsToNow(job.build.created_at);
         this.setFavicon();
         this.loading = false;
-        if (this.job.lastJob && this.job.lastJob.end_time) {
-          this.previousRuntime = this.job.lastJob.end_time - this.job.lastJob.start_time;
+        const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+        if (lastRun) {
+          this.previousRuntime = lastRun.end_time - lastRun.start_time;
         }
 
         this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
       });
+    });
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
     });
   }
 
@@ -129,6 +140,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
     }
 
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');

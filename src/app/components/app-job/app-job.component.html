@@ -98,12 +98,12 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <progress *ngIf="jobRun.status === 'running' && previousRuntime" class="progress-bar is-success is-small" [value]="(jobRun.start_time | timeDurationRaw) / previousRuntime" max="1" min="0"></progress>
+                    <progress *ngIf="jobRun.status === 'running' && previousRuntime" class="progress-bar is-success is-small" [value]="(currentTime - jobRun.start_time) / previousRuntime" max="1" min="0"></progress>
                   </div>
                   <div class="column is-1">
                     <p class="total-time">
                       <img src="images/icons/clock.svg">
-                      <span *ngIf="jobRun.status === 'running'">{{ jobRun.start_time | timeDuration }}</span>
+                      <span *ngIf="jobRun.status === 'running'">{{ currentTime - jobRun.start_time | toTime }}</span>
                       <span *ngIf="jobRun.status !== 'running'">{{ jobRun.end_time - jobRun.start_time | toTime }}</span>
                     </p>
                   </div>

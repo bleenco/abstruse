@@ -1,6 +1,8 @@
 import { Component, Input, HostBinding, OnInit } from '@angular/core';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
+import { TimeService } from '../../services/time.service';
+import { distanceInWordsToNow } from 'date-fns';
 
 @Component({
   selector: 'app-build-item',
@@ -15,8 +17,17 @@ export class AppBuildItemComponent implements OnInit {
   committerAvatar: string;
   authorAvatar: string;
   name: string;
+  timerSubscription: any = null;
+  currentTime: number;
+  buildCreated: string;
 
-  constructor(private socketService: SocketService, private apiService: ApiService) { }
+  constructor(
+    private socketService: SocketService,
+    private apiService: ApiService,
+    private timeService: TimeService) {
+      this.currentTime = new Date().getTime();
+      this.buildCreated = '';
+    }
 
   ngOnInit() {
     this.setAvatars();
@@ -28,6 +39,11 @@ export class AppBuildItemComponent implements OnInit {
     this.socketService.outputEvents
       .filter(x => x.type === 'build restarted' || x.type === 'build stopped')
       .subscribe(e => this.processingRequest = false);
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.buildCreated = distanceInWordsToNow(this.build.created_at);
+    });
   }
 
   restartBuild(e: MouseEvent, id: number): void {
@@ -70,6 +86,12 @@ export class AppBuildItemComponent implements OnInit {
           this.name = body.name;
         }
       });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
     }
   }
 }

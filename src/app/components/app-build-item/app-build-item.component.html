@@ -37,7 +37,7 @@
     <span *ngIf="!build?.data?.commits && !build?.data?.pull_request?.title && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message && !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</span>
     <span *ngIf="tag">{{ build?.data?.head_commit?.message }}</span>
 
-    <span class="smaller">{{ build?.created_at | timeToNow }} ago</span>
+    <span class="smaller">{{ buildCreated }} ago</span>
   </div>
   <div class="column is-2 justify-center">
     <span *ngIf="name && !tag">{{ name }}</span>
@@ -46,7 +46,7 @@
     <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
   </div>
   <div class="column is-1">
-    <span class="build-time" *ngIf="build?.status === 'running'">{{ build?.maxTime | timeDuration }}</span>
+    <span class="build-time" *ngIf="build?.status === 'running'">{{ currentTime - build?.startTime | toTime }} </span>
     <span class="build-time" *ngIf="build?.status !== 'running'">{{ build?.maxTime | toTime }}</span>
   </div>
   <div class="column is-1 justify-end" *ngIf="build?.userId && build?.hasPermission">

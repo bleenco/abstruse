@@ -213,6 +213,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           build.maxTime = Math.max(...build.jobs.map(job => job.start_time));
         }
 
+        build.startTime = Math.min(...build.jobs.map(job => job.start_time));
         build.status = status;
         return build;
       });

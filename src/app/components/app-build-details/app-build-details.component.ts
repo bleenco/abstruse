@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { TimeService } from '../../services/time.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
@@ -31,10 +32,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   authorAvatar: string;
   nameAuthor: string;
   nameCommitter: string;
+  timerSubscription: any = null;
+  currentTime: number;
 
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
+    private timeService: TimeService,
     private authService: AuthService,
     private route: ActivatedRoute,
     private ngZone: NgZone,
@@ -44,6 +48,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   ) {
     this.loading = true;
     this.status = 'queued';
+    this.currentTime = new Date().getTime();
   }
 
   ngOnInit() {
@@ -63,7 +68,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.setAvatars();
 
         this.build.jobs.forEach(job => job.time = '00:00');
-        this.timeWords = distanceInWordsToNow(this.build.start_time);
+        this.timeWords = distanceInWordsToNow(this.build.created_at);
         if (this.build.lastBuild) {
           this.previousRuntime = this.build.lastBuild.end_time - this.build.lastBuild.start_time;
         }
@@ -103,6 +108,10 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           });
       });
     });
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+    });
   }
 
   ngOnDestroy() {
@@ -112,6 +121,10 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
     if (this.subStatus) {
       this.subStatus.unsubscribe();
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
     }
 
     this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');

@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NgUploaderModule } from 'ngx-uploader';
 import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
+import { TimeServiceProvider } from './services/time.service';
 import { SocketServiceProvider } from './services/socket.service';
 import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AccessGuardProvider, AccessGuard } from './services/access-guard.service';
@@ -14,10 +15,7 @@ import { AuthServiceProvider } from './services/auth.service';
 import { NotificationService } from './services/notification.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
-import { TimeDurationPipe } from './pipes/time-duration.pipe';
-import { TimeDurationRawPipe } from './pipes/time-duration-raw.pipe';
 import { ToTimePipe } from './pipes/to-time.pipe';
-import { TimeToNowPipe } from './pipes/time-to-now.pipe';
 import { AppComponent } from './app.component';
 import { AppSetupComponent } from './components/app-setup';
 import { AppTerminalComponent } from './components/app-terminal';
@@ -54,10 +52,7 @@ import { AppLogsComponent } from './components/app-logs';
     AppLogsComponent,
     EqualValidator,
     SafeHtmlPipe,
-    TimeDurationPipe,
-    TimeDurationRawPipe,
-    ToTimePipe,
-    TimeToNowPipe
+    ToTimePipe
   ],
   imports: [
     BrowserModule,
@@ -125,6 +120,7 @@ import { AppLogsComponent } from './components/app-logs';
   providers: [
     ConfigServiceProvider,
     ApiServiceProvider,
+    TimeServiceProvider,
     SocketServiceProvider,
     AuthServiceProvider,
     AuthGuardProvider,
