@@ -9,6 +9,7 @@ import { ConfigService } from '../../services/config.service';
 })
 export class AppHeaderComponent implements OnInit {
   menuDropped: boolean;
+  notifyDropped: boolean;
   user: any;
 
   constructor(
@@ -42,6 +43,10 @@ export class AppHeaderComponent implements OnInit {
     this.menuDropped = !this.menuDropped;
   }
 
+  toggleNotify() {
+    this.notifyDropped = !this.notifyDropped;
+  }
+
   logout(): void {
     this.authService.logout();
     this.menuDropped = false;
@@ -50,7 +55,7 @@ export class AppHeaderComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onBlur(e: MouseEvent) {
-    if (!this.menuDropped) {
+    if (!this.menuDropped || !this.notifyDropped) {
       return;
     }
 
@@ -62,6 +67,16 @@ export class AppHeaderComponent implements OnInit {
     let dropMenu: HTMLElement = this.elementRef.nativeElement.querySelector('.nav-dropdown');
     if (dropMenu && dropMenu !== e.target && !dropMenu.contains((<any>e.target))) {
       this.menuDropped = false;
+    }
+
+    let toggleNotify = this.elementRef.nativeElement.querySelector('.notification-item');
+    if (e.target === toggleBtn || toggleBtn.contains(<any>e.target)) {
+      return;
+    }
+
+    let notifyMenu = this.elementRef.nativeElement.querySelector('.notification-dropdown');
+    if (notifyMenu && notifyMenu !== e.target && !dropMenu.contains((<any>e.target))) {
+      this.notifyDropped = false;
     }
   }
 }
