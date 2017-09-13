@@ -7,6 +7,10 @@
   margin-top: 10px
   margin-bottom: 100px
 
+  +mobile
+    padding: 0 10px
+    margin-bottom: 20px
+
   ul
     margin: 10px 0
 
@@ -52,6 +56,9 @@
     &.larger
       font-size: 17px
 
+      +mobile
+        padding: 5px 0
+
     &.smaller
       font-size: 12px
       color: $color-secondary
@@ -72,13 +79,21 @@
 .list-item
   display: flex
   align-items: center
-  height: 100px
+  min-height: 100px
   color: $color
   font-size: 13px
   cursor: pointer
   background: $background
   border-radius: 3px
   border: 1px solid $divider
+
+  +mobile
+    display: block
+
+    .column
+      display: block !important
+      margin: 5px 0
+      text-align: center
 
   &.list-item-mini
     height: 35px
@@ -90,7 +105,7 @@
       border-radius: 4px
 
   &.list-item-slim
-    height: 70px
+    min-height: 70px
 
   &.columns
     margin: 5px 0
@@ -101,6 +116,14 @@
     overflow: hidden
     text-overflow: ellipsis
     margin-right: 10px
+
+    +mobile
+      width: 100%
+      text-align: center
+      display: flex
+      align-items: center
+      justify-content: center
+      white-space: pre-wrap
 
   &:hover
     background: darken($background, 3)
@@ -113,11 +136,20 @@
     .columns
       width: 100%
 
+      +mobile
+        width: 100%
+        padding: 0
+        margin: 0
+
     &.commit-column
       display: inline-block
 
       span
         display: block
+
+        +mobile
+          width: 100%
+          text-align: center
 
         &.icon
           display: inline-flex
@@ -127,13 +159,20 @@
           margin-top: 20px
           margin-right: 20px
 
+          +mobile
+            display: none
+
           img
             width: 14px
             height: 14px
 
     .repo-branch-column
+      width: 100%
 
       span
+
+        +mobile
+          text-align: center
 
         &.span-branch
           font-size: 13px
@@ -193,12 +232,20 @@
     align-items: center
     margin-right: 25px
 
+    +mobile
+      display: block
+      width: 100%
+      text-align: center
+      margin: 0
+
     .icon
       display: inline-flex
       justify-content: center
       align-items: center
 
+
       &.script
+
         img
           width: 18px
 
@@ -231,6 +278,9 @@
 .justify-end
   display: flex
   justify-content: flex-end
+
+  +mobile
+    justify-content: center
 
 .search-input-container
   display: inline-block
