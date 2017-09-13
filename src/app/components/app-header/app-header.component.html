@@ -4,15 +4,15 @@
       <a class="nav-item nav-logo" routerLink="/">
         <img src="images/abstruse-text-logo.svg">
       </a>
-      <a class="nav-item nav-team" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
         Team
       </a>
-      <a class="nav-item" routerLink="/repositories" routerLinkActive="is-active">
+      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
         Repositories
       </a>
     </div>
     <div class="nav-right">
-      <a class="nav-item notification-item" *ngIf="user" (click)="toggleNotify()">
+      <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
         <img src="/images/icons/notification.svg">
         <div class="notify-num-container" *ngIf="notifications?.length">
           <span>{{ notifications?.length }}</span>

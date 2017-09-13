@@ -165,6 +165,10 @@
     margin-bottom: 10px
     z-index: 80 !important
 
+    +mobile
+      padding-top: 10px
+      margin-bottom: 0
+
     .nav-left
 
       .nav-item
@@ -173,6 +177,9 @@
           color: $color-secondary
           font-size: 20px
           font-weight: $weight-semibold
+
+          +mobile
+            display: none
 
         span
           margin-left: 20px
@@ -185,6 +192,10 @@
     .nav-right
       display: flex
       align-items: center
+      justify-content: flex-end
+
+      +mobile
+        justify-content: center
 
       .nav-item
         max-width: 50px
