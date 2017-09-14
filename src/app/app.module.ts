@@ -31,6 +31,7 @@ import { AppUserComponent } from './components/app-user';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
 import { AppLogsComponent } from './components/app-logs';
+import { AppDashboardComponent } from './components/app-dashboard';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { AppLogsComponent } from './components/app-logs';
     AppTeamComponent,
     AppUserComponent,
     AppLogsComponent,
+    AppDashboardComponent,
     EqualValidator,
     SafeHtmlPipe,
     ToTimePipe
@@ -61,6 +63,11 @@ import { AppLogsComponent } from './components/app-logs';
       {
         path: '',
         pathMatch: 'full',
+        component: AppDashboardComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'builds',
         component: AppBuildsComponent,
         canActivate: [AuthGuard]
       },
