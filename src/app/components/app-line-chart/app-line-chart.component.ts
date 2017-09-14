@@ -12,7 +12,8 @@ import {
   max,
   axisBottom,
   axisLeft,
-  area
+  area,
+  event
 } from 'd3';
 
 @Component({
@@ -22,6 +23,7 @@ import {
 export class AppLineChartComponent implements OnInit, OnDestroy {
   data: any[];
   el: Element;
+  tooltip: any;
 
   constructor(private elementRef: ElementRef) {
     this.data = [
@@ -106,13 +108,7 @@ export class AppLineChartComponent implements OnInit, OnDestroy {
 
     g.append('g')
       .attr('class', 'axis axis--y')
-      .call(axisLeft(y))
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('y', 6)
-      .attr('dy', '0.71em')
-      .attr('fill', 'white')
-      .text('Temperature, ºC');
+      .call(axisLeft(y));
 
     g.append('path')
       .attr('d', l(this.data))
@@ -123,5 +119,15 @@ export class AppLineChartComponent implements OnInit, OnDestroy {
     g.append('path')
       .attr('d', a(this.data))
       .attr('fill', 'url(#mainGradient)');
+
+    g.selectAll('dot')
+      .data(this.data)
+      .enter().append('circle')
+      .attr('r', 3)
+      .attr('cx', (d: any) => x(d.date))
+      .attr('cy', (d: any) => y(d.value))
+      .attr('fill', 'white')
+      .attr('stroke', '#00AAFF')
+      .attr('stroke-width', 2);
   }
 }

@@ -13,6 +13,7 @@ import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
 import { AccessGuardProvider, AccessGuard } from './services/access-guard.service';
 import { AuthServiceProvider } from './services/auth.service';
 import { NotificationService } from './services/notification.service';
+import { StatsService } from './services/stats.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ToTimePipe } from './pipes/to-time.pipe';
@@ -134,7 +135,8 @@ import { AppLineChartComponent } from './components/app-line-chart';
     AuthServiceProvider,
     AuthGuardProvider,
     AccessGuardProvider,
-    NotificationService
+    NotificationService,
+    StatsService
   ],
   bootstrap: [ AppComponent ]
 })
