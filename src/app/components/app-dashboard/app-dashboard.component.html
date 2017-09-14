@@ -1,3 +1,43 @@
 <app-header></app-header>
 
+<nav class="nav sub-nav">
+  <div class="container">
+    <div class="nav-left is-hidden-mobile">
+      <span class="nav-item">
+        <h1>Dashboard</h1>
+      </span>
+    </div>
+    <div class="nav-center is-hidden-mobile">
 
+    </div>
+    <div class="nav-right"></div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-12">
+      <div class="content">
+        <div class="container" *ngIf="loading">
+          <img src="images/icons/flickr.svg" class="main-loader">
+        </div>
+
+        <div class="columns is-multiline" *ngIf="!loading">
+          <div class="column is-8">
+            <div class="content-box">
+              <app-line-chart></app-line-chart>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content-box">
+
+            </div>
+            <div class="content-box">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

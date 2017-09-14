@@ -32,6 +32,7 @@ import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
 import { AppLogsComponent } from './components/app-logs';
 import { AppDashboardComponent } from './components/app-dashboard';
+import { AppLineChartComponent } from './components/app-line-chart';
 
 
 @NgModule({
@@ -52,6 +53,7 @@ import { AppDashboardComponent } from './components/app-dashboard';
     AppUserComponent,
     AppLogsComponent,
     AppDashboardComponent,
+    AppLineChartComponent,
     EqualValidator,
     SafeHtmlPipe,
     ToTimePipe
