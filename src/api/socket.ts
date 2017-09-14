@@ -24,9 +24,15 @@ import { readFileSync } from 'fs';
 import * as express from 'express';
 import { yellow, red, blue, green } from 'chalk';
 import { sessionParser } from './server';
+import { IMemoryData, memory } from './stats/memory';
 
 export interface ISocketServerOptions {
   port: number;
+}
+
+export interface IOutput {
+  type: string;
+  data: IMemoryData;
 }
 
 export class SocketServer {
@@ -129,6 +135,7 @@ export class SocketServer {
                     conn.next({ type: 'job stopped', data: event.data.jobId });
                   });
               break;
+
               case 'subscribeToJobOutput':
                 getJobProcesses()
                   .then(procs => {
@@ -147,14 +154,22 @@ export class SocketServer {
                   .filter(e => e.job_id === parseInt(event.data.jobId, 10))
                   .subscribe(output => conn.next(output));
               break;
+
               case 'subscribeToLogs':
                 logger.subscribe(msg => conn.next(msg));
               break;
+
               case 'subscribeToNotifications':
                 logger.filter(msg => !!msg.notify).subscribe(msg => {
                   const notify = { notification: msg, type: 'notification' };
                   conn.next(notify);
                 });
+              break;
+
+              case 'subscribeToStats':
+                memory()
+                  .subscribe(event => conn.next(event));
+
               break;
             }
           });

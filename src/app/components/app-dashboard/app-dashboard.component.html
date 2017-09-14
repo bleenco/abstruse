@@ -23,6 +23,7 @@
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
+
           <div class="column is-8">
             <div class="content-box">
               <app-line-chart></app-line-chart>
@@ -33,9 +34,40 @@
 
             </div>
             <div class="content-box">
-
+              <h2>Memory</h2>
+              <div class="info-data-container">
+                <span class="label-txt">Total</span>
+                <span class="data-txt">{{ memoryHuman?.total }}</span>
+              </div>
+              <div class="info-data-container">
+                <span class="label-txt">Used</span>
+                <span class="data-txt">{{ memoryHuman?.used }}</span>
+              </div>
+              <div class="info-data-container">
+                <span class="label-txt">Free</span>
+                <span class="data-txt">{{ memoryHuman?.free }}</span>
+              </div>
+              <hr/>
+              <div class="info-data-container">
+                <span class="label-txt">Usage</span>
+                <div class="data-progress-container green">
+                  <span class="data-progress-bar" [style.width]="memoryPercentage + '%'"></span>
+                </div>
+                <span class="data-txt">
+                  {{ memoryPercentage }}%
+                </span>
+              </div>
             </div>
           </div>
+
+          <div class="column is-6">
+            <div class="content-box"></div>
+          </div>
+
+          <div class="column is-6">
+            <div class="content-box"></div>
+          </div>
+
         </div>
       </div>
     </div>
