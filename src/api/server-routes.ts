@@ -28,6 +28,7 @@ import {
 } from './db/repository';
 import { getBuilds, getBuild, getLastBuild } from './db/build';
 import { getJob } from './db/job';
+import { getJobRuns } from './db/job-run';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
 import {
   updatePermission,
@@ -444,6 +445,18 @@ export function environmentVariableRoutes(): express.Router {
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
     }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  return router;
+}
+
+export function statsRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/job-runs', (req: express.Request, res: express.Response) => {
+    getJobRuns()
+      .then(runs => res.status(200).json({ data: runs }))
+      .catch(err => res.status(200).json({ status: false }));
   });
 
   return router;

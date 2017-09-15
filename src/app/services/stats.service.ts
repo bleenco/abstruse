@@ -1,31 +1,33 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { SocketService } from './socket.service';
+import { ApiService } from './api.service';
 
 @Injectable()
 export class StatsService {
   stats: EventEmitter<any>;
   sub: Subscription;
 
-  constructor(private socketService: SocketService) {
+  constructor(private socketService: SocketService, private apiService: ApiService) {
     this.stats = new EventEmitter<any>();
   }
 
   start(): void {
-    this.sub = this.socketService.onMessage()
-      .filter(e => e.type === 'memory')
-      .subscribe(e => this.stats.emit(e));
+    if (!this.sub) {
+      this.sub = this.socketService.onMessage()
+        .filter(e => e.type === 'memory' || e.type === 'cpu')
+        .subscribe(e => this.stats.emit(e));
+    }
 
     this.socketService.emit({ type: 'subscribeToStats' });
   }
 
   stop(): void {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-
     this.socketService.emit({ type: 'unsubscribeFromStats' });
+  }
+
+  getJobRuns(): Promise<any[]> {
+    return this.apiService.statsJobRuns().toPromise().then(runs => runs);
   }
 
   humanizeBytes(bytes: number): string {

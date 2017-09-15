@@ -180,6 +180,10 @@ export class ApiService {
     return this.get(`${this.url}/variables/remove/${id}`, null, true);
   }
 
+  statsJobRuns(): Observable<any> {
+    return this.get(`${this.url}/stats/job-runs`, null, true);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

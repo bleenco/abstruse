@@ -14,6 +14,7 @@ import { AccessGuardProvider, AccessGuard } from './services/access-guard.servic
 import { AuthServiceProvider } from './services/auth.service';
 import { NotificationService } from './services/notification.service';
 import { StatsService } from './services/stats.service';
+import { WindowService } from './services/window.service';
 import { EqualValidator } from './directives/equal-validator.directive';
 import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { ToTimePipe } from './pipes/to-time.pipe';
@@ -34,6 +35,7 @@ import { AppTeamComponent } from './components/app-team';
 import { AppLogsComponent } from './components/app-logs';
 import { AppDashboardComponent } from './components/app-dashboard';
 import { AppLineChartComponent } from './components/app-line-chart';
+import { AppProgressChartComponent } from './components/app-progress-chart';
 
 
 @NgModule({
@@ -55,6 +57,7 @@ import { AppLineChartComponent } from './components/app-line-chart';
     AppLogsComponent,
     AppDashboardComponent,
     AppLineChartComponent,
+    AppProgressChartComponent,
     EqualValidator,
     SafeHtmlPipe,
     ToTimePipe
@@ -66,12 +69,12 @@ import { AppLineChartComponent } from './components/app-line-chart';
       {
         path: '',
         pathMatch: 'full',
-        component: AppDashboardComponent,
+        component: AppBuildsComponent,
         canActivate: [AuthGuard]
       },
       {
-        path: 'builds',
-        component: AppBuildsComponent,
+        path: 'dashboard',
+        component: AppDashboardComponent,
         canActivate: [AuthGuard]
       },
       {
@@ -136,7 +139,8 @@ import { AppLineChartComponent } from './components/app-line-chart';
     AuthGuardProvider,
     AccessGuardProvider,
     NotificationService,
-    StatsService
+    StatsService,
+    WindowService
   ],
   bootstrap: [ AppComponent ]
 })
