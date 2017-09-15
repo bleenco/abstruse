@@ -96,6 +96,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.jobRun.status = 'failed';
           this.jobRun.end_time = new Date().getTime();
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
+        } else if (event.data == 'job stopped') {
+          this.jobRun.status = 'stopped';
+          this.jobRun.end_time = new Date().getTime();
+          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
         }
 
         this.setFavicon();
@@ -154,6 +158,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     let favicon;
     switch (this.jobRun.status) {
       case 'queued': favicon = 'images/favicon-queued.png'; break;
+      case 'stopped':
       case 'failed': favicon = 'images/favicon-error.png'; break;
       case 'running': favicon = 'images/favicon-running.png'; break;
       case 'success': favicon = 'images/favicon.png'; break;

@@ -80,7 +80,7 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.dateTime('start_time').notNullable();
       t.dateTime('end_time');
-      t.enum('status', ['queued', 'running', 'success', 'failed'])
+      t.enum('status', ['queued', 'running', 'success', 'failed', 'stopped'])
         .notNullable().defaultTo('queue');
       t.text('log');
       t.integer('job_id').notNullable();

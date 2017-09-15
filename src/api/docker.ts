@@ -8,7 +8,7 @@ export interface TTYMessage {
   id: string;
   type: 'data' | 'error' | 'exit';
   data: string;
-  status:  'queued' | 'running' | 'success' | 'failed';
+  status:  'queued' | 'running' | 'success' | 'failed' | 'stopped';
 }
 
 export function runInteractive(id: string, image: string): Subject<any> {

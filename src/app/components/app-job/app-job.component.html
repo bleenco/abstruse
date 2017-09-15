@@ -10,7 +10,7 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="jobRun">
-            <div class="build-top-container" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
+            <div class="build-top-container" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' || jobRun?.status === 'stopped' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
                   <div class="column is-7">
@@ -28,7 +28,7 @@
                       <img src="images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
                       <img src="images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
                       <img src="images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
-                      <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
+                      <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed' || jobRun?.status === 'stopped'">
                     </span>
                   </div>
                   <div class="column is-5 justify-end right-buttons-top" *ngIf="userId && job?.hasPermission">

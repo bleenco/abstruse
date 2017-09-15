@@ -114,7 +114,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
                 this.repo.builds[index].jobs[jobIndex].start_time = new Date();
               break;
               case 'job stopped':
-                status = 'failed';
+                status = 'stopped';
                 this.repo.builds[index].jobs[jobIndex].end_time = new Date();
               break;
             }
@@ -195,6 +195,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.repo.builds = this.repo.builds
       .map(build => {
         let status = 'queued';
+        if (build.jobs.findIndex(job => job.status === 'stopped') !== -1) {
+          status = 'stopped';
+        }
+
         if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
           status = 'failed';
         }
