@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
+import { Component, OnDestroy, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { WindowService } from '../../services/window.service';
 import {
   select,
   scaleTime,
@@ -15,42 +16,46 @@ import {
   area,
   event
 } from 'd3';
+import { isSameDay, compareAsc, format } from 'date-fns';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-line-chart',
   templateUrl: 'app-line-chart.component.html'
 })
-export class AppLineChartComponent implements OnInit, OnDestroy {
-  data: any[];
+export class AppLineChartComponent implements OnDestroy, OnChanges {
+  @Input() data: { success: {}, failed: {} };
   el: Element;
   tooltip: any;
+  minDate: string;
+  maxDate: string;
+  sub: Subscription;
 
-  constructor(private elementRef: ElementRef) {
-    this.data = [
-      { date: '2017-01-01', value: 0 },
-      { date: '2017-02-01', value: 10 },
-      { date: '2017-03-01', value: 5 },
-      { date: '2017-04-01', value: 7 },
-      { date: '2017-05-01', value: 24 },
-      { date: '2017-06-01', value: 28 },
-      { date: '2017-07-01', value: 32 },
-      { date: '2017-08-01', value: 28 },
-      { date: '2017-09-01', value: 20 },
-      { date: '2017-10-01', value: 14 },
-      { date: '2017-11-01', value: 6 },
-      { date: '2017-12-01', value: 12 }
-    ];
+  constructor(private elementRef: ElementRef, private windowService: WindowService) {
+    this.sub = this.windowService.resize
+      .filter(x => !!this.el)
+      .subscribe(e => {
+        this.render();
+      });
   }
 
-  ngOnInit() {
-    this.el = this.elementRef.nativeElement.querySelector('.line-chart-container');
-    this.render();
+  ngOnChanges(changes: SimpleChanges) {
+    if ('data' in changes) {
+      this.render();
+    }
   }
 
-  ngOnDestroy() { }
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+  }
 
   render() {
-    const margin = { top: 20, right: 50, bottom: 30, left: 50 };
+    this.el = this.elementRef.nativeElement.querySelector('.line-chart-container');
+    select(this.el).select('svg').remove();
+
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
     const style: CSSStyleDeclaration = getComputedStyle(this.el);
     const width = parseInt(style.width, 10) - margin.left - margin.right;
     const height = parseInt(style.height, 10) - margin.top - margin.bottom;
@@ -66,12 +71,44 @@ export class AppLineChartComponent implements OnInit, OnDestroy {
     const x = scaleTime().rangeRound([0, width]);
     const y = scaleLinear().rangeRound([height, 0]);
 
-    this.data = this.data.map(d => {
-      return { date: parseTime(d.date), value: d.value };
+    let successData = Object.keys(this.data.success).map(key => {
+      return { date: parseTime(key), value: this.data.success[key] };
     });
 
-    x.domain(extent(this.data, (d: any) => d.date));
-    y.domain(extent(this.data, (d: any) => d.value));
+    let failedData = Object.keys(this.data.failed).map(key => {
+      return { date: parseTime(key), value: this.data.failed[key] };
+    });
+
+    successData.forEach(success => {
+      const index = failedData.findIndex(d => isSameDay(new Date(d.date), new Date(success.date)));
+      if (index === -1) {
+        failedData.push({ date: success.date, value: 0 });
+      }
+    });
+
+    failedData.forEach(failed => {
+      const index = successData.findIndex(d => isSameDay(new Date(d.date), new Date(failed.date)));
+      if (index === -1) {
+        successData.push({ date: failed.date, value: 0 });
+      }
+    });
+
+    successData = this.sortByKey(successData, 'date');
+    failedData = this.sortByKey(failedData, 'date');
+
+    const minMaxFormat = 'ddd D.M.';
+
+    this.minDate = format(Math.min(...successData
+      .concat(failedData).map(d => Number(format(d.date, 'x')))), minMaxFormat);
+    this.maxDate = format(Math.max(...successData
+      .concat(failedData).map(d => Number(format(d.date, 'x')))), minMaxFormat);
+
+    if (!successData.length && !failedData.length) {
+      return;
+    }
+
+    x.domain(extent(successData.concat(failedData), (d: any) => d.date));
+    y.domain(extent(successData.concat(failedData), (d: any) => d.value));
 
     const l = line()
       .curve(curveLinear)
@@ -86,18 +123,33 @@ export class AppLineChartComponent implements OnInit, OnDestroy {
     a.y0(y(0));
 
     const defs = svg.append('defs');
-    const gradient = defs.append('linearGradient')
-      .attr('id', 'mainGradient')
+    const successGradient = defs.append('linearGradient')
+      .attr('id', 'successGradient')
       .attr('x1', '0%').attr('y1', '13%')
       .attr('x2', '0%').attr('y2', '100%');
 
-    gradient.append('stop')
-      .attr('stop-color', '#00ACFF')
+    successGradient.append('stop')
+      .attr('stop-color', '#2BB415')
       .attr('stop-opacity', '0.1')
       .attr('offset', 0);
 
-    gradient.append('stop')
-      .attr('stop-color', 'rgba(0,172,255,0.00)')
+    successGradient.append('stop')
+      .attr('stop-color', 'rgba(90, 217, 70, 0.1)')
+      .attr('stop-opacity', '0.1')
+      .attr('offset', 1);
+
+    const failedGradient = defs.append('linearGradient')
+      .attr('id', 'failedGradient')
+      .attr('x1', '0%').attr('y1', '13%')
+      .attr('x2', '0%').attr('y2', '100%');
+
+    failedGradient.append('stop')
+      .attr('stop-color', '#f03e3e')
+      .attr('stop-opacity', '0.1')
+      .attr('offset', 0);
+
+    failedGradient.append('stop')
+      .attr('stop-color', 'rgba(240, 62, 62, 0.1)')
       .attr('stop-opacity', '0.1')
       .attr('offset', 1);
 
@@ -108,26 +160,54 @@ export class AppLineChartComponent implements OnInit, OnDestroy {
 
     g.append('g')
       .attr('class', 'axis axis--y')
-      .call(axisLeft(y));
+      .call(axisLeft(y).tickSizeInner(-width).tickSizeOuter(0).tickPadding(10));
 
     g.append('path')
-      .attr('d', l(this.data))
+      .attr('d', l(successData as any))
       .attr('fill', 'none')
-      .attr('stroke', '#00AAFF')
+      .attr('stroke', '#2BB415')
       .attr('stroke-width', '2px');
 
     g.append('path')
-      .attr('d', a(this.data))
-      .attr('fill', 'url(#mainGradient)');
+      .attr('d', a(successData as any))
+      .attr('fill', 'url(#successGradient)');
 
     g.selectAll('dot')
-      .data(this.data)
+      .data(successData)
       .enter().append('circle')
       .attr('r', 3)
       .attr('cx', (d: any) => x(d.date))
       .attr('cy', (d: any) => y(d.value))
       .attr('fill', 'white')
-      .attr('stroke', '#00AAFF')
+      .attr('stroke', '#2BB415')
       .attr('stroke-width', 2);
+
+    g.append('path')
+      .attr('d', l(failedData as any))
+      .attr('fill', 'none')
+      .attr('stroke', '#f03e3e')
+      .attr('stroke-width', '2px');
+
+    g.append('path')
+      .attr('d', a(failedData as any))
+      .attr('fill', 'url(#failedGradient)');
+
+    g.selectAll('dot')
+      .data(failedData)
+      .enter().append('circle')
+      .attr('r', 3)
+      .attr('cx', (d: any) => x(d.date))
+      .attr('cy', (d: any) => y(d.value))
+      .attr('fill', 'white')
+      .attr('stroke', '#f03e3e')
+      .attr('stroke-width', 2);
+  }
+
+  sortByKey(array, key) {
+    return array.sort((a, b) => {
+      const x = new Date(a[key]);
+      const y = new Date(b[key]);
+      return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
   }
 }

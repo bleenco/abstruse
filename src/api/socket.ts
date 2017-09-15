@@ -25,6 +25,7 @@ import * as express from 'express';
 import { yellow, red, blue, green } from 'chalk';
 import { sessionParser } from './server';
 import { IMemoryData, memory } from './stats/memory';
+import { ICpuData, cpu } from './stats/cpu';
 
 export interface ISocketServerOptions {
   port: number;
@@ -32,7 +33,7 @@ export interface ISocketServerOptions {
 
 export interface IOutput {
   type: string;
-  data: IMemoryData;
+  data: IMemoryData | ICpuData;
 }
 
 export class SocketServer {
@@ -61,6 +62,9 @@ export class SocketServer {
 
           // send client latest status about jobs
           jobEvents.subscribe(event => conn.next(event));
+
+          // subscriptions
+          let statsSub: Subscription;
 
           conn.subscribe(event => {
             if (event.type === 'disconnected') {
@@ -167,9 +171,15 @@ export class SocketServer {
               break;
 
               case 'subscribeToStats':
-                memory()
+                statsSub = Observable.merge(...[memory(), cpu()])
                   .subscribe(event => conn.next(event));
 
+              break;
+
+              case 'unsubscribeFromStats':
+                if (statsSub) {
+                  statsSub.unsubscribe();
+                }
               break;
             }
           });

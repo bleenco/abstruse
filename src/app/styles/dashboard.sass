@@ -1,0 +1,122 @@
+.content-box
+  padding: 30px
+  background: $white
+  border: 1px solid $border
+  border-radius: 4px
+  width: 100%
+  min-height: 215px
+  margin-bottom: 30px
+
+  .content-box-header
+    display: flex
+    align-items: center
+    justify-content: space-between
+    margin-bottom: 10px
+
+    h2
+      padding: 0
+      margin: 0
+      display: inline
+
+    h3
+      display: inline
+      text-transform: none
+      padding: 0
+      margin: 0
+
+  hr
+    margin: 10px 0
+
+  .info-data-container
+    display: flex
+    align-items: center
+    height: 30px
+    font-size: 14px
+    justify-content: space-between
+
+    .label-txt
+      color: $color
+
+    .data-txt
+      color: $color-secondary
+
+  .data-progress-container
+    height: 4px
+    border-radius: 2px
+    width: 100%
+    background: #E2E7EE
+    position: relative
+    margin: 0 30px 0 20px
+
+    .data-progress-bar
+      height: 4px
+      border-radius: 2px
+      position: absolute
+      left: 0
+      top: 0
+
+    &.green
+
+      .data-progress-bar
+        background-image: linear-gradient(90deg, #2BB415 2%, #5AD946 98%)
+
+.line-chart-top-content
+  padding: 0
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottom: 10px
+
+  h2
+    margin: 0
+    padding: 0
+
+  .line-chart-legend
+    display: flex
+    align-items: center
+    font-size: 13px
+
+    .dot
+      display: inline-block
+      width: 8px
+      height: 8px
+      border-radius: 50%
+      margin: 0 10px
+
+      &.green
+        border: 2px solid #2BB415
+
+      &.red
+        border: 2px solid #f03e3e
+
+.line-chart-container
+  width: 100%
+  height: 400px
+
+  .axis
+    font-family: $font-family-regular
+
+    .domain
+      stroke: transparent
+
+    .tick
+
+      line
+        stroke: transparent
+
+      text
+        fill: $text
+
+    &.axis--y
+
+      .tick
+
+        line
+          stroke: #DFE2E5
+          stroke-width: 1
+
+.progress-chart
+  width: 240px
+  height: 240px
+  display: block
+  margin: 0 auto

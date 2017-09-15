@@ -24,17 +24,24 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
 
-          <div class="column is-8">
+          <div class="column is-7">
             <div class="content-box">
-              <app-line-chart></app-line-chart>
+              <app-line-chart [data]="runs"></app-line-chart>
             </div>
           </div>
-          <div class="column is-4">
+          <div class="column is-5">
             <div class="content-box">
-
+              <div class="content-box-header">
+                <h2>CPU</h2>
+                <h3>Total CPU Usage</h3>
+              </div>
+              <app-progress-chart [percent]="cpuPercent"></app-progress-chart>
             </div>
             <div class="content-box">
-              <h2>Memory</h2>
+              <div class="content-box-header">
+                <h2>Memory</h2>
+                <h3>Overall Memory Consumption</h3>
+              </div>
               <div class="info-data-container">
                 <span class="label-txt">Total</span>
                 <span class="data-txt">{{ memoryHuman?.total }}</span>
@@ -58,14 +65,6 @@
                 </span>
               </div>
             </div>
-          </div>
-
-          <div class="column is-6">
-            <div class="content-box"></div>
-          </div>
-
-          <div class="column is-6">
-            <div class="content-box"></div>
           </div>
 
         </div>
