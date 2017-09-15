@@ -84,7 +84,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
               this.builds[build].jobs[index].end_time = new Date();
               break;
             case 'job stopped':
-              this.builds[build].jobs[index].status = 'failed';
+              this.builds[build].jobs[index].status = 'stopped';
               this.builds[build].jobs[index].end_time = new Date();
               break;
           }
@@ -107,6 +107,10 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   update(): void {
     this.builds = this.builds.map(build => {
       let status = 'queued';
+      if (build.jobs.findIndex(job => job.status === 'stopped') !== -1) {
+        status = 'stopped';
+      }
+
       if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
         status = 'failed';
       }

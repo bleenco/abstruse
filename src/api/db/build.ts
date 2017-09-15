@@ -108,6 +108,8 @@ export function getBuild(id: number, userId?: number): Promise<any> {
               run.status = 'running';
             } else if (run.job_runs.findIndex(j => j.status === 'failed') !== -1) {
               run.status = 'failed';
+            } else if (run.job_runs.findIndex(j => j.status === 'stopped') !== -1) {
+              run.status = 'stopped';
             } else if (run.job_runs.findIndex(j => j.status === 'success') !== -1) {
               run.status = 'success';
             }
@@ -272,7 +274,10 @@ export function getBuildStatus(buildId: number): Promise<any> {
               return curr;
             } else if (curr === 'failed' && accu !== 'running' && accu !== 'queued') {
               return curr;
-            } else if (curr === 'success' && accu !== 'failed'
+            } else if (curr === 'stopped' && accu !== 'failed'
+              && accu !== 'running' && accu !== 'queued') {
+              return curr;
+            } else if (curr === 'success' && accu !== 'stopped' && accu !== 'failed'
               && accu !== 'running' && accu !== 'queued') {
                 return curr;
             }

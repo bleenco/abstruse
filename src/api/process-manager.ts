@@ -350,7 +350,7 @@ export function stopJob(jobId: number): Promise<any> {
         .then(runId => dbJobRuns.getRun(runId))
         .then(jobRun => {
           if (jobRun.status !== 'success') {
-            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed'});
+            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'stopped'});
           }
         })
         .then(() => dbJob.getJob(jobId))
@@ -366,7 +366,7 @@ export function stopJob(jobId: number): Promise<any> {
                       .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                       .then(() => sendSuccessStatus(build, build.id));
                   });
-              } else if (status === 'failed') {
+              } else if (status === 'failed' || status === 'stopped') {
                 getBuild(job.builds_id)
                 .then(build => {
                   return updateBuild({ id: build.id, end_time: new Date() })
@@ -396,7 +396,7 @@ export function stopJob(jobId: number): Promise<any> {
                       .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                       .then(() => sendSuccessStatus(build, build.id));
                   });
-              } else if (status === 'failed') {
+              } else if (status === 'failed' || status === 'stopped') {
                 getBuild(job.builds_id)
                 .then(build => {
                   return updateBuild({ id: build.id, end_time: new Date() })
@@ -411,7 +411,7 @@ export function stopJob(jobId: number): Promise<any> {
         .then(runId => dbJobRuns.getRun(runId))
         .then(jobRun => {
           if (jobRun.status !== 'success') {
-            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed' });
+            return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'stopped'});
           }
         })
         .then(() => {

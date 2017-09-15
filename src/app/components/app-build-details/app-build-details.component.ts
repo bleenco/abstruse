@@ -88,8 +88,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
               } else if (event.data === 'job succeded') {
                 this.build.jobs[index].status = 'success';
                 this.build.jobs[index].end_time = new Date().getTime();
-              } else if (event.data === 'job failed' || event.data === 'job stopped') {
+              } else if (event.data === 'job failed') {
                 this.build.jobs[index].status = 'failed';
+                this.build.jobs[index].end_time = new Date().getTime();
+              } else if (event.data === 'job stopped') {
+                this.build.jobs[index].status = 'stopped';
                 this.build.jobs[index].end_time = new Date().getTime();
               } else if (event.data === 'job queued') {
                 this.build.jobs[index].status = 'queued';
@@ -155,6 +158,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     let favicon = 'images/favicon-queued.png';
 
     if (this.build && this.build.jobs) {
+      if (this.build.jobs.findIndex(job => job.status === 'stopped') !== -1) {
+        status = 'stopped';
+        favicon = 'images/favicon-error.png';
+      }
+
       if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
         status = 'failed';
         favicon = 'images/favicon-error.png';
