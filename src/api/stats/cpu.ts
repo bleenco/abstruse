@@ -14,7 +14,8 @@ export function cpu(): Observable<IOutput> {
     .mergeMap(() => cpuLoad())
     .map((res: ICpuData) => {
       return { type: 'cpu', data: res };
-    });
+    })
+    .share();
 }
 
 function cpuLoad(): Promise<ICpuData> {
