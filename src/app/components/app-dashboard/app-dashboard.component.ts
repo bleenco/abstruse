@@ -31,8 +31,6 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loading = false;
-
     this.sub = this.statsService.stats.subscribe(e => {
       if (e.type === 'memory') {
         this.memory = {
@@ -54,7 +52,10 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.statsService.getJobRuns().then((runs: any) => this.runs = runs);
+    this.statsService.getJobRuns().then((runs: any) => {
+      this.loading = false;
+      this.runs = runs;
+    });
 
     setTimeout(() => this.statsService.start());
   }
