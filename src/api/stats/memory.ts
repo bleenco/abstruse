@@ -13,7 +13,8 @@ export function memory(): Observable<IOutput> {
     .mergeMap(() => getMemory())
     .map((res: IMemoryData) => {
       return { type: 'memory', data: res };
-    });
+    })
+    .share();
 }
 
 function getMemory(): Promise<IMemoryData> {

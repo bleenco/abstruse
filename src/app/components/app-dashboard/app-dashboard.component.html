@@ -32,13 +32,6 @@
           <div class="column is-5">
             <div class="content-box">
               <div class="content-box-header">
-                <h2>CPU</h2>
-                <h3>Total CPU Usage</h3>
-              </div>
-              <app-progress-chart [percent]="cpuPercent"></app-progress-chart>
-            </div>
-            <div class="content-box">
-              <div class="content-box-header">
                 <h2>Memory</h2>
                 <h3>Overall Memory Consumption</h3>
               </div>
@@ -62,6 +55,28 @@
                 </div>
                 <span class="data-txt">
                   {{ memoryPercentage }}%
+                </span>
+              </div>
+            </div>
+            <div class="content-box">
+              <div class="content-box-header">
+                <h2>CPU</h2>
+                <h3>Total CPU Usage</h3>
+              </div>
+              <app-progress-chart [percent]="cpuPercent"></app-progress-chart>
+            </div>
+            <div class="content-box" *ngIf="cpuCores?.length">
+              <div class="content-box-header">
+                <h2>CPU Cores</h2>
+                <h3>CPU Cores Utilization</h3>
+              </div>
+              <div class="info-data-container" *ngFor="let core of cpuCores; let i = index">
+                <span class="label-txt">Core {{ i }}</span>
+                <div class="data-progress-container green">
+                  <span class="data-progress-bar" [style.width]="core + '%'"></span>
+                </div>
+                <span class="data-txt">
+                  {{ core }}%
                 </span>
               </div>
             </div>

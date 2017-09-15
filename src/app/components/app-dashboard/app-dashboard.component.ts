@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StatsService } from '../../services/stats.service';
 import { Subscription } from 'rxjs/Subscription';
+import { schemeCategory20b } from 'd3';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,20 +10,24 @@ import { Subscription } from 'rxjs/Subscription';
 export class AppDashboardComponent implements OnInit, OnDestroy {
   loading: boolean;
   sub: Subscription;
+  colors: string[];
   memory: { total: number, free: number, used: number };
   memoryHuman: { total: string, free: string, used: string };
   memoryPercentage: string;
   runs: { success: {}, failed: {} };
   cpuPercent: number;
+  cpuCores: number[];
 
   constructor(private statsService: StatsService) {
     this.loading = true;
 
+    this.colors = schemeCategory20b;
     this.memory = { total: null, free: null, used: null };
     this.memoryHuman = { total: null, free: null, used: null };
     this.memoryPercentage = '0';
     this.runs = { success: {}, failed: {} };
     this.cpuPercent = 0;
+    this.cpuCores = [];
   }
 
   ngOnInit() {
@@ -45,6 +50,7 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
         this.memoryPercentage = Number(this.memory.used / this.memory.total * 100).toFixed(2);
       } else if (e.type === 'cpu') {
         this.cpuPercent = e.data.load;
+        this.cpuCores = e.data.cores.map(core => core.total);
       }
     });
 
