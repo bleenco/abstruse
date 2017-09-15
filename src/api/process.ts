@@ -25,7 +25,7 @@ export interface SpawnedProcessOutput {
 
 export interface ProcessOutput {
   type: 'data' | 'exit' | 'container' | 'exposed port';
-  data: string;
+  data: any;
 }
 
 export function startBuildProcess(
@@ -37,13 +37,9 @@ export function startBuildProcess(
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
-      .map(cmd => cmd.command.replace('export', '-e'))
-      .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
+    const envs = []
       .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
       .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
-
-    proc.commands = proc.commands.filter(cmd => !cmd.command.startsWith('export'));
 
     const gitCommands = proc.commands.filter(command => command.type === CommandType.git);
     const installCommands = proc.commands.filter(command => {
@@ -75,7 +71,7 @@ export function startBuildProcess(
 
       restoreCache = Observable.concat(...[
         executeOutsideContainer(copyRestoreCmd),
-        executeInContainer(name, { command: restoreCmd, type: CommandType.restore_cache })
+        docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
       ]);
 
       let tarCmd = [
@@ -88,7 +84,7 @@ export function startBuildProcess(
       ].join('');
 
       saveCache = Observable.concat(...[
-        executeInContainer(name, { command: tarCmd, type: CommandType.store_cache }),
+        docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
@@ -109,128 +105,50 @@ export function startBuildProcess(
       ].join(' ');
 
       debug = Observable.concat(...[
-        executeInContainer(name, { command: ssh, type: CommandType.before_install }),
+        docker.attachExec(name, { command: ssh, type: CommandType.before_install }),
         getContainerExposedPort(name, 22),
-        executeInContainer(name, { command: xvfb, type: CommandType.before_install }),
-        executeInContainer(name, { command: vnc, type: CommandType.before_install }),
+        docker.attachExec(name, { command: xvfb, type: CommandType.before_install }),
+        docker.attachExec(name, { command: vnc, type: CommandType.before_install }),
         getContainerExposedPort(name, 5900)
       ]);
     }
 
-    const sub = startContainer(name, image, envs)
+    const sub = docker.createContainer(name, image, envs)
       .concat(debug)
-      .concat(...gitCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(restoreCache)
-      .concat(...installCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => executeInContainer(name, cmd)))
-      .concat(...deployCommands.map(cmd => executeInContainer(name, cmd)))
+      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
-        observer.next(event);
+        if (event.type === 'exit') {
+          if (Number(event.data) !== 0) {
+            const msg = [
+              `build: ${proc.build_id} job: ${proc.job_id} =>`,
+              `last executed command exited with code ${event.data}`
+            ].join(' ');
+            sub.unsubscribe();
+            observer.error(msg);
+            observer.complete();
+          }
+        } else {
+          observer.next(event);
+        }
       }, err => {
         sub.unsubscribe();
         observer.error(err);
-        stopContainer(name).subscribe((event: ProcessOutput) => {
-          observer.next(event);
-          observer.next({ type: 'data', data: err });
-          observer.complete();
-        });
+        observer.complete();
       }, () => {
         sub.unsubscribe();
-        stopContainer(name).subscribe((event: ProcessOutput) => {
-          observer.next(event);
-          observer.complete();
-        });
+        const msg = '[success]: build finished with exit code 0';
+        observer.next({ type: 'data', data: green(msg) });
+        observer.complete();
       });
-  });
-}
-
-function executeInContainer(name: string, cmd: Command): Observable<ProcessOutput> {
-  return new Observable(observer => {
-    const startTime = new Date().getTime();
-    const start = nodePty.spawn('docker', ['start', name], { name: 'xterm-color' });
-
-    const splitted = name.split('_');
-    const build = splitted[1] || null;
-    const job = splitted[2] || null;
-
-    start.on('exit', startCode => {
-      if (startCode !== 0) {
-        const msg = `build: ${build} job: ${job} => errored with exit code ${startCode}`;
-        observer.error(msg);
-      }
-
-      let executed = false;
-      let success = false;
-      let dk = null;
-      let attach = null;
-
-      if (cmd.command.includes('init.d') && cmd.command.includes('start')) {
-        dk = 'Q';
-        attach = nodePty.spawn('docker', ['attach', `--detach-keys=${dk}`, name]);
-      } else {
-        attach = nodePty.spawn('docker', ['exec', `-it`, name, 'bash', '-l']);
-      }
-
-      attach.on('data', data => {
-        if (!executed) {
-          const exec = `/usr/bin/abstruse '${cmd.command}'\r`;
-          attach.write(exec);
-
-          // don't show access token on UI
-          if (cmd.command.includes('http') && cmd.command.includes('@')) {
-            cmd.command = cmd.command.replace(/\/\/(.*)@/, '//');
-          }
-
-          if (cmd.type === CommandType.store_cache) {
-            observer.next({ type: 'data', data: yellow('==> saving cache ...') + '\r' });
-          } else if (cmd.type === CommandType.restore_cache) {
-            observer.next({ type: 'data', data: yellow('==> restoring cache ...') + '\r' });
-          } else {
-            observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
-          }
-          executed = true;
-        } else {
-          if (data.includes('[success]')) {
-            if (cmd.type === CommandType.script) {
-              observer.next({ type: 'data', data: green(data.replace(/\n\r/g, '')) });
-            }
-
-            success = true;
-            if (dk) {
-              attach.write(dk);
-            } else {
-              attach.write('pkill -9 sleep && exit 100\r');
-            }
-          } else if (data.includes('[error]')) {
-            attach.kill();
-            observer.error(red(data.replace(/\n\r/g, '')));
-          } else if (!data.includes('/usr/bin/abstruse') &&
-            !data.includes('exit 100') && !data.includes('logout') &&
-            !data.includes('read escape sequence')) {
-            observer.next({ type: 'data', data: data.replace('> ', '') });
-          }
-        }
-      });
-
-      attach.on('exit', code => {
-        const endTime = new Date().getTime();
-        const totalTime = endTime - startTime;
-        observer.next({ type: 'data', data: `[exectime]: ${totalTime}` });
-
-        if (code !== 0 && !success) {
-          observer.next({ type: 'exit', data: code });
-          observer.complete();
-        } else {
-          observer.next({ type: 'exit', data: '0' });
-          observer.complete();
-        }
-      });
-    });
   });
 }
 
@@ -243,52 +161,6 @@ function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
 
     proc.on('close', code => {
       observer.next({ type: 'exit', data: code.toString() });
-      observer.complete();
-    });
-  });
-}
-
-function startContainer(name: string, image: string, vars = []): Observable<ProcessOutput> {
-  return new Observable(observer => {
-    docker.killContainer(name)
-      .then(() => {
-        const args = ['run', '-dit', '--privileged', '-P']
-          .concat('-m=2048M', '--cpus=2')
-          .concat(vars)
-          .concat('--name', name, image);
-
-        const process = nodePty.spawn('docker', args);
-
-        process.on('exit', exitCode => {
-          if (exitCode !== 0) {
-            observer.error(`error starting container ${exitCode}`);
-          } else {
-            observer.next({
-              type: 'container',
-              data: `container ${name} succesfully started`
-            });
-          }
-
-          observer.complete();
-        });
-      });
-  });
-}
-
-export function stopContainer(name: string): Observable<ProcessOutput> {
-  return new Observable(observer => {
-    const process = nodePty.spawn('docker', [
-      'rm',
-      '-f',
-      name
-    ]);
-
-    process.on('exit', exitCode => {
-      observer.next({
-        type: 'container',
-        data: `container ${name} succesfully stopped.`
-      });
-
       observer.complete();
     });
   });

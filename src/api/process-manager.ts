@@ -1,4 +1,4 @@
-import { startDockerImageSetupJob, startBuildProcess, stopContainer } from './process';
+import { startDockerImageSetupJob, startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import {
   insertBuild,
@@ -355,11 +355,11 @@ export function stopJob(jobId: number): Promise<any> {
         })
         .then(() => dbJob.getJob(jobId))
         .then(job => {
-          return stopContainer(`abstruse_${job.builds_id}_${jobId}`).toPromise()
+          return killContainer(`abstruse_${job.builds_id}_${jobId}`)
             .then(() => getBuildStatus(job.builds_id))
             .then(status => {
               if (status === 'success') {
-                getBuild(job.builds_id)
+                return getBuild(job.builds_id)
                   .then(build => {
                     return updateBuild({ id: build.id, end_time: new Date() })
                       .then(() => getLastRunId(build.id))
@@ -367,7 +367,7 @@ export function stopJob(jobId: number): Promise<any> {
                       .then(() => sendSuccessStatus(build, build.id));
                   });
               } else if (status === 'failed') {
-                getBuild(job.builds_id)
+                return getBuild(job.builds_id)
                 .then(build => {
                   return updateBuild({ id: build.id, end_time: new Date() })
                     .then(() => getLastRunId(build.id))
@@ -385,11 +385,11 @@ export function stopJob(jobId: number): Promise<any> {
       return Promise.resolve()
         .then(() => dbJob.getJob(jobId))
         .then(job => {
-          return stopContainer(`abstruse_${job.builds_id}_${jobId}`).toPromise()
+          return killContainer(`abstruse_${job.builds_id}_${jobId}`)
             .then(() => getBuildStatus(job.builds_id))
             .then(status => {
               if (status === 'success') {
-                getBuild(job.builds_id)
+                return getBuild(job.builds_id)
                   .then(build => {
                     return updateBuild({ id: build.id, end_time: new Date() })
                       .then(() => getLastRunId(build.id))
@@ -397,7 +397,7 @@ export function stopJob(jobId: number): Promise<any> {
                       .then(() => sendSuccessStatus(build, build.id));
                   });
               } else if (status === 'failed') {
-                getBuild(job.builds_id)
+                return getBuild(job.builds_id)
                 .then(build => {
                   return updateBuild({ id: build.id, end_time: new Date() })
                     .then(() => getLastRunId(build.id))
