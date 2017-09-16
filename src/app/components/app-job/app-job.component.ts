@@ -53,6 +53,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.terminalOptions = { size: 'large' };
     this.id = null;
+    this.sshd = null;
+    this.vnc = null;
   }
 
   ngOnInit() {

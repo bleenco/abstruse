@@ -98,9 +98,13 @@ export class AppTerminalComponent implements OnInit {
           t = t ? parseFloat(<any>(<any>t / 10)).toFixed(0) : null;
           let time = t && parseInt(<any>t, 10);
 
-          this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : null;
+          if (this.commands[this.commands.length - 1]) {
+            this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : null;
+          }
         } else {
-          this.commands[this.commands.length - 1].output += output;
+          if (this.commands[this.commands.length - 1]) {
+            this.commands[this.commands.length - 1].output += output;
+          }
         }
       }
 
