@@ -18,17 +18,14 @@ before_install:
 
 install:
   - npm install
-  - sudo apt-get install iptables sqlite3 -y
-  - curl -o /home/abstruse/docker.pkg https://download.docker.com/linux/ubuntu/dists/zesty/pool/stable/amd64/docker-ce_17.06.2~ce-0~ubuntu_amd64.deb
-  - sudo dpkg -i /home/abstruse/docker.pkg
-  - sudo $(which node) ./tests/postinstall_ci.js
 
 before_script:
-  - sudo usermod -aG docker abstruse
-  - sudo /etc/init.d/docker start
   - sudo /etc/init.d/xvfb start
   - export DISPLAY=:99
 
 script:
   - if [[ "$SCRIPT" ]]; then npm run-script $SCRIPT; fi
 
+cache:
+  directories:
+    - node_modules

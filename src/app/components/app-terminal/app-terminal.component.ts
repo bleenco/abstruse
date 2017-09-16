@@ -99,7 +99,7 @@ export class AppTerminalComponent implements OnInit {
           let time = t && parseInt(<any>t, 10);
 
           if (this.commands[this.commands.length - 1]) {
-            this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : null;
+            this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : '0ms';
           }
         } else {
           if (this.commands[this.commands.length - 1]) {

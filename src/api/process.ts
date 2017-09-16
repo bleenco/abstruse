@@ -139,7 +139,9 @@ export function startBuildProcess(
             observer.next({ type: 'data', data: red(tmsg) });
             sub.unsubscribe();
             observer.error(msg);
-            observer.complete();
+            docker.killContainer(name)
+              .then(() => observer.complete())
+              .catch(err => console.error(err));
           }
         } else {
           observer.next(event);
@@ -147,12 +149,16 @@ export function startBuildProcess(
       }, err => {
         sub.unsubscribe();
         observer.error(err);
-        observer.complete();
+        docker.killContainer(name)
+          .then(() => observer.complete())
+          .catch(err => console.error(err));
       }, () => {
         sub.unsubscribe();
-        const msg = '[success]: build finished with exit code 0';
+        const msg = '[success]: build returned exit code 0';
         observer.next({ type: 'data', data: green(msg) });
-        observer.complete();
+        docker.killContainer(name)
+          .then(() => observer.complete())
+          .catch(err => console.error(err));
       });
   });
 }

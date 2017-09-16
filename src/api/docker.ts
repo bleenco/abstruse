@@ -23,8 +23,10 @@ export function createContainer(
       OpenStdin: true,
       StdinOnce: false,
       Cmd: ['/bin/bash'],
-      Env: envs || []
-    })
+      Env: envs || [],
+      Binds: ['/var/run/docker.sock:/var/run/docker.sock'],
+      Privileged: true
+    } as any)
     .then(container => container.start())
     .then(() => observer.complete())
     .catch(err => observer.error(err));
@@ -54,57 +56,47 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     }
 
     const container = docker.getContainer(id);
+    const attachOpts = {
+      stream: true,
+      stdin: true,
+      stdout: true,
+      stderr: true
+    };
 
-    container.inspect()
-      .then((containerInfo: dockerode.ContainerInspectInfo): any => {
-        if (containerInfo.State.Status !== 'running') {
-          return startContainer(id);
-        } else {
-          return Promise.resolve();
+    container.attach(attachOpts, (err, stream: any) => {
+      if (err) {
+        observer.error(err);
+      }
+
+      const ws = new Writable();
+
+      ws.on('finish', () => {
+        const duration = new Date().getTime() - startTime;
+        observer.next({ type: 'data', data: `[exectime]: ${duration}` });
+        observer.next({ type: 'exit', data: exitCode });
+        observer.complete();
+      });
+
+      ws._write = (chunk, enc, next) => {
+        const str = chunk.toString();
+
+        if (str.includes('[error]')) {
+          const splitted = str.split(' ');
+          exitCode = splitted[splitted.length - 1] || 1;
+          ws.end();
+        } else if (str.includes('[success]')) {
+          exitCode = 0;
+          ws.end();
+        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
+          observer.next({ type: 'data', data: str });
         }
-      })
-      .then(() => {
-        const attachOpts = {
-          stream: true,
-          stdin: true,
-          stdout: true,
-          stderr: true
-        };
 
-        container.attach(attachOpts, (err, stream: any) => {
-          if (err) {
-            observer.error(err);
-          }
+        next();
+      };
 
-          const ws = new Writable();
-
-          ws.on('finish', () => {
-            const duration = new Date().getTime() - startTime;
-            observer.next({ type: 'data', data: `[exectime]: ${duration}` });
-            observer.next({ type: 'exit', data: exitCode });
-            observer.complete();
-          });
-
-          ws._write = (chunk, enc, next) => {
-            const str = chunk.toString();
-
-            if (str.includes('[error]')) {
-              exitCode = Number(str.split(' ').pop());
-              ws.end();
-            } else if (str.includes('[success]')) {
-              exitCode = 0;
-              ws.end();
-            } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
-              observer.next({ type: 'data', data: str });
-            }
-
-            next();
-          };
-
-          stream.pipe(ws);
-          stream.write('/usr/bin/abstruse \'(' + cmd.command + ')\'\r');
-        });
-      }).catch(err => console.error(err));
+      stream.pipe(ws);
+      stream.write('/usr/bin/abstruse \'(' + cmd.command + ')\'\r');
+    });
   });
 }
 
@@ -222,11 +214,11 @@ export function killAllContainers(): Promise<void> {
 
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    const info = spawn('docker', ['info']);
-    info.on('close', code => {
-      observer.next(code === 0 ? true : false);
-      observer.complete();
-    });
+    fs.exists('/var/run/docker.sock')
+      .then(isRunning => {
+        observer.next(isRunning);
+        observer.complete();
+      });
   });
 }
 
