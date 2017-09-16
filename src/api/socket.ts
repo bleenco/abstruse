@@ -55,16 +55,21 @@ export class SocketServer {
           return this.createRxSocket(data.conn);
         })
         .subscribe(conn => {
-          this.clients.push({ connection: conn, sub: null, session: this.connectingClient });
+          this.clients.push({
+            connection: conn,
+            sub: null,
+            session: this.connectingClient,
+            subs: []
+          });
+
+          const clientIndex = this.clients.length - 1;
+          let statsSubIndex = null;
 
           // send server time for sync
           conn.next({ type: 'time', data: new Date().getTime() });
 
           // send client latest status about jobs
           jobEvents.subscribe(event => conn.next(event));
-
-          // subscriptions
-          let statsSub: Subscription;
 
           conn.subscribe(event => {
             if (event.type === 'disconnected') {
@@ -171,14 +176,15 @@ export class SocketServer {
               break;
 
               case 'subscribeToStats':
-                statsSub = Observable.merge(...[memory(), cpu()])
-                  .subscribe(event => conn.next(event));
-
+                this.clients[clientIndex].subs.push({ id: 'stats', sub: null });
+                statsSubIndex = this.clients[clientIndex].subs.length - 1;
+                this.clients[clientIndex].subs[statsSubIndex] =
+                  Observable.merge(...[memory(), cpu()])
+                    .subscribe(event => conn.next(event));
               break;
-
               case 'unsubscribeFromStats':
-                if (statsSub) {
-                  statsSub.unsubscribe();
+                if (!this.clients[clientIndex].subs[statsSubIndex]) {
+                  this.clients[clientIndex].subs[statsSubIndex].unsubscribe();
                 }
               break;
             }

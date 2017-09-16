@@ -148,10 +148,23 @@ export function killContainer(id: string): Promise<void> {
     let container = null;
     try {
       container = docker.getContainer(id);
-      container.kill()
+      container.inspect()
+        .then(containerInfo => {
+          if (containerInfo.State.Running) {
+            return container.kill();
+          } else {
+            return Promise.resolve();
+          }
+        })
         .then(() => container.remove())
         .then(() => resolve())
-        .catch(err => reject(err));
+        .catch(err => {
+          if (err.statusCode === 404) {
+            resolve();
+          } else {
+            console.error(err);
+          }
+        });
     } catch (e) {
       resolve();
     }
