@@ -37,9 +37,12 @@ export function startBuildProcess(
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const envs = []
-      .concat(proc.env.reduce((acc, curr) => acc.concat(['-e', curr]), []))
-      .concat(variables.reduce((acc, curr) => acc.concat(['-e', curr]), []));
+    const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
+      .map(cmd => cmd.command.replace('export', ''))
+      .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
+      .concat(proc.env)
+      .concat(variables)
+      .filter(Boolean);
 
     const gitCommands = proc.commands.filter(command => command.type === CommandType.git);
     const installCommands = proc.commands.filter(command => {
@@ -132,6 +135,8 @@ export function startBuildProcess(
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
             ].join(' ');
+            const tmsg = `[error]: executed command returned exit code ${event.data}`;
+            observer.next({ type: 'data', data: red(tmsg) });
             sub.unsubscribe();
             observer.error(msg);
             observer.complete();

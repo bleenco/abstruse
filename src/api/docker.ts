@@ -22,7 +22,8 @@ export function createContainer(
       Tty: true,
       OpenStdin: true,
       StdinOnce: false,
-      Cmd: ['/bin/bash']
+      Cmd: ['/bin/bash'],
+      Env: envs || []
     })
     .then(container => container.start())
     .then(() => observer.complete())
@@ -37,6 +38,7 @@ export function startContainer(id: string): Promise<dockerode.Container> {
 export function attachExec(id: string, cmd: any): Observable<any> {
   return new Observable(observer => {
     const startTime = new Date().getTime();
+    let exitCode = 255;
 
     // don't show access token on UI
     if (cmd.command.includes('http') && cmd.command.includes('@')) {
@@ -75,25 +77,32 @@ export function attachExec(id: string, cmd: any): Observable<any> {
           }
 
           const ws = new Writable();
+
+          ws.on('finish', () => {
+            const duration = new Date().getTime() - startTime;
+            observer.next({ type: 'data', data: `[exectime]: ${duration}` });
+            observer.next({ type: 'exit', data: exitCode });
+            observer.complete();
+          });
+
           ws._write = (chunk, enc, next) => {
             const str = chunk.toString();
-            if (!str.includes(cmd.command) && !str.includes('exit $?') && !str.startsWith('>')) {
+
+            if (str.includes('[error]')) {
+              exitCode = Number(str.split(' ').pop());
+              ws.end();
+            } else if (str.includes('[success]')) {
+              exitCode = 0;
+              ws.end();
+            } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
               observer.next({ type: 'data', data: str });
             }
+
             next();
           };
 
           stream.pipe(ws);
-          stream.write(cmd.command + '\rexit $?\r');
-
-          container.wait()
-            .then(code => {
-              const duration = new Date().getTime() - startTime;
-              observer.next({ type: 'data', data: `[exectime]: ${duration}` });
-              observer.next({ type: 'exit', data: code.StatusCode });
-              observer.complete();
-            })
-            .catch(err => observer.error(err));
+          stream.write('/usr/bin/abstruse \'(' + cmd.command + ')\'\r');
         });
       }).catch(err => console.error(err));
   });

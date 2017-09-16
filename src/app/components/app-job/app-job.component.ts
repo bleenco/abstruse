@@ -60,6 +60,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.userData = this.authService.getData();
     this.userId = this.userData && this.userData.id || null;
+    this.id = this.route.snapshot.params.id;
 
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
@@ -77,6 +78,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
 
     this.sub = this.socketService.outputEvents
       .filter(event => event.type === 'process')
@@ -103,31 +106,25 @@ export class AppJobComponent implements OnInit, OnDestroy {
         this.setFavicon();
       });
 
-    this.route.params.subscribe(params => {
-      this.id = params.id;
+    this.apiService.getJob(this.id, this.userId).subscribe(job => {
+      this.job = job;
 
-      this.apiService.getJob(this.id, this.userId).subscribe(job => {
-        this.job = job;
+      this.setAvatars();
 
-        this.setAvatars();
+      if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {
+        this.tag = this.job.build.data.ref.replace('refs/tags/', '');
+      }
 
-        if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {
-          this.tag = this.job.build.data.ref.replace('refs/tags/', '');
-        }
-
-        this.jobRun = job.runs[job.runs.length - 1];
-        this.terminalInput = this.jobRun.log;
-        this.timeWords = distanceInWordsToNow(job.build.created_at);
-        this.setFavicon();
-        this.loading = false;
-        const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
-        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
-        if (lastRun) {
-          this.previousRuntime = lastRun.end_time - lastRun.start_time;
-        }
-
-        this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
-      });
+      this.jobRun = job.runs[job.runs.length - 1];
+      this.terminalInput = this.jobRun.log;
+      this.timeWords = distanceInWordsToNow(job.build.created_at);
+      this.setFavicon();
+      this.loading = false;
+      const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+      job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+      if (lastRun) {
+        this.previousRuntime = lastRun.end_time - lastRun.start_time;
+      }
     });
 
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {

@@ -14,7 +14,7 @@ export class StatsService {
 
   start(): void {
     if (!this.sub) {
-      this.sub = this.socketService.onMessage()
+      this.sub = this.socketService.outputEvents
         .filter(e => e.type === 'memory' || e.type === 'cpu')
         .subscribe(e => this.stats.emit(e));
     }
