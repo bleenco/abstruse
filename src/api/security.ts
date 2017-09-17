@@ -7,6 +7,7 @@ import { getFilePath, getConfig } from './utils';
 import { existsSync, exists, writeFile } from './fs';
 import { readFileSync } from 'fs';
 import { logger, LogMessageType } from './logger';
+import { Observable } from 'rxjs';
 
 export function generatePassword(plain: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -73,70 +74,54 @@ export function decrypt(str: string, config: any): string {
   }
 }
 
-export function generatePublicKey(): Promise<void> {
-  return new Promise((resolve, reject) => {
+export function generatePublicKey(): Observable<string> {
+  return new Observable(observer => {
     const config: any = getConfig();
     const publicKeyPath = getFilePath(config.publicKey);
 
     if (existsSync(publicKeyPath)) {
-      return resolve();
+      observer.complete();
     } else {
-      const msg: LogMessageType = {
-        message: '[encrypt]: generating RSA public key...',
-        type: 'info',
-        notify: false
-      };
-      logger.next(msg);
+      observer.next(`[encrypt]: generating RSA public key...`);
 
       const key = new nodeRsa({b: 4096});
       const publicKey = key.exportKey('public').toString();
 
       writeFile(publicKeyPath, publicKey)
         .then(() => {
-          const msg: LogMessageType = {
-            message: '[encrypt]: RSA public key successfully generated',
-            type: 'info',
-            notify: false
-          };
-          logger.next(msg);
-
-          resolve();
+          observer.next('[encrypt]: RSA public key successfully generated');
+          observer.complete();
         })
-        .catch(err => reject(err));
+        .catch(err => {
+          observer.error(err);
+          observer.complete();
+        });
     }
   });
 }
 
-export function generatePrivateKey(): Promise<void> {
-  return new Promise((resolve, reject) => {
+export function generatePrivateKey(): Observable<string> {
+  return new Observable(observer => {
     const config: any = getConfig();
     const privateKeyPath = getFilePath(config.privateKey);
 
     if (existsSync(privateKeyPath)) {
-      return resolve();
+      observer.complete();
     } else {
-      const msg: LogMessageType = {
-        message: '[encrypt]: generating RSA private key...',
-        type: 'info',
-        notify: false
-      };
-      logger.next(msg);
+      observer.next('[encrypt]: generating RSA private key...');
 
       const key = new nodeRsa({b: 4096});
       const privateKey = key.exportKey('private').toString();
 
       writeFile(privateKeyPath, privateKey)
         .then(() => {
-          const msg: LogMessageType = {
-            message: '[encrypt]: RSA private key successfully generated',
-            type: 'info',
-            notify: false
-          };
-          logger.next(msg);
-
-          resolve();
+          observer.next('[encrypt]: RSA private key successfully generated');
+          observer.complete();
         })
-        .catch(err => reject(err));
+        .catch(err => {
+          observer.error(err);
+          observer.complete();
+        });
     }
   });
 }
