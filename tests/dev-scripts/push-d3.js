@@ -1,6 +1,6 @@
 const request = require('request');
 const crypto = require('crypto');
-const data = require('./data/push-abstruse.json');
+const data = require('./data/push-d3.json');
 const headers = require('./data/push-request-headers.json');
 
 const secret = 'thisIsSecret';
