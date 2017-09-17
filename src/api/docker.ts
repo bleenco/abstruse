@@ -95,7 +95,7 @@ export function attachExec(id: string, cmd: any): Observable<any> {
       };
 
       stream.pipe(ws);
-      stream.write('/usr/bin/abstruse \'(' + cmd.command + ')\'\r');
+      stream.write('/usr/bin/abstruse \'' + cmd.command + '\'\r');
     });
   });
 }
