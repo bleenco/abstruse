@@ -52,8 +52,14 @@ int main(int argc, char *argv[]) {
     close(fd[1]);
 
     int status;
-    waitpid(pid, &status, 0);
+    if (waitpid(pid, &status, 0) == -1) {
+      perror("waitpid failed");
+      return EXIT_FAILURE;
+    }
 
-    return status;
+    if (WIFEXITED(status)) {
+      const int code = WEXITSTATUS(status);
+      return code;
+    }
   }
 }
