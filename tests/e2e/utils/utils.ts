@@ -113,11 +113,3 @@ export function sendGogsRequest(data: any, headers: any): Promise<any> {
     });
   });
 }
-
-export function killAllDockerContainers(): Promise<boolean> {
-  return new Promise(resolve => {
-    exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => {
-      resolve();
-    });
-  });
-}
