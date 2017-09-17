@@ -30,17 +30,18 @@ export interface ProcessOutput {
 
 export function startBuildProcess(
   proc: JobProcess,
-  image: string,
   variables: string[],
   jobTimeout: number,
   idleTimeout: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
+    const image = proc.image_name;
+
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
     const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
       .map(cmd => cmd.command.replace('export', ''))
       .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
-      .concat(proc.env)
+      .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
       .concat(variables)
       .filter(Boolean);
 
