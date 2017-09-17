@@ -1,17 +1,17 @@
 {
   "action": "synchronize",
-  "number": 168,
+  "number": 169,
   "pull_request": {
-    "url": "https://api.github.com/repos/bleenco/abstruse/pulls/168",
-    "id": 141460132,
-    "html_url": "https://github.com/bleenco/abstruse/pull/168",
-    "diff_url": "https://github.com/bleenco/abstruse/pull/168.diff",
-    "patch_url": "https://github.com/bleenco/abstruse/pull/168.patch",
-    "issue_url": "https://api.github.com/repos/bleenco/abstruse/issues/168",
-    "number": 168,
+    "url": "https://api.github.com/repos/bleenco/abstruse/pulls/169",
+    "id": 141473700,
+    "html_url": "https://github.com/bleenco/abstruse/pull/169",
+    "diff_url": "https://github.com/bleenco/abstruse/pull/169.diff",
+    "patch_url": "https://github.com/bleenco/abstruse/pull/169.patch",
+    "issue_url": "https://api.github.com/repos/bleenco/abstruse/issues/169",
+    "number": 169,
     "state": "open",
     "locked": false,
-    "title": "chore(config): update CI config",
+    "title": "test(e2e): fix e2e tests",
     "user": {
       "login": "jkuri",
       "id": 1796022,
@@ -32,11 +32,11 @@
       "site_admin": false
     },
     "body": "",
-    "created_at": "2017-09-16T20:04:01Z",
-    "updated_at": "2017-09-17T02:41:48Z",
+    "created_at": "2017-09-17T05:34:48Z",
+    "updated_at": "2017-09-17T07:27:48Z",
     "closed_at": null,
     "merged_at": null,
-    "merge_commit_sha": "33505e8f60af5965904c5af7eec149a6df55193d",
+    "merge_commit_sha": "2a36c3bd31610885d691b92cd90793ae28e41289",
     "assignee": null,
     "assignees": [
 
@@ -45,15 +45,15 @@
 
     ],
     "milestone": null,
-    "commits_url": "https://api.github.com/repos/bleenco/abstruse/pulls/168/commits",
-    "review_comments_url": "https://api.github.com/repos/bleenco/abstruse/pulls/168/comments",
+    "commits_url": "https://api.github.com/repos/bleenco/abstruse/pulls/169/commits",
+    "review_comments_url": "https://api.github.com/repos/bleenco/abstruse/pulls/169/comments",
     "review_comment_url": "https://api.github.com/repos/bleenco/abstruse/pulls/comments{/number}",
-    "comments_url": "https://api.github.com/repos/bleenco/abstruse/issues/168/comments",
-    "statuses_url": "https://api.github.com/repos/bleenco/abstruse/statuses/8038f6f7ac330eea97fc3031417e1c519b0eb29b",
+    "comments_url": "https://api.github.com/repos/bleenco/abstruse/issues/169/comments",
+    "statuses_url": "https://api.github.com/repos/bleenco/abstruse/statuses/32b1c858657f7463ee97857be10a1719373c8450",
     "head": {
-      "label": "jkuri:abstruse-yml-config",
-      "ref": "abstruse-yml-config",
-      "sha": "8038f6f7ac330eea97fc3031417e1c519b0eb29b",
+      "label": "jkuri:fix-e2e-tests",
+      "ref": "fix-e2e-tests",
+      "sha": "32b1c858657f7463ee97857be10a1719373c8450",
       "user": {
         "login": "jkuri",
         "id": 1796022,
@@ -139,13 +139,13 @@
         "deployments_url": "https://api.github.com/repos/jkuri/abstruse/deployments",
         "created_at": "2017-05-05T18:47:09Z",
         "updated_at": "2017-05-15T00:14:08Z",
-        "pushed_at": "2017-09-17T02:41:48Z",
+        "pushed_at": "2017-09-17T07:27:47Z",
         "git_url": "git://github.com/jkuri/abstruse.git",
         "ssh_url": "git@github.com:jkuri/abstruse.git",
         "clone_url": "https://github.com/jkuri/abstruse.git",
         "svn_url": "https://github.com/jkuri/abstruse",
         "homepage": null,
-        "size": 4480,
+        "size": 4490,
         "stargazers_count": 0,
         "watchers_count": 0,
         "language": "TypeScript",
@@ -166,7 +166,7 @@
     "base": {
       "label": "bleenco:master",
       "ref": "master",
-      "sha": "d1f0f89107a6b1ee886df1fcfecde7455ccae298",
+      "sha": "29cac0b192616c907cc92ee88e130e8b28cef36d",
       "user": {
         "login": "bleenco",
         "id": 26046537,
@@ -252,13 +252,13 @@
         "deployments_url": "https://api.github.com/repos/bleenco/abstruse/deployments",
         "created_at": "2017-03-13T22:31:58Z",
         "updated_at": "2017-09-15T17:40:13Z",
-        "pushed_at": "2017-09-17T01:34:39Z",
+        "pushed_at": "2017-09-17T06:14:43Z",
         "git_url": "git://github.com/bleenco/abstruse.git",
         "ssh_url": "git@github.com:bleenco/abstruse.git",
         "clone_url": "https://github.com/bleenco/abstruse.git",
         "svn_url": "https://github.com/bleenco/abstruse",
         "homepage": "http://abstruse.bleenco.com",
-        "size": 4447,
+        "size": 4451,
         "stargazers_count": 16,
         "watchers_count": 16,
         "language": "TypeScript",
@@ -278,28 +278,28 @@
     },
     "_links": {
       "self": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/168"
+        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/169"
       },
       "html": {
-        "href": "https://github.com/bleenco/abstruse/pull/168"
+        "href": "https://github.com/bleenco/abstruse/pull/169"
       },
       "issue": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/issues/168"
+        "href": "https://api.github.com/repos/bleenco/abstruse/issues/169"
       },
       "comments": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/issues/168/comments"
+        "href": "https://api.github.com/repos/bleenco/abstruse/issues/169/comments"
       },
       "review_comments": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/168/comments"
+        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/169/comments"
       },
       "review_comment": {
         "href": "https://api.github.com/repos/bleenco/abstruse/pulls/comments{/number}"
       },
       "commits": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/168/commits"
+        "href": "https://api.github.com/repos/bleenco/abstruse/pulls/169/commits"
       },
       "statuses": {
-        "href": "https://api.github.com/repos/bleenco/abstruse/statuses/8038f6f7ac330eea97fc3031417e1c519b0eb29b"
+        "href": "https://api.github.com/repos/bleenco/abstruse/statuses/32b1c858657f7463ee97857be10a1719373c8450"
       }
     },
     "author_association": "OWNER",
@@ -311,13 +311,13 @@
     "comments": 0,
     "review_comments": 0,
     "maintainer_can_modify": true,
-    "commits": 1,
-    "additions": 69,
-    "deletions": 85,
-    "changed_files": 9
+    "commits": 2,
+    "additions": 65,
+    "deletions": 628,
+    "changed_files": 11
   },
-  "before": "7fad22a6710e4156842ae4701fa59717444b9da2",
-  "after": "8038f6f7ac330eea97fc3031417e1c519b0eb29b",
+  "before": "c861e8111ea91fb0653ea5a1833d46d03a106742",
+  "after": "32b1c858657f7463ee97857be10a1719373c8450",
   "repository": {
     "id": 84880847,
     "name": "abstruse",
@@ -384,13 +384,13 @@
     "deployments_url": "https://api.github.com/repos/bleenco/abstruse/deployments",
     "created_at": "2017-03-13T22:31:58Z",
     "updated_at": "2017-09-15T17:40:13Z",
-    "pushed_at": "2017-09-17T01:34:39Z",
+    "pushed_at": "2017-09-17T06:14:43Z",
     "git_url": "git://github.com/bleenco/abstruse.git",
     "ssh_url": "git@github.com:bleenco/abstruse.git",
     "clone_url": "https://github.com/bleenco/abstruse.git",
     "svn_url": "https://github.com/bleenco/abstruse",
     "homepage": "http://abstruse.bleenco.com",
-    "size": 4447,
+    "size": 4451,
     "stargazers_count": 16,
     "watchers_count": 16,
     "language": "TypeScript",

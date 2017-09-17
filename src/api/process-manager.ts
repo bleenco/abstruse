@@ -208,7 +208,7 @@ export function startJob(proc: JobProcess): Promise<void> {
 
       const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
       const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
-      startBuildProcess(proc, 'abstruse', envVariables, jobTimeout, idleTimeout)
+      startBuildProcess(proc, envVariables, jobTimeout, idleTimeout)
         .subscribe(event => {
           const msg: JobProcessEvent = {
             build_id: proc.build_id,
@@ -465,6 +465,7 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         repo_name: job.build.repository.full_name || null,
         branch: job.build.branch || null,
         env: jobData.env,
+        image_name: jobData.image,
         sshAndVnc: sshAndVnc,
         log: []
       };
