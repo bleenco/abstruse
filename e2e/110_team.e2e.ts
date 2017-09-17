@@ -29,7 +29,7 @@ describe('Teams', () => {
       }));
   });
 
-  xit('should redirect to team, user and then grant, revoke repository permission', () => {
+  it('should redirect to team, user and then grant, revoke repository permission', () => {
     return browser.get('/')
       .then((): any => browser.wait(() => element(by.css('.nav-team')).isPresent()))
       .then((): any => element(by.css('.nav-team')).click())
@@ -61,7 +61,7 @@ describe('Teams', () => {
       }));
   });
 
-  xit(`should logout, access page as annonymous, see public build, job, but can't restart it`,
+  it(`should logout, access page as annonymous, see public build, job, but can't restart it`,
     () => {
     return browser.get('/')
       .then(() => isLoaded())

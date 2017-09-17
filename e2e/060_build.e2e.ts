@@ -149,7 +149,7 @@ describe('Build Details', () => {
       });
   });
 
-  xit('should start new build (D3) and see progress bar in second job run', () => {
+  it('should start new build (D3) and see progress bar in second job run', () => {
     return Promise.resolve()
       .then(() => browser.get('/'))
       .then(() => sendGitHubRequest(requestD3, header))
@@ -245,87 +245,4 @@ describe('Build Details', () => {
       .then(() => delay(1000))
       .then((): any => element(by.css(`[name="stop-build"]`)).click());
   });
-
-  // it('should test button load more', () => {
-  //   return Promise.resolve()
-  //     .then(() => browser.get('/'))
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt === 5;
-  //     })))
-  //     .then(() => sendGitHubRequest(requestD3, header))
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt === 5;
-  //     })))
-  //     .then((): any => browser.wait(() => {
-  //       return element.all(by.css('.is-running')).count().then(count => count === 1);
-  //     }))
-  //     .then((): any => browser.wait(() => {
-  //       return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isPresent();
-  //     }))
-  //     .then((): any => {
-  //       return browser.wait(() => {
-  //         const el = element(by.css('.list-item:nth-child(1) .stop-build'));
-  //         return ExpectedConditions.elementToBeClickable(el);
-  //       });
-  //     })
-  //     .then((): any => element.all(by.css('.stop-build')).first().click())
-  //     .then((): any => browser.wait(() => {
-  //       return element.all(by.css('.is-running')).count().then(count => count === 0);
-  //     }))
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt === 5;
-  //     })))
-  //     .then((): any => element.all(by.css('.list-item')).last().click())
-  //     .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/2'))
-  //     .then(() => browser.get('/'))
-  //     .then((): any => browser.wait(() => element(by.css('[name="btn-loadmore"]')).isPresent()))
-  //     .then((): any => element(by.css('[name="btn-loadmore"]')).click())
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt === 6;
-  //     })))
-  //     .then((): any => element.all(by.css('.list-item')).last().click())
-  //     .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/1'))
-  //     .then(() => browser.get('/'))
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt === 5;
-  //     })));
-  // });
-
-  // it('should restart all jobs', () => {
-  //   return Promise.resolve()
-  //     .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-  //       return cnt > 0;
-  //     })))
-  //     .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
-  //       return cnt === 0;
-  //     })))
-  //     .then((): any => {
-  //       return browser.wait(() => {
-  //         return element.all(by.css(`[name="restart-job"]`)).each(el => el.isPresent());
-  //       });
-  //     })
-  //     .then((): any => element.all(by.css(`[name="restart-job"]`)).each(el => el.click()))
-  //     .then((): any => element.all(by.css('.list-item')).count())
-  //     .then((num): any => {
-  //       return browser.wait(() => element.all(by.css('.is-running')).count()
-  //         .then(cnt => cnt === num));
-  //     })
-  //     .then((): any => {
-  //       return browser.wait(() => element.all(by.css('.job-time')).each(el => {
-  //         return el.getAttribute('innerHTML').then(html => parseInt(html, 10) > 5);
-  //       }));
-  //     })
-  //     .then((): any => {
-  //       return browser.wait(() => {
-  //         return element.all(by.css(`[name="stop-job"]`)).each(el => el.isPresent());
-  //       });
-  //     })
-  //     .then((): any => {
-  //       return element.all(by.css(`[name="stop-job"]`)).each(el => el.click());
-  //     })
-  //     .then((num): any => {
-  //       return browser.wait(() => element.all(by.css('.is-running')).count()
-  //         .then(cnt => cnt === 0));
-  //     });
-  // });
 });

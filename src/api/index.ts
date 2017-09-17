@@ -20,18 +20,21 @@ import * as db from './db/migrations';
 const server = new ExpressServer({ port: 6500 });
 const socket = new SocketServer({ port: 6501 });
 
-const msg: LogMessageType = {
-  message: '[server] starting Abstruse CI server...',
-  type: 'info',
-  notify: false
-};
-logger.next(msg);
-
 initSetup()
-  .then(() => Promise.all([generatePublicKey(), generatePrivateKey()]))
   .then(() => db.create())
   .then(() => {
-    Observable.merge(...[server.start(), socket.start()])
+    const msg: LogMessageType = {
+      message: '[server] starting Abstruse CI server...',
+      type: 'info',
+      notify: false
+    };
+    logger.next(msg);
+  })
+  .then(() => {
+    Observable
+      .merge(...[server.start(), socket.start()])
+      .concat(generatePublicKey())
+      .concat(generatePrivateKey())
       .subscribe(data => {
         const msg: LogMessageType = { message: data, type: 'info', notify: false };
         logger.next(msg);
