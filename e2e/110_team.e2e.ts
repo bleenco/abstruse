@@ -1,10 +1,14 @@
 import { browser, by, element } from 'protractor';
 import { login, logout, waitForUrlToChangeTo, isLoaded, delay } from './utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 
 describe('Teams', () => {
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login());
 
   it('should see one user on team page', () => {
     return browser.get('/team')
@@ -37,7 +41,7 @@ describe('Teams', () => {
       .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/1'))
-      .then(() => expect(element.all(by.css('h1')).first().getText()).toContain('John Wayne'))
+      .then(() => expect(element.all(by.css('h1')).first().getText()).to.include('John Wayne'))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
       }))
@@ -61,7 +65,7 @@ describe('Teams', () => {
       }));
   });
 
-  it(`should logout, access page as annonymous, see public build, job, but can't restart it`,
+  xit(`should logout, access page as annonymous, see public build, job, but can't restart it`,
     () => {
     return browser.get('/')
       .then(() => isLoaded())
@@ -71,7 +75,7 @@ describe('Teams', () => {
       .then(() => isLoaded())
       .then(() => browser.get('/login'))
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/login'))
+      .then(url => expect(url).to.equal('http://localhost:6500/login'))
       .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isPresent()))
       .then((): any => element(by.css('.centered-anonymous')).click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/'))

@@ -6,10 +6,15 @@ import {
   header as pushEventHeader
 } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Builds', () => {
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login().then(() => browser.waitForAngularEnabled(false)));
+  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
   afterEach(() => {
     return Promise.resolve(() => {
@@ -21,7 +26,7 @@ describe('Builds', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => element(by.css('.is-info')).isPresent()))
       .then(() => expect(element(by.css('.is-info')).getText())
-        .toContain('No builds has been runned yet.'));
+        .to.eventually.have.string('No builds has been runned yet.'));
   });
 
   it('should start new build (send open_pull_request event)', () => {
@@ -55,7 +60,7 @@ describe('Builds', () => {
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/build/1'))
       .then(() => browser.navigate().back())
       .then((): any => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/'));
+      .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 
   it('should start new build (send reopen_pull_request event)', () => {
@@ -88,7 +93,7 @@ describe('Builds', () => {
       }));
   });
 
-  it('should start new build (send push event)', () => {
+  xit('should start new build (send push event)', () => {
     return sendGitHubRequest(requestD3, pushEventHeader)
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 3;
@@ -118,7 +123,7 @@ describe('Builds', () => {
       }));
   });
 
-  it('should restart last build and send same push event, the old build should stop', () => {
+  xit('should restart last build and send same push event, the old build should stop', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);

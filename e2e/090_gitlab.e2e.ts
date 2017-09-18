@@ -3,11 +3,16 @@ import { isLoaded, login, logout, delay } from './utils';
 import { request, header } from '../tests/e2e/webhooks/gitlab/PushEvents';
 import { request as prReq, header as prHead } from '../tests/e2e/webhooks/gitlab/MergeEvents';
 import { sendGitLabRequest } from '../tests/e2e/utils/utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 
 describe('Gitlab repositories', () => {
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login().then(() => browser.waitForAngularEnabled(false)));
+  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
   xit('should add gitlab repository and start new build (send push event)', () => {
     return browser.wait(() => {
@@ -20,7 +25,7 @@ describe('Gitlab repositories', () => {
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))
-      .then(() => expect(element.all(by.css('.bold')).last().getText()).toContain('test'))
+      .then(() => expect(element.all(by.css('.bold')).last().getText()).to.include('test'))
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();

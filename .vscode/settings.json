@@ -1,7 +1,0 @@
-{
-  "files.associations": {
-    "fstream": "c",
-    "locale": "c",
-    "*.tcc": "c"
-  }
-}

@@ -2,6 +2,11 @@ import { browser, by, element, ExpectedConditions } from 'protractor';
 import { login, logout, delay } from './utils';
 import { requestD3, header } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 function randomNumber(minimum: number, maximum: number): number {
   return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
@@ -9,8 +14,8 @@ function randomNumber(minimum: number, maximum: number): number {
 
 describe('Build Details', () => {
   let originalTimeout: number;
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login().then(() => browser.waitForAngularEnabled(false)));
+  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
   it('should restart existing build', () => {
     return browser.get('/build/1')
@@ -149,7 +154,7 @@ describe('Build Details', () => {
       });
   });
 
-  it('should start new build (D3) and see progress bar in second job run', () => {
+  xit('should start new build (D3) and see progress bar in second job run', () => {
     return Promise.resolve()
       .then(() => browser.get('/'))
       .then(() => sendGitHubRequest(requestD3, header))
@@ -212,7 +217,7 @@ describe('Build Details', () => {
       });
   });
 
-  it(`should restart first build and see approximately time remaining`, () => {
+  xit(`should restart first build and see approximately time remaining`, () => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;

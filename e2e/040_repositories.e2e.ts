@@ -1,19 +1,23 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import { isLoaded, login, logout } from './utils';
 import { request, header } from '../tests/e2e/webhooks/github/PingEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
+
 describe('Repositories', () => {
-
-  beforeAll(() => login());
-
-  afterAll(() => logout());
+  before(() => login());
+  after(() => logout());
 
   it('should open repository page with zero repositories', () => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => {
-        return expect(element(by.css('.is-info')).getText()).toContain('No repositories found.');
+        return expect(element(by.css('.is-info')).getText())
+          .to.eventually.have.string('No repositories found.');
       });
   });
 
@@ -22,7 +26,10 @@ describe('Repositories', () => {
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))
-      .then(() => expect(element(by.css('.bold')).getText()).toContain('bterm'));
+      .then(() => {
+        return expect(element(by.css('.bold')).getText())
+          .to.eventually.have.string('bterm');
+      });
   });
 
   it('should redirect to bterm repository, add new environment variable and then delete it', () => {
@@ -32,7 +39,7 @@ describe('Repositories', () => {
       }))
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then((): any => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/repo/1'))
+      .then(url => expect(url).to.equal('http://localhost:6500/repo/1'))
       .then((): any => browser.wait(() => element(by.css(`[name="btn-settings"]`)).isPresent()))
       .then((): any => browser.wait(() => {
         return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-settings"]`)));

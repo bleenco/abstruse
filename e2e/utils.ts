@@ -1,4 +1,9 @@
 import { browser, by, element } from 'protractor';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 export function isLoaded() {
   return browser.wait(() => {
@@ -35,10 +40,16 @@ export function logout(): any {
     .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
     .then(() => isLoaded())
     .then(() => browser.getCurrentUrl())
-    .then(url => expect(url).toEqual('http://localhost:6500/login'))
+    .then(url => expect(url).to.equal('http://localhost:6500/login'))
     .then(() => browser.waitForAngularEnabled(true));
 }
 
 export function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function hasClass(el: any, className: string): Promise<boolean> {
+  return el.getAttribute('class').then(classes => {
+    return classes.split(' ').indexOf(className) !== -1;
+  });
 }

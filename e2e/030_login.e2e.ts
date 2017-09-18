@@ -1,5 +1,10 @@
 import { browser, by, element } from 'protractor';
 import { isLoaded } from './utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('User Login', () => {
 
@@ -10,7 +15,7 @@ describe('User Login', () => {
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/login'));
+      .then(url => expect(url).to.equal('http://localhost:6500/login'));
   });
 
   it('should login with correct username and password', () => {
@@ -22,7 +27,7 @@ describe('User Login', () => {
       .then(() => element(by.css('.login-button')).click())
       .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/'))
+      .then(url => expect(url).to.equal('http://localhost:6500/'))
       .then(() => browser.waitForAngularEnabled(true));
   });
 
@@ -35,7 +40,7 @@ describe('User Login', () => {
       .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
       .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).toEqual('http://localhost:6500/login'))
+      .then(url => expect(url).to.equal('http://localhost:6500/login'))
       .then(() => browser.waitForAngularEnabled(true));
   });
 });
