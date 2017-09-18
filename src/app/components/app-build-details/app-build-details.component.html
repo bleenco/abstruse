@@ -117,25 +117,20 @@
               <div class="column is-1">
                 <span class="bold larger"># {{ build.id }}.{{ job.id }}</span>
               </div>
-              <div class="column is-4">
-                <div class="icon-and-text">
-                  <span class="icon is-medium">
-                    <img src="images/icons/linux.svg">
-                  </span>
-                </div>
-                <div class="icon-and-text">
-                  <span class="icon is-medium">
-                    <img src="images/icons/node_js.svg" *ngIf="job?.data?.language === 'node_js'">
-                  </span>
-                  <span class="version">{{ job?.data?.display_version }}</span>
-                </div>
-              </div>
               <div class="column is-3">
+                <span class="icon is-large">
+                  <img src="images/logos/docker.svg">
+                </span>
+                <span class="version">
+                  image: {{ job?.data?.image }}
+                </span>
+              </div>
+              <div class="column is-4">
                 <div class="icon-and-text">
                   <span class="icon is-medium">
                     <img src="images/icons/computing-script.svg">
                   </span>
-                  <span>{{ job?.data?.display_env }}</span>
+                  <span class="env-text">{{ job?.data?.env }}</span>
                 </div>
               </div>
               <div class="column is-2">

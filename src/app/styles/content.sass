@@ -189,13 +189,19 @@
   .icon
     width: 26px
     height: 26px
-    display: flex
-    align-items: center
-    justify-content: center
+    display: block
 
-    svg
-      width: 14px
-      height: 14px
+    img
+      width: 26px
+      height: 26px
+
+    &.is-large
+      width: 36px
+      height: 36px
+
+      img
+        width: 36px
+        height: 36px
 
   &.is-success
     border-left: 10px solid $green
@@ -255,6 +261,10 @@
 
     .version
       padding: 0 5px
+      font-size: 15px
+
+    .env-text
+      font-size: 15px
 
 .message-center
   display: block
