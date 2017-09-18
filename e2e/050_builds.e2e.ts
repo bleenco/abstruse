@@ -93,7 +93,7 @@ describe('Builds', () => {
       }));
   });
 
-  xit('should start new build (send push event)', () => {
+  it('should start new build (send push event)', () => {
     return sendGitHubRequest(requestD3, pushEventHeader)
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 3;
@@ -123,7 +123,7 @@ describe('Builds', () => {
       }));
   });
 
-  xit('should restart last build and send same push event, the old build should stop', () => {
+  it('should restart last build and send same push event, the old build should stop', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
@@ -156,7 +156,7 @@ describe('Builds', () => {
       }));
   });
 
-  xit('should restart last build', () => {
+  it('should restart last build', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);

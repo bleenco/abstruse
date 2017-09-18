@@ -2,7 +2,6 @@ import { execSilent, exec, abstruse, killAllProcesses } from './e2e/utils/proces
 import { join } from 'path';
 import * as temp from 'temp';
 import * as minimist from 'minimist';
-import { killAllContainers } from '../src/api/docker';
 
 Error.stackTraceLimit = Infinity;
 
@@ -39,8 +38,7 @@ Promise.resolve()
     process.exitCode = result.code;
     return killAllProcesses();
   })
-  .then(() => killAllContainers())
   .then(() => process.exit(process.exitCode))
   .catch(err => {
-    killAllProcesses().then(() => killAllContainers()).then(() => process.exit(process.exitCode));
+    killAllProcesses().then(() => process.exit(process.exitCode));
   });

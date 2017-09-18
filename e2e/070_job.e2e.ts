@@ -7,9 +7,8 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Job Details', () => {
-  let originalTimeout: number;
-  before(() => login().then(() => browser.waitForAngularEnabled(false)));
-  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login());
+  after(() => logout());
 
   xit('should restart job watch console log until it matches expected output', () => {
     return browser.get('/job/5')

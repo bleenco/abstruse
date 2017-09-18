@@ -116,7 +116,9 @@ export function stopContainer(id: string): Observable<any> {
     let container = null;
     try {
       container = docker.getContainer(id);
-    } catch (e) { }
+    } catch (e) {
+      observer.complete();
+    }
 
     if (container) {
       try {
@@ -156,10 +158,16 @@ export function killContainer(id: string): Promise<void> {
           if (containerInfo.State.Running) {
             return container.kill();
           } else {
+            return Promise.resolve(containerInfo.State.Status);
+          }
+        })
+        .then(status => {
+          if (status === 'exited') {
+            container.remove();
+          } else {
             return Promise.resolve();
           }
         })
-        .then(() => container.remove())
         .then(() => resolve())
         .catch(err => {
           if (err.statusCode === 404) {

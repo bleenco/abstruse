@@ -1,7 +1,6 @@
 import * as child_process from 'child_process';
 import { blue, yellow } from 'chalk';
 const treeKill = require('tree-kill');
-import * as fs from './fs';
 
 interface ExecOptions {
   silent?: boolean;
