@@ -1,11 +1,15 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 import { login, logout, delay } from './utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Job Details', () => {
   let originalTimeout: number;
-  beforeAll(() => login().then(() => browser.waitForAngularEnabled(false)));
-  afterAll(() => logout().then(() => browser.waitForAngularEnabled(true)));
+  before(() => login().then(() => browser.waitForAngularEnabled(false)));
+  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
   xit('should restart job watch console log until it matches expected output', () => {
     return browser.get('/job/5')

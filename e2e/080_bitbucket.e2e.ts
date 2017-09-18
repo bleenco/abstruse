@@ -4,18 +4,20 @@ import { request, header } from '../tests/e2e/webhooks/bitbucket/PushEvent';
 import { request as prReq, headerPullRequestCreated }
   from '../tests/e2e/webhooks/bitbucket/PullRequestEvent';
 import { sendBitBucketRequest } from '../tests/e2e/utils/utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 
 describe('Bitbucket repositories', () => {
   let originalTimeout: number;
-  beforeAll(() => {
-    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 150000;
+  before(() => {
     login().then(() => browser.waitForAngularEnabled(false));
   });
 
-  afterAll(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+  after(() => {
     logout().then(() => browser.waitForAngularEnabled(true));
   });
 
@@ -30,7 +32,7 @@ describe('Bitbucket repositories', () => {
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))
-      .then(() => expect(element.all(by.css('.bold')).last().getText()).toContain('test'))
+      .then(() => expect(element.all(by.css('.bold')).last().getText()).to.include('test'))
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();

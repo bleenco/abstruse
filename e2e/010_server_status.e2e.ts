@@ -1,5 +1,10 @@
 import { browser, by, element } from 'protractor';
 import { isLoaded } from './utils';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Server Status', () => {
 
@@ -8,7 +13,7 @@ describe('Server Status', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="docker-installed-icon"]')))
       .then(el => el.getAttribute('src'))
-      .then(attr => expect(attr).toContain('images/icons/check-true.svg'));
+      .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
   });
 
   it(`should have docker running`, () => {
@@ -16,7 +21,7 @@ describe('Server Status', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="docker-running-icon"]')))
       .then(el => el.getAttribute('src'))
-      .then(attr => expect(attr).toContain('/images/icons/check-true.svg'));
+      .then(attr => expect(attr).to.includes('/images/icons/check-true.svg'));
   });
 
   it(`should have sqlite3 installed`, () => {
@@ -24,6 +29,6 @@ describe('Server Status', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="sqlite3-installed-icon"]')))
       .then(el => el.getAttribute('src'))
-      .then(attr => expect(attr).toContain('images/icons/check-true.svg'));
+      .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
   });
 });

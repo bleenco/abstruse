@@ -1,5 +1,3 @@
-const { SpecReporter } = require('jasmine-spec-reporter');
-
 exports.config = {
   allScriptsTimeout: 300000,
   specs: [
@@ -13,19 +11,18 @@ exports.config = {
   },
   directConnect: true,
   baseUrl: 'http://localhost:6500/',
-  framework: 'jasmine',
-  jasmineNodeOpts: {
-    showColors: true,
-    defaultTimeoutInterval: 120000,
-    print: () => {}
+  framework: 'mocha',
+  mochaOpts: {
+    reporter: 'spec',
+    timeout: 25000,
+    slow: 3000,
+    colors: true,
+    bail: true
   },
   useAllAngular2AppRoots: true,
   beforeLaunch() {
     require('ts-node').register({
       project: 'e2e'
     });
-  },
-  onPrepare() {
-    jasmine.getEnv().addReporter(new SpecReporter({ spec: { displayStacktrace: true } }));
   }
 };
