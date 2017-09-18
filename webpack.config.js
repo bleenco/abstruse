@@ -45,7 +45,26 @@ module.exports = function (options, webpackOptions) {
       open: true,
       hot: false,
       inline: true,
-      stats: { colors: true, chunks: false },
+      stats: {
+        errors: true,
+        errorDetails: true,
+        depth: false,
+        chunkOrigins: false,
+        chunkModules: false,
+        chunks: false,
+        children: false,
+        cacheAssets: false,
+        cached: false,
+        assets: false,
+        modules: false,
+        hash: false,
+        reasons: false,
+        source: false,
+        timings: true,
+        version: false,
+        warnings: false,
+        colors: true
+      },
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
