@@ -29,7 +29,7 @@ describe('Teams', () => {
       }));
   });
 
-  it('should redirect to team, user and then grant, revoke repository permission', () => {
+  xit('should redirect to team, user and then grant, revoke repository permission', () => {
     return browser.get('/')
       .then((): any => browser.wait(() => element(by.css('.nav-team')).isPresent()))
       .then((): any => element(by.css('.nav-team')).click())
