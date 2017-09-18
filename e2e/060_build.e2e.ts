@@ -154,7 +154,7 @@ describe('Build Details', () => {
       });
   });
 
-  xit('should start new build (D3) and see progress bar in second job run', () => {
+  it('should start new build (D3) and see progress bar in second job run', () => {
     return Promise.resolve()
       .then(() => browser.get('/'))
       .then(() => sendGitHubRequest(requestD3, header))
@@ -217,7 +217,7 @@ describe('Build Details', () => {
       });
   });
 
-  xit(`should restart first build and see approximately time remaining`, () => {
+  it(`should restart first build and see approximately time remaining`, () => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;

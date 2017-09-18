@@ -1,67 +1,57 @@
 {
   "ref": "refs/heads/master",
-  "before": "5f3ed0aedf8a467c326bb792677f99e98fa71603",
-  "after": "d2929a50bb5000e5d2df3385566c9183d39dbb39",
+  "before": "29cac0b192616c907cc92ee88e130e8b28cef36d",
+  "after": "9e549ab27d91b7af75d6aa8493d50cef88e465d6",
   "created": false,
   "deleted": false,
   "forced": false,
   "base_ref": null,
-  "compare": "https://github.com/bleenco/abstruse/compare/5f3ed0aedf8a...d2929a50bb50",
+  "compare": "https://github.com/bleenco/abstruse/compare/29cac0b19261...9e549ab27d91",
   "commits": [
     {
-      "id": "32af36a7d05903fc59d916d69d705c2991dcbe19",
-      "tree_id": "2f649376dfdb9ded1f73eb870ebd388c60514ac1",
+      "id": "6809feef5e574d42c34f7f0e2cd9437d55db2a0e",
+      "tree_id": "29c12ad5e7ca436b2130b16a802466148e1a823f",
       "distinct": true,
-      "message": "feat(logs): system logs",
-      "timestamp": "2017-09-06T14:24:39+02:00",
-      "url": "https://github.com/bleenco/abstruse/commit/32af36a7d05903fc59d916d69d705c2991dcbe19",
+      "message": "test(e2e): fix e2e tests",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/6809feef5e574d42c34f7f0e2cd9437d55db2a0e",
       "author": {
         "name": "Jan Kuri",
         "email": "jkuri88@gmail.com",
         "username": "jkuri"
       },
       "committer": {
-        "name": "Izak Lipnik",
-        "email": "izak.lipnik@gmail.com",
-        "username": "Izak88"
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
       },
       "added": [
-        "src/app/components/app-logs/app-logs.component.html",
-        "src/app/components/app-logs/app-logs.component.ts",
-        "src/app/components/app-logs/index.ts",
-        "src/app/styles/logs.sass"
+
       ],
       "removed": [
 
       ],
       "modified": [
-        "src/api/db/log.ts",
-        "src/api/server-routes.ts",
-        "src/api/server.ts",
-        "src/api/socket.ts",
-        "src/app/app.module.ts",
-        "src/app/components/app-header/app-header.component.html",
-        "src/app/services/api.service.ts",
-        "src/app/styles/app.sass",
-        "src/app/styles/terminal/dracula-ansi.scss"
+        "tests/e2e/utils/utils.ts",
+        "tests/e2e_runner.ts"
       ]
     },
     {
-      "id": "d2929a50bb5000e5d2df3385566c9183d39dbb39",
-      "tree_id": "165d7dea56c9607232985beccee3be4520548709",
+      "id": "b0a9a4c12cec58dd0164d950ad07149e5b9ea535",
+      "tree_id": "42af40bc264f5a1915286be34d790a8d1ce9375f",
       "distinct": true,
-      "message": "chore(logs): make logs sortable",
-      "timestamp": "2017-09-06T14:24:39+02:00",
-      "url": "https://github.com/bleenco/abstruse/commit/d2929a50bb5000e5d2df3385566c9183d39dbb39",
+      "message": "refactor(config): simplified config",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/b0a9a4c12cec58dd0164d950ad07149e5b9ea535",
       "author": {
         "name": "Jan Kuri",
         "email": "jkuri88@gmail.com",
         "username": "jkuri"
       },
       "committer": {
-        "name": "Izak Lipnik",
-        "email": "izak.lipnik@gmail.com",
-        "username": "Izak88"
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
       },
       "added": [
 
@@ -70,39 +60,284 @@
 
       ],
       "modified": [
-        "src/app/components/app-logs/app-logs.component.html",
-        "src/app/components/app-logs/app-logs.component.ts",
-        "src/app/styles/logs.sass"
+        ".abstruse.yml",
+        "src/api/config.ts",
+        "src/api/process-manager.ts",
+        "src/api/process.ts",
+        "src/files/Dockerfile",
+        "tests/dev-scripts/data/pull-request.json",
+        "tests/dev-scripts/data/push-request.json",
+        "tests/unit/010_config.spec.ts",
+        "tests/unit/020_generate_java.spec.ts",
+        "tests/unit/030_generate_node_js.spec.ts"
+      ]
+    },
+    {
+      "id": "75a33831ba3b56d45a24b6d84b60c663b04e0a9f",
+      "tree_id": "74b1cc7f263fef5241b612a4f926f8a13f5d5be5",
+      "distinct": true,
+      "message": "feat(exec-script): execute script",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/75a33831ba3b56d45a24b6d84b60c663b04e0a9f",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+        ".vscode/settings.json",
+        "src/files/scripts/abstruse-pty.c"
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "src/api/docker.ts",
+        "src/files/scripts/abstruse-exec.sh",
+        "tests/dev-scripts/data/pull-request.json"
+      ]
+    },
+    {
+      "id": "924a456075f6a05752563fe01d6ea05a91a285af",
+      "tree_id": "15eadc0b3beb09cc584585d5a76b6ab14f49c489",
+      "distinct": true,
+      "message": "chore(): update e2e request test with the new config",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/924a456075f6a05752563fe01d6ea05a91a285af",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "tests/e2e/webhooks/github/PushEvent.ts"
+      ]
+    },
+    {
+      "id": "d2e58a10aa0dc05766823c7291af9113bfb70e9d",
+      "tree_id": "9c266c1875097b6c951c49ee33834ea6c1a49323",
+      "distinct": true,
+      "message": "fix(build): fix abstruse-pty program",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/d2e58a10aa0dc05766823c7291af9113bfb70e9d",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+        "tests/dev-scripts/data/push-d3.json",
+        "tests/dev-scripts/push-d3.js"
+      ],
+      "removed": [
+        "tests/dev-scripts/data/push-abstruse.json",
+        "tests/dev-scripts/push-abstruse.js"
+      ],
+      "modified": [
+        "protractor.conf.js",
+        "src/api/docker.ts",
+        "src/files/scripts/abstruse-pty.c",
+        "tests/e2e/webhooks/github/PushEvent.ts"
+      ]
+    },
+    {
+      "id": "31796ba93855c67e3ffa03e854f32504d284e8c3",
+      "tree_id": "dc47ec68e1bb2cff530155360648f67e6dbed5d9",
+      "distinct": true,
+      "message": "fix(logs): do not allow logger to emit prematurely (closes #164)",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/31796ba93855c67e3ffa03e854f32504d284e8c3",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "e2e/050_builds.e2e.ts",
+        "e2e/060_build.e2e.ts",
+        "e2e/080_bitbucket.e2e.ts",
+        "e2e/090_gitlab.e2e.ts",
+        "e2e/100_gogs.e2e.ts",
+        "e2e/110_team.e2e.ts",
+        "protractor.conf.js",
+        "src/api/index.ts",
+        "src/api/security.ts"
+      ]
+    },
+    {
+      "id": "e163a27c2b180f36d388c1eaf6ef858429d94e11",
+      "tree_id": "567d940a1f82b9c76c4dab2f0ae0c11d707b10eb",
+      "distinct": true,
+      "message": "fix(protractor): disable others e2e tests than GitHubs",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/e163a27c2b180f36d388c1eaf6ef858429d94e11",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "e2e/080_bitbucket.e2e.ts",
+        "e2e/090_gitlab.e2e.ts",
+        "e2e/100_gogs.e2e.ts",
+        "e2e/110_team.e2e.ts"
+      ]
+    },
+    {
+      "id": "754add6b189ca83d613fceef4558279437a86d94",
+      "tree_id": "ef434fa6854aa43c6094275edf5596c3dc22d06f",
+      "distinct": true,
+      "message": "chore(ui): update build detals data",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/754add6b189ca83d613fceef4558279437a86d94",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+        "src/app/assets/public/images/logos/docker.svg"
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "src/app/components/app-build-details/app-build-details.component.html",
+        "src/app/styles/common.sass",
+        "src/app/styles/content.sass"
+      ]
+    },
+    {
+      "id": "9e549ab27d91b7af75d6aa8493d50cef88e465d6",
+      "tree_id": "d2d4e42167c76c4d9ca4b1be8a37e0273b6be972",
+      "distinct": true,
+      "message": "test(mocha): switch protractor framework to mocha",
+      "timestamp": "2017-09-18T08:15:30+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/9e549ab27d91b7af75d6aa8493d50cef88e465d6",
+      "author": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+
+      ],
+      "removed": [
+        ".vscode/settings.json"
+      ],
+      "modified": [
+        "e2e/010_server_status.e2e.ts",
+        "e2e/020_setup.e2e.ts",
+        "e2e/030_login.e2e.ts",
+        "e2e/040_repositories.e2e.ts",
+        "e2e/050_builds.e2e.ts",
+        "e2e/060_build.e2e.ts",
+        "e2e/070_job.e2e.ts",
+        "e2e/080_bitbucket.e2e.ts",
+        "e2e/090_gitlab.e2e.ts",
+        "e2e/100_gogs.e2e.ts",
+        "e2e/110_team.e2e.ts",
+        "e2e/tsconfig.json",
+        "e2e/utils.ts",
+        "package-lock.json",
+        "package.json",
+        "protractor.conf.js"
       ]
     }
   ],
   "head_commit": {
-    "id": "d2929a50bb5000e5d2df3385566c9183d39dbb39",
-    "tree_id": "165d7dea56c9607232985beccee3be4520548709",
+    "id": "9e549ab27d91b7af75d6aa8493d50cef88e465d6",
+    "tree_id": "d2d4e42167c76c4d9ca4b1be8a37e0273b6be972",
     "distinct": true,
-    "message": "chore(logs): make logs sortable",
-    "timestamp": "2017-09-06T14:24:39+02:00",
-    "url": "https://github.com/bleenco/abstruse/commit/d2929a50bb5000e5d2df3385566c9183d39dbb39",
+    "message": "test(mocha): switch protractor framework to mocha",
+    "timestamp": "2017-09-18T08:15:30+02:00",
+    "url": "https://github.com/bleenco/abstruse/commit/9e549ab27d91b7af75d6aa8493d50cef88e465d6",
     "author": {
       "name": "Jan Kuri",
       "email": "jkuri88@gmail.com",
       "username": "jkuri"
     },
     "committer": {
-      "name": "Izak Lipnik",
-      "email": "izak.lipnik@gmail.com",
-      "username": "Izak88"
+      "name": "Jan Kuri",
+      "email": "jkuri88@gmail.com",
+      "username": "jkuri"
     },
     "added": [
 
     ],
     "removed": [
-
+      ".vscode/settings.json"
     ],
     "modified": [
-      "src/app/components/app-logs/app-logs.component.html",
-      "src/app/components/app-logs/app-logs.component.ts",
-      "src/app/styles/logs.sass"
+      "e2e/010_server_status.e2e.ts",
+      "e2e/020_setup.e2e.ts",
+      "e2e/030_login.e2e.ts",
+      "e2e/040_repositories.e2e.ts",
+      "e2e/050_builds.e2e.ts",
+      "e2e/060_build.e2e.ts",
+      "e2e/070_job.e2e.ts",
+      "e2e/080_bitbucket.e2e.ts",
+      "e2e/090_gitlab.e2e.ts",
+      "e2e/100_gogs.e2e.ts",
+      "e2e/110_team.e2e.ts",
+      "e2e/tsconfig.json",
+      "e2e/utils.ts",
+      "package-lock.json",
+      "package.json",
+      "protractor.conf.js"
     ]
   },
   "repository": {
@@ -172,16 +407,16 @@
     "releases_url": "https://api.github.com/repos/bleenco/abstruse/releases{/id}",
     "deployments_url": "https://api.github.com/repos/bleenco/abstruse/deployments",
     "created_at": 1489444318,
-    "updated_at": "2017-09-02T10:44:54Z",
-    "pushed_at": 1504700680,
+    "updated_at": "2017-09-15T17:40:13Z",
+    "pushed_at": 1505715331,
     "git_url": "git://github.com/bleenco/abstruse.git",
     "ssh_url": "git@github.com:bleenco/abstruse.git",
     "clone_url": "https://github.com/bleenco/abstruse.git",
     "svn_url": "https://github.com/bleenco/abstruse",
     "homepage": "http://abstruse.bleenco.com",
-    "size": 3966,
-    "stargazers_count": 14,
-    "watchers_count": 14,
+    "size": 4451,
+    "stargazers_count": 16,
+    "watchers_count": 16,
     "language": "TypeScript",
     "has_issues": true,
     "has_projects": true,
@@ -190,18 +425,18 @@
     "has_pages": false,
     "forks_count": 5,
     "mirror_url": null,
-    "open_issues_count": 13,
+    "open_issues_count": 9,
     "forks": 5,
-    "open_issues": 13,
-    "watchers": 14,
+    "open_issues": 9,
+    "watchers": 16,
     "default_branch": "master",
-    "stargazers": 14,
+    "stargazers": 16,
     "master_branch": "master",
     "organization": "bleenco"
   },
   "pusher": {
-    "name": "Izak88",
-    "email": "izak.lipnik@gmail.com"
+    "name": "jkuri",
+    "email": "jkuri88@gmail.com"
   },
   "organization": {
     "login": "bleenco",
@@ -217,21 +452,21 @@
     "description": ""
   },
   "sender": {
-    "login": "Izak88",
-    "id": 8555269,
-    "avatar_url": "https://avatars0.githubusercontent.com/u/8555269?v=4",
+    "login": "jkuri",
+    "id": 1796022,
+    "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
     "gravatar_id": "",
-    "url": "https://api.github.com/users/Izak88",
-    "html_url": "https://github.com/Izak88",
-    "followers_url": "https://api.github.com/users/Izak88/followers",
-    "following_url": "https://api.github.com/users/Izak88/following{/other_user}",
-    "gists_url": "https://api.github.com/users/Izak88/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/Izak88/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/Izak88/subscriptions",
-    "organizations_url": "https://api.github.com/users/Izak88/orgs",
-    "repos_url": "https://api.github.com/users/Izak88/repos",
-    "events_url": "https://api.github.com/users/Izak88/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/Izak88/received_events",
+    "url": "https://api.github.com/users/jkuri",
+    "html_url": "https://github.com/jkuri",
+    "followers_url": "https://api.github.com/users/jkuri/followers",
+    "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+    "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+    "organizations_url": "https://api.github.com/users/jkuri/orgs",
+    "repos_url": "https://api.github.com/users/jkuri/repos",
+    "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/jkuri/received_events",
     "type": "User",
     "site_admin": false
   }
