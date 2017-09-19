@@ -25,9 +25,7 @@ export function createContainer(
       Cmd: ['/bin/bash'],
       Env: envs || [],
       Binds: ['/var/run/docker.sock:/var/run/docker.sock'],
-      HostConfig: {
-        Privileged: true
-      }
+      Privileged: true
     } as any)
     .then(container => container.start())
     .then(() => observer.complete())
