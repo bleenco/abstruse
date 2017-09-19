@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import * as ansiUp from 'ansi_up';
 
@@ -23,17 +24,24 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   initEditorOptions: any;
   form: IImage;
   imageBuilds: ImageBuildType[];
+  imageBuildsText: string;
   imageBuildLog: string;
   au: any;
+  building: boolean;
+  success: boolean;
 
-  constructor(private socketService: SocketService, private zone: NgZone) {
+  constructor(
+    private socketService: SocketService,
+    private zone: NgZone,
+    @Inject(DOCUMENT) private document: any
+  ) {
     this.loading = true;
     this.imageBuilds = [];
     this.imageBuildLog = '';
 
     this.editorOptions = {
-      lineNumbers: false,
-      theme: 'vs',
+      lineNumbers: true,
+      theme: 'vs-dark',
       language: 'dockerfile',
       minimap: {
         enabled: false
@@ -57,7 +65,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.initEditorOptions = Object.assign({}, this.editorOptions, { language: 'plaintext' });
 
     this.form = {
-      name: 'unnamed_image',
+      name: 'abstruse',
       dockerfile: [
         'FROM ubuntu:17.04',
         '',
@@ -123,6 +131,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     };
 
     this.au = new ansiUp.default();
+    this.building = false;
   }
 
   ngOnInit() {
@@ -138,19 +147,38 @@ export class AppImagesComponent implements OnInit, OnDestroy {
           output = null;
         }
 
+        if (output) {
+          this.building = true;
+        }
+
         if (output && output.id && output.progressDetail) {
           const buildIndex = this.findImageBuild(event.data.name);
           const layerIndex = this.findImageLayer(buildIndex, output.id);
 
           this.zone.run(() => {
             this.imageBuilds[buildIndex].layers[layerIndex] = output;
+            const length = this.imageBuilds[buildIndex].layers.length;
+            const done = this.imageBuilds[buildIndex].layers.filter(l => {
+              return l.status === 'Download complete' || l.status === 'Pull complete';
+            }).length;
+
+            this.imageBuildsText = done + '/' + length;
           });
         } else if (output && output.stream) {
-          this.imageBuildLog += this.au.ansi_to_html(output.stream);
+          if (output.stream.startsWith('Successfully built') || output.stream.startsWith('Successfully tagged')) {
+            this.building = false;
+            this.success = true;
+          } else {
+            this.imageBuildLog += this.au.ansi_to_html(output.stream);
+            this.scrollToBottom();
+          }
         } else if (output && output.errorDetail) {
           this.imageBuildLog += `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`;
+          this.scrollToBottom();
         }
       });
+
+    this.socketService.emit({ type: 'subscribeToImageBuilder' });
   }
 
   findImageBuild(imageName: string): number {
@@ -185,11 +213,17 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     }
   }
 
+  scrollToBottom() {
+    const body = this.document.documentElement.scrollHeight;
+    window.scrollTo(0, body.scrollHeight);
+  }
+
   ngOnDestroy() {
 
   }
 
   buildImage(): void {
+    this.building = true;
     this.socketService.emit({ type: 'buildImage', data: this.form });
   }
 }
