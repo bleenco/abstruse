@@ -1,2 +1,0 @@
-FROM jkuri/abstruse
-

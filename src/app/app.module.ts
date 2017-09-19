@@ -33,6 +33,8 @@ import { AppUserComponent } from './components/app-user';
 import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
 import { AppLogsComponent } from './components/app-logs';
+import { AppImagesComponent } from './components/app-images';
+import { AppEditorComponent } from './components/app-editor';
 import { AppDashboardComponent } from './components/app-dashboard';
 import { AppLineChartComponent } from './components/app-line-chart';
 import { AppProgressChartComponent } from './components/app-progress-chart';
@@ -55,6 +57,8 @@ import { AppProgressChartComponent } from './components/app-progress-chart';
     AppTeamComponent,
     AppUserComponent,
     AppLogsComponent,
+    AppImagesComponent,
+    AppEditorComponent,
     AppDashboardComponent,
     AppLineChartComponent,
     AppProgressChartComponent,
@@ -105,6 +109,11 @@ import { AppProgressChartComponent } from './components/app-progress-chart';
       {
         path: 'team',
         component: AppTeamComponent,
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'images',
+        component: AppImagesComponent,
         canActivate: [AuthGuard]
       },
       {

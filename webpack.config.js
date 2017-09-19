@@ -27,7 +27,10 @@ module.exports = function (options, webpackOptions) {
       ]
     },
     plugins: [
-      new copy([{ context: './src/app/assets/public', from: '**/*' }])
+      new copy([
+        { context: './src/app/assets/public', from: '**/*' },
+        { context: './node_modules/monaco-editor/min/', from: '**/*', to: 'monaco' }
+      ]),
     ]
   });
 
