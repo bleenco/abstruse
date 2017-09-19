@@ -17,6 +17,7 @@ import {
   terminalEvents,
   getJobProcesses
 } from './process-manager';
+import { buildDockerImage } from './image-builder';
 import { getConfig } from './utils';
 import * as https from 'https';
 import * as http from 'http';
@@ -108,6 +109,18 @@ export class SocketServer {
                     });
                   });
               break;
+
+              case 'buildImage': {
+                const imageData = event.data;
+
+                buildDockerImage(imageData).subscribe(event => {
+                  console.log(event);
+                  conn.next({ type: 'imageBuildProgress', data: event });
+                });
+              }
+
+              break;
+
               case 'startBuild':
                 startBuild({ repositories_id: event.data.repositoryId })
                   .then(buildId => {

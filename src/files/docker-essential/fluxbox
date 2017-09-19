@@ -1,0 +1,32 @@
+# Provides: Fluxbox
+# Required-Start: $local_fs $remote_fs
+# Required-Stop:
+# X-Start-Before:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Starts Fluxbox 
+### END INIT INFO
+
+FLUXBOX=/usr/bin/fluxbox
+PIDFILE=/var/run/fluxbox.pid
+case "$1" in
+  start)
+    echo -n "Starting Fluxbox"
+    start-stop-daemon --start --quiet --pidfile $PIDFILE --make-pidfile --background --exec $FLUXBOX
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping Fluxbox"
+    start-stop-daemon --stop --quiet --pidfile $PIDFILE
+    echo "."
+    ;;
+  restart)
+    $0 stop
+    $0 start
+    ;;
+  *)
+        echo "Usage: /etc/init.d/fluxbox {start|stop|restart}"
+        exit 1
+esac
+
+exit 0

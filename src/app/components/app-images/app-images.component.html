@@ -1,0 +1,46 @@
+<app-header></app-header>
+
+<nav class="nav sub-nav">
+  <div class="container">
+    <div class="nav-left is-hidden-mobile">
+      <span class="nav-item">
+        <h1>Images</h1>
+      </span>
+    </div>
+    <div class="nav-center is-hidden-mobile"></div>
+    <div class="nav-right"></div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-12">
+      <div class="content">
+        <div class="container" *ngIf="loading">
+          <img src="images/icons/flickr.svg" class="main-loader">
+        </div>
+      </div>
+
+      <div class="content-box">
+        <div class="columns is-multiline" *ngIf="!loading">
+          <div class="column is-12">
+
+            <pre>{{ imageBuilds | json }}</pre>
+
+            <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml"></pre>
+
+            <input type="text" class="image-name-input" [(ngModel)]="form.name">
+            <h2>Dockerfile</h2>
+            <app-editor [options]="editorOptions" [(ngModel)]="form.dockerfile" class="editor-large"></app-editor>
+            <h2>init.sh</h2>
+            <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
+            <div class="images-buttons-container">
+              <button type="button" class="button w300 green" (click)="buildImage()">Build Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

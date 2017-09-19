@@ -50,9 +50,10 @@ export function setHome(dirPath: string): void {
 export function initSetup(): Promise<null> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
+    .then(() => ensureDirectory(getFilePath('images')))
     .then(() => {
-      const srcDir = resolve(__dirname, '../../src/files');
-      const destDir = getFilePath('docker-files');
+      const srcDir = resolve(__dirname, '../../src/files/docker-essential');
+      const destDir = getFilePath('docker-essential');
       return copyFile(srcDir, destDir);
     })
     .then(() => {
@@ -63,7 +64,7 @@ export function initSetup(): Promise<null> {
 }
 
 export function appReady(): boolean {
-  return existsSync(getFilePath('docker-images')) && existsSync(getFilePath('docker-files'));
+  return existsSync(getFilePath('images')) && existsSync(getFilePath('docker-essential'));
 }
 
 export function getRootDir(): string {
