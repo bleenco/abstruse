@@ -17,22 +17,36 @@ export interface ImageBuildOutput {
   output: any;
 }
 
-export function buildDockerImage(data: ImageData): Observable<ImageBuildOutput> {
-  return new Observable(observer => {
-    prepareDirectory(data).then(() => {
-      const folderPath = getFilePath(`images/${data.name}`);
-      const src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
+export const imageBuilder: Subject<ImageBuildOutput> = new Subject();
+imageBuilder.share();
 
-      docker.buildImage({ context: folderPath, src: src }, { t: data.name })
-        .then(output => {
-          output.on('data', d => observer.next({ name: data.name, output: d.toString() }));
-          output.on('finish', () => observer.complete());
-        })
-        .catch(err => {
-          observer.error(err);
-          observer.complete();
+export function buildDockerImage(data: ImageData): void {
+  prepareDirectory(data).then(() => {
+    const folderPath = getFilePath(`images/${data.name}`);
+    const src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
+
+    let msg: LogMessageType = {
+      message: `starting image build ${data.name}`,
+      type: 'info',
+      notify: false
+    };
+    logger.next(msg);
+
+    docker.buildImage({ context: folderPath, src: src }, { t: data.name })
+      .then(output => {
+        output.on('data', d => {
+          imageBuilder.next({ name: data.name, output: d.toString() });
         });
-    });
+        output.on('finish', () => {
+          msg.message = `image ${data.name} build successfully completed`;
+          logger.next(msg);
+        });
+      })
+      .catch(err => {
+        msg.message = `error while building image ${data.name} (${err})`;
+        msg.type = 'error';
+        logger.next(msg);
+      });
   });
 }
 
