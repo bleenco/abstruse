@@ -8,7 +8,12 @@
       </span>
     </div>
     <div class="nav-center is-hidden-mobile"></div>
-    <div class="nav-right"></div>
+    <div class="nav-right">
+      <div class="group-buttons">
+        <button class="group-button" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">Images</button>
+        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'">Create New Image</button>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -23,39 +28,71 @@
 
       <div *ngIf="!loading">
 
-        <div class="content-box image-builder-box" *ngIf="!building && !success">
-          <h1>Build New Image</h1>
-          <div class="columns is-multiline">
-            <div class="column is-12">
-              <h2>Image name</h2>
-              <input type="text" class="image-name-input" [(ngModel)]="form.name" placeholder="Image Name">
-              <h2>Dockerfile</h2>
-              <app-editor [options]="editorOptions" [(ngModel)]="form.dockerfile" class="editor-large"></app-editor>
-              <h2>init.sh</h2>
-              <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
-              <div class="images-buttons-container">
-                <button type="button" class="button w300 blue" (click)="buildImage()" name="build-image-btn">Build Image</button>
+        <div *ngIf="tab === 'images'">
+          <div class="content-box image-builder-box is-paddingless">
+            <div class="image-builder-box-header">
+              <h2>Images List</h2>
+            </div>
+            <div class="image-item" *ngFor="let i of images; let i = index;">
+              <div class="columns">
+                <div class="column is-2">
+                  {{ i.name }}
+                </div>
+                <div class="column is-2">
+                  {{ i.version }}
+                </div>
+                <div class="column is-2">
+                  {{ i.created }}
+                </div>
+                <div class="column is-2">
+                  Created {{ i.createdAgo }} ago
+                </div>
+                <div class="column is-2">
+                  Size {{ i.size }}
+                </div>
+                <div class="column is-2">
+                  <button type="button" class="button">Edit</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="content-box image-builder-box" *ngIf="!building && success">
-          <h1>Image Build Done</h1>
-          <div class="columns is-multiline">
-            <div class="column is-12">
-              <div class="notification is-info">
-                <p class="has-text-centered" name="build-done">Image successfully built.</p>
+        <div *ngIf="tab === 'build'">
+          <div class="content-box image-builder-box" *ngIf="!building && !success">
+            <h1>Build New Image</h1>
+            <div class="columns is-multiline">
+              <div class="column is-12">
+                <h2>Image name</h2>
+                <input type="text" class="image-name-input" [(ngModel)]="form.name" placeholder="Image Name">
+                <h2>Dockerfile</h2>
+                <app-editor [options]="editorOptions" [(ngModel)]="form.dockerfile" class="editor-large"></app-editor>
+                <h2>init.sh</h2>
+                <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
+                <div class="images-buttons-container">
+                  <button type="button" class="button w300 blue" (click)="buildImage()" name="build-image-btn">Build Image</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="content-box image-builder-box" *ngIf="building">
-          <p class="has-text-centered">
-            Building image <strong>{{ form.name }}</strong> <span *ngIf="imageBuildsText">({{ imageBuildsText }} layers)</span> ...
-          </p>
-          <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml" *ngIf="imageBuildLog"></pre>
+          <div class="content-box image-builder-box" *ngIf="!building && success">
+            <h1>Image Build Done</h1>
+            <div class="columns is-multiline">
+              <div class="column is-12">
+                <div class="notification is-info">
+                  <p class="has-text-centered" name="build-done">Image successfully built.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-box image-builder-box" *ngIf="building">
+            <p class="has-text-centered">
+              Building image <strong>{{ form.name }}</strong> <span *ngIf="imageBuildsText">({{ imageBuildsText }} layers)</span> ...
+            </p>
+            <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml" *ngIf="imageBuildLog"></pre>
+          </div>
         </div>
 
       </div>
