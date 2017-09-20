@@ -184,6 +184,10 @@ export class ApiService {
     return this.get(`${this.url}/stats/job-runs`, null, true);
   }
 
+  imagesList(): Observable<any> {
+    return this.get(`${this.url}/images`, null, true);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

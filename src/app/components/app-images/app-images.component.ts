@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
+import { ApiService } from '../../services/api.service';
 import * as ansiUp from 'ansi_up';
 
 export interface IImage {
@@ -29,10 +30,13 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   au: any;
   building: boolean;
   success: boolean;
+  images: any[];
+  tab: string;
 
   constructor(
     private socketService: SocketService,
     private zone: NgZone,
+    private api: ApiService,
     @Inject(DOCUMENT) private document: any
   ) {
     this.loading = true;
@@ -41,7 +45,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
     this.editorOptions = {
       lineNumbers: true,
-      theme: 'vs-dark',
+      theme: 'abstruseTheme',
       language: 'dockerfile',
       minimap: {
         enabled: false
@@ -145,6 +149,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
     this.au = new ansiUp.default();
     this.building = false;
+    this.tab = 'images';
   }
 
   ngOnInit() {
@@ -192,6 +197,15 @@ export class AppImagesComponent implements OnInit, OnDestroy {
       });
 
     this.socketService.emit({ type: 'subscribeToImageBuilder' });
+    this.fetchImages();
+  }
+
+  fetchImages(): void {
+    this.loading = true;
+    this.api.imagesList().subscribe(data => {
+      this.images = data;
+      this.loading = false;
+    });
   }
 
   findImageBuild(imageName: string): number {

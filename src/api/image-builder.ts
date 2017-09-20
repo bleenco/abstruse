@@ -1,10 +1,11 @@
 import { docker } from './docker';
-import { getFilePath } from './utils';
+import { getFilePath, getHumanSize } from './utils';
 import * as fs from 'fs-extra';
 import { logger, LogMessageType } from './logger';
 import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
 import * as glob from 'glob';
+import { format, distanceInWordsToNow } from 'date-fns';
 
 export interface ImageData {
   name: string;
@@ -71,3 +72,28 @@ function prepareDirectory(data: ImageData): Promise<void> {
     });
 }
 
+export function getImages(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const imagesDir = getFilePath(`images`);
+
+    fs.readdir(imagesDir).then(dirs => {
+      docker.listImages()
+        .then(images => {
+          const imgs = images.filter(image => {
+            const tag = image.RepoTags[0].split(':')[0];
+            return imagesDir.indexOf(tag) !== -1;
+          }).map(image => {
+            return {
+              name: image.RepoTags[0].split(':')[0],
+              version: image.RepoTags[0].split(':')[1],
+              created: format(new Date(image.Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
+              createdAgo: distanceInWordsToNow(new Date(image.Created * 1000)),
+              size: getHumanSize(image.Size)
+            };
+          });
+
+          resolve(imgs);
+        });
+    });
+  });
+}

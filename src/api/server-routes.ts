@@ -39,6 +39,7 @@ import {
 import { insertEnvironmentVariable, removeEnvironmentVariable } from './db/environment-variable';
 import { getLogs } from './db/log';
 import { imageExists } from './docker';
+import { getImages } from './image-builder';
 import { checkApiRequestAuth } from './security';
 import * as multer from 'multer';
 
@@ -55,6 +56,8 @@ const storage: multer.StorageEngine = multer.diskStorage({
 });
 
 const upload: multer.Instance = multer({ storage: storage });
+
+// getImages().then(images => console.log(images));
 
 export function webRoutes(): express.Router {
   const router = express.Router();
@@ -485,6 +488,18 @@ export function keysRoutes(): express.Router {
     }
 
     return res.status(200).json({ status: false });
+  });
+
+  return router;
+}
+
+export function imagesRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get('/', (req: express.Request, res: express.Response) => {
+    getImages()
+      .then(images => res.status(200).json({ data: images }))
+      .catch(err => res.status(200).json({ status: false }));
   });
 
   return router;
