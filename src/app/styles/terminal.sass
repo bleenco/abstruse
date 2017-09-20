@@ -14,7 +14,7 @@
   border-radius: 10px
   box-shadow: 1px 2px 10px rgba($background, 0.7)
   border: 1px solid $divider
-
+  height: 600px
 
   .terminal
     display: block
@@ -26,14 +26,12 @@
     .command-line
       display: flex
       align-items: center
-      margin: 2px 5px
+      margin: 1px 5px
       cursor: pointer
       height: 20px
       position: relative
       padding-left: 15px
-
-      &:hover, &.is-opened
-        background: lighten(#000000, 7)
+      background: lighten(#000000, 10)
 
       .icon
         margin-right: 3px
@@ -46,19 +44,18 @@
       .command
         font-size: 12px
         color: $white
-        font-weight: $weight-semibold
+        font-weight: $weight-bold !important
 
         span
           font-size: 12px
           color: $white
-          font-weight: $weight-semibold
 
       .time
         position: absolute
         display: block
         font-size: 12px
         color: $white
-        right: 5px
+        right: 10px
         outline: none
         border: none
 
@@ -76,7 +73,8 @@
       margin: 0 !important
       font-family: $font-family-roboto-mono
       font-size: 12px
-      padding: 10px 10px 10px 25px !important
+      padding: 0 25px 0 25px !important
       background: #000000
       white-space: pre-wrap
       word-wrap: break-word
+      font-weight: $weight-normal !important
