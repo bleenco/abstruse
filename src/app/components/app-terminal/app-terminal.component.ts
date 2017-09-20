@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import * as AnsiUp from 'ansi_up';
+import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
 
 @Component({
   selector: 'app-terminal',
@@ -21,13 +22,26 @@ export class AppTerminalComponent implements OnInit {
   commands: { command: string, visible: boolean, output: string, time: string }[];
   noData: boolean;
   initScroll: boolean;
+  scrollOptions: ISlimScrollOptions;
+  scrollEvents: EventEmitter<SlimScrollEvent>;
 
   constructor(
     private elementRef: ElementRef,
     @Inject(DOCUMENT) private document: any
   ) {
-    this.commands = [];
-    this.initScroll = true;
+    this.scrollOptions = {
+      barBackground: '#666',
+      gridBackground: '#000',
+      barBorderRadius: '10',
+      barWidth: '7',
+      gridWidth: '7',
+      barMargin: '2px 5px',
+      gridMargin: '2px 5px',
+      gridBorderRadius: '10',
+      alwaysVisible: false
+    };
+
+    this.scrollEvents = new EventEmitter<SlimScrollEvent>();
   }
 
   ngOnInit() {
@@ -115,31 +129,28 @@ export class AppTerminalComponent implements OnInit {
       });
     }
 
-    setTimeout(() => this.checkScrollBottom());
+    setTimeout(() => {
+      const ev: SlimScrollEvent = {
+        type: 'scrollToBottom',
+        easing: 'linear',
+        duration: 50
+      };
+      this.scrollEvents.emit(ev);
+    });
   }
 
-  checkScrollBottom(): void {
-    const body = this.document.body;
-
-    if (this.initScroll) {
-      window.scrollTo(0, body.scrollHeight);
-      this.initScroll = false;
-    } else {
-      const top = window.pageYOffset || this.document.documentElement.scrollTop ||
-        this.document.body.scrollTop || 0;
-      const scrollHeight = this.document.body.scrollHeight;
-      const clientHeight = this.document.body.clientHeight;
-      const height = scrollHeight - clientHeight;
-      const diff = 250;
-
-      if (height - diff < top) {
-        window.scrollTo(0, body.scrollHeight);
-      }
-    }
-  }
-
-  toogleCommand(index: number) {
+  toggleCommand(index: number) {
     this.commands[index].visible = !this.commands[index].visible;
+    setTimeout(() => this.recalculate());
+  }
+
+  recalculate(): void {
+    const event: SlimScrollEvent = {
+      type: 'recalculate',
+      easing: 'linear'
+    };
+
+    this.scrollEvents.emit(event);
   }
 
   getDuration(millis: number): string {
