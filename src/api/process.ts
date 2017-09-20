@@ -70,7 +70,7 @@ export function startBuildProcess(
       ].join('');
       let restoreCmd = [
         `if [ -e ${cacheContainerPath} ]; `,
-        `then tar xf ${cacheContainerPath} -C .; fi`
+        `then tar xf ${cacheContainerPath} -C /; fi`
       ].join('');
 
       restoreCache = Observable.concat(...[
@@ -78,12 +78,20 @@ export function startBuildProcess(
         docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
       ]);
 
+      let cacheFolders = proc.cache.map(folder => {
+        if (folder.startsWith('/')) {
+          return folder;
+        } else {
+          return `/home/abstruse/build/${folder}`;
+        }
+      }).join(' ');
+
       let tarCmd = [
-        `if [ ! -e ${cacheContainerPath} ];`,
-        `then tar cfz ${cacheContainerPath} ${proc.cache.join(' ')}; fi`,
+        `if [ ! -e ${cacheContainerPath} ]; `,
+        `then tar cfz ${cacheContainerPath} ${cacheFolders}; fi`,
       ].join('');
       let saveTarCmd = [,
-        `if [ ! -e ${cacheHostPath} ];`,
+        `if [ ! -e ${cacheHostPath} ]; `,
         `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
       ].join('');
 
@@ -93,32 +101,7 @@ export function startBuildProcess(
       ]);
     }
 
-    let debug: Observable<any> = Observable.empty();
-    if (proc.sshAndVnc) {
-      const ssh = `sudo /etc/init.d/ssh start`;
-      const xvfb = [
-        'export DISPLAY=:99 &&',
-        'sudo /etc/init.d/xvfb start &&',
-        'sleep 3 &&',
-        'sudo /etc/init.d/openbox start'
-      ].join(' ');
-      const vnc = [
-        'x11vnc -xkb -noxrecord -noxfixes -noxdamage',
-        '-display :99 -forever -bg -rfbauth /etc/x11vnc.pass',
-        '-rfbport 5900'
-      ].join(' ');
-
-      debug = Observable.concat(...[
-        docker.attachExec(name, { command: ssh, type: CommandType.before_install }),
-        getContainerExposedPort(name, 22),
-        docker.attachExec(name, { command: xvfb, type: CommandType.before_install }),
-        docker.attachExec(name, { command: vnc, type: CommandType.before_install }),
-        getContainerExposedPort(name, 5900)
-      ]);
-    }
-
     const sub = docker.createContainer(name, image, envs)
-      .concat(debug)
       .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(restoreCache)
       .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
