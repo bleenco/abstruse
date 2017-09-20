@@ -25,7 +25,7 @@ export interface User {
 export class AppSetupComponent implements OnInit {
   serverStatus: ServerStatus;
   readyToSetup: boolean;
-  step: 'config' | 'db' | 'docker' | 'done';
+  step: 'config' | 'db' | 'done';
   terminalInput: string;
   loading: boolean;
   user: User;
@@ -86,31 +86,8 @@ export class AppSetupComponent implements OnInit {
           }
         });
       } else {
-        this.continueToDockerImageBuild();
-      }
-    });
-  }
-
-  continueToDockerImageBuild(): void {
-    this.loading = true;
-    this.apiService.dockerImageExists().delay(2000).subscribe(exists => {
-      this.loading = false;
-      if (!exists) {
-        this.step = 'docker';
-        this.socketService.outputEvents.subscribe(event => {
-          if (event.type === 'terminalOutput') {
-            if (event.data.type === 'exit') {
-              if (event.data.data === 0) {
-                this.step = 'done';
-              }
-            } else {
-              this.terminalInput = event.data.data;
-            }
-          }
-        });
-        this.socketService.emit({ type: 'initializeDockerImage', data: 'abstruse' });
-      } else {
-        this.router.navigate(['/login']);
+        this.loading = false;
+        this.step = 'done';
       }
     });
   }
@@ -120,7 +97,7 @@ export class AppSetupComponent implements OnInit {
     this.apiService.createUser(this.user).delay(2000).subscribe(event => {
       this.loading = false;
       if (event) {
-        this.continueToDockerImageBuild();
+        this.step = 'done';
       }
     });
   }
