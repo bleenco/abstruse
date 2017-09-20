@@ -1,4 +1,4 @@
-import { startDockerImageSetupJob, startBuildProcess } from './process';
+import { startBuildProcess } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import {
   insertBuild,
@@ -574,92 +574,6 @@ export function restartJob(jobId: number): Promise<void> {
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
-    });
-}
-
-export function restartJobWithSshAndVnc(jobId: number): Promise<void> {
-  let jobData = null;
-  return stopJob(jobId)
-    .then(() => dbJob.getLastRun(jobId))
-    .then(lastRun => dbJobRuns.insertJobRun({
-      start_time: new Date(),
-      end_time: null,
-      status: 'queued',
-      log: '',
-      build_run_id: lastRun.build_run_id,
-      job_id: jobId }))
-    .then(() => dbJob.getJob(jobId))
-    .then(job => jobData = job)
-    .then(() => queueJob(jobData.builds_id, jobId, true))
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: jobData.builds_id,
-        job_id: jobData.id,
-        data: 'job restarted'
-      });
-    })
-    .then(() => getBuild(jobData.builds_id))
-    .then(build => sendPendingStatus(build, build.id))
-    .catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
-      logger.next(msg);
-    });
-}
-
-export function startSetup(name: string): Promise<void> {
-  return getJobProcesses()
-    .then(procs => {
-      const setup: JobProcess = {
-        image_name: name,
-        status: 'queued',
-        job: queueSetupDockerImage(name),
-        log: []
-      };
-
-      procs.push(setup);
-      jobProcesses.next(procs);
-    });
-}
-
-export function queueSetupDockerImage(name: string): Observable<any> {
-  let job = startDockerImageSetupJob(name);
-
-  let jobOutput = new Observable(observer => {
-    job.pty.subscribe(output => {
-      const message: JobMessage = {
-        image_name: name,
-        type: output.type,
-        data: output.data
-      };
-
-      observer.next(message);
-
-      if (output.type === 'exit') {
-        getJobProcesses()
-          .then(procs => {
-            procs = procs.filter(job => !job.image_name && job.image_name !== name);
-            jobProcesses.next(procs);
-
-            observer.complete();
-          });
-      }
-    }, err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
-      logger.next(msg);
-    }, () => {
-      observer.complete();
-    });
-  });
-
-  return jobOutput;
-}
-
-export function findDockerImageBuildJob(name: string): Promise<JobProcess> {
-  return getJobProcesses()
-    .then(procs => {
-      const dockerJob = procs.find(job => job.image_name && job.image_name === name);
-      return dockerJob;
     });
 }
 

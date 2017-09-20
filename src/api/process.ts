@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue, cyan } from 'chalk';
 import { CommandType, Command } from './config';
 import { JobProcess } from './process-manager';
-const nodePty = require('node-pty');
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -170,19 +169,6 @@ function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
   });
 }
 
-export function startDockerImageSetupJob(name: string): Job {
-  let pty = new PtyInstance();
-  let job: Job = {
-    status: 'queued',
-    type: 'build',
-    pty: docker.buildImage(name),
-    log: [],
-    exitStatus: null
-  };
-
-  return job;
-}
-
 export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput> {
   return new Promise(resolve => {
     let stdout = '';
@@ -195,30 +181,5 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
       const output = { stdout, stderr, exit };
       resolve(output);
     });
-  });
-}
-
-function saveCredentialsToImage(name: string, buildId: number): Promise<void> {
-  return new Promise((resolve, reject) => {
-    getRepositoryByBuildId(buildId)
-      .then(repo => {
-        if (repo.username !== '' && repo.password !== '') {
-          const matches = repo.clone_url.match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i);
-          const domain = matches && matches[1];
-          const cmd = `echo 'machine ${domain} login ${repo.username} password ${repo.password}'` +
-            `> /home/abstruse/.netrc`;
-          const save = nodePty.spawn('docker', [
-            'exec',
-            name,
-            'sh',
-            '-c',
-            cmd
-          ]);
-
-          save.on('exit', () => resolve());
-        } else {
-          resolve();
-        }
-      });
   });
 }
