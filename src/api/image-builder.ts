@@ -80,8 +80,12 @@ export function getImages(): Promise<any> {
       docker.listImages()
         .then(images => {
           const imgs = images.filter(image => {
-            const tag = image.RepoTags[0].split(':')[0];
-            return imagesDir.indexOf(tag) !== -1;
+            if (image.RepoTags && image.RepoTags.length) {
+              const tag = image.RepoTags[0].split(':')[0];
+              return imagesDir.indexOf(tag) !== -1;
+            } else {
+              return false;
+            }
           }).map(image => {
             return {
               name: image.RepoTags[0].split(':')[0],
@@ -108,9 +112,7 @@ export function getImages(): Promise<any> {
                 });
               });
           }))
-          .then(imgs => {
-            resolve(imgs);
-          })
+          .then(imgs => resolve(imgs))
           .catch(err => reject(err));
         });
     });
