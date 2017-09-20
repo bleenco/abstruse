@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, Inject, EventEmitter } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import * as ansiUp from 'ansi_up';
+import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
 
 export interface IImage {
   name: string;
@@ -32,6 +33,8 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   success: boolean;
   images: any[];
   tab: string;
+  scrollOptions: ISlimScrollOptions;
+  scrollEvents: EventEmitter<SlimScrollEvent>;
 
   constructor(
     private socketService: SocketService,
@@ -73,6 +76,20 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.tab = 'images';
 
     this.resetForm();
+
+    this.scrollOptions = {
+      barBackground: '#666',
+      gridBackground: '#000',
+      barBorderRadius: '10',
+      barWidth: '7',
+      gridWidth: '7',
+      barMargin: '2px 5px',
+      gridMargin: '2px 5px',
+      gridBorderRadius: '10',
+      alwaysVisible: false
+    };
+
+    this.scrollEvents = new EventEmitter<SlimScrollEvent>();
   }
 
   ngOnInit() {
@@ -254,8 +271,14 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   scrollToBottom() {
-    const body = this.document.documentElement.scrollHeight;
-    window.scrollTo(0, body.scrollHeight);
+    setTimeout(() => {
+      const ev: SlimScrollEvent = {
+        type: 'scrollToBottom',
+        easing: 'linear',
+        duration: 50
+      };
+      this.scrollEvents.emit(ev);
+    });
   }
 
   ngOnDestroy() {

@@ -80,7 +80,7 @@
             <p class="has-text-centered">
               Building image <strong>{{ form.name }}</strong> <span *ngIf="imageBuildsText">({{ imageBuildsText }} layers)</span> ...
             </p>
-            <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml" *ngIf="imageBuildLog"></pre>
+            <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml" *ngIf="imageBuildLog" slimScroll [options]="scrollOptions" [scrollEvents]="scrollEvents"></pre>
           </div>
         </div>
 
