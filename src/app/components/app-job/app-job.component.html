@@ -32,14 +32,6 @@
                     </span>
                   </div>
                   <div class="column is-5 justify-end right-buttons-top" *ngIf="userId && job?.hasPermission">
-                    <button class="button is-fullwidth" name="btn-restart-ssh" type="button" (click)="restartJobWithSSH($event)" [disabled]="processing">
-                      <div class="centered">
-                        <span class="icon">
-                          <img src="images/icons/restart.svg">
-                        </span>
-                        <span>Restart (debug)</span>
-                      </div>
-                    </button>
                     <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">

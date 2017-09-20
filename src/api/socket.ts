@@ -6,11 +6,8 @@ import { logger, LogMessageType } from './logger';
 import * as docker from './docker';
 import {
   startBuild,
-  startSetup,
-  findDockerImageBuildJob,
   jobEvents,
   restartJob,
-  restartJobWithSshAndVnc,
   stopJob,
   restartBuild,
   stopBuild,
@@ -87,29 +84,6 @@ export class SocketServer {
             }
 
             switch (event.type) {
-              case 'initializeDockerImage':
-                findDockerImageBuildJob('abstruse')
-                  .then(dbuild => {
-                    if (!dbuild) {
-                      return startSetup('abstruse')
-                        .then(() => findDockerImageBuildJob('abstruse'))
-                        .then(build => build);
-                    } else {
-                      return Promise.resolve()
-                        .then(() => dbuild);
-                    }
-                  })
-                  .then(build => {
-                    build.job.subscribe(event => {
-                      conn.next({ type: 'terminalOutput', data: event });
-                    }, err => {
-                      console.error(err);
-                    }, () => {
-                      console.log('Docker image build completed.');
-                    });
-                  });
-              break;
-
               case 'buildImage': {
                 const imageData = event.data;
                 buildDockerImage(imageData);
@@ -143,12 +117,6 @@ export class SocketServer {
               break;
               case 'restartJob':
                 restartJob(parseInt(event.data.jobId, 10))
-                  .then(() => {
-                    conn.next({ type: 'job restarted', data: event.data.jobId });
-                  });
-              break;
-              case 'restartJobWithSshAndVnc':
-                restartJobWithSshAndVnc(parseInt(event.data.jobId, 10))
                   .then(() => {
                     conn.next({ type: 'job restarted', data: event.data.jobId });
                   });

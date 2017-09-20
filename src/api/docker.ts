@@ -197,19 +197,6 @@ export function removeContainer(id: string): Promise<void> {
   return docker.getContainer(id).remove();
 }
 
-export interface TTYMessage {
-  id: string;
-  type: 'data' | 'error' | 'exit';
-  data: string;
-  status:  'queued' | 'running' | 'success' | 'failed';
-}
-
-export function runInteractive(id: string, image: string): Subject<any> {
-  let cmd = 'docker';
-  let args = ['run', '-it', '--rm', '--privileged', '--name', id, image];
-  return execTty(id, cmd, args);
-}
-
 export function imageExists(name: string): Observable<boolean> {
   return new Observable(observer => {
     const image = spawn('docker', ['inspect', '--type=image', name]);
@@ -217,19 +204,6 @@ export function imageExists(name: string): Observable<boolean> {
       observer.next(code === 0 ? true : false);
       observer.complete();
     });
-  });
-}
-
-export function buildImage(name: string): Observable<boolean> {
-  let dockerFile = utils.getFilePath('docker-files');
-  let cmd = 'docker';
-  let args = ['build', '--compress=true', '-m=2048M', '-t', name, dockerFile];
-  return execTty(name, cmd, args);
-}
-
-export function killAllContainers(): Promise<void> {
-  return new Promise(resolve => {
-    exec('docker rm $(docker ps -a -q) -f', (err, stdout, stderr) => resolve());
   });
 }
 
@@ -251,59 +225,4 @@ export function isDockerInstalled(): Observable<boolean> {
       observer.complete();
     });
   });
-}
-
-function execTty(id: string, cmd: string, args: string[] = []): Subject<any> {
-  let ps = pty.spawn(cmd, args);
-
-  let output = new Observable((observer: Observer<TTYMessage>) => {
-    let msg: TTYMessage = { id: id, type: 'data', data: null, status: 'queued' };
-    observer.next(msg);
-
-    let buildMsg: TTYMessage = {
-      id: id,
-      type: 'data',
-      data: '==> Build Docker Image',
-      status: 'running'
-    };
-
-    observer.next(buildMsg);
-
-    ps.on('data', data => {
-      let msg: TTYMessage = { id: id, type: 'data', data: data, status: 'running' };
-      observer.next(msg);
-    });
-
-    ps.on('error', err => {
-      let error: TTYMessage = { id: id, type: 'error', data: err, status: 'failed' };
-      observer.next(error);
-    });
-
-    ps.on('exit', code => {
-      let exitCode: TTYMessage = {
-        id: id,
-        type: 'exit',
-        data: code,
-        status: code === 0 ? 'success' : 'failed'
-      };
-
-      observer.next(exitCode);
-      ps.kill();
-      observer.complete();
-    });
-  });
-
-  let input: any = {
-    next(data: any) {
-      if (data.action === 'command') {
-        ps.write(`${data.message}\r`);
-      } else if (data.action === 'resize') {
-        ps.resize(data.col, data.row);
-      } else if (data.action === 'exit') {
-        ps.kill();
-      }
-    }
-  };
-
-  return Subject.create(input, output);
 }

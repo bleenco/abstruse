@@ -183,16 +183,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
   }
 
-  restartJobWithSSH(e: MouseEvent): void {
-    e.preventDefault();
-    e.stopPropagation();
-    this.terminalInput = { clear: true };
-    this.processing = true;
-    this.sshd = null;
-    this.vnc = null;
-    this.socketService.emit({ type: 'restartJobWithSshAndVnc', data: { jobId: this.id } });
-  }
-
   stopJob(e: MouseEvent): void {
     e.preventDefault();
     e.stopPropagation();
