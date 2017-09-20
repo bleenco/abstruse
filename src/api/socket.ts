@@ -1,7 +1,6 @@
 import * as ws from 'ws';
 import * as uuid from 'uuid';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
-import { PtyInstance } from './pty';
 import { logger, LogMessageType } from './logger';
 import * as docker from './docker';
 import {
