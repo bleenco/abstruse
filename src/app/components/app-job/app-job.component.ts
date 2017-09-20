@@ -65,16 +65,24 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
         if (event.type === 'data') {
-          this.ngZone.run(() => this.terminalInput = event.data);
+          if (typeof event.data === 'string') {
+            this.ngZone.run(() => this.terminalInput = event.data);
+          }
         } else if (event.type === 'job stopped' && event.data === this.id) {
           this.processing = false;
         } else if (event.type === 'job restarted' && event.data === this.id) {
           this.processing = false;
-        } else if (event.type === 'exposed port') {
-          if (parseInt(event.data.split(':')[0], 10) === 22) {
-            this.sshd = `${document.location.hostname}:${event.data.split(':')[1]}`;
-          } else if (parseInt(event.data.split(':')[0], 10) === 5900) {
-            this.vnc = `${document.location.hostname}:${event.data.split(':')[1]}`;
+        } else if (event.type === 'exposed ports') {
+          const portData = event.data.info;
+
+          if (typeof portData['22/tcp'] !== 'undefined') {
+            const port = portData['22/tcp'][0].HostPort;
+            this.sshd = `${document.location.hostname}:${port}`;
+          }
+
+          if (typeof portData['5900/tcp'] !== 'undefined') {
+            const port = portData['5900/tcp'][0].HostPort;
+            this.vnc = `${document.location.hostname}:${port}`;
           }
         }
       });

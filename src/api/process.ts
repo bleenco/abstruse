@@ -24,7 +24,7 @@ export interface SpawnedProcessOutput {
 }
 
 export interface ProcessOutput {
-  type: 'data' | 'exit' | 'container' | 'exposed port';
+  type: 'data' | 'exit' | 'container' | 'exposed ports' | 'containerInfo';
   data: any;
 }
 
@@ -113,7 +113,12 @@ export function startBuildProcess(
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
-        if (event.type === 'exit') {
+        if (event.type === 'containerInfo') {
+          observer.next({
+            type: 'exposed ports',
+            data: { type: 'ports', info: event.data.NetworkSettings.Ports }
+          });
+        } else if (event.type === 'exit') {
           if (Number(event.data) !== 0) {
             const msg = [
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
@@ -162,21 +167,6 @@ function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
       observer.next({ type: 'exit', data: code.toString() });
       observer.complete();
     });
-  });
-}
-
-function getContainerExposedPort(name: string, port: number): Observable<ProcessOutput> {
-  return new Observable(observer => {
-    const process = nodePty.spawn('docker', [
-      'port',
-      name,
-      port
-    ]);
-
-    process.on('data', data => {
-      return observer.next({ type: 'exposed port', data: port + ':' + data.split(':')[1] });
-    });
-    process.on('exit', () => observer.complete());
   });
 }
 
