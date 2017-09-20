@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { NgUploaderModule } from 'ngx-uploader';
+import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
 import { TimeServiceProvider } from './services/time.service';
@@ -137,7 +138,8 @@ import { AppProgressChartComponent } from './components/app-progress-chart';
     ]),
     HttpModule,
     FormsModule,
-    NgUploaderModule
+    NgUploaderModule,
+    NgSlimScrollModule
   ],
   providers: [
     ConfigServiceProvider,
