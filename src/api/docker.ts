@@ -7,6 +7,7 @@ import * as dockerode from 'dockerode';
 import { Writable } from 'stream';
 import { CommandType } from './config';
 import { yellow, green, red } from 'chalk';
+import { ProcessOutput } from './process';
 
 export const docker = new dockerode();
 
@@ -14,7 +15,7 @@ export function createContainer(
   name: string,
   image: string,
   envs?: string[]
-): Observable<dockerode.Container> {
+): Observable<ProcessOutput> {
   return new Observable(observer => {
     docker.createContainer({
       Image: image,
@@ -25,9 +26,19 @@ export function createContainer(
       Cmd: ['/bin/bash'],
       Env: envs || [],
       Binds: ['/var/run/docker.sock:/var/run/docker.sock'],
-      Privileged: true
+      Privileged: true,
+      ExposedPorts: {
+        '22/tcp': {},
+        '5900/tcp': {}
+      },
+      PortBindings: {
+        '22/tcp': [{ HostPort: '' }],
+        '5900/tcp': [{ HostPort: '' }]
+      }
     } as any)
     .then(container => container.start())
+    .then(container => container.inspect())
+    .then(info => observer.next({ type: 'containerInfo', data: info }))
     .then(() => observer.complete())
     .catch(err => observer.error(err));
   });
