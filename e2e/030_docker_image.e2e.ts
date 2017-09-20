@@ -21,11 +21,12 @@ describe('Docker Image', () => {
       .then(() => browser.waitForAngularEnabled(true));
   });
 
-  it('should build initial docker image with name `abstruse`', () => {
+  xit('should build initial docker image with name `abstruse`', () => {
     return browser.get('/images')
       .then(() => browser.waitForAngularEnabled(false))
       .then(() => isLoaded())
       .then(() => delay(5000))
+      .then(() => browser.wait(() => element(by.css('[name="build-image-btn"]')).isPresent()))
       .then(() => element(by.css('[name="build-image-btn"]')).click())
       .then(() => browser.wait(() => element(by.css('[name="build-done"]')).isPresent()))
       .then(() => browser.waitForAngularEnabled(true));
