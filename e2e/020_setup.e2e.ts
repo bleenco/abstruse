@@ -76,9 +76,7 @@ describe('User Registration', () => {
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.form-input[name="password2"]')).sendKeys('test123'))
       .then(() => element(by.css('.button[name="btn-register"]')).click())
-      .then(() => isLoaded())
-      .then(() => browser.getCurrentUrl())
-      .then((url): any => {
+      .then(() => {
         return Promise.resolve()
           .then((): any => browser.wait(() => element(by.css('[name="loginPage"]')).isPresent()))
           .then((): any => element(by.css('[name="loginPage"]')).click())

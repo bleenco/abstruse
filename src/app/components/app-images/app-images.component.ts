@@ -114,18 +114,31 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         '    && export NVM_DIR="$HOME/.nvm" \\',
         '    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"',
         '',
+        '# example; install sqlite3',
+        'RUN sudo apt-get install sqlite3 -y',
+        '',
+        '# example; install docker',
+        'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.06.2-ce.tgz \\',
+        '    && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \\',
+        '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz',
+        '',
         '# commands below should be there for builds to work properly',
         '',
         'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
         'CMD ["/entry.sh"]',
         '',
-        'EXPOSE 5900'
+        'EXPOSE 22 5900'
       ].join('\n'),
       initsh: [
         '# here you define scripts that should be loaded or static env variables',
         '# example for `nvm` or Node Version Manager',
         'if [ -d /home/abstruse/.nvm ]; then',
         '  source /home/abstruse/.nvm/nvm.sh',
+        'fi',
+        '',
+        '# example for giving docker access to abstruse user',
+        'if [ -f /var/run/docker.sock ]; then',
+        '  sudo chown -R 1000:100 /var/run/docker.sock',
         'fi'
       ].join('\n')
     };

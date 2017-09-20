@@ -13,7 +13,7 @@
       <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
         Repositories
       </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active">
+      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
         Images
       </a>
     </div>
