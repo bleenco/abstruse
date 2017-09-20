@@ -48,12 +48,6 @@
                   <img src="images/icons/password.svg">
                   Administrator Account
                 </h2>
-                <div class="message blue">
-                  <p>
-                    <img src="images/icons/info.svg">
-                    All fields are mandatory.
-                  </p>
-                </div>
                 <form class="password-form" #userForm="ngForm" (ngSubmit)="createUser()">
                   <div class="columns is-multiline">
                     <div class="column is-6 is-offset-3">
@@ -85,18 +79,9 @@
                 </form>
               </div>
 
-              <div *ngIf="step === 'docker'">
-                <div class="paragraph">
-                  <img src="images/icons/flickr.svg" class="m-loader">
-                  Setting up docker image, please wait ...
-                </div>
-                <hr/>
-                <app-terminal [data]="terminalInput" [options]="terminalOptions"></app-terminal>
-              </div>
               <div *ngIf="step === 'done'">
                 <div class="message green">
                   <p>
-                    <img src="images/icons/info.svg">
                     Abstruse successfully configured.
                   </p>
                 </div>

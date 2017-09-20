@@ -66,7 +66,7 @@ describe('User Registration', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/setup'));
   });
 
-  it('should successfully register user and build docker image', () => {
+  it('should successfully register user', () => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -79,15 +79,11 @@ describe('User Registration', () => {
       .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
       .then((url): any => {
-        if (url === 'http://localhost:6500/setup') {
-          return Promise.resolve()
-            .then((): any => browser.wait(() => element(by.css('[name="loginPage"]')).isPresent()))
-            .then((): any => element(by.css('[name="loginPage"]')).click())
-            .then((): any => browser.getCurrentUrl())
-            .then(url => expect(url).to.equal('http://localhost:6500/login'));
-        } else {
-          return Promise.resolve();
-        }
+        return Promise.resolve()
+          .then((): any => browser.wait(() => element(by.css('[name="loginPage"]')).isPresent()))
+          .then((): any => element(by.css('[name="loginPage"]')).click())
+          .then((): any => browser.getCurrentUrl())
+          .then(url => expect(url).to.equal('http://localhost:6500/login'));
       });
   });
 

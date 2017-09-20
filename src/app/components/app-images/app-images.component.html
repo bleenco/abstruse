@@ -34,7 +34,7 @@
               <h2>init.sh</h2>
               <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
               <div class="images-buttons-container">
-                <button type="button" class="button w300 blue" (click)="buildImage()">Build Image</button>
+                <button type="button" class="button w300 blue" (click)="buildImage()" name="build-image-btn">Build Image</button>
               </div>
             </div>
           </div>
@@ -45,7 +45,7 @@
           <div class="columns is-multiline">
             <div class="column is-12">
               <div class="notification is-info">
-                <p class="has-text-centered">Image successfully built.</p>
+                <p class="has-text-centered" name="build-done">Image successfully built.</p>
               </div>
             </div>
           </div>
