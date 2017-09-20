@@ -2,7 +2,6 @@ import { spawn, exec } from 'child_process';
 import { Subject, Observable, Observer } from 'rxjs';
 import * as fs from './fs';
 import * as utils from './utils';
-const pty = require('node-pty');
 import * as dockerode from 'dockerode';
 import { Writable } from 'stream';
 import { CommandType } from './config';
