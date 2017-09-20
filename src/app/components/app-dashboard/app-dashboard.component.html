@@ -24,12 +24,72 @@
 
         <div class="columns is-multiline" *ngIf="!loading">
 
-          <div class="column is-7">
+          <div class="column is-8">
             <div class="content-box">
               <app-line-chart [data]="runs"></app-line-chart>
             </div>
+
+            <div class="content-box">
+              <div class="content-box-header">
+                <h3>Container(s) resource consumption</h3>
+              </div>
+              <div class="columns" *ngIf="!containers?.length">
+                <div class="column is-12">
+                  <div class="message green">
+                    <p class="p-content has-text-centered">No available data or no jobs running.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="columns is-multiline" *ngIf="containers?.length">
+                <div class="column is-6" *ngFor="let c of containers; let i = index;">
+                  <div class="container-item">
+                    <div class="container-header">
+                      {{ c.name }}
+                    </div>
+                    <div class="container-data border-bottom">
+                      <div class="data-info">
+                        <span>Memory Total</span>
+                        <span>{{ c.memory.total }}</span>
+                      </div>
+                      <div class="data-info">
+                        <span>Memory Usage</span>
+                        <span>{{ c.memory.usage }}</span>
+                      </div>
+                      <div class="data-info">
+                        <span>CPU Cores</span>
+                        <span>{{ c.cpu.cores }}</span>
+                      </div>
+                      <div class="data-info">
+                        <span>CPU Usage</span>
+                        <span>{{ c.cpu.usage }}</span>
+                      </div>
+                    </div>
+                    <div class="container-data">
+                      <div class="info-data-container">
+                        <span class="label-txt">CPU</span>
+                        <div class="data-progress-container green">
+                          <span class="data-progress-bar" [style.width]="c.cpu.usage"></span>
+                        </div>
+                        <span class="data-txt">
+                          {{ c.cpu.usage }}
+                        </span>
+                      </div>
+                      <div class="info-data-container">
+                        <span class="label-txt">Mem</span>
+                        <div class="data-progress-container purple">
+                          <span class="data-progress-bar" [style.width]="c.memory.percent"></span>
+                        </div>
+                        <span class="data-txt">
+                          {{ c.memory.percent }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="column is-5">
+          <div class="column is-4">
             <div class="content-box">
               <div class="content-box-header">
                 <h2>Memory</h2>

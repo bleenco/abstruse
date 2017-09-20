@@ -52,15 +52,9 @@ export class SocketServer {
           return this.createRxSocket(data.conn);
         })
         .subscribe(conn => {
-          this.clients.push({
-            connection: conn,
-            sub: null,
-            session: this.connectingClient,
-            subs: []
-          });
+          this.clients.push({ connection: conn, sub: null, session: this.connectingClient });
 
           const clientIndex = this.clients.length - 1;
-          let statsSubIndex = null;
 
           // send server time for sync
           conn.next({ type: 'time', data: new Date().getTime() });
@@ -158,15 +152,13 @@ export class SocketServer {
               break;
 
               case 'subscribeToStats':
-                this.clients[clientIndex].subs.push({ id: 'stats', sub: null });
-                statsSubIndex = this.clients[clientIndex].subs.length - 1;
-                this.clients[clientIndex].subs[statsSubIndex] =
-                  Observable.merge(...[memory(), cpu()])
-                    .subscribe(event => conn.next(event));
+                this.clients[clientIndex].sub = Observable.merge(...[
+                  memory(), cpu(), docker.getContainersStats()
+                ]).subscribe(event => conn.next(event));
               break;
               case 'unsubscribeFromStats':
-                if (!this.clients[clientIndex].subs[statsSubIndex]) {
-                  this.clients[clientIndex].subs[statsSubIndex].unsubscribe();
+                if (this.clients[clientIndex].sub) {
+                  this.clients[clientIndex].sub.unsubscribe();
                 }
               break;
             }

@@ -17,6 +17,7 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
   runs: { success: {}, failed: {} };
   cpuPercent: number;
   cpuCores: number[];
+  containers: any[];
 
   constructor(private statsService: StatsService) {
     this.loading = true;
@@ -28,6 +29,7 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
     this.runs = { success: {}, failed: {} };
     this.cpuPercent = 0;
     this.cpuCores = [];
+    this.containers = [];
   }
 
   ngOnInit() {
@@ -49,6 +51,8 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
       } else if (e.type === 'cpu') {
         this.cpuPercent = e.data.load;
         this.cpuCores = e.data.cores.map(core => core.total);
+      } else if (e.type === 'containersStats') {
+        this.containers = e.data;
       }
     });
 
