@@ -68,8 +68,64 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
     this.initEditorOptions = Object.assign({}, this.editorOptions, { language: 'plaintext' });
 
+    this.au = new ansiUp.default();
+    this.building = false;
+    this.tab = 'images';
+
+    this.resetForm();
+  }
+
+  ngOnInit() {
+    this.loading = false;
+
+    this.socketService.outputEvents
+      .filter(event => event.type === 'imageBuildProgress')
+      .subscribe(event => {
+        let output;
+        try {
+          output = JSON.parse(event.data.output.replace('\r\n', ''));
+        } catch (e) {
+          output = null;
+        }
+
+        if (output) {
+          this.building = true;
+        }
+
+        if (output && output.id && output.progressDetail) {
+          const buildIndex = this.findImageBuild(event.data.name);
+          const layerIndex = this.findImageLayer(buildIndex, output.id);
+
+          this.zone.run(() => {
+            this.imageBuilds[buildIndex].layers[layerIndex] = output;
+            const length = this.imageBuilds[buildIndex].layers.length;
+            const done = this.imageBuilds[buildIndex].layers.filter(l => {
+              return l.status === 'Download complete' || l.status === 'Pull complete';
+            }).length;
+
+            this.imageBuildsText = done + '/' + length;
+          });
+        } else if (output && output.stream) {
+          if (output.stream.startsWith('Successfully built') || output.stream.startsWith('Successfully tagged')) {
+            this.building = false;
+            this.fetchImages();
+          } else {
+            this.imageBuildLog += this.au.ansi_to_html(output.stream);
+            this.scrollToBottom();
+          }
+        } else if (output && output.errorDetail) {
+          this.imageBuildLog += `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`;
+          this.scrollToBottom();
+        }
+      });
+
+    this.socketService.emit({ type: 'subscribeToImageBuilder' });
+    this.fetchImages();
+  }
+
+  resetForm(): void {
     this.form = {
-      name: 'abstruse',
+      name: 'nameless_image',
       dockerfile: [
         'FROM ubuntu:17.04',
         '',
@@ -146,58 +202,13 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         'fi'
       ].join('\n')
     };
-
-    this.au = new ansiUp.default();
-    this.building = false;
-    this.tab = 'images';
   }
 
-  ngOnInit() {
-    this.loading = false;
-
-    this.socketService.outputEvents
-      .filter(event => event.type === 'imageBuildProgress')
-      .subscribe(event => {
-        let output;
-        try {
-          output = JSON.parse(event.data.output.replace('\r\n', ''));
-        } catch (e) {
-          output = null;
-        }
-
-        if (output) {
-          this.building = true;
-        }
-
-        if (output && output.id && output.progressDetail) {
-          const buildIndex = this.findImageBuild(event.data.name);
-          const layerIndex = this.findImageLayer(buildIndex, output.id);
-
-          this.zone.run(() => {
-            this.imageBuilds[buildIndex].layers[layerIndex] = output;
-            const length = this.imageBuilds[buildIndex].layers.length;
-            const done = this.imageBuilds[buildIndex].layers.filter(l => {
-              return l.status === 'Download complete' || l.status === 'Pull complete';
-            }).length;
-
-            this.imageBuildsText = done + '/' + length;
-          });
-        } else if (output && output.stream) {
-          if (output.stream.startsWith('Successfully built') || output.stream.startsWith('Successfully tagged')) {
-            this.building = false;
-            this.success = true;
-          } else {
-            this.imageBuildLog += this.au.ansi_to_html(output.stream);
-            this.scrollToBottom();
-          }
-        } else if (output && output.errorDetail) {
-          this.imageBuildLog += `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`;
-          this.scrollToBottom();
-        }
-      });
-
-    this.socketService.emit({ type: 'subscribeToImageBuilder' });
-    this.fetchImages();
+  editImage(index: number): void {
+    this.form.name = this.images[index].name;
+    this.form.dockerfile = this.images[index].dockerfile;
+    this.form.initsh = this.images[index].initsh;
+    this.tab = 'build';
   }
 
   fetchImages(): void {
@@ -205,6 +216,8 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.api.imagesList().subscribe(data => {
       this.images = data;
       this.loading = false;
+      this.tab = 'images';
+      this.resetForm();
     });
   }
 

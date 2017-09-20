@@ -88,11 +88,30 @@ export function getImages(): Promise<any> {
               version: image.RepoTags[0].split(':')[1],
               created: format(new Date(image.Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
               createdAgo: distanceInWordsToNow(new Date(image.Created * 1000)),
-              size: getHumanSize(image.Size)
+              size: getHumanSize(image.Size),
+              dockerfile: null,
+              initsh: null
             };
           });
 
-          resolve(imgs);
+          Promise.all(imgs.map(img => {
+            const dockerfile = getFilePath(`images/${img.name}/Dockerfile`);
+            const initsh = getFilePath(`images/${img.name}/init.sh`);
+
+            return fs.readFile(dockerfile)
+              .then(dockerfileContents => {
+                return fs.readFile(initsh).then(initshContents => {
+                  img.dockerfile = dockerfileContents.toString();
+                  img.initsh = initshContents.toString();
+
+                  return img;
+                });
+              });
+          }))
+          .then(imgs => {
+            resolve(imgs);
+          })
+          .catch(err => reject(err));
         });
     });
   });

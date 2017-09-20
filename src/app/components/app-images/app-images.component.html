@@ -11,7 +11,7 @@
     <div class="nav-right">
       <div class="group-buttons">
         <button class="group-button" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">Images</button>
-        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'">Create New Image</button>
+        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">Build Image</button>
       </div>
     </div>
   </div>
@@ -33,7 +33,7 @@
             <div class="image-builder-box-header">
               <h2>Images List</h2>
             </div>
-            <div class="image-item" *ngFor="let i of images; let i = index;">
+            <div class="image-item" *ngFor="let i of images; let index = index;">
               <div class="columns">
                 <div class="column is-2">
                   {{ i.name }}
@@ -51,7 +51,7 @@
                   Size {{ i.size }}
                 </div>
                 <div class="column is-2">
-                  <button type="button" class="button">Edit</button>
+                  <button type="button" class="button" (click)="editImage(index)">Edit</button>
                 </div>
               </div>
             </div>
@@ -59,8 +59,8 @@
         </div>
 
         <div *ngIf="tab === 'build'">
-          <div class="content-box image-builder-box" *ngIf="!building && !success">
-            <h1>Build New Image</h1>
+          <div class="content-box image-builder-box" *ngIf="!building">
+            <h1>Build Image</h1>
             <div class="columns is-multiline">
               <div class="column is-12">
                 <h2>Image name</h2>
@@ -70,18 +70,7 @@
                 <h2>init.sh</h2>
                 <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
                 <div class="images-buttons-container">
-                  <button type="button" class="button w300 blue" (click)="buildImage()" name="build-image-btn">Build Image</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="content-box image-builder-box" *ngIf="!building && success">
-            <h1>Image Build Done</h1>
-            <div class="columns is-multiline">
-              <div class="column is-12">
-                <div class="notification is-info">
-                  <p class="has-text-centered" name="build-done">Image successfully built.</p>
+                  <button type="button" class="button w300" (click)="buildImage()" name="build-image-btn">Build Image</button>
                 </div>
               </div>
             </div>
