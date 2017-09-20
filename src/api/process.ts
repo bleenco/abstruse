@@ -131,17 +131,21 @@ export function startBuildProcess(
           observer.next(event);
         }
       }, err => {
-        sub.unsubscribe();
         observer.error(err);
         docker.killContainer(name)
-          .then(() => observer.complete())
+          .then(() => {
+            observer.complete();
+            sub.unsubscribe();
+          })
           .catch(err => console.error(err));
       }, () => {
-        sub.unsubscribe();
         const msg = '[success]: build returned exit code 0';
         observer.next({ type: 'data', data: green(msg) });
         docker.killContainer(name)
-          .then(() => observer.complete())
+          .then(() => {
+            observer.complete();
+            sub.unsubscribe();
+          })
           .catch(err => console.error(err));
       });
   });

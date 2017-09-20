@@ -154,7 +154,9 @@ export function killContainer(id: string): Promise<void> {
       container.inspect()
         .then(containerInfo => {
           if (containerInfo.State.Running) {
-            return container.kill();
+            return container.kill()
+              .then(() => container.inspect())
+              .then(info => info.State.Status);
           } else {
             return Promise.resolve(containerInfo.State.Status);
           }
