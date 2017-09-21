@@ -235,16 +235,12 @@ export function getContainersStats(): Observable<any> {
         return docker.listContainers().then(containers => {
           return Promise.all(containers.map(container => {
             return docker.getContainer(container.Id).stats().then((stream: Readable) => {
+              let json = '';
               return new Promise(resolve => {
                 stream.on('data', buf => {
-                  let data = null;
+                  let rawJson = json + buf.toString();
                   try {
-                    data = JSON.parse(buf.toString());
-                  } catch (e) {
-                    resolve(null);
-                  }
-
-                  if (data && data.precpu_stats.system_cpu_usage) {
+                    let data = JSON.parse(rawJson);
                     const stats = {
                       id: container.Id,
                       name: container.Names[0].substr(1) || '',
@@ -255,6 +251,8 @@ export function getContainersStats(): Observable<any> {
 
                     stream.destroy();
                     resolve(stats);
+                  } catch (e) {
+                    json = rawJson;
                   }
                 });
               });
