@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Config, parseConfig, CacheType, CommandType } from '../../src/api/config';
+import { Config, parseConfig, CommandType } from '../../src/api/config';
 
 let config: Config;
 
@@ -43,13 +43,6 @@ describe('Common Configuration Options', () => {
       delete data.cache;
       const parsed = parseConfig(data);
       expect(parsed.cache).to.equal(null);
-    });
-
-    it(`should be enum specified in CacheType if only string is specified`, () => {
-      Object.keys(CacheType).forEach(cacheType => {
-        data.cache = cacheType;
-        expect(() => parseConfig(data)).to.not.throw(Error);
-      });
     });
   });
 
