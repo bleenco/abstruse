@@ -113,8 +113,8 @@
                 <img src="images/icons/ssh.svg">
               </span>
               <span>SSH and VNC Daemon is enabled in this container.</span>
-              <code class="ssh-code code-copy" [attr.data-clipboard-text]="sshd">
-                SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse
+              <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
+                SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
                 <img src="images/icons/copy.svg">
               </code>
               <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">

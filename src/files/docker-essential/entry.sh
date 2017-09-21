@@ -13,6 +13,7 @@ export DISPLAY=:99
   sudo /etc/init.d/xvfb start && sleep 3
   sudo /etc/init.d/fluxbox start
   sudo /etc/init.d/x11vnc start
+  sudo /etc/init.d/ssh start
 } &> /dev/null
 
 /bin/bash
