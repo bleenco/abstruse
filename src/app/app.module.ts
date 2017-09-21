@@ -39,6 +39,8 @@ import { AppEditorComponent } from './components/app-editor';
 import { AppDashboardComponent } from './components/app-dashboard';
 import { AppLineChartComponent } from './components/app-line-chart';
 import { AppProgressChartComponent } from './components/app-progress-chart';
+import { AppSelectboxComponent } from './components/app-selectbox';
+import { AppToggleComponent } from './components/app-toggle';
 
 
 @NgModule({
@@ -63,6 +65,8 @@ import { AppProgressChartComponent } from './components/app-progress-chart';
     AppDashboardComponent,
     AppLineChartComponent,
     AppProgressChartComponent,
+    AppSelectboxComponent,
+    AppToggleComponent,
     EqualValidator,
     SafeHtmlPipe,
     ToTimePipe

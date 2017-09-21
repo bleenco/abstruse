@@ -1,0 +1,10 @@
+<div class="selectbox-container" (click)="opened = !opened">
+  <i class="ionicon ion-chevron-down chevron-icon" [class.ion-chevron-up]="opened"></i>
+  <span class="selectbox-value">{{ data[index]?.value }}</span>
+  <div class="selectbox-options" *ngIf="opened">
+    <div class="selectbox-option" *ngFor="let option of data; let i = index" (click)="value = option.key" [class.is-active]="data[index]?.key === option.key">
+      {{ option.value }}
+      <i class="ionicon ion-checkmark-round check-icon" *ngIf="data[index]?.value === option.value"></i>
+    </div>
+  </div>
+</div>

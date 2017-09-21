@@ -77,6 +77,13 @@
   border-radius: 4px
   box-shadow: none !important
 
+  &.is-small
+    height: 26px
+    padding: 3px 15px
+    font-size: 12px
+    text-transform: none
+    font-weight: $weight-normal
+
   &.centered-anonymous
     display: flex
     margin: 0 auto
@@ -88,8 +95,9 @@
       height: 25px
 
   &:focus, &:active
-    background-image: linear-gradient(-1deg, #E0E4E8 0%, #F2F7FA 97%);
+    background-image: linear-gradient(0deg, #EAEEF3 0%, #FFFFFF 100%)
     border: 1px solid $border
+    color: $color-secondary
 
   &.floated
     float: left
