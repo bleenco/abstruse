@@ -3,15 +3,6 @@ import { readdir, readFile } from 'fs';
 import * as yaml from 'yamljs';
 import * as temp from 'temp';
 
-export enum CacheType {
-  bundler,
-  yarn,
-  pip,
-  ccache,
-  packages,
-  cargo
-}
-
 export enum CommandType {
   git = 'git',
   before_install = 'before_install',
