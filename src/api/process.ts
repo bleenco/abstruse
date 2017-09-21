@@ -123,7 +123,7 @@ export function startBuildProcess(
               `last executed command exited with code ${event.data}`
             ].join(' ');
             const tmsg = `[error]: executed command returned exit code ${event.data}`;
-            observer.next({ type: 'data', data: red(tmsg) });
+            observer.next({ type: 'exit', data: red(tmsg) });
             sub.unsubscribe();
             observer.error(msg);
             docker.killContainer(name)
@@ -143,7 +143,7 @@ export function startBuildProcess(
           .catch(err => console.error(err));
       }, () => {
         const msg = '[success]: build returned exit code 0';
-        observer.next({ type: 'data', data: green(msg) });
+        observer.next({ type: 'exit', data: green(msg) });
         docker.killContainer(name)
           .then(() => {
             observer.complete();

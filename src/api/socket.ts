@@ -4,14 +4,14 @@ import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import * as docker from './docker';
 import {
+  processes,
   startBuild,
   jobEvents,
   restartJob,
   stopJob,
   restartBuild,
   stopBuild,
-  terminalEvents,
-  getJobProcesses
+  terminalEvents
 } from './process-manager';
 import { imageBuilder, buildDockerImage } from './image-builder';
 import { getConfig } from './utils';
@@ -122,14 +122,13 @@ export class SocketServer {
               break;
 
               case 'subscribeToJobOutput':
-                getJobProcesses()
-                  .then(procs => {
-                    const proc = procs.find(job => job.job_id === parseInt(event.data.jobId, 10));
-                    if (proc) {
-                      conn.next({ type: 'data', data: proc.log.join('\n') });
-                      conn.next({ type: 'exposed ports', data: proc.exposed_ports });
-                    }
-                  });
+                const jobId = parseInt(event.data.jobId, 10);
+                const idx = processes.findIndex(proc => proc.job_id === jobId);
+                if (idx !== -1) {
+                  const proc = processes[idx];
+                  conn.next({ type: 'data', data: proc.log.join('\n') });
+                  conn.next({ type: 'exposed ports', data: proc.exposed_ports });
+                }
 
                 const index = this.clients.findIndex(client => client.connection === conn);
                 if (this.clients[index].sub) {

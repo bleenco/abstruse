@@ -168,14 +168,14 @@ export function killContainer(id: string): Promise<void> {
               .then(() => container.inspect())
               .then(info => info.State.Status);
           } else {
-            return Promise.resolve(containerInfo.State.Status);
-          }
-        })
-        .then(status => {
-          if (status === 'exited') {
-            container.remove();
-          } else {
-            return Promise.resolve();
+            return Promise.resolve(containerInfo.State.Status)
+              .then(status => {
+                if (status === 'exited') {
+                  return container.remove();
+                } else {
+                  return Promise.resolve();
+                }
+              });
           }
         })
         .then(() => resolve())
