@@ -14,8 +14,7 @@ export const docker = new dockerode();
 export function createContainer(
   name: string,
   image: string,
-  envs: string[],
-  memoryLimitPerJob: number
+  envs: string[]
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     docker.createContainer({
@@ -34,9 +33,6 @@ export function createContainer(
       PortBindings: {
         '22/tcp': [{ HostPort: '' }],
         '5900/tcp': [{ HostPort: '' }]
-      },
-      HostConfig: {
-        Memory: memoryLimitPerJob * 1024 * 1024
       }
     } as any)
     .then(container => container.start())

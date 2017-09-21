@@ -26,7 +26,6 @@ const defaultConfig = {
   concurrency: 10,
   idleTimeout: 600,
   jobTimeout: 3600,
-  memoryLimitPerJob: 2048,
   ssl: false,
   sslcert: null,
   sslkey: null,

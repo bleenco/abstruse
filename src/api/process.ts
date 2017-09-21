@@ -30,8 +30,7 @@ export function startBuildProcess(
   proc: JobProcess,
   variables: string[],
   jobTimeout: number,
-  idleTimeout: number,
-  memoryLimitPerJob: number
+  idleTimeout: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     const image = proc.image_name;
@@ -100,7 +99,7 @@ export function startBuildProcess(
       ]);
     }
 
-    const sub = docker.createContainer(name, image, envs, memoryLimitPerJob)
+    const sub = docker.createContainer(name, image, envs)
       .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(restoreCache)
       .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))

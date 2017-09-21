@@ -208,9 +208,8 @@ export function startJob(proc: JobProcess): Promise<void> {
 
       const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
       const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
-      const memoryLimitPerJob = config.memoryLimitPerJob || 1024;
 
-      startBuildProcess(proc, envVariables, jobTimeout, idleTimeout, memoryLimitPerJob)
+      startBuildProcess(proc, envVariables, jobTimeout, idleTimeout)
         .subscribe(event => {
           const msg: JobProcessEvent = {
             build_id: proc.build_id,

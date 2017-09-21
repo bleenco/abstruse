@@ -76,12 +76,12 @@ export class AppJobComponent implements OnInit, OnDestroy {
         } else if (event.type === 'exposed ports') {
           const portData = event.data.info;
 
-          if (typeof portData['22/tcp'] !== 'undefined') {
+          if (portData['22/tcp']) {
             const port = portData['22/tcp'][0].HostPort;
             this.sshd = `${document.location.hostname}:${port}`;
           }
 
-          if (typeof portData['5900/tcp'] !== 'undefined') {
+          if (portData['5900/tcp']) {
             const port = portData['5900/tcp'][0].HostPort;
             this.vnc = `${document.location.hostname}:${port}`;
           }
