@@ -76,19 +76,93 @@
                   <h2>Settings</h2>
 
                   <div class="columns is-multiline">
-                    <div class="column is-4">
+                    <div class="column is-6">
                       <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
+                        <h4>Access Token</h4>
+                        <div class="notification is-info">
+                          <div class="columns">
+                            <div class="column is-1">
+                              <i class="ion ion-ios-information"></i>
+                            </div>
+                            <div class="column is-11">
+                              <p>It is important to set access token so abstruse can:</p>
+                              <ul>
+                                <li>access and clone repository</li>
+                                <li>send build status to repository</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
                         <div class="form-field">
-                          <label class="form-label" *ngIf="!repo?.bitbucket_id">Access Token</label>
-                          <label class="form-label" *ngIf="repo?.bitbucket_id">Access Token (OAuth consumers pair key:secret)</label>
-                          <!-- <select class="form-input form-select" [(ngModel)]="form.access_tokens_id" name="access_tokens_id">
-                            <option *ngFor="let t of tokens" [value]="t.id">{{ t.user.fullname }}`s {{ t.description }}</option>
-                          </select> -->
                           <app-selectbox [data]="accessTokensOptions" [(ngModel)]="form.access_tokens_id" name="access_tokens_id"></app-selectbox>
                         </div>
                         <input type="hidden" name="id" [(ngModel)]="form.id">
                         <div class="form-field">
                           <button type="submit" class="button is-small float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Token</button>
+                        </div>
+                      </form>
+
+                      <form class="form">
+                        <h4>Check Configuration</h4>
+                        <p>Here you can make test if settings provided works in the wild.</p>
+                        <p>Tests includes access to repository and checking presence of .abstruse.yml config file inside repository.</p>
+                        <div class="message green" *ngIf="checkConfigResult && (checkConfigResult.read || checkConfigResult.config)">
+                          <p *ngIf="checkConfigResult.read">
+                            <i class="ion ion-checkmark-round"></i>
+                            Has read permissions on repository (clone)
+                          </p>
+                          <p *ngIf="checkConfigResult.config">
+                            <i class="ion ion-checkmark-round"></i>
+                            Repository includes .abstruse.yml configuration
+                          </p>
+                        </div>
+                        <div class="message orange" *ngIf="checkConfigResult && (!checkConfigResult.read || !checkConfigResult.config)">
+                          <p *ngIf="!checkConfigResult.read">
+                            <i class="ion ion-close-round"></i>
+                            Has read permissions on repository (clone)
+                          </p>
+                          <p *ngIf="!checkConfigResult.config">
+                            <i class="ion ion-close-round"></i>
+                            Repository does includes .abstruse.yml configuration
+                          </p>
+                        </div>
+                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
+                      </form>
+                    </div>
+                    <div class="column is-6">
+                      <form class="form" (ngSubmit)="addEnvironmentVariable()" #addForm="ngForm">
+                        <h4>Environment Variables</h4>
+                        <div class="notification is-green">
+                          <div class="columns">
+                            <div class="column is-1">
+                              <i class="ion ion-ios-information"></i>
+                            </div>
+                            <div class="column is-11">
+                              <p>Environment variables are the way to customize the build process. They can be accessed from any stage of the build.</p>
+                              <p>If the variable contain, for example SSH token then you need to encrypt it with Abstruse CLI tool.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-field">
+                          <label class="form-label">Name</label>
+                          <input class="form-input" type="text" placeholder="VARIABLE_NAME" name="name" required [(ngModel)]="environmentVariableForm.name">
+                          <p class="helper">
+                            Name of the variable, please use uppercase letters. Example: DEPLOY_KEY
+                          </p>
+                        </div>
+                        <div class="form-field">
+                          <label class="form-label">Value</label>
+                          <input class="form-input" type="text" placeholder="Value" name="value" required [(ngModel)]="environmentVariableForm.value">
+                          <p class="helper">
+                            Variable value. Make sure you encrypt it if includes sensitive data.
+                          </p>
+                        </div>
+                        <div class="form-field">
+                          <label class="form-label">Encrypted</label>
+                          <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted"></app-selectbox>
+                        </div>
+                        <div class="form-field">
+                          <button type="submit" class="button is-small float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add Variable</button>
                         </div>
                       </form>
                     </div>

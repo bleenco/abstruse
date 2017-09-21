@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs';
 import * as yaml from 'yamljs';
 import * as temp from 'temp';
+import { getHttpJsonResponse } from './utils';
 
 export enum CommandType {
   git = 'git',
@@ -128,6 +129,51 @@ export function parseConfig(data: any): Config {
   }
 
   return main;
+}
+
+export function checkRepositoryAccess(repository: Repository): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    let cloneUrl = repository.clone_url;
+    let branch = repository.branch;
+    let cloneDir = null;
+
+    if (repository.access_token) {
+      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+    }
+
+    createGitTmpDir()
+      .then(dir => cloneDir = dir)
+      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
+      .then(() => resolve(true))
+      .catch(err => resolve(false));
+  });
+}
+
+export function checkConfigPresence(repository: Repository): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    let cloneUrl = repository.clone_url;
+    let branch = repository.branch;
+    let cloneDir = null;
+
+    if (repository.access_token) {
+      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+    }
+
+    createGitTmpDir()
+      .then(dir => cloneDir = dir)
+      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
+      .then(() => resolve(true))
+      .then(() => readGitDir(cloneDir))
+      .then(files => repository.file_tree = files)
+      .then(() => {
+        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      })
+      .catch(err => resolve(false));
+  });
 }
 
 function parseJob(data: any): Config {

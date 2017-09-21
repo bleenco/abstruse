@@ -43,6 +43,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   userId: string | null;
   environmentVariableForm: VariableForm;
   accessTokensOptions: { key: string, value: string }[];
+  yesNoOptions: { key: number, value: string }[];
+  checkingConfig: boolean;
+  checkConfigResult: { read: boolean; config: boolean; };
 
   constructor(
     private route: ActivatedRoute,
@@ -57,10 +60,11 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.limit = 5;
     this.offset = 0;
     this.environmentVariableForm = {
-      name: null, value: null, repositories_id: null, encrypted: null
+      name: null, value: null, repositories_id: null, encrypted: 0
     };
 
     this.accessTokensOptions = [];
+    this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
   }
 
   ngOnInit() {
@@ -91,8 +95,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'build added' && event.repository_id && event.repository_id === this.id)
-        {
+        if (event.data === 'build added' && event.repository_id && event.repository_id === this.id) {
           this.fetchLastBuild();
         }
 
@@ -229,6 +232,15 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.router.navigate(['build', buildId]);
   }
 
+  checkRepositoryConfig(): void {
+    this.checkingConfig = true;
+    this.checkConfigResult = null;
+    this.api.checkRepositoryConfiguration(Number(this.id)).subscribe(ev => {
+      this.checkConfigResult = ev;
+      this.checkingConfig = false;
+    });
+  }
+
   saveRepoSettings(e: MouseEvent): void {
     this.saving = true;
 
@@ -246,8 +258,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.api.addNewEnvironmentVariable(this.environmentVariableForm)
       .subscribe(() => this.fetch());
 
-    this.environmentVariableForm
-      = { name: null, value: null, repositories_id: null, encrypted: null };
+    this.environmentVariableForm = {
+      name: null, value: null, repositories_id: null, encrypted: 0
+    };
   }
 
   removeVariable(id: number): void {
