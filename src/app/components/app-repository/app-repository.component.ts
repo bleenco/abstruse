@@ -42,6 +42,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   userData: any;
   userId: string | null;
   environmentVariableForm: VariableForm;
+  accessTokensOptions: { key: string, value: string }[];
 
   constructor(
     private route: ActivatedRoute,
@@ -55,15 +56,18 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.fetching = false;
     this.limit = 5;
     this.offset = 0;
-    this.environmentVariableForm
-      = { name: null, value: null, repositories_id: null, encrypted: null };
+    this.environmentVariableForm = {
+      name: null, value: null, repositories_id: null, encrypted: null
+    };
+
+    this.accessTokensOptions = [];
   }
 
   ngOnInit() {
     this.userData = this.authService.getData();
     this.userId = this.userData && this.userData.id || null;
 
-    this.tab = 'builds';
+    this.tab = 'settings';
     this.url = this.config.url;
 
     this.route.params.subscribe(params => {
@@ -187,7 +191,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   fetchTokens(): void {
     this.api.getAllTokens().subscribe(tokens => {
-      this.tokens = tokens;
+      this.accessTokensOptions = tokens.map(token => {
+        return { key: token.id, value: token.user.fullname + '`s ' + token.description };
+      });
     });
   }
 
