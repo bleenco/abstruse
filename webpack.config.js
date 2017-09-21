@@ -12,6 +12,27 @@ module.exports = function (options, webpackOptions) {
 
   let config = {};
 
+  const stats = {
+    errors: true,
+    errorDetails: true,
+    depth: false,
+    chunkOrigins: false,
+    chunkModules: false,
+    chunks: false,
+    children: false,
+    cacheAssets: false,
+    cached: false,
+    assets: false,
+    modules: false,
+    hash: false,
+    reasons: false,
+    source: false,
+    timings: true,
+    version: false,
+    warnings: false,
+    colors: true
+  };
+
   config = webpackMerge({}, config, {
     entry: getEntry(options),
     resolve: { extensions: ['.ts', '.js', '.json'] },
@@ -31,7 +52,8 @@ module.exports = function (options, webpackOptions) {
         { context: './src/app/assets/public', from: '**/*' },
         { context: './node_modules/monaco-editor/min/', from: '**/*', to: 'monaco' }
       ]),
-    ]
+    ],
+    stats: stats
   });
 
   config = webpackMerge({}, config, {
@@ -48,26 +70,7 @@ module.exports = function (options, webpackOptions) {
       open: true,
       hot: false,
       inline: true,
-      stats: {
-        errors: true,
-        errorDetails: true,
-        depth: false,
-        chunkOrigins: false,
-        chunkModules: false,
-        chunks: false,
-        children: false,
-        cacheAssets: false,
-        cached: false,
-        assets: false,
-        modules: false,
-        hash: false,
-        reasons: false,
-        source: false,
-        timings: true,
-        version: false,
-        warnings: false,
-        colors: true
-      },
+      stats: stats,
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000

@@ -9,6 +9,7 @@ import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow, distanceInWordsStrict } from 'date-fns';
+import * as Clipboard from 'clipboard';
 
 @Component({
   selector: 'app-job',
@@ -138,6 +139,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
       this.currentTime = time;
     });
+
+    const clipboard = new Clipboard('.code-copy');
   }
 
   ngOnDestroy() {

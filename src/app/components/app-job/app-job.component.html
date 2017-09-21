@@ -13,7 +13,7 @@
             <div class="build-top-container" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
-                  <div class="column is-7">
+                  <div class="column is-8">
                     <h1 class="bold">
                       <span *ngIf="job?.build?.data?.repository?.full_name"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.repository?.full_name }}</a></span>
                       <span *ngIf="!job?.build?.data?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
@@ -31,21 +31,24 @@
                       <img src="images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
                     </span>
                   </div>
-                  <div class="column is-5 justify-end right-buttons-top" *ngIf="userId && job?.hasPermission">
-                    <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
-                      <div class="centered">
-                        <span class="icon">
-                          <img src="images/icons/restart.svg">
-                        </span>
-                        <span>Restart</span>
-                      </div>
-                    </button>
+
+                  <div class="column is-2" *ngIf="userId && job?.hasPermission">
                     <button class="button is-fullwidth" name="btn-stop" type="button" (click)="stopJob($event)" [class.is-hidden]="jobRun.status !== 'running'" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/stop.svg">
                         </span>
                         <span>Stop</span>
+                      </div>
+                    </button>
+                  </div>
+                  <div class="column is-2" *ngIf="userId && job?.hasPermission">
+                    <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
+                      <div class="centered">
+                        <span class="icon">
+                          <img src="images/icons/restart.svg">
+                        </span>
+                        <span>Restart</span>
                       </div>
                     </button>
                   </div>
@@ -109,10 +112,19 @@
               <span class="icon">
                 <img src="images/icons/ssh.svg">
               </span>
-              <span>SSH Daemon is enabled in this container.</span>
-              <code>ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse</code>
-              <code>VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}</code>
-              <code>password: abstrusePass</code>
+              <span>SSH and VNC Daemon is enabled in this container.</span>
+              <code class="ssh-code code-copy" [attr.data-clipboard-text]="sshd">
+                SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse
+                <img src="images/icons/copy.svg">
+              </code>
+              <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
+                VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
+                <img src="images/icons/copy.svg">
+              </code>
+              <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
+                password: abstrusePass
+                <img src="images/icons/copy.svg">
+              </code>
             </div>
           </div>
           <div class="column is-12">

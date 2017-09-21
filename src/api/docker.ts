@@ -237,9 +237,14 @@ export function getContainersStats(): Observable<any> {
             return docker.getContainer(container.Id).stats().then((stream: Readable) => {
               return new Promise(resolve => {
                 stream.on('data', buf => {
-                  const data = JSON.parse(buf.toString());
+                  let data = null;
+                  try {
+                    data = JSON.parse(buf.toString());
+                  } catch (e) {
+                    resolve(null);
+                  }
 
-                  if (data.precpu_stats.system_cpu_usage) {
+                  if (data && data.precpu_stats.system_cpu_usage) {
                     const stats = {
                       id: container.Id,
                       name: container.Names[0].substr(1) || '',

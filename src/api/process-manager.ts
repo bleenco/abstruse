@@ -44,8 +44,8 @@ export interface JobProcess {
   repo_name?: string;
   branch?: string;
   env?: string[];
-  sshAndVnc?: boolean;
   job?: Observable<any>;
+  exposed_ports?: string;
 }
 
 export interface JobProcessEvent {
@@ -220,6 +220,8 @@ export function startJob(proc: JobProcess): Promise<void> {
           terminalEvents.next(msg);
           if (event.data && event.type === 'data') {
             proc.log.push(event.data);
+          } else if (event.data && event.type === 'exposed ports') {
+            proc.exposed_ports = event.data;
           } else if (event.type === 'container') {
             const ev: JobProcessEvent = {
               type: 'process',
@@ -435,7 +437,7 @@ export function stopJob(jobId: number): Promise<any> {
   });
 }
 
-function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<void> {
+function queueJob(buildId: number, jobId: number): Promise<void> {
   let commands: string[] = null;
   let processes: JobProcess[] = null;
 
@@ -466,7 +468,7 @@ function queueJob(buildId: number, jobId: number, sshAndVnc = false): Promise<vo
         branch: job.build.branch || null,
         env: jobData.env,
         image_name: jobData.image,
-        sshAndVnc: sshAndVnc,
+        exposed_ports: null,
         log: []
       };
 
