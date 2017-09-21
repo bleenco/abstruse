@@ -127,6 +127,7 @@ export class SocketServer {
                     const proc = procs.find(job => job.job_id === parseInt(event.data.jobId, 10));
                     if (proc) {
                       conn.next({ type: 'data', data: proc.log.join('\n') });
+                      conn.next({ type: 'exposed ports', data: proc.exposed_ports });
                     }
                   });
 
