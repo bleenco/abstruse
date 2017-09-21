@@ -14,7 +14,8 @@ export const docker = new dockerode();
 export function createContainer(
   name: string,
   image: string,
-  envs?: string[]
+  envs: string[],
+  memoryLimitPerJob: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     docker.createContainer({
@@ -33,6 +34,9 @@ export function createContainer(
       PortBindings: {
         '22/tcp': [{ HostPort: '' }],
         '5900/tcp': [{ HostPort: '' }]
+      },
+      HostConfig: {
+        Memory: memoryLimitPerJob * 1024 * 1024
       }
     } as any)
     .then(container => container.start())
@@ -241,16 +245,19 @@ export function getContainersStats(): Observable<any> {
                   let rawJson = json + buf.toString();
                   try {
                     let data = JSON.parse(rawJson);
-                    const stats = {
-                      id: container.Id,
-                      name: container.Names[0].substr(1) || '',
-                      cpu: getCpuData(data),
-                      network: getNetworkData(data),
-                      memory: getMemory(data)
-                    };
 
-                    stream.destroy();
-                    resolve(stats);
+                    if (data && data.precpu_stats.system_cpu_usage) {
+                      const stats = {
+                        id: container.Id,
+                        name: container.Names[0].substr(1) || '',
+                        cpu: getCpuData(data),
+                        network: getNetworkData(data),
+                        memory: getMemory(data)
+                      };
+
+                      stream.destroy();
+                      resolve(stats);
+                    }
                   } catch (e) {
                     json = rawJson;
                   }
@@ -271,6 +278,7 @@ function getCpuData(json: any): { usage: string, cores: number } {
   const total = preCpuStats.cpu_usage.total_usage - postCpuStats.cpu_usage.total_usage;
   const curr = preCpuStats.system_cpu_usage - postCpuStats.system_cpu_usage;
   const perc = isNaN(total / (total + curr) * 100) ? 0 : total / (total + curr) * 100;
+
   return {
     usage: perc.toFixed(2) + '%',
     cores: postCpuStats.online_cpus
