@@ -41,6 +41,7 @@ import { getLogs } from './db/log';
 import { imageExists } from './docker';
 import { getImages } from './image-builder';
 import { checkApiRequestAuth } from './security';
+import { checkConfigPresence, checkRepositoryAccess, Repository } from './config';
 import * as multer from 'multer';
 
 const config: any = getConfig();
@@ -292,6 +293,37 @@ export function repositoryRoutes(): express.Router {
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
     }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.get('/check/:id', (req: express.Request, res: express.Response) => {
+    let repository: Repository = null;
+    getRepository(req.params.id).then(repo => {
+      let accessToken = null;
+      if (repo.access_token && repo.access_token[0]) {
+        accessToken = repo.access_token[0].token || null;
+      }
+      repository = {
+        clone_url: repo.clone_url,
+        branch: 'master',
+        access_token: accessToken
+      };
+
+      return checkRepositoryAccess(repository);
+    })
+    .then(hasAccess => {
+      if (!hasAccess) {
+        res.status(200).json({ data: { read: false, config: false } });
+      } else {
+        return checkConfigPresence(repository);
+      }
+    })
+    .then(configPresence => {
+      if (!configPresence) {
+        res.status(200).json({ data: { read: true, config: false } });
+      } else {
+        res.status(200).json({ data: { read: true, config: true } });
+      }
+    });
   });
 
   return router;

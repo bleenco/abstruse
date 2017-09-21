@@ -41,12 +41,12 @@ export class AppSelectboxComponent implements OnChanges {
   }
 
   writeValue(val: string) {
-    if (!val) {
+    if (val === null) {
       return;
     }
 
     this.tmp = val;
-    this.index = this.data.findIndex(d => d.value === val);
+    this.index = this.data.findIndex(d => d.key === val);
   }
 
   registerOnChange(fn: any) {
