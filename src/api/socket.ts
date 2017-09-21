@@ -127,7 +127,7 @@ export class SocketServer {
                 if (idx !== -1) {
                   const proc = processes[idx];
                   conn.next({ type: 'data', data: proc.log.join('\n') });
-                  conn.next({ type: 'exposed ports', data: proc.exposed_ports });
+                  conn.next({ type: 'exposed ports', data: proc.exposed_ports || null });
                 }
 
                 const index = this.clients.findIndex(client => client.connection === conn);
