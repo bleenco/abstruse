@@ -93,7 +93,7 @@
                     </p>
                   </div>
                   <div class="column is-1">
-                    <p class="total-time">
+                    <p class="total-time" *ngIf="!processingBuild">
                       <img src="images/icons/clock.svg">
                       <span *ngIf="status !== 'running'">{{ totalTime | toTime }}</span>
                       <span *ngIf="status === 'running'">{{ currentTime - totalTime | toTime }}</span>

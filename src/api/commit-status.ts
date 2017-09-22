@@ -81,9 +81,8 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
       return Promise.resolve();
     }
   } else {
-
-    const name = buildData.repository && buildData.repository.full_name ||
-      buildData.data.repository.full_name;
+    const name = buildData.repository && (buildData.repository.full_name ||
+      buildData.data.repository.full_name);
     const msg: LogMessageType = {
       message: `[error]: repository: ${name} => access token is not set`,
       type: 'error',

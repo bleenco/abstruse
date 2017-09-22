@@ -16,6 +16,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
   hideMoreButton: boolean;
   subAdded: Subscription;
   sub: Subscription;
+  subUpdate: Subscription;
   builds: any[];
   limit: number;
   offset: number;
@@ -97,9 +98,29 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           this.update();
         }
       });
+
+    this.subUpdate = this.socketService.outputEvents
+      .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
+        || event.data === 'build failed')
+      .subscribe(event => {
+        let index = this.builds.findIndex(i => i.id === event.build_id);
+        if (index !== -1) {
+          if (event.data === 'build restarted') {
+            this.builds[index].start_time = event.additionalData;
+            this.update();
+          } else {
+            this.builds[index].end_time = event.additionalData;
+            this.update();
+          }
+        }
+      });
   }
 
   ngOnDestroy() {
+    if (this.subUpdate) {
+      this.subUpdate.unsubscribe();
+    }
+
     if (this.subAdded) {
       this.subAdded.unsubscribe();
     }
@@ -125,13 +146,16 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       }
 
       if (status !== 'running') {
-        build.maxTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
-      } else {
-        build.maxTime = Math.min(...build.jobs
-          .filter(job => job.status === 'running').map(job => job.start_time));
+        if (build.end_time > build.start_time) {
+          build.maxTime = build.end_time - build.start_time;
+        } else {
+          build.maxTime = 0;
+        }
       }
 
-      build.startTime = Math.min(...build.jobs.map(job => job.start_time));
+      build.startTime = Math.min(...build.jobs
+        .filter(job => job.status === 'running')
+        .map(job => job.start_time));
       build.status = status;
       build.userId = this.userId;
       return build;

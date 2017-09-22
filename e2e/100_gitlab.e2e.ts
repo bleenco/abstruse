@@ -30,6 +30,9 @@ describe('Gitlab repositories', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
+      .then((): any => browser.wait(() => {
+        return element(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
+      }))
       .then(() => delay(2000))
       .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
       .then((): any => browser.wait(() => {
@@ -50,6 +53,9 @@ describe('Gitlab repositories', () => {
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
       }))
       .then((): any => {
         return browser.wait(() => {
@@ -72,6 +78,9 @@ describe('Gitlab repositories', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restart-build')).first().isPresent();
       }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restart-build')).first().isEnabled();
+      }))
       .then(() => delay(2000))
       .then((): any => element.all(by.css('.restart-build')).first().click())
       .then((): any => browser.wait(() => {
@@ -85,6 +94,9 @@ describe('Gitlab repositories', () => {
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.stop-build')).first().isPresent();
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isEnabled();
       }))
       .then((): any => {
         return browser.wait(() => {
