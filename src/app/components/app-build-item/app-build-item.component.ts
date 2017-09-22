@@ -21,6 +21,7 @@ export class AppBuildItemComponent implements OnInit {
   currentTime: number;
   buildCreated: string;
   commitMessage: string;
+  dateTime: string;
 
   constructor(
     private socketService: SocketService,
@@ -40,11 +41,6 @@ export class AppBuildItemComponent implements OnInit {
     this.socketService.outputEvents
       .filter(x => x.type === 'build restarted' || x.type === 'build stopped')
       .subscribe(e => this.processingRequest = false);
-
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
-      this.buildCreated = distanceInWordsToNow(this.build.created_at);
-    });
   }
 
   restartBuild(e: MouseEvent, id: number): void {
@@ -62,6 +58,18 @@ export class AppBuildItemComponent implements OnInit {
   }
 
   setData(): void {
+    const data = this.build.data;
+
+    this.dateTime = data.pull_request && data.pull_request.updated_at ||
+      data.commit && data.commit.author && data.commit.author.date ||
+      data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
+      null;
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.buildCreated = distanceInWordsToNow(this.dateTime);
+    });
+
     if (this.build.data.commit) {
       this.commitMessage = this.build.data.commit.message;
     } else if (this.build.data.commits) {

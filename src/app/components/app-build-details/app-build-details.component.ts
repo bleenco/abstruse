@@ -35,6 +35,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   timerSubscription: any = null;
   currentTime: number;
   commitMessage: string;
+  dateTime: string;
+  dateTimeToNow: string;
 
   constructor(
     private socketService: SocketService,
@@ -108,10 +110,6 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
             this.processingBuild = false;
           });
       });
-    });
-
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
     });
   }
 
@@ -226,6 +224,18 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   }
 
   setData(): void {
+    const data = this.build.data;
+
+    this.dateTime = data.pull_request && data.pull_request.updated_at ||
+      data.commit && data.commit.author && data.commit.author.date ||
+      data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
+      null;
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
+    });
+
     if (this.build.data.commit) {
       this.commitMessage = this.build.data.commit.message;
     } else if (this.build.data.commits) {
@@ -269,6 +279,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         if (evt.status === 200) {
           const body = JSON.parse(evt._body);
           this.nameAuthor = body.name;
+        }
+      });
+
+      this.apiService.getGithubUserData(this.build.data.pull_request.user.login).subscribe((evt: any) => {
+        if (evt.status === 200) {
+          const body = JSON.parse(evt._body);
+          this.nameCommitter = body.name;
         }
       });
     }
