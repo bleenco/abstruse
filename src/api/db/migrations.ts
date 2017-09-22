@@ -35,7 +35,7 @@ export function create(): Promise<null> {
       t.string('full_name');
       t.string('description');
       t.string('api_url');
-      t.enum('repository_provider', ['github', 'gitlab', 'bitbucket', 'gogs']).notNullable();
+      t.enum('repository_provider', ['github', 'gitlab', 'bitbucket', 'gogs']);
       t.boolean('private').notNullable().defaultTo(false);
       t.boolean('fork');
       t.string('user_login');

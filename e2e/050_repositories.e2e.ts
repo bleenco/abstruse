@@ -32,7 +32,7 @@ describe('Repositories', () => {
       });
   });
 
-  it('should redirect to bterm repository, add new environment variable and then delete it', () => {
+  xit('should redirect to bterm repository, add environment variable and then delete it', () => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 1);
