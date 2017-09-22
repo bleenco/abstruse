@@ -347,6 +347,7 @@ export function stopJob(jobId: number): Promise<void> {
 
 export function startBuild(data: any): Promise<any> {
   let config: JobsAndEnv[];
+  let repoId = data.repositories_id;
   let pr = null;
   let sha = null;
   let branch = null;
@@ -424,7 +425,7 @@ export function startBuild(data: any): Promise<any> {
         jobEvents.next({
           type: 'process',
           build_id: data.build_id,
-          repository_id: data.repositories_id,
+          repository_id: repoId,
           data: 'build added'
         });
       })
