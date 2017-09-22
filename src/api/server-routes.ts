@@ -42,6 +42,8 @@ import { imageExists } from './docker';
 import { getImages } from './image-builder';
 import { checkApiRequestAuth } from './security';
 import { checkConfigPresence, checkRepositoryAccess, Repository } from './config';
+import { getHttpJsonResponse } from './utils';
+import { startBuild } from './process-manager';
 import * as multer from 'multer';
 
 const config: any = getConfig();
@@ -324,6 +326,43 @@ export function repositoryRoutes(): express.Router {
         res.status(200).json({ data: { read: true, config: true } });
       }
     });
+  });
+
+  router.get('/trigger-test-build/:id', (req: express.Request, res: express.Response) => {
+    getRepository(req.params.id)
+      .then(repository => {
+        if (!repository.api_url || !repository.repository_provider) {
+          res.status(200).json({ data: false });
+          return Promise.reject(null);
+        }
+
+        if (repository.repository_provider === 'github') {
+          let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
+            repository.default_branch;
+          let accessToken = null;
+
+          if (repository.access_token) {
+            accessToken = repository.access_token.token || null;
+          }
+
+          if (accessToken) {
+            url = url.replace('//', `//${accessToken}@`);
+          }
+
+          return getHttpJsonResponse(url);
+        }
+      })
+      .then(payload => {
+        const buildData = {
+          data: payload,
+          start_time: new Date(),
+          repositories_id: req.params.id
+        };
+
+        return startBuild(buildData);
+      })
+      .then(() => res.status(200).json({ data: true }))
+      .catch(err => res.status(200).json({ data: false }));
   });
 
   return router;
