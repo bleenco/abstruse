@@ -34,6 +34,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   nameCommitter: string;
   timerSubscription: any = null;
   currentTime: number;
+  commitMessage: string;
 
   constructor(
     private socketService: SocketService,
@@ -65,7 +66,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           this.tag = this.build.data.ref.replace('refs/tags/', '');
         }
 
-        this.setAvatars();
+        this.setData();
 
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.created_at);
@@ -224,11 +225,28 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['job', jobId]);
   }
 
-  setAvatars(): void {
-    if (this.build.data.head_commit) {
+  setData(): void {
+    if (this.build.data.commit) {
+      this.commitMessage = this.build.data.commit.message;
+    } else if (this.build.data.commits) {
+      const len = this.build.data.commits.length - 1;
+      this.commitMessage = this.build.data.commits[len].message;
+    } else if (this.build.data.pull_request && this.build.data.pull_request.title) {
+      this.commitMessage = this.build.data.pull_request.title;
+    } else if (this.build.data.head_commit) {
+      this.commitMessage = this.build.data.head_commit.message;
+    }
+
+    if (this.build.data.sha) {
+      const data = this.build.data;
+      this.committerAvatar = data.committer.avatar_url;
+      this.nameCommitter = data.commit.committer.name;
+      this.authorAvatar = data.author.avatar_url;
+      this.nameAuthor = data.commit.author.name;
+    } else if (this.build.data.head_commit) {
       const commit = this.build.data.head_commit;
       this.committerAvatar = this.build.data.sender.avatar_url;
-      this.nameAuthor = this.build.data.head_commit.author.name;
+      this.nameCommitter = this.build.data.head_commit.author.name;
 
       if (commit.author.username !== commit.committer.username) {
         this.nameCommitter = commit.committer.name;

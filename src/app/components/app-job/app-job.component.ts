@@ -39,6 +39,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   nameCommitter: string;
   timerSubscription: any = null;
   currentTime: number;
+  commitMessage: string;
 
   constructor(
     private socketService: SocketService,
@@ -118,7 +119,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.apiService.getJob(this.id, this.userId).subscribe(job => {
       this.job = job;
 
-      this.setAvatars();
+      this.setData();
 
       if (this.job.build.data.ref && this.job.build.data.ref.startsWith('refs/tags/')) {
         this.tag = this.job.build.data.ref.replace('refs/tags/', '');
@@ -201,11 +202,28 @@ export class AppJobComponent implements OnInit, OnDestroy {
     }
   }
 
-  setAvatars(): void {
-    if (this.job.build.data.head_commit) {
+  setData(): void {
+    if (this.job.build.data.commit) {
+      this.commitMessage = this.job.build.data.commit.message;
+    } else if (this.job.build.data.commits) {
+      const len = this.job.build.data.commits.length - 1;
+      this.commitMessage = this.job.build.data.commits[len].message;
+    } else if (this.job.build.data.pull_request && this.job.build.data.pull_request.title) {
+      this.commitMessage = this.job.build.data.pull_request.title;
+    } else if (this.job.build.data.head_commit) {
+      this.commitMessage = this.job.build.data.head_commit.message;
+    }
+
+    if (this.job.build.data.sha) {
+      const data = this.job.build.data;
+      this.committerAvatar = data.committer.avatar_url;
+      this.nameCommitter = data.commit.committer.name;
+      this.authorAvatar = data.author.avatar_url;
+      this.nameAuthor = data.commit.author.name;
+    } else if (this.job.build.data.head_commit) {
       const commit = this.job.build.data.head_commit;
       this.committerAvatar = this.job.build.data.sender.avatar_url;
-      this.nameAuthor = this.job.build.data.head_commit.author.name;
+      this.nameCommitter = this.job.build.data.head_commit.author.name;
 
       if (commit.author.username !== commit.committer.username) {
         this.nameCommitter = commit.committer.name;
