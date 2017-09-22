@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, delay } from './utils';
+import { login, logout, delay, isLoaded } from './utils';
 import { requestD3, header } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
@@ -26,11 +26,24 @@ describe('Build Details', () => {
         return cnt === 0;
       })))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isEnabled()))
       .then((): any => element(by.css(`[name="restart-build"]`)).click())
       .then((): any => element.all(by.css('.list-item')).count())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === num;
       })))
+      .then(() => delay(1000))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.total-time > span')).first()
+          .getAttribute('innerHTML').then(html => html.trim() === '00:04'));
+      })
+      .then(() => browser.get('/build/1'))
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.total-time > span')).first()
+          .getAttribute('innerHTML').then(html => html.trim() === '00:08'));
+      })
       .then(() => delay(2000))
       .then(() => element.all(by.css(`[name="stop-job"]`)).each(el => el.click()))
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
@@ -56,9 +69,10 @@ describe('Build Details', () => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 1));
       })
+      .then(() => delay(2000))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.job-time')).then(els => els[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05')));
+          .then(el => el.getAttribute('innerHTML').then(html => html === '00:06')));
       })
       .then((): any => {
         return browser
@@ -226,6 +240,7 @@ describe('Build Details', () => {
         return cnt === 0;
       })))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isEnabled()))
       .then((): any => browser.wait(() => {
         return ExpectedConditions.elementToBeClickable(element(by.css(`[name="restart-build"]`)));
       }))
@@ -245,6 +260,7 @@ describe('Build Details', () => {
         });
       })
       .then((): any => browser.wait(() => element(by.css(`[name="stop-build"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="stop-build"]`)).isEnabled()))
       .then(() => browser.wait(
         ExpectedConditions.presenceOf(element(by.css(`[name="stop-build"]`)))))
       .then(() => delay(1000))

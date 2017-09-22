@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, waitForUrlToChangeTo, delay } from './utils';
+import { login, logout, waitForUrlToChangeTo, delay, isLoaded } from './utils';
 import {
   request as pushEventRequest,
   requestD3,
@@ -34,6 +34,7 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 1;
       })))
+      .then(() => delay(2000))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
@@ -45,6 +46,9 @@ describe('Builds', () => {
       }))
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+      }))
+      .then((): any => browser.wait(() => {
+        return element(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
       }))
       .then(() => delay(2000))
       .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
@@ -65,7 +69,7 @@ describe('Builds', () => {
 
   it('should start new build (send reopen_pull_request event)', () => {
     return sendGitHubRequest(requestD3, pushEventHeader)
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+    .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 2;
       })))
       .then((): any => browser.wait(() => {
@@ -79,6 +83,9 @@ describe('Builds', () => {
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
       }))
       .then((): any => {
         return browser.wait(() => {
@@ -110,6 +117,9 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
       }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
+      }))
       .then((): any => {
         return browser.wait(() => {
           const el = element(by.css('.list-item:nth-child(1) .stop-build'));
@@ -131,6 +141,9 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restart-build')).first().isPresent();
       }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restart-build')).first().isEnabled();
+      }))
       .then(() => delay(2000))
       .then((): any => element.all(by.css('.restart-build')).first().click())
       .then((): any => browser.wait(() => {
@@ -143,13 +156,17 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.stop-build')).first().isPresent();
       }))
-      .then((): any => {
-        return browser.wait(() => {
-          const el = element(by.css('.stop-build'));
-          return ExpectedConditions.elementToBeClickable(el);
-        });
-      })
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isDisplayed();
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isEnabled();
+      }))
       .then(() => delay(2000))
+      .then((): any => {
+        return browser.wait(() =>
+          ExpectedConditions.elementToBeClickable(element.all(by.css('.stop-build')).first()));
+      })
       .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
@@ -164,6 +181,9 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restart-build')).first().isPresent();
       }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.restart-build')).first().isEnabled();
+      }))
       .then(() => delay(2000))
       .then((): any => element.all(by.css('.restart-build')).first().click())
       .then((): any => browser.wait(() => {
@@ -173,18 +193,36 @@ describe('Builds', () => {
         return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
+        return element(by.css('.build-time')).isDisplayed();
+      }))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.build-time')).first()
+          .getAttribute('innerHTML').then(html => html.trim() === '00:04'));
+      })
+      .then(() => browser.get('/'))
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.build-time')).first()
+          .getAttribute('innerHTML').then(html => html.trim() === '00:08'));
+      })
+      .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.stop-build')).first().isPresent();
       }))
-      .then((): any => {
-        return browser.wait(() => {
-          const el = element(by.css('.stop-build'));
-          return ExpectedConditions.elementToBeClickable(el);
-        });
-      })
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isDisplayed();
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.stop-build')).first().isEnabled();
+      }))
       .then(() => delay(2000))
+      .then((): any => {
+        return browser.wait(() =>
+          ExpectedConditions.elementToBeClickable(element.all(by.css('.stop-build')).first()));
+      })
       .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);

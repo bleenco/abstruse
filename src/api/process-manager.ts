@@ -134,6 +134,7 @@ function execJob(proc: JobProcess): Observable<{}> {
               observer.complete();
             }
           }, err => {
+            const time = new Date();
             const msg: LogMessageType = {
               message: `[error]: ${err}`, type: 'error', notify: false
             };
@@ -150,10 +151,18 @@ function execJob(proc: JobProcess): Observable<{}> {
 
                 return dbJobRuns.updateJobRun(data);
               })
-              .then(build => updateBuild({ id: proc.build_id, end_time: new Date() }))
-              .then(id => updateBuildRun({ id: id, end_time: new Date() }))
+              .then(build => updateBuild({ id: proc.build_id, end_time: time }))
+              .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
               .then(build => sendFailureStatus(build, build.id))
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  data: 'build failed',
+                  additionalData: time.getTime()
+                });
+              })
               .then(() => observer.complete())
               .catch(err => {
                 const msg: LogMessageType = {
@@ -163,6 +172,7 @@ function execJob(proc: JobProcess): Observable<{}> {
                 observer.complete();
               });
           }, () => {
+            const time = new Date();
             dbJob.getLastRunId(proc.job_id)
               .then(runId => {
                 const data = {
@@ -177,18 +187,34 @@ function execJob(proc: JobProcess): Observable<{}> {
               .then(() => getBuildStatus(proc.build_id))
               .then(status => {
                 if (status === 'success') {
-                  return updateBuild({ id: proc.build_id, end_time: new Date() })
+                  return updateBuild({ id: proc.build_id, end_time: time })
                     .then(() => getLastRunId(proc.build_id))
-                    .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                    .then(id => updateBuildRun({ id: id, end_time: time} ))
                     .then(() => getBuild(proc.build_id))
-                    .then(build => sendSuccessStatus(build, build.id));
+                    .then(build => sendSuccessStatus(build, build.id))
+                    .then(() => {
+                      jobEvents.next({
+                        type: 'process',
+                        build_id: proc.build_id,
+                        data: 'build succeeded',
+                        additionalData: time.getTime()
+                      });
+                    });
                 } else if (status === 'failed') {
                   return getBuild(proc.build_id)
                     .then(build => updateBuild({ id: proc.build_id, end_time: new Date() }))
                     .then(() => getLastRunId(proc.build_id))
                     .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
                     .then(() => getBuild(proc.build_id))
-                    .then(build => sendFailureStatus(build, build.id));
+                    .then(build => sendFailureStatus(build, build.id))
+                    .then(() => {
+                      jobEvents.next({
+                        type: 'process',
+                        build_id: proc.build_id,
+                        data: 'build failed',
+                        additionalData: time.getTime()
+                      });
+                    });
                 } else {
                   return Promise.resolve();
                 }
@@ -233,11 +259,14 @@ function execJob(proc: JobProcess): Observable<{}> {
 }
 
 export function restartJob(jobId: number): Promise<void> {
+  const time = new Date();
   let job = null;
+  let buildData;
+
   return stopJob(jobId)
     .then(() => dbJob.getLastRun(jobId))
     .then(lastRun => dbJobRuns.insertJobRun({
-      start_time: new Date(),
+      start_time: time,
       end_time: null,
       status: 'queued',
       log: '',
@@ -246,8 +275,37 @@ export function restartJob(jobId: number): Promise<void> {
     }))
     .then(() => queueJob(jobId))
     .then(() => dbJob.getJob(jobId))
-    .then(job => getBuild(job.builds_id))
-    .then(build => sendPendingStatus(build, build.id))
+    .then(j => job = j)
+    .then(() => {
+      jobEvents.next({
+        type: 'process',
+        build_id: job.builds_id,
+        job_id: job.id,
+        data: 'job restarted'
+      });
+    })
+    .then(() => getBuild(job.builds_id))
+    .then(build => buildData = build)
+    .then(() => {
+      let jobs = buildData.jobs;
+      buildData.start_time = time;
+      buildData.end_time = null;
+
+      return updateBuild(buildData)
+        .then(() => {
+          buildData.build_id = job.builds_id;
+          return insertBuildRun(buildData);
+        });
+    })
+    .then(() => {
+      jobEvents.next({
+        type: 'process',
+        build_id: job.builds_id,
+        data: 'build restarted',
+        additionalData: time.getTime()
+      });
+    })
+    .then(() => sendPendingStatus(buildData, buildData.id))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
@@ -256,6 +314,8 @@ export function restartJob(jobId: number): Promise<void> {
 
 
 export function stopJob(jobId: number): Promise<void> {
+  const time = new Date();
+
   return Promise.resolve()
     .then(() => dbJob.getJob(jobId))
     .then(job => {
@@ -265,10 +325,18 @@ export function stopJob(jobId: number): Promise<void> {
           if (status === 'success') {
             return getBuild(job.builds_id)
               .then(build => {
-                return updateBuild({ id: build.id, end_time: new Date() })
+                return updateBuild({ id: build.id, end_time: time })
                   .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                  .then(id => updateBuildRun({ id: id, end_time: time} ))
                   .then(() => sendSuccessStatus(build, build.id))
+                  .then(() => {
+                    jobEvents.next({
+                      type: 'process',
+                      build_id: build.id,
+                      data: 'build succeeded',
+                      additionalData: time.getTime()
+                    });
+                  })
                   .catch(err => {
                     const msg: LogMessageType = {
                       message: `[error]: ${err}`,
@@ -288,10 +356,18 @@ export function stopJob(jobId: number): Promise<void> {
           } else if (status === 'failed') {
             return getBuild(job.builds_id)
               .then(build => {
-                return updateBuild({ id: build.id, end_time: new Date() })
+                return updateBuild({ id: build.id, end_time: time })
                   .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                  .then(id => updateBuildRun({ id: id, end_time: time} ))
                   .then(() =>  sendFailureStatus(build, build.id))
+                  .then(() => {
+                    jobEvents.next({
+                      type: 'process',
+                      build_id: build.id,
+                      data: 'build failed',
+                      additionalData: time.getTime()
+                    });
+                  })
                   .catch(err => {
                     const msg: LogMessageType = {
                       message: `[error]: ${err}`,
@@ -437,15 +513,17 @@ export function startBuild(data: any): Promise<any> {
 }
 
 export function restartBuild(buildId: number): Promise<any> {
+  const time = new Date();
   let buildData;
   let accessToken;
+
   return stopBuild(buildId)
     .then(() => getBuild(buildId))
     .then(build => buildData = build)
     .then(() => accessToken = buildData.repository.access_token || null)
     .then(() => {
       let jobs = buildData.jobs;
-      buildData.start_time = new Date();
+      buildData.start_time = time;
       buildData.end_time = null;
 
       return updateBuild(buildData)
@@ -456,7 +534,7 @@ export function restartBuild(buildId: number): Promise<any> {
         .then(buildRun => {
           return Promise.all(jobs.map(job => {
             dbJobRuns.insertJobRun({
-              start_time: new Date(),
+              start_time: time,
               end_time: null,
               status: 'queued',
               log: '',
@@ -474,6 +552,14 @@ export function restartBuild(buildId: number): Promise<any> {
         })
         .then(() => getBuild(buildId))
         .then(build => sendPendingStatus(build, build.id))
+        .then(() => {
+          jobEvents.next({
+            type: 'process',
+            build_id: buildId,
+            data: 'build restarted',
+            additionalData: time.getTime()
+          });
+        })
         .catch(err => {
           const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
           logger.next(msg);

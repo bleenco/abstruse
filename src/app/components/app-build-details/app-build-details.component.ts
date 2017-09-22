@@ -26,6 +26,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   updateInterval: any;
   subStatus: Subscription;
   sub: Subscription;
+  subUpdate: Subscription;
   userData: any;
   userId: string | null;
   committerAvatar: string;
@@ -105,9 +106,25 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           });
 
         this.sub = this.socketService.outputEvents
-          .filter(event => event.type === 'build restarted' || event.type === 'build stopped')
+          .filter(event => event.type === 'build stopped')
           .subscribe(event => {
             this.processingBuild = false;
+          });
+
+        this.subUpdate = this.socketService.outputEvents
+          .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
+            || event.data === 'build failed')
+          .subscribe(event => {
+            if (event.build_id === Number(this.id)) {
+              if (event.data === 'build restarted') {
+                this.build.start_time = event.additionalData;
+                this.updateJobTimes();
+                this.processingBuild = false;
+              } else {
+                this.build.end_time = event.additionalData;
+                this.updateJobTimes();
+              }
+            }
           });
       });
     });
@@ -116,6 +133,10 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+
+    if (this.subUpdate) {
+      this.subUpdate.unsubscribe();
     }
 
     if (this.subStatus) {
@@ -132,7 +153,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
   updateJobTimes(): void {
     if (this.status !== 'running') {
-      this.totalTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+      if (this.build.end_time > this.build.start_time) {
+        this.totalTime = this.build.end_time - this.build.start_time;
+      } else {
+        this.totalTime = 0;
+      }
     } else {
       this.totalTime = Math.min(...this.build.jobs
         .filter(job => job.status === 'running').map(job => job.start_time));

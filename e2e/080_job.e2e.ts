@@ -46,6 +46,7 @@ describe('Job Details', () => {
         return cnt > 0;
       })))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isEnabled()))
       .then((): any => browser.wait(() => {
         return ExpectedConditions.elementToBeClickable(element(by.css(`[name="restart-build"]`)));
       }))

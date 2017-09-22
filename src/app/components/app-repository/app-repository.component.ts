@@ -31,6 +31,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   loading: boolean;
   fetching: boolean;
   sub: Subscription;
+  subUpdate: Subscription;
   tab: 'builds' | 'settings';
   id: string;
   repo: any;
@@ -152,11 +153,31 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           }
         }
       });
+
+    this.subUpdate = this.socketService.outputEvents
+      .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
+        || event.data === 'build failed')
+      .subscribe(event => {
+        let index = this.repo.builds.findIndex(i => i.id === event.build_id);
+        if (index !== -1) {
+          if (event.data === 'build restarted') {
+            this.repo.builds[index].start_time = event.additionalData;
+            this.updateJobs();
+          } else {
+            this.repo.builds[index].end_time = event.additionalData;
+            this.updateJobs();
+          }
+        }
+      });
   }
 
   ngOnDestroy() {
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+
+    if (this.subUpdate) {
+      this.subUpdate.unsubscribe();
     }
   }
 
@@ -231,12 +252,16 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         }
 
         if (status !== 'running') {
-          build.maxTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
-        } else {
-          build.maxTime = Math.max(...build.jobs.map(job => job.start_time));
+          if (build.end_time > build.start_time) {
+            build.maxTime = build.end_time - build.start_time;
+          } else {
+            build.maxTime = new Date().getTime() - build.start_time;
+          }
         }
 
-        build.startTime = Math.min(...build.jobs.map(job => job.start_time));
+        build.startTime = Math.min(...build.jobs
+          .filter(job => job.status === 'running')
+          .map(job => job.start_time));
         build.status = status;
         return build;
       });
