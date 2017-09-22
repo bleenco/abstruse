@@ -109,8 +109,14 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'build added' && event.repository_id && event.repository_id === this.id) {
-          this.fetchLastBuild();
+        if (event.data === 'build added' && event.repository_id
+            && event.repository_id === this.id && event.additionalData) {
+          if (!this.repo.builds) {
+            this.repo.builds = [];
+          }
+
+          this.repo.builds.unshift(event.additionalData);
+          this.updateJobs();
         }
 
         const index = this.repo.builds.findIndex(build => build.id === event.build_id);
@@ -188,17 +194,6 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         this.hideMoreButton = true;
       }
 
-      this.updateJobs();
-    });
-  }
-
-  fetchLastBuild(): void {
-    this.api.getLastBuild(this.userId).subscribe(build => {
-      if (!this.repo.builds) {
-        this.repo.builds = [];
-      }
-
-      this.repo.builds.unshift(build);
       this.updateJobs();
     });
   }

@@ -33,6 +33,8 @@ export interface IOutput {
   data: IMemoryData | ICpuData;
 }
 
+export let userId: number;
+
 export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
@@ -77,6 +79,10 @@ export class SocketServer {
             }
 
             switch (event.type) {
+              case 'userId': {
+                userId = Number(event.data);
+              }
+              break;
               case 'buildImage': {
                 const imageData = event.data;
                 buildDockerImage(imageData);

@@ -34,14 +34,6 @@ export class ApiService {
     }
   }
 
-  getLastBuild(userId?: string): Observable<any> {
-    if (userId) {
-      return this.get(`${this.url}/builds/last/${userId}`, null, true);
-    } else {
-      return this.get(`${this.url}/builds/last`, null, true);
-    }
-  }
-
   getBuild(id: string, userId?: string | null): Observable<any> {
     if (userId) {
       return this.get(`${this.url}/builds/${id}/${userId}`, null, true);

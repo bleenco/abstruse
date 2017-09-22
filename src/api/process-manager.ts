@@ -6,7 +6,8 @@ import {
   getBuild,
   getBuildStatus,
   getLastRunId,
-  getDepracatedBuilds
+  getDepracatedBuilds,
+  getLastBuild
 } from './db/build';
 import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
@@ -19,6 +20,7 @@ import { blue, yellow, green, cyan } from 'chalk';
 import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 import { decrypt } from './security';
+import { userId } from './socket';
 
 export interface BuildMessage {
   type: string;
@@ -54,6 +56,7 @@ export interface JobProcessEvent {
   repository_id?: number;
   type?: string;
   data?: string;
+  additionalData?: any;
 }
 
 const config: any = getConfig();
@@ -414,12 +417,14 @@ export function startBuild(data: any): Promise<any> {
           });
         }, Promise.resolve());
       })
-      .then(() => {
+      .then(() => getLastBuild(userId || null))
+      .then(lastBuild => {
         jobEvents.next({
           type: 'process',
           build_id: data.build_id,
           repository_id: repoId,
-          data: 'build added'
+          data: 'build added',
+          additionalData: lastBuild
         });
       })
       .then(() => getDepracatedBuilds(buildData))

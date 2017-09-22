@@ -48,8 +48,13 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (event.data === 'build added') {
-          this.fetchLastBuild();
+        if (event.data === 'build added' && event.additionalData) {
+          if (!this.builds) {
+            this.builds = [];
+          }
+
+          this.builds.unshift(event.additionalData);
+          this.update();
         }
       });
 
@@ -156,17 +161,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         this.hideMoreButton = true;
       }
 
-      this.update();
-    });
-  }
-
-  fetchLastBuild(): void {
-    this.apiService.getLastBuild(this.userId).subscribe(build => {
-      if (!this.builds) {
-        this.builds = [];
-      }
-
-      this.builds.unshift(build);
       this.update();
     });
   }

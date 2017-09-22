@@ -2,6 +2,7 @@ import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
+import { SocketService } from '../../services/socket.service';
 import { NotificationService, NotificationType } from '../../services/notification.service';
 
 @Component({
@@ -19,7 +20,8 @@ export class AppHeaderComponent implements OnInit {
     private router: Router,
     private elementRef: ElementRef,
     private config: ConfigService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private socketService: SocketService
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -34,12 +36,14 @@ export class AppHeaderComponent implements OnInit {
     this.user = this.authService.getData();
     if (this.user) {
       this.user.avatar = this.config.url + this.user.avatar;
+      this.socketService.emit({ type: 'userId', data: this.user.id });
     }
 
     this.authService.userEvents.subscribe(event => {
       if (event === 'login') {
         this.user = this.authService.getData();
         this.user.avatar = this.config.url + this.user.avatar;
+        this.socketService.emit({ type: 'userId', data: this.user.id });
       }
     });
 
