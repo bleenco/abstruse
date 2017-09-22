@@ -32,8 +32,7 @@
     "protractor:delay": "sleep 30 && protractor ./protractor.conf.js",
     "protractor:abstruse": "node ./tests/run_protractor.js",
     "prepublishOnly": "npm run build:prod",
-    "log": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "cli": "./tests/run_cli.sh"
+    "log": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "repository": {
     "type": "git",
