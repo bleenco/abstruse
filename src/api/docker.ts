@@ -51,10 +51,13 @@ export function attachExec(id: string, cmd: any): Observable<any> {
   return new Observable(observer => {
     const startTime = new Date().getTime();
     let exitCode = 255;
+    let command;
 
     // don't show access token on UI
     if (cmd.command.includes('http') && cmd.command.includes('@')) {
-      cmd.command = cmd.command.replace(/\/\/(.*)@/, '//');
+      command = cmd.command.replace(/\/\/(.*)@/, '//');
+    } else {
+      command = cmd.command;
     }
 
     if (cmd.type === CommandType.store_cache) {
@@ -62,7 +65,7 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     } else if (cmd.type === CommandType.restore_cache) {
       observer.next({ type: 'data', data: yellow('==> restoring cache ...') + '\r' });
     } else {
-      observer.next({ type: 'data', data: yellow('==> ' + cmd.command) + '\r' });
+      observer.next({ type: 'data', data: yellow('==> ' + command) + '\r' });
     }
 
     const container = docker.getContainer(id);

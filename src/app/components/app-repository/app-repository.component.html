@@ -4,7 +4,7 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1 class="mr15">{{ repo?.full_name }}</h1>
+        <h1 class="mr15 repository-h1">{{ repo?.full_name }}</h1>
         <span *ngIf="statusBadge" [innerHTML]="statusBadge | safeHtml" class="status-badge-repo"></span>
       </span>
     </div>
@@ -31,19 +31,19 @@
             <div class="columns repository-details">
               <div class="column is-8">
                 <span>
-                  <img src="images/icons/github-white.svg">
+                  <i class="ion ion-network"></i>
                   <a [href]="repo?.html_url">{{ repo?.html_url }}</a>
                 </span>
                 <span>
-                  <img src="images/icons/git-branch.svg">
+                  <i class="ion ion-merge"></i>
                   {{ repo?.default_branch }}
                 </span>
                 <span *ngIf="repo?.private">
-                  <img src="images/icons/unlock.svg">
-                  Private
+                  <i class="ion ion-ios-unlocked-outline"></i>
+                  Private Repository
                 </span>
                 <span *ngIf="!repo?.private">
-                  <img src="images/icons/unlock.svg">
+                  <i class="ion ion-ios-locked-outline"></i>
                   Public Repository
                 </span>
               </div>
@@ -73,13 +73,36 @@
             <div class="columns">
               <div class="column is-12">
                 <div class="settings-container">
-                  <h2>Settings</h2>
+                  <h2>Repository Settings</h2>
 
                   <div class="columns is-multiline">
                     <div class="column is-6">
                       <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
+                        <h4>General Settings</h4>
+                        <div class="columns">
+                          <div class="column is-9">
+                            <div class="form-field">
+                              <label class="form-label">Repository Provider</label>
+                              <app-selectbox [data]="repositoryProviders" [(ngModel)]="form.repository_provider" name="repository_provider"></app-selectbox>
+                              <p class="helper">Set git provider where this repository is hosted.</p>
+                            </div>
+                            <div class="form-field">
+                              <label class="form-label">API URL</label>
+                              <input type="text" placeholder="https://api.github.com" name="api_url" [(ngModel)]="form.api_url" class="form-input">
+                              <p class="helper">Set API URL for git repository provider. Example for GitHub (not GHE) is https://api.github.com</p>
+                            </div>
+                          </div>
+                          <div class="column is-3">
+                            <div class="form-field">
+                              <label class="form-label">Is Public</label>
+                              <app-toggle [(ngModel)]="form.public" name="public"></app-toggle>
+                              <p class="helper">Visibility of builds.</p>
+                            </div>
+                          </div>
+                        </div>
+                        <hr/>
                         <h4>Access Token</h4>
-                        <div class="notification is-info">
+                        <div class="notification is-warning">
                           <div class="columns">
                             <div class="column is-1">
                               <i class="ion ion-ios-information"></i>
@@ -95,10 +118,13 @@
                         </div>
                         <div class="form-field">
                           <app-selectbox [data]="accessTokensOptions" [(ngModel)]="form.access_tokens_id" name="access_tokens_id"></app-selectbox>
+                          <p class="helper">
+                            If you cannot find access token that is suitable for this repository then create new one <a routerLink="/settings">here</a>.
+                          </p>
                         </div>
                         <input type="hidden" name="id" [(ngModel)]="form.id">
                         <div class="form-field">
-                          <button type="submit" class="button is-small float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Token</button>
+                          <button type="submit" class="button float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Settings</button>
                         </div>
                       </form>
 
@@ -109,7 +135,7 @@
                         <div class="message green" *ngIf="checkConfigResult && (checkConfigResult.read || checkConfigResult.config)">
                           <p *ngIf="checkConfigResult.read">
                             <i class="ion ion-checkmark-round"></i>
-                            Has read permissions on repository (clone)
+                            Has read permissions on repository
                           </p>
                           <p *ngIf="checkConfigResult.config">
                             <i class="ion ion-checkmark-round"></i>
@@ -127,6 +153,22 @@
                           </p>
                         </div>
                         <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
+                        <hr/>
+                        <h4>Test Build</h4>
+                        <p>To see if everything works as expected you can trigger new build here. Build will be run from the last commit and default branch.</p>
+                        <div class="message green" *ngIf="buildSuccessfullyTriggered && !triggeringBuild">
+                          <p>
+                            <i class="ion ion-checkmark-round"></i>
+                            Build successfully triggered.
+                          </p>
+                        </div>
+                        <div class="message green" *ngIf="buildTriggerError && !triggeringBuild">
+                            <p>
+                              <i class="ion ion-close-round"></i>
+                              Error triggering build. Please check your configuration.
+                            </p>
+                          </div>
+                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="triggeringBuild" (click)="triggerTestBuild()">Trigger Test Build</button>
                       </form>
                     </div>
                     <div class="column is-6">
@@ -162,7 +204,7 @@
                           <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted"></app-selectbox>
                         </div>
                         <div class="form-field">
-                          <button type="submit" class="button is-small float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add Variable</button>
+                          <button type="submit" class="button float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add Variable</button>
                         </div>
                       </form>
                     </div>
@@ -172,7 +214,7 @@
             </div>
           </div>
 
-          <div class="column is-12" *ngIf="tab === 'settings' && repo.hasPermission">
+          <!-- <div class="column is-12" *ngIf="tab === 'settings' && repo.hasPermission">
             <div class="columns">
               <div class="column is-12">
                 <div class="settings-container">
@@ -223,7 +265,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
         </div>
       </div>

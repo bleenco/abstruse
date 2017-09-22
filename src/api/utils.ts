@@ -149,6 +149,7 @@ export function generateBadgeHtml(status: string): string {
   } else if (status === 'queued') {
     background = '#ffd43b';
   } else if (status === 'unknown') {
+    status = 'none';
     background = '#3A7EE1';
   } else {
     background = '#39B54A';

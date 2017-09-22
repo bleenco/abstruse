@@ -1,6 +1,7 @@
 import { Repository, Build } from './model';
 import { getHttpJsonResponse } from '../utils';
 import { addRepositoryPermissionToEveryone } from './permission';
+import { URL } from 'url';
 
 export function getRepository(id: number, userId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -559,6 +560,9 @@ export function synchronizeGitLabPullRequest(data: any): Promise<any> {
 }
 
 function generateGitHubRepositoryData(data: any): any {
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//api.' + url.host;
+
   return {
     github_id: data.repository.id,
     clone_url: data.repository.clone_url,
@@ -574,6 +578,8 @@ function generateGitHubRepositoryData(data: any): any {
     user_avatar_url: data.repository.owner.avatar_url,
     user_url: data.repository.owner.url,
     user_html_url: data.repository.owner.html_url,
+    repository_provider: 'github',
+    api_url: apiUrl,
     data: data
   };
 }

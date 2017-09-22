@@ -365,12 +365,14 @@ export function startBuild(data: any): Promise<any> {
           sha = data.data.pull_request.head.sha;
           branch = data.data.pull_request.base.ref;
         } else {
-          sha = data.data.after;
-          branch = data.data.ref.split('/').pop();
+          sha = data.data.after || data.data.sha;
+          if (data.data && data.data.ref) {
+            branch = data.data.ref.split('/').pop();
+          }
         }
       }
 
-      branch = branch || 'master';
+      branch = branch || repository.default_branch || 'master';
 
       const repo = {
         clone_url: repository.clone_url,

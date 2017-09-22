@@ -11,6 +11,9 @@ import 'rxjs/add/operator/delay';
 export interface IRepoForm {
   id: number;
   access_tokens_id: any;
+  repository_provider: string;
+  api_url: string;
+  public: boolean;
 }
 
 export interface VariableForm {
@@ -46,6 +49,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   yesNoOptions: { key: number, value: string }[];
   checkingConfig: boolean;
   checkConfigResult: { read: boolean; config: boolean; };
+  repositoryProviders: { key: string, value: string }[];
+  triggeringBuild: boolean;
+  buildSuccessfullyTriggered: boolean;
+  buildTriggerError: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -65,6 +72,12 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
     this.accessTokensOptions = [];
     this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
+    this.repositoryProviders = [
+      { key: 'github', value: 'GitHub' },
+      { key: 'gitlab', value: 'GitLab' },
+      { key: 'bitbucket', value: 'BitBucket' },
+      { key: 'gogs', value: 'Gogs' }
+    ];
   }
 
   ngOnInit() {
@@ -80,6 +93,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         this.router.navigate(['repositories']);
       } else {
         this.fetch();
+        this.fetchBuilds();
         this.fetchBadge();
 
         if (this.userId) {
@@ -143,9 +157,14 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   fetch(): void {
     this.api.getRepository(this.id, this.userId).subscribe(event => {
       this.repo = event;
-      this.form = { id: parseInt(this.id, 10), access_tokens_id: event.access_tokens_id };
+      this.form = {
+        id: parseInt(this.id, 10),
+        access_tokens_id: event.access_tokens_id,
+        repository_provider: event.repository_provider,
+        api_url: event.api_url,
+        public: event.public
+      };
       this.loading = false;
-      this.fetchBuilds();
     });
   }
 
@@ -238,6 +257,21 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.api.checkRepositoryConfiguration(Number(this.id)).subscribe(ev => {
       this.checkConfigResult = ev;
       this.checkingConfig = false;
+    });
+  }
+
+  triggerTestBuild(): void {
+    this.triggeringBuild = true;
+    this.buildSuccessfullyTriggered = false;
+    this.buildTriggerError = false;
+
+    this.api.triggerTestBuild(Number(this.id)).subscribe(ev => {
+      if (ev) {
+        this.buildSuccessfullyTriggered = true;
+      } else {
+        this.buildTriggerError = true;
+      }
+      this.triggeringBuild = false;
     });
   }
 

@@ -7,8 +7,9 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
   const config: any = getConfig();
   if (build.repository && build.repository.access_token) {
     if (build.repository.github_id) {
-      const sha = build.data.after || build.data.pull_request.head.sha;
-      const name = build.data.repository.full_name;
+      const sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
+        build.data.sha;
+      const name = build.repository.full_name;
       const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
@@ -53,8 +54,9 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
   const config: any = getConfig();
   if (buildData.repository && buildData.repository.access_token) {
     if (buildData.repository.github_id) {
-      const sha = buildData.data.after || buildData.data.pull_request.head.sha;
-      const name = buildData.data.repository.full_name;
+      const sha = buildData.data.after || buildData.data.pull_request &&
+        buildData.data.pull_request.head.sha || buildData.data.sha;
+      const name = buildData.repository.full_name;
       const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
@@ -97,8 +99,9 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
   const config: any = getConfig();
   if (buildData.repository && buildData.repository.access_token) {
     if (buildData.repository.github_id) {
-      const sha = buildData.data.after || buildData.data.pull_request.head.sha;
-      const name = buildData.data.repository.full_name;
+      const sha = buildData.data.after || buildData.data.pull_request &&
+        buildData.data.pull_request.head.sha || buildData.data.sha;
+      const name = buildData.repository.full_name;
       const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
       const abstruseUrl = `${config.url}/build/${buildId}`;
 
