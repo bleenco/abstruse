@@ -4,11 +4,10 @@
   padding: 10px
   border-radius: 0
   margin: 20px 10px
-  color: $color
   border: 1px solid $border
 
   p
-    color: $color !important
+    color: $color
 
   i
     font-size: 20px
@@ -25,6 +24,13 @@
       padding: 0
       margin: 0
 
+  &.red
+    background: rgba($red-secondary, 0.4)
+    border: 1px solid $red-secondary
+    color: $red-secondary
+
+    p
+      color: $red-secondary
 
   &.green
     background-color: rgba($green-secondary, 0.4)
@@ -52,6 +58,3 @@
 
   img
     margin-right: 10px
-
-  p
-    color: $white

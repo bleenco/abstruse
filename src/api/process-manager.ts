@@ -98,7 +98,7 @@ function execJob(proc: JobProcess): Observable<{}> {
       .then(repository => {
         const envVariables: string[] = repository.variables.map(v => {
           if (!!v.encrypted) {
-            return `${v.name}=${decrypt(v.value, config)}`;
+            return `${v.name}=${decrypt(v.value)}`;
           } else {
             return `${v.name}=${v.value}`;
           }

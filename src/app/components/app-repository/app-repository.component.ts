@@ -54,6 +54,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   triggeringBuild: boolean;
   buildSuccessfullyTriggered: boolean;
   buildTriggerError: boolean;
+  addingEnvVar: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -309,8 +310,13 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   addEnvironmentVariable(): void {
     this.environmentVariableForm.repositories_id = this.repo.id;
+    this.addingEnvVar = true;
     this.api.addNewEnvironmentVariable(this.environmentVariableForm)
-      .subscribe(() => this.fetch());
+      .delay(500)
+      .subscribe(() => {
+        this.addingEnvVar = false;
+        this.fetch();
+      });
 
     this.environmentVariableForm = {
       name: null, value: null, repositories_id: null, encrypted: 0

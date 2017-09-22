@@ -42,12 +42,13 @@ const defaultConfig = {
 };
 
 export let abstruseHome = null;
+export let config: any = defaultConfig;
 
 export function setHome(dirPath: string): void {
   abstruseHome = dirPath;
 }
 
-export function initSetup(): Promise<null> {
+export function initSetup(): Promise<string> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
     .then(() => ensureDirectory(getFilePath('images')))
@@ -60,7 +61,8 @@ export function initSetup(): Promise<null> {
       const avatarDir = resolve(__dirname, '../../src/avatars');
       const destDir = getFilePath('avatars');
       return copyFile(avatarDir, destDir);
-    });
+    })
+    .then(() => getConfig());
 }
 
 export function appReady(): boolean {
@@ -95,6 +97,7 @@ export function writeDefaultConfig(): void {
   ensureDirSync(getRootDir());
   const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+  getConfig();
 }
 
 export function configExists(): boolean {
@@ -102,7 +105,8 @@ export function configExists(): boolean {
 }
 
 export function getConfig(): string {
-  return JSON.parse(readFileSync(getFilePath('config.json')).toString());
+  config = JSON.parse(readFileSync(getFilePath('config.json')).toString());
+  return config;
 }
 
 export function getHumanSize(bytes: number, decimals = 2): string {
