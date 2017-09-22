@@ -20,6 +20,7 @@ export class AppBuildItemComponent implements OnInit {
   timerSubscription: any = null;
   currentTime: number;
   buildCreated: string;
+  commitMessage: string;
 
   constructor(
     private socketService: SocketService,
@@ -30,7 +31,7 @@ export class AppBuildItemComponent implements OnInit {
     }
 
   ngOnInit() {
-    this.setAvatars();
+    this.setData();
 
     if (this.build.data && this.build.data.ref && this.build.data.ref.startsWith('refs/tags/')) {
       this.tag = this.build.data.ref.replace('refs/tags/', '');
@@ -60,8 +61,24 @@ export class AppBuildItemComponent implements OnInit {
     this.socketService.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
-  setAvatars(): void {
-    if (this.build.data.head_commit) {
+  setData(): void {
+    if (this.build.data.commit) {
+      this.commitMessage = this.build.data.commit.message;
+    } else if (this.build.data.commits) {
+      const len = this.build.data.commits.length - 1;
+      this.commitMessage = this.build.data.commits[len].message;
+    } else if (this.build.data.pull_request && this.build.data.pull_request.title) {
+      this.commitMessage = this.build.data.pull_request.title;
+    } else if (this.build.data.head_commit) {
+      this.commitMessage = this.build.data.head_commit.message;
+    }
+
+    if (this.build.data.sha) {
+      const data = this.build.data;
+      this.committerAvatar = data.committer.avatar_url;
+      this.name = data.commit.committer.name;
+      this.authorAvatar = data.author.avatar_url;
+    } else if (this.build.data.head_commit) {
       const commit = this.build.data.head_commit;
       this.committerAvatar = this.build.data.sender.avatar_url;
       this.name = this.build.data.head_commit.author.name;

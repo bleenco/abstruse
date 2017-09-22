@@ -1,11 +1,8 @@
 <div class="columns">
   <div class="column is-2">
     <span class="avatar-img-container is-hidden-mobile">
-      <img *ngIf="build?.data?.sender?.avatar_url && authorAvatar" [src]="authorAvatar" class="avatar-img">
-      <img *ngIf="build?.data?.sender?.avatar_url && authorAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
-      <img *ngIf="!build?.data?.sender?.avatar_url && build?.data?.actor?.links?.avatar?.href" [src]="build?.data?.actor?.links?.avatar?.href" class="avatar-img">
-      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && build?.data?.user_avatar" [src]="build?.data?.user_avatar" class="avatar-img">
-      <img *ngIf="!build?.data?.sender?.avatar_url && !build?.data?.actor?.links?.avatar?.href && !build?.data?.user_avatar && build?.data?.user?.avatar_url" class="avatar-img" [src]="build?.data?.user?.avatar_url">
+      <img *ngIf="authorAvatar" [src]="authorAvatar" class="avatar-img">
+      <img *ngIf="authorAvatar && committerAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
     </span>
     <span *ngIf="!build?.pr && !tag" class="bold larger">#{{ build?.id }}</span>
     <span *ngIf="build?.pr && !tag" class="bold larger">PR #{{ build?.pr }}</span>
@@ -31,11 +28,7 @@
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
 
-    <span *ngIf="build?.data?.commits && !tag">{{ build?.data?.commits[0]?.message }}</span>
-    <span *ngIf="!build?.data?.commits && !tag && build?.data?.pull_request?.title">{{ build?.data?.pull_request?.title }}</span>
-    <span *ngIf="!build?.data?.commits && !tag && !build?.data?.pull_request?.title && build?.data?.message">{{ build?.data?.message }}</span>
-    <span *ngIf="!build?.data?.commits && !build?.data?.pull_request?.title && !build?.data?.message && build?.data?.object_attributes?.last_commit?.message && !tag">{{ build?.data?.object_attributes?.last_commit?.message }}</span>
-    <span *ngIf="tag">{{ build?.data?.head_commit?.message }}</span>
+    <span>{{ commitMessage }}</span>
 
     <span class="smaller">{{ buildCreated }} ago</span>
   </div>
