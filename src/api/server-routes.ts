@@ -26,7 +26,7 @@ import {
   getRepositoryBuilds,
   saveRepositorySettings
 } from './db/repository';
-import { getBuilds, getBuild, getLastBuild } from './db/build';
+import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
 import { getJobRuns } from './db/job-run';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
@@ -96,18 +96,6 @@ export function buildRoutes(): express.Router {
         })
         .catch(err => res.status(200).json({ err: err }));
       }
-  });
-
-  router.get('/last/:userid?', (req: express.Request, res: express.Response) => {
-    if (req.params.userid) {
-      getLastBuild(req.params.userid)
-        .then(build => res.status(200).json({ data: build }))
-        .catch(err => res.status(200).json({ err: err }));
-    } else {
-      getLastBuild()
-        .then(build => res.status(200).json({ data: build }))
-        .catch(err => res.status(200).json({ err: err }));
-    }
   });
 
   router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {

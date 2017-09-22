@@ -1,6 +1,7 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 import { ApiService } from './api.service';
+import { SocketService } from './socket.service';
 
 @Injectable()
 export class AuthService {
@@ -8,7 +9,7 @@ export class AuthService {
   userEvents: EventEmitter<string>;
   loginRequired: boolean;
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private socket: SocketService) {
     this.jwtHelper = new JwtHelper();
     this.userEvents = new EventEmitter<string>();
   }
@@ -24,6 +25,7 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('abs-token');
+    this.socket.emit({ type: 'userId', data: null });
   }
 
   getData(): Object {
