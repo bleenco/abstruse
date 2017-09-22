@@ -52,7 +52,7 @@
           </div>
 
           <div class="column is-12" *ngIf="!repo?.builds?.length && tab === 'builds'">
-            <div class="notification is-info">
+            <div class="message is-info">
               No builds has been runned yet.
             </div>
           </div>
@@ -102,10 +102,10 @@
                         </div>
                         <hr/>
                         <h4>Access Token</h4>
-                        <div class="notification is-warning">
+                        <div class="message">
                           <div class="columns">
                             <div class="column is-1">
-                              <i class="ion ion-ios-information"></i>
+                              <i class="ion ion-information"></i>
                             </div>
                             <div class="column is-11">
                               <p>It is important to set access token so abstruse can:</p>
@@ -142,7 +142,7 @@
                             Repository includes .abstruse.yml configuration
                           </p>
                         </div>
-                        <div class="message orange" *ngIf="checkConfigResult && (!checkConfigResult.read || !checkConfigResult.config)">
+                        <div class="message red" *ngIf="checkConfigResult && (!checkConfigResult.read || !checkConfigResult.config)">
                           <p *ngIf="!checkConfigResult.read">
                             <i class="ion ion-close-round"></i>
                             Has read permissions on repository (clone)
@@ -162,7 +162,7 @@
                             Build successfully triggered.
                           </p>
                         </div>
-                        <div class="message green" *ngIf="buildTriggerError && !triggeringBuild">
+                        <div class="message red" *ngIf="buildTriggerError && !triggeringBuild">
                             <p>
                               <i class="ion ion-close-round"></i>
                               Error triggering build. Please check your configuration.
@@ -174,10 +174,10 @@
                     <div class="column is-6">
                       <form class="form" (ngSubmit)="addEnvironmentVariable()" #addForm="ngForm">
                         <h4>Environment Variables</h4>
-                        <div class="notification is-green">
+                        <div class="message">
                           <div class="columns">
                             <div class="column is-1">
-                              <i class="ion ion-ios-information"></i>
+                              <i class="ion ion-information"></i>
                             </div>
                             <div class="column is-11">
                               <p>Environment variables are the way to customize the build process. They can be accessed from any stage of the build.</p>

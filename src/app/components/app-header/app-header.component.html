@@ -30,8 +30,11 @@
         </div>
       </a>
 
-      <a class="nav-item user-item" (click)="toggleMenu()" *ngIf="user">
+      <a class="nav-item user-item" (click)="toggleMenu()" [class.is-open]="menuDropped" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
+        <span>{{ user.fullname }}</span>
+        <i class="ion ion-chevron-down"></i>
+
         <div class="nav-dropdown" *ngIf="menuDropped">
           <a class="nav-dropdown-item" routerLink="/settings">
             Settings
