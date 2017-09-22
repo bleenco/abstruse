@@ -3,7 +3,8 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { getUser } from './db/user';
 import * as nodeRsa from 'node-rsa';
-import { getFilePath, getConfig } from './utils';
+import { RSA } from 'rsa-compat';
+import { getFilePath, config } from './utils';
 import { existsSync, exists, writeFile } from './fs';
 import { readFileSync } from 'fs';
 import { logger, LogMessageType } from './logger';
@@ -60,68 +61,59 @@ export function checkApiRequestAuth(req: express.Request): Promise<void> {
   });
 }
 
-export function decrypt(str: string, config: any): string {
-  const privateKeyPath = getFilePath(config.privateKey);
-  if (existsSync(privateKeyPath)) {
-    const key = readFileSync(privateKeyPath, 'utf8').toString();
-    const rsa = new nodeRsa();
-    rsa.importKey(key, 'private');
-    const decrypted = rsa.decrypt(str, 'utf8');
+export function encrypt(str: string): string {
+  const publicKeyPath = getFilePath(config.publicKey);
+  if (existsSync(publicKeyPath)) {
+    const key = readFileSync(publicKeyPath, 'utf8').toString();
+    const rsa = new nodeRsa(key);
 
-    return decrypted;
+    return rsa.encrypt(str, 'base64');
   } else {
     return null;
   }
 }
 
-export function generatePublicKey(): Observable<string> {
-  return new Observable(observer => {
-    const config: any = getConfig();
-    const publicKeyPath = getFilePath(config.publicKey);
+export function decrypt(str: string): string {
+  const privateKeyPath = getFilePath(config.privateKey);
+  if (existsSync(privateKeyPath)) {
+    const key = readFileSync(privateKeyPath, 'utf8').toString();
+    const rsa = new nodeRsa(key);
 
-    if (existsSync(publicKeyPath)) {
-      observer.complete();
-    } else {
-      observer.next(`[encrypt]: generating RSA public key...`);
-
-      const key = new nodeRsa({b: 4096});
-      const publicKey = key.exportKey('public').toString();
-
-      writeFile(publicKeyPath, publicKey)
-        .then(() => {
-          observer.next('[encrypt]: RSA public key successfully generated');
-          observer.complete();
-        })
-        .catch(err => {
-          observer.error(err);
-          observer.complete();
-        });
-    }
-  });
+    return rsa.decrypt(str, 'utf8');
+  } else {
+    return null;
+  }
 }
 
-export function generatePrivateKey(): Observable<string> {
+export function generateKeys(): Observable<string> {
   return new Observable(observer => {
-    const config: any = getConfig();
+    const publicKeyPath = getFilePath(config.publicKey);
     const privateKeyPath = getFilePath(config.privateKey);
 
-    if (existsSync(privateKeyPath)) {
+    if (existsSync(publicKeyPath) && existsSync(privateKeyPath)) {
       observer.complete();
     } else {
-      observer.next('[encrypt]: generating RSA private key...');
+      const bitlen = 4096;
+      const exp = 65537;
+      const options = { public: true, pem: true, internal: true };
 
-      const key = new nodeRsa({b: 4096});
-      const privateKey = key.exportKey('private').toString();
-
-      writeFile(privateKeyPath, privateKey)
-        .then(() => {
-          observer.next('[encrypt]: RSA private key successfully generated');
-          observer.complete();
-        })
-        .catch(err => {
+      RSA.generateKeypair(bitlen, exp, options, (err, keypair) => {
+        if (err) {
           observer.error(err);
           observer.complete();
-        });
+        } else {
+          writeFile(publicKeyPath, keypair.publicKeyPem)
+            .then(() => writeFile(privateKeyPath, keypair.privateKeyPem))
+            .then(() => {
+              observer.next('[encrypt]: RSA public and private key successfully generated');
+              observer.complete();
+            })
+            .catch(err => {
+              observer.error(err);
+              observer.complete();
+            });
+        }
+      });
     }
   });
 }

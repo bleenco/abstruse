@@ -14,7 +14,7 @@ import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import { initSetup } from './utils';
-import { generatePublicKey, generatePrivateKey } from './security';
+import { generateKeys } from './security';
 import * as db from './db/migrations';
 
 const server = new ExpressServer({ port: 6500 });
@@ -32,9 +32,7 @@ initSetup()
   })
   .then(() => {
     Observable
-      .merge(...[server.start(), socket.start()])
-      .concat(generatePublicKey())
-      .concat(generatePrivateKey())
+      .merge(...[server.start(), socket.start(), generateKeys()])
       .subscribe(data => {
         const msg: LogMessageType = { message: data, type: 'info', notify: false };
         logger.next(msg);

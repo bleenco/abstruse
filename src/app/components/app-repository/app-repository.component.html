@@ -149,7 +149,7 @@
                           </p>
                           <p *ngIf="!checkConfigResult.config">
                             <i class="ion ion-close-round"></i>
-                            Repository does includes .abstruse.yml configuration
+                            Repository includes .abstruse.yml configuration
                           </p>
                         </div>
                         <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
@@ -172,8 +172,25 @@
                       </form>
                     </div>
                     <div class="column is-6">
-                      <form class="form" (ngSubmit)="addEnvironmentVariable()" #addForm="ngForm">
+                      <form class="form" (ngSubmit)="addEnvironmentVariable()" #envVarForm="ngForm">
                         <h4>Environment Variables</h4>
+                        <div class="env-variables-list" *ngIf="repo?.variables?.length">
+                          <div class="columns list-item list-item-mini" *ngFor="let v of repo?.variables; let i = index;">
+                            <div class="column is-9">
+                              <span class="bold">{{ v.name }}: {{ v.value }}</span>
+                            </div>
+                            <div class="column is-2">
+                              <span *ngIf="v.encrypted">(encrypted)</span>
+                              <span *ngIf="!v.encrypted">(public)</span>
+                            </div>
+                            <div class="column is-1 justify-center">
+                              <span class="icon" name="remove-variable" (click)="removeVariable(v.id)">
+                                <img src="images/icons/remove.svg">
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
                         <div class="message">
                           <div class="columns">
                             <div class="column is-1">
@@ -185,6 +202,7 @@
                             </div>
                           </div>
                         </div>
+
                         <div class="form-field">
                           <label class="form-label">Name</label>
                           <input class="form-input" type="text" placeholder="VARIABLE_NAME" name="name" required [(ngModel)]="environmentVariableForm.name">
@@ -204,7 +222,7 @@
                           <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted"></app-selectbox>
                         </div>
                         <div class="form-field">
-                          <button type="submit" class="button float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add Variable</button>
+                          <button type="submit" class="button float-right" name="btn-add-variable" [class.is-loading]="addingEnvVar" [disabled]="!envVarForm.form.valid" required>Add Variable</button>
                         </div>
                       </form>
                     </div>
@@ -213,59 +231,6 @@
               </div>
             </div>
           </div>
-
-          <!-- <div class="column is-12" *ngIf="tab === 'settings' && repo.hasPermission">
-            <div class="columns">
-              <div class="column is-12">
-                <div class="settings-container">
-                  <h2>Environment Variables</h2>
-
-                  <div class="add-variable">
-                    <h3>Add New Variable:</h3>
-                    <form class="control-form" (ngSubmit)="addEnvironmentVariable()" #addForm="ngForm">
-                      <div class="form-field">
-                        <label class="form-label">Name</label>
-                        <input class="form-input" type="text" placeholder="Name" name="name" required [(ngModel)]="environmentVariableForm.name">
-                      </div>
-                      <div class="form-field">
-                        <label class="form-label">Value</label>
-                        <input class="form-input" type="text" placeholder="Value" name="value" required [(ngModel)]="environmentVariableForm.value">
-                      </div>
-                      <div class="form-field">
-                        <label class="form-label">Encrypted</label>
-                        <select class="form-input" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted">
-                          <option value="0">No</option>
-                          <option value="1">Yes</option>
-                        </select>
-                      </div>
-                      <div class="form-field">
-                        <button type="submit" class="button green float-right" name="btn-add-variable" [disabled]="!addForm.form.valid" required>Add New Variable</button>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div class="variables" *ngIf="repo?.variables?.length">
-                    <h3>Repository Environment Variables:</h3>
-                    <div class="columns list-item list-item-slim" *ngFor="let v of repo?.variables; let i = index;">
-                      <div class="column is-9">
-                        <span class="bold">{{ v.name }}: {{ v.value }}</span>
-                      </div>
-                      <div class="column is-2">
-                        <span *ngIf="v.encrypted">(encrypted)</span>
-                        <span *ngIf="!v.encrypted">(public)</span>
-                      </div>
-                      <div class="column is-1 justify-center">
-                          <span class="icon" name="remove-variable" (click)="removeVariable(v.id)">
-                            <img src="images/icons/remove.svg">
-                          </span>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div> -->
 
         </div>
       </div>

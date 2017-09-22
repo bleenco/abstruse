@@ -41,7 +41,12 @@ import { getLogs } from './db/log';
 import { imageExists } from './docker';
 import { getImages } from './image-builder';
 import { checkApiRequestAuth } from './security';
-import { checkConfigPresence, checkRepositoryAccess, Repository } from './config';
+import {
+  checkConfigPresence,
+  checkRepositoryAccess,
+  Repository,
+  getRemoteParsedConfig
+} from './config';
 import { getHttpJsonResponse } from './utils';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
@@ -302,16 +307,23 @@ export function repositoryRoutes(): express.Router {
     })
     .then(hasAccess => {
       if (!hasAccess) {
-        res.status(200).json({ data: { read: false, config: false } });
+        res.status(200).json({ data: { read: false, config: false, parsedcfg: false } });
       } else {
         return checkConfigPresence(repository);
       }
     })
     .then(configPresence => {
       if (!configPresence) {
-        res.status(200).json({ data: { read: true, config: false } });
+        res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
       } else {
-        res.status(200).json({ data: { read: true, config: true } });
+        return getRemoteParsedConfig(repository);
+      }
+    })
+    .then(parsedCfg => {
+      if (!parsedCfg) {
+        res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
+      } else {
+        res.status(200).json({ data: { read: true, config: false, parsedcfg: parsedCfg } });
       }
     });
   });
