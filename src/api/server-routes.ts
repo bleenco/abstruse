@@ -306,7 +306,7 @@ export function repositoryRoutes(): express.Router {
       }
       repository = {
         clone_url: repo.clone_url,
-        branch: 'master',
+        branch: repo.default_branch,
         access_token: accessToken
       };
 

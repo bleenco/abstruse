@@ -242,15 +242,8 @@ export function restartJob(jobId: number): Promise<void> {
       job_id: jobId
     }))
     .then(() => queueJob(jobId))
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job restarted'
-      });
-    })
-    .then(() => getBuild(job.builds_id))
+    .then(() => dbJob.getJob(jobId))
+    .then(job => getBuild(job.builds_id))
     .then(build => sendPendingStatus(build, build.id))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };

@@ -1,11 +1,30 @@
 .message
   display: block
   font-size: 14px
-  color: $white
   padding: 10px
   border-radius: 0
   margin: 20px 10px
-  color: $white
+  color: $color
+  border: 1px solid $border
+
+  p
+    color: $color !important
+
+  i
+    font-size: 20px
+    display: block
+    width: 20px
+    height: 20px
+    margin: 0 10px
+    float: left
+
+  ul
+    margin: 13px 0 13px 10px
+
+    li
+      padding: 0
+      margin: 0
+
 
   &.green
     background-color: rgba($green-secondary, 0.4)
@@ -13,7 +32,7 @@
     color: $green-secondary
 
     p
-      color: darken($green-secondary, 10)
+      color: darken($green-secondary, 10) !important
 
   &.orange
     background-color: rgba($orange-secondary, 0.4)
@@ -29,7 +48,7 @@
     color: $blue-background
 
     p
-      color: $blue-background
+      color: $blue-background !important
 
   img
     margin-right: 10px

@@ -77,14 +77,14 @@ export class AppJobComponent implements OnInit, OnDestroy {
         } else if (event.type === 'job restarted' && event.data === this.id) {
           this.processing = false;
         } else if (event.type === 'exposed ports') {
-          const portData = event.data.info;
+          const portData = event.data && event.data.info || null;
 
-          if (portData['22/tcp']) {
+          if (portData && portData['22/tcp']) {
             const port = portData['22/tcp'][0].HostPort;
             this.sshd = `${document.location.hostname}:${port}`;
           }
 
-          if (portData['5900/tcp']) {
+          if (portData && portData['5900/tcp']) {
             const port = portData['5900/tcp'][0].HostPort;
             this.vnc = `${document.location.hostname}:${port}`;
           }
