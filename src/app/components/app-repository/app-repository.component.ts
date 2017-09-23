@@ -55,6 +55,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   buildSuccessfullyTriggered: boolean;
   buildTriggerError: boolean;
   addingEnvVar: boolean;
+  fetchingConfig: boolean;
+  configFile: string;
+  runningConfigBuild: boolean;
+  configBuildStatus: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -293,6 +297,28 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         this.buildTriggerError = true;
       }
       this.triggeringBuild = false;
+    });
+  }
+
+  fetchConfigFile(): void {
+    this.fetchingConfig = true;
+
+    this.api.getRepositoryConfigRawFile(Number(this.id)).subscribe(ev => {
+      this.fetchingConfig = false;
+      this.configFile = ev;
+    });
+  }
+
+  runConfigBuild(): void {
+    this.runningConfigBuild = true;
+    const cfg = {
+      config: this.configFile,
+      id: this.id
+    };
+
+    this.api.runRepositoryBuildFromConfig(cfg).subscribe(ev => {
+      this.configBuildStatus = ev;
+      this.runningConfigBuild = false;
     });
   }
 

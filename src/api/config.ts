@@ -131,6 +131,17 @@ export function parseConfig(data: any): Config {
   return main;
 }
 
+export function parseConfigFromRaw(repository: Repository, raw: string): Promise<JobsAndEnv[]> {
+  return new Promise((resolve, reject) => {
+    return Promise.resolve()
+      .then(() => yaml.parse(raw))
+      .then(json => parseConfig(json))
+      .then(parsed => generateJobsAndEnv(repository, parsed))
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
+}
+
 export function checkRepositoryAccess(repository: Repository): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
@@ -162,7 +173,6 @@ export function checkConfigPresence(repository: Repository): Promise<boolean> {
     createGitTmpDir()
       .then(dir => cloneDir = dir)
       .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => resolve(true))
       .then(() => readGitDir(cloneDir))
       .then(files => repository.file_tree = files)
       .then(() => {
@@ -172,6 +182,34 @@ export function checkConfigPresence(repository: Repository): Promise<boolean> {
           resolve(true);
         }
       })
+      .catch(err => resolve(false));
+  });
+}
+
+export function getConfigRawFile(repository: Repository): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let cloneUrl = repository.clone_url;
+    let branch = repository.branch;
+    let cloneDir = null;
+
+    if (repository.access_token) {
+      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+    }
+
+    createGitTmpDir()
+      .then(dir => cloneDir = dir)
+      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
+      .then(() => readGitDir(cloneDir))
+      .then(files => repository.file_tree = files)
+      .then(() => {
+        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
+          resolve(false);
+        } else {
+          return Promise.resolve();
+        }
+      })
+      .then(() => readAbstruseConfigFile(cloneDir))
+      .then(rawFile => resolve(rawFile))
       .catch(err => resolve(false));
   });
 }

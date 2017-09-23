@@ -73,9 +73,11 @@
             <div class="columns">
               <div class="column is-12">
                 <div class="settings-container">
-                  <h2>Repository Settings</h2>
-
                   <div class="columns is-multiline">
+                    <div class="column is-12 is-marginless is-paddingless">
+                      <h2>Repository Settings</h2>
+                    </div>
+
                     <div class="column is-6">
                       <form class="form" #repoForm="ngForm" (ngSubmit)="saveRepoSettings($event)">
                         <h4>General Settings</h4>
@@ -128,49 +130,8 @@
                         </div>
                       </form>
 
-                      <form class="form">
-                        <h4>Check Configuration</h4>
-                        <p>Here you can make test if settings provided works in the wild.</p>
-                        <p>Tests includes access to repository and checking presence of .abstruse.yml config file inside repository.</p>
-                        <div class="message green" *ngIf="checkConfigResult && (checkConfigResult.read || checkConfigResult.config)">
-                          <p *ngIf="checkConfigResult.read">
-                            <i class="ion ion-checkmark-round"></i>
-                            Has read permissions on repository
-                          </p>
-                          <p *ngIf="checkConfigResult.config">
-                            <i class="ion ion-checkmark-round"></i>
-                            Repository includes .abstruse.yml configuration
-                          </p>
-                        </div>
-                        <div class="message red" *ngIf="checkConfigResult && (!checkConfigResult.read || !checkConfigResult.config)">
-                          <p *ngIf="!checkConfigResult.read">
-                            <i class="ion ion-close-round"></i>
-                            Has read permissions on repository (clone)
-                          </p>
-                          <p *ngIf="!checkConfigResult.config">
-                            <i class="ion ion-close-round"></i>
-                            Repository includes .abstruse.yml configuration
-                          </p>
-                        </div>
-                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
-                        <hr/>
-                        <h4>Test Build</h4>
-                        <p>To see if everything works as expected you can trigger new build here. Build will be run from the last commit and default branch.</p>
-                        <div class="message green" *ngIf="buildSuccessfullyTriggered && !triggeringBuild">
-                          <p>
-                            <i class="ion ion-checkmark-round"></i>
-                            Build successfully triggered.
-                          </p>
-                        </div>
-                        <div class="message red" *ngIf="buildTriggerError && !triggeringBuild">
-                            <p>
-                              <i class="ion ion-close-round"></i>
-                              Error triggering build. Please check your configuration.
-                            </p>
-                          </div>
-                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="triggeringBuild" (click)="triggerTestBuild()">Trigger Test Build</button>
-                      </form>
                     </div>
+
                     <div class="column is-6">
                       <form class="form" (ngSubmit)="addEnvironmentVariable()" #envVarForm="ngForm">
                         <h4>Environment Variables</h4>
@@ -226,6 +187,84 @@
                         </div>
                       </form>
                     </div>
+
+                    <div class="column is-12 is-marginless is-paddingless">
+                      <h2>Repository Configuration</h2>
+                    </div>
+
+                    <div class="column is-6">
+                      <form class="form">
+                        <h4>Check Configuration</h4>
+                        <p>Here you can make test if settings provided works in the wild.</p>
+                        <p>Tests includes access to repository and checking presence of .abstruse.yml config file inside repository.</p>
+                        <div class="message green" *ngIf="checkConfigResult && (checkConfigResult.read || checkConfigResult.config)">
+                          <p *ngIf="checkConfigResult.read">
+                            <i class="ion ion-checkmark-round"></i>
+                            Has read permissions on repository
+                          </p>
+                          <p *ngIf="checkConfigResult.config">
+                            <i class="ion ion-checkmark-round"></i>
+                            Repository includes .abstruse.yml configuration
+                          </p>
+                          <p *ngIf="checkConfigResult.parsedcfg">
+                            <i class="ion ion-checkmark-round"></i>
+                            Abstruse can parse .abstruse.yml configuration
+                          </p>
+                        </div>
+                        <div class="message red" *ngIf="checkConfigResult && (!checkConfigResult.read || !checkConfigResult.config)">
+                          <p *ngIf="!checkConfigResult.read">
+                            <i class="ion ion-close-round"></i>
+                            Has read permissions on repository (clone)
+                          </p>
+                          <p *ngIf="!checkConfigResult.config">
+                            <i class="ion ion-close-round"></i>
+                            Repository includes .abstruse.yml configuration
+                          </p>
+                          <p *ngIf="!checkConfigResult.parsedcfg">
+                            <i class="ion ion-close-round"></i>
+                            Abstruse cannot parse .abstruse.yml configuration
+                          </p>
+                        </div>
+                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
+
+                        <hr/>
+
+                        <h4>Test Build</h4>
+                        <p>To see if everything works as expected you can trigger new build here. Build will be run from the last commit and default branch.</p>
+                        <div class="message green" *ngIf="buildSuccessfullyTriggered && !triggeringBuild">
+                          <p>
+                            <i class="ion ion-checkmark-round"></i>
+                            Build successfully triggered.
+                          </p>
+                        </div>
+                        <div class="message red" *ngIf="buildTriggerError && !triggeringBuild">
+                          <p>
+                            <i class="ion ion-close-round"></i>
+                            Error triggering build. Please check your configuration.
+                          </p>
+                        </div>
+                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="triggeringBuild" (click)="triggerTestBuild()">Trigger Test Build</button>
+
+                      </form>
+                    </div>
+
+                    <div class="column is-6">
+                      <form class="form">
+                        <h4>Check Build Configuration File</h4>
+                        <p>If you want to check how <code>.abstruse.yml</code> config file behaves on abstruse, here you can fetch it from repository and adopt changes then run build from it.</p>
+
+                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="fetchingConfig" (click)="fetchConfigFile()">Fetch Config</button>
+
+                        <div *ngIf="configFile">
+                          <div class="form-field">
+                            <label class="form-label">.abstruse.yml config file</label>
+                            <textarea class="form-input" rows="25" [(ngModel)]="configFile" [ngModelOptions]="{ standalone: true }"></textarea>
+                          </div>
+                          <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="runningConfigBuild" (click)="runConfigBuild()">Run Build From Config</button>
+                        </div>
+                      </form>
+                    </div>
+
                   </div>
                 </div>
               </div>
