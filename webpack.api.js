@@ -37,6 +37,8 @@ module.exports = {
   externals: {
     knex: 'commonjs knex',
     sqlite3: 'commonjs sqlite3',
-    'dockerode': 'commonjs dockerode'
+    dockerode: 'commonjs dockerode',
+    'node-rsa': 'commonjs node-rsa',
+    'rsa-compat': 'commonjs rsa-compat'
   }
 };
