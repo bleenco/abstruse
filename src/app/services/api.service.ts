@@ -188,6 +188,14 @@ export class ApiService {
     return this.get(`${this.url}/repositories/trigger-test-build/${id}`, null, true);
   }
 
+  getRepositoryConfigRawFile(id: number): Observable<any> {
+    return this.get(`${this.url}/repositories/get-config-file/${id}`, null, true);
+  }
+
+  runRepositoryBuildFromConfig(data: any): Observable<any> {
+    return this.post(`${this.url}/repositories/run-build-config`, data, true);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

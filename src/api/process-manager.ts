@@ -417,7 +417,7 @@ export function stopJob(jobId: number): Promise<void> {
     });
 }
 
-export function startBuild(data: any): Promise<any> {
+export function startBuild(data: any, buildConfig?: any): Promise<any> {
   let config: JobsAndEnv[];
   let repoId = data.repositories_id;
   let pr = null;
@@ -455,7 +455,11 @@ export function startBuild(data: any): Promise<any> {
         access_token: repository.access_token || null
       };
 
-      return getRemoteParsedConfig(repo);
+      if (buildConfig) {
+        return Promise.resolve(buildConfig);
+      } else {
+        return getRemoteParsedConfig(repo);
+      }
     })
     .then(parsedConfig => config = parsedConfig)
     .then(() => data.parsed_config = JSON.stringify(config))

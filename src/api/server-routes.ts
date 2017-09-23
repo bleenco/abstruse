@@ -45,7 +45,9 @@ import {
   checkConfigPresence,
   checkRepositoryAccess,
   Repository,
-  getRemoteParsedConfig
+  getRemoteParsedConfig,
+  getConfigRawFile,
+  parseConfigFromRaw
 } from './config';
 import { getHttpJsonResponse } from './utils';
 import { startBuild } from './process-manager';
@@ -294,8 +296,8 @@ export function repositoryRoutes(): express.Router {
     let repository: Repository = null;
     getRepository(req.params.id).then(repo => {
       let accessToken = null;
-      if (repo.access_token && repo.access_token[0]) {
-        accessToken = repo.access_token[0].token || null;
+      if (repo.access_token && repo.access_token) {
+        accessToken = repo.access_token.token || null;
       }
       repository = {
         clone_url: repo.clone_url,
@@ -321,9 +323,9 @@ export function repositoryRoutes(): express.Router {
     })
     .then(parsedCfg => {
       if (!parsedCfg) {
-        res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
+        res.status(200).json({ data: { read: true, config: true, parsedcfg: false } });
       } else {
-        res.status(200).json({ data: { read: true, config: false, parsedcfg: parsedCfg } });
+        res.status(200).json({ data: { read: true, config: true, parsedcfg: parsedCfg } });
       }
     });
   });
@@ -360,6 +362,83 @@ export function repositoryRoutes(): express.Router {
         };
 
         return startBuild(buildData);
+      })
+      .then(() => res.status(200).json({ data: true }))
+      .catch(err => res.status(200).json({ data: false }));
+  });
+
+  router.get('/get-config-file/:id', (req: express.Request, res: express.Response) => {
+    let repository = null;
+    getRepository(req.params.id)
+      .then(repo => {
+        let accessToken = null;
+        if (repo.access_token) {
+          accessToken = repo.access_token.token || null;
+        }
+        repository = {
+          clone_url: repo.clone_url,
+          branch: repo.default_branch,
+          access_token: accessToken
+        };
+
+        return getConfigRawFile(repository);
+      })
+      .then(rawFile => {
+        if (!rawFile) {
+          res.status(200).json({ data: false });
+        } else {
+          res.status(200).json({ data: rawFile });
+        }
+      })
+      .catch(err => res.status(200).json({ data: false }));
+  });
+
+  router.post('/run-build-config', (req: express.Request, res: express.Response) => {
+    let repo: Repository = null;
+    let payload: any = null;
+    getRepository(req.body.id)
+      .then(repository => {
+        if (!repository.api_url || !repository.repository_provider) {
+          res.status(200).json({ data: false });
+          return Promise.reject(null);
+        }
+
+        let accessToken = null;
+        if (repository.access_token) {
+          accessToken = repository.access_token.token || null;
+        }
+        repo = {
+          clone_url: repository.clone_url,
+          branch: repository.default_branch,
+          access_token: accessToken
+        };
+
+        if (repository.repository_provider === 'github') {
+          let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
+            repository.default_branch;
+          let accessToken = null;
+
+          if (repository.access_token) {
+            accessToken = repository.access_token.token || null;
+          }
+
+          if (accessToken) {
+            url = url.replace('//', `//${accessToken}@`);
+          }
+
+          return getHttpJsonResponse(url);
+        }
+      })
+      .then(load => payload = load)
+      .then(() => parseConfigFromRaw(repo, req.body.config))
+      .then(config => {
+        const buildData = {
+          data: payload,
+          start_time: new Date(),
+          repositories_id: req.body.id
+        };
+
+        return startBuild(buildData, config);
       })
       .then(() => res.status(200).json({ data: true }))
       .catch(err => res.status(200).json({ data: false }));
