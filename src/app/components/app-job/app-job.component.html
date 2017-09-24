@@ -103,7 +103,7 @@
               </div>
             </div>
           </div>
-          <div class="column is-12" *ngIf="sshd && vnc">
+          <div class="column is-12" *ngIf="jobRun.status === 'running' && sshd && vnc">
             <div class="ssh-container">
               <span class="icon">
                 <img src="images/icons/ssh.svg">

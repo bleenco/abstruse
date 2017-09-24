@@ -66,7 +66,7 @@ export function initSetup(): Promise<string> {
 }
 
 export function appReady(): boolean {
-  return existsSync(getFilePath('images')) && existsSync(getFilePath('docker-essential'));
+  return existsSync(getFilePath('config.json')) && existsSync(getFilePath('docker-essential'));
 }
 
 export function getRootDir(): string {
