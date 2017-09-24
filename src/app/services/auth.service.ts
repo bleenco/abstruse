@@ -1,4 +1,5 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 import { ApiService } from './api.service';
 import { SocketService } from './socket.service';
@@ -9,9 +10,20 @@ export class AuthService {
   userEvents: EventEmitter<string>;
   loginRequired: boolean;
 
-  constructor(private api: ApiService, private socket: SocketService) {
+  constructor(
+    private api: ApiService,
+    private socket: SocketService,
+    private router: Router
+  ) {
     this.jwtHelper = new JwtHelper();
     this.userEvents = new EventEmitter<string>();
+
+    this.api.isAppReady().subscribe(ready => {
+      if (!ready) {
+        this.logout();
+        this.router.navigate(['/setup']);
+      }
+    });
   }
 
   isLoggedIn(): boolean {
