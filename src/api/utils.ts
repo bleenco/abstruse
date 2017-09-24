@@ -10,13 +10,14 @@ import {
   writeFile
 } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
-import { ensureDirSync } from 'fs-extra';
+import { ensureDirSync, statSync, remove } from 'fs-extra';
 import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 import * as request from 'request';
 import * as temp from 'temp';
 import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
 import * as nodeRsa from 'node-rsa';
+import * as glob from 'glob';
 
 const defaultConfig = {
   url: null,
@@ -107,6 +108,29 @@ export function configExists(): boolean {
 export function getConfig(): string {
   config = JSON.parse(readFileSync(getFilePath('config.json')).toString());
   return config;
+}
+
+export function getCacheFilesFromPattern(pattern: string): any[] {
+  const cacheFolder = getFilePath('cache');
+  const search = glob.sync(join(cacheFolder, pattern));
+
+  return [].concat(search.map(result => {
+    return {
+      filename: result.split('/').pop(),
+      size: getHumanSize(statSync(result).size)
+    };
+  }));
+}
+
+export function deleteCacheFilesFromPattern(pattern): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const cacheFolder = getFilePath('cache');
+    const search = glob.sync(join(cacheFolder, pattern));
+
+    Promise.all(search.map(result => remove(result)))
+      .then(() => resolve())
+      .catch(err => reject(err));
+  });
 }
 
 export function getHumanSize(bytes: number, decimals = 2): string {
