@@ -190,10 +190,10 @@ describe('Builds', () => {
         return element.all(by.css('.is-running')).count().then(count => count > 0);
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.build-time')).isPresent();
+        return element.all(by.css('.build-time')).first().isPresent();
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.build-time')).isDisplayed();
+        return element.all(by.css('.build-time')).first().isDisplayed();
       }))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.build-time')).first()

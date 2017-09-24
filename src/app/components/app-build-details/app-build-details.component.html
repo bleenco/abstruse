@@ -88,7 +88,7 @@
                   </div>
                   <div class="column is-2">
                     <p class="text-small">
-                      Build started {{ timeWords }} ago
+                      <span *ngIf="status !== 'running'">Build started {{ timeWords }} ago</span>
                       <span *ngIf="status === 'running' && previousRuntime && previousRuntime >= (currentTime - totalTime)">approximately {{ previousRuntime - (currentTime - totalTime) | date:'mm:ss' }} remaining</span>
                     </p>
                   </div>

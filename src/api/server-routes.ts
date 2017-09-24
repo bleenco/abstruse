@@ -479,7 +479,6 @@ export function setupRoutes(): express.Router {
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
-      docker.imageExists('abstruse'),
       Observable.fromPromise(exists(getFilePath('config.json'))),
       Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
       Observable.fromPromise(usersExists())

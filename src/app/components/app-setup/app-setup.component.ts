@@ -50,7 +50,7 @@ export class AppSetupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.isAppReady().delay(1000).subscribe(event => {
+    this.apiService.isAppReady().delay(250).subscribe(event => {
       if (event) {
         this.router.navigate(['/login']);
       } else {
@@ -65,7 +65,7 @@ export class AppSetupComponent implements OnInit {
 
   checkConfiguration(): void {
     this.loading = true;
-    this.apiService.getServerStatus().delay(1000).subscribe((resp: ServerStatus) => {
+    this.apiService.getServerStatus().delay(250).subscribe((resp: ServerStatus) => {
       this.serverStatus = resp;
       const i =
         Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
@@ -76,7 +76,7 @@ export class AppSetupComponent implements OnInit {
 
   continueToDb(): void {
     this.loading = true;
-    this.apiService.getDatabaseStatus().delay(2000).subscribe(dbStatus => {
+    this.apiService.getDatabaseStatus().delay(250).subscribe(dbStatus => {
       this.loading = false;
       if (!dbStatus) {
         this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
@@ -94,7 +94,7 @@ export class AppSetupComponent implements OnInit {
 
   createUser(): void {
     this.loading = true;
-    this.apiService.createUser(this.user).delay(2000).subscribe(event => {
+    this.apiService.createUser(this.user).delay(250).subscribe(event => {
       this.loading = false;
       if (event) {
         this.step = 'done';
