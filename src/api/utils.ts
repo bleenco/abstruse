@@ -58,7 +58,7 @@ export function initSetup(): Promise<string> {
       return copyFile(srcDir, destDir);
     })
     .then(() => {
-      const avatarDir = resolve(__dirname, '../../src/avatars');
+      const avatarDir = resolve(__dirname, '../../src/files/avatars');
       const destDir = getFilePath('avatars');
       return copyFile(avatarDir, destDir);
     })
