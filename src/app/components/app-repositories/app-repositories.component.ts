@@ -70,7 +70,7 @@ export class AppRepositoriesComponent implements OnInit {
     e.preventDefault();
     e.stopPropagation();
 
-    this.router.navigate(['repo', id]);
+    this.router.navigate(['repo', id], { queryParams: { tab: 'builds' } });
   }
 
   onKeywordChanged(text: string): void {

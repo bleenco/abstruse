@@ -32,7 +32,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   fetching: boolean;
   sub: Subscription;
   subUpdate: Subscription;
-  tab: 'builds' | 'settings';
+  tab: string;
   id: string;
   repo: any;
   url: string;
@@ -90,23 +90,27 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.userData = this.authService.getData();
     this.userId = this.userData && this.userData.id || null;
 
-    this.tab = 'settings';
     this.url = this.config.url;
 
-    this.route.params.subscribe(params => {
-      this.id = params.id || null;
-      if (!this.id) {
-        this.router.navigate(['repositories']);
-      } else {
-        this.fetch();
-        this.fetchBuilds();
-        this.fetchBadge();
+    this.id = this.route.snapshot.params.id;
+    const queryParams = this.route.snapshot.queryParams.tab;
+    if (!queryParams) {
+      this.router.navigate(['/repo', this.id], { queryParams: { tab: 'builds' } });
+    } else {
+      this.tab = queryParams;
+    }
 
-        if (this.userId) {
-          this.fetchTokens();
-        }
+    if (!this.id) {
+      this.router.navigate(['repositories']);
+    } else {
+      this.fetch();
+      this.fetchBuilds();
+      this.fetchBadge();
+
+      if (this.userId) {
+        this.fetchTokens();
       }
-    });
+    }
 
     this.sub = this.socketService.outputEvents
       .filter(x => x.type !== 'data')
@@ -183,6 +187,15 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
     if (this.subUpdate) {
       this.subUpdate.unsubscribe();
+    }
+  }
+
+  switchTab(tab: string): void {
+    if (this.route.snapshot.queryParams.tab === tab) {
+      return;
+    } else {
+      this.router.navigate(['repo', this.id], { queryParams: { tab: tab } });
+      this.tab = tab;
     }
   }
 

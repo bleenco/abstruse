@@ -11,8 +11,8 @@
     <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons" *ngIf="userId">
-        <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="tab = 'builds'">Builds</button>
-        <button class="group-button" name="btn-settings" [class.is-active]="tab === 'settings'" (click)="tab = 'settings'">Settings</button>
+        <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">Builds</button>
+        <button class="group-button" name="btn-settings" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')">Settings</button>
       </div>
     </div>
   </div>
@@ -261,6 +261,12 @@
                             <textarea class="form-input" rows="25" [(ngModel)]="configFile" [ngModelOptions]="{ standalone: true }"></textarea>
                           </div>
                           <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="runningConfigBuild" (click)="runConfigBuild()">Run Build From Config</button>
+                          <div class="message green" *ngIf="configBuildStatus">
+                            <p>
+                              <i class="ion ion-checkmark-round"></i>
+                              Build has been runned successfully.
+                            </p>
+                          </div>
                         </div>
                       </form>
                     </div>
