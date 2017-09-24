@@ -1,3 +1,22 @@
+<a name="1.0.0-beta.4"></a>
+# [1.0.0-beta.4](https://github.com/bleenco/abstruse/compare/1.0.0-beta.1...1.0.0-beta.4) (2017-09-24)
+
+
+### Bug Fixes
+
+* running times ([72f4d28](https://github.com/bleenco/abstruse/commit/72f4d28))
+* **builds:** return job failed status correctly, cleanup docker containers ([ae5b740](https://github.com/bleenco/abstruse/commit/ae5b740))
+* **exposed-ports:** fix socket exposed ports ([d47193c](https://github.com/bleenco/abstruse/commit/d47193c))
+* **repository:** trigger new build and fetch latest build ([d1c4692](https://github.com/bleenco/abstruse/commit/d1c4692))
+* **times:** fix commit and build start times ([1c9a0ea](https://github.com/bleenco/abstruse/commit/1c9a0ea))
+
+
+### Features
+
+* **cache:** make cache deletable from repository settings ([6e229d8](https://github.com/bleenco/abstruse/commit/6e229d8))
+
+
+
 <a name="1.0.0-beta.2"></a>
 # [1.0.0-beta.2](https://github.com/bleenco/abstruse/compare/1.0.0-beta.1...1.0.0-beta.2) (2017-09-24)
 
