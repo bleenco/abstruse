@@ -124,10 +124,12 @@ export function startBuildProcess(
             ].join(' ');
             const tmsg = `[error]: executed command returned exit code ${event.data}`;
             observer.next({ type: 'exit', data: red(tmsg) });
-            sub.unsubscribe();
             observer.error(msg);
             docker.killContainer(name)
-              .then(() => observer.complete())
+              .then(() => {
+                sub.unsubscribe();
+                observer.complete();
+              })
               .catch(err => console.error(err));
           }
         } else {
@@ -137,8 +139,8 @@ export function startBuildProcess(
         observer.error(err);
         docker.killContainer(name)
           .then(() => {
-            observer.complete();
             sub.unsubscribe();
+            observer.complete();
           })
           .catch(err => console.error(err));
       }, () => {
@@ -146,8 +148,8 @@ export function startBuildProcess(
         observer.next({ type: 'exit', data: green(msg) });
         docker.killContainer(name)
           .then(() => {
-            observer.complete();
             sub.unsubscribe();
+            observer.complete();
           })
           .catch(err => console.error(err));
       });

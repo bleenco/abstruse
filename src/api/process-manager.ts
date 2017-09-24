@@ -163,6 +163,14 @@ function execJob(proc: JobProcess): Observable<{}> {
                   additionalData: time.getTime()
                 });
               })
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  job_id: proc.job_id,
+                  data: 'job failed'
+                });
+              })
               .then(() => observer.complete())
               .catch(err => {
                 const msg: LogMessageType = {
@@ -233,6 +241,14 @@ function execJob(proc: JobProcess): Observable<{}> {
                   message: `[error]: ${err}`, type: 'error', notify: false
                 };
                 logger.next(msg);
+
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  job_id: proc.job_id,
+                  data: 'job failed'
+                });
+
                 observer.complete();
               });
           });
