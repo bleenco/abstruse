@@ -59,6 +59,10 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   configFile: string;
   runningConfigBuild: boolean;
   configBuildStatus: boolean;
+  cache: any[];
+  cacheDeleted: boolean;
+  fetchingCache: boolean;
+  deletingCache: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -106,6 +110,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       this.fetch();
       this.fetchBuilds();
       this.fetchBadge();
+      this.fetchCache();
 
       if (this.userId) {
         this.fetchTokens();
@@ -287,6 +292,25 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   gotoBuild(buildId: number) {
     this.router.navigate(['build', buildId]);
+  }
+
+  fetchCache(): void {
+    this.fetchingCache = true;
+    this.cache = [];
+
+    this.api.fetchCacheForRepository(Number(this.id)).subscribe(cache => {
+      this.cache = cache;
+      this.fetchingCache = false;
+    });
+  }
+
+  deleteCache(): void {
+    this.deletingCache = true;
+    this.api.deleteCacheForRepository(Number(this.id)).subscribe(status => {
+      this.cacheDeleted = true;
+      this.deletingCache = false;
+      this.fetchCache();
+    });
   }
 
   checkRepositoryConfig(): void {

@@ -196,6 +196,14 @@ export class ApiService {
     return this.post(`${this.url}/repositories/run-build-config`, data, true);
   }
 
+  fetchCacheForRepository(id: number): Observable<any> {
+    return this.get(`${this.url}/repositories/get-cache/${id}`, null, true);
+  }
+
+  deleteCacheForRepository(id: number): Observable<any> {
+    return this.get(`${this.url}/repositories/delete-cache/${id}`, null, true);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

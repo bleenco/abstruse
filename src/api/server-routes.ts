@@ -49,7 +49,11 @@ import {
   getConfigRawFile,
   parseConfigFromRaw
 } from './config';
-import { getHttpJsonResponse } from './utils';
+import {
+  getHttpJsonResponse,
+  getCacheFilesFromPattern,
+  deleteCacheFilesFromPattern
+} from './utils';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
 
@@ -439,6 +443,24 @@ export function repositoryRoutes(): express.Router {
         };
 
         return startBuild(buildData, config);
+      })
+      .then(() => res.status(200).json({ data: true }))
+      .catch(err => res.status(200).json({ data: false }));
+  });
+
+  router.get('/get-cache/:id', (req: express.Request, res: express.Response) => {
+    getRepository(req.params.id)
+      .then(repo => {
+        const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
+        res.status(200).json({ data: getCacheFilesFromPattern(searchPattern) });
+      });
+  });
+
+  router.get('/delete-cache/:id', (req: express.Request, res: express.Response) => {
+    getRepository(req.params.id)
+      .then(repo => {
+        const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
+        return deleteCacheFilesFromPattern(searchPattern);
       })
       .then(() => res.status(200).json({ data: true }))
       .catch(err => res.status(200).json({ data: false }));

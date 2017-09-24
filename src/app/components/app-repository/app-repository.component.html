@@ -189,6 +189,46 @@
                     </div>
 
                     <div class="column is-12 is-marginless is-paddingless">
+                      <h2>Repository Cache</h2>
+                    </div>
+
+                    <div class="column is-6">
+                      <form class="form">
+                        <h4>Cached Dependencies and Directories</h4>
+                        <p>Using cache can speed up builds as it stores contents that does not often change.</p>
+
+                        <div *ngIf="cache?.length && !fetchingCache">
+                          <div class="columns list-item list-item-mini" *ngFor="let c of cache">
+                            <div class="column is-9">
+                              <span class="bold">{{ c.filename }}</span>
+                            </div>
+                            <div class="column is-3 justify-center">
+                              <span>{{ c.size }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="message" *ngIf="!cache?.length">
+                          <p>
+                            <i class="ion ion-information"></i>
+                            No cached files or folders found for this repository.
+                          </p>
+                        </div>
+
+                        <div class="message green" *ngIf="cacheDeleted">
+                          <p>
+                            <i class="ion ion-checkmark-round"></i>
+                            Cache has been deleted.
+                          </p>
+                        </div>
+
+                        <button type="button" class="button is-fullwidth mtb20" *ngIf="cache?.length" [class.is-loading]="deletingCache" (click)="deleteCache()">Delete Cache</button>
+                      </form>
+                    </div>
+
+                    <div class="column is-6"></div>
+
+                    <div class="column is-12 is-marginless is-paddingless">
                       <h2>Repository Configuration</h2>
                     </div>
 

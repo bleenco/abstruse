@@ -18,7 +18,7 @@
       </a>
     </div>
     <div class="nav-right">
-      <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
+      <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
         <img src="/images/icons/notification.svg">
         <div class="notify-num-container" *ngIf="notifications?.length">
           <span>{{ notifications?.length }}</span>
@@ -28,7 +28,7 @@
             <span [ngClass]="{ error: notify.type === 'error' }">{{ notify.message }}</span>
           </div>
         </div>
-      </a>
+      </a> -->
 
       <a class="nav-item user-item" (click)="toggleMenu()" [class.is-open]="menuDropped" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
