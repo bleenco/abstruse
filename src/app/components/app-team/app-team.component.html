@@ -4,66 +4,20 @@
   <div class="container">
     <div class="nav-left">
       <span class="nav-item">
-        <h1>Team</h1>
+        <h1>Team Management</h1>
       </span>
     </div>
     <div class="nav-center">
 
     </div>
     <div class="nav-right">
+      <button type="button" class="button blue w200" (click)="showAddUser()" name="btn-addUser" [disabled]="addUser || !user.admin">
+        <i class="ionicon ion-person-add"></i>
+        Add User
+      </button>
     </div>
   </div>
 </nav>
-
-<div class="container">
-  <div class="columns">
-    <div class="column is-12" *ngIf="user.admin">
-      <div *ngIf="!addUser">
-        <button type="button" class="button green float-right" name="btn-addUser" (click)="showAddUser()">
-          Add New User
-        </button>
-      </div>
-      <div *ngIf="addUser">
-        <div class="notification is-danger" *ngIf="error">
-          <button class="delete" (click)="error = false"></button>
-          Adding user failed.
-        </div>
-        <div class="notification is-success" *ngIf="success">
-          <button class="delete" (click)="error = false"></button>
-          User successfully added.
-        </div>
-        <form class="control-form" (ngSubmit)="addNewUser($event)" #addForm="ngForm">
-          <div class="form-field">
-            <label class="form-label">Email (Username)</label>
-            <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="userForm.email">
-          </div>
-          <div class="form-field">
-            <label class="form-label">Full Name</label>
-            <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="userForm.fullname">
-          </div>
-          <div class="form-field">
-            <label class="form-label">New Password</label>
-            <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userForm.password">
-          </div>
-          <div class="form-field">
-            <label class="form-label">Repeat New Password</label>
-            <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required validateEqual="password" [(ngModel)]="userForm.confirmPassword">
-          </div>
-          <div class="form-field">
-            <label class="form-label">Admin</label>
-            <select class="form-input" name="admin" required [(ngModel)]="userForm.admin">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <button type="submit" class="button green float-right" name="btn-saveNewUser" [disabled]="!addForm.form.valid" required>Add New User</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div class="container">
   <div class="columns">
@@ -81,21 +35,69 @@
           </div>
 
           <div class="column is-12" *ngIf="users && users.length">
-            <div class="columns list-item list-item-slim" *ngFor="let user of users; let i = index;" (click)="goToUser(user.id)">
-              <div class="column is-1">
-                <img [src]="user.avatarUrl" class="avatar-img">
+            <div class="columns is-multiline">
+              <div class="column is-4" *ngFor="let user of users; let i = index;">
+                <div class="team-user-item">
+                  <div class="user-item-avatar-container">
+                    <img [src]="user.avatarUrl">
+                  </div>
+                  <div class="user-item-data has-text-centered">
+                    <h2>{{ user.fullname }}</h2>
+                    <h3>{{ user.email }}</h3>
+                    <p>{{ user.created_at | date:'medium' }}</p>
+                  </div>
+                  <div class="user-item-buttons">
+                    <button type="button" class="button blue" (click)="goToUser(user.id)">Edit Profile</button>
+                  </div>
+                  <hr/>
+                  <div class="user-item-repositories">
+                    <h4>Repository Permissions</h4>
+                    <div *ngFor="let repo of user.permissions" class="label-container">
+                      <a class="label" *ngIf="repo.repository?.full_name" [routerLink]="['/repo', repo.id]">{{ repo.repository?.full_name }}</a>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="column is-2">
-                <span class="bold">{{ user.fullname }}</span>
-              </div>
-              <div class="column is-5">
-                <span>{{ user.email }}</span>
-              </div>
-              <div class="column is-3">
-                {{ user.created_at | date:'medium' }}
-              </div>
-              <div class="column is-1">
-                <button class="button">Edit</button>
+              <div class="column is-4" *ngIf="addUser">
+                <form class="form" (ngSubmit)="addNewUser($event)" #addForm="ngForm">
+                  <h4>Add User</h4>
+                  <div class="message red" *ngIf="error">
+                    <p>
+                      <i class="ion ion-close-round"></i>
+                      Adding user failed.
+                    </p>
+                  </div>
+                  <div class="message green" *ngIf="success">
+                    <p>
+                      <i class="ion ion-checkmark-round"></i>
+                      User successfully added.
+                    </p>
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Email (Username)</label>
+                    <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="userForm.email">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Full Name</label>
+                    <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="userForm.fullname">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">New Password</label>
+                    <input class="form-input" type="password" placeholder="New Password" name="password" required [(ngModel)]="userForm.password">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Repeat New Password</label>
+                    <input class="form-input" type="password" placeholder="Repeat New Password" name="repeat_password" required validateEqual="password" [(ngModel)]="userForm.confirmPassword">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Admin</label>
+                    <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="userForm.admin" required></app-selectbox>
+                  </div>
+                  <div class="user-item-buttons">
+                    <button type="button" class="button red" (click)="resetForm()">Cancel</button>
+                    <button type="submit" class="button green" name="btn-saveNewUser" [disabled]="!addForm.form.valid" required>Add New User</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

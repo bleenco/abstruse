@@ -24,6 +24,7 @@ export class AppTeamComponent implements OnInit {
   users: any[];
   user: any;
   userForm: AddUserForm;
+  yesNoOptions: { key: number, value: string }[];
 
   constructor(
     private api: ApiService,
@@ -38,6 +39,7 @@ export class AppTeamComponent implements OnInit {
     this.userForm = {
       email: null, fullname: null, password: null, confirmPassword: null, admin: 0
     };
+    this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
   }
 
   ngOnInit() {
@@ -66,18 +68,18 @@ export class AppTeamComponent implements OnInit {
     e.preventDefault();
 
     this.auth.addNewUser(this.userForm)
-    .then(res => {
-      if (res) {
-        this.success = true;
-        this.error = false;
-        this.fetch();
-        setTimeout(() => this.success = false, 5000);
-        this.addUser = false;
-      } else {
-        this.error = true;
-        this.success = false;
-      }
-    });
+      .then(res => {
+        if (res) {
+          this.success = true;
+          this.error = false;
+          this.fetch();
+          setTimeout(() => this.success = false, 5000);
+          this.addUser = false;
+        } else {
+          this.error = true;
+          this.success = false;
+        }
+      });
 
     this.userForm = {
       email: null, fullname: null, password: null, confirmPassword: null, admin: 0
@@ -86,5 +88,12 @@ export class AppTeamComponent implements OnInit {
 
   goToUser(id: number): void {
     this.router.navigate(['user', id]);
+  }
+
+  resetForm(): void {
+    this.addUser = false;
+    this.userForm = {
+      email: null, fullname: null, password: null, confirmPassword: null, admin: 0
+    };
   }
 }

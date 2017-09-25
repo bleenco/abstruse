@@ -11,8 +11,14 @@
     <div class="nav-center"></div>
     <div class="nav-right">
       <div class="group-buttons" *ngIf="userId">
-        <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">Builds</button>
-        <button class="group-button" name="btn-settings" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')">Settings</button>
+        <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">
+          <i class="ionicon ion-hammer"></i>
+          Builds
+        </button>
+        <button class="group-button" name="btn-settings" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')">
+          <i class="ionicon ion-wrench"></i>
+          Settings
+        </button>
       </div>
     </div>
   </div>

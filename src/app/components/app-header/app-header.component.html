@@ -4,16 +4,20 @@
       <a class="nav-item nav-logo" routerLink="/">
         <img src="images/abstruse-text-logo.svg">
       </a>
-      <a class="nav-item nav-team is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active">
+      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active">
+        <i class="ionicon ion-pie-graph"></i>
         Dashboard
       </a>
       <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+        <i class="ionicon ion-ios-people"></i>
         Team
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
+        <i class="ionicon ion-code"></i>
         Repositories
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
+        <i class="ionicon ion-ios-folder"></i>
         Images
       </a>
     </div>
