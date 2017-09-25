@@ -11,7 +11,7 @@
       <div class="columns">
         <div class="column is-5">
           <div class="content-box">
-            <div class="content-box-list-item">
+            <div class="content-box-list-item" (click)="tab = 'profile'" [class.is-active]="tab === 'profile'">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-person"></i>
               </div>
@@ -20,7 +20,7 @@
                 <p>How your profile looks like?</p>
               </div>
             </div>
-            <div class="content-box-list-item">
+            <div class="content-box-list-item" (click)="tab = 'tokens'" [class.is-active]="tab === 'tokens'">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-key"></i>
               </div>
@@ -29,7 +29,7 @@
                 <p>User saved access tokens.</p>
               </div>
             </div>
-            <div class="content-box-list-item">
+            <div class="content-box-list-item" (click)="tab = 'permissions'" [class.is-active]="tab === 'permissions'">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-ios-paper"></i>
               </div>
@@ -41,7 +41,8 @@
           </div>
         </div>
         <div class="column is-7">
-          <div class="content-box">
+
+          <div class="content-box" *ngIf="tab === 'profile'">
             <div class="user-content-profile">
               <h1>User Profile</h1>
               <div class="columns">
@@ -51,128 +52,191 @@
                   </figure>
                 </div>
                 <div class="column is-9">
-                  <div class="form-field">
-                    <label class="form-label">Full Name</label>
-                    <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.fullname">
+                  <form class="form borderless" (ngSubmit)="updateUser($event)" #editForm="ngForm">
+                    <div class="message red" *ngIf="!saving && userSaved === false">
+                      <p>
+                        <i class="ion ion-close-round"></i>
+                        Error saving user data.
+                      </p>
+                    </div>
+                    <div class="message green" *ngIf="!saving && userSaved">
+                      <p>
+                        <i class="ion ion-checkmark-round"></i>
+                        User data successfully saved.
+                      </p>
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Full Name</label>
+                      <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Email</label>
+                      <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.email">
+                    </div>
+                    <div class="form-field">
+                      <label class="form-label">Admin</label>
+                      <app-selectbox [data]="yesNoOptions" name="admin" required [(ngModel)]="user.admin" required></app-selectbox>
+                    </div>
+                    <div class="form-field">
+                      <button type="submit" class="button float-right" [class.is-loading]="saving" [disabled]="!editForm.form.valid">Save User Data</button>
+                    </div>
+                  </form>
+                  <form class="form borderless" (ngSubmit)="updatePassword($event)" #passwdForm="ngForm">
+                    <div class="message red" *ngIf="!savingPassword && passwordSaved === false">
+                      <p>
+                        <i class="ion ion-close-round"></i>
+                        Error saving user password.
+                      </p>
+                    </div>
+                    <div class="message green" *ngIf="!savingPassword && passwordSaved">
+                      <p>
+                        <i class="ion ion-checkmark-round"></i>
+                        User password successfully updated.
+                      </p>
+                    </div>
+                    <label class="form-label">Change Password</label>
+                    <div class="form-field flex-centered">
+                      <input class="form-input" type="password" placeholder="Password" name="password" required [(ngModel)]="password">
+                      <button type="submit" class="button float-right" [class.is-loading]="savingPassword" [disabled]="!passwdForm.form.valid">Change</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="content-box" *ngIf="tab === 'tokens'">
+            <div class="user-content-profile">
+              <h1>Access Tokens</h1>
+              <div class="message" *ngIf="!user?.access_tokens?.length">
+                <div class="columns">
+                  <div class="column is-1">
+                    <i class="ion ion-key"></i>
                   </div>
-                  <div class="form-field">
-                    <label class="form-label">Email</label>
-                    <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.email">
+                  <div class="column is-11">
+                    <p>No access tokens found.</p>
                   </div>
-                  <div class="form-field">
-                    <label class="form-label">Admin</label>
-                    <app-selectbox [data]="yesNoOptions" name="admin" required [(ngModel)]="user.admin" required></app-selectbox>
+                </div>
+              </div>
+              <div class="access-tokens-container" *ngIf="user?.access_tokens?.length">
+                <div class="access-token-item" *ngFor="let token of user?.access_tokens">
+                  <div class="columns">
+                    <div class="column is-1">
+                      <i class="ionicon ion-key"></i>
+                    </div>
+                    <div class="column is-6">
+                      <span>{{ token.description }}</span>
+                    </div>
+                    <div class="column is-4">
+                      <span>{{ token.created_at | date:'medium' }}</span>
+                    </div>
+                    <div class="column is-1 justify-center">
+                      <i class="ionicon ion-close pointer"></i>
+                    </div>
                   </div>
-                  <div class="form-field">
-                    <button type="button" class="button blue float-right" [class.is-loading]="saving">Save User Data</button>
+                </div>
+              </div>
+              <form class="form" #tokenForm="ngForm" (ngSubmit)="addToken($event)" *ngIf="loggedUser.id === user.id">
+                <h4>New Access Token</h4>
+                <div class="message">
+                  <div class="columns">
+                    <div class="column is-1">
+                      <i class="ion ion-alert"></i>
+                    </div>
+                    <div class="column is-11">
+                      <p>Treat your access tokens with same respect as passwords.</p>
+                      <p>Once you save access token you cannot see it again.</p>
+                    </div>
                   </div>
-                  <hr/>
-                  <label class="form-label">Change Password</label>
-                  <div class="form-field flex-centered">
-                    <input class="form-input" type="password" placeholder="Password" name="password" required [(ngModel)]="password">
-                    <button type="button" class="button blue float-right" [class.is-loading]="saving">Change</button>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Token Description</label>
+                  <input class="form-input" type="text" placeholder="Access Token Description" name="token_description" required [(ngModel)]="token.description">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Token</label>
+                  <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
+                </div>
+                <div class="form-field">
+                  <button type="submit" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="content-box" *ngIf="tab === 'permissions'">
+            <div class="user-content-profile">
+              <h1>Permissions</h1>
+              <div class="message green" *ngIf="user?.admin">
+                <div class="columns">
+                  <div class="column is-1">
+                    <i class="ion ion-ios-paper"></i>
+                  </div>
+                  <div class="column is-11">
+                    <p>As an admin user has permissions to all repositories.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!user?.admin && repositories && repositories.length" class="permission-repositories">
+                <div class="message">
+                  <div class="columns">
+                    <div class="column is-1">
+                      <i class="ion ion-ios-paper"></i>
+                    </div>
+                    <div class="column is-11">
+                      <p>List of repositories that user has access to.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="columns list-item list-item-mini border-green" *ngFor="let repo of repositories; let i = index;">
+                  <div class="column is-3" (click)="gotoRepository($event, repo.id)">
+                    <span>{{ repo.full_name }}</span>
+                  </div>
+                  <div class="column" [ngClass]="{ 'is-6': loggedUser.admin, 'is-7': !loggedUser.admin }">
+                    <span>{{ repo.html_url }}</span>
+                  </div>
+                  <div class="column is-2">
+                    <span>{{ repo.default_branch }}</span>
+                  </div>
+                  <div class="column is-1" *ngIf="loggedUser.admin">
+                    <i class="ionicon ion-close pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 0)" name="btn-removePermission"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!user?.admin && loggedUser?.admin && restrictedRepositories && restrictedRepositories.length" class="permission-repositories">
+                <div class="message">
+                  <div class="columns">
+                    <div class="column is-1">
+                      <i class="ion ion-ios-paper"></i>
+                    </div>
+                    <div class="column is-11">
+                      <p>List of repositories that user cannot see and manage.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="columns list-item list-item-mini border-red" *ngFor="let repo of restrictedRepositories; let i = index;">
+                  <div class="column is-3" (click)="gotoRepository($event, repo.id)">
+                    <span>{{ repo.full_name }}</span>
+                  </div>
+                  <div class="column" [ngClass]="{ 'is-6': loggedUser.admin, 'is-7': !loggedUser.admin }">
+                    <span>{{ repo.html_url }}</span>
+                  </div>
+                  <div class="column is-2">
+                    <span>{{ repo.default_branch }}</span>
+                  </div>
+                  <div class="column is-1" *ngIf="loggedUser.admin">
+                    <i class="ionicon ion-checkmark-round pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 1)" name="btn-addPermission"></i>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
-
-
-
-      <!-- <div class="columns">
-        <div class="column is-3">
-            <figure class="image profile-image">
-              <img [src]="avatarUrl">
-            </figure>
-        </div>
-        <div class="column is-9">
-          <div class="columns">
-            <div class="column is-6">
-              <form class="form">
-                <h4>User Data</h4>
-                <div class="form-field">
-                  <label class="form-label">Email (Username)</label>
-                  <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Full Name</label>
-                  <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
-                </div>
-              </form>
-            </div>
-          </div> -->
-
-
-          <!-- <div class="settings-container repositories" *ngIf="repositories && repositories.length">
-            <h2>Repositories</h2>
-            <div class="form-field">
-              <div class="column is-12">
-                <div class="columns list-item list-item-slim" *ngFor="let repo of repositories; let i = index;">
-                  <div class="column is-3" (click)="gotoRepository($event, repo.id)">
-                    <span class="icon">
-                      <img src="images/icons/git-repository.svg">
-                    </span>
-                    <span class="bold">{{ repo.full_name }}</span>
-                  </div>
-                  <div class="column" [ngClass]="{ 'is-4': loggedUser.admin, 'is-5': !loggedUser.admin }">
-                    <span class="icon">
-                      <img src="images/icons/github-white.svg">
-                    </span>
-                    <span>{{ repo.html_url }}</span>
-                  </div>
-                  <div class="column is-2">
-                    <span class="icon">
-                      <img src="images/icons/git-branch.svg">
-                    </span>
-                    <span>{{ repo.default_branch }}</span>
-                  </div>
-                  <div class="column is-2 justify-center">
-                    <span *ngIf="repo.status_badge" [innerHTML]="repo.status_badge | safeHtml" class="status-badge-repositories"></span>
-                  </div>
-                  <div class="column is-1" *ngIf="loggedUser.admin" name="btn-removePermisison" (click)="updateRepositoryPermissions(user.id, repo.id, 0)">
-                    <img src="images/icons/remove.svg" style="width:24px;">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
-
-          <!-- <div class="settings-container restricted-repositories" *ngIf="loggedUser.admin && restrictedRepositories && restrictedRepositories.length">
-            <h2>Restricted Repositories</h2>
-            <div class="form-field">
-              <div class="column is-12">
-                <div class="columns list-item list-item-slim" *ngFor="let repo of restrictedRepositories; let i = index;">
-                  <div class="column is-3" (click)="gotoRepository($event, repo.id)">
-                    <span class="icon">
-                      <img src="images/icons/git-repository.svg">
-                    </span>
-                    <span class="bold">{{ repo.full_name }}</span>
-                  </div>
-                  <div class="column is-4">
-                    <span class="icon">
-                      <img src="images/icons/github-white.svg">
-                    </span>
-                    <span>{{ repo.html_url }}</span>
-                  </div>
-                  <div class="column is-2">
-                    <span class="icon">
-                      <img src="images/icons/git-branch.svg">
-                    </span>
-                    <span>{{ repo.default_branch }}</span>
-                  </div>
-                  <div class="column is-2 justify-center">
-                    <span *ngIf="repo.status_badge" [innerHTML]="repo.status_badge | safeHtml" class="status-badge-repositories"></span>
-                  </div>
-                  <div class="column is-1" name="btn-addPermisison" (click)="updateRepositoryPermissions(user.id, repo.id, 1)">
-                    <img src="images/icons/add.svg" style="width:20px;">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
     </div>
   </div>
 </div>

@@ -10,6 +10,7 @@ export function getUser(id: number): Promise<any> {
           reject(user);
         } else {
           let result = user.toJSON();
+          delete result.password;
           result.access_tokens = result.access_tokens.map(token => {
             delete token.token;
             return token;
