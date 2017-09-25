@@ -144,12 +144,20 @@ function execJob(proc: JobProcess): Observable<{}> {
               .then(runId => {
                 const data = {
                   id: runId,
-                  end_time: new Date(),
+                  end_time: time,
                   status: 'failed',
                   log: proc.log.join('')
                 };
 
                 return dbJobRuns.updateJobRun(data);
+              })
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  job_id: proc.job_id,
+                  data: 'job failed',
+                  additionalData: time.getTime()
+                });
               })
               .then(build => updateBuild({ id: proc.build_id, end_time: time }))
               .then(id => updateBuildRun({ id: id, end_time: time }))
@@ -185,7 +193,7 @@ function execJob(proc: JobProcess): Observable<{}> {
               .then(runId => {
                 const data = {
                   id: runId,
-                  end_time: new Date(),
+                  end_time: time,
                   status: 'success',
                   log: proc.log.join('')
                 };
@@ -210,9 +218,9 @@ function execJob(proc: JobProcess): Observable<{}> {
                     });
                 } else if (status === 'failed') {
                   return getBuild(proc.build_id)
-                    .then(build => updateBuild({ id: proc.build_id, end_time: new Date() }))
+                    .then(build => updateBuild({ id: proc.build_id, end_time: time }))
                     .then(() => getLastRunId(proc.build_id))
-                    .then(id => updateBuildRun({ id: id, end_time: new Date()} ))
+                    .then(id => updateBuildRun({ id: id, end_time: time} ))
                     .then(() => getBuild(proc.build_id))
                     .then(build => sendFailureStatus(build, build.id))
                     .then(() => {
@@ -232,7 +240,8 @@ function execJob(proc: JobProcess): Observable<{}> {
                   type: 'process',
                   build_id: proc.build_id,
                   job_id: proc.job_id,
-                  data: 'job succeded'
+                  data: 'job succeded',
+                  additionalData: time.getTime()
                 });
                 observer.complete();
               })
@@ -255,17 +264,20 @@ function execJob(proc: JobProcess): Observable<{}> {
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
       .then(runId => {
-        const data = { id: runId, start_time: new Date(), status: 'running', log: '' };
-        return dbJobRuns.updateJobRun(data);
-      })
-      .then(() => {
+        const time = new Date();
         const data = {
-          type: 'process',
-          build_id: proc.build_id,
-          job_id: proc.job_id,
-          data: 'job started'
-        };
-        jobEvents.next(data);
+          id: runId, start_time: time, end_time: null, status: 'running', log: '' };
+        return dbJobRuns.updateJobRun(data)
+          .then(() => {
+            const data = {
+              type: 'process',
+              build_id: proc.build_id,
+              job_id: proc.job_id,
+              data: 'job started',
+              additionalData: time.getTime()
+            };
+            jobEvents.next(data);
+          });
       })
       .catch(err => {
         const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
@@ -410,7 +422,7 @@ export function stopJob(jobId: number): Promise<void> {
     .then(runId => dbJobRuns.getRun(runId))
     .then(jobRun => {
       if (jobRun.status !== 'success') {
-        return dbJobRuns.updateJobRun({id: jobRun.id, end_time: new Date(), status: 'failed' });
+        return dbJobRuns.updateJobRun({id: jobRun.id, end_time: time, status: 'failed' });
       }
     })
     .then(() => dbJob.getJob(jobId))
@@ -419,7 +431,8 @@ export function stopJob(jobId: number): Promise<void> {
         type: 'process',
         build_id: job.builds_id,
         job_id: job.id,
-        data: 'job stopped'
+        data: 'job stopped',
+        additionalData: time.getTime()
       };
       jobEvents.next(data);
     }).then(() => {

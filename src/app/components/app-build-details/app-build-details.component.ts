@@ -88,13 +88,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
               if (event.data === 'job started') {
                 this.build.jobs[index].status = 'running';
                 this.build.jobs[index].end_time = null;
-                this.build.jobs[index].start_time = new Date().getTime();
+                this.build.jobs[index].start_time = event.additionalData;
               } else if (event.data === 'job succeded') {
                 this.build.jobs[index].status = 'success';
-                this.build.jobs[index].end_time = new Date().getTime();
+                this.build.jobs[index].end_time = event.additionalData;
               } else if (event.data === 'job failed' || event.data === 'job stopped') {
                 this.build.jobs[index].status = 'failed';
-                this.build.jobs[index].end_time = new Date().getTime();
+                this.build.jobs[index].end_time = event.additionalData;
               } else if (event.data === 'job queued') {
                 this.build.jobs[index].status = 'queued';
               }
@@ -106,7 +106,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           });
 
         this.sub = this.socketService.outputEvents
-          .filter(event => event.type === 'build stopped')
+          .filter(event => event.type === 'build stopped' || event.type === 'build restarted')
           .subscribe(event => {
             this.processingBuild = false;
           });
@@ -224,11 +224,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
-    if (this.getBuildStatus() === 'success') {
-      let minJobStartTime = Math.min(...this.build.jobs.map(job => job.start_time));
-      let maxJobEndTime = Math.max(...this.build.jobs.map(job => job.end_time));
-      this.previousRuntime = maxJobEndTime - minJobStartTime;
-    }
+    let minJobStartTime = Math.min(...this.build.jobs.map(job => job.start_time));
+    let maxJobEndTime = Math.max(...this.build.jobs.map(job => job.end_time));
+    this.previousRuntime = maxJobEndTime - minJobStartTime;
     this.processingBuild = true;
     this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
   }

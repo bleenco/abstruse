@@ -104,14 +104,14 @@ export class AppJobComponent implements OnInit, OnDestroy {
         if (event.data === 'job started') {
           this.jobRun.status = 'running';
           this.jobRun.end_time = null;
-          this.jobRun.start_time = new Date().getTime();
+          this.jobRun.start_time = event.additionalData;
         } else if (event.data === 'job succeded') {
           this.jobRun.status = 'success';
-          this.jobRun.end_time = new Date().getTime();
+          this.jobRun.end_time = event.additionalData;
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
         } else if (event.data == 'job failed') {
           this.jobRun.status = 'failed';
-          this.jobRun.end_time = new Date().getTime();
+          this.jobRun.end_time = event.additionalData;
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
         }
 
