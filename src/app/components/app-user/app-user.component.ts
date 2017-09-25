@@ -15,6 +15,8 @@ export class AppUserComponent implements OnInit {
   avatarUrl: string;
   repositories: any;
   restrictedRepositories: any;
+  password: string;
+  yesNoOptions: { key: number, value: string }[];
 
   constructor(
     private api: ApiService,
@@ -25,6 +27,7 @@ export class AppUserComponent implements OnInit {
   ) {
     this.loading = true;
     this.user = {};
+    this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
   }
 
   ngOnInit() {
@@ -37,33 +40,32 @@ export class AppUserComponent implements OnInit {
       }
 
       this.avatarUrl = this.config.url + user.avatar;
+      this.loading = false;
     });
 
     this.route.params
-    .switchMap((params: Params) => this.api.getRepositories('', params.id))
-    .subscribe(repositories => {
-      this.repositories =
-        repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);
-      this.repositories.forEach((repo: any, i) => {
-        this.api.getBadge(repo.id).subscribe(badge => {
-          if (badge.ok) {
-            this.repositories[i].status_badge = badge._body;
-          }
+      .switchMap((params: Params) => this.api.getRepositories('', params.id))
+      .subscribe(repositories => {
+        this.repositories =
+          repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);
+        this.repositories.forEach((repo: any, i) => {
+          this.api.getBadge(repo.id).subscribe(badge => {
+            if (badge.ok) {
+              this.repositories[i].status_badge = badge._body;
+            }
+          });
+        });
+
+        this.restrictedRepositories =
+          repositories.filter(r => r.permissions.findIndex(p => !p.permission) !== -1);
+        this.restrictedRepositories.forEach((repo: any, i) => {
+          this.api.getBadge(repo.id).subscribe(badge => {
+            if (badge.ok) {
+              this.restrictedRepositories[i].status_badge = badge._body;
+            }
+          });
         });
       });
-
-      this.restrictedRepositories =
-        repositories.filter(r => r.permissions.findIndex(p => !p.permission) !== -1);
-      this.restrictedRepositories.forEach((repo: any, i) => {
-        this.api.getBadge(repo.id).subscribe(badge => {
-          if (badge.ok) {
-            this.restrictedRepositories[i].status_badge = badge._body;
-          }
-        });
-      });
-    });
-
-    this.loading = false;
   }
 
   gotoRepository(e: MouseEvent, id: number): void {

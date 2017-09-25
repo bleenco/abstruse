@@ -4,39 +4,109 @@
   <img src="images/icons/flickr.svg" class="main-loader">
 </div>
 
-<nav class="nav sub-nav" *ngIf="!loading">
-  <div class="container">
-    <div class="nav-left">
-      <span class="nav-item">
-        <h1>{{ user?.fullname }}</h1>
-      </span>
-    </div>
-  </div>
-</nav>
-
-<div class="container">
+<div class="container user-profile-container">
   <div class="columns">
     <div class="column is-12" *ngIf="!loading">
-      <div class="columns is-multiline">
-        <div class="column is-4">
+
+      <div class="columns">
+        <div class="column is-5">
+          <div class="content-box">
+            <div class="content-box-list-item">
+              <div class="content-box-item-icon">
+                <i class="ionicons ion-person"></i>
+              </div>
+              <div class="content-box-container">
+                <h2>User Profile</h2>
+                <p>How your profile looks like?</p>
+              </div>
+            </div>
+            <div class="content-box-list-item">
+              <div class="content-box-item-icon">
+                <i class="ionicons ion-key"></i>
+              </div>
+              <div class="content-box-container">
+                <h2>Access Tokens</h2>
+                <p>User saved access tokens.</p>
+              </div>
+            </div>
+            <div class="content-box-list-item">
+              <div class="content-box-item-icon">
+                <i class="ionicons ion-ios-paper"></i>
+              </div>
+              <div class="content-box-container">
+                <h2>Permissions</h2>
+                <p>Manage permissions for user access to repositories</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="column is-7">
+          <div class="content-box">
+            <div class="user-content-profile">
+              <h1>User Profile</h1>
+              <div class="columns">
+                <div class="column is-3">
+                  <figure class="image profile-image">
+                    <img [src]="avatarUrl">
+                  </figure>
+                </div>
+                <div class="column is-9">
+                  <div class="form-field">
+                    <label class="form-label">Full Name</label>
+                    <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.fullname">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.email">
+                  </div>
+                  <div class="form-field">
+                    <label class="form-label">Admin</label>
+                    <app-selectbox [data]="yesNoOptions" name="admin" required [(ngModel)]="user.admin" required></app-selectbox>
+                  </div>
+                  <div class="form-field">
+                    <button type="button" class="button blue float-right" [class.is-loading]="saving">Save User Data</button>
+                  </div>
+                  <hr/>
+                  <label class="form-label">Change Password</label>
+                  <div class="form-field flex-centered">
+                    <input class="form-input" type="password" placeholder="Password" name="password" required [(ngModel)]="password">
+                    <button type="button" class="button blue float-right" [class.is-loading]="saving">Change</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <!-- <div class="columns">
+        <div class="column is-3">
             <figure class="image profile-image">
               <img [src]="avatarUrl">
             </figure>
         </div>
-        <div class="column is-8">
-          <div class="settings-container">
-            <h2>{{ user?.fullname }}</h2>
-            <div class="form-field">
-              <label class="form-label">Email (Username)</label>
-              <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
+        <div class="column is-9">
+          <div class="columns">
+            <div class="column is-6">
+              <form class="form">
+                <h4>User Data</h4>
+                <div class="form-field">
+                  <label class="form-label">Email (Username)</label>
+                  <input class="form-input" type="text" placeholder="Email" name="email" required readonly [(ngModel)]="user.email">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Full Name</label>
+                  <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
+                </div>
+              </form>
             </div>
-            <div class="form-field">
-              <label class="form-label">Full Name</label>
-              <input class="form-input" type="text" placeholder="Full Name" name="fullname" required [(ngModel)]="user.fullname">
-            </div>
-          </div>
+          </div> -->
 
-          <div class="settings-container repositories" *ngIf="repositories && repositories.length">
+
+          <!-- <div class="settings-container repositories" *ngIf="repositories && repositories.length">
             <h2>Repositories</h2>
             <div class="form-field">
               <div class="column is-12">
@@ -68,9 +138,9 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
-          <div class="settings-container restricted-repositories" *ngIf="loggedUser.admin && restrictedRepositories && restrictedRepositories.length">
+          <!-- <div class="settings-container restricted-repositories" *ngIf="loggedUser.admin && restrictedRepositories && restrictedRepositories.length">
             <h2>Restricted Repositories</h2>
             <div class="form-field">
               <div class="column is-12">
@@ -102,9 +172,7 @@
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div> -->
     </div>
   </div>
 </div>
