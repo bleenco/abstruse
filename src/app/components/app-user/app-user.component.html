@@ -11,7 +11,7 @@
       <div class="columns">
         <div class="column is-5">
           <div class="content-box">
-            <div class="content-box-list-item" (click)="tab = 'profile'" [class.is-active]="tab === 'profile'">
+            <div class="content-box-list-item" (click)="tab = 'profile'" [class.is-active]="tab === 'profile'" name="tab-profile">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-person"></i>
               </div>
@@ -20,7 +20,7 @@
                 <p>How your profile looks like?</p>
               </div>
             </div>
-            <div class="content-box-list-item" (click)="tab = 'tokens'" [class.is-active]="tab === 'tokens'">
+            <div class="content-box-list-item" (click)="tab = 'tokens'" [class.is-active]="tab === 'tokens'" name="tab-tokens">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-key"></i>
               </div>
@@ -29,7 +29,7 @@
                 <p>User saved access tokens.</p>
               </div>
             </div>
-            <div class="content-box-list-item" (click)="tab = 'permissions'" [class.is-active]="tab === 'permissions'">
+            <div class="content-box-list-item" (click)="tab = 'permissions'" [class.is-active]="tab === 'permissions'" name="tab-permissions">
               <div class="content-box-item-icon">
                 <i class="ionicons ion-ios-paper"></i>
               </div>

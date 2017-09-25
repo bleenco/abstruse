@@ -101,7 +101,7 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
 
     console.log(blue(`Running \`${cmd} ${args.map(x => `"${x}"`).join(' ')}\`${flags}...`));
     console.log(blue(`CWD: ${cwd}`));
-    const spawnOptions: any = {cwd};
+    const spawnOptions: any = {cwd, env: Object.assign({}, process.env, { FORCE_COLOR: true })};
 
     if (process.platform.startsWith('win')) {
       args.unshift('/c', cmd);
