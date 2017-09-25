@@ -129,13 +129,14 @@
                 </div>
               </div>
               <div class="column is-2">
-                <progress min="0" max="1" [value]="(currentTime - job?.start_time) / job.lastRunTime" *ngIf="job?.status === 'running' && (job?.lastRunTime && (currentTime - job?.start_time) / job?.lastRunTime) < 1"></progress>
+                <progress min="0" max="1" [value]="(currentTime - job?.start_time) / job.lastRunTime" *ngIf="job?.status === 'running' && job?.lastRunTime && job?.lastRunTime > 0 && (currentTime - job?.start_time) / job?.lastRunTime < 1"></progress>
                 <span class="data-label green" *ngIf="job?.status === 'success'">Success</span>
                 <span class="data-label red" *ngIf="job?.status === 'failed'">Failed</span>
                 <span class="data-label bright" *ngIf="job?.status === 'queued'">Queued</span>
                 <span class="data-label bright" *ngIf="job?.status === 'running' && (job?.lastRunTime && (currentTime - job?.start_time) / job?.lastRunTime) >= 1">Running</span>
               </div>
-              <div class="column is-1">
+              <div class="column is-1" *ngIf="processingBuild"></div>
+              <div class="column is-1" *ngIf="!processingBuild">
                 <span class="job-time" *ngIf="job?.status === 'running'">{{ currentTime - job.start_time | toTime }}</span>
                 <span class="job-time" *ngIf="job?.status === 'success' || job?.status === 'failed'">{{ job.end_time - job.start_time | toTime }}</span>
                 <span class="job-time" *ngIf="job?.status === 'queued'">00:00</span>

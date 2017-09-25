@@ -86,7 +86,7 @@
                     </p>
                   </div>
                   <div class="column is-2">
-                    <progress *ngIf="jobRun.status === 'running' && previousRuntime" class="progress-bar is-success is-small" [value]="(currentTime - jobRun.start_time) / previousRuntime" max="1" min="0"></progress>
+                    <progress *ngIf="jobRun.status === 'running' && previousRuntime && previousRuntime > 0" class="progress-bar is-success is-small" [value]="(currentTime - jobRun.start_time) / previousRuntime" max="1" min="0"></progress>
                     <p class="text-small" *ngIf="jobRun.status !== 'running'">
                       Build started {{ timeWords }} ago
                     </p>

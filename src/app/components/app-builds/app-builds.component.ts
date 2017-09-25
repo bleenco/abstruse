@@ -75,23 +75,23 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
           switch (e.data) {
             case 'job succeded':
               this.builds[build].jobs[index].status = 'success';
-              this.builds[build].jobs[index].end_time = new Date();
+              this.builds[build].jobs[index].end_time = e.additionalData;
               break;
             case 'job queued':
               this.builds[build].jobs[index].status = 'queued';
               break;
             case 'job started':
               this.builds[build].jobs[index].status = 'running';
-              this.builds[build].jobs[index].start_time = new Date();
+              this.builds[build].jobs[index].start_time = e.additionalData;
               this.builds[build].jobs[index].end_time = null;
               break;
             case 'job failed':
               this.builds[build].jobs[index].status = 'failed';
-              this.builds[build].jobs[index].end_time = new Date();
+              this.builds[build].jobs[index].end_time = e.additionalData;
               break;
             case 'job stopped':
               this.builds[build].jobs[index].status = 'failed';
-              this.builds[build].jobs[index].end_time = new Date();
+              this.builds[build].jobs[index].end_time = e.additionalData;
               break;
           }
 

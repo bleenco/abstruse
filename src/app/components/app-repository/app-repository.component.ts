@@ -142,22 +142,22 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
             switch (event.data) {
               case 'job succeded':
                 status = 'success';
-                this.repo.builds[index].jobs[jobIndex].end_time = new Date();
+                this.repo.builds[index].jobs[jobIndex].end_time = event.additionalData;
               break;
               case 'job queued':
                 status = 'queued';
               break;
               case 'job started':
                 status = 'running';
-                this.repo.builds[index].jobs[jobIndex].start_time = new Date();
+                this.repo.builds[index].jobs[jobIndex].start_time = event.additionalData;
               break;
               case 'job failed':
                 status = 'failed';
-                this.repo.builds[index].jobs[jobIndex].start_time = new Date();
+                this.repo.builds[index].jobs[jobIndex].start_time = event.additionalData;
               break;
               case 'job stopped':
                 status = 'failed';
-                this.repo.builds[index].jobs[jobIndex].end_time = new Date();
+                this.repo.builds[index].jobs[jobIndex].end_time = event.additionalData;
               break;
             }
 
