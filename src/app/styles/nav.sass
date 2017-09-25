@@ -8,10 +8,14 @@
   position: relative
 
   .nav-item
-    color: $color-secondary !important
+    color: $color !important
     font-weight: $weight-semibold
     font-size: 13px
     margin-right: 15px
+
+    i
+      font-size: 20px !important
+      margin-right: 10px
 
     &.notification-item
       cursor: pointer
@@ -42,7 +46,7 @@
         padding-top: 12px
         padding-bottom: 12px
         background: $background
-        box-shadow: 0 2px 5px rgba(10, 10, 10, 0.1)
+        box-shadow: 1px 2px 3px rgba(10, 10, 10, 0.1)
         border: 1px solid $border
         z-index: 100
 
@@ -99,7 +103,8 @@
       i
         position: absolute
         top: 18px
-        right: 10px
+        right: 0
+        font-size: 12px !important
 
     img.nav-item-icon
       width: 20px
@@ -141,7 +146,7 @@
     background: $background
     border: 1px solid $border
     border-radius: 4px
-    box-shadow: 1px 2px 3px 0 rgba($black, 0.3)
+    box-shadow: 1px 2px 3px rgba(10, 10, 10, 0.1)
 
     &:after
       display: block
@@ -175,11 +180,13 @@
 
   &.sub-nav
     background: transparent
-    box-shadow: none
-    border-bottom: none
-    padding-top: 20px
+    padding-top: 40px
+    padding-bottom: 15px
     margin-bottom: 10px
+    display: flex
+    align-items: center
     z-index: 80 !important
+    border-bottom: none
 
     +mobile
       padding-top: 10px
@@ -190,8 +197,8 @@
       .nav-item
 
         h1
-          color: $color-secondary
-          font-size: 20px
+          color: $color
+          font-size: 18px
           font-weight: $weight-semibold
 
           +mobile

@@ -12,9 +12,18 @@
     </div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="showAllBuilds()">All Builds</button>
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'commits' }" (click)="showCommits()">Commits</button>
-        <button class="group-button" [ngClass]="{ 'is-active': show === 'pr' }" (click)="showPullRequests()">Pull Requests</button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="showAllBuilds()">
+          <i class="ionicon ion-network"></i>
+          All Builds
+        </button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'commits' }" (click)="showCommits()">
+          <i class="ionicon ion-merge"></i>
+          Commits
+        </button>
+        <button class="group-button" [ngClass]="{ 'is-active': show === 'pr' }" (click)="showPullRequests()">
+          <i class="ionicon ion-pull-request"></i>
+          Pull Requests
+        </button>
       </div>
     </div>
   </div>

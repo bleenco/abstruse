@@ -13,7 +13,7 @@ describe('Teams', () => {
   it('should see one user on team page', () => {
     return browser.get('/team')
     .then((): any => browser.wait(() => {
-      return element.all(by.css('.list-item')).count().then(count => count === 1);
+      return element.all(by.css('.team-user-item')).count().then(count => count === 1);
     }));
   });
 

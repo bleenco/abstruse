@@ -5,6 +5,7 @@ export class User extends Bookshelf.Model<any> {
   get tableName() { return 'users'; }
   get hasTimestamps() { return true; }
   access_tokens() { return this.hasMany(AccessToken, 'users_id'); }
+  permissions() { return this.hasMany(Permission, 'users_id'); }
 }
 
 export class AccessToken extends Bookshelf.Model<any> {

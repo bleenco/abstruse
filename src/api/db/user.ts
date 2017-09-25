@@ -23,19 +23,26 @@ export function getUser(id: number): Promise<any> {
 
 export function getUsers(): Promise<any> {
   return new Promise((resolve, reject) => {
-    new User().fetchAll().then(users => {
-      if (!users) {
-        reject(users);
-      } else {
-        let data = users.toJSON();
-        data = data.map(user => {
-          delete user.password;
-          return user;
-        });
+    new User()
+      .fetchAll({ withRelated: ['access_tokens', 'permissions.repository'] })
+      .then(users => {
+        if (!users) {
+          reject(users);
+        } else {
+          let data = users.toJSON();
+          data = data.map(user => {
+            delete user.password;
+            user.access_tokens = user.access_tokens.map(token => {
+              delete token.token;
+              return token;
+            });
 
-        resolve(data);
-      }
-    });
+            return user;
+          });
+
+          resolve(data);
+        }
+      });
   });
 }
 
