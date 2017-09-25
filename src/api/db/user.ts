@@ -4,7 +4,7 @@ import { generatePassword, comparePassword, generateJwt } from '../security';
 
 export function getUser(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new User({ id: id }).fetch({ withRelated: ['access_tokens'] })
+    new User({ id: id }).fetch({ withRelated: ['access_tokens', 'permissions.repository'] })
       .then(user => {
         if (!user) {
           reject(user);
@@ -24,7 +24,7 @@ export function getUser(id: number): Promise<any> {
 export function getUsers(): Promise<any> {
   return new Promise((resolve, reject) => {
     new User()
-      .fetchAll({ withRelated: ['access_tokens', 'permissions.repository'] })
+      .fetchAll()
       .then(users => {
         if (!users) {
           reject(users);
@@ -32,11 +32,6 @@ export function getUsers(): Promise<any> {
           let data = users.toJSON();
           data = data.map(user => {
             delete user.password;
-            user.access_tokens = user.access_tokens.map(token => {
-              delete token.token;
-              return token;
-            });
-
             return user;
           });
 

@@ -46,21 +46,18 @@
                     <h3>{{ user.email }}</h3>
                     <p>{{ user.created_at | date:'medium' }}</p>
                   </div>
+                  <div class="user-item-data has-text-centered">
+                    <h3 *ngIf="user.admin">admin</h3>
+                    <h3 *ngIf="!user.admin">user</h3>
+                  </div>
                   <div class="user-item-buttons">
                     <button type="button" class="button blue" (click)="goToUser(user.id)">Edit Profile</button>
-                  </div>
-                  <hr/>
-                  <div class="user-item-repositories">
-                    <h4>Repository Permissions</h4>
-                    <div *ngFor="let repo of user.permissions" class="label-container">
-                      <a class="label" *ngIf="repo.repository?.full_name" [routerLink]="['/repo', repo.id]">{{ repo.repository?.full_name }}</a>
-                    </div>
                   </div>
                 </div>
               </div>
               <div class="column is-4" *ngIf="addUser">
                 <form class="form" (ngSubmit)="addNewUser($event)" #addForm="ngForm">
-                  <h4>Add User</h4>
+                  <h4>Add New User</h4>
                   <div class="message red" *ngIf="error">
                     <p>
                       <i class="ion ion-close-round"></i>
