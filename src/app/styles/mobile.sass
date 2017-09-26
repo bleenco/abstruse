@@ -21,7 +21,7 @@
     right: 15px
     top: 4px
 
-.mobile-build-item
+.mobile-build-item, .mobile-build-top-container
 
   .mobile-avatar-img
     display: block
@@ -48,6 +48,13 @@
         font-size: 11px
         height: 30px
 
+      &.data-label
+        padding: 2px 5px
+        width: 100px
+        text-align: center
+        float: left
+        display: block
+
   span
 
     &.build-time
@@ -67,3 +74,58 @@
         margin: -37px 0 0 1px
         font-size: 14px
         color: $black
+
+  .build-icon
+    width: 20px
+    height: 20px
+    display: block
+    float: left
+
+    img
+      width: 20px
+      height: 20px
+      display: block
+
+.mobile-build-top-container
+  padding: 10px
+  position: relative
+  margin-top: 10px
+
+  .columns
+    background: $white
+    border: 1px solid $border
+    border-radius: 6px
+    box-shadow: 1px 2px 30px 0 rgba(#4259E7, 0.2)
+
+    &.green
+      border-top: 4px solid $green
+      border-left: 0
+
+    &.yellow
+      border-top: 4px solid $yellow
+      -webkit-animation: pulsate 3s infinite ease-in-out
+      animation: pulsate 3s infinite ease-in-out
+      border-left: 0
+
+    &.red
+      border-top: 4px solid $red
+      border-left: 0
+
+  span
+    display: block
+
+    &.commit-message
+      font-size: 12px
+      color: $color
+
+    &.build-icon
+      position: absolute
+      left: 18px
+      bottom: 30px
+
+  .icon
+
+    &.circle
+
+      i
+        margin: 1px 0 0 7px
