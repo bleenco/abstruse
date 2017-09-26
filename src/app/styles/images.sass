@@ -6,9 +6,9 @@
   border: 1px solid $border
   outline: none
   width: 100%
-  color: $white
+  color: $color
   margin: 0 0 10px 0
-  background: $black
+  background: $white
   border-radius: 4px
 
 .images-buttons-container
@@ -30,6 +30,9 @@
   height: 600px
 
 .image-builder-box
+  background: transparent
+  border: none
+  padding: 10px
 
   p
     margin: 0 0 20px 0
@@ -53,17 +56,36 @@
   .image-item
     display: inline-block
     width: 100%
-    height: 60px
+    height: 410px
     border-bottom: 1px solid $border
     padding: 10px
-    font-size: 13px
-    font-weight: $weight-semibold
-    background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+    border-radius: 4px
+    background: $white
 
-    .columns
+    h2
+      font-size: 20px
+      font-weight: $weight-semibold
+      text-align: center
 
-      .column
-        display: flex
-        align-items: center
-        justify-content: center
+    span
+      width: 100%
+      height: 30px
+      font-size: 14px
+      display: flex
+      align-items: center
+      justify-content: center
+
+      &.time
+        color: $color-secondary
+
+      &.size
+        font-weight: $weight-semibold
+
+    .docker-img
+      display: block
+      width: 260px
+      margin: 15px auto
+
+    .button
+      margin: 10px 0
 

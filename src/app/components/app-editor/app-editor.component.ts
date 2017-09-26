@@ -109,15 +109,15 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
 
   private initMonaco(options: any): void {
     monaco.editor.defineTheme('abstruseTheme', {
-      base: 'vs-dark',
+      base: 'vs',
       inherit: true,
       rules: [
-        { background: '000000' },
-        { foreground: 'FFFFFF' }
+        { background: 'FFFFFF' },
+        { foreground: '000000' }
       ],
       colors: {
-        'editor.foreground': '#FFFFFF',
-        'editor.background': '#000000',
+        'editor.foreground': '#000000',
+        'editor.background': '#FFFFFF',
       }
     });
 

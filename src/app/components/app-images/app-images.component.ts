@@ -4,6 +4,7 @@ import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import * as ansiUp from 'ansi_up';
 import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
+import { Subscription } from 'rxjs/Subscription';
 
 export interface IImage {
   name: string;
@@ -35,6 +36,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   tab: string;
   scrollOptions: ISlimScrollOptions;
   scrollEvents: EventEmitter<SlimScrollEvent>;
+  sub: Subscription;
 
   constructor(
     private socketService: SocketService,
@@ -95,7 +97,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loading = false;
 
-    this.socketService.outputEvents
+    this.sub = this.socketService.outputEvents
       .filter(event => event.type === 'imageBuildProgress')
       .subscribe(event => {
         let output;
@@ -238,7 +240,12 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.api.imagesList().subscribe(data => {
       this.images = data;
       this.loading = false;
-      this.tab = 'images';
+      if (this.images && this.images.length) {
+        this.tab = 'images';
+      } else {
+        this.tab = 'build';
+      }
+
       this.resetForm();
     });
   }
@@ -287,7 +294,9 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   buildImage(): void {
