@@ -1,0 +1,69 @@
+.mobile-nav
+  height: 50px
+  width: 100%
+  background: $white
+  border-bottom: 1px solid $border
+  display: block
+  position: relative
+  z-index: 99
+  box-shadow: 1px 2px 30px 0 rgba(#4259E7, 0.2)
+
+  .mobile-nav-logo
+    width: 120px
+    height: auto
+    margin: 0 auto
+    padding-top: 12px
+    display: block
+
+  i
+    position: absolute
+    font-size: 30px
+    right: 15px
+    top: 4px
+
+.mobile-build-item
+
+  .mobile-avatar-img
+    display: block
+    width: 32px
+    height: 32px
+    border-radius: 50%
+    margin: 0 auto
+
+  .mobile-build-item-body
+
+    span
+      font-size: 12px
+      text-align: left
+
+      &.name
+        color: $color-secondary
+
+      &.bold
+        font-size: 14px
+        color: #4D575E
+
+      &.commit-message
+        color: #4D575E
+        font-size: 11px
+        height: 30px
+
+  span
+
+    &.build-time
+      text-align: center
+      font-size: 11px
+
+  .icon
+
+    &.circle
+      display: block
+      width: 27px !important
+      height: 27px !important
+      margin: 5px auto !important
+
+      i
+        padding: 0
+        margin: -37px 0 0 1px
+        font-size: 14px
+        color: $black
