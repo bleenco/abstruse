@@ -100,6 +100,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     const queryParams = this.route.snapshot.queryParams.tab;
     if (!queryParams) {
       this.router.navigate(['/repo', this.id], { queryParams: { tab: 'builds' } });
+      this.tab = 'builds';
     } else {
       this.tab = queryParams;
     }

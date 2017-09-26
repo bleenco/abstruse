@@ -4,14 +4,20 @@
   <div class="container">
     <div class="nav-left is-hidden-mobile">
       <span class="nav-item">
-        <h1>Images</h1>
+        <h1>Docker Build Images</h1>
       </span>
     </div>
     <div class="nav-center is-hidden-mobile"></div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">Images</button>
-        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">Build Image</button>
+        <button class="group-button" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">
+          <i class="ionicon ion-ios-paper-outline"></i>
+          Images
+        </button>
+        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">
+          <i class="ionicon ion-hammer"></i>
+          Build Image
+        </button>
       </div>
     </div>
   </div>
@@ -29,29 +35,17 @@
       <div *ngIf="!loading">
 
         <div *ngIf="tab === 'images'">
-          <div class="content-box image-builder-box is-paddingless">
-            <div class="image-builder-box-header">
-              <h2>Images List</h2>
-            </div>
-            <div class="image-item" *ngFor="let i of images; let index = index;">
-              <div class="columns">
-                <div class="column is-2">
-                  {{ i.name }}
-                </div>
-                <div class="column is-2">
-                  {{ i.version }}
-                </div>
-                <div class="column is-2">
-                  {{ i.created }}
-                </div>
-                <div class="column is-2">
-                  Created {{ i.createdAgo }} ago
-                </div>
-                <div class="column is-2">
-                  Size {{ i.size }}
-                </div>
-                <div class="column is-2">
-                  <button type="button" class="button" (click)="editImage(index)">Edit</button>
+          <div class="content-box image-builder-box">
+            <div class="columns is-multiline">
+              <div class="column is-4" *ngFor="let i of images; let index = index;">
+                <div class="image-item">
+                  <h2>{{ i.name }}</h2>
+                  <span class="version">{{ i.version }}</span>
+                  <img src="images/logos/docker.svg" class="docker-img">
+                  <span class="time">{{ i.created }}</span>
+                  <span class="time">Created {{ i.createdAgo }} ago</span>
+                  <span class="size">Size {{ i.size }}</span>
+                  <button type="button" class="button is-fullwidth" (click)="editImage(index)">Edit Image</button>
                 </div>
               </div>
             </div>
@@ -60,7 +54,6 @@
 
         <div *ngIf="tab === 'build'">
           <div class="content-box image-builder-box" *ngIf="!building">
-            <h1>Build Image</h1>
             <div class="columns is-multiline">
               <div class="column is-12">
                 <h2>Image name</h2>
@@ -70,7 +63,7 @@
                 <h2>init.sh</h2>
                 <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
                 <div class="images-buttons-container">
-                  <button type="button" class="button w300" (click)="buildImage()" name="build-image-btn">Build Image</button>
+                  <button type="button" class="button w300 green" (click)="buildImage()" name="build-image-btn">Build Image</button>
                 </div>
               </div>
             </div>
@@ -85,8 +78,6 @@
         </div>
 
       </div>
-
-
 
     </div>
   </div>
