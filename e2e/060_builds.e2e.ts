@@ -45,13 +45,13 @@ describe('Builds', () => {
         return element(by.css('.build-time')).isPresent();
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isPresent();
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isEnabled();
       }))
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
+      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));

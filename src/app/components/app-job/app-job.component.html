@@ -10,7 +10,8 @@
       <div class="content">
         <div class="columns is-multiline">
           <div class="column is-12" *ngIf="jobRun">
-            <div class="build-top-container" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
+
+            <div class="build-top-container is-hidden-mobile is-tablet" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
               <div class="build-top-content">
                 <div class="columns is-multiline">
                   <div class="column is-8">
@@ -102,8 +103,45 @@
                 </div>
               </div>
             </div>
+
+            <div class="is-hidden-tablet mobile-build-top-container">
+              <div class="mobile-build-top-container">
+                <div class="columns is-mobile" [ngClass]="{ green: jobRun?.status === 'success', yellow: jobRun?.status === 'running', red: jobRun?.status === 'failed' }">
+                  <div class="column is-2">
+                    <img *ngIf="authorAvatar" [src]="authorAvatar" class="mobile-avatar-img">
+                  </div>
+                  <div class="column is-8">
+                    <span class="bold" *ngIf="job?.build?.repository?.full_name"><a [routerLink]="['/repo', job?.build?.repository.id]">{{ job?.build?.repository?.full_name }}</a></span>
+                    <span class="bold" *ngIf="!job?.build?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
+                    <span class="name" *ngIf="job?.build?.branch">{{ job?.build?.branch }}</span>
+                    <span *ngIf="commitMessage" class="commit-message">{{ commitMessage }}</span>
+                  </div>
+                  <div class="column is-2">
+                    <span class="build-time" *ngIf="jobRun.status === 'running'">{{ currentTime - jobRun.start_time | toTime }}</span>
+                    <span class="build-time" *ngIf="jobRun.status !== 'running'">{{ jobRun.end_time - jobRun.start_time | toTime }}</span>
+
+                    <div *ngIf="userId && job?.hasPermission">
+                      <span class="icon circle restart-build" name="btn-restart" type="button" (click)="restartJob($event)" [class.disabled]="processing">
+                        <i class="ionicon ion-refresh"></i>
+                      </span>
+                      <span class="icon circle stop-build" name="btn-stop" (click)="stopJob($event)" [class.is-hidden]="jobRun.status !== 'running'" [class.disabled]="processing">
+                        <i class="ionicon ion-stop"></i>
+                      </span>
+                    </div>
+                  </div>
+
+                  <span class="build-icon">
+                    <img src="images/icons/clock.svg" *ngIf="status === 'queued'">
+                    <img src="images/icons/flickr.svg" *ngIf="status === 'running'">
+                    <img src="images/icons/check-true.svg" *ngIf="status === 'success'">
+                    <img src="images/icons/check-false.svg" *ngIf="status === 'failed'">
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <div class="column is-12" *ngIf="jobRun?.status === 'running' && sshd && vnc">
+          <div class="column is-12 is-hidden-mobile" *ngIf="jobRun?.status === 'running' && sshd && vnc && userId">
             <div class="ssh-container">
               <span class="icon">
                 <img src="images/icons/ssh.svg">

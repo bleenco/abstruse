@@ -19,15 +19,17 @@ describe('Build Details', () => {
 
   it('should restart existing build', () => {
     return browser.get('/build/1')
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt > 0;
-      })))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item')).count().then(cnt => {
+          return cnt > 0;
+        });
+      }))
       .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;
       })))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isEnabled()))
-      .then((): any => element(by.css(`[name="restart-build"]`)).click())
+      .then((): any => element.all(by.css(`[name="restart-build"]`)).first().click())
       .then((): any => element.all(by.css('.list-item')).count())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === num;
@@ -45,13 +47,13 @@ describe('Build Details', () => {
           .getAttribute('innerHTML').then(html => html.trim() === '00:08'));
       })
       .then(() => delay(2000))
-      .then(() => element.all(by.css(`[name="stop-job"]`)).each(el => el.click()))
+      .then(() => element.all(by.css(`[name="stop-job"]`)).first().click())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;
       })));
   });
 
-  it('should restart first job', () => {
+  it('should restart job', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
@@ -66,102 +68,18 @@ describe('Build Details', () => {
       .then(() => delay(2000))
       .then((): any => element.all(by.css(`[name="restart-job"]`)).first().click())
       .then((): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 1));
+        return browser.wait(() => element.all(by.css('.is-running')).first().isPresent());
       })
       .then(() => delay(2000))
       .then((): any => {
-        return browser.wait(() => element.all(by.css('.job-time')).then(els => els[0])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:06')));
+        return browser.wait(() => element.all(by.css('.job-time')).first()
+          .getAttribute('innerHTML').then(html => html === '00:06'));
       })
       .then((): any => {
-        return browser
-          .wait(() => element.all(by.css(`[name="stop-job"]`)).first().isPresent());
+        return browser.wait(() => element.all(by.css(`[name="stop-job"]`)).first().isPresent());
       })
       .then(() => delay(2000))
       .then((): any => element.all(by.css(`[name="stop-job"]`)).first().click())
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 0));
-      });
-  });
-
-  it('should restart last job', () => {
-    return Promise.resolve()
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt > 0;
-      })))
-      .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
-        return cnt === 0;
-      })))
-      .then((): any => {
-        return browser
-          .wait(() => element.all(by.css(`[name="restart-job"]`)).last().isPresent());
-      })
-      .then(() => delay(2000))
-      .then((): any => element.all(by.css(`[name="restart-job"]`)).last().click())
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 1));
-      })
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.job-time')).then(els => els[els.length - 1])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05')));
-      })
-      .then((): any => {
-        return browser
-          .wait(() => element.all(by.css(`[name="stop-job"]`)).last().isPresent());
-      })
-      .then(() => delay(2000))
-      .then((): any => element.all(by.css(`[name="stop-job"]`)).last().click())
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 0));
-      });
-  });
-
-  it('should restart random job', () => {
-    let num = null;
-    return Promise.resolve()
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt > 0;
-      })))
-      .then((): any => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
-        return cnt === 0;
-      })))
-      .then((): any => element.all(by.css('.list-item')).count())
-      .then(numJobs => num = randomNumber(0, numJobs - 1))
-      .then((): any => {
-        return browser.wait(() => {
-          return element.all(by.css(`[name="restart-job"]`)).then(els => els[num])
-            .then(el => el.isPresent());
-        });
-      })
-      .then(() => delay(2000))
-      .then((): any => {
-        return element.all(by.css(`[name="restart-job"]`))
-          .then(els => els[num])
-          .then(el => el.click());
-      })
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 1));
-      })
-      .then((): any => {
-        return browser.wait(() => element.all(by.css('.job-time')).then(els => els[num])
-          .then(el => el.getAttribute('innerHTML').then(html => html === '00:05')));
-      })
-      .then((): any => {
-        return browser.wait(() => {
-          return element.all(by.css(`[name="stop-job"]`)).then(els => els[num])
-            .then(el => el.isPresent());
-        });
-      })
-      .then(() => delay(2000))
-      .then((): any => {
-        return element.all(by.css(`[name="stop-job"]`)).then(els => els[num])
-          .then(el => el.click());
-      })
       .then((num): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 0));
