@@ -33,20 +33,15 @@
           <div class="column is-12">
             <div class="columns" *ngIf="!logs?.length">
               <div class="column is-4 is-offset-4">
-                <div class="message blue">
+                <div class="message">
                   <p class="has-text-centered">No logs found.</p>
                 </div>
               </div>
             </div>
 
             <div class="log-lines dracula-ansi-theme" *ngIf="logs?.length">
-              <div class="columns log-line" *ngFor="let line of logs; let i = index;">
-                <div class="column is-2 data-label-container">
-                  <span class="data-label" [ngClass]="{ green: line.type === 'info', red: line.type === 'error', yellow: line.type === 'warning' }">
-                    {{ line.type }}
-                  </span>
-                </div>
-                <div class="column is-8">
+              <div class="columns log-line" *ngFor="let line of logs; let i = index;" [ngClass]="{ green: line.type === 'info', red: line.type === 'error', yellow: line.type === 'warning' }">
+                <div class="column is-10">
                   <span [innerHTML]="line.message"></span>
                 </div>
                 <div class="column is-2">

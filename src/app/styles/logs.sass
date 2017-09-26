@@ -1,25 +1,43 @@
 .log-lines
   display: inline-block
   width: 100%
-  margin: 30px 0 0
-  padding: 10px
-  background: darken($background, 5)
-  border-radius: 6px
-  box-shadow: 1px 2px 10px rgba($background, 0.7)
+  margin: 10px 0 0
+  padding: 0
+  border-top: 1px solid $border
+  border-bottom: 1px solid $border
+  border-right: 1px solid $border
 
   .log-line
     display: flex
     align-items: center
-    margin: 0
     line-height: 1
-    font-size: 14px
-    height: 28px
-    font-weight: $weight-semibold
+    font-size: 13px
+    height: 40px
+    background: $white
+    color: $color
+    margin: 0
+    border-left: 3px solid transparent
 
-    .data-label-container
-      display: flex
-      align-items: center
-      justify-content: center
+    span
+      color: $color
+
+    &.green
+      border-color: $green
+
+    &.red
+      border-color: $red
+
+    &.yellow
+      border-color: $yellow
+
+    .ansi-yellow-fg
+      color: $yellow
+
+    .ansi-green-fg
+      color: $green
+
+    .ansi-red-fg
+      color: $red
 
     .time
       font-size: 12px
