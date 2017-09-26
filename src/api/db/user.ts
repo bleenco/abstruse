@@ -45,6 +45,7 @@ export function getUsers(): Promise<any> {
 export function updateUser(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     delete data.access_tokens;
+    delete data.permissions;
 
     new User({ id: data.id }).save(data, { method: 'update', require: false })
       .then(user => {

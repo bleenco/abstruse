@@ -39,7 +39,7 @@
         <i class="ion ion-chevron-down"></i>
 
         <div class="nav-dropdown" *ngIf="menuDropped">
-          <a class="nav-dropdown-item" routerLink="/settings">
+          <a class="nav-dropdown-item" [routerLink]="['/user', user?.id]">
             Settings
           </a>
           <a class="nav-dropdown-item" routerLink="/logs">

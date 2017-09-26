@@ -85,11 +85,14 @@ hr
     background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
     border: 1px solid #CED0DA
     border-radius: 18px
+    display: flex
+    align-items: center
+    justify-content: center
 
-    svg
-      width: 15px
-      height: 15px
-      margin: 5px 0 0 5px
+    i
+      margin: 0 0 0 6px
+      display: block
+      font-size: 16px
 
     +mobile
       width: 100% !important
@@ -112,10 +115,8 @@ hr
     background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%) !important
     pointer-events: none
 
-    svg
-
-      g
-        fill: $color-disabled !important
+    i
+      color: $color-disabled !important
 
   &.is-medium
 

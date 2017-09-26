@@ -9,8 +9,16 @@
   display: flex
   align-items: center
   justify-content: center
-  color: $color-secondary
+  color: $color
   font-size: 18px
-  font-weight: bold
-  background: rgba($white, 0.7)
+  background: rgba($white, 0.9)
   z-index: 999
+  visibility: hidden
+  animation: 0.5s fadeIn
+  animation-fill-mode: forwards
+
+@keyframes fadeIn
+  99%
+    visibility: hidden
+  100%
+    visibility: visible
