@@ -77,18 +77,19 @@
     padding: 0 10px !important
 
 .list-item
-  display: flex
-  align-items: center
-  min-height: 100px
+  height: 100px
   color: $color
   font-size: 13px
   cursor: pointer
   background: $background
   border-radius: 3px
   border: 1px solid $divider
+  display: flex
+  align-items: center
 
   +mobile
     display: block
+    box-shadow: 1px 2px 30px 0 rgba(#4259E7, 0.2)
 
     .column
       display: block !important
@@ -133,6 +134,9 @@
   &.columns
     margin: 5px 0
 
+    +mobile
+      margin: 10px 0
+
   span
     display: block
     white-space: nowrap
@@ -155,6 +159,9 @@
     padding: 0 10px !important
     display: flex
     align-items: center
+
+    +tablet
+      margin-top: 12px
 
     .columns
       width: 100%
@@ -229,16 +236,32 @@
   &.is-success
     border-left: 10px solid $green
 
+    +mobile
+      border-left: 0
+      border-top: 4px solid $green
+
   &.is-running
     border-left: 10px solid $yellow
-    -webkit-animation: pulsate 2.0s infinite ease-in-out
-    animation: pulsate 2.0s infinite ease-in-out
+    -webkit-animation: pulsate 3s infinite ease-in-out
+    animation: pulsate 3s infinite ease-in-out
+
+    +mobile
+      border-left: 0
+      border-top: 4px solid $yellow
 
   &.is-errored
     border-left: 10px solid $red
 
+    +mobile
+      border-left: 0
+      border-top: 4px solid $red
+
   &.is-queued
-    border-left: 10px solid $white
+    border-left: 10px solid $grey-light
+
+    +mobile
+      border-left: 0
+      border-top: 4px solid $grey-light
 
   .avatar-icon
     width: 50px
