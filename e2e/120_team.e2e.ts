@@ -1,4 +1,4 @@
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ExpectedConditions } from 'protractor';
 import { login, logout, waitForUrlToChangeTo, isLoaded, delay } from './utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -33,57 +33,69 @@ describe('Teams', () => {
       }));
   });
 
-  xit('should redirect to team, user and then grant, revoke repository permission', () => {
-    return browser.get('/')
-      .then((): any => browser.wait(() => element(by.css('.nav-team')).isPresent()))
-      .then((): any => element(by.css('.nav-team')).click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/team'))
+  it('should redirect to team, user and then grant, revoke repository permission', () => {
+    return browser.get('/team')
       .then((): any => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
-      .then((): any => element.all(by.css('.edit-user-button')).first().click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/1'))
+      .then((): any => element.all(by.css('.edit-user-button')).last().click())
+      .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/2'))
+      .then((): any => browser.wait(() => element(by.css(`[name="tab-permissions"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="tab-permissions"]`)).isEnabled()))
+      .then((): any => element(by.css('[name="tab-permissions"]')).click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
+        return element.all(by.css('.border-green')).count().then(count => count === 2);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
+        return element.all(by.css('.border-red')).count().then(count => count === 0);
       }))
-      .then((): any => element.all(by.css('[name="btn-removePermissions"]')).first().click())
+      .then((): any => browser.wait(() => element.all(by.css(`[name="btn-removePermission"]`))
+        .first().isPresent()))
+      .then((): any => browser.wait(() => element.all(by.css(`[name="btn-removePermission"]`))
+        .first().isEnabled()))
+      .then((): any => browser.wait(() => ExpectedConditions.elementToBeClickable(
+        element.all(by.css(`[name="btn-removePermission"]`)).first())))
+      .then(() => element.all(by.css(`[name="btn-removePermission"]`)).first())
+      .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
+      .then((): any => element.all(by.css('[name="btn-removePermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 4);
+        return element.all(by.css('.border-green')).count().then(count => count === 1);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.restricted-repositories .list-item')).count()
+        return element.all(by.css('.border-red')).count()
           .then(count => count === 1);
       }))
-      .then((): any => element.all(by.css('[name="btn-addPermissions"]')).first().click())
+      .then((): any => browser.wait(() => element.all(by.css(`[name="btn-addPermission"]`))
+        .first().isPresent()))
+      .then((): any => browser.wait(() => element.all(by.css(`[name="btn-addPermission"]`))
+        .first().isEnabled()))
+      .then((): any => browser.wait(() => ExpectedConditions.elementToBeClickable(
+        element.all(by.css(`[name="btn-addPermission"]`)).first())))
+      .then(() => element.all(by.css(`[name="btn-addPermission"]`)).first())
+      .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
+      .then((): any => element.all(by.css('[name="btn-addPermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.repositories .list-item')).count().then(count => count === 5);
+        return element.all(by.css('.border-green')).count().then(count => count === 2);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.restricted-repositories')).count().then(count => count === 0);
+        return element.all(by.css('.border-red')).count().then(count => count === 0);
       }));
   });
 
   xit(`should logout, access page as annonymous, see public build, job, but can't restart it`,
     () => {
-    return browser.get('/')
-      .then(() => isLoaded())
-      .then(() => browser.wait(() => element(by.css('.user-item')).isPresent()))
-      .then(() => element(by.css('.user-item')).click())
-      .then(() => element.all(by.css('.nav-dropdown-item')).last().click())
+    return logout()
       .then(() => isLoaded())
       .then(() => browser.get('/login'))
       .then(() => browser.getCurrentUrl())
       .then(url => expect(url).to.equal('http://localhost:6500/login'))
       .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isPresent()))
+      .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isEnabled()))
       .then((): any => element(by.css('.centered-anonymous')).click())
-      .then((): any => waitForUrlToChangeTo('http://localhost:6500/'))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item')).count().then(count => count > 0);
-      }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item .restart-build')).count().then(count => count === 0);
-      }))
+      .then((): any => element.all(by.css('.list-item')).count())
+      .then(cnt => cnt > 0 ? Promise.resolve() : Promise.reject(-1))
+      .then((): any => element.all(by.css('.restart-build')).count())
+      .then(cnt => cnt === 0 ? Promise.resolve() : Promise.reject(-1))
+      .then((): any => browser.wait(() => element(by.css('.list-item')).isPresent()))
+      .then((): any => browser.wait(() => element(by.css('.list-item')).isEnabled()))
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count > 0);

@@ -34,7 +34,6 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt === 1;
       })))
-      .then(() => delay(2000))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
