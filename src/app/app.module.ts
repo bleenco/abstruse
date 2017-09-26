@@ -31,7 +31,6 @@ import { AppRepositoriesComponent } from './components/app-repositories';
 import { AppRepositoryComponent } from './components/app-repository';
 import { AppJobComponent } from './components/app-job';
 import { AppUserComponent } from './components/app-user';
-import { AppSettingsComponent } from './components/app-settings';
 import { AppTeamComponent } from './components/app-team';
 import { AppLogsComponent } from './components/app-logs';
 import { AppImagesComponent } from './components/app-images';
@@ -56,7 +55,6 @@ import { AppToggleComponent } from './components/app-toggle';
     AppRepositoriesComponent,
     AppRepositoryComponent,
     AppJobComponent,
-    AppSettingsComponent,
     AppTeamComponent,
     AppUserComponent,
     AppLogsComponent,
@@ -105,11 +103,6 @@ import { AppToggleComponent } from './components/app-toggle';
         path: 'repo/:id',
         component: AppRepositoryComponent,
         canActivate: [AuthGuard, AccessGuard]
-      },
-      {
-        path: 'settings',
-        component: AppSettingsComponent,
-        canActivate: [AuthGuard]
       },
       {
         path: 'team',

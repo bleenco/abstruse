@@ -44,22 +44,10 @@
   </div>
   <div class="column is-1 justify-end" *ngIf="build?.userId && build?.hasPermission">
     <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
-      <svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g id="icon" fill-rule="nonzero" fill="#7F8FA4">
-            <path d="M12.083,1.887 C11.288,1.093 10.353,0.528 9.356,0.19 L9.356,2.325 C9.836,2.564 10.291,2.875 10.69,3.275 C12.683,5.269 12.683,8.511 10.69,10.504 C8.697,12.494 5.457,12.494 3.461,10.504 C1.47,8.509 1.47,5.269 3.461,3.275 C3.466,3.269 3.482,3.259 3.489,3.25 L3.491,3.25 L4.672,4.429 L4.665,0.685 L0.923,0.68 L2.099,1.856 C2.092,1.868 2.081,1.88 2.072,1.887 C-0.691,4.649 -0.691,9.13 2.072,11.892 C4.839,14.657 9.317,14.657 12.083,11.892 C14.844,9.13 14.847,4.649 12.083,1.887 Z" id="Shape"></path>
-          </g>
-        </g>
-      </svg>
+      <i class="ionicon ion-refresh"></i>
     </span>
     <span class="icon circle stop-build" (click)="stopBuild($event, build.id)" [class.disabled]="processingRequest" [class.is-hidden]="build.status === 'success' || build.status === 'failed'">
-      <svg width="66px" height="66px" viewBox="0 0 66 66" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-          <g transform="translate(-17.000000, 0.000000)" fill-rule="nonzero" fill="#7F8FA4">
-            <path d="M19.8,63.2 C21.4,64.8 23.4,65.5 25.5,65.5 C27.6,65.5 29.6,64.7 31.2,63.2 L50,44.3 L68.8,63.1 C70.4,64.7 72.4,65.4 74.5,65.4 C76.6,65.4 78.6,64.6 80.2,63.1 C83.3,60 83.3,54.9 80.2,51.8 L61.3,33 L80.1,14.2 C83.2,11.1 83.2,6 80.1,2.9 C77,-0.2 71.9,-0.2 68.8,2.9 L50,21.7 L31.2,2.8 C28.1,-0.3 23,-0.3 19.9,2.8 C16.8,5.9 16.8,11 19.9,14.1 L38.7,33 L19.8,51.8 C16.7,55 16.7,60 19.8,63.2 Z" id="Shape"></path>
-          </g>
-        </g>
-      </svg>
+      <i class="ionicon ion-stop"></i>
     </span>
   </div>
 </div>

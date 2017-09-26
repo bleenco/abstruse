@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
+import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
 
 export interface IAccessToken {
   token: string;
@@ -29,7 +30,9 @@ export class AppUserComponent implements OnInit {
   savingPassword: boolean;
   passwordSaved: boolean;
   token: IAccessToken;
-
+  uploading: boolean;
+  uploadProgress: number;
+  uploadInput: EventEmitter<UploadInput>;
 
   constructor(
     private api: ApiService,
@@ -41,6 +44,9 @@ export class AppUserComponent implements OnInit {
     this.loading = true;
     this.user = {};
     this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
+    this.uploading = false;
+    this.uploadProgress = 0;
+    this.uploadInput = new EventEmitter<UploadInput>();
   }
 
   ngOnInit() {
@@ -163,5 +169,31 @@ export class AppUserComponent implements OnInit {
         }
       }
     });
+  }
+
+  onUploadOutput(output: UploadOutput): void {
+    if (output.type === 'allAddedToQueue') {
+      const event: UploadInput = {
+        type: 'uploadAll',
+        url: this.config.url + '/api/user/upload-avatar',
+        method: 'POST',
+        data: { userId: this.user.id.toString() }
+      };
+
+      this.uploadInput.emit(event);
+      this.uploading = true;
+      this.uploadProgress = 0;
+    } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
+      this.uploadProgress = output.file.progress.data.percentage;
+      if (this.uploadProgress === 100) {
+        this.uploading = false;
+        this.uploadProgress = 0;
+      }
+    } else if (output.file && output.file.responseStatus === 200) {
+      const jwt = output.file.response.data;
+      this.auth.login(jwt);
+      this.loggedUser = this.auth.getData();
+      this.fetchUser();
+    }
   }
 }
