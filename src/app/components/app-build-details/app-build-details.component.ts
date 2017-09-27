@@ -19,7 +19,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   build: any;
   status: string;
   timeWords: string;
-  totalTime: number;
+  maxCompletedJobTime: number;
+  minRunningJobStartTime: number;
   previousRuntime: number;
   processingBuild: boolean;
   tag: string = null;
@@ -73,8 +74,10 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
         this.build.jobs.forEach(job => job.time = '00:00');
         this.timeWords = distanceInWordsToNow(this.build.created_at);
+        this.previousRuntime = 0;
         if (this.build.lastBuild) {
-          this.previousRuntime = this.build.lastBuild.end_time - this.build.lastBuild.start_time;
+          let maxJobTime = Math.max(...this.build.lastBuild.job_runs.map(job => job.end_time - job.start_time));
+          maxJobTime ? this.previousRuntime = maxJobTime : this.previousRuntime = 0;
         }
 
         this.status = this.getBuildStatus();
@@ -89,12 +92,29 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
                 this.build.jobs[index].status = 'running';
                 this.build.jobs[index].end_time = null;
                 this.build.jobs[index].start_time = event.additionalData;
+                this.build.jobs[index].runs.push({ start_time: event.additionalData, end_time: null });
               } else if (event.data === 'job succeded') {
                 this.build.jobs[index].status = 'success';
                 this.build.jobs[index].end_time = event.additionalData;
-              } else if (event.data === 'job failed' || event.data === 'job stopped') {
+                this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time = event.additionalData;
+              } else if (event.data === 'job failed') {
                 this.build.jobs[index].status = 'failed';
-                this.build.jobs[index].end_time = event.additionalData;
+                if (!this.build.jobs[index].end_time)  {
+                  this.build.jobs[index].end_time = event.additionalData;
+                }
+                if (!this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time) {
+                  this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time = event.additionalData;
+                }
+              } else if (event.data === 'job stopped') {
+                if (this.build.jobs[index].status !== 'success') {
+                  this.build.jobs[index].status = 'failed';
+                }
+                if (!this.build.jobs[index].end_time)  {
+                  this.build.jobs[index].end_time = event.additionalData;
+                }
+                if (!this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time) {
+                  this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time = event.additionalData;
+                }
               } else if (event.data === 'job queued') {
                 this.build.jobs[index].status = 'queued';
               }
@@ -118,11 +138,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
             if (event.build_id === Number(this.id)) {
               if (event.data === 'build restarted') {
                 this.build.start_time = event.additionalData;
-                this.updateJobTimes();
                 this.processingBuild = false;
               } else {
                 this.build.end_time = event.additionalData;
-                this.updateJobTimes();
               }
             }
           });
@@ -152,14 +170,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateJobTimes(): void {
-    if (this.status !== 'running') {
-      if (this.build.end_time > this.build.start_time) {
-        this.totalTime = this.build.end_time - this.build.start_time;
-      } else {
-        this.totalTime = 0;
-      }
-    } else {
-      this.totalTime = Math.min(...this.build.jobs
+    this.maxCompletedJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    if (this.status === 'running') {
+      this.minRunningJobStartTime = Math.min(...this.build.jobs
         .filter(job => job.status === 'running').map(job => job.start_time));
     }
 
@@ -224,9 +237,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
-    let minJobStartTime = Math.min(...this.build.jobs.map(job => job.start_time));
-    let maxJobEndTime = Math.max(...this.build.jobs.map(job => job.end_time));
-    this.previousRuntime = maxJobEndTime - minJobStartTime;
+    this.previousRuntime = 0;
+    let maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    maxJobTime ? this.previousRuntime = maxJobTime : this.previousRuntime = 0;
     this.processingBuild = true;
     this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
   }

@@ -151,14 +151,6 @@ function execJob(proc: JobProcess): Observable<{}> {
 
                 return dbJobRuns.updateJobRun(data);
               })
-              .then(() => {
-                jobEvents.next({
-                  type: 'process',
-                  job_id: proc.job_id,
-                  data: 'job failed',
-                  additionalData: time.getTime()
-                });
-              })
               .then(build => updateBuild({ id: proc.build_id, end_time: time }))
               .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
@@ -176,7 +168,8 @@ function execJob(proc: JobProcess): Observable<{}> {
                   type: 'process',
                   build_id: proc.build_id,
                   job_id: proc.job_id,
-                  data: 'job failed'
+                  data: 'job failed',
+                  additionalData: time.getTime()
                 });
               })
               .then(() => observer.complete())
@@ -255,8 +248,11 @@ function execJob(proc: JobProcess): Observable<{}> {
                   type: 'process',
                   build_id: proc.build_id,
                   job_id: proc.job_id,
-                  data: 'job failed'
+                  data: 'job failed',
+                  additionalData: time.getTime()
                 });
+
+                getLastRunId(proc.build_id).then(id => updateBuildRun({ id: id, end_time: time} ));
 
                 observer.complete();
               });
@@ -289,7 +285,6 @@ function execJob(proc: JobProcess): Observable<{}> {
 export function restartJob(jobId: number): Promise<void> {
   const time = new Date();
   let job = null;
-  let buildData;
 
   return stopJob(jobId)
     .then(() => dbJob.getLastRun(jobId))
@@ -309,31 +304,12 @@ export function restartJob(jobId: number): Promise<void> {
         type: 'process',
         build_id: job.builds_id,
         job_id: job.id,
-        data: 'job restarted'
-      });
-    })
-    .then(() => getBuild(job.builds_id))
-    .then(build => buildData = build)
-    .then(() => {
-      let jobs = buildData.jobs;
-      buildData.start_time = time;
-      buildData.end_time = null;
-
-      return updateBuild(buildData)
-        .then(() => {
-          buildData.build_id = job.builds_id;
-          return insertBuildRun(buildData);
-        });
-    })
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        data: 'build restarted',
+        data: 'job restarted',
         additionalData: time.getTime()
       });
     })
-    .then(() => sendPendingStatus(buildData, buildData.id))
+    .then(() => getBuild(job.builds_id))
+    .then(build => sendPendingStatus(build, build.id))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
@@ -421,7 +397,7 @@ export function stopJob(jobId: number): Promise<void> {
     .then(() => dbJob.getLastRunId(jobId))
     .then(runId => dbJobRuns.getRun(runId))
     .then(jobRun => {
-      if (jobRun.status !== 'success') {
+      if (!jobRun.end_time) {
         return dbJobRuns.updateJobRun({id: jobRun.id, end_time: time, status: 'failed' });
       }
     })

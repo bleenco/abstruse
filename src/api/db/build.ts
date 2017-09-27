@@ -146,7 +146,7 @@ export function getBuild(id: number, userId?: number): Promise<any> {
             .whereNotNull('build_runs.end_time')
             .orderBy('build_runs.id', 'desc');
           })
-          .fetch()
+          .fetch({ withRelated: 'job_runs'})
           .then(lastBuild => {
             if (lastBuild) {
               build.lastBuild = lastBuild.toJSON();

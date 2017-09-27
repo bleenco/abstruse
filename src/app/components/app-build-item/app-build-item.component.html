@@ -39,8 +39,9 @@
     <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
   </div>
   <div class="column is-1">
-    <span class="build-time" *ngIf="build?.status === 'running'">{{ currentTime - build?.startTime | toTime }} </span>
-    <span class="build-time" *ngIf="build?.status !== 'running'">{{ build?.maxTime | toTime }}</span>
+    <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (currentTime - build?.minRunningJobStartTime)">{{ build?.maxCompletedJobTime | toTime }} </span>
+    <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime <= (currentTime - build?.minRunningJobStartTime)">{{ currentTime - build?.minRunningJobStartTime | toTime }} </span>
+    <span class="build-time" *ngIf="build?.status !== 'running' && build?.maxCompletedJobTime">{{ build?.maxCompletedJobTime | toTime }}</span>
   </div>
   <div class="column is-1 justify-end" *ngIf="build?.userId && build?.hasPermission">
     <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
