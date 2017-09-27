@@ -13,9 +13,10 @@ import { ExpressServer } from './server';
 import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
 import { logger, LogMessageType } from './logger';
-import { initSetup } from './utils';
+import { initSetup, getAbstruseVersion } from './utils';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
+import { green } from 'chalk';
 
 const server = new ExpressServer({ port: 6500 });
 const socket = new SocketServer({ port: 6501 });
@@ -23,8 +24,9 @@ const socket = new SocketServer({ port: 6501 });
 initSetup()
   .then(() => db.create())
   .then(() => {
+    const version = getAbstruseVersion();
     const msg: LogMessageType = {
-      message: '[server] starting Abstruse CI server...',
+      message: `[server] starting Abstruse CI version ${green(version)} ...`,
       type: 'info',
       notify: false
     };

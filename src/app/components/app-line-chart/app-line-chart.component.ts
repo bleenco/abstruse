@@ -45,9 +45,7 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
 
     this.sub = this.windowService.resize
       .filter(x => !!this.el)
-      .subscribe(e => {
-        this.render();
-      });
+      .subscribe(e => this.render());
 
     this.calendarDateFrom = subDays(new Date(), 7);
     this.calendarDateTo = new Date();
@@ -74,6 +72,10 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
         this.runs = runs;
         this.render();
       });
+  }
+
+  timeRangeUpdate(): void {
+    this.getData();
   }
 
   render() {
