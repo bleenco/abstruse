@@ -13,8 +13,11 @@ export class AppProgressChartComponent implements OnChanges, OnDestroy {
   middleCount: any;
   arcLine: any;
   ratio: number;
+  lastCount: number;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef) {
+    this.lastCount = 0;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if ('percent' in changes) {
@@ -93,12 +96,14 @@ export class AppProgressChartComponent implements OnChanges, OnDestroy {
   arcTween = (transition: any, newAngle: number) => {
     transition.attrTween('d', (d: any) => {
       const i = interpolate(d.endAngle, newAngle);
-      const iCount = interpolate(this.percent, this.percent);
+      const iCount = interpolate(this.lastCount, this.percent);
 
       return (t) => {
         d.startAngle = d.endAngle;
         d.endAngle = i(t);
-        this.middleCount.text(Math.floor(iCount(t)));
+        this.lastCount = Math.floor(iCount(t));
+        this.middleCount.text(this.lastCount);
+
         return this.arcLine(d);
       };
     });

@@ -15,7 +15,8 @@ import {
   axisBottom,
   axisLeft,
   area,
-  event
+  event,
+  easeLinear
 } from 'd3';
 import { isSameDay, compareAsc, format, subDays } from 'date-fns';
 import { Subscription } from 'rxjs/Subscription';
@@ -189,11 +190,13 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
       .attr('class', 'axis axis--y')
       .call(axisLeft(y).tickSizeInner(-width).tickSizeOuter(0).tickPadding(10));
 
-    g.append('path')
+    const successPath = g.append('path')
       .attr('d', l(successData as any))
       .attr('fill', 'none')
       .attr('stroke', '#2BB415')
       .attr('stroke-width', '2px');
+
+    const totalLengthSuccess = (<any>successPath.node()).getTotalLength();
 
     g.append('path')
       .attr('d', a(successData as any))
@@ -209,11 +212,21 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
       .attr('stroke', '#2BB415')
       .attr('stroke-width', 2);
 
-    g.append('path')
+    successPath
+      .attr('stroke-dasharray', totalLengthSuccess + ' ' + totalLengthSuccess)
+      .attr('stroke-dashoffset', totalLengthSuccess)
+      .transition()
+      .duration(1000)
+      .ease(easeLinear)
+      .attr('stroke-dashoffset', 0);
+
+    const failedPath = g.append('path')
       .attr('d', l(failedData as any))
       .attr('fill', 'none')
       .attr('stroke', '#f03e3e')
       .attr('stroke-width', '2px');
+
+    const totalLengthFailed = (<any>failedPath.node()).getTotalLength();
 
     g.append('path')
       .attr('d', a(failedData as any))
@@ -228,6 +241,14 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
       .attr('fill', 'white')
       .attr('stroke', '#f03e3e')
       .attr('stroke-width', 2);
+
+    failedPath
+      .attr('stroke-dasharray', totalLengthFailed + ' ' + totalLengthFailed)
+      .attr('stroke-dashoffset', totalLengthFailed)
+      .transition()
+      .duration(1000)
+      .ease(easeLinear)
+      .attr('stroke-dashoffset', 0);
   }
 
   sortByKey(array, key) {
