@@ -110,6 +110,16 @@ export function getConfig(): string {
   return config;
 }
 
+export function getAbstruseVersion(): string {
+  try {
+    const pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
+    return pkgJson.version;
+  } catch (e) {
+    console.log(e);
+    return 'unknown';
+  }
+}
+
 export function getCacheFilesFromPattern(pattern: string): any[] {
   const cacheFolder = getFilePath('cache');
   const search = glob.sync(join(cacheFolder, pattern));
