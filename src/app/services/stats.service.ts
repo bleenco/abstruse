@@ -30,6 +30,11 @@ export class StatsService {
     return this.apiService.statsJobRuns().toPromise().then(runs => runs);
   }
 
+  getJobRunsBetween(dateFrom: Date, dateTo: Date): Promise<any[]> {
+    return this.apiService.statsJobRunsBetween(dateFrom.toISOString(), dateTo.toISOString())
+      .toPromise().then(runs => runs);
+  }
+
   humanizeBytes(bytes: number): string {
     if (bytes === 0) {
       return '0 Byte';

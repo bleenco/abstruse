@@ -169,3 +169,24 @@
   height: 240px
   display: block
   margin: 0 auto
+
+.datepickers-container
+  display: flex
+  justify-content: flex-end
+
+  .ngx-datepicker-input
+    display: block
+    float: left
+    border-radius: 4px
+    margin-left: 10px
+    width: 120px !important
+    background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+    color: $color-secondary !important
+    font-size: 12px !important
+    border: 1px solid $border !important
+    cursor: pointer
+
+  .day-unit
+
+    &.is-selected
+      background: $green !important
