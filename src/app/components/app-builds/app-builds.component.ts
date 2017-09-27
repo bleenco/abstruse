@@ -107,7 +107,6 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         if (index !== -1) {
           if (event.data === 'build restarted') {
             this.builds[index].start_time = event.additionalData;
-            this.update();
           } else {
             this.builds[index].end_time = event.additionalData;
             this.update();
@@ -145,15 +144,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
         status = 'success';
       }
 
-      if (status !== 'running') {
-        if (build.end_time > build.start_time) {
-          build.maxTime = build.end_time - build.start_time;
-        } else {
-          build.maxTime = 0;
-        }
-      }
-
-      build.startTime = Math.min(...build.jobs
+      build.maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+      build.minRunningJobStartTime = Math.min(...build.jobs
         .filter(job => job.status === 'running')
         .map(job => job.start_time));
       build.status = status;

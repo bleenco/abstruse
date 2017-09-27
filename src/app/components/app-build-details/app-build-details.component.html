@@ -90,14 +90,16 @@
                   <div class="column is-2">
                     <p class="text-small">
                       <span *ngIf="status !== 'running'">Build started {{ timeWords }} ago</span>
-                      <span *ngIf="status === 'running' && previousRuntime && previousRuntime >= (currentTime - totalTime)">approximately {{ previousRuntime - (currentTime - totalTime) | date:'mm:ss' }} remaining</span>
+                      <span *ngIf="status === 'running' && previousRuntime && previousRuntime > 0 && previousRuntime >= (currentTime - minRunningJobStartTime)">approximately {{ previousRuntime - (currentTime - minRunningJobStartTime) | date:'mm:ss' }} remaining</span>
                     </p>
                   </div>
                   <div class="column is-1">
                     <p class="total-time" *ngIf="!processingBuild">
                       <img src="images/icons/clock.svg">
-                      <span *ngIf="status !== 'running'">{{ totalTime | toTime }}</span>
-                      <span *ngIf="status === 'running'">{{ currentTime - totalTime | toTime }}</span>
+                      <span *ngIf="status !== 'running' && maxCompletedJobTime">{{ maxCompletedJobTime | toTime }}</span>
+                      <span *ngIf="status !== 'running' && !maxCompletedJobTime">00:00</span>
+                      <span *ngIf="status === 'running' && maxCompletedJobTime > (currentTime - minRunningJobStartTime)">{{ maxCompletedJobTime | toTime }}</span>
+                      <span *ngIf="status === 'running' && (!maxCompletedJobTime || maxCompletedJobTime <= (currentTime - minRunningJobStartTime))">{{ currentTime - minRunningJobStartTime | toTime }}</span>
                     </p>
                   </div>
                 </div>
@@ -173,8 +175,8 @@
               <div class="column is-1" *ngIf="processingBuild"></div>
               <div class="column is-1" *ngIf="!processingBuild">
                 <span class="job-time" *ngIf="job?.status === 'running'">{{ currentTime - job.start_time | toTime }}</span>
-                <span class="job-time" *ngIf="job?.status === 'success' || job?.status === 'failed'">{{ job.end_time - job.start_time | toTime }}</span>
-                <span class="job-time" *ngIf="job?.status === 'queued'">00:00</span>
+                <span class="job-time" *ngIf="job?.end_time && (job?.status === 'success' || job?.status === 'failed')">{{ job.end_time - job.start_time | toTime }}</span>
+                <span class="job-time" *ngIf="job?.status === 'queued' || (!job.end_time && (job?.status === 'success' || job?.status === 'failed'))">00:00</span>
               </div>
               <div class="column is-1" *ngIf="userId && build?.hasPermission">
                 <span class="icon circle" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">

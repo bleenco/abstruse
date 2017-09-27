@@ -96,7 +96,7 @@
                     <p class="total-time">
                       <img src="images/icons/clock.svg">
                       <span *ngIf="jobRun.status === 'running'">{{ currentTime - jobRun.start_time | toTime }}</span>
-                      <span *ngIf="jobRun.status !== 'running'">{{ jobRun.end_time - jobRun.start_time | toTime }}</span>
+                      <span *ngIf="jobRun.status !== 'running' && jobRun.end_time">{{ jobRun.end_time - jobRun.start_time | toTime }}</span>
                     </p>
                   </div>
 
