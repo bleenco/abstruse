@@ -1,13 +1,17 @@
 <div class="line-chart-top-content">
-  <h2>Runned Jobs</h2>
+  <h2>Jobs</h2>
   <div class="line-chart-legend">
     <span class="dot green"></span>
     <span>Successful</span>
     <span class="dot red"></span>
     <span>Failed</span>
   </div>
-  <div class="group-buttons bright small">
+  <!-- <div class="group-buttons bright small">
     <button type="button" class="group-button">{{ minDate }} - {{ maxDate }}</button>
+  </div> -->
+  <div class="datepickers-container">
+    <ng-datepicker [(ngModel)]="statsDateFrom" [ngModelOptions]="{ standalone: true }"></ng-datepicker>
+    <ng-datepicker [(ngModel)]="statsDateTo" [ngModelOptions]="{ standalone: true }"></ng-datepicker>
   </div>
 </div>
 <div class="line-chart-container"></div>

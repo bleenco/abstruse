@@ -176,6 +176,10 @@ export class ApiService {
     return this.get(`${this.url}/stats/job-runs`, null, true);
   }
 
+  statsJobRunsBetween(dateFrom: string, dateTo: string): Observable<any> {
+    return this.get(`${this.url}/stats/job-runs/${dateFrom}/${dateTo}`, null, true);
+  }
+
   imagesList(): Observable<any> {
     return this.get(`${this.url}/images`, null, true);
   }

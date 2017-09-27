@@ -14,7 +14,6 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
   memory: { total: number, free: number, used: number };
   memoryHuman: { total: string, free: string, used: string };
   memoryPercentage: string;
-  runs: { success: {}, failed: {} };
   cpuPercent: number;
   cpuCores: number[];
   containers: any[];
@@ -26,7 +25,6 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
     this.memory = { total: null, free: null, used: null };
     this.memoryHuman = { total: null, free: null, used: null };
     this.memoryPercentage = '0';
-    this.runs = { success: {}, failed: {} };
     this.cpuPercent = 0;
     this.cpuCores = [];
     this.containers = [];
@@ -34,6 +32,8 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.sub = this.statsService.stats.subscribe(e => {
+      this.loading = false;
+
       if (e.type === 'memory') {
         this.memory = {
           total: e.data.total,
@@ -54,11 +54,6 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
       } else if (e.type === 'containersStats') {
         this.containers = e.data;
       }
-    });
-
-    this.statsService.getJobRuns().then((runs: any) => {
-      this.loading = false;
-      this.runs = runs;
     });
 
     setTimeout(() => this.statsService.start());

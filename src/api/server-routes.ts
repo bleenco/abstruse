@@ -28,7 +28,7 @@ import {
 } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
-import { getJobRuns } from './db/job-run';
+import { getJobRuns, getJobRunsBetween } from './db/job-run';
 import { insertAccessToken, getAccessTokens } from './db/access-token';
 import {
   updatePermission,
@@ -630,6 +630,12 @@ export function statsRoutes(): express.Router {
 
   router.get('/job-runs', (req: express.Request, res: express.Response) => {
     getJobRuns()
+      .then(runs => res.status(200).json({ data: runs }))
+      .catch(err => res.status(200).json({ status: false }));
+  });
+
+  router.get('/job-runs/:dateFrom/:dateTo', (req: express.Request, res: express.Response) => {
+    getJobRunsBetween(req.params.dateFrom, req.params.dateTo)
       .then(runs => res.status(200).json({ data: runs }))
       .catch(err => res.status(200).json({ status: false }));
   });

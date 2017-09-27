@@ -1,5 +1,6 @@
-import { Component, OnDestroy, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { WindowService } from '../../services/window.service';
+import { StatsService } from '../../services/stats.service';
 import {
   select,
   scaleTime,
@@ -16,7 +17,7 @@ import {
   area,
   event
 } from 'd3';
-import { isSameDay, compareAsc, format } from 'date-fns';
+import { isSameDay, compareAsc, format, subDays } from 'date-fns';
 import { Subscription } from 'rxjs/Subscription';
 
 @Component({
@@ -24,19 +25,34 @@ import { Subscription } from 'rxjs/Subscription';
   templateUrl: 'app-line-chart.component.html'
 })
 export class AppLineChartComponent implements OnDestroy, OnChanges {
-  @Input() data: { success: {}, failed: {} };
   el: Element;
   tooltip: any;
   minDate: string;
   maxDate: string;
   sub: Subscription;
+  calendarDateFrom: Date;
+  calendarDateTo: Date;
+  loading: boolean;
+  runs: { success: {}, failed: {} };
 
-  constructor(private elementRef: ElementRef, private windowService: WindowService) {
+  constructor(
+    private elementRef: ElementRef,
+    private windowService: WindowService,
+    private statsService: StatsService
+  ) {
+    this.loading = true;
+    this.runs = { success: {}, failed: {} };
+
     this.sub = this.windowService.resize
       .filter(x => !!this.el)
       .subscribe(e => {
         this.render();
       });
+
+    this.calendarDateFrom = subDays(new Date(), 7);
+    this.calendarDateTo = new Date();
+
+    this.getData();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -49,6 +65,15 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+  }
+
+  getData(): void {
+    this.statsService.getJobRunsBetween(this.calendarDateFrom, this.calendarDateTo)
+      .then((runs: any) => {
+        this.loading = false;
+        this.runs = runs;
+        this.render();
+      });
   }
 
   render() {
@@ -71,12 +96,12 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     const x = scaleTime().rangeRound([0, width]);
     const y = scaleLinear().rangeRound([height, 0]);
 
-    let successData = Object.keys(this.data.success).map(key => {
-      return { date: parseTime(key), value: this.data.success[key] };
+    let successData = Object.keys(this.runs.success).map(key => {
+      return { date: parseTime(key), value: this.runs.success[key] };
     });
 
-    let failedData = Object.keys(this.data.failed).map(key => {
-      return { date: parseTime(key), value: this.data.failed[key] };
+    let failedData = Object.keys(this.runs.failed).map(key => {
+      return { date: parseTime(key), value: this.runs.failed[key] };
     });
 
     successData.forEach(success => {
