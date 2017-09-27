@@ -78,9 +78,9 @@
                       <label class="form-label">Email</label>
                       <input class="form-input" type="text" placeholder="Email" name="email" required [(ngModel)]="user.email">
                     </div>
-                    <div class="form-field">
-                      <label class="form-label">Admin</label>
-                      <app-selectbox [data]="yesNoOptions" name="admin" required [(ngModel)]="user.admin" required></app-selectbox>
+                    <div class="form-field" *ngIf="loggedUser.id !== user.id">
+                      <label class="form-label is-for-toggle">Admin</label>
+                      <app-toggle name="admin" [(ngModel)]="user.admin"></app-toggle>
                     </div>
                     <div class="form-field">
                       <button type="submit" class="button float-right" [class.is-loading]="saving" [disabled]="!editForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Save User Data</button>
@@ -102,7 +102,7 @@
                     <label class="form-label">Change Password</label>
                     <div class="form-field flex-centered">
                       <input class="form-input" type="password" placeholder="Password" name="password" required [(ngModel)]="password">
-                      <button type="submit" class="button float-right" [class.is-loading]="savingPassword" [disabled]="!passwdForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Change</button>
+                      <button type="submit" class="button float-right is-marginless mleft10" [class.is-loading]="savingPassword" [disabled]="!passwdForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Change</button>
                     </div>
                   </form>
                 </div>
