@@ -86,7 +86,7 @@ describe('Build Details', () => {
       });
   });
 
-  xit('should start new build (D3) and see progress bar in second job run', () => {
+  it('should start new build (D3) and see progress bar in second job run', () => {
     return Promise.resolve()
       .then(() => browser.get('/'))
       .then(() => sendGitHubRequest(requestD3, header))
@@ -97,13 +97,12 @@ describe('Build Details', () => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
       .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
-      .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
-        return cnt === 1;
-      })))
+      .then((): any => browser.wait(() => element.all(by.css('.list-item-slim')).count()
+        .then(cnt => cnt === 1)))
       .then(() => element.all(by.css('.list-item')).then(els => els[0]).then(el => el.click()))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.yellow')).count()
-          .then(cnt => cnt === 1));
+          .then(cnt => cnt > 0));
       })
       .then((): any => element.all(by.css('.progress-bar')).count())
       .then(progress => progress === 0)
@@ -149,7 +148,7 @@ describe('Build Details', () => {
       });
   });
 
-  xit(`should restart first build and see approximately time remaining`, () => {
+  it(`should restart first build and see approximately time remaining`, () => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;

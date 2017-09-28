@@ -7,28 +7,28 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('Job Details', () => {
-  before(() => login());
-  after(() => logout());
+  before(() => login().then(() => browser.waitForAngularEnabled(false)));
+  after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  xit('should restart job watch console log until it matches expected output', () => {
+  it('should restart job watch console log until it matches expected output', () => {
     return browser.get('/job/5')
-      .then((): any => browser.wait(() => element(by.css(`[name="btn-restart"]`)).isPresent()))
       .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-restart"]`)));
-      }))
-      .then(() => browser.wait(
-        ExpectedConditions.presenceOf(element(by.css(`[name="btn-restart"]`)))))
-      .then(() => delay(1000))
-      .then((): any => element(by.css(`[name="btn-restart"]`)).click())
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .command')).count().then(cnt => {
-          return cnt === 2;
+        return element.all(by.css('.restart-job')).count().then(cnt => {
+          return cnt > 0;
         });
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .output.is-hidden')).count().then(cnt => {
-          return cnt === 2;
-        });
+        return ExpectedConditions.elementToBeClickable(element(by.css('.restart-job')));
+      }))
+      .then((): any => element(by.css('.restart-job')).click())
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 0);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 1);
+      }))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.terminal .output')).count().then(cnt => cnt === 1);
       }))
       .then((): any => browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent()))
       .then((): any => browser.wait(() => {
@@ -40,8 +40,8 @@ describe('Job Details', () => {
       .then((): any => element(by.css(`[name="btn-stop"]`)).click());
   });
 
-  xit('should restart build and watch job output', () => {
-    return browser.get('/build/4')
+  it('should restart build and watch job output', () => {
+    return browser.get('/build/5')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
       })))
@@ -60,14 +60,10 @@ describe('Job Details', () => {
       })))
       .then(() => browser.get('/job/5'))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .command')).count().then(cnt => {
-          return cnt === 3;
-        });
+        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 3);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .output.is-hidden')).count().then(cnt => {
-          return cnt === 3;
-        });
+        return element.all(by.css('.terminal .output')).count().then(cnt => cnt === 3);
       }))
       .then((): any => browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent()))
       .then((): any => browser.wait(() => {

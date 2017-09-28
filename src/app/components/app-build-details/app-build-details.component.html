@@ -90,7 +90,7 @@
                   <div class="column is-2">
                     <p class="text-small">
                       <span *ngIf="status !== 'running'">Build started {{ timeWords }} ago</span>
-                      <span *ngIf="status === 'running' && previousRuntime && previousRuntime > 0 && previousRuntime >= (currentTime - minRunningJobStartTime)">approximately {{ previousRuntime - (currentTime - minRunningJobStartTime) | date:'mm:ss' }} remaining</span>
+                      <span name="approximately-remainig-time" *ngIf="status === 'running' && previousRuntime && previousRuntime > 0 && previousRuntime >= (currentTime - minRunningJobStartTime)">approximately {{ previousRuntime - (currentTime - minRunningJobStartTime) | date:'mm:ss' }} remaining</span>
                     </p>
                   </div>
                   <div class="column is-1">

@@ -46,7 +46,7 @@
                     <h3>{{ user.email }}</h3>
                     <p>{{ user.created_at | date:'medium' }}</p>
                   </div>
-                  <div class="user-item-data has-text-centered">
+                  <div class="user-item-data has-text-centered" name="user-type">
                     <h3 *ngIf="user.admin">admin</h3>
                     <h3 *ngIf="!user.admin">user</h3>
                   </div>

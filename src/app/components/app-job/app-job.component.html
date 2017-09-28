@@ -44,7 +44,7 @@
                     </button>
                   </div>
                   <div class="column is-2" *ngIf="userId && job?.hasPermission">
-                    <button class="button is-fullwidth" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
+                    <button class="button is-fullwidth restart-job" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/restart.svg">
