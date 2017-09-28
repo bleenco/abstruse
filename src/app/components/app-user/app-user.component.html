@@ -83,7 +83,7 @@
                       <app-toggle name="admin" [(ngModel)]="user.admin"></app-toggle>
                     </div>
                     <div class="form-field">
-                      <button type="submit" class="button float-right" [class.is-loading]="saving" [disabled]="!editForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Save User Data</button>
+                      <button type="submit" name="save-user-data" class="button float-right" [class.is-loading]="saving" [disabled]="!editForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Save User Data</button>
                     </div>
                   </form>
                   <form class="form borderless" (ngSubmit)="updatePassword($event)" #passwdForm="ngForm">
@@ -102,7 +102,7 @@
                     <label class="form-label">Change Password</label>
                     <div class="form-field flex-centered">
                       <input class="form-input" type="password" placeholder="Password" name="password" required [(ngModel)]="password">
-                      <button type="submit" class="button float-right is-marginless mleft10" [class.is-loading]="savingPassword" [disabled]="!passwdForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Change</button>
+                      <button type="submit" name="change-password" class="button float-right is-marginless mleft10" [class.is-loading]="savingPassword" [disabled]="!passwdForm.form.valid || !(loggedUser.id === user.id || loggedUser.admin)">Change</button>
                     </div>
                   </form>
                 </div>
@@ -163,7 +163,7 @@
                   <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
                 </div>
                 <div class="form-field">
-                  <button type="submit" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
+                  <button type="submit" name="add-token" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
                 </div>
               </form>
             </div>
