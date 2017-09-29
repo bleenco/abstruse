@@ -10,11 +10,11 @@
     <div class="nav-center is-hidden-mobile"></div>
     <div class="nav-right">
       <div class="group-buttons">
-        <button class="group-button" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">
+        <button class="group-button" name="tab-images" [ngClass]="{ 'is-active': tab === 'images' }" (click)="tab = 'images'">
           <i class="ionicon ion-ios-paper-outline"></i>
           Images
         </button>
-        <button class="group-button" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">
+        <button class="group-button" name="tab-build-image" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">
           <i class="ionicon ion-hammer"></i>
           Build Image
         </button>
