@@ -86,6 +86,7 @@ describe('Teams', () => {
 
   it(`should logout, access page as annonymous, see public builds but can't restart it`, () => {
     return logout()
+      .then(() => browser.waitForAngularEnabled(false))
       .then(() => isLoaded())
       .then(() => browser.get('/login'))
       .then(() => browser.getCurrentUrl())
@@ -93,23 +94,23 @@ describe('Teams', () => {
       .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isPresent()))
       .then((): any => browser.wait(() => element(by.css('.centered-anonymous')).isEnabled()))
       .then((): any => element(by.css('.centered-anonymous')).click())
-      .then((): any => element.all(by.css('.list-item')).count())
-      .then(cnt => cnt > 0 ? Promise.resolve() : Promise.reject(-1))
-      .then(() => browser.waitForAngularEnabled(false))
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then(() => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
+        return cnt > 0;
+      })))
       .then((): any => element.all(by.css('.restart-build')).first().isDisplayed())
-      .then(displayed => !displayed ? Promise.resolve() : Promise.reject(-1));
+      .then(displayed => expect(displayed).to.equals(false));
   });
 
   it(`as annonymous can click on build but can't restart it`, () => {
     return browser.get('/')
       .then(() => isLoaded())
       .then(() => browser.wait(() => element(by.css('.list-item')).isPresent()))
-      .then((): any => browser.waitForAngularEnabled(false))
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then(() => isLoaded())
       .then(() => delay(1000))
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).to.equal('http://localhost:6500/build/5'))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/5'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });
@@ -123,68 +124,70 @@ describe('Teams', () => {
       .then(() => browser.wait(() => element(by.css('.list-item-slim')).isPresent()))
       .then((): any => element.all(by.css('.list-item-slim')).first().click())
       .then(() => isLoaded())
-      .then(() => delay(500))
-      .then(() => delay(20000))
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).to.equal('http://localhost:6500/job/5'))
+      .then(() => delay(1000))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/5'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });
 
   it(`logout admin user and login with non admin user`, () => {
     return browser.get('/login')
-      .then(() => browser.waitForAngularEnabled(false))
       .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('frank@gmail.com'))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.login-button')).click())
-      .then(() => isLoaded())
-      .then(() => browser.waitForAngularEnabled(true));
+      .then(() => isLoaded());
   });
 
   it(`non admin user can update his name`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then(() => browser.wait(() => element(by.css('.form-input[name="fullname"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="fullname"]')).sendKeys('2'))
       .then((): any => element.all(by.css('[name="save-user-data"]')).first().click())
       .then(() => browser.get('http://localhost:6500/user/2'))
+      .then(() => browser.wait(() => element(by.css('.form-input[name="fullname"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="fullname"]')).getAttribute('value'))
       .then(txt => expect(txt).to.equals('Frank Milner2'));
   });
 
   it(`non admin user can update his email`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then(() => browser.wait(() => element(by.css('.form-input[name="email"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('2'))
       .then((): any => element.all(by.css('[name="save-user-data"]')).first().click())
       .then(() => browser.get('http://localhost:6500/user/2'))
+      .then(() => browser.wait(() => element(by.css('.form-input[name="email"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="email"]')).getAttribute('value'))
       .then(txt => expect(txt).to.equals('frank@gmail.com2'));
   });
 
   it(`non admin user can change his password`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then(() => browser.wait(() => element(by.css('.form-input[name="password"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test321'))
       .then((): any => element(by.css('[name="change-password"]')).click())
       .then(() => logout())
+      .then(() => browser.waitForAngularEnabled(false))
       .then(() => browser.get('/login'))
       .then(() => isLoaded())
+      .then(() => browser.wait(() => element(by.css('.form-input[name="email"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('frank@gmail.com2'))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test321'))
       .then(() => element(by.css('.login-button')).click())
-      .then(() => browser.waitForAngularEnabled(false))
       .then(() => isLoaded())
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).to.equal('http://localhost:6500/'))
-      .then(() => browser.waitForAngularEnabled(true));
+      .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 
-  it(`not admin user cannot update password from some other user`, () => {
+  it(`non admin user cannot update password from some other user`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).first().click())
       .then(() => browser.wait(() => element(by.css('.form-input[name="password"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test321'))
@@ -192,16 +195,20 @@ describe('Teams', () => {
       .then(enabled => expect(enabled).to.equal(false));
   });
 
-  it(`not admin cannot set himeself as admin`, () => {
+  it(`non admin cannot set himeself as admin`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
+      .then(() => browser.wait(() => element(by.css('[name="email"]')).isPresent()))
       .then(() => element.all(by.css('[name="admin"]')).count())
-      .then(cnt => expect(cnt).to.equal(0));
+      .then(cnt => expect(cnt).to.equals(0));
   });
 
   it(`non admin user can add his access token`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
+      .then(() => browser.wait(() => element(by.css('[name="tab-tokens"]')).isPresent()))
       .then((): any => element(by.css('[name="tab-tokens"]')).click())
       .then(() => element.all(by.css('.access-token-item')).count())
       .then(cnt => expect(cnt).to.equal(0))
@@ -211,13 +218,16 @@ describe('Teams', () => {
       .then(() => element(by.css('.form-input[name="token_description"]')).sendKeys('test'))
       .then(() => element(by.css('.form-input[name="token"]')).sendKeys('a22142wfafwa12431'))
       .then((): any => element.all(by.css('[name="add-token"]')).first().click())
+      .then(() => browser.wait(() => element(by.css('.access-token-item')).isPresent()))
       .then(() => element.all(by.css('.access-token-item')).count())
       .then(cnt => expect(cnt).to.equal(1));
   });
 
   xit(`non admin user can remove his access token`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
+      .then(() => browser.wait(() => element(by.css('[name="tab-tokens"]')).isPresent()))
       .then((): any => element(by.css('[name="tab-tokens"]')).click())
       .then(() => element.all(by.css('.access-token-item')).count())
       .then(cnt => expect(cnt).to.equal(1))
@@ -231,39 +241,40 @@ describe('Teams', () => {
       .then(() => login())
       .then(() => browser.waitForAngularEnabled(false))
       .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).to.equal('http://localhost:6500/'))
-      .then(() => browser.waitForAngularEnabled(true));
+      .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 
   it(`admin can set other user as admin`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then(() => browser.wait(() => element(by.css('[name="admin"]')).isPresent()))
       .then(() => browser.wait(() => element(by.css('.toggle-button')).isPresent()))
       .then((): any => element.all(by.css('.toggle-button')).first().click())
       .then((): any => element.all(by.css('[name="save-user-data"]')).first().click())
       .then(() => browser.get('/team'))
+      .then(() => browser.wait(() => element(by.css('[name="user-type"]')).isPresent()))
       .then(() => element.all(by.css('[name="user-type"]')).last().getAttribute('innerHTML'))
       .then(html => expect(html).to.include('admin'));
   });
 
   it(`admin can update other user's password`, () => {
     return browser.get('/team')
+      .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then(() => browser.wait(() => element(by.css('.form-input[name="password"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test111'))
       .then((): any => element.all(by.css('[name="change-password"]')).first().click())
       .then(() => logout())
+      .then(() => browser.waitForAngularEnabled(false))
       .then(() => browser.get('/login'))
       .then(() => isLoaded())
+      .then(() => browser.wait(() => element(by.css('.form-input[name="email"]')).isPresent()))
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('frank@gmail.com2'))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test111'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => isLoaded())
-      .then(() => browser.waitForAngularEnabled(false))
       .then(() => browser.getCurrentUrl())
-      .then(() => browser.getCurrentUrl())
-      .then(url => expect(url).to.equal('http://localhost:6500/'))
-      .then(() => browser.waitForAngularEnabled(true));
+      .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 });

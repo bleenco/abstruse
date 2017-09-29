@@ -132,7 +132,7 @@
                         </div>
                         <input type="hidden" name="id" [(ngModel)]="form.id">
                         <div class="form-field">
-                          <button type="submit" class="button float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Settings</button>
+                          <button type="submit" name="save-settings" class="button float-right" [class.is-loading]="saving" [disabled]="!repoForm.form.valid">Save Settings</button>
                         </div>
                       </form>
 
@@ -271,7 +271,7 @@
                             Abstruse cannot parse .abstruse.yml configuration
                           </p>
                         </div>
-                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
+                        <button type="button" name="check-repository-configuration" class="button is-fullwidth mtb20" [class.is-loading]="checkingConfig" (click)="checkRepositoryConfig()">Check Repository Configuration</button>
 
                         <hr/>
 
@@ -289,7 +289,7 @@
                             Error triggering build. Please check your configuration.
                           </p>
                         </div>
-                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="triggeringBuild" (click)="triggerTestBuild()">Trigger Test Build</button>
+                        <button type="button" name="trigger-test-build" class="button is-fullwidth mtb20" [class.is-loading]="triggeringBuild" (click)="triggerTestBuild()">Trigger Test Build</button>
 
                       </form>
                     </div>
@@ -299,14 +299,14 @@
                         <h4>Check Build Configuration File</h4>
                         <p>If you want to check how <code>.abstruse.yml</code> config file behaves on abstruse, here you can fetch it from repository and adopt changes then run build from it.</p>
 
-                        <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="fetchingConfig" (click)="fetchConfigFile()">Fetch Config</button>
+                        <button type="button" name="fetch-config" class="button is-fullwidth mtb20" [class.is-loading]="fetchingConfig" (click)="fetchConfigFile()">Fetch Config</button>
 
                         <div *ngIf="configFile">
                           <div class="form-field">
                             <label class="form-label">.abstruse.yml config file</label>
                             <textarea class="form-input" rows="25" [(ngModel)]="configFile" [ngModelOptions]="{ standalone: true }"></textarea>
                           </div>
-                          <button type="button" class="button is-fullwidth mtb20" [class.is-loading]="runningConfigBuild" (click)="runConfigBuild()">Run Build From Config</button>
+                          <button type="button" name="run-build-from-config" class="button is-fullwidth mtb20" [class.is-loading]="runningConfigBuild" (click)="runConfigBuild()">Run Build From Config</button>
                           <div class="message green" *ngIf="configBuildStatus">
                             <p>
                               <i class="ion ion-checkmark-round"></i>

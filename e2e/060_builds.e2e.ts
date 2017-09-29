@@ -80,15 +80,11 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
-      }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
-      }))
+      .then((): any => browser.wait(() => element.all(by.css('.stop-build')).first().isPresent()))
+      .then((): any => browser.wait(() => element.all(by.css('.stop-build')).first().isEnabled()))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.list-item:nth-child(1) .stop-build'));
+          const el = element.all(by.css('.stop-build')).first();
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
@@ -107,21 +103,15 @@ describe('Builds', () => {
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
       }))
-      .then((): any => browser.wait(() => {
-        return element(by.css('.build-time')).isPresent();
-      }))
+      .then((): any => browser.wait(() => element(by.css('.build-time')).isPresent()))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
       }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
-      }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
-      }))
+      .then((): any => browser.wait(() => element.all(by.css('.stop-build')).first().isPresent()))
+      .then((): any => browser.wait(() => element.all(by.css('.stop-build')).first().isEnabled()))
       .then((): any => {
         return browser.wait(() => {
-          const el = element(by.css('.list-item:nth-child(1) .stop-build'));
+          const el = element.all(by.css('.stop-build')).first();
           return ExpectedConditions.elementToBeClickable(el);
         });
       })
