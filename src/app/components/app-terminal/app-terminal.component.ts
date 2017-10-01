@@ -61,7 +61,7 @@ export class AppTerminalComponent implements OnInit {
     if (typeof this.data.clear !== 'undefined') {
       this.commands = [];
     } else {
-      const output: string = this.au.ansi_to_html(this.data);
+      let output: string = this.au.ansi_to_html(this.data);
       const regex = /==[&gt;|>](.*)/g;
       let match;
       let commands: string[] = [];
@@ -75,11 +75,11 @@ export class AppTerminalComponent implements OnInit {
           this.commands = [];
         }
 
-        let retime = new RegExp('exectime.*(\\d)', 'igm');
+        let retime = new RegExp('\\[exectime\\]: \\d*', 'igm');
         let times = [];
         while (match = retime.exec(output)) {
-          let t = match[0].replace('exectime]: ', '').replace(/<span.*/, '');
-          times.push(t);
+          let t = match[0].replace(/\[exectime\]: /igm, '');
+          times.push((t / 10).toFixed(0));
         }
 
         this.commands = commands.reduce((acc, curr, i) => {
@@ -90,32 +90,34 @@ export class AppTerminalComponent implements OnInit {
           if (!output.match(re)) {
             re = new RegExp('(' + c + ')' + '[\\s\\S]+');
           }
-          let retime = new RegExp('exectime.*(\\d)', 'igm');
-          let t = times[i] ? parseFloat(<any>(times[i] / 10)).toFixed(0) : null;
-          let time = t && parseInt(<any>t, 10);
+          let time = times[i] ? Number(times[i]) : null;
 
           let out = output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : '';
-          out = out.replace(/\[exectime\]: [0-9.,]+/g, '');
+          out = out.replace(retime, '');
+
+          out = out.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
+          out = out.replace(/(\[error\]: .*)/igm, '<span class="ansi-red-fg">$1</span>');
 
           return acc.concat({
             command: curr.replace('==&gt;', '').trim(),
             visible: i === commands.length - 1 ? true : false,
             output: out,
-            time: times[i] ? this.getDuration(time) : null
+            time: time ? this.getDuration(time) : ''
           });
         }, this.commands);
       } else {
         if (output.includes('[exectime]')) {
-          let retime = new RegExp('exectime.*(\\d)', 'igm');
+          let retime = new RegExp('\\[exectime\]: \\d*', 'igm');
           let match = output.match(retime);
-          let t = match[0].replace('exectime]: ', '').replace(/<span.*/, '');
-          t = t ? parseFloat(<any>(<any>t / 10)).toFixed(0) : null;
-          let time = t && parseInt(<any>t, 10);
+          let time = Number((Number(match[0].replace('[exectime]: ', '')) / 10).toFixed(0));
 
           if (this.commands[this.commands.length - 1]) {
             this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : '0ms';
           }
         } else {
+          output = output.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
+          output = output.replace(/(\[error\]: .*)/igm, '<span class="ansi-red-fg">$1</span>');
+
           if (this.commands[this.commands.length - 1]) {
             this.commands[this.commands.length - 1].output += output;
           }

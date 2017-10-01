@@ -6,7 +6,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { NgUploaderModule } from 'ngx-uploader';
 import { NgSlimScrollModule } from 'ngx-slimscroll';
-import { NgDatepickerModule } from 'ng2-datepicker';
+import { NgDatepickerModule } from 'ng2-datepicker/ng2-datepicker';
 import { ConfigServiceProvider } from './services/config.service';
 import { ApiServiceProvider } from './services/api.service';
 import { TimeServiceProvider } from './services/time.service';
