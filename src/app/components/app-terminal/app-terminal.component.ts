@@ -138,7 +138,7 @@ export class AppTerminalComponent implements OnInit {
         duration: 50
       };
       this.scrollEvents.emit(ev);
-    });
+    }, 50);
   }
 
   toggleCommand(index: number) {
