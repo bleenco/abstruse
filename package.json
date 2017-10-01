@@ -136,7 +136,7 @@
     "mocha": "^3.5.3",
     "monaco-editor": "^0.10.0",
     "multer": "^1.3.0",
-    "ng2-datepicker": "^2.1.0",
+    "ng2-datepicker": "^2.1.1",
     "ngx-slimscroll": "^3.3.3",
     "ngx-uploader": "^4.0.0",
     "node-sass": "^4.5.3",
