@@ -83,6 +83,7 @@ export class SocketServer {
                 userId = Number(event.data);
               }
               break;
+
               case 'buildImage': {
                 const imageData = event.data;
                 buildDockerImage(imageData);
@@ -96,30 +97,27 @@ export class SocketServer {
               }
               break;
 
-              case 'startBuild':
-                startBuild({ repositories_id: event.data.repositoryId })
-                  .then(buildId => {
-                    console.log('New Build: ', buildId);
-                  });
-              break;
               case 'stopBuild':
                 stopBuild(event.data.buildId)
                   .then(() => {
                     conn.next({ type: 'build stopped', data: event.data.buildId });
                   });
               break;
+
               case 'restartBuild':
                 restartBuild(event.data.buildId)
                   .then(() => {
                     conn.next({ type: 'build restarted', data: event.data.buildId });
                   });
               break;
+
               case 'restartJob':
                 restartJob(parseInt(event.data.jobId, 10))
                   .then(() => {
                     conn.next({ type: 'job restarted', data: event.data.jobId });
                   });
               break;
+
               case 'stopJob':
                 stopJob(event.data.jobId)
                   .then(() => {
@@ -162,6 +160,7 @@ export class SocketServer {
                   memory(), cpu(), docker.getContainersStats()
                 ]).subscribe(event => conn.next(event));
               break;
+
               case 'unsubscribeFromStats':
                 if (this.clients[clientIndex].sub) {
                   this.clients[clientIndex].sub.unsubscribe();

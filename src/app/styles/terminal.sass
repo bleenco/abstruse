@@ -5,16 +5,15 @@
 .window-terminal-container
   position: relative
   display: block
-  color: #f8f8f2
+  color: #ffffff
   margin: 0
   font-family: $font-family-roboto-mono
-  padding: 10px 0
+  padding: 0
   height: 100%
   background: #000000
   border-radius: 4px
-  box-shadow: 1px 2px 10px rgba($background, 0.7)
-  border: 1px solid $divider
   height: 600px
+  -webkit-font-smoothing: auto
 
   +mobile
     height: 400px
@@ -35,50 +34,42 @@
     .command-line
       display: flex
       align-items: center
-      margin: 1px 5px
+      margin: 0 5px
       cursor: pointer
-      height: 20px
+      height: 28px
       position: relative
       padding-left: 15px
-      background: lighten(#000000, 5)
-
-      .icon
-        margin-right: 3px
-
-        img
-          margin-top: 1px
-          width: 8px
-          height: 8px
+      background: lighten(#000000, 7)
+      font-family: $font-family-roboto-mono
 
       .command
         font-size: 12px
         color: $white
-        font-weight: $weight-bold !important
-
-        span
-          font-size: 12px
-          color: $white
 
       .time
         position: absolute
         display: block
         font-size: 12px
-        color: $white
         right: 10px
-        outline: none
-        border: none
+        color: $white
 
-        .command-loader
-          margin-top: 2px
+      .command-loader
+        position: absolute
+        right: 10px
+        top: 4px
+        display: block
+        overflow: hidden
+        width: 16px
+        height: 16px
+
+        svg
           width: 16px
           height: 16px
-          outline: none
-          border: none
 
     .output
       display: inline-block
       width: 100%
-      color: #f8f8f2
+      color: #ffffff
       margin: 0 !important
       font-family: $font-family-roboto-mono
       font-size: 12px
