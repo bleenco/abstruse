@@ -60,6 +60,7 @@ export interface Repository {
   sha?: string;
   file_tree?: string[];
   access_token?: string;
+  type?: 'github' | 'bitbucket' | 'gogs' | 'gitlab';
 }
 
 export interface Config {
@@ -87,7 +88,7 @@ export interface Config {
 export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
-    let branch = repository.branch;
+    let branch = repository.type === 'bitbucket' ? 'master' : repository.branch;
     let sha = repository.sha || null;
     let pr = repository.pr || null;
     let cloneDir = null;
@@ -99,7 +100,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
     createGitTmpDir()
       .then(dir => cloneDir = dir)
       .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => checkoutShaOrPr(sha, pr, cloneDir))
+      .then(() => checkoutShaOrPr(sha, pr, cloneDir, repository.type, repository.branch))
       .then(() => readGitDir(cloneDir))
       .then(files => repository.file_tree = files)
       .then(() => {
@@ -400,17 +401,23 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     repo.clone_url = repo.clone_url.replace('//', `//${repo.access_token}@`);
   }
 
-  const clone = `git clone -q ${repo.clone_url} -b ${repo.branch} .`;
+  let cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
+  const clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
 
   // 2. fetch & checkout
   let fetch = null;
   let checkout = null;
 
   if (repo.pr) {
-    fetch = `git fetch origin pull/${repo.pr}/head:pr${repo.pr}`;
-    checkout = `git checkout pr${repo.pr}`;
+    if (repo.type === 'github') {
+      fetch = `git fetch origin pull/${repo.pr}/head:pr${repo.pr}`;
+      checkout = `git checkout pr${repo.pr}`;
+    } else if (repo.type === 'bitbucket') {
+      fetch = `git fetch origin ${repo.branch}:${repo.branch}`;
+      checkout = `git checkout FETCH_HEAD`;
+    }
   } else if (repo.sha) {
-    fetch = `git fetch origin`;
+    fetch = `git fetch origin ${repo.branch}`;
     checkout = `git checkout ${repo.sha} .`;
   }
 
@@ -559,17 +566,25 @@ function spawnGit(args: string[]): Promise<void> {
   });
 }
 
-function checkoutShaOrPr(sha: string, pr: number, dir: string): Promise<void> {
+function checkoutShaOrPr(
+  sha: string, pr: number, dir: string, type: string, branch: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     let fetch = null;
     let checkout = null;
     let gitDir = `--git-dir ${dir}/.git`;
 
     if (pr) {
-      fetch = `${gitDir} fetch origin pull/${pr}/head:pr${pr}`;
-      checkout = `${gitDir} --work-tree ${dir} checkout pr${pr}`;
+      if (type === 'github') {
+        fetch = `${gitDir} fetch origin pull/${pr}/head:pr${pr}`;
+        checkout = `${gitDir} --work-tree ${dir} checkout pr${pr}`;
+      } else if (type === 'bitbucket') {
+        fetch = `${gitDir} fetch origin ${branch}:${branch}`;
+        checkout = `${gitDir} --work-tree ${dir} checkout FETCH_HEAD`;
+      }
+
     } else if (sha) {
-      fetch = `${gitDir} fetch --unshallow`;
+      fetch = `${gitDir} fetch origin ${branch}`;
       checkout = `${gitDir} --work-tree ${dir} checkout ${sha}`;
     }
 
