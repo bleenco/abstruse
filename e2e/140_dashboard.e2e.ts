@@ -20,7 +20,6 @@ describe('Dashboard', () => {
 
   it('should go to dashboard and wait for cpu graph', () => {
     return  browser.get('/dashboard')
-      .then(() => isLoaded())
       .then(() => element.all(by.css('.progress-chart')).count())
       .then(cnt => expect(cnt).to.equals(0))
       .then((): any => browser.wait(() => element(by.css('.progress-chart')).isPresent()));
@@ -28,7 +27,6 @@ describe('Dashboard', () => {
 
   it('should go to dashboard and see jobs in last 7 days', () => {
     return  browser.get('/dashboard')
-      .then(() => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.line-chart-top-content')).isPresent()))
       .then(() => element.all(by.css('.line-chart-top-content')).count())
       .then(cnt => expect(cnt).to.equals(1));
@@ -36,7 +34,6 @@ describe('Dashboard', () => {
 
   it('should go to dashboard and see memory widget', () => {
     return  browser.get('/dashboard')
-    .then(() => isLoaded())
     .then((): any => browser.wait(() => element(by.css('[name="memory-usage"]')).isPresent()))
     .then(() => element(by.css('[name="memory-usage"]')).getCssValue('width'))
     .then(width => expect(width).to.not.equals('0px'));

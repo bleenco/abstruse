@@ -14,8 +14,8 @@ exports.config = {
   framework: 'mocha',
   mochaOpts: {
     reporter: 'spec',
-    timeout: 45000,
-    slow: 3000,
+    timeout: 60000,
+    slow: 10000,
     colors: true,
     bail: true
   },

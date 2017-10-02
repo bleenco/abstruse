@@ -67,6 +67,7 @@
                       <span *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id.slice(0, 7) }}</span>
                       <span *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash.slice(0, 7) }}</span>
                       <span *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash.slice(0, 7) }}</span>
+                      <span *ngIf="build?.data?.commit">{{ build?.data?.commit?.id.slice(0, 7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">

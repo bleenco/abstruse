@@ -106,14 +106,17 @@ describe('Build Details', () => {
       })
       .then((): any => element.all(by.css('.progress-bar')).count())
       .then(progress => progress === 0)
-      .then((): any => browser.wait(() => element(by.css(`[name="btn-restart"]`)).isPresent()))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css(`[name="btn-restart"]`)).first().isPresent());
+      })
       .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-restart"]`)));
+        return ExpectedConditions
+          .elementToBeClickable(element.all(by.css(`[name="btn-restart"]`)).first());
       }))
       .then(() => browser.wait(
-        ExpectedConditions.presenceOf(element(by.css(`[name="btn-restart"]`)))))
+        ExpectedConditions.presenceOf(element.all(by.css(`[name="btn-restart"]`)).first())))
       .then(() => delay(1000))
-      .then((): any => element(by.css(`[name="btn-restart"]`)).click())
+      .then((): any => element.all(by.css(`[name="btn-restart"]`)).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.progress-bar')).count().then(cnt => cnt === 1);
       }))
@@ -134,18 +137,21 @@ describe('Build Details', () => {
         return browser.wait(() => element(by.css('.progress-bar')).getAttribute('value')
           .then(value => parseFloat(value) > 0.5));
       })
-      .then((): any => browser.wait(() => element(by.css(`[name="btn-stop"]`)).isPresent()))
       .then((): any => browser.wait(() => {
-        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-stop"]`)));
+        return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();
+      })
+      .then((): any => browser.wait(() => {
+        return ExpectedConditions
+          .elementToBeClickable(element.all(by.css(`[name="btn-stop"]`)).first());
       }))
       .then(() => browser.wait(
-        ExpectedConditions.presenceOf(element(by.css(`[name="btn-stop"]`)))))
+        ExpectedConditions.presenceOf(element.all(by.css(`[name="btn-stop"]`)).first())))
       .then(() => delay(1000))
-      .then((): any => element(by.css(`[name="btn-stop"]`)).click())
+      .then((): any => element.all(by.css(`[name="btn-stop"]`)).first().click())
       .then((num): any => {
         return browser.wait(() => element.all(by.css('.is-running')).count()
           .then(cnt => cnt === 0));
-      });
+      }));
   });
 
   it(`should restart first build and see approximately time remaining`, () => {

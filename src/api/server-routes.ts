@@ -71,8 +71,6 @@ const storage: multer.StorageEngine = multer.diskStorage({
 
 const upload: multer.Instance = multer({ storage: storage });
 
-// getImages().then(images => console.log(images));
-
 export function webRoutes(): express.Router {
   const router = express.Router();
 
@@ -347,6 +345,46 @@ export function repositoryRoutes(): express.Router {
             repository.default_branch;
           let accessToken = null;
 
+          if (repository.access_token) {
+            accessToken = repository.access_token.token || null;
+          }
+
+          if (accessToken) {
+            url = url.replace('//', `//${accessToken}@`);
+          }
+
+          return getHttpJsonResponse(url);
+        } else if (repository.repository_provider === 'gitlab') {
+          let url = repository.api_url + '/projects/' +
+            repository.gitlab_id + '/repository/branches/master';
+
+          let accessToken = null;
+          if (repository.access_token) {
+            accessToken = repository.access_token.token || null;
+          }
+
+          if (accessToken) {
+            url = url.replace('//', `//${accessToken}@`);
+          }
+
+          return getHttpJsonResponse(url);
+        } else if (repository.repository_provider === 'bitbucket') {
+          let url = repository.api_url + '/' + repository.user_login + '/' + repository.name +
+            '/commits/master';
+          let accessToken = null;
+          if (repository.access_token) {
+            accessToken = repository.access_token.token || null;
+          }
+
+          if (accessToken) {
+            url = url.replace('//', `//${accessToken}@`);
+          }
+
+          return getHttpJsonResponse(url).then(payload => payload.values[0]);
+        } else if (repository.repository_provider === 'gogs') {
+          let url = repository.api_url + '/api/v1/' + repository.user_login +
+            '/repos/' + repository.full_name + '/branches/master';
+          let accessToken = null;
           if (repository.access_token) {
             accessToken = repository.access_token.token || null;
           }

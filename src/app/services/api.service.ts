@@ -208,6 +208,17 @@ export class ApiService {
     return this.get(`${this.url}/repositories/delete-cache/${id}`, null, true);
   }
 
+  customGet(url: string, searchParams: any = null): Observable<any> {
+    let params = new URLSearchParams();
+    Object.keys(searchParams).forEach(key => {
+      params.append(key, searchParams[key]);
+    });
+
+    return this.http.get(url, { search: params })
+      .map(res => res.json())
+      .catch(this.handleError);
+  }
+
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
     let headers = new Headers();
     if (auth) {

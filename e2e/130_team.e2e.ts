@@ -112,7 +112,7 @@ describe('Teams', () => {
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then(() => isLoaded())
       .then(() => delay(1000))
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/11'))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/13'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });
@@ -127,7 +127,7 @@ describe('Teams', () => {
       .then((): any => element.all(by.css('.list-item-slim')).first().click())
       .then(() => isLoaded())
       .then(() => delay(1000))
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/11'))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/13'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });

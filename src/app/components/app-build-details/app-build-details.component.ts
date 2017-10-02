@@ -342,7 +342,18 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       }
     } else if (this.build.repository.repository_provider === 'gitlab') {
       // gitlab
-      if (data.user_avatar) {
+      if (data.commit) {
+        this.dateTime = data.commit.created_at;
+        this.commitMessage = data.commit.message;
+        this.nameCommitter = data.commit.committer_name;
+        this.nameAuthor = data.commit.author_name;
+
+        this.apiService.customGet(this.build.repository.api_url + '/users', {
+          username: this.build.repository.user_login
+        }).subscribe(data => {
+          this.authorAvatar = data[0].avatar_url;
+        });
+      } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;
         this.commitMessage = data.commits[0].message;
         this.dateTime = data.commits[0].timestamp;
