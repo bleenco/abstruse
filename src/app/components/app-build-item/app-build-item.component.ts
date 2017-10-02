@@ -65,84 +65,100 @@ export class AppBuildItemComponent implements OnInit {
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
       null;
 
-    if (this.build.data.commit) {
-      this.commitMessage = this.build.data.commit.message;
-    } else if (this.build.data.commits) {
-      const len = this.build.data.commits.length - 1;
-      this.commitMessage = this.build.data.commits[len].message;
-    } else if (this.build.data.pull_request && this.build.data.pull_request.title) {
-      this.commitMessage = this.build.data.pull_request.title;
-    } else if (this.build.data.head_commit) {
-      this.commitMessage = this.build.data.head_commit.message;
-    }
+    if (this.build.repository.repository_provider === 'github') {
+      if (this.build.data.commit) {
+        this.commitMessage = this.build.data.commit.message;
+      } else if (this.build.data.commits) {
+        const len = this.build.data.commits.length - 1;
+        this.commitMessage = this.build.data.commits[len].message;
+      } else if (this.build.data.pull_request && this.build.data.pull_request.title) {
+        this.commitMessage = this.build.data.pull_request.title;
+      } else if (this.build.data.head_commit) {
+        this.commitMessage = this.build.data.head_commit.message;
+      }
 
-    if (this.build.data.sha) {
-      const data = this.build.data;
-      this.committerAvatar = data.committer.avatar_url;
-      this.name = data.commit.committer.name;
-      this.authorAvatar = data.author.avatar_url;
-    } else if (this.build.data.head_commit) {
-      const commit = this.build.data.head_commit;
-      this.committerAvatar = this.build.data.sender.avatar_url;
-      this.name = this.build.data.head_commit.author.name;
+      if (this.build.data.sha) {
+        const data = this.build.data;
+        this.committerAvatar = data.committer.avatar_url;
+        this.name = data.commit.committer.name;
+        this.authorAvatar = data.author.avatar_url;
+      } else if (this.build.data.head_commit) {
+        const commit = this.build.data.head_commit;
+        this.committerAvatar = this.build.data.sender.avatar_url;
+        this.name = this.build.data.head_commit.author.name;
 
-      if (commit.author.username !== commit.committer.username) {
-        this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+        if (commit.author.username !== commit.committer.username) {
+          this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+            if (evt.status === 200) {
+              const body = JSON.parse(evt._body);
+              this.authorAvatar = body.avatar_url;
+            }
+          });
+        } else {
+          this.authorAvatar = this.committerAvatar;
+        }
+      } else if (this.build.data.pull_request) {
+        this.authorAvatar = this.build.data.sender.avatar_url;
+        this.committerAvatar = this.authorAvatar;
+
+        this.apiService.getGithubUserData(this.build.data.sender.login).subscribe((evt: any) => {
           if (evt.status === 200) {
             const body = JSON.parse(evt._body);
-            this.authorAvatar = body.avatar_url;
+            this.name = body.name;
           }
         });
-      } else {
-        this.authorAvatar = this.committerAvatar;
       }
-    } else if (this.build.data.pull_request) {
-      this.authorAvatar = this.build.data.sender.avatar_url;
-      this.committerAvatar = this.authorAvatar;
+    } else if (this.build.repository.repository_provider === 'bitbucket') {
+      // bitbucket
+      if (this.build.data.actor) {
+        this.authorAvatar = this.build.data.actor.links.avatar.href;
+      }
 
-      this.apiService.getGithubUserData(this.build.data.sender.login).subscribe((evt: any) => {
-        if (evt.status === 200) {
-          const body = JSON.parse(evt._body);
-          this.name = body.name;
-        }
+      if (this.build.data.push) {
+        this.commitMessage = this.build.data.push.changes[0].commits[0].message;
+        this.dateTime = this.build.data.push.changes[0].commits[0].date;
+        this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+      } else if (this.build.data.pullrequest) {
+        this.commitMessage = data.pullrequest.description;
+        this.dateTime = data.pullrequest.updated_on;
+        this.committerAvatar = data.pullrequest.author.links.avatar.href;
+      }
+    } else if (this.build.repository.repository_provider === 'gitlab') {
+      // gitlab
+      if (data.user_avatar) {
+        this.authorAvatar = data.user_avatar;
+        this.commitMessage = data.commits[0].message;
+        this.dateTime = data.commits[0].timestamp;
+        this.committerAvatar = this.authorAvatar;
+      } else if (data.object_attributes) {
+        this.authorAvatar = data.user.avatar_url;
+        this.commitMessage = data.object_attributes.last_commit.message;
+        this.dateTime = data.object_attributes.last_commit.timestamp;
+        this.committerAvatar = this.authorAvatar;
+      }
+    } else if (this.build.repository.repository_provider === 'gogs') {
+      // gogs
+      if (data.pusher) {
+        this.authorAvatar = data.pusher.avatar_url;
+      }
+
+      if (data.sender && data.commits) {
+        this.commitMessage = data.commits[0].message;
+        this.dateTime = data.commits[0].timestamp;
+        this.committerAvatar = data.sender.avatar_url;
+      }
+
+      if (data.pull_request) {
+        this.authorAvatar = data.pull_request.user.avatar_url;
+        this.commitMessage = data.pull_request.title;
+        this.dateTime = data.pull_request.head_repo.updated_at;
+      }
+
+      this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+        this.currentTime = time;
+        this.buildCreated = distanceInWordsToNow(this.dateTime);
       });
     }
-
-    // bitbucket
-    if (this.build.data.actor) {
-      this.authorAvatar = this.build.data.actor.links.avatar.href;
-    }
-
-    if (this.build.data.push) {
-      this.commitMessage = this.build.data.push.changes[0].commits[0].message;
-      this.dateTime = this.build.data.push.changes[0].commits[0].date;
-      this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
-    } else if (this.build.data.pullrequest) {
-      this.commitMessage = data.pullrequest.description;
-      this.dateTime = data.pullrequest.updated_on;
-      this.committerAvatar = data.pullrequest.author.links.avatar.href;
-    }
-
-    // gitlab
-    if (data.user_avatar) {
-      this.authorAvatar = data.user_avatar;
-      this.commitMessage = data.commits[0].message;
-      this.dateTime = data.commits[0].timestamp;
-      this.committerAvatar = this.authorAvatar;
-    }
-
-    // gogs
-    if (data.sender && data.pusher) {
-      this.authorAvatar = data.pusher.avatar_url;
-      this.commitMessage = data.commits[0].message;
-      this.dateTime = data.commits[0].timestamp;
-      this.committerAvatar = data.sender.avatar_url;
-    }
-
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
-      this.buildCreated = distanceInWordsToNow(this.dateTime);
-    });
   }
 
   ngOnDestroy() {
