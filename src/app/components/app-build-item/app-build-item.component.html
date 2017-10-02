@@ -27,6 +27,7 @@
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha }}</span>
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
+    <span class="bold" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash }}</span>
 
     <span>{{ commitMessage }}</span>
 

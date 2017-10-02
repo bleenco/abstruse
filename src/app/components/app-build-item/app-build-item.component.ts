@@ -65,11 +65,6 @@ export class AppBuildItemComponent implements OnInit {
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
       null;
 
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
-      this.buildCreated = distanceInWordsToNow(this.dateTime);
-    });
-
     if (this.build.data.commit) {
       this.commitMessage = this.build.data.commit.message;
     } else if (this.build.data.commits) {
@@ -112,6 +107,22 @@ export class AppBuildItemComponent implements OnInit {
         }
       });
     }
+
+    // bitbucket
+    if (this.build.data.actor) {
+      this.authorAvatar = this.build.data.actor.links.avatar.href;
+    }
+
+    if (this.build.data.push) {
+      this.commitMessage = this.build.data.push.changes[0].commits[0].message;
+      this.dateTime = this.build.data.push.changes[0].commits[0].date;
+      this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+    }
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.buildCreated = distanceInWordsToNow(this.dateTime);
+    });
   }
 
   ngOnDestroy() {
