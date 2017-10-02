@@ -585,6 +585,9 @@ function generateGitHubRepositoryData(data: any): any {
 }
 
 function generateBitbucketRepositoryData(data: any): any {
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//' + url.host;
+
   return {
     bitbucket_id: data.repository.uuid,
     clone_url: `${data.repository.links.html.href}.git`,
@@ -599,11 +602,16 @@ function generateBitbucketRepositoryData(data: any): any {
     user_avatar_url: data.actor.links.avatar.href,
     user_url: data.actor.links.self.href,
     user_html_url: data.actor.links.html.href,
+    repository_provider: 'bitbucket',
+    api_url: apiUrl,
     data: data
   };
 }
 
 function generateGitLabRepositoryData(data: any): any {
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//' + url.host;
+
   return {
     gitlab_id: data.project_id ? data.project_id : data.object_attributes.target_project_id,
     clone_url: data.repository.git_http_url ? data.repository.git_http_url : data.project.http_url,
@@ -617,11 +625,16 @@ function generateGitLabRepositoryData(data: any): any {
     user_login: data.user_username ? data.user_username : data.user.username,
     user_id: data.user_id ? data.user_id : data.object_attributes.author_id,
     user_avatar_url: data.user_avatar ? data.user_avatar : data.user.avatar_url,
+    repository_provider: 'gitlab',
+    api_url: apiUrl,
     data: data
   };
 }
 
 function generateGogsRepositoryData(data: any): any {
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//' + url.host;
+
   return {
     gogs_id: data.repository.id,
     clone_url: data.repository.clone_url,
@@ -635,6 +648,8 @@ function generateGogsRepositoryData(data: any): any {
     user_login: data.repository.owner.login,
     user_id: data.repository.owner.id,
     user_avatar_url: data.repository.owner.avatar_url,
+    repository_provider: 'gogs',
+    api_url: apiUrl,
     data: data
   };
 }
