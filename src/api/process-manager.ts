@@ -436,7 +436,6 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
       const isGitlab = repository.gitlab_id || false;
       const isGogs = repository.gogs_id || false;
 
-      // TODO: add other git providers
       if (isGithub) {
         if (data.data.pull_request) {
           pr = data.data.pull_request.number;
@@ -448,6 +447,17 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
             branch = data.data.ref.split('/').pop();
           }
         }
+      } else if (isBitbucket) {
+        if (data.data.push) {
+          const push = data.data.push.changes[data.data.push.changes.length - 1];
+          const commit = push.commits[push.commits.length - 1];
+          sha = commit.hash;
+          branch = push.new.type === 'branch' ? push.new.name : 'master';
+        } else {
+          pr = data.data.pullrequest.id;
+          sha = data.data.pullrequest.source.commit.hash;
+          branch = data.data.pullrequest.source.branch.name;
+        }
       }
 
       branch = branch || repository.default_branch || 'master';
@@ -457,7 +467,8 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
         branch: branch,
         pr: pr,
         sha: sha,
-        access_token: repository.access_token || null
+        access_token: repository.access_token || null,
+        type: repository.repository_provider
       };
 
       if (buildConfig) {

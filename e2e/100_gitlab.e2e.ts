@@ -14,7 +14,7 @@ describe('Gitlab repositories', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  xit('should add gitlab repository and start new build (send push event)', () => {
+  it('should add gitlab repository and start new build (send push event)', () => {
     return browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       })
@@ -40,7 +40,7 @@ describe('Gitlab repositories', () => {
       }));
   });
 
-  xit('should start new build (send reopen_pull_request event)', () => {
+  it('should start new build (send reopen_pull_request event)', () => {
     return sendGitLabRequest(prReq, prHead)
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
@@ -70,7 +70,7 @@ describe('Gitlab repositories', () => {
       }));
   });
 
-  xit('should restart last build', () => {
+  it('should restart last build', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);

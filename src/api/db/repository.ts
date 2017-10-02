@@ -273,32 +273,31 @@ export function pingBitbucketRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const saveData = generateBitbucketRepositoryData(data);
     new Repository().where({ bitbucket_id: saveData.bitbucket_id }).fetch()
-    .then(repo => {
-      if (!repo) {
-        new Repository().save(saveData, { method: 'insert' })
-        .then(result => {
-          if (!result) {
-            reject(result);
-          } else {
-            let repository = result.toJSON();
-            return addRepositoryPermissionToEveryone(result.id)
-              .then(() => resolve(repository))
-              .catch(err => reject(err));
+      .then(repo => {
+        if (!repo) {
+          new Repository().save(saveData, { method: 'insert' })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                let repository = result.toJSON();
+                return addRepositoryPermissionToEveryone(result.id)
+                  .then(() => resolve(repository))
+                  .catch(err => reject(err));
+              }
+            }).catch(err => reject(err));
+        } else {
+          repo.save(saveData, { method: 'update', require: false })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
+            .catch(err => reject(err));
           }
-        })
-        .catch(err => reject(err));
-    } else {
-      repo.save(saveData, { method: 'update', require: false })
-        .then(result => {
-          if (!result) {
-            reject(result);
-          } else {
-            resolve(result.toJSON());
-          }
-        })
-        .catch(err => reject(err));
-      }
-    });
+        });
 });
 }
 
@@ -471,9 +470,7 @@ export function synchronizeBitbucketPullRequest(data: any): Promise<any> {
       .then(repository => {
         if (!repository) {
           const repoData = generateBitbucketRepositoryData(data);
-          return addRepository(repoData).then(repo => {
-            repoId = repo.id;
-          });
+          return addRepository(repoData).then(repo => repoId = repo.id);
         } else {
           const repoJson = repository.toJSON();
           repoId = repoJson.id;
@@ -585,8 +582,8 @@ function generateGitHubRepositoryData(data: any): any {
 }
 
 function generateBitbucketRepositoryData(data: any): any {
-  const url = new URL(data.repository.clone_url);
-  const apiUrl = url.protocol + '//' + url.host;
+  const url = new URL(data.repository.links.self.href);
+  const apiUrl = url.protocol + '//' + url.host + '/2.0/repositories';
 
   return {
     bitbucket_id: data.repository.uuid,
@@ -603,7 +600,6 @@ function generateBitbucketRepositoryData(data: any): any {
     user_url: data.actor.links.self.href,
     user_html_url: data.actor.links.html.href,
     repository_provider: 'bitbucket',
-    api_url: apiUrl,
     data: data
   };
 }

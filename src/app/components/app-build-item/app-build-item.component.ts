@@ -117,6 +117,10 @@ export class AppBuildItemComponent implements OnInit {
       this.commitMessage = this.build.data.push.changes[0].commits[0].message;
       this.dateTime = this.build.data.push.changes[0].commits[0].date;
       this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+    } else if (this.build.data.pullrequest) {
+      this.commitMessage = data.pullrequest.description;
+      this.dateTime = data.pullrequest.updated_on;
+      this.committerAvatar = data.pullrequest.author.links.avatar.href;
     }
 
     // gitlab

@@ -21,7 +21,7 @@ describe('Bitbucket repositories', () => {
     logout().then(() => browser.waitForAngularEnabled(true));
   });
 
-  xit('should add bitbucket repository and start new build (send push event)', () => {
+  it('should add bitbucket repository and start new build (send push event)', () => {
     return browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       })
@@ -32,7 +32,9 @@ describe('Bitbucket repositories', () => {
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))
-      .then(() => expect(element.all(by.css('.bold')).last().getText()).to.include('test'))
+      .then(() => {
+        expect(element.all(by.css('.bold')).last().getText()).to.eventually.include('test');
+      })
       .then(() => browser.get('/'))
       .then((): any => browser.wait(() => {
         return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
@@ -47,7 +49,7 @@ describe('Bitbucket repositories', () => {
       }));
   });
 
-  xit('should start new build (send reopen_pull_request event)', () => {
+  it('should start new build (send reopen_pull_request event)', () => {
     return sendBitBucketRequest(prReq, headerPullRequestCreated)
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);
@@ -77,7 +79,7 @@ describe('Bitbucket repositories', () => {
       }));
   });
 
-  xit('should restart last build', () => {
+  it('should restart last build', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => {
         return element.all(by.css('.disabled')).count().then(cnt => cnt === 0);
