@@ -208,11 +208,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
       null;
 
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
-      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
-    });
-
     if (this.job.build.data.commit) {
       this.commitMessage = this.job.build.data.commit.message;
     } else if (this.job.build.data.commits) {
@@ -266,5 +261,23 @@ export class AppJobComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+    // bitbucket
+    if (this.job.build.data.actor) {
+      this.authorAvatar = this.job.build.data.actor.links.avatar.href;
+      this.nameAuthor = this.job.build.data.actor.display_name;
+    }
+
+    if (this.job.build.data.push) {
+      this.commitMessage = this.job.build.data.push.changes[0].commits[0].message;
+      this.dateTime = this.job.build.data.push.changes[0].commits[0].date;
+      this.committerAvatar = this.job.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+      this.nameCommitter = this.job.build.data.push.changes[0].commits[0].author.user.display_name;
+    }
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
+    });
   }
 }

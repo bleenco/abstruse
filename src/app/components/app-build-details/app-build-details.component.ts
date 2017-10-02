@@ -267,11 +267,6 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
       null;
 
-    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-      this.currentTime = time;
-      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
-    });
-
     if (this.build.data.commit) {
       this.commitMessage = this.build.data.commit.message;
     } else if (this.build.data.commits) {
@@ -325,5 +320,23 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+    // bitbucket
+    if (this.build.data.actor) {
+      this.authorAvatar = this.build.data.actor.links.avatar.href;
+      this.nameAuthor = this.build.data.actor.display_name;
+    }
+
+    if (this.build.data.push) {
+      this.commitMessage = this.build.data.push.changes[0].commits[0].message;
+      this.dateTime = this.build.data.push.changes[0].commits[0].date;
+      this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+      this.nameCommitter = this.build.data.push.changes[0].commits[0].author.user.display_name;
+    }
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
+    });
   }
 }
