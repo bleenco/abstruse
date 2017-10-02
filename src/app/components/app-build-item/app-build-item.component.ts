@@ -127,6 +127,14 @@ export class AppBuildItemComponent implements OnInit {
       this.committerAvatar = this.authorAvatar;
     }
 
+    // gogs
+    if (data.sender && data.pusher) {
+      this.authorAvatar = data.pusher.avatar_url;
+      this.commitMessage = data.commits[0].message;
+      this.dateTime = data.commits[0].timestamp;
+      this.committerAvatar = data.sender.avatar_url;
+    }
+
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
       this.currentTime = time;
       this.buildCreated = distanceInWordsToNow(this.dateTime);
