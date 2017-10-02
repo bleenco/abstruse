@@ -275,6 +275,16 @@ export class AppJobComponent implements OnInit, OnDestroy {
       this.nameCommitter = this.job.build.data.push.changes[0].commits[0].author.user.display_name;
     }
 
+    // gitlab
+    if (data.user_avatar) {
+      this.authorAvatar = data.user_avatar;
+      this.commitMessage = data.commits[0].message;
+      this.dateTime = data.commits[0].timestamp;
+      this.committerAvatar = this.authorAvatar;
+      this.nameAuthor = data.user_name;
+      this.nameCommitter = data.commits[0].author.name;
+    }
+
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
       this.currentTime = time;
       this.dateTimeToNow = distanceInWordsToNow(this.dateTime);

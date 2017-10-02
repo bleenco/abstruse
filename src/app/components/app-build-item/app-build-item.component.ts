@@ -119,6 +119,14 @@ export class AppBuildItemComponent implements OnInit {
       this.committerAvatar = this.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
     }
 
+    // gitlab
+    if (data.user_avatar) {
+      this.authorAvatar = data.user_avatar;
+      this.commitMessage = data.commits[0].message;
+      this.dateTime = data.commits[0].timestamp;
+      this.committerAvatar = this.authorAvatar;
+    }
+
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
       this.currentTime = time;
       this.buildCreated = distanceInWordsToNow(this.dateTime);
