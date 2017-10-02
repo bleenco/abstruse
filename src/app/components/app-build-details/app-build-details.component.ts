@@ -344,6 +344,16 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       this.nameCommitter = data.commits[0].author.name;
     }
 
+    // gogs
+    if (data.sender && data.pusher) {
+      this.authorAvatar = data.pusher.avatar_url;
+      this.nameAuthor = data.pusher.username;
+      this.commitMessage = data.commits[0].message;
+      this.dateTime = data.commits[0].timestamp;
+      this.committerAvatar = data.sender.avatar_url;
+      this.nameCommitter = data.sender.username;
+    }
+
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
       this.currentTime = time;
       this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
