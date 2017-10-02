@@ -38,6 +38,7 @@
     <span *ngIf="!build?.data?.user_name && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }}</span>
     <span *ngIf="!build?.data?.user_name && !build?.data?.commits && !build?.data?.actor?.display_name && !build?.data?.sender?.login && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }}</span>
     <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
+    <span *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
   </div>
   <div class="column is-1">
     <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (currentTime - build?.minRunningJobStartTime)">{{ build?.maxCompletedJobTime | toTime }} </span>

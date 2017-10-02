@@ -17,7 +17,7 @@
                   <div class="column is-8">
                     <h1 class="bold">
                       <span *ngIf="job?.build?.repository?.full_name"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.repository?.full_name }}</a></span>
-                      <span *ngIf="!job?.build?.data?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
+                      <span *ngIf="!job?.build?.repository?.full_name && job?.build?.data?.project?.path_with_namespace"><a [routerLink]="['/repo', job?.build?.repository?.id]">{{ job?.build?.data?.project?.path_with_namespace }}</a></span>
                     </h1>
                     <div class="branch-container">
                       <span class="icon is-small">
