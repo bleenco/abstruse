@@ -605,7 +605,7 @@ function generateBitbucketRepositoryData(data: any): any {
 }
 
 function generateGitLabRepositoryData(data: any): any {
-  const url = new URL(data.repository.clone_url);
+  const url = new URL(data.repository.git_http_url || data.project.git_http_url);
   const apiUrl = url.protocol + '//' + url.host;
 
   return {

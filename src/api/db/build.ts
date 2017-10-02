@@ -307,9 +307,9 @@ export function getDepracatedBuilds(build: any): Promise<any> {
             return build.data.before === b.data.before;
           } else if (build.data.before_sha) {
             return build.data.before_sha === b.data.before_sha;
-          } else if (build.data.object_attributes && build.data.object_attirbutes.before_sha) {
-            return build.data.object_attirbutes.before_sha
-              === b.data.object_attirbutes.before_sha;
+          } else if (build.data.object_attributes && build.data.object_attributes.before_sha) {
+            return build.data.object_attributes.before_sha
+              === b.data.object_attributes.before_sha;
           }
 
           return false;

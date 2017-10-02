@@ -194,18 +194,18 @@
                     </div>
                   </div>
                 </div>
-                <div class="columns list-item list-item-mini border-green" *ngFor="let repo of repositories; let i = index;">
+                <div class="columns repo-item border-green" *ngFor="let repo of repositories; let i = index;">
                   <div class="column is-3" (click)="gotoRepository($event, repo.id)">
                     <span>{{ repo.full_name }}</span>
                   </div>
-                  <div class="column" [ngClass]="{ 'is-6': loggedUser.admin, 'is-7': !loggedUser.admin }">
+                  <div class="column is-6">
                     <span>{{ repo.html_url }}</span>
                   </div>
                   <div class="column is-2">
                     <span>{{ repo.default_branch }}</span>
                   </div>
-                  <div class="column is-1" *ngIf="loggedUser.admin">
-                    <i class="ionicon ion-close pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 0)" name="btn-removePermission"></i>
+                  <div class="column is-1">
+                    <i class="ionicon ion-close pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 0)" name="btn-removePermission" *ngIf="loggedUser.admin"></i>
                   </div>
                 </div>
               </div>
@@ -221,18 +221,18 @@
                     </div>
                   </div>
                 </div>
-                <div class="columns list-item list-item-mini border-red" *ngFor="let repo of restrictedRepositories; let i = index;">
+                <div class="columns repo-item border-red" *ngFor="let repo of restrictedRepositories; let i = index;">
                   <div class="column is-3" (click)="gotoRepository($event, repo.id)">
                     <span>{{ repo.full_name }}</span>
                   </div>
-                  <div class="column" [ngClass]="{ 'is-6': loggedUser.admin, 'is-7': !loggedUser.admin }">
+                  <div class="column is-6">
                     <span>{{ repo.html_url }}</span>
                   </div>
                   <div class="column is-2">
                     <span>{{ repo.default_branch }}</span>
                   </div>
-                  <div class="column is-1" *ngIf="loggedUser.admin">
-                    <i class="ionicon ion-checkmark-round pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 1)" name="btn-addPermission"></i>
+                  <div class="column is-1">
+                    <i class="ionicon ion-checkmark-round pointer" (click)="updateRepositoryPermissions(user.id, repo.id, 1)" name="btn-addPermission" *ngIf="loggedUser.admin"></i>
                   </div>
                 </div>
               </div>

@@ -39,14 +39,16 @@ describe('Teams', () => {
 
   it('should redirect to team, user and then grant, revoke repository permission', () => {
     return browser.get('/team')
-      .then((): any => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
+      .then((): any => {
+        return browser.wait(() => element.all(by.css('.edit-user-button')).last().isPresent());
+      })
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
       .then((): any => waitForUrlToChangeTo('http://localhost:6500/user/2'))
       .then((): any => browser.wait(() => element(by.css(`[name="tab-permissions"]`)).isPresent()))
       .then((): any => browser.wait(() => element(by.css(`[name="tab-permissions"]`)).isEnabled()))
       .then((): any => element(by.css('[name="tab-permissions"]')).click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 2);
+        return element.all(by.css('.border-green')).count().then(count => count === 5);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.border-red')).count().then(count => count === 0);
@@ -61,7 +63,7 @@ describe('Teams', () => {
       .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
       .then((): any => element.all(by.css('[name="btn-removePermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 1);
+        return element.all(by.css('.border-green')).count().then(count => count === 4);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.border-red')).count()
@@ -77,7 +79,7 @@ describe('Teams', () => {
       .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
       .then((): any => element.all(by.css('[name="btn-addPermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 2);
+        return element.all(by.css('.border-green')).count().then(count => count === 5);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.border-red')).count().then(count => count === 0);
@@ -110,7 +112,7 @@ describe('Teams', () => {
       .then((): any => element.all(by.css('.list-item')).first().click())
       .then(() => isLoaded())
       .then(() => delay(1000))
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/5'))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/build/11'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });
@@ -125,7 +127,7 @@ describe('Teams', () => {
       .then((): any => element.all(by.css('.list-item-slim')).first().click())
       .then(() => isLoaded())
       .then(() => delay(1000))
-      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/5'))
+      .then(() => waitForUrlToChangeTo('http://localhost:6500/job/11'))
       .then((): any => element.all(by.css('[name="restart-build"]')).count())
       .then(cnt => expect(cnt).to.equals(0));
   });

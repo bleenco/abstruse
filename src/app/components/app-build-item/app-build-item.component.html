@@ -4,8 +4,10 @@
       <img *ngIf="authorAvatar" [src]="authorAvatar" class="avatar-img">
       <img *ngIf="authorAvatar && committerAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
     </span>
-    <span *ngIf="!build?.pr && !tag" class="bold larger">#{{ build?.id }}</span>
-    <span *ngIf="build?.pr && !tag" class="bold larger">PR #{{ build?.pr }}</span>
+    <span *ngIf="!build?.pr && build?.data?.object_kind !== 'merge_request' && !build?.data?.pull_request && !tag" class="bold larger">#{{ build?.id }}</span>
+    <span *ngIf="(build?.pr && !build?.data?.object_kind) && !build?.data?.pull_request && !tag" class="bold larger">PR #{{ build?.pr }}</span>
+    <span *ngIf="build?.data?.object_kind === 'merge_request' && !build?.data?.pull_request && !tag" class="bold larger">PR #{{ build?.data?.object_attributes?.iid }}</span>
+    <span *ngIf="build?.data?.pull_request && !tag" class="bold larger">PR #{{ build?.data?.pull_request?.number }}</span>
     <span *ngIf="tag" class="bold larger">{{ tag }}</span>
   </div>
   <div class="column is-2">
@@ -29,6 +31,7 @@
     <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
     <span class="bold" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash }}</span>
     <span class="bold" *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash }}</span>
+    <span class="bold" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.source?.commit?.hash }}</span>
 
     <span>{{ commitMessage }}</span>
 
@@ -41,6 +44,7 @@
     <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
     <span *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
     <span *ngIf="build?.data?.pusher">{{ build?.data?.pusher?.username }}</span>
+    <span *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.user?.username }}</span>
   </div>
   <div class="column is-1">
     <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (currentTime - build?.minRunningJobStartTime)">{{ build?.maxCompletedJobTime | toTime }} </span>

@@ -208,97 +208,106 @@ export class AppJobComponent implements OnInit, OnDestroy {
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
       null;
 
-    if (this.job.build.data.commit) {
-      this.commitMessage = this.job.build.data.commit.message;
-    } else if (this.job.build.data.commits) {
-      const len = this.job.build.data.commits.length - 1;
-      this.commitMessage = this.job.build.data.commits[len].message;
-    } else if (this.job.build.data.pull_request && this.job.build.data.pull_request.title) {
-      this.commitMessage = this.job.build.data.pull_request.title;
-    } else if (this.job.build.data.head_commit) {
-      this.commitMessage = this.job.build.data.head_commit.message;
-    }
+    if (this.job.build.repository.repository_provider === 'github') {
+      if (this.job.build.data.commit) {
+        this.commitMessage = this.job.build.data.commit.message;
+      } else if (this.job.build.data.commits) {
+        const len = this.job.build.data.commits.length - 1;
+        this.commitMessage = this.job.build.data.commits[len].message;
+      } else if (this.job.build.data.pull_request && this.job.build.data.pull_request.title) {
+        this.commitMessage = this.job.build.data.pull_request.title;
+      } else if (this.job.build.data.head_commit) {
+        this.commitMessage = this.job.build.data.head_commit.message;
+      }
 
-    if (this.job.build.data.sha) {
-      const data = this.job.build.data;
-      this.committerAvatar = data.committer.avatar_url;
-      this.nameCommitter = data.commit.committer.name;
-      this.authorAvatar = data.author.avatar_url;
-      this.nameAuthor = data.commit.author.name;
-    } else if (this.job.build.data.head_commit) {
-      const commit = this.job.build.data.head_commit;
-      this.committerAvatar = this.job.build.data.sender.avatar_url;
-      this.nameCommitter = this.job.build.data.head_commit.author.name;
+      if (this.job.build.data.sha) {
+        const data = this.job.build.data;
+        this.committerAvatar = data.committer.avatar_url;
+        this.nameCommitter = data.commit.committer.name;
+        this.authorAvatar = data.author.avatar_url;
+        this.nameAuthor = data.commit.author.name;
+      } else if (this.job.build.data.head_commit) {
+        const commit = this.job.build.data.head_commit;
+        this.committerAvatar = this.job.build.data.sender.avatar_url;
+        this.nameCommitter = this.job.build.data.head_commit.author.name;
 
-      if (commit.author.username !== commit.committer.username) {
-        this.nameCommitter = commit.committer.name;
+        if (commit.author.username !== commit.committer.username) {
+          this.nameCommitter = commit.committer.name;
 
-        this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+          this.apiService.getGithubUserData(commit.author.username).subscribe((evt: any) => {
+            if (evt.status === 200) {
+              const body = JSON.parse(evt._body);
+              this.authorAvatar = body.avatar_url;
+            }
+          });
+        } else {
+          this.authorAvatar = this.committerAvatar;
+          this.nameCommitter = this.nameAuthor;
+        }
+      } else if (this.job.build.data.pull_request) {
+        this.authorAvatar = this.job.build.data.sender.avatar_url;
+        this.committerAvatar = this.authorAvatar;
+
+        this.apiService.getGithubUserData(this.job.build.data.sender.login).subscribe((evt: any) => {
           if (evt.status === 200) {
             const body = JSON.parse(evt._body);
-            this.authorAvatar = body.avatar_url;
+            this.nameAuthor = body.name;
           }
         });
-      } else {
-        this.authorAvatar = this.committerAvatar;
+
+        this.apiService.getGithubUserData(this.job.build.data.pull_request.user.login).subscribe((evt: any) => {
+          if (evt.status === 200) {
+            const body = JSON.parse(evt._body);
+            this.nameCommitter = body.name;
+          }
+        });
+      }
+    } else if (this.job.build.repository.repository_provider === 'bitbucket') {
+      // bitbucket
+      if (this.job.build.data.actor) {
+        this.authorAvatar = this.job.build.data.actor.links.avatar.href;
+        this.nameAuthor = this.job.build.data.actor.display_name;
+      }
+
+      if (this.job.build.data.push) {
+        this.commitMessage = this.job.build.data.push.changes[0].commits[0].message;
+        this.dateTime = this.job.build.data.push.changes[0].commits[0].date;
+        this.committerAvatar = this.job.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
+        this.nameCommitter = this.job.build.data.push.changes[0].commits[0].author.user.display_name;
+      } else if (this.job.build.data.pullrequest) {
+        this.commitMessage = data.pullrequest.description;
+        this.dateTime = data.pullrequest.updated_on;
+        this.committerAvatar = data.pullrequest.author.links.avatar.href;
+        this.nameAuthor = data.pullrequest.author.display_name;
         this.nameCommitter = this.nameAuthor;
       }
-    } else if (this.job.build.data.pull_request) {
-      this.authorAvatar = this.job.build.data.sender.avatar_url;
-      this.committerAvatar = this.authorAvatar;
-
-      this.apiService.getGithubUserData(this.job.build.data.sender.login).subscribe((evt: any) => {
-        if (evt.status === 200) {
-          const body = JSON.parse(evt._body);
-          this.nameAuthor = body.name;
-        }
-      });
-
-      this.apiService.getGithubUserData(this.job.build.data.pull_request.user.login).subscribe((evt: any) => {
-        if (evt.status === 200) {
-          const body = JSON.parse(evt._body);
-          this.nameCommitter = body.name;
-        }
-      });
-    }
-
-    // bitbucket
-    if (this.job.build.data.actor) {
-      this.authorAvatar = this.job.build.data.actor.links.avatar.href;
-      this.nameAuthor = this.job.build.data.actor.display_name;
-    }
-
-    if (this.job.build.data.push) {
-      this.commitMessage = this.job.build.data.push.changes[0].commits[0].message;
-      this.dateTime = this.job.build.data.push.changes[0].commits[0].date;
-      this.committerAvatar = this.job.build.data.push.changes[0].commits[0].author.user.links.avatar.href;
-      this.nameCommitter = this.job.build.data.push.changes[0].commits[0].author.user.display_name;
-    } else if (this.job.build.data.pullrequest) {
-      this.commitMessage = data.pullrequest.description;
-      this.dateTime = data.pullrequest.updated_on;
-      this.committerAvatar = data.pullrequest.author.links.avatar.href;
-      this.nameAuthor = data.pullrequest.author.display_name;
-      this.nameCommitter = this.nameAuthor;
-    }
-
-    // gitlab
-    if (data.user_avatar) {
-      this.authorAvatar = data.user_avatar;
-      this.commitMessage = data.commits[0].message;
-      this.dateTime = data.commits[0].timestamp;
-      this.committerAvatar = this.authorAvatar;
-      this.nameAuthor = data.user_name;
-      this.nameCommitter = data.commits[0].author.name;
-    }
-
-    // gogs
-    if (data.sender && data.pusher) {
-      this.authorAvatar = data.pusher.avatar_url;
-      this.nameAuthor = data.pusher.username;
-      this.commitMessage = data.commits[0].message;
-      this.dateTime = data.commits[0].timestamp;
-      this.committerAvatar = data.sender.avatar_url;
-      this.nameCommitter = data.sender.username;
+    } else if (this.job.build.repository.repository_provider === 'gitlab') {
+      // gitlab
+      if (data.user_avatar) {
+        this.authorAvatar = data.user_avatar;
+        this.commitMessage = data.commits[0].message;
+        this.dateTime = data.commits[0].timestamp;
+        this.committerAvatar = this.authorAvatar;
+        this.nameAuthor = data.user_name;
+        this.nameCommitter = data.commits[0].author.name;
+      } else if (data.object_attributes) {
+        this.authorAvatar = data.user.avatar_url;
+        this.commitMessage = data.object_attributes.last_commit.message;
+        this.dateTime = data.object_attributes.last_commit.timestamp;
+        this.committerAvatar = this.authorAvatar;
+        this.nameAuthor = data.user.name;
+        this.nameCommitter = data.object_attributes.last_commit.author.name;
+      }
+    } else if (this.job.build.repository.repository_provider === 'gogs') {
+      // gogs
+      if (data.sender && data.pusher) {
+        this.authorAvatar = data.pusher.avatar_url;
+        this.nameAuthor = data.pusher.username;
+        this.commitMessage = data.commits[0].message;
+        this.dateTime = data.commits[0].timestamp;
+        this.committerAvatar = data.sender.avatar_url;
+        this.nameCommitter = data.sender.username;
+      }
     }
 
     this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
