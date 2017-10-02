@@ -33,17 +33,18 @@ describe('Bitbucket repositories', () => {
       .then((): any => isLoaded())
       .then((): any => browser.wait(() => element(by.css('.bold')).isPresent()))
       .then(() => {
-        expect(element.all(by.css('.bold')).last().getText()).to.eventually.include('test');
+        expect(element.all(by.css('.bold')).last().getText()).to.eventually.include('d3-bundle');
       })
       .then(() => browser.get('/'))
+      .then(() => delay(3000))
       .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isPresent();
+        return element.all(by.css('.stop-build')).first().isPresent();
       }))
       .then((): any => browser.wait(() => {
-        return element(by.css('.list-item:nth-child(1) .stop-build')).isEnabled();
+        return element.all(by.css('.stop-build')).first().isDisplayed();
       }))
       .then(() => delay(2000))
-      .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).click())
+      .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       }));
