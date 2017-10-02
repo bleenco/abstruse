@@ -8,12 +8,16 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "es2015",
+      "es2017",
       "dom"
     ],
     "outDir": "lib",
     "typeRoots": [
       "../node_modules/@types"
+    ],
+    "types": [
+      "jasmine",
+      "webpack"
     ]
   },
   "exclude": [
