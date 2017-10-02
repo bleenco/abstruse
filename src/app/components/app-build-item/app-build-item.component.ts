@@ -125,7 +125,16 @@ export class AppBuildItemComponent implements OnInit {
       }
     } else if (this.build.repository.repository_provider === 'gitlab') {
       // gitlab
-      if (data.user_avatar) {
+      if (data.commit) {
+        this.dateTime = data.commit.created_at;
+        this.commitMessage = data.commit.message;
+
+        this.apiService.customGet(this.build.repository.api_url + '/users', {
+          username: this.build.repository.user_login
+        }).subscribe(data => {
+          this.authorAvatar = data[0].avatar_url;
+        });
+      } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;
         this.commitMessage = data.commits[0].message;
         this.dateTime = data.commits[0].timestamp;
@@ -153,12 +162,12 @@ export class AppBuildItemComponent implements OnInit {
         this.commitMessage = data.pull_request.title;
         this.dateTime = data.pull_request.head_repo.updated_at;
       }
-
-      this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
-        this.currentTime = time;
-        this.buildCreated = distanceInWordsToNow(this.dateTime);
-      });
     }
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.buildCreated = distanceInWordsToNow(this.dateTime);
+    });
   }
 
   ngOnDestroy() {

@@ -39,7 +39,7 @@ export function getRepositoryBuilds(id: number, limit: number, offset: number): 
       qb.limit(limit);
       qb.offset(offset);
     })
-    .fetchAll({ withRelated: ['jobs.runs'] })
+    .fetchAll({ withRelated: ['jobs.runs', 'repository.permissions'] })
     .then(builds => {
       if (!builds) {
         reject();
@@ -600,13 +600,14 @@ function generateBitbucketRepositoryData(data: any): any {
     user_url: data.actor.links.self.href,
     user_html_url: data.actor.links.html.href,
     repository_provider: 'bitbucket',
+    api_url: apiUrl,
     data: data
   };
 }
 
 function generateGitLabRepositoryData(data: any): any {
   const url = new URL(data.repository.git_http_url || data.project.git_http_url);
-  const apiUrl = url.protocol + '//' + url.host;
+  const apiUrl = url.protocol + '//' + url.host + '/api/v4';
 
   return {
     gitlab_id: data.project_id ? data.project_id : data.object_attributes.target_project_id,

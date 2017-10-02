@@ -453,10 +453,17 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
           const commit = push.commits[push.commits.length - 1];
           sha = commit.hash;
           branch = push.new.type === 'branch' ? push.new.name : 'master';
-        } else {
+        } else if (data.data.pullrequest) {
           pr = data.data.pullrequest.id;
           sha = data.data.pullrequest.source.commit.hash;
           branch = data.data.pullrequest.source.branch.name;
+        } else if (data.hash) {
+          sha = data.data.hash;
+        }
+      } else if (isGitlab) {
+        if (data.data.name) {
+          sha = data.data.commit.id;
+          branch = data.data.name;
         }
       }
 

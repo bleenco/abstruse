@@ -32,6 +32,7 @@
     <span class="bold" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash }}</span>
     <span class="bold" *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash }}</span>
     <span class="bold" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.source?.commit?.hash }}</span>
+    <span class="bold" *ngIf="build?.data?.commit">{{ build?.data?.commit?.id }}</span>
 
     <span>{{ commitMessage }}</span>
 
@@ -45,6 +46,7 @@
     <span *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
     <span *ngIf="build?.data?.pusher">{{ build?.data?.pusher?.username }}</span>
     <span *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.user?.username }}</span>
+    <span *ngIf="build?.data?.commit">{{ build?.data?.commit?.author_name }}</span>
   </div>
   <div class="column is-1">
     <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (currentTime - build?.minRunningJobStartTime)">{{ build?.maxCompletedJobTime | toTime }} </span>

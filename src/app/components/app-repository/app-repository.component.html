@@ -203,9 +203,9 @@
                         <p>Using cache can speed up builds as it stores contents that does not often change.</p>
 
                         <div *ngIf="cache?.length && !fetchingCache">
-                          <div class="columns list-item list-item-mini" *ngFor="let c of cache">
+                          <div class="columns cache-item" *ngFor="let c of cache">
                             <div class="column is-9">
-                              <span class="bold">{{ c.filename }}</span>
+                              <span>{{ c.filename }}</span>
                             </div>
                             <div class="column is-3 justify-center">
                               <span>{{ c.size }}</span>
