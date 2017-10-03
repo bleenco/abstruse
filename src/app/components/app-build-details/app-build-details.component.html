@@ -123,8 +123,10 @@
                   <span *ngIf="commitMessage" class="commit-message">{{ commitMessage }}</span>
                 </div>
                 <div class="column is-2">
-                  <span class="build-time" *ngIf="status !== 'running'">{{ totalTime | toTime }}</span>
-                  <span class="build-time" *ngIf="status === 'running'">{{ currentTime - totalTime | toTime }}</span>
+                  <span class="build-time" *ngIf="status !== 'running' && maxCompletedJobTime">{{ maxCompletedJobTime | toTime }}</span>
+                  <span class="build-time" *ngIf="status !== 'running' && !maxCompletedJobTime">00:00</span>
+                  <span class="build-time" *ngIf="status === 'running' && maxCompletedJobTime > (currentTime - minRunningJobStartTime)">{{ maxCompletedJobTime | toTime }}</span>
+                  <span class="build-time" *ngIf="status === 'running' && (!maxCompletedJobTime || maxCompletedJobTime <= (currentTime - minRunningJobStartTime))">{{ currentTime - minRunningJobStartTime | toTime }}</span>
 
                   <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
                     <i class="ionicon ion-refresh"></i>
