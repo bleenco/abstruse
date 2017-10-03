@@ -304,6 +304,8 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+
+    this.socketService.emit({ type: 'unsubscribeFromImageBuilder' });
   }
 
   buildImage(): void {

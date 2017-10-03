@@ -13,7 +13,7 @@ import {
   stopBuild,
   terminalEvents
 } from './process-manager';
-import { imageBuilder, buildDockerImage } from './image-builder';
+import { imageBuilderObs, buildDockerImage } from './image-builder';
 import { getConfig } from './utils';
 import * as https from 'https';
 import * as http from 'http';
@@ -64,6 +64,9 @@ export class SocketServer {
           // send client latest status about jobs
           jobEvents.subscribe(event => conn.next(event));
 
+          // image builder subscription
+          let imageBuilderSub: Subscription;
+
           conn.subscribe(event => {
             if (event.type === 'disconnected') {
               const index = this.clients.findIndex(client => client.connection === conn);
@@ -91,9 +94,16 @@ export class SocketServer {
               break;
 
               case 'subscribeToImageBuilder': {
-                imageBuilder.subscribe(event => {
+                imageBuilderSub = imageBuilderObs.subscribe(event => {
                   conn.next({ type: 'imageBuildProgress', data: event });
                 });
+              }
+              break;
+
+              case 'unsubscribeFromImageBuilder': {
+                if (imageBuilderSub) {
+                  imageBuilderSub.unsubscribe();
+                }
               }
               break;
 

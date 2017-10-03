@@ -11,7 +11,7 @@ describe('Images', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should go to images and see no images', () => {
+  xit('should go to images and see no images', () => {
     return  browser.get('/images')
       .then((): any => browser.wait(() => element(by.css(`[name="tab-images"]`)).isPresent()))
       .then((): any => browser.wait(() => {
