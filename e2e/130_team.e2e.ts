@@ -101,8 +101,8 @@ describe('Teams', () => {
       .then(() => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
       })))
-      .then((): any => element.all(by.css('.restart-build')).first().isDisplayed())
-      .then(displayed => expect(displayed).to.equals(false));
+      .then((): any => element.all(by.css('.restart-build')).count())
+      .then(cnt => expect(cnt).to.equals(0));
   });
 
   it(`as annonymous can click on build but can't restart it`, () => {
