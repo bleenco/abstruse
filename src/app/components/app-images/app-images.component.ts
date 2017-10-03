@@ -92,6 +92,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     };
 
     this.scrollEvents = new EventEmitter<SlimScrollEvent>();
+    this.images = [];
   }
 
   ngOnInit() {
@@ -128,6 +129,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
           if (output.stream.startsWith('Successfully built') || output.stream.startsWith('Successfully tagged')) {
             this.building = false;
             this.fetchImages();
+            this.tab = 'images';
           } else {
             this.imageBuildLog += this.au.ansi_to_html(output.stream);
             this.scrollToBottom();
@@ -202,7 +204,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         'RUN sudo apt-get install sqlite3 -y',
         '',
         '# example; install docker',
-        'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.06.2-ce.tgz \\',
+        'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.09.0-ce.tgz \\',
         '    && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \\',
         '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz',
         '',
@@ -222,7 +224,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         '',
         '# example for giving docker access to abstruse user',
         'if [ -f /var/run/docker.sock ]; then',
-        '  sudo chown -R 1000:100 /var/run/docker.sock',
+        '  sudo chown -R 1000:100 /var/run/docker.sock > /dev/null 2>&1',
         'fi'
       ].join('\n')
     };
@@ -238,15 +240,20 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   fetchImages(): void {
     this.loading = true;
     this.api.imagesList().subscribe(data => {
-      this.images = data;
-      this.loading = false;
-      if (this.images && this.images.length) {
-        this.tab = 'images';
-      } else {
-        this.tab = 'build';
-      }
-
       this.resetForm();
+      this.images = data.map(image => {
+        if (!image.dockerfile) {
+          image.dockerfile = this.form.dockerfile;
+        }
+
+        if (!image.initsh) {
+          image.initsh = this.form.initsh;
+        }
+
+        return image;
+      });
+
+      this.loading = false;
     });
   }
 

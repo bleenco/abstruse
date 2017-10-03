@@ -36,7 +36,7 @@
 
         <div *ngIf="tab === 'images'">
           <div class="content-box image-builder-box">
-            <div class="columns is-multiline">
+            <div class="columns is-multiline" *ngIf="images?.length">
               <div class="column is-4" *ngFor="let i of images; let index = index;">
                 <div class="image-item">
                   <h2>{{ i.name }}</h2>
@@ -49,6 +49,24 @@
                 </div>
               </div>
             </div>
+
+            <div class="columns" *ngIf="!images?.length">
+              <div class="column is-12">
+                <div class="message">
+                  <div class="columns">
+                    <div class="column is-1">
+                      <i class="ion ion-information"></i>
+                    </div>
+                    <div class="column is-11">
+                      <p><strong>No Docker images built with Abstruse found.</strong></p>
+                      <p>It is important to build images using <a (click)="tab = 'build'">this</a> form so files needed for Abstruse to work are included.</p>
+                      <p>Images built using Abstruse form are later easily upgradeable as config files are stored with the application.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 

@@ -102,15 +102,19 @@ export function getImages(): Promise<any> {
             const dockerfile = getFilePath(`images/${img.name}/Dockerfile`);
             const initsh = getFilePath(`images/${img.name}/init.sh`);
 
-            return fs.readFile(dockerfile)
-              .then(dockerfileContents => {
-                return fs.readFile(initsh).then(initshContents => {
-                  img.dockerfile = dockerfileContents.toString();
-                  img.initsh = initshContents.toString();
+            if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
+              return fs.readFile(dockerfile)
+                .then(dockerfileContents => {
+                  return fs.readFile(initsh).then(initshContents => {
+                    img.dockerfile = dockerfileContents.toString();
+                    img.initsh = initshContents.toString();
 
-                  return img;
+                    return img;
+                  });
                 });
-              });
+            } else {
+              return Promise.resolve(img);
+            }
           }))
           .then(imgs => resolve(imgs))
           .catch(err => reject(err));
