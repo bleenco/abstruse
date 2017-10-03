@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
     "noImplicitAny": false,
@@ -21,8 +21,7 @@
     ]
   },
   "exclude": [
-    "./main.aot.ts",
-    "**/*.spec.ts"
+    "main.aot.ts"
   ],
   "paths": {
     "@angular/*": ["../node_modules/@angular/*"]
