@@ -14,15 +14,12 @@
     "outDir": "lib",
     "typeRoots": [
       "../node_modules/@types"
-    ],
-    "types": [
-      "jasmine",
-      "node"
     ]
   },
   "exclude": [
-    "./main.aot.ts",
-    "**/*.spec.ts"
+    "main.aot.ts",
+    "**/*.spec.ts",
+    "testing/**/*"
   ],
   "paths": {
     "@angular/*": ["../node_modules/@angular/*"]
