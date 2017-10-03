@@ -63,9 +63,20 @@
   </div>
 </header>
 
+<div class="mobile-switch-view is-hidden-tablet is-mobile is-mobile-only">
+  <button type="button" (click)="switchToDesktopView()" *ngIf="view === 'mobile'">
+    Switch to Desktop View
+    <i class="ionicon ion-monitor"></i>
+  </button>
+  <button type="button" (click)="switchToMobileView()" *ngIf="view === 'desktop'">Switch to Mobile View</button>
+</div>
+
 <div class="mobile-nav is-hidden-tablet is-mobile is-mobile-only">
   <a routerLink="/">
     <img class="mobile-nav-logo" src="images/abstruse-text-logo.svg">
   </a>
-  <i class="ionicon ion-ios-more"></i>
+  <a routerLink="/login" *ngIf="!user">
+    <i class="ionicon ion-log-in"></i>
+  </a>
+  <i class="ionicon ion-log-out" (click)="logout()" *ngIf="user"></i>
 </div>

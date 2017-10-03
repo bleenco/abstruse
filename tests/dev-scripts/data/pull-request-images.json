@@ -1,0 +1,198 @@
+{
+  "ref": "refs/heads/master",
+  "before": "ee7609e713ec6c40bea1e1755f822ea1e7a2ce5b",
+  "after": "c3657e6eabc1f1ba9839e258902ce4f90681323f",
+  "created": false,
+  "deleted": false,
+  "forced": false,
+  "base_ref": null,
+  "compare": "https://github.com/bleenco/abstruse/compare/ee7609e713ec...c3657e6eabc1",
+  "commits": [
+    {
+      "id": "c3657e6eabc1f1ba9839e258902ce4f90681323f",
+      "tree_id": "51f0b23c6cb624e3b6c9962f94c1b508e12ac560",
+      "distinct": true,
+      "message": "fix(): times on mobile view",
+      "timestamp": "2017-10-03T17:02:55+02:00",
+      "url": "https://github.com/bleenco/abstruse/commit/c3657e6eabc1f1ba9839e258902ce4f90681323f",
+      "author": {
+        "name": "Izak Lipnik",
+        "email": "izak.lipnik@gmail.com",
+        "username": "Izak88"
+      },
+      "committer": {
+        "name": "Jan Kuri",
+        "email": "jkuri88@gmail.com",
+        "username": "jkuri"
+      },
+      "added": [
+
+      ],
+      "removed": [
+
+      ],
+      "modified": [
+        "src/app/components/app-build-details/app-build-details.component.html",
+        "src/app/components/app-build-item/app-build-item.component.html"
+      ]
+    }
+  ],
+  "head_commit": {
+    "id": "c3657e6eabc1f1ba9839e258902ce4f90681323f",
+    "tree_id": "51f0b23c6cb624e3b6c9962f94c1b508e12ac560",
+    "distinct": true,
+    "message": "fix(): times on mobile view",
+    "timestamp": "2017-10-03T17:02:55+02:00",
+    "url": "https://github.com/bleenco/abstruse/commit/c3657e6eabc1f1ba9839e258902ce4f90681323f",
+    "author": {
+      "name": "Izak Lipnik",
+      "email": "izak.lipnik@gmail.com",
+      "username": "Izak88"
+    },
+    "committer": {
+      "name": "Jan Kuri",
+      "email": "jkuri88@gmail.com",
+      "username": "jkuri"
+    },
+    "added": [
+
+    ],
+    "removed": [
+
+    ],
+    "modified": [
+      "src/app/components/app-build-details/app-build-details.component.html",
+      "src/app/components/app-build-item/app-build-item.component.html"
+    ]
+  },
+  "repository": {
+    "id": 84880847,
+    "name": "abstruse",
+    "full_name": "bleenco/abstruse",
+    "owner": {
+      "name": "bleenco",
+      "email": "oss@bleenco.com",
+      "login": "bleenco",
+      "id": 26046537,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/26046537?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/bleenco",
+      "html_url": "https://github.com/bleenco",
+      "followers_url": "https://api.github.com/users/bleenco/followers",
+      "following_url": "https://api.github.com/users/bleenco/following{/other_user}",
+      "gists_url": "https://api.github.com/users/bleenco/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/bleenco/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/bleenco/subscriptions",
+      "organizations_url": "https://api.github.com/users/bleenco/orgs",
+      "repos_url": "https://api.github.com/users/bleenco/repos",
+      "events_url": "https://api.github.com/users/bleenco/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/bleenco/received_events",
+      "type": "Organization",
+      "site_admin": false
+    },
+    "private": false,
+    "html_url": "https://github.com/bleenco/abstruse",
+    "description": "open source continuous integration platform",
+    "fork": false,
+    "url": "https://github.com/bleenco/abstruse",
+    "forks_url": "https://api.github.com/repos/bleenco/abstruse/forks",
+    "keys_url": "https://api.github.com/repos/bleenco/abstruse/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/bleenco/abstruse/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/bleenco/abstruse/teams",
+    "hooks_url": "https://api.github.com/repos/bleenco/abstruse/hooks",
+    "issue_events_url": "https://api.github.com/repos/bleenco/abstruse/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/bleenco/abstruse/events",
+    "assignees_url": "https://api.github.com/repos/bleenco/abstruse/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/bleenco/abstruse/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/bleenco/abstruse/tags",
+    "blobs_url": "https://api.github.com/repos/bleenco/abstruse/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/bleenco/abstruse/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/bleenco/abstruse/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/bleenco/abstruse/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/bleenco/abstruse/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/bleenco/abstruse/languages",
+    "stargazers_url": "https://api.github.com/repos/bleenco/abstruse/stargazers",
+    "contributors_url": "https://api.github.com/repos/bleenco/abstruse/contributors",
+    "subscribers_url": "https://api.github.com/repos/bleenco/abstruse/subscribers",
+    "subscription_url": "https://api.github.com/repos/bleenco/abstruse/subscription",
+    "commits_url": "https://api.github.com/repos/bleenco/abstruse/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/bleenco/abstruse/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/bleenco/abstruse/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/bleenco/abstruse/issues/comments{/number}",
+    "contents_url": "https://api.github.com/repos/bleenco/abstruse/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/bleenco/abstruse/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/bleenco/abstruse/merges",
+    "archive_url": "https://api.github.com/repos/bleenco/abstruse/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/bleenco/abstruse/downloads",
+    "issues_url": "https://api.github.com/repos/bleenco/abstruse/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/bleenco/abstruse/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/bleenco/abstruse/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/bleenco/abstruse/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/bleenco/abstruse/labels{/name}",
+    "releases_url": "https://api.github.com/repos/bleenco/abstruse/releases{/id}",
+    "deployments_url": "https://api.github.com/repos/bleenco/abstruse/deployments",
+    "created_at": 1489444318,
+    "updated_at": "2017-09-29T08:19:39Z",
+    "pushed_at": 1507042976,
+    "git_url": "git://github.com/bleenco/abstruse.git",
+    "ssh_url": "git@github.com:bleenco/abstruse.git",
+    "clone_url": "https://github.com/bleenco/abstruse.git",
+    "svn_url": "https://github.com/bleenco/abstruse",
+    "homepage": "http://abstruse.bleenco.io",
+    "size": 5369,
+    "stargazers_count": 28,
+    "watchers_count": 28,
+    "language": "TypeScript",
+    "has_issues": true,
+    "has_projects": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "forks_count": 5,
+    "mirror_url": null,
+    "open_issues_count": 2,
+    "forks": 5,
+    "open_issues": 2,
+    "watchers": 28,
+    "default_branch": "master",
+    "stargazers": 28,
+    "master_branch": "master",
+    "organization": "bleenco"
+  },
+  "pusher": {
+    "name": "jkuri",
+    "email": "jkuri88@gmail.com"
+  },
+  "organization": {
+    "login": "bleenco",
+    "id": 26046537,
+    "url": "https://api.github.com/orgs/bleenco",
+    "repos_url": "https://api.github.com/orgs/bleenco/repos",
+    "events_url": "https://api.github.com/orgs/bleenco/events",
+    "hooks_url": "https://api.github.com/orgs/bleenco/hooks",
+    "issues_url": "https://api.github.com/orgs/bleenco/issues",
+    "members_url": "https://api.github.com/orgs/bleenco/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/bleenco/public_members{/member}",
+    "avatar_url": "https://avatars2.githubusercontent.com/u/26046537?v=4",
+    "description": ""
+  },
+  "sender": {
+    "login": "jkuri",
+    "id": 1796022,
+    "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/jkuri",
+    "html_url": "https://github.com/jkuri",
+    "followers_url": "https://api.github.com/users/jkuri/followers",
+    "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+    "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+    "organizations_url": "https://api.github.com/users/jkuri/orgs",
+    "repos_url": "https://api.github.com/users/jkuri/repos",
+    "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/jkuri/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}

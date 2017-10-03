@@ -80,7 +80,7 @@
                         <img *ngIf="authorAvatar && committerAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
                       </span>
 
-                      <span *ngIf="nameAuthor || nameCommitter === nameAuthor">
+                      <span *ngIf="nameAuthor && nameCommitter === nameAuthor">
                         {{ nameAuthor }} authored and commited
                       </span>
                       <span *ngIf="nameCommitter !== nameAuthor">

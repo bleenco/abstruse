@@ -1,4 +1,5 @@
-import { Component, HostListener, ElementRef, OnInit } from '@angular/core';
+import { Component, HostListener, ElementRef, OnInit, Inject, Renderer2 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
@@ -16,6 +17,8 @@ export class AppHeaderComponent implements OnInit {
   user: any;
   notifications: NotificationType[];
   version: string;
+  viewport: any;
+  view: 'mobile' | 'desktop';
 
   constructor(
     private authService: AuthService,
@@ -23,7 +26,9 @@ export class AppHeaderComponent implements OnInit {
     private elementRef: ElementRef,
     private config: ConfigService,
     private notificationService: NotificationService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document: any
   ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
@@ -59,6 +64,9 @@ export class AppHeaderComponent implements OnInit {
 
       this.notificationService.sub();
     }
+
+    this.viewport = this.document.querySelector('head > [name="viewport"]');
+    this.view = 'mobile';
   }
 
   toggleMenu() {
@@ -73,6 +81,16 @@ export class AppHeaderComponent implements OnInit {
     this.authService.logout();
     this.menuDropped = false;
     this.router.navigate(['/login']);
+  }
+
+  switchToDesktopView(): void {
+    this.renderer.setAttribute(this.viewport, 'content', 'width=1024');
+    this.view = 'desktop';
+  }
+
+  switchToMobileView(): void {
+    this.renderer.setAttribute(this.viewport, 'content', 'width=device-width, initial-scale=1');
+    this.view = 'mobile';
   }
 
   @HostListener('document:click', ['$event'])
