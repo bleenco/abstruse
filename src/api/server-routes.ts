@@ -111,11 +111,13 @@ export function buildRoutes(): express.Router {
     if (req.params.userid) {
       getBuild(req.params.id, req.params.userid).then(build => {
         return res.status(200).json({ data: build });
-      });
+      })
+      .catch(err => res.status(200).json({ err: err }));
     } else {
       getBuild(req.params.id).then(build => {
         return res.status(200).json({ data: build });
-      });
+      })
+      .catch(err => res.status(200).json({ err: err }));
     }
   });
 
@@ -129,11 +131,13 @@ export function jobRoutes(): express.Router {
     if (req.params.userid) {
       getJob(req.params.id, req.params.userid).then(job => {
         return res.status(200).json({ data: job });
-      });
+      })
+      .catch(err => res.status(200).json({ err: err }));
     } else {
       getJob(req.params.id, req.params.userid).then(job => {
         return res.status(200).json({ data: job });
-      });
+      })
+      .catch(err => res.status(200).json({ err: err }));
     }
   });
 
@@ -329,84 +333,86 @@ export function repositoryRoutes(): express.Router {
       } else {
         res.status(200).json({ data: { read: true, config: true, parsedcfg: parsedCfg } });
       }
-    });
+    }).catch(err => res.status(200).json({ err: err }));
   });
 
   router.get('/trigger-test-build/:id', (req: express.Request, res: express.Response) => {
-    getRepository(req.params.id)
-      .then(repository => {
-        if (!repository.api_url || !repository.repository_provider) {
-          res.status(200).json({ data: false });
-          return Promise.reject(null);
-        }
-
-        if (repository.repository_provider === 'github') {
-          let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
-            repository.default_branch;
-          let accessToken = null;
-
-          if (repository.access_token) {
-            accessToken = repository.access_token.token || null;
+    checkApiRequestAuth(req).then(() => {
+      getRepository(req.params.id)
+        .then(repository => {
+          if (!repository.api_url || !repository.repository_provider) {
+            res.status(200).json({ data: false });
+            return Promise.reject(null);
           }
 
-          if (accessToken) {
-            url = url.replace('//', `//${accessToken}@`);
+          if (repository.repository_provider === 'github') {
+            let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
+              repository.default_branch;
+            let accessToken = null;
+
+            if (repository.access_token) {
+              accessToken = repository.access_token.token || null;
+            }
+
+            if (accessToken) {
+              url = url.replace('//', `//${accessToken}@`);
+            }
+
+            return getHttpJsonResponse(url);
+          } else if (repository.repository_provider === 'gitlab') {
+            let url = repository.api_url + '/projects/' +
+              repository.gitlab_id + '/repository/branches/master';
+
+            let accessToken = null;
+            if (repository.access_token) {
+              accessToken = repository.access_token.token || null;
+            }
+
+            if (accessToken) {
+              url = url.replace('//', `//${accessToken}@`);
+            }
+
+            return getHttpJsonResponse(url);
+          } else if (repository.repository_provider === 'bitbucket') {
+            let url = repository.api_url + '/' + repository.user_login + '/' + repository.name +
+              '/commits/master';
+            let accessToken = null;
+            if (repository.access_token) {
+              accessToken = repository.access_token.token || null;
+            }
+
+            if (accessToken) {
+              url = url.replace('//', `//${accessToken}@`);
+            }
+
+            return getHttpJsonResponse(url).then(payload => payload.values[0]);
+          } else if (repository.repository_provider === 'gogs') {
+            let url = repository.api_url + '/api/v1/' + repository.user_login +
+              '/repos/' + repository.full_name + '/branches/master';
+            let accessToken = null;
+            if (repository.access_token) {
+              accessToken = repository.access_token.token || null;
+            }
+
+            if (accessToken) {
+              url = url.replace('//', `//${accessToken}@`);
+            }
+
+            return getHttpJsonResponse(url);
           }
+        })
+        .then(payload => {
+          const buildData = {
+            data: payload,
+            start_time: new Date(),
+            repositories_id: req.params.id
+          };
 
-          return getHttpJsonResponse(url);
-        } else if (repository.repository_provider === 'gitlab') {
-          let url = repository.api_url + '/projects/' +
-            repository.gitlab_id + '/repository/branches/master';
-
-          let accessToken = null;
-          if (repository.access_token) {
-            accessToken = repository.access_token.token || null;
-          }
-
-          if (accessToken) {
-            url = url.replace('//', `//${accessToken}@`);
-          }
-
-          return getHttpJsonResponse(url);
-        } else if (repository.repository_provider === 'bitbucket') {
-          let url = repository.api_url + '/' + repository.user_login + '/' + repository.name +
-            '/commits/master';
-          let accessToken = null;
-          if (repository.access_token) {
-            accessToken = repository.access_token.token || null;
-          }
-
-          if (accessToken) {
-            url = url.replace('//', `//${accessToken}@`);
-          }
-
-          return getHttpJsonResponse(url).then(payload => payload.values[0]);
-        } else if (repository.repository_provider === 'gogs') {
-          let url = repository.api_url + '/api/v1/' + repository.user_login +
-            '/repos/' + repository.full_name + '/branches/master';
-          let accessToken = null;
-          if (repository.access_token) {
-            accessToken = repository.access_token.token || null;
-          }
-
-          if (accessToken) {
-            url = url.replace('//', `//${accessToken}@`);
-          }
-
-          return getHttpJsonResponse(url);
-        }
-      })
-      .then(payload => {
-        const buildData = {
-          data: payload,
-          start_time: new Date(),
-          repositories_id: req.params.id
-        };
-
-        return startBuild(buildData);
-      })
-      .then(() => res.status(200).json({ data: true }))
-      .catch(err => res.status(200).json({ data: false }));
+          return startBuild(buildData);
+        })
+        .then(() => res.status(200).json({ data: true }))
+        .catch(err => res.status(200).json({ data: false }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/get-config-file/:id', (req: express.Request, res: express.Response) => {
@@ -436,54 +442,56 @@ export function repositoryRoutes(): express.Router {
   });
 
   router.post('/run-build-config', (req: express.Request, res: express.Response) => {
-    let repo: Repository = null;
-    let payload: any = null;
-    getRepository(req.body.id)
-      .then(repository => {
-        if (!repository.api_url || !repository.repository_provider) {
-          res.status(200).json({ data: false });
-          return Promise.reject(null);
-        }
+    checkApiRequestAuth(req).then(() => {
+      let repo: Repository = null;
+      let payload: any = null;
+      getRepository(req.body.id)
+        .then(repository => {
+          if (!repository.api_url || !repository.repository_provider) {
+            res.status(200).json({ data: false });
+            return Promise.reject(null);
+          }
 
-        let accessToken = null;
-        if (repository.access_token) {
-          accessToken = repository.access_token.token || null;
-        }
-        repo = {
-          clone_url: repository.clone_url,
-          branch: repository.default_branch,
-          access_token: accessToken
-        };
-
-        if (repository.repository_provider === 'github') {
-          let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
-            repository.default_branch;
           let accessToken = null;
-
           if (repository.access_token) {
             accessToken = repository.access_token.token || null;
           }
+          repo = {
+            clone_url: repository.clone_url,
+            branch: repository.default_branch,
+            access_token: accessToken
+          };
 
-          if (accessToken) {
-            url = url.replace('//', `//${accessToken}@`);
+          if (repository.repository_provider === 'github') {
+            let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
+              repository.default_branch;
+            let accessToken = null;
+
+            if (repository.access_token) {
+              accessToken = repository.access_token.token || null;
+            }
+
+            if (accessToken) {
+              url = url.replace('//', `//${accessToken}@`);
+            }
+
+            return getHttpJsonResponse(url);
           }
+        })
+        .then(load => payload = load)
+        .then(() => parseConfigFromRaw(repo, req.body.config))
+        .then(config => {
+          const buildData = {
+            data: payload,
+            start_time: new Date(),
+            repositories_id: req.body.id
+          };
 
-          return getHttpJsonResponse(url);
-        }
-      })
-      .then(load => payload = load)
-      .then(() => parseConfigFromRaw(repo, req.body.config))
-      .then(config => {
-        const buildData = {
-          data: payload,
-          start_time: new Date(),
-          repositories_id: req.body.id
-        };
-
-        return startBuild(buildData, config);
-      })
-      .then(() => res.status(200).json({ data: true }))
-      .catch(err => res.status(200).json({ data: false }));
+          return startBuild(buildData, config);
+        })
+        .then(() => res.status(200).json({ data: true }))
+        .catch(err => res.status(200).json({ data: false }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/get-cache/:id', (req: express.Request, res: express.Response) => {
@@ -491,17 +499,20 @@ export function repositoryRoutes(): express.Router {
       .then(repo => {
         const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
         res.status(200).json({ data: getCacheFilesFromPattern(searchPattern) });
-      });
+      })
+      .catch(err => res.status(200).json({ err: err }));
   });
 
   router.get('/delete-cache/:id', (req: express.Request, res: express.Response) => {
-    getRepository(req.params.id)
-      .then(repo => {
-        const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
-        return deleteCacheFilesFromPattern(searchPattern);
-      })
-      .then(() => res.status(200).json({ data: true }))
-      .catch(err => res.status(200).json({ data: false }));
+    checkApiRequestAuth(req).then(() => {
+      getRepository(req.params.id)
+        .then(repo => {
+          const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
+          return deleteCacheFilesFromPattern(searchPattern);
+        })
+        .then(() => res.status(200).json({ data: true }))
+        .catch(err => res.status(200).json({ data: false }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
