@@ -229,7 +229,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
       } else if (this.job.build.data.head_commit) {
         const commit = this.job.build.data.head_commit;
         this.committerAvatar = this.job.build.data.sender.avatar_url;
-        this.nameCommitter = this.job.build.data.head_commit.author.name;
+        this.nameAuthor = this.job.build.data.head_commit.author.name;
+        this.nameCommitter = this.job.build.data.head_commit.committer.name;
 
         if (commit.author.username !== commit.committer.username) {
           this.nameCommitter = commit.committer.name;
