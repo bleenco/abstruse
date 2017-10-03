@@ -19,7 +19,7 @@ export interface ImageBuildOutput {
 }
 
 export const imageBuilder: Subject<ImageBuildOutput> = new Subject();
-imageBuilder.share();
+export const imageBuilderObs = imageBuilder.share();
 
 export function buildDockerImage(data: ImageData): void {
   prepareDirectory(data).then(() => {
