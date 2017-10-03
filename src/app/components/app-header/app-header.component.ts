@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService, NotificationType } from '../../services/notification.service';
+const pkgJson = require('../../../../package.json');
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ export class AppHeaderComponent implements OnInit {
   notifyDropped: boolean;
   user: any;
   notifications: NotificationType[];
+  version: string;
 
   constructor(
     private authService: AuthService,
@@ -30,6 +32,7 @@ export class AppHeaderComponent implements OnInit {
     });
 
     this.notifications = [];
+    this.version = pkgJson.version;
   }
 
   ngOnInit() {

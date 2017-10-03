@@ -288,7 +288,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       } else if (this.build.data.head_commit) {
         const commit = this.build.data.head_commit;
         this.committerAvatar = this.build.data.sender.avatar_url;
-        this.nameCommitter = this.build.data.head_commit.author.name;
+        this.nameAuthor = this.build.data.head_commit.author.name;
+        this.nameCommitter = this.build.data.head_commit.committer.name;
 
         if (commit.author.username !== commit.committer.username) {
           this.nameCommitter = commit.committer.name;
