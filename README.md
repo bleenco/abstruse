@@ -20,12 +20,6 @@ Intel i7-4700HQ @ 2.40GHz CPU, 12GB DDR3 1600 MHz, 256 SSD.*
 When testing Java-Design-Patterns 1.17.0 (*Figure 1*), Abstruse 1.0.0 outperforms Jenkins 2.60.3 by 22.15% in time, 52.36% in CPU consumption and 45.96% in memory use.
 When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 22.15% in time, 6.27% in CPU consumption and 35.49% in memory use. 
 
-|  **Code Repository** | **Time Savings** | **CPU Savings** | **Memory Savings** |
-|---	|---	|---   |--- |
-|   [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns)	|  22.15% |  52.36% | 45.96% |
-|   [Angular 5.0.0-beta.7](https://github.com/angular/angular)	|  25.84% |  6.27%	| 35.49% |
-*Table 1*: Comparison of time, CPU and memory savings when benchmarking Abstruse vs Jenkins.
-
 <p align="center">
   <img src="https://user-images.githubusercontent.com/3041169/31200826-a2b4292c-a95c-11e7-8d73-c395f7b37355.jpg">
 </p>
@@ -37,6 +31,16 @@ When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 
 </p>
 
 *Figure 2*: Testing Angular 5.0.0-beta.7 with Abstruse (left) and Jenkins (right).
+
+
+According to our benchmarking results Abstruse saves on time, CPU and memory as follows:
+
+|  **Code Repository** | **Time Savings** | **CPU Savings** | **Memory Savings** |
+|---	|---	|---   |--- |
+|   [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns)	|  22.15% |  52.36% | 45.96% |
+|   [Angular 5.0.0-beta.7](https://github.com/angular/angular)	|  25.84% |  6.27%	| 35.49% |
+
+*Table 1*: Comparison of time, CPU and memory savings when benchmarking Abstruse vs Jenkins.
 
 For more details on benchmarking visit our [benchmarking section](docs/BENCHMARKING.md).
 
