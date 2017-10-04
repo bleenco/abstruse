@@ -14,4 +14,6 @@ protractor.conf.js
 tsconfig.json
 tslint.json
 webpack.config.js
+scripts/abstruse*
+scripts/nodec
 !src/files/

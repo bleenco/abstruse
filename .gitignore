@@ -6,3 +6,5 @@ aot/
 src/ngfactory
 coverage/
 src/server/logs/
+scripts/abstruse*
+scripts/nodec
