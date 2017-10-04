@@ -33,11 +33,13 @@ export class AuthService {
   login(jwt: string): void {
     localStorage.setItem('abs-token', jwt);
     this.userEvents.emit('login');
+    this.socket.emit({ type: 'login', data: localStorage.getItem('abs-token') });
   }
 
   logout(): void {
     localStorage.removeItem('abs-token');
     this.socket.emit({ type: 'userId', data: null });
+    this.socket.emit({ type: 'logout' });
   }
 
   getData(): Object {

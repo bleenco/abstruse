@@ -128,12 +128,14 @@
                   <span class="build-time" *ngIf="status === 'running' && maxCompletedJobTime > (currentTime - minRunningJobStartTime)">{{ maxCompletedJobTime | toTime }}</span>
                   <span class="build-time" *ngIf="status === 'running' && (!maxCompletedJobTime || maxCompletedJobTime <= (currentTime - minRunningJobStartTime))">{{ currentTime - minRunningJobStartTime | toTime }}</span>
 
-                  <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
-                    <i class="ionicon ion-refresh"></i>
-                  </span>
-                  <span class="icon circle stop-build" (click)="stopBuild($event, build.id)" [class.disabled]="processingRequest" [class.is-hidden]="build.status === 'success' || build.status === 'failed'">
-                    <i class="ionicon ion-stop"></i>
-                  </span>
+                  <div *ngIf="userId && build?.hasPermission">
+                    <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
+                      <i class="ionicon ion-refresh"></i>
+                    </span>
+                    <span class="icon circle stop-build" (click)="stopBuild($event, build.id)" [class.disabled]="processingRequest" [class.is-hidden]="status === 'success' || status === 'failed'">
+                      <i class="ionicon ion-stop"></i>
+                    </span>
+                  </div>
                 </div>
 
                 <span class="build-icon">
@@ -219,12 +221,14 @@
                 <span class="build-time" *ngIf="job?.status === 'success' || job?.status === 'failed'">{{ job.end_time - job.start_time | toTime }}</span>
                 <span class="build-time" *ngIf="job?.status === 'queued'">00:00</span>
 
-                <span class="icon circle" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">
-                  <i class="ionicon ion-refresh"></i>
-                </span>
-                <span class="icon circle" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing" [class.is-hidden]="job?.status === 'success' || job?.status === 'failed'">
-                  <i class="ionicon ion-stop"></i>
-                </span>
+                <div *ngIf="userId && build?.hasPermission">
+                  <span class="icon circle" name="restart-job" (click)="restartJob($event, job.id)" [class.disabled]="job.processing">
+                    <i class="ionicon ion-refresh"></i>
+                  </span>
+                  <span class="icon circle" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing" [class.is-hidden]="job?.status === 'success' || job?.status === 'failed'">
+                    <i class="ionicon ion-stop"></i>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
