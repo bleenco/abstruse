@@ -14,9 +14,7 @@ import {
   max,
   axisBottom,
   axisLeft,
-  area,
-  event,
-  easeLinear
+  area
 } from 'd3';
 import { isSameDay, compareAsc, format, subDays } from 'date-fns';
 import { Subscription } from 'rxjs/Subscription';
@@ -215,9 +213,6 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     successPath
       .attr('stroke-dasharray', totalLengthSuccess + ' ' + totalLengthSuccess)
       .attr('stroke-dashoffset', totalLengthSuccess)
-      .transition()
-      .duration(1000)
-      .ease(easeLinear)
       .attr('stroke-dashoffset', 0);
 
     const failedPath = g.append('path')
@@ -245,9 +240,6 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     failedPath
       .attr('stroke-dasharray', totalLengthFailed + ' ' + totalLengthFailed)
       .attr('stroke-dashoffset', totalLengthFailed)
-      .transition()
-      .duration(1000)
-      .ease(easeLinear)
       .attr('stroke-dashoffset', 0);
   }
 
