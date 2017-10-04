@@ -23,7 +23,7 @@ export function comparePassword(plain: string, hash: string): Promise<boolean> {
 
 export function generateJwt(data: any): Promise<string> {
   return new Promise((resolve, reject) => {
-    jwt.sign(data, 'abstruseSecret4321!!', {}, (err: jwt.JsonWebTokenError, token: string) => {
+    jwt.sign(data, config.jwtSecret, {}, (err: jwt.JsonWebTokenError, token: string) => {
       if (err) {
         reject(err);
       }
@@ -35,7 +35,7 @@ export function generateJwt(data: any): Promise<string> {
 
 export function decodeJwt(token: string): any {
   try {
-    const decoded = jwt.verify(token, 'abstruseSecret4321!!');
+    const decoded = jwt.verify(token, config.jwtSecret);
     return decoded;
   } catch (err) {
     return false;
@@ -52,7 +52,7 @@ export function checkApiRequestAuth(req: express.Request): Promise<void> {
     if (!token) {
       reject('Authentication failed.');
     } else {
-      jwt.verify(token, 'abstruseSecret4321!!', (err, decoded: any) => {
+      jwt.verify(token, config.jwtSecret, (err, decoded: any) => {
         if (err) {
           reject('Authentication failed.');
         } else {
