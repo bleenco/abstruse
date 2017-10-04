@@ -276,7 +276,7 @@ export class SocketServer {
     });
   }
 
-  private createRxServer = (options: ws.IServerOptions) => {
+  private createRxServer = (options: ws.ServerOptions) => {
     return new Observable((observer: Observer<any>) => {
       let config: any = getConfig();
       let server;

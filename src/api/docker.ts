@@ -228,7 +228,7 @@ export function getContainersStats(): Observable<any> {
       .mergeMap(() => {
         return docker.listContainers().then(containers => {
           return Promise.all(containers.map(container => {
-            return docker.getContainer(container.Id).stats().then((stream: Readable) => {
+            return docker.getContainer(container.Id).stats().then((stream: any) => {
               let json = '';
               return new Promise(resolve => {
                 stream.on('data', buf => {
