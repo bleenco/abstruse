@@ -143,22 +143,24 @@ export class SocketServer {
 
               case 'buildImage': {
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  const imageData = event.data;
+                  buildDockerImage(imageData);
                 }
-
-                const imageData = event.data;
-                buildDockerImage(imageData);
               }
               break;
 
               case 'subscribeToImageBuilder': {
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  imageBuilderSub = imageBuilderObs.subscribe(event => {
+                    conn.next({ type: 'imageBuildProgress', data: event });
+                  });
                 }
-
-                imageBuilderSub = imageBuilderObs.subscribe(event => {
-                  conn.next({ type: 'imageBuildProgress', data: event });
-                });
               }
               break;
 
@@ -171,46 +173,50 @@ export class SocketServer {
 
               case 'stopBuild':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  stopBuild(event.data.buildId)
+                    .then(() => {
+                      conn.next({ type: 'build stopped', data: event.data.buildId });
+                    });
                 }
-
-                stopBuild(event.data.buildId)
-                  .then(() => {
-                    conn.next({ type: 'build stopped', data: event.data.buildId });
-                  });
               break;
 
               case 'restartBuild':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  restartBuild(event.data.buildId)
+                    .then(() => {
+                      conn.next({ type: 'build restarted', data: event.data.buildId });
+                    });
                 }
-
-                restartBuild(event.data.buildId)
-                  .then(() => {
-                    conn.next({ type: 'build restarted', data: event.data.buildId });
-                  });
               break;
 
               case 'restartJob':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  restartJob(parseInt(event.data.jobId, 10))
+                    .then(() => {
+                      conn.next({ type: 'job restarted', data: event.data.jobId });
+                    });
                 }
-
-                restartJob(parseInt(event.data.jobId, 10))
-                  .then(() => {
-                    conn.next({ type: 'job restarted', data: event.data.jobId });
-                  });
               break;
 
               case 'stopJob':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  stopJob(event.data.jobId)
+                    .then(() => {
+                      conn.next({ type: 'job stopped', data: event.data.jobId });
+                    });
                 }
-
-                stopJob(event.data.jobId)
-                  .then(() => {
-                    conn.next({ type: 'job stopped', data: event.data.jobId });
-                  });
               break;
 
               case 'subscribeToJobOutput':
@@ -234,21 +240,23 @@ export class SocketServer {
 
               case 'subscribeToLogs':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  logger.subscribe(msg => conn.next(msg));
                 }
-
-                logger.subscribe(msg => conn.next(msg));
               break;
 
               case 'subscribeToNotifications':
                 if (this.clients[clientIndex].username === 'anonymous') {
-                  return;
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  logger.filter(msg => !!msg.notify).subscribe(msg => {
+                    const notify = { notification: msg, type: 'notification' };
+                    conn.next(notify);
+                  });
                 }
-
-                logger.filter(msg => !!msg.notify).subscribe(msg => {
-                  const notify = { notification: msg, type: 'notification' };
-                  conn.next(notify);
-                });
               break;
 
               case 'subscribeToStats':
