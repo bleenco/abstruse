@@ -23,6 +23,7 @@ import { yellow, red, blue, green } from 'chalk';
 import { sessionParser } from './server';
 import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';
+import { decodeJwt } from './security';
 
 export interface ISocketServerOptions {
   port: number;
@@ -39,6 +40,7 @@ export class SocketServer {
   options: ISocketServerOptions;
   connections: Observable<any>;
   clients: any[];
+  token: string | null;
   connectingClient: any;
 
   constructor(options: ISocketServerOptions) {
@@ -50,11 +52,31 @@ export class SocketServer {
     return new Observable(observer => {
       this.createRxServer(this.options)
         .map(data => {
+          this.token = data.conn.protocol;
           this.connectingClient = data.session;
           return this.createRxSocket(data.conn);
         })
         .subscribe(conn => {
-          this.clients.push({ connection: conn, sub: null, session: this.connectingClient });
+          let decoded = !!this.token ? decodeJwt(this.token) : false;
+
+          this.clients.push({
+            connection: conn,
+            sub: null,
+            session: this.connectingClient,
+            username: decoded ? decoded.email : 'anonymous',
+            isAdmin: decoded ? decoded.admin : false
+          });
+
+          const message = [
+            `[socket]: user ${this.connectingClient.userId} authenticated as `,
+            decoded ? decoded.email : 'anonymous'
+          ].join('');
+          const msg: LogMessageType = {
+            message: message,
+            type: 'info',
+            notify: false
+          };
+          logger.next(msg);
 
           const clientIndex = this.clients.length - 1;
 
@@ -71,10 +93,11 @@ export class SocketServer {
             if (event.type === 'disconnected') {
               const index = this.clients.findIndex(client => client.connection === conn);
               const session = this.clients[index].session;
+              const username = this.clients[index].username;
               this.clients.splice(index, 1);
 
               const msg: LogMessageType = {
-                message: `[socket]: user ${session.userId} disconnected`,
+                message: `[socket]: user ${session.userId} (${username}) disconnected`,
                 type: 'info',
                 notify: false
               };
@@ -88,12 +111,20 @@ export class SocketServer {
               break;
 
               case 'buildImage': {
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 const imageData = event.data;
                 buildDockerImage(imageData);
               }
               break;
 
               case 'subscribeToImageBuilder': {
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 imageBuilderSub = imageBuilderObs.subscribe(event => {
                   conn.next({ type: 'imageBuildProgress', data: event });
                 });
@@ -108,6 +139,10 @@ export class SocketServer {
               break;
 
               case 'stopBuild':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 stopBuild(event.data.buildId)
                   .then(() => {
                     conn.next({ type: 'build stopped', data: event.data.buildId });
@@ -115,6 +150,10 @@ export class SocketServer {
               break;
 
               case 'restartBuild':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 restartBuild(event.data.buildId)
                   .then(() => {
                     conn.next({ type: 'build restarted', data: event.data.buildId });
@@ -122,6 +161,10 @@ export class SocketServer {
               break;
 
               case 'restartJob':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 restartJob(parseInt(event.data.jobId, 10))
                   .then(() => {
                     conn.next({ type: 'job restarted', data: event.data.jobId });
@@ -129,6 +172,10 @@ export class SocketServer {
               break;
 
               case 'stopJob':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 stopJob(event.data.jobId)
                   .then(() => {
                     conn.next({ type: 'job stopped', data: event.data.jobId });
@@ -155,10 +202,18 @@ export class SocketServer {
               break;
 
               case 'subscribeToLogs':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 logger.subscribe(msg => conn.next(msg));
               break;
 
               case 'subscribeToNotifications':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  return;
+                }
+
                 logger.filter(msg => !!msg.notify).subscribe(msg => {
                   const notify = { notification: msg, type: 'notification' };
                   conn.next(notify);

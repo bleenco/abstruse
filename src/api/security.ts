@@ -33,6 +33,15 @@ export function generateJwt(data: any): Promise<string> {
   });
 }
 
+export function decodeJwt(token: string): any {
+  try {
+    const decoded = jwt.verify(token, 'abstruseSecret4321!!');
+    return decoded;
+  } catch (err) {
+    return false;
+  }
+}
+
 export function calculateMd5(str: string): string {
   return crypto.createHash('md5').update(str).digest('hex');
 }
