@@ -165,9 +165,19 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/create', (req: express.Request, res: express.Response) => {
-    createUser(req.body)
-      .then(() => res.status(200).json({ status: true }))
-      .catch(err => res.status(200).json({ status: false }));
+    getUsers().then(users => {
+      if (users && users.length) {
+        checkApiRequestAuth(req).then(() => {
+          createUser(req.body)
+            .then(() => res.status(200).json({ status: true }))
+            .catch(err => res.status(200).json({ status: false }));
+        }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      } else {
+        createUser(req.body)
+          .then(() => res.status(200).json({ status: true }))
+          .catch(err => res.status(200).json({ status: false }));
+      }
+    }).catch(err => res.status(200).json({ data: false }));
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {

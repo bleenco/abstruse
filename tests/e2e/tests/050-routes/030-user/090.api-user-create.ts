@@ -7,7 +7,7 @@ export default function() {
         let options = {
           url: 'http://localhost:6500/api/user/create',
           method: 'POST',
-          json: { email: 'test@gmail.com', fullname: 'test',
+          json: { email: 'test2@gmail.com', fullname: 'test2',
             password: 'test', confirmPassword: 'test', admin: 1 }
         };
 
@@ -15,7 +15,7 @@ export default function() {
           if (err) {
             Promise.reject(err);
           } else {
-            if (response.statusCode === 200) {
+            if (response.statusCode === 401 && response.body.data === 'Not Authorized') {
               resolve(body);
             } else {
               reject({
