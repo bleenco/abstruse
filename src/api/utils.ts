@@ -22,6 +22,7 @@ import * as glob from 'glob';
 const defaultConfig = {
   url: null,
   secret: 'thisIsSecret',
+  jwtSecret: 'abstruseSecret4321!!',
   port: 6500,
   wsport: 6501,
   concurrency: 10,
