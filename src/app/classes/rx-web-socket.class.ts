@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { Subject, Observable, Subscriber, Subscription, Observer, BehaviorSubject } from 'rxjs';
 import { ConfigService } from '../services/config.service';
 
@@ -30,7 +29,7 @@ export class RxWebSocket {
   get out(): Observable<any> {
     if (!this._out) {
       this._out = Observable.create((subscriber: Subscriber<any>) => {
-        this.socket = new WebSocket(this.config.wsurl);
+        this.socket = new WebSocket(this.config.wsurl, localStorage.getItem('abs-token') || null);
 
         if (this.willOpen) {
           this.willOpen();
