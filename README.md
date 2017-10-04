@@ -8,78 +8,44 @@
 
 [Abstruse](https://abstruse.bleenco.io/) is a continuous integration platform requiring zero or minimal configuration to get started, providing safe testing and deployment environment using [Docker](https://docker.github.io/) containers. It integrates seamlessly with all git hosted services as [GitHub](https://github.com/), [BitBucket](https://bitbucket.org/), [GitLab](https://about.gitlab.com/) and [gogs](https://gogs.io/).
 
-## Prerequirements
+## Why Abstruse?
+We saw many projects relying on outdated open source continuous integration (CI) solutions that were widely adopted in the past, but unfortunately cannot answer new requirements from the industry. On the other hand, commercial CI solutions have all this great features (i.e. Travis CI), but they cost money. Hence, numerous organizations decide to cut costs and go with legacy open source CI solutions or not use CI solutions at all. This kills the code quality and increases software maintenance costs. We want to change this and equip developers with the commercial-grade open source CI solution that differentiates from the rest by simplicity, scalability and up-to-date technology stack.
 
-`Abstruse` requires `SQLite3` and `Docker` to be installed.
+Not convinced yet? We compared **[Abstruse 1.0.0](https://github.com/bleenco/abstruse)** with the most popular open source CI platform of all times -- **[Jenkins 2.60.3](https://github.com/jenkinsci/jenkins)** -- and measured the time of execution, CPU and memory consumption while running [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns) and [Angular 5.0.0-beta.7](https://github.com/angular/angular) tests.
 
-## Installation
+*We used the following machine for benchmarking: 
+Intel i7-4700HQ @ 2.40GHz CPU, 12GB DDR3 1600 MHz, 256 SSD.*
 
-```sh
-$ npm install abstruse -g
-```
+### **Abstruse vs Jenkins**
+When testing Java-Design-Patterns 1.17.0 (*Figure 1*), Abstruse 1.0.0 outperforms Jenkins 2.60.3 by 22.15% in time, 52.36% in CPU consumption and 45.96% in memory use.
+When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 22.15% in time, 6.27% in CPU consumption and 35.49% in memory use. 
 
-## Running abstruse
+|  **Code Repository** | **Time Savings** | **CPU Savings** | **Memory Savings** |
+|---	|---	|---   |--- |
+|   [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns)	|  22.15% |  52.36% | 45.96% |
+|   [Angular 5.0.0-beta.7](https://github.com/angular/angular)	|  25.84% |  6.27%	| 35.49% |
+*Table 1*: Comparison of time, CPU and memory savings when benchmarking Abstruse vs Jenkins.
 
-After the installation, running a server is as easy as running the following command:
-
-```sh
-$ abstruse
-```
-
-## Tests
-
-#### Server e2e tests
-
-```sh
-npm run test:e2e
-```
-
-#### Protractor e2e tests
-
-```sh
-npm run test:protractor
-```
-
-## GitHub Integration
-
-<p align="left">
-  <img src="https://user-images.githubusercontent.com/1796022/29858646-a6ba0772-8d5e-11e7-9280-ef5a9d4ca0f4.png" width="700">
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/3041169/31200826-a2b4292c-a95c-11e7-8d73-c395f7b37355.jpg">
 </p>
 
-#### 1. Configuring secret token
+*Figure 1*: Testing Java-Design-Patterns 1.17.0 with Abstruse (left) and Jenkins (right).
 
-Abstruse configuration file is located in **~/.abstruse/config.json**.
-
-The integration of GitHub webhooks and Abstruse is done using `secret` token. The default `secret` is set to **thisIsSecret**.
-
-**It is recommended to change the default `secret` token and restart abstruse to apply changes.**
-
-#### 2. Setting up Github Webhooks
-
-In repository `Settings` navigate to `Webhooks` section in the menu. Click `Add Webhooks` and fill in the required information.
-
-An example of a successful webhook entry can be seen in a screenshot below. Instead of `https://abstruse.bleenco.io` the URL of your choice has to be entered.
-
-<p align="left">
-  <img src="https://user-images.githubusercontent.com/1796022/29858741-220462f6-8d5f-11e7-8b3b-b6418b46684c.png" width="700">
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/3041169/31200825-a2b3ab3c-a95c-11e7-9d0e-7c48af6730f9.jpg">
 </p>
 
-#### 3. Initiating Abstruse repositories
+*Figure 2*: Testing Angular 5.0.0-beta.7 with Abstruse (left) and Jenkins (right).
 
-Your new code repositories will automatically appear in Abstruse
-after the first commit or pull request.
+For more details on benchmarking visit our [benchmarking section](docs/BENCHMARKING.md).
 
-**Note: Please make sure your local repository includes .abstruse.yml file.**
+## Quickstart
+* [Dependencies](docs/DEPENDENCIES.md)
+* [Installation](docs/INSTALLATION.md)
+* [Integrating Git Providers](docs/INTEGRATING_GIT_PROVIDERS.md)
 
-#### 4. Setting up protected branches
-
-In repository `Settings` navigate to `Branches` section in the menu. Click `Edit` next to the branch you want to protect and select the checkbox `continuous-integration/abstruse` as required.
-
-<p align="left">
-  <img src="https://user-images.githubusercontent.com/1796022/29859098-d90d5682-8d60-11e7-92ff-b089daf4f7a8.png" width="700">
-</p>
-
-## Licence
+## License
 
 The MIT License
 
