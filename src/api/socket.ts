@@ -110,6 +110,37 @@ export class SocketServer {
               }
               break;
 
+              case 'login': {
+                const token = event.data;
+                const decoded = !!token ? decodeJwt(token) : false;
+                this.clients[clientIndex].username = decoded ? decoded.email : 'anonymous';
+                this.clients[clientIndex].isAdmin = decoded ? decoded.admin : false;
+                const client = this.clients[clientIndex];
+
+                const msg: LogMessageType = {
+                  message: `[socket]: ${client.session.userId} (${client.username}) logged in`,
+                  type: 'info',
+                  notify: false
+                };
+                logger.next(msg);
+              }
+              break;
+
+              case 'logout': {
+                const username = this.clients[clientIndex].username;
+                const userId = this.clients[clientIndex].session.userId;
+                this.clients[clientIndex].username = 'anonymous';
+                this.clients[clientIndex].isAdmin = false;
+
+                const msg: LogMessageType = {
+                  message: `[socket]: ${userId} (${username}) logged out`,
+                  type: 'info',
+                  notify: false
+                };
+                logger.next(msg);
+              }
+              break;
+
               case 'buildImage': {
                 if (this.clients[clientIndex].username === 'anonymous') {
                   return;
