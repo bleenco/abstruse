@@ -16,6 +16,10 @@ describe('Socket Security', () => {
   before(function() {
     this.timeout(60000);
     let tempRoot = null;
+    let registerData = {
+      email: 'test@gmail.com', fullname: 'test',
+      password: 'test', confirmPassword: 'test', admin: 1
+    };
 
     return Promise.resolve()
       .then(() => console.log('Building project for socket tests...'))
@@ -27,7 +31,8 @@ describe('Socket Security', () => {
         tempRoot = temp.mkdirSync('abstruse-socket-tests');
         console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
       })
-      .then(() => abstruse(tempRoot, false));
+      .then(() => abstruse(tempRoot, false))
+      .then(() => sendRequest(registerData, 'api/user/create'));
   });
 
   after(() => killAllProcesses());
@@ -60,14 +65,9 @@ describe('Socket Security', () => {
   });
 
   it(`should have permissions to trigger build image on 'buildImage' event`, (done) => {
-    let registerData = {
-      email: 'test@gmail.com', fullname: 'test',
-      password: 'test', confirmPassword: 'test', admin: 1
-    };
     let loginData = { email: 'test@gmail.com', password: 'test' };
 
-    sendRequest(registerData, 'api/user/create')
-      .then(() => sendRequest(loginData, 'api/user/login'))
+    sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
         socket = new ws('ws://localhost:6501', jwt.data);
 
@@ -78,9 +78,270 @@ describe('Socket Security', () => {
           }
         });
 
-        socket.on('open', () => socket.send(JSON.stringify({ type: 'buildImage', data: null })));
+        socket.on('open', () => socket.send(JSON.stringify({
+          type: 'buildImage', data: { name: 'test'}})));
       })
       .catch(err => console.error(err));
   });
 
+  it(`should not have permissions to trigger 'subscribeToImageBuilder' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({
+      type: 'subscribeToImageBuilder', data: null })));
+  });
+
+  it(`should have permissions to trigger 'subscribeToImageBuilder' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'subscribeToImageBuilder', data: null }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'stopBuild' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'stopBuild', data: null })));
+  });
+
+  it(`should have permissions to trigger 'stopBuild' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'stopBuild', data: { buildId: -1 } }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'restartBuild' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'restartBuild', data: null })));
+  });
+
+  it(`should have permissions to trigger 'restartBuild' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'restartBuild', data: { buildId: -1 } }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'restartJob' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'restartJob', data: null })));
+  });
+
+  it(`should have permissions to trigger 'restartJob' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'restartJob', data: { jobId: -1 } }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'stopJob' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'stopJob', data: null })));
+  });
+
+  it(`should have permissions to trigger 'stopJob' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'stopJob', data: { jobId: -1 } }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'subscribeToLogs' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({ type: 'subscribeToLogs', data: null })));
+  });
+
+  it(`should have permissions to trigger 'subscribeToLogs' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'subscribeToLogs', data: null }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
+
+  it(`should not have permissions to trigger 'subscribeToNotifications' event`, (done) => {
+    socket = new ws('ws://localhost:6501', null);
+
+    socket.on('message', (data: any) => {
+      data = JSON.parse(data);
+
+      if (data.type === 'error') {
+        expect(data.data).to.equal('not authorized');
+        done();
+      }
+    });
+
+    socket.on('open', () => socket.send(JSON.stringify({
+      type: 'subscribeToNotifications', data: null })));
+  });
+
+  it(`should have permissions to trigger 'subscribeToNotifications' event`,
+    (done) => {
+      let loginData = { email: 'test@gmail.com', password: 'test' };
+
+      sendRequest(loginData, 'api/user/login')
+        .then((jwt: any) => {
+          socket = new ws('ws://localhost:6501', jwt.data);
+
+          socket.on('message', (data: any) => {
+            data = JSON.parse(data);
+            if (data.type === 'request_received') {
+              done();
+            }
+          });
+
+          socket.on('open', () => {
+            return socket.send(JSON.stringify({ type: 'subscribeToNotifications', data: null }));
+          });
+        })
+        .catch(err => console.error(err));
+  });
 });
