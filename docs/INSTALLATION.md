@@ -1,10 +1,44 @@
 ## Installation
 
+### Table of Contents
+
+* [Docker Image](#docker-image)
+* [Install From Npm](#install-from-npm)
+* [Run From Source](#run-from-source)
+
+### Docker Image
+
+1. Pull Docker Image
+
+```sh
+docker pull bleenco/abstruse
+```
+
+2. Run Image
+
+```sh
+docker run -dit -v /var/run/docker.sock:/var/run/docker.sock -v ~/abstruse-config:/home/abstruse/.abstruse -p 6500:6500 -p 6501:6501 bleenco/abstruse
+```
+
+Note that we are exposing hosts `/var/run/docker.sock` to `abstruse` image. This is the only way you persist native `docker` performance.
+All builds or jobs will actually run on the host.
+
+You could also not expose `/var/run/docker.sock` to `abstruse` but performance will not be as it should be. At least we couldn't find appropriate
+storage-driver or storage-driver combination that this will run with good performance. This will actually run docker-in-docker and please try to avoid
+this while using `abstruse` docker image.
+
+3. Open Application
+
+Run your favourite `Chrome` browser and navigate to `http://localhost:6500`. You should see `abstruse` setup page which will guide you
+throught the initial setup.
+
+### Install From npm
+
+Note: This requires `node` version >= `6.x.x` installed on your host. We advise you that you run latest version of node.
+
 ```sh
 $ npm install abstruse -g
 ```
-
-## Running abstruse
 
 After the installation, running a server is as easy as running the following command:
 
@@ -12,16 +46,22 @@ After the installation, running a server is as easy as running the following com
 $ abstruse
 ```
 
-## Tests
-
-#### Server e2e tests
+### Run From Source
 
 ```sh
-npm run test:e2e
+git clone https://github.com/bleenco/abstruse.git
+cd abstruse
+npm install
 ```
 
-#### Protractor e2e tests
+Then open two terminal instances and in the first run:
 
 ```sh
-npm run test:protractor
+npm run dev # this compiles and run API
+```
+
+in the second instance run:
+
+```sh
+npm start # this will build UI part of the application and open browser at http://localhost:8000
 ```
