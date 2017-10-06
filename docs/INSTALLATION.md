@@ -29,7 +29,7 @@ this while using `abstruse` docker image.
 
 3. Open Application
 
-Run your favourite `Chrome` browser and navigate to `http://localhost:6500`. You should see `abstruse` setup page which will guide you
+Run your favorite `Chrome` browser and navigate to `http://localhost:6500`. You should see `abstruse` setup page which will guide you
 throught the initial setup.
 
 ### Install From npm
