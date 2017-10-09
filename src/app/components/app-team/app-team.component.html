@@ -88,7 +88,7 @@
                   </div>
                   <div class="form-field">
                     <label class="form-label">Admin</label>
-                    <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="userForm.admin" required></app-selectbox>
+                    <app-selectbox [data]="yesNoOptions" name="admin" [(ngModel)]="userForm.admin" required></app-selectbox>
                   </div>
                   <div class="user-item-buttons">
                     <button type="button" class="button red" (click)="resetForm()">Cancel</button>
