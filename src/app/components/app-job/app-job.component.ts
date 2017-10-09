@@ -155,7 +155,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
       this.timerSubscription.unsubscribe();
     }
 
-    this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    if (this.document.getElementById('favicon')) {
+      this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    }
+
     this.titleService.setTitle('Abstruse CI');
   }
 
@@ -172,7 +175,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
     const name = this.job.build.repository.full_name;
     const status = this.jobRun.status;
     this.titleService.setTitle(`${name} - ${status}`);
-    this.document.getElementById('favicon').setAttribute('href', favicon);
+    if (this.document.getElementById('favicon')) {
+      this.document.getElementById('favicon').setAttribute('href', favicon);
+    }
   }
 
   restartJob(e: MouseEvent): void {
