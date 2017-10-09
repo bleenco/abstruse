@@ -6,6 +6,8 @@
 
 [![AbstruseCI](https://abstruse.bleenco.io/badge/1)](https://abstruse.bleenco.io/repo/1)
 
+*The majority of widely used browsers (except IE) are tested on BrowserStack.*
+
 [Abstruse](https://abstruse.bleenco.io/) is a continuous integration platform requiring zero or minimal configuration to get started, providing safe testing and deployment environment using [Docker](https://docker.github.io/) containers. It integrates seamlessly with all git hosted services as [GitHub](https://github.com/), [BitBucket](https://bitbucket.org/), [GitLab](https://about.gitlab.com/) and [gogs](https://gogs.io/).
 
 ## Why Abstruse?
@@ -31,16 +33,6 @@ When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 
 </p>
 
 *Figure 2*: Testing Angular 5.0.0-beta.7 with Abstruse (left) and Jenkins (right).
-
-
-According to our benchmarking results Abstruse saves on time, CPU and memory as follows:
-
-|  **Code Repository** | **Time Savings** | **CPU Savings** | **Memory Savings** |
-|---	|---	|---   |--- |
-|   [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns)	|  22.15% |  52.36% | 45.96% |
-|   [Angular 5.0.0-beta.7](https://github.com/angular/angular)	|  25.84% |  6.27%	| 35.49% |
-
-*Table 1*: Comparison of time, CPU and memory savings when benchmarking Abstruse vs Jenkins.
 
 For more details on benchmarking visit our [benchmarking section](docs/BENCHMARKING.md).
 
