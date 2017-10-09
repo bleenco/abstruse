@@ -34,7 +34,7 @@
     <span class="bold" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.source?.commit?.hash }}</span>
     <span class="bold" *ngIf="build?.data?.commit">{{ build?.data?.commit?.id }}</span>
 
-    <span>{{ commitMessage }}</span>
+    <span name="commit-message">{{ commitMessage }}</span>
 
     <span class="smaller">{{ buildCreated }} ago</span>
   </div>

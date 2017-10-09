@@ -1,4 +1,4 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
@@ -7,23 +7,24 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
-import { AppTeamComponent } from './app-team.component';
+import { AppBuildDetailsComponent } from './app-build-details.component';
 import { AppHeaderComponent } from '../app-header/app-header.component';
 import { AppToggleComponent } from '../app-toggle/app-toggle.component';
-import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
-import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
+import { TimeService } from '../../services/time.service';
+import { ConfigService } from '../../services/config.service';
 import { Observable } from 'rxjs/Observable';
-const usersData: any = require('json-loader!../../testing/xhr-data/users.json');
+import { ToTimePipe } from '../../pipes/to-time.pipe';
+const buildData: any = require('json-loader!../../testing/xhr-data/build.json');
 
-describe('Team Component', () => {
-  let comp:    AppTeamComponent;
-  let fixture: ComponentFixture<AppTeamComponent>;
+describe('Build Details Component', () => {
+  let comp:    AppBuildDetailsComponent;
+  let fixture: ComponentFixture<AppBuildDetailsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     spyOn(localStorage, 'getItem').and.callFake(() => {
       return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZ21haWwuY29tIiwiaWQiOjE'
         + 'sImZ1bGxuYW1lIjoiSm9obiBXYXluZSIsInBhc3N3b3JkIjoiY2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YW'
@@ -34,86 +35,51 @@ describe('Team Component', () => {
 
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppTeamComponent, AppHeaderComponent, AppToggleComponent, AppSelectboxComponent ],
-      schemas:      [ NO_ERRORS_SCHEMA ],
+      declarations: [ AppBuildDetailsComponent, AppHeaderComponent, AppToggleComponent, ToTimePipe ],
+      schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
         AuthService,
         SocketService,
-        ConfigService,
+        TimeService,
         NotificationService,
+        ConfigService,
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
     })
-    .createComponent(AppTeamComponent);
+    .createComponent(AppBuildDetailsComponent);
     comp = fixture.componentInstance;
-  }));
+  });
 
-  it('should expect loging to be true', () => {
+  it('should expect loading to be true', () => {
     expect(fixture.componentInstance.loading).toBe(true);
   });
 
-  describe('Team Component', () => {
+  describe('Build Details Component', () => {
     let backend: MockBackend;
     let apiService: ApiService;
     let authService: AuthService;
     let socketService: SocketService;
-    let responseUsers: Response;
-    let fakeUsers: any[];
+    let responseBuild: Response;
+    let fakeBuild: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeUsers = usersData.data;
-      let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
-      responseUsers = new Response(optionsUsers);
+      fakeBuild = buildData.data;
+      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
+      responseBuild = new Response(optionsBuild);
 
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseUsers));
+      backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuild));
     }));
 
-    it('should get users', () => {
+    it('should see build name', () => {
       fixture.componentInstance.ngOnInit();
-      return apiService.getUsers().toPromise().then(users => {
-        if (users) {
-          expect(users.length).toEqual(1);
-          expect(users[0].email).toEqual('john@gmail.com');
-        } else {
-          Promise.reject(false);
-        }
-      });
-    });
-
-    it('should see Team Management', () => {
       fixture.detectChanges();
       const de = fixture.debugElement.query(By.css('h1'));
-      expect(de.nativeElement.textContent).toBe('Team Management');
-    });
-
-    it('should see one user, John', () => {
-      fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h2'));
-      expect(de.nativeElement.textContent).toBe('John Wayne');
-    });
-
-    it(`shouldn't see form for adding new user`, () => {
-      fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h4'));
-      expect(de).toBeNull();
-    });
-
-    it(`should see form for adding new user after click on button`, () => {
-      fixture.detectChanges();
-      const deToken = fixture.debugElement.query(By.css('[name="btn-addUser"]'));
-      if (deToken instanceof HTMLElement) {
-        deToken.click();
-      } else {
-        deToken.triggerEventHandler('click', { button: 0 });
-      }
-      fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h4'));
-      expect('Add New User').toBe('Add New User');
+      expect(de.nativeElement.textContent).toContain('jkuri/d3-bundle');
     });
   });
 

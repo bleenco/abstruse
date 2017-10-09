@@ -165,7 +165,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       this.timerSubscription.unsubscribe();
     }
 
-    this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    if (this.document.getElementById('favicon')) {
+      this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+    }
     this.titleService.setTitle('Abstruse CI');
   }
 
@@ -209,7 +211,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     }
 
     const name = this.build.repository.full_name;
-    this.document.getElementById('favicon').setAttribute('href', favicon);
+    if (this.document.getElementById('favicon')) {
+      this.document.getElementById('favicon').setAttribute('href', favicon);
+    }
     this.titleService.setTitle(`${name} - ${status}`);
 
     return status;
