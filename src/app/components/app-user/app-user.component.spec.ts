@@ -1,4 +1,4 @@
-import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
@@ -15,18 +15,14 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { UploadOutput, UploadInput, UploadFile, NgUploaderModule } from 'ngx-uploader';
+import { NgUploaderModule } from 'ngx-uploader';
 import { Observable } from 'rxjs/Observable';
-const usersData: any = require('json-loader!../../testing/xhr-data/users.json');
+const userData: any = require('json-loader!../../testing/xhr-data/user.json');
 const repositoriesData: any = require('json-loader!../../testing/xhr-data/repositories.json');
 
 describe('User Component', () => {
   let comp:    AppUserComponent;
   let fixture: ComponentFixture<AppUserComponent>;
-  let de:      DebugElement;
-  let el:      HTMLElement;
-  let controller;
-  let scope;
 
   beforeEach(async(() => {
     fixture = TestBed.configureTestingModule({
@@ -65,7 +61,7 @@ describe('User Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeUsers = usersData.data;
+      fakeUsers = userData.data;
       fakeRepositories = repositoriesData.data;
       let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
       responseUsers = new Response(optionsUsers);
