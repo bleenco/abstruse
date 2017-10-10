@@ -8,14 +8,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
 import { AppTeamComponent } from './app-team.component';
-import { AppHeaderComponent } from '../app-header/app-header.component';
-import { AppToggleComponent } from '../app-toggle/app-toggle.component';
 import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
-import { NotificationService } from '../../services/notification.service';
 import { Observable } from 'rxjs/Observable';
 const usersData: any = require('json-loader!../../testing/xhr-data/users.json');
 
@@ -34,14 +31,13 @@ describe('Team Component', () => {
 
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppTeamComponent, AppHeaderComponent, AppToggleComponent, AppSelectboxComponent ],
+      declarations: [ AppTeamComponent, AppSelectboxComponent ],
       schemas:      [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         ConfigService,
-        NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
     })

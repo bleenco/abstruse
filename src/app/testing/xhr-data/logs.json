@@ -1,0 +1,184 @@
+{
+  "data": [
+    {
+      "id": 426,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user f9f64d99-e769-4156-9f27-a16198393cca succesfully connected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637786555,
+      "updated_at": 1507637786555
+    },
+    {
+      "id": 425,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user f9f64d99-e769-4156-9f27-a16198393cca authenticated as john@gmail.com",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637786555,
+      "updated_at": 1507637786555
+    },
+    {
+      "id": 424,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user f9f64d99-e769-4156-9f27-a16198393cca connected from ::1",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637786555,
+      "updated_at": 1507637786555
+    },
+    {
+      "id": 423,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 64a54ac2-20e8-458c-a9ec-a339ecf77729 (john@gmail.com) disconnected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637783985,
+      "updated_at": 1507637783985
+    },
+    {
+      "id": 422,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 64a54ac2-20e8-458c-a9ec-a339ecf77729 succesfully connected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637728127,
+      "updated_at": 1507637728127
+    },
+    {
+      "id": 421,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 64a54ac2-20e8-458c-a9ec-a339ecf77729 authenticated as john@gmail.com",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637728127,
+      "updated_at": 1507637728127
+    },
+    {
+      "id": 420,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 64a54ac2-20e8-458c-a9ec-a339ecf77729 connected from ::1",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637728126,
+      "updated_at": 1507637728126
+    },
+    {
+      "id": 419,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32mhttp\u001b[39m\u001b[33m]\u001b[39m: server running on port 6500",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637708272,
+      "updated_at": 1507637708272
+    },
+    {
+      "id": 418,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: server running at port 6501",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637708271,
+      "updated_at": 1507637708271
+    },
+    {
+      "id": 417,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32mserver\u001b[39m\u001b[33m]\u001b[39m starting Abstruse CI version \u001b[32m1.0.0\u001b[39m ...",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507637708270,
+      "updated_at": 1507637708270
+    },
+    {
+      "id": 416,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user ff5391c7-158f-4388-a761-186abb3be6d8 (john@gmail.com) disconnected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551452531,
+      "updated_at": 1507551452531
+    },
+    {
+      "id": 415,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user ff5391c7-158f-4388-a761-186abb3be6d8 succesfully connected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551232289,
+      "updated_at": 1507551232289
+    },
+    {
+      "id": 414,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user ff5391c7-158f-4388-a761-186abb3be6d8 authenticated as john@gmail.com",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551232289,
+      "updated_at": 1507551232289
+    },
+    {
+      "id": 413,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user ff5391c7-158f-4388-a761-186abb3be6d8 connected from ::1",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551232289,
+      "updated_at": 1507551232289
+    },
+    {
+      "id": 412,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 778ed175-f712-491b-b14c-9c125ce34069 succesfully connected",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551139440,
+      "updated_at": 1507551139440
+    },
+    {
+      "id": 411,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 778ed175-f712-491b-b14c-9c125ce34069 authenticated as john@gmail.com",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551139440,
+      "updated_at": 1507551139440
+    },
+    {
+      "id": 410,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: user 778ed175-f712-491b-b14c-9c125ce34069 connected from ::1",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551139439,
+      "updated_at": 1507551139439
+    },
+    {
+      "id": 409,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32mhttp\u001b[39m\u001b[33m]\u001b[39m: server running on port 6500",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551136197,
+      "updated_at": 1507551136197
+    },
+    {
+      "id": 408,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32msocket\u001b[39m\u001b[33m]\u001b[39m: server running at port 6501",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551136197,
+      "updated_at": 1507551136197
+    },
+    {
+      "id": 407,
+      "type": "info",
+      "message": "\u001b[33m[\u001b[39m\u001b[32mserver\u001b[39m\u001b[33m]\u001b[39m starting Abstruse CI version \u001b[32m1.0.0\u001b[39m ...",
+      "notify": 0,
+      "read": 0,
+      "created_at": 1507551136196,
+      "updated_at": 1507551136196
+    }
+  ]
+}
