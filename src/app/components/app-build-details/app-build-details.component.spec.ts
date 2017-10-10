@@ -1,5 +1,5 @@
-import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
@@ -8,20 +8,16 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
 import { AppBuildDetailsComponent } from './app-build-details.component';
-import { AppHeaderComponent } from '../app-header/app-header.component';
-import { AppToggleComponent } from '../app-toggle/app-toggle.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
-import { ConfigService } from '../../services/config.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 const buildData: any = require('json-loader!../../testing/xhr-data/build.json');
 
 describe('Build Details Component', () => {
-  let comp:    AppBuildDetailsComponent;
   let fixture: ComponentFixture<AppBuildDetailsComponent>;
 
   beforeEach(() => {
@@ -35,7 +31,7 @@ describe('Build Details Component', () => {
 
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppBuildDetailsComponent, AppHeaderComponent, AppToggleComponent, ToTimePipe ],
+      declarations: [ AppBuildDetailsComponent, ToTimePipe ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
@@ -43,12 +39,10 @@ describe('Build Details Component', () => {
         SocketService,
         TimeService,
         NotificationService,
-        ConfigService,
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
     })
     .createComponent(AppBuildDetailsComponent);
-    comp = fixture.componentInstance;
   });
 
   it('should expect loading to be true', () => {

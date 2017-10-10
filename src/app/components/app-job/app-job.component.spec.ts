@@ -8,14 +8,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
 import { AppJobComponent } from './app-job.component';
-import { AppHeaderComponent } from '../app-header/app-header.component';
-import { AppToggleComponent } from '../app-toggle/app-toggle.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
-import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
-import { ConfigService } from '../../services/config.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 const jobData: any = require('json-loader!../../testing/xhr-data/job.json');
@@ -35,15 +31,13 @@ describe('Job Component', () => {
 
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppJobComponent, AppHeaderComponent, AppToggleComponent, ToTimePipe ],
+      declarations: [ AppJobComponent, ToTimePipe ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         TimeService,
-        NotificationService,
-        ConfigService,
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
     })

@@ -1,7 +1,7 @@
-import { NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
+import { NO_ERRORS_SCHEMA }          from '@angular/core';
 import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions  } from '@angular/http';
+import { HttpModule, Http, XHRBackend  } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -36,19 +36,13 @@ describe('Login Component (mockBackend)', () => {
   });
 
   describe('Login Component', () => {
-    let backend: MockBackend;
     let service: ApiService;
-    let response: Response;
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
-      backend = be;
+    beforeEach(inject([Http, Router], (http: Http, router: Router) => {
       service = new ApiService(http, router);
-      let options = new ResponseOptions({ status: 200, body: { data: true } });
-      response = new Response(options);
     }));
 
     it('should have Sign In <h1> after app is ready completes', async(inject([], () => {
-      backend.connections.subscribe((c: MockConnection) => c.mockRespond(response));
       fixture.componentInstance.ngOnInit();
 
       return service.isAppReady().toPromise().then(isReady => {
