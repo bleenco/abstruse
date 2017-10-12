@@ -5,7 +5,7 @@ import { AppEditorComponent } from './app-editor.component';
 import { WindowService } from '../../services/window.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 
-describe('Dashboard Component', () => {
+describe('Editor Component', () => {
   let fixture: ComponentFixture<AppEditorComponent>;
 
   beforeEach(() => {

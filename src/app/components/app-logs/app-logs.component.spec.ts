@@ -15,7 +15,6 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 const logsData: any = require('json-loader!../../testing/xhr-data/logs.json');
 
 describe('Logs Component', () => {
@@ -62,15 +61,15 @@ describe('Logs Component', () => {
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseLogs));
     }));
 
-    xit('should expect loading to be false', () => {
+    it('should expect loading to be false', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.loading).toBe(false);
     });
 
-    xit('should see h1 contains text Docker Build Images', () => {
+    it('should see h1 contains text Docker Build Images', () => {
       fixture.detectChanges();
       const de = fixture.debugElement.query(By.css('h1'));
-      expect(de.nativeElement.textContent).toContain('Docker Build Images');
+      expect(de.nativeElement.textContent).toContain('System Logs');
     });
   });
 });

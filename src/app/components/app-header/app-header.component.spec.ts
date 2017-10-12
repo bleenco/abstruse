@@ -1,9 +1,10 @@
 import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { By }              from '@angular/platform-browser';
-import { HttpModule, Http } from '@angular/http';
+import { HttpModule, XHRBackend } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MockBackend } from '@angular/http/testing';
 
 import { AppHeaderComponent } from './app-header.component';
 import { ApiService } from '../../services/api.service';
@@ -15,7 +16,7 @@ import { NotificationService } from '../../services/notification.service';
 describe('Header Component', () => {
   let fixture: ComponentFixture<AppHeaderComponent>;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     spyOn(localStorage, 'getItem').and.callFake(() => {
       return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZ21haWwuY29tIiwiaWQiOjE'
         + 'sImZ1bGxuYW1lIjoiSm9obiBXYXluZSIsInBhc3N3b3JkIjoiY2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YW'
@@ -32,28 +33,29 @@ describe('Header Component', () => {
         ApiService,
         AuthService,
         SocketService,
+        NotificationService,
         ConfigService,
-        NotificationService ]
+        { provide: XHRBackend, useClass: MockBackend } ]
     })
     .createComponent(AppHeaderComponent);
-  });
+  }));
 
-  it('should expect user to be undefined', () => {
+  it('should expect user to be undefined', async(() => {
     expect(fixture.componentInstance.user).toBeUndefined();
-  });
+  }));
 
-  it('should expect user to be John', () => {
+  it('should expect user to be John', async(() => {
     fixture.detectChanges();
     expect(fixture.componentInstance.user.email).toBe('john@gmail.com');
-  });
+  }));
 
-  it('should expect item text to include Dashboard', () => {
+  it('should expect item text to include Dashboard', async(() => {
     fixture.detectChanges();
     const de = fixture.debugElement.query(By.css('.nav-item:nth-child(2)'));
     expect(de.nativeElement.textContent).toContain('Dashboard');
-  });
+  }));
 
-  it('should expect navigation item to show after click', () => {
+  it('should expect navigation item to show after click', async(() => {
     fixture.detectChanges();
     const deMenu = fixture.debugElement.query(By.css('.user-item'));
     if (deMenu instanceof HTMLElement) {
@@ -62,6 +64,5 @@ describe('Header Component', () => {
       deMenu.triggerEventHandler('click', { button: 0 });
     }
     expect(fixture.componentInstance.menuDropped).toBe(true);
-  });
-
+  }));
 });

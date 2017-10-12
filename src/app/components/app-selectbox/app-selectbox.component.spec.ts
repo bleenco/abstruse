@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
-import { AppTerminalComponent } from './app-terminal.component';
+import { AppSelectboxComponent } from './app-selectbox.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
@@ -15,15 +15,14 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
-describe('Terminal Component', () => {
-  let fixture: ComponentFixture<AppTerminalComponent>;
+describe('SelectBox Component', () => {
+  let fixture: ComponentFixture<AppSelectboxComponent>;
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppTerminalComponent ],
+      declarations: [ AppSelectboxComponent ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
@@ -35,21 +34,16 @@ describe('Terminal Component', () => {
         StatsService,
         { provide: XHRBackend, useClass: MockBackend } ]
     })
-    .createComponent(AppTerminalComponent);
+    .createComponent(AppSelectboxComponent);
   });
 
-  it('should expect noData to be undefined', () => {
-    expect(fixture.componentInstance.noData).toBeUndefined();
+  it('should expect el to be undefined', () => {
+    expect(fixture.componentInstance.data).toBeUndefined();
   });
 
-  it('should expect noData to be true', () => {
-    fixture.detectChanges();
-    expect(fixture.componentInstance.noData).toBe(true);
-  });
-
-  it('should expect duration to convert into human readable string', () => {
-    fixture.detectChanges();
-    const duration = fixture.componentInstance.getDuration(2142412421421);
-    expect(duration).toBe('26d, 9h, 36min, 54sec, 21ms');
+  it('should expect index to be 0', () => {
+    fixture.componentInstance.data = [ { key: 'a', value: '1234' }, { key: 'b', value: '4321' } ];
+    fixture.componentInstance.writeValue('a');
+    expect(fixture.componentInstance.index).toBe(0);
   });
 });

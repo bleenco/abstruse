@@ -8,9 +8,7 @@ import { AuthService } from './auth.service';
 import { SocketService } from './socket.service';
 
 describe('Auth Service (mockBackend)', () => {
-
   beforeEach(async(() => {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
     TestBed.configureTestingModule({
       imports: [ HttpModule, RouterTestingModule ],
       providers: [
@@ -52,11 +50,13 @@ describe('Auth Service (mockBackend)', () => {
     })));
 
     it('should return null when getting user data', inject([ApiService, SocketService, Router], (api: ApiService, socket: SocketService, router: Router) => {
+      spyOn(localStorage, 'getItem').and.callFake(() => null);
       expect(service.getData()).toBeNull();
     }));
 
     it('should return false when checking if user is logged in',
       inject([ApiService, SocketService, Router], (api: ApiService, socket: SocketService, router: Router) => {
+        spyOn(localStorage, 'getItem').and.callFake(() => null);
         service.logout();
         expect(service.isLoggedIn()).toBe(false);
     }));
@@ -65,6 +65,10 @@ describe('Auth Service (mockBackend)', () => {
       inject([ApiService, SocketService, Router], (api: ApiService, socket: SocketService, router: Router) => {
         service.login('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpva'
         + 'G4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ');
+        spyOn(localStorage, 'getItem').and.callFake(() => {
+          return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpva'
+          + 'G4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ';
+        });
         expect(service.isLoggedIn()).toBe(true);
     }));
 
