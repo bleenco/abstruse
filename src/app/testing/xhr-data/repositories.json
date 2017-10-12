@@ -73,6 +73,43 @@
           "updated_at": 1507286468433
         }
       ]
+    },
+    {
+      "id": 3,
+      "github_id": 71424198,
+      "bitbucket_id": null,
+      "gitlab_id": null,
+      "gogs_id": null,
+      "clone_url": "https://github.com/jkuri/d3-bundle.git",
+      "html_url": "https://github.com/jkuri/d3-bundle",
+      "default_branch": "master",
+      "name": "d3-bundle",
+      "full_name": "jkuri/d3-bundle",
+      "description": null,
+      "api_url": "https://api.github.com",
+      "repository_provider": "github",
+      "private": 1,
+      "fork": 0,
+      "user_login": "jkuri",
+      "user_id": "1796022",
+      "user_avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+      "user_url": "https://api.github.com/users/jkuri",
+      "user_html_url": "https://github.com/jkuri",
+      "access_tokens_id": null,
+      "public": 0,
+      "data": null,
+      "created_at": 1507286468355,
+      "updated_at": 1507286468355,
+      "permissions": [
+        {
+          "id": 3,
+          "repositories_id": 3,
+          "users_id": 1,
+          "permission": 0,
+          "created_at": 1507286468433,
+          "updated_at": 1507286468433
+        }
+      ]
     }
   ]
 }

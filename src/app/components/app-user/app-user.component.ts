@@ -70,7 +70,7 @@ export class AppUserComponent implements OnInit {
       });
 
     this.route.params
-      .switchMap((params: Params) => this.api.getRepositories('', params.id))
+      .switchMap((params: Params) => this.api.getRepositories(''))
       .subscribe(repositories => {
         this.repositories =
           repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);

@@ -152,8 +152,6 @@ export function getRepositories(keyword: string, userId?: string): Promise<any[]
         .andWhere(function() {
           this.where('permissions.permission', true).orWhere('public', true);
         });
-      } else {
-        q.where('repositories.public', true);
       }
     }).fetchAll({ withRelated: [{'permissions': (query) => {
       if (userId) {
