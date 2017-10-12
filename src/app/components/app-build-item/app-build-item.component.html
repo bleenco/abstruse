@@ -25,28 +25,28 @@
     <span class="icon">
       <img src="images/icons/git-commit.svg">
     </span>
-    <span class="bold" *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request.head.sha }}</span>
-    <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after }}</span>
-    <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha }}</span>
-    <span class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
-    <span class="bold" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash }}</span>
-    <span class="bold" *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash }}</span>
-    <span class="bold" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.source?.commit?.hash }}</span>
-    <span class="bold" *ngIf="build?.data?.commit">{{ build?.data?.commit?.id }}</span>
+    <span name="sha" class="bold" *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request.head.sha }}</span>
+    <span name="sha" class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after }}</span>
+    <span name="sha" class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha }}</span>
+    <span name="sha" class="bold" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id }}</span>
+    <span name="sha" class="bold" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash }}</span>
+    <span name="sha" class="bold" *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash }}</span>
+    <span name="sha" class="bold" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.source?.commit?.hash }}</span>
+    <span name="sha" class="bold" *ngIf="build?.data?.commit">{{ build?.data?.commit?.id }}</span>
 
     <span name="commit-message">{{ commitMessage }}</span>
 
     <span class="smaller">{{ buildCreated }} ago</span>
   </div>
   <div class="column is-2 justify-center">
-    <span *ngIf="name && !tag">{{ name }}</span>
-    <span *ngIf="!build?.data?.user_name && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }}</span>
-    <span *ngIf="!build?.data?.user_name && !build?.data?.commits && !build?.data?.actor?.display_name && !build?.data?.sender?.login && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }}</span>
-    <span *ngIf="tag">{{ build?.data?.head_commit?.committer?.name }}</span>
-    <span *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
-    <span *ngIf="build?.data?.pusher">{{ build?.data?.pusher?.username }}</span>
-    <span *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.user?.username }}</span>
-    <span *ngIf="build?.data?.commit">{{ build?.data?.commit?.author_name }}</span>
+    <span name="author" *ngIf="name && !tag">{{ name }}</span>
+    <span name="author" *ngIf="!build?.data?.user_name && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }}</span>
+    <span name="author" *ngIf="!build?.data?.user_name && !build?.data?.commits && !build?.data?.actor?.display_name && !build?.data?.sender?.login && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }}</span>
+    <span name="author" *ngIf="tag">{{ build?.data?.head_commit?.committer?.name }}</span>
+    <span name="author" *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
+    <span name="author" *ngIf="build?.data?.pusher">{{ build?.data?.pusher?.username }}</span>
+    <span name="author" *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.user?.username }}</span>
+    <span name="author" *ngIf="build?.data?.commit">{{ build?.data?.commit?.author_name }}</span>
   </div>
   <div class="column is-1">
     <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (currentTime - build?.minRunningJobStartTime)">{{ build?.maxCompletedJobTime | toTime }} </span>

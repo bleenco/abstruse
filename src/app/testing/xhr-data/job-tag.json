@@ -1,0 +1,333 @@
+{
+  "data":
+  {
+    "id": 1,
+    "data": "{\"commands\":[{\"command\":\"git clone -q https://github.com/jkuri/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin master\",\"type\":\"git\"},{\"command\":\"git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"before_install\"},{\"command\":\"npm config set spin false\",\"type\":\"before_install\"},{\"command\":\"npm config set progress false\",\"type\":\"before_install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"if [[ \\\"$SCRIPT\\\" ]]; then npm run-script $SCRIPT; fi\",\"type\":\"script\"}],\"env\":[\"SCRIPT=test NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+    "builds_id": 1,
+    "created_at": 1507286478322,
+    "updated_at": 1507286478322,
+    "build": {
+      "id": 500,
+      "branch": "0.0.1",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "ref": "refs/tags/0.0.1",
+        "before": "0000000000000000000000000000000000000000",
+        "after": "1f3e9ce9bae91202f7186644b7038405865b92bb",
+        "created": true,
+        "deleted": false,
+        "forced": false,
+        "base_ref": "refs/heads/master",
+        "compare": "https://github.com/Izak88/d3-bundle/compare/0.0.1",
+        "commits": [],
+        "head_commit": {
+          "id": "1f3e9ce9bae91202f7186644b7038405865b92bb",
+          "tree_id": "88ed9c20b1ac9e7438fef1348ae971c71b0cee74",
+          "distinct": true,
+          "message": "add jenkins file",
+          "timestamp": "2017-09-13T08:04:46+02:00",
+          "url": "https://github.com/Izak88/d3-bundle/commit/1f3e9ce9bae91202f7186644b7038405865b92bb",
+          "author": {
+            "name": "Izak Lipnik",
+            "email": "izak.lipnik@gmail.com",
+            "username": "Izak88"
+          },
+          "committer": {
+            "name": "Izak Lipnik",
+            "email": "izak.lipnik@gmail.com",
+            "username": "Izak88"
+          },
+          "added": [
+            "jenkinsfile"
+          ],
+          "removed": [],
+          "modified": []
+        },
+        "repository": {
+          "id": 99934351,
+          "name": "d3-bundle",
+          "full_name": "Izak88/d3-bundle",
+          "owner": {
+            "name": "Izak88",
+            "email": "izak.lipnik@gmail.com",
+            "login": "Izak88",
+            "id": 8555269,
+            "avatar_url": "https://avatars0.githubusercontent.com/u/8555269?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/Izak88",
+            "html_url": "https://github.com/Izak88",
+            "followers_url": "https://api.github.com/users/Izak88/followers",
+            "following_url": "https://api.github.com/users/Izak88/following{/other_user}",
+            "gists_url": "https://api.github.com/users/Izak88/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/Izak88/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/Izak88/subscriptions",
+            "organizations_url": "https://api.github.com/users/Izak88/orgs",
+            "repos_url": "https://api.github.com/users/Izak88/repos",
+            "events_url": "https://api.github.com/users/Izak88/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/Izak88/received_events",
+            "type": "User",
+            "site_admin": false
+          },
+          "private": false,
+          "html_url": "https://github.com/Izak88/d3-bundle",
+          "description": null,
+          "fork": true,
+          "url": "https://github.com/Izak88/d3-bundle",
+          "forks_url": "https://api.github.com/repos/Izak88/d3-bundle/forks",
+          "keys_url": "https://api.github.com/repos/Izak88/d3-bundle/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/Izak88/d3-bundle/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/Izak88/d3-bundle/teams",
+          "hooks_url": "https://api.github.com/repos/Izak88/d3-bundle/hooks",
+          "issue_events_url": "https://api.github.com/repos/Izak88/d3-bundle/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/Izak88/d3-bundle/events",
+          "assignees_url": "https://api.github.com/repos/Izak88/d3-bundle/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/Izak88/d3-bundle/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/Izak88/d3-bundle/tags",
+          "blobs_url": "https://api.github.com/repos/Izak88/d3-bundle/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/Izak88/d3-bundle/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/Izak88/d3-bundle/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/Izak88/d3-bundle/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/Izak88/d3-bundle/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/Izak88/d3-bundle/languages",
+          "stargazers_url": "https://api.github.com/repos/Izak88/d3-bundle/stargazers",
+          "contributors_url": "https://api.github.com/repos/Izak88/d3-bundle/contributors",
+          "subscribers_url": "https://api.github.com/repos/Izak88/d3-bundle/subscribers",
+          "subscription_url": "https://api.github.com/repos/Izak88/d3-bundle/subscription",
+          "commits_url": "https://api.github.com/repos/Izak88/d3-bundle/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/Izak88/d3-bundle/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/Izak88/d3-bundle/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/Izak88/d3-bundle/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/Izak88/d3-bundle/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/Izak88/d3-bundle/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/Izak88/d3-bundle/merges",
+          "archive_url": "https://api.github.com/repos/Izak88/d3-bundle/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/Izak88/d3-bundle/downloads",
+          "issues_url": "https://api.github.com/repos/Izak88/d3-bundle/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/Izak88/d3-bundle/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/Izak88/d3-bundle/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/Izak88/d3-bundle/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/Izak88/d3-bundle/labels{/name}",
+          "releases_url": "https://api.github.com/repos/Izak88/d3-bundle/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/Izak88/d3-bundle/deployments",
+          "created_at": 1502376699,
+          "updated_at": "2017-08-10T14:51:46Z",
+          "pushed_at": 1507800333,
+          "git_url": "git://github.com/Izak88/d3-bundle.git",
+          "ssh_url": "git@github.com:Izak88/d3-bundle.git",
+          "clone_url": "https://github.com/Izak88/d3-bundle.git",
+          "svn_url": "https://github.com/Izak88/d3-bundle",
+          "homepage": null,
+          "size": 34622,
+          "stargazers_count": 0,
+          "watchers_count": 0,
+          "language": "JavaScript",
+          "has_issues": false,
+          "has_projects": true,
+          "has_downloads": true,
+          "has_wiki": true,
+          "has_pages": false,
+          "forks_count": 0,
+          "mirror_url": null,
+          "open_issues_count": 0,
+          "forks": 0,
+          "open_issues": 0,
+          "watchers": 0,
+          "default_branch": "master",
+          "stargazers": 0,
+          "master_branch": "master"
+        },
+        "pusher": {
+          "name": "Izak88",
+          "email": "izak.lipnik@gmail.com"
+        },
+        "sender": {
+          "login": "Izak88",
+          "id": 8555269,
+          "avatar_url": "https://avatars0.githubusercontent.com/u/8555269?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Izak88",
+          "html_url": "https://github.com/Izak88",
+          "followers_url": "https://api.github.com/users/Izak88/followers",
+          "following_url": "https://api.github.com/users/Izak88/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Izak88/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Izak88/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Izak88/subscriptions",
+          "organizations_url": "https://api.github.com/users/Izak88/orgs",
+          "repos_url": "https://api.github.com/users/Izak88/repos",
+          "events_url": "https://api.github.com/users/Izak88/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Izak88/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://github.com/Izak88/d3-bundle.git -b 0.0.1 .\",\"type\":\"git\"},{\"command\":\"git fetch origin 0.0.1\",\"type\":\"git\"},{\"command\":\"git checkout 1f3e9ce9bae91202f7186644b7038405865b92bb .\",\"type\":\"git\"},{\"command\":\"npm install\",\"type\":\"install\"}],\"env\":[\"SCRIPT=test\"],\"stage\":\"test\",\"image\":null,\"cache\":null}]",
+      "start_time": 1507800334520,
+      "end_time": 1507800338929,
+      "repositories_id": 9,
+      "created_at": 1507800338403,
+      "updated_at": 1507800339106,
+      "repository": {
+        "id": 9,
+        "github_id": 99934351,
+        "bitbucket_id": null,
+        "gitlab_id": null,
+        "gogs_id": null,
+        "clone_url": "https://github.com/Izak88/d3-bundle.git",
+        "html_url": "https://github.com/Izak88/d3-bundle",
+        "default_branch": "master",
+        "name": "d3-bundle",
+        "full_name": "Izak88/d3-bundle",
+        "description": null,
+        "private": 0,
+        "fork": 1,
+        "user_login": "Izak88",
+        "user_id": "8555269",
+        "user_avatar_url": "https://avatars0.githubusercontent.com/u/8555269?v=4",
+        "user_url": "https://api.github.com/users/Izak88",
+        "user_html_url": "https://github.com/Izak88",
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507800334380,
+        "updated_at": 1507800334380,
+        "repository_provider": "github",
+        "api_url": "https://api.github.com",
+        "permissions": [
+          {
+            "id": 31,
+            "repositories_id": 9,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507800334417,
+            "updated_at": 1507800334417
+          }
+        ],
+        "access_token": null
+      },
+      "jobs": [
+        {
+          "id": 2121,
+          "data": {
+            "commands": [
+              {
+                "command": "git clone -q https://github.com/Izak88/d3-bundle.git -b 0.0.1 .",
+                "type": "git"
+              },
+              {
+                "command": "git fetch origin 0.0.1",
+                "type": "git"
+              },
+              {
+                "command": "git checkout 1f3e9ce9bae91202f7186644b7038405865b92bb .",
+                "type": "git"
+              },
+              {
+                "command": "npm install",
+                "type": "install"
+              }
+            ],
+            "env": [
+              "SCRIPT=test"
+            ],
+            "stage": "test",
+            "image": null,
+            "cache": null
+          },
+          "builds_id": 500,
+          "created_at": 1507800338743,
+          "updated_at": 1507800338743,
+          "runs": [
+            {
+              "id": 3351,
+              "start_time": 1507800338970,
+              "end_time": 1507800338929,
+              "status": "failed",
+              "log": "",
+              "job_id": 2121,
+              "build_run_id": 718,
+              "created_at": 1507800338816,
+              "updated_at": 1507800339056
+            }
+          ],
+          "end_time": 1507800338929,
+          "start_time": 1507800338970,
+          "status": "failed"
+        }
+      ],
+      "runs": [
+        {
+          "id": 718,
+          "head_id": 99934351,
+          "start_time": 1507800334520,
+          "end_time": null,
+          "build_id": 500,
+          "created_at": 1507800338403,
+          "updated_at": 1507800338403,
+          "job_runs": [
+            {
+              "id": 3351,
+              "start_time": 1507800338970,
+              "end_time": 1507800338929,
+              "status": "failed",
+              "log": "",
+              "job_id": 2121,
+              "build_run_id": 718,
+              "created_at": 1507800338816,
+              "updated_at": 1507800339056
+            }
+          ],
+          "status": "failed"
+        }
+      ],
+      "hasPermission": true
+    },
+    "runs": [
+      {
+        "id": 1,
+        "start_time": 1507286478642,
+        "end_time": 1507286481035,
+        "status": "failed",
+        "log": "==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\r+ VNC_STORE_PWD_FILE=/home/abstruse/.vnc/passwd\r\n+ '[' '!' -e /home/abstruse/.vnc/passwd -o -n '' ']'\r\n+ mkdir -vp /home/abstruse/.vnc\r\nmkdir: created directory '/home/abstruse/.vnc'\r\n+ x11vnc -storepasswd abstruse /home/abstruse/.vnc/passwd\r\nstored passwd in file: /home/abstruse/.vnc/passwd\r\n+ export CHROME=/opt/google/chrome/google-chrome\r\n+ CHROME=/opt/google/chrome/google-chrome\r\n+ export DISPLAY=:99\r\n+ DISPLAY=:99\r\n+ sudo /etc/init.d/xvfb start\r\nStarting virtual X frame buffer: Xvfb.\r\n+ sleep 3\r\n[exectime]: 1295[error]: executed command returned exit code 255",
+        "job_id": 1,
+        "build_run_id": 1,
+        "created_at": 1507286478468,
+        "updated_at": 1507286481142
+      },
+      {
+        "id": 7,
+        "start_time": 1507286532555,
+        "end_time": 1507286543228,
+        "status": "failed",
+        "log": "==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\rstored passwd in file: /home/abstruse/.vnc/passwd\r\n+ export CHROME=/opt/google/chrome/google-chrome\r\n+ CHROME=/opt/google/chrome/google-chrome\r\n+ export DISPLAY=:99\r\n+ DISPLAY=:99\r\n+ sudo /etc/init.d/xvfb start\r\nStarting virtual X frame buffer: Xvfb.\r\n+ sleep 3\r\n+ sudo /etc/init.d/fluxbox start\r\nStarting Fluxbox.\r\n+ sudo /etc/init.d/x11vnc start\r\n06/10/2017 10:42:16 passing arg to libvncserver: -rfbauth\r\n06/10/2017 10:42:16 passing arg to libvncserver: /etc/x11vnc.pass\r\n06/10/2017 10:42:16 passing arg to libvncserver: -rfbport\r\n06/10/2017 10:42:16 passing arg to libvncserver: 5900\r\n06/10/2017 10:42:16 x11vnc version: 0.9.13 lastmod: 2011-08-10  pid: 32\r\n06/10/2017 10:42:16 Using X display :99\r\n06/10/2017 10:42:16 rootwin: 0x25c reswin: 0x200001 dpy: 0x291d3f20\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 ------------------ USEFUL INFORMATION ------------------\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 Wireframing: -wireframe mode is in effect for window moves.\r\n06/10/2017 10:42:16   If this yields undesired behavior (poor response, painting\r\n06/10/2017 10:42:16   errors, etc) it may be disabled:\r\n06/10/2017 10:42:16    - use '-nowf' to disable wireframing completely.\r\n06/10/2017 10:42:16    - use '-nowcr' to disable the Copy Rectangle after the\r\n06/10/2017 10:42:16      moved window is released in the new position.\r\n06/10/2017 10:42:16   Also see the -help entry for tuning parameters.\r\n06/10/2017 10:42:16   You can press 3 Alt_L's (Left \"Alt\" key) in a row to \r\n06/10/2017 10:42:16   repaint the screen, also see the -fixscreen option for\r\n06/10/2017 10:42:16   periodic repaints.\r\n06/10/2017 10:42:16 GrabServer control via XTEST.\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 Scroll Detection: -scrollcopyrect mode is in effect to\r\n06/10/2017 10:42:16   use RECORD extension to try to detect scrolling windows\r\n06/10/2017 10:42:16   (induced by either user keystroke or mouse input).\r\n06/10/2017 10:42:16   If this yields undesired behavior (poor response, painting\r\n06/10/2017 10:42:16   errors, etc) it may be disabled via: '-noscr'\r\n06/10/2017 10:42:16   Also see the -help entry for tuning parameters.\r\n06/10/2017 10:42:16   You can press 3 Alt_L's (Left \"Alt\" key) in a row to \r\n06/10/2017 10:42:16   repaint the screen, also see the -fixscreen option for\r\n06/10/2017 10:42:16   periodic repaints.\r\n06/10/2017 10:42:16 X FBPM extension not supported.\r\n06/10/2017 10:42:16 X display is not capable of DPMS.\r\n06/10/2017 10:42:16 --------------------------------------------------------\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 Default visual ID: 0x21\r\n06/10/2017 10:42:16 Read initial data from X display into framebuffer.\r\n06/10/2017 10:42:16 initialize_screen: fb_depth/fb_bpp/fb_Bpl 24/32/7680\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 X display :99 is 32bpp depth=24 true color\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 Listening for VNC connections on TCP port 5900\r\n06/10/2017 10:42:16 Listening for VNC connections on TCP6 port 5900\r\n06/10/2017 10:42:16 listen6: bind: Address already in use\r\n06/10/2017 10:42:16 Not listening on IPv6 interface.\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 Xinerama is present and active (e.g. multi-head).\r\n06/10/2017 10:42:16 Xinerama: number of sub-screens: 1\r\n06/10/2017 10:42:16 Xinerama: no blackouts needed (only one sub-screen)\r\n06/10/2017 10:42:16 \r\n06/10/2017 10:42:16 fb read rate: 1906 MB/sec\r\n06/10/2017 10:42:16 fast read: reset -wait  ms to: 10\r\n06/10/2017 10:42:16 fast read: reset -defer ms to: 10\r\n06/10/2017 10:42:16 The X server says there are 10 mouse buttons.\r\n06/10/2017 10:42:16 screen setup finished.\r\n06/10/2017 10:42:16 \r\n\r\nThe VNC desktop is:      4adeb138f338:0\r\nPORT=5900\r\n\r\n******************************************************************************\r\nHave you tried the x11vnc '-ncache' VNC client-side pixel caching feature yet?\r\n\r\nThe scheme stores pixel data offscreen on the VNC viewer side for faster\r\nretrieval.  It should work with any VNC viewer.  Try it by running:\r\n\r\n    x11vnc -ncache 10 ...\r\n\r\nOne can also add -ncache_cr for smooth 'copyrect' window motion.\r\nMore info: http://www.karlrunge.com/x11vnc/faq.html#faq-client-caching\r\n\r\n+ /bin/bash\r\n[exectime]: 9788[error]: executed command returned exit code 255",
+        "job_id": 1,
+        "build_run_id": 7,
+        "created_at": 1507286532205,
+        "updated_at": 1507286543305
+      },
+      {
+        "id": 8,
+        "start_time": 1507286546232,
+        "end_time": 1507286555236,
+        "status": "failed",
+        "log": "==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\rstored passwd in file: /home/abstruse/.vnc/passwd\r\n+ export CHROME=/opt/google/chrome/google-chrome\r\n+ CHROME=/opt/google/chrome/google-chrome\r\n+ export DISPLAY=:99\r\n+ DISPLAY=:99\r\n+ sudo /etc/init.d/xvfb start\r\nStarting virtual X frame buffer: Xvfb.\r\n+ sleep 3\r\n+ sudo /etc/init.d/fluxbox start\r\nStarting Fluxbox.\r\n+ sudo /etc/init.d/x11vnc start\r\n06/10/2017 10:42:30 passing arg to libvncserver: -rfbauth\r\n06/10/2017 10:42:30 passing arg to libvncserver: /etc/x11vnc.pass\r\n06/10/2017 10:42:30 passing arg to libvncserver: -rfbport\r\n06/10/2017 10:42:30 passing arg to libvncserver: 5900\r\n06/10/2017 10:42:30 x11vnc version: 0.9.13 lastmod: 2011-08-10  pid: 31\r\n06/10/2017 10:42:30 Using X display :99\r\n06/10/2017 10:42:30 rootwin: 0x25c reswin: 0x200001 dpy: 0x3dce4f20\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 ------------------ USEFUL INFORMATION ------------------\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 Wireframing: -wireframe mode is in effect for window moves.\r\n06/10/2017 10:42:30   If this yields undesired behavior (poor response, painting\r\n06/10/2017 10:42:30   errors, etc) it may be disabled:\r\n06/10/2017 10:42:30    - use '-nowf' to disable wireframing completely.\r\n06/10/2017 10:42:30    - use '-nowcr' to disable the Copy Rectangle after the\r\n06/10/2017 10:42:30      moved window is released in the new position.\r\n06/10/2017 10:42:30   Also see the -help entry for tuning parameters.\r\n06/10/2017 10:42:30   You can press 3 Alt_L's (Left \"Alt\" key) in a row to \r\n06/10/2017 10:42:30   repaint the screen, also see the -fixscreen option for\r\n06/10/2017 10:42:30   periodic repaints.\r\n06/10/2017 10:42:30 GrabServer control via XTEST.\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 Scroll Detection: -scrollcopyrect mode is in effect to\r\n06/10/2017 10:42:30   use RECORD extension to try to detect scrolling windows\r\n06/10/2017 10:42:30   (induced by either user keystroke or mouse input).\r\n06/10/2017 10:42:30   If this yields undesired behavior (poor response, painting\r\n06/10/2017 10:42:30   errors, etc) it may be disabled via: '-noscr'\r\n06/10/2017 10:42:30   Also see the -help entry for tuning parameters.\r\n06/10/2017 10:42:30   You can press 3 Alt_L's (Left \"Alt\" key) in a row to \r\n06/10/2017 10:42:30   repaint the screen, also see the -fixscreen option for\r\n06/10/2017 10:42:30   periodic repaints.\r\n06/10/2017 10:42:30 X FBPM extension not supported.\r\n06/10/2017 10:42:30 X display is not capable of DPMS.\r\n06/10/2017 10:42:30 --------------------------------------------------------\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 Default visual ID: 0x21\r\n06/10/2017 10:42:30 Read initial data from X display into framebuffer.\r\n06/10/2017 10:42:30 initialize_screen: fb_depth/fb_bpp/fb_Bpl 24/32/7680\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 X display :99 is 32bpp depth=24 true color\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 Listening for VNC connections on TCP port 5900\r\n06/10/2017 10:42:30 Listening for VNC connections on TCP6 port 5900\r\n06/10/2017 10:42:30 listen6: bind: Address already in use\r\n06/10/2017 10:42:30 Not listening on IPv6 interface.\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 Xinerama is present and active (e.g. multi-head).\r\n06/10/2017 10:42:30 Xinerama: number of sub-screens: 1\r\n06/10/2017 10:42:30 Xinerama: no blackouts needed (only one sub-screen)\r\n06/10/2017 10:42:30 \r\n06/10/2017 10:42:30 fb read rate: 1234 MB/sec\r\n06/10/2017 10:42:30 fast read: reset -wait  ms to: 10\r\n06/10/2017 10:42:30 fast read: reset -defer ms to: 10\r\n06/10/2017 10:42:30 The X server says there are 10 mouse buttons.\r\n06/10/2017 10:42:30 screen setup finished.\r\n06/10/2017 10:42:30 \r\n\r\nThe VNC desktop is:      086d0d000b10:0\r\nPORT=5900\r\n\r\n******************************************************************************\r\nHave you tried the x11vnc '-ncache' VNC client-side pixel caching feature yet?\r\n\r\nThe scheme stores pixel data offscreen on the VNC viewer side for faster\r\nretrieval.  It should work with any VNC viewer.  Try it by running:\r\n\r\n    x11vnc -ncache 10 ...\r\n\r\nOne can also add -ncache_cr for smooth 'copyrect' window motion.\r\nMore info: http://www.karlrunge.com/x11vnc/faq.html#faq-client-caching\r\n\r\n+ /bin/bash\r\n\u001b]0;abstruse@086d0d000b10: ~/build\u0007abstruse@086d0d000b10:~/build$ [exectime]: 8006[error]: executed command returned exit code 255",
+        "job_id": 1,
+        "build_run_id": 7,
+        "created_at": 1507286546070,
+        "updated_at": 1507286555321
+      },
+      {
+        "id": 11,
+        "start_time": 1507286572542,
+        "end_time": 1507286575053,
+        "status": "failed",
+        "log": "==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\rstored passwd in file: /home/abstruse/.vnc/passwd\r\n+ export CHROME=/opt/google/chrome/google-chrome\r\n+ CHROME=/opt/google/chrome/google-chrome\r\n+ export DISPLAY=:99\r\n+ DISPLAY=:99\r\n+ sudo /etc/init.d/xvfb start\r\nStarting virtual X frame buffer: Xvfb.\r\n+ sleep 3\r\n[exectime]: 1481[error]: executed command returned exit code 255",
+        "job_id": 1,
+        "build_run_id": 9,
+        "created_at": 1507286572220,
+        "updated_at": 1507286575131
+      }
+    ],
+    "hasPermission": true
+  }
+}
