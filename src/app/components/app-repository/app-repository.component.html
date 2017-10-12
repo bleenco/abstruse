@@ -45,11 +45,11 @@
                   {{ repo?.default_branch }}
                 </span>
                 <span *ngIf="repo?.private">
-                  <i class="ion ion-ios-unlocked-outline"></i>
+                  <i class="ion ion-ios-locked-outline"></i>
                   Private Repository
                 </span>
                 <span *ngIf="!repo?.private">
-                  <i class="ion ion-ios-locked-outline"></i>
+                  <i class="ion ion-ios-unlocked-outline"></i>
                   Public Repository
                 </span>
               </div>

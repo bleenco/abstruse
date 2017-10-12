@@ -81,9 +81,9 @@ describe('Repositories Component', () => {
       expect(de.nativeElement.textContent).toContain('Repositories');
     });
 
-    it('should see two repositories', () => {
+    it('should see three repositories', () => {
       fixture.detectChanges();
-      expect(fixture.componentInstance.repositories.length).toBe(2);
+      expect(fixture.componentInstance.repositories.length).toBe(3);
     });
 
     it('first repository should be bterm', () => {

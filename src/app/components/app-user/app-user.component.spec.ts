@@ -99,7 +99,7 @@ describe('User Component', () => {
     it('should get Repositories', () => {
       return apiService.getRepositories('', '1').toPromise().then(repositories => {
         if (repositories) {
-          expect(repositories.length).toEqual(2);
+          expect(repositories.length).toEqual(3);
         } else {
           Promise.reject(false);
         }
@@ -131,6 +131,16 @@ describe('User Component', () => {
       fixture.detectChanges();
       const de = fixture.debugElement.query(By.css('h1'));
       expect(de.nativeElement.textContent).toBe('Permissions');
+    });
+
+    it('should show repositories on permission tab', () => {
+      fixture.detectChanges();
+      fixture.debugElement.query(By.css('[name="tab-permissions"]')).nativeElement.click();
+      fixture.detectChanges();
+      const de = fixture.debugElement.query(By.css('h1'));
+      expect(de.nativeElement.textContent).toBe('Permissions');
+      expect(fixture.componentInstance.restrictedRepositories.length).toBe(1);
+      expect(fixture.componentInstance.repositories.length).toBe(2);
     });
   });
 
