@@ -211,12 +211,13 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.dateTime = data.pull_request && data.pull_request.updated_at ||
       data.commit && data.commit.author && data.commit.author.date ||
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
+      data.head_commit && data.head_commit.timestamp ||
       null;
 
     if (this.job.build.repository.repository_provider === 'github') {
       if (this.job.build.data.commit) {
         this.commitMessage = this.job.build.data.commit.message;
-      } else if (this.job.build.data.commits) {
+      } else if (this.job.build.data.commits && this.job.build.data.commits.length > 0) {
         const len = this.job.build.data.commits.length - 1;
         this.commitMessage = this.job.build.data.commits[len].message;
       } else if (this.job.build.data.pull_request && this.job.build.data.pull_request.title) {

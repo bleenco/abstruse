@@ -42,7 +42,7 @@
     <span *ngIf="name && !tag">{{ name }}</span>
     <span *ngIf="!build?.data?.user_name && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }}</span>
     <span *ngIf="!build?.data?.user_name && !build?.data?.commits && !build?.data?.actor?.display_name && !build?.data?.sender?.login && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }}</span>
-    <span *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
+    <span *ngIf="tag">{{ build?.data?.head_commit?.committer?.name }}</span>
     <span *ngIf="build?.data?.user_name">{{ build?.data?.user_name }}</span>
     <span *ngIf="build?.data?.pusher">{{ build?.data?.pusher?.username }}</span>
     <span *ngIf="build?.data?.pull_request">{{ build?.data?.pull_request?.user?.username }}</span>
@@ -72,7 +72,7 @@
       <span class="name" *ngIf="name && !tag">{{ name }}</span>
       <span class="name" *ngIf="!build?.data?.user_name && !build?.data?.commits && build?.data?.actor?.display_name && !tag">{{ build?.data?.actor?.display_name }}</span>
       <span class="name" *ngIf="!build?.data?.user_name && !build?.data?.commits && !build?.data?.actor?.display_name && !build?.data?.sender?.login && build?.data?.user?.name && !tag">{{ build?.data?.user?.name }}</span>
-      <span class="name" *ngIf="tag">{{ build?.data?.head_commit?.comitter?.name }}</span>
+      <span class="name" *ngIf="tag">{{ build?.data?.head_commit?.committer?.name }}</span>
 
       <span class="bold" *ngIf="build?.repository?.full_name">{{ build?.repository?.full_name }}</span>
       <span class="bold" *ngIf="!build?.repository?.full_name">{{ build?.data?.repository?.full_name }}</span>
