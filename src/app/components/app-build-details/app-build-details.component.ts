@@ -269,12 +269,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     this.dateTime = data.pull_request && data.pull_request.updated_at ||
       data.commit && data.commit.author && data.commit.author.date ||
       data.commits && data.commits[data.commits.length - 1] && data.commits[data.commits.length - 1].timestamp ||
+      data.head_commit && data.head_commit.timestamp ||
       null;
 
     if (this.build.repository.repository_provider === 'github') {
       if (this.build.data.commit) {
         this.commitMessage = this.build.data.commit.message;
-      } else if (this.build.data.commits) {
+      } else if (this.build.data.commits && this.build.data.commits.length > 0) {
         const len = this.build.data.commits.length - 1;
         this.commitMessage = this.build.data.commits[len].message;
       } else if (this.build.data.pull_request && this.build.data.pull_request.title) {
