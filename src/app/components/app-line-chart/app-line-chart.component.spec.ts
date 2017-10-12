@@ -15,7 +15,6 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 const jobsData: any = require('json-loader!../../testing/xhr-data/jobs.json');
 
 describe('Line Chart Component', () => {
@@ -52,7 +51,7 @@ describe('Line Chart Component', () => {
     let responseJobs: Response;
     let fakeJobs: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
@@ -62,17 +61,12 @@ describe('Line Chart Component', () => {
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeJobs } });
       responseJobs = new Response(optionsBuild);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseJobs));
+    })));
+
+    it('should see h2 contains text Jobs', async(() => {
+      fixture.detectChanges();
+      const de = fixture.debugElement.query(By.css('h2'));
+      expect(de.nativeElement.textContent).toContain('Jobs');
     }));
-
-    xit('should expect loading to be false', () => {
-      fixture.detectChanges();
-      expect(fixture.componentInstance.loading).toBe(false);
-    });
-
-    xit('should see h1 contains text Docker Build Images', () => {
-      fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h1'));
-      expect(de.nativeElement.textContent).toContain('Docker Build Images');
-    });
   });
 });

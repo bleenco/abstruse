@@ -15,7 +15,6 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
 describe('Toggle Component', () => {
   let fixture: ComponentFixture<AppToggleComponent>;

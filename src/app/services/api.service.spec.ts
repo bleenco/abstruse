@@ -3,7 +3,6 @@ import { MockBackend, MockConnection } from '@angular/http/testing';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs/Observable';
 import { ApiService } from './api.service';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/do';

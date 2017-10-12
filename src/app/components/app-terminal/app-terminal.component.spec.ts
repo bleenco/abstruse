@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 
-import { AppProgressChartComponent } from './app-progress-chart.component';
+import { AppTerminalComponent } from './app-terminal.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
@@ -15,15 +15,14 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 
-describe('Progress Chart Component', () => {
-  let fixture: ComponentFixture<AppProgressChartComponent>;
+describe('Terminal Component', () => {
+  let fixture: ComponentFixture<AppTerminalComponent>;
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
       imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppProgressChartComponent ],
+      declarations: [ AppTerminalComponent ],
       schemas: [ NO_ERRORS_SCHEMA ],
       providers: [
         ApiService,
@@ -35,19 +34,21 @@ describe('Progress Chart Component', () => {
         StatsService,
         { provide: XHRBackend, useClass: MockBackend } ]
     })
-    .createComponent(AppProgressChartComponent);
+    .createComponent(AppTerminalComponent);
   });
 
-  it('should expect el to be undefined', () => {
-    expect(fixture.componentInstance.el).toBeUndefined();
+  it('should expect noData to be undefined', () => {
+    expect(fixture.componentInstance.noData).toBeUndefined();
   });
 
-  it('should expect ratio to be 0.15', () => {
-    fixture.componentInstance.percent = 15;
+  it('should expect noData to be true', () => {
     fixture.detectChanges();
-    fixture.componentInstance.render();
-    expect(fixture.componentInstance.ratio).toBe(0.15);
-    const de = fixture.debugElement.query(By.css('.progress-chart'));
-    expect(de.nativeElement.textContent).toContain('%');
+    expect(fixture.componentInstance.noData).toBe(true);
+  });
+
+  it('should expect duration to convert into human readable string', () => {
+    fixture.detectChanges();
+    const duration = fixture.componentInstance.getDuration(2142412421421);
+    expect(duration).toBe('26d, 9h, 36min, 54sec, 21ms');
   });
 });

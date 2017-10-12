@@ -91,7 +91,7 @@
                           <div class="column is-9">
                             <div class="form-field">
                               <label class="form-label">Repository Provider</label>
-                              <app-selectbox [data]="repositoryProviders" [(ngModel)]="form.repository_provider" name="repository_provider"></app-selectbox>
+                              <app-selectbox [data]="repositoryProviders" [(ngModel)]="form.repository_provider" name="repository_provider" ngDefaultControl></app-selectbox>
                               <p class="helper">Set git provider where this repository is hosted.</p>
                             </div>
                             <div class="form-field">
@@ -124,7 +124,7 @@
                           </div>
                         </div>
                         <div class="form-field">
-                          <app-selectbox [data]="accessTokensOptions" [(ngModel)]="form.access_tokens_id" name="access_tokens_id"></app-selectbox>
+                          <app-selectbox [data]="accessTokensOptions" [(ngModel)]="form.access_tokens_id" name="access_tokens_id" ngDefaultControl></app-selectbox>
                           <p class="helper">
                             If you cannot find access token that is suitable for this repository then create new one <a routerLink="/settings">here</a>.
                           </p>
@@ -185,7 +185,7 @@
                         </div>
                         <div class="form-field">
                           <label class="form-label">Encrypted</label>
-                          <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted"></app-selectbox>
+                          <app-selectbox [data]="yesNoOptions" name="encrypted" required [(ngModel)]="environmentVariableForm.encrypted" ngDefaultControl></app-selectbox>
                         </div>
                         <div class="form-field">
                           <button type="submit" class="button float-right" name="btn-add-variable" [class.is-loading]="addingEnvVar" [disabled]="!envVarForm.form.valid" required>Add Variable</button>
