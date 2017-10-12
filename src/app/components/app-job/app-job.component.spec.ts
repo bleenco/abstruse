@@ -15,6 +15,7 @@ import { TimeService } from '../../services/time.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 const jobData: any = require('json-loader!../../testing/xhr-data/job.json');
+const jobTagData: any = require('json-loader!../../testing/xhr-data/job-tag.json');
 
 describe('Job Component', () => {
   let comp:    AppJobComponent;
@@ -74,6 +75,45 @@ describe('Job Component', () => {
       fixture.detectChanges();
       const de = fixture.debugElement.query(By.css('h1'));
       expect(de.nativeElement.textContent).toContain('jkuri/d3-bundle');
+    });
+  });
+
+  describe('Job Component when pushing new tag', () => {
+    let backend: MockBackend;
+    let apiService: ApiService;
+    let authService: AuthService;
+    let socketService: SocketService;
+    let responseJob: Response;
+    let fakeJob: any[];
+
+    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+      backend = be;
+      apiService = new ApiService(http, router);
+      socketService = new SocketService();
+      authService = new AuthService(apiService, socketService, router);
+      fakeJob = jobTagData.data;
+      let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
+      responseJob = new Response(optionsJob);
+
+      backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseJob));
+    }));
+
+    it('should see job name', () => {
+      fixture.componentInstance.ngOnInit();
+      fixture.detectChanges();
+      const de = fixture.debugElement.query(By.css('h1'));
+      expect(de.nativeElement.textContent).toContain('Izak88/d3-bundle');
+    });
+
+    it('should see all the correct informations', () => {
+      fixture.detectChanges();
+      expect(fixture.componentInstance.dateTime).not.toBeNull();
+      let de = fixture.debugElement.query(By.css('[name="author-and-commited"]'));
+      expect(de.nativeElement.textContent).toContain('Izak Lipnik authored and commited');
+      de = fixture.debugElement.query(By.css('[name="message"]'));
+      expect(de.nativeElement.textContent).toContain('add jenkins file');
+      de = fixture.debugElement.query(By.css('[name="sha"]'));
+      expect(de.nativeElement.textContent).toContain('1f3e9ce');
     });
   });
 

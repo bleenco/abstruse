@@ -61,17 +61,17 @@
                       <span class="icon">
                         <img src="images/icons/git-commit.svg">
                       </span>
-                      <span *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request?.head?.sha.slice(0, 7) }}</span>
-                      <span *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after?.slice(0, 7) }}</span>
-                      <span *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha.slice(0, 7) }}</span>
-                      <span *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id.slice(0, 7) }}</span>
-                      <span *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash.slice(0, 7) }}</span>
-                      <span *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash.slice(0, 7) }}</span>
-                      <span *ngIf="build?.data?.commit">{{ build?.data?.commit?.id?.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request?.head?.sha.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after?.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && build?.data?.sha">{{ build?.data?.sha.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="!build?.data?.pull_request?.head?.sha && !build?.data?.after && !build?.data?.sha && build?.data?.object_attributes?.last_commit?.id">{{ build?.data?.object_attributes?.last_commit?.id.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="build?.data?.push?.changes">{{ build?.data?.push?.changes[0].commits[0].hash.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="build?.data?.pullrequest">{{ build?.data?.pullrequest?.source?.commit?.hash.slice(0, 7) }}</span>
+                      <span name="sha" *ngIf="build?.data?.commit">{{ build?.data?.commit?.id?.slice(0, 7) }}</span>
                     </p>
                   </div>
                   <div class="column is-4">
-                    <p *ngIf="commitMessage" class="text-small">{{ commitMessage }}</p>
+                    <p name="message" *ngIf="commitMessage" class="text-small">{{ commitMessage }}</p>
                   </div>
                   <div class="column is-4">
                     <p class="text-small">
@@ -80,10 +80,10 @@
                         <img *ngIf="authorAvatar && committerAvatar && authorAvatar !== committerAvatar" [src]="committerAvatar" class="avatar-small">
                       </span>
 
-                      <span *ngIf="nameAuthor && nameCommitter === nameAuthor">
+                      <span name="author-and-commited" *ngIf="nameAuthor && nameCommitter === nameAuthor">
                         {{ nameAuthor }} authored and commited
                       </span>
-                      <span *ngIf="nameCommitter !== nameAuthor">
+                      <span name="author-commited" *ngIf="nameCommitter !== nameAuthor">
                         {{ nameAuthor }} commited with {{ nameCommitter }}
                       </span>
 
