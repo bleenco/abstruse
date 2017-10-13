@@ -78,8 +78,6 @@ export class SocketServer {
           };
           logger.next(msg);
 
-          const clientIndex = this.clients.length - 1;
-
           // send server time for sync
           conn.next({ type: 'time', data: new Date().getTime() });
 
@@ -90,11 +88,11 @@ export class SocketServer {
           let imageBuilderSub: Subscription;
 
           conn.subscribe(event => {
+            const clientIndex = this.clients.findIndex(client => client.connection === conn);
             if (event.type === 'disconnected') {
-              const index = this.clients.findIndex(client => client.connection === conn);
-              const session = this.clients[index].session;
-              const username = this.clients[index].username;
-              this.clients.splice(index, 1);
+              const session = this.clients[clientIndex].session;
+              const username = this.clients[clientIndex].username;
+              this.clients.splice(clientIndex, 1);
 
               const msg: LogMessageType = {
                 message: `[socket]: user ${session.userId} (${username}) disconnected`,
