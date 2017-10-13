@@ -1,3 +1,43 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/bleenco/abstruse/compare/1.0.0-beta.1...1.1.0) (2017-10-13)
+
+
+### Bug Fixes
+
+* **builds:** return job failed status correctly, cleanup docker containers ([ae5b740](https://github.com/bleenco/abstruse/commit/ae5b740))
+* **exposed-ports:** fix socket exposed ports ([d47193c](https://github.com/bleenco/abstruse/commit/d47193c))
+* **image-builder:** fixes the stability of building images ([ee7609e](https://github.com/bleenco/abstruse/commit/ee7609e))
+* **image-builder:** image builder fixes ([ac6f5f0](https://github.com/bleenco/abstruse/commit/ac6f5f0))
+* **ping:** ping repositories with right provider and api url ([28806ba](https://github.com/bleenco/abstruse/commit/28806ba))
+* **repository:** trigger new build and fetch latest build ([d1c4692](https://github.com/bleenco/abstruse/commit/d1c4692))
+* **scrollbar:** fix double scrollbar on Windows ([b2d88f0](https://github.com/bleenco/abstruse/commit/b2d88f0))
+* **terminal:** fix terminal output times ([6e2445b](https://github.com/bleenco/abstruse/commit/6e2445b))
+* **terminal:** fix terminal spinner ([46b11bd](https://github.com/bleenco/abstruse/commit/46b11bd))
+* **times:** fix commit and build start times ([1c9a0ea](https://github.com/bleenco/abstruse/commit/1c9a0ea))
+* **ui:** various fixes ([ca25a32](https://github.com/bleenco/abstruse/commit/ca25a32))
+* **unit-tests:** abstruse now have 5 entries in matrix for testing ([7257f24](https://github.com/bleenco/abstruse/commit/7257f24))
+* auhentication required when adding new user ([abbd17b](https://github.com/bleenco/abstruse/commit/abbd17b))
+* fixed issue with client indexes ([6ae0a0a](https://github.com/bleenco/abstruse/commit/6ae0a0a))
+* progress bar ([b5e09ed](https://github.com/bleenco/abstruse/commit/b5e09ed))
+* repository status badges ([6029393](https://github.com/bleenco/abstruse/commit/6029393))
+* require server authentication for delicated requests ([2c3b7e5](https://github.com/bleenco/abstruse/commit/2c3b7e5))
+* running times ([72f4d28](https://github.com/bleenco/abstruse/commit/72f4d28))
+* show correct data when new tag is pushed ([5170aa4](https://github.com/bleenco/abstruse/commit/5170aa4))
+* show private repositories on permissions tab ([f08d586](https://github.com/bleenco/abstruse/commit/f08d586))
+* times on mobile view ([c3657e6](https://github.com/bleenco/abstruse/commit/c3657e6))
+
+
+### Features
+
+* change build time algorithm ([4ff60d3](https://github.com/bleenco/abstruse/commit/4ff60d3))
+* **bitbucket:** bitbucket config integration ([14b1af4](https://github.com/bleenco/abstruse/commit/14b1af4))
+* **cache:** make cache deletable from repository settings ([6e229d8](https://github.com/bleenco/abstruse/commit/6e229d8))
+* **gogs-gitlab:** gitlab and gogs integrated back ([1e3fc0a](https://github.com/bleenco/abstruse/commit/1e3fc0a))
+* **mobile:** mobile login, switch to desktop view ([a64aa5a](https://github.com/bleenco/abstruse/commit/a64aa5a))
+* **version:** display abstruse version in header dropdown ([13fe0aa](https://github.com/bleenco/abstruse/commit/13fe0aa))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/bleenco/abstruse/compare/1.0.0-beta.1...1.0.0) (2017-10-05)
 
