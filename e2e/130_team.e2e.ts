@@ -132,6 +132,14 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(0));
   });
 
+  it(`as annonymous user dashboard shouldn't be visible`, () => {
+    return browser.get('/')
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => element(by.css('[name="dashboard"]')).isPresent())
+      .then(present => expect(present).to.equals(false));
+  });
+
   it(`logout admin user and login with non admin user`, () => {
     return browser.get('/login')
       .then(() => isLoaded())
@@ -139,6 +147,14 @@ describe('Teams', () => {
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => isLoaded());
+  });
+
+  it(`non admin user should see dashboard`, () => {
+    return browser.get('/')
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => element(by.css('[name="dashboard"]')).isDisplayed())
+      .then(displayed => expect(displayed).to.equals(true));
   });
 
   it(`non admin user can update his name`, () => {
