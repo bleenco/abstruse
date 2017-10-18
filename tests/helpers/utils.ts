@@ -9,12 +9,39 @@ export function readConfig(configName: string): Promise<Config> {
     .then(config => yaml.parse(config));
 }
 
-export function sendRequest(data: any, uri: string): Promise<void> {
+export function sendRequest(data: any, uri: string, header?: any): Promise<void> {
   return new Promise((resolve, reject) => {
     let options = {
       url: `http://localhost:6500/${uri}`,
       method: 'POST',
-      json: data
+      json: data,
+      headers: header
+    };
+
+    request(options, (err, response, body) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (response.statusCode === 200) {
+          resolve(body);
+        } else {
+          reject({
+            statusCode: response.statusCode,
+            response: body
+          });
+        }
+      }
+    });
+  });
+}
+
+export function sendGetRequest(data: any, uri: string, header?: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let options = {
+      url: `http://localhost:6500/${uri}`,
+      method: 'GET',
+      json: data,
+      headers: header
     };
 
     request(options, (err, response, body) => {
