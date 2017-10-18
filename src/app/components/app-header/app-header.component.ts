@@ -2,6 +2,7 @@ import { Component, HostListener, ElementRef, OnInit, Inject, Renderer2 } from '
 import { DOCUMENT } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService, NotificationType } from '../../services/notification.service';
@@ -19,8 +20,10 @@ export class AppHeaderComponent implements OnInit {
   version: string;
   viewport: any;
   view: 'mobile' | 'desktop';
+  demo: boolean;
 
   constructor(
+    private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
     private elementRef: ElementRef,
@@ -38,6 +41,7 @@ export class AppHeaderComponent implements OnInit {
 
     this.notifications = [];
     this.version = pkgJson.version;
+    this.demo = false;
   }
 
   ngOnInit() {
@@ -45,6 +49,8 @@ export class AppHeaderComponent implements OnInit {
     if (this.user) {
       this.user.avatar = this.config.url + this.user.avatar;
       this.socketService.emit({ type: 'userId', data: this.user.id });
+    } else {
+      this.apiService.configDemo().subscribe(demo => this.demo = demo);
     }
 
     this.authService.userEvents.subscribe(event => {

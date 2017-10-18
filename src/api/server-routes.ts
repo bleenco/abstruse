@@ -742,6 +742,18 @@ export function keysRoutes(): express.Router {
   return router;
 }
 
+export function configRoutes(): express.Router {
+  const router = express.Router();
+
+  router.get(`/demo`, (req: express.Request, res: express.Response) => {
+    let config: any = getConfig();
+
+    return res.status(200).json({ data: config.demo });
+  });
+
+  return router;
+}
+
 export function imagesRoutes(): express.Router {
   const router = express.Router();
 
