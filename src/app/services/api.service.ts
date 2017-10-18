@@ -103,6 +103,10 @@ export class ApiService {
     return this.get(`${this.url}/setup/login-required`);
   }
 
+  configDemo(): Observable<any> {
+    return this.get(`${this.url}/config/demo`, null, true);
+  }
+
   getAllTokens(): Observable<any> {
     return this.get(`${this.url}/tokens`, null, true);
   }

@@ -34,6 +34,7 @@ const defaultConfig = {
   publicKey: 'rsa.pub',
   privateKey: 'rsa.key',
   requireLogin: false,
+  demo: false,
   db: {
     client: 'sqlite3',
     connection: {
