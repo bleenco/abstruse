@@ -5,6 +5,7 @@ import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
+import { readFileSync } from 'fs';
 import { getFilePath, generateBadgeHtml, getConfig } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import {
@@ -536,7 +537,7 @@ export function badgeRoutes(): express.Router {
       res.writeHead(200, {'Content-Type': 'image/svg+xml'});
       res.write(generateBadgeHtml(status));
       res.end();
-    });
+    }).catch(err => res.status(200).json({ status: false }));
   });
 
   router.get('/:owner/:repository', (req: express.Request, res: express.Response) => {
@@ -546,7 +547,7 @@ export function badgeRoutes(): express.Router {
         res.writeHead(200, {'Content-Type': 'image/svg+xml'});
         res.write(generateBadgeHtml(status));
         res.end();
-      });
+      }).catch(err => res.status(200).json({ status: false }));
   });
 
   return router;
@@ -603,8 +604,18 @@ export function setupRoutes(): express.Router {
   });
 
   router.post('/db/init', (req: express.Request, res: express.Response) => {
-    reinitializeDatabase().then(() => {
-      return res.status(200).json({ data: true });
+    getUsers().then(users => {
+      if (users && users.length) {
+        checkApiRequestAuth(req).then(() => {
+          reinitializeDatabase().then(() => {
+            return res.status(200).json({ data: true });
+          });
+        }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      } else {
+        reinitializeDatabase().then(() => {
+          return res.status(200).json({ data: true });
+        });
+      }
     });
   });
 
@@ -720,7 +731,9 @@ export function keysRoutes(): express.Router {
   router.get(`/public`, (req: express.Request, res: express.Response) => {
     let config: any = getConfig();
     if (config.publicKey) {
-      return res.status(200).json({ key: config.publicKey });
+      const keyPath = config.publicKey;
+
+      return res.status(200).json({ key: readFileSync(getFilePath(keyPath)).toString() });
     }
 
     return res.status(200).json({ status: false });

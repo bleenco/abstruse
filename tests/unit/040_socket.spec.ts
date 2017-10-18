@@ -24,9 +24,6 @@ describe('Socket Security', () => {
     return Promise.resolve()
       .then(() => console.log('Building project for socket tests...'))
       .then(() => process.chdir(join(__dirname, '../')))
-      .then(() => execSilent('npm',  ['run', 'build']))
-      .then(() => console.log('Linking project...'))
-      .then(() => execSilent('npm', ['link']))
       .then(() => {
         tempRoot = temp.mkdirSync('abstruse-socket-tests');
         console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
