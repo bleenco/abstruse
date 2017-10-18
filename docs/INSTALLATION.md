@@ -5,6 +5,7 @@
 * [Docker Image](#docker-image)
 * [Install From Npm](#install-from-npm)
 * [Run From Source](#run-from-source)
+* [Run Test Builds](#run-test-builds)
 
 ### Docker Image
 
@@ -14,10 +15,16 @@
 docker pull bleenco/abstruse
 ```
 
+2. Make directory on host where configuration and database will be stored (not mandatory)
+
+```sh
+mkdir ~/abstruse-config
+```
+
 2. Run Image
 
 ```sh
-docker run -dit -v /var/run/docker.sock:/var/run/docker.sock -v ~/abstruse-config:/home/abstruse/.abstruse -p 6500:6500 -p 6501:6501 bleenco/abstruse
+docker run -dit --restart always -v /var/run/docker.sock:/var/run/docker.sock -v ~/abstruse-config:/root/.abstruse -p 6500:6500 -p 6501:6501 bleenco/abstruse
 ```
 
 Note that we are exposing hosts `/var/run/docker.sock` to `abstruse` image. This is the only way you persist native `docker` performance.
@@ -64,4 +71,12 @@ in the second instance run:
 
 ```sh
 npm start # this will build UI part of the application and open browser at http://localhost:8000
+```
+
+### Run Test Builds
+
+After you got everything up and running, you can trigger some test builds that are stored in `tests/dev-scripts/`, i.e.
+
+```sh
+node ./tests/dev-scripts/push-d3.js
 ```
