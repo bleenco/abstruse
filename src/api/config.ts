@@ -21,6 +21,23 @@ export enum CommandType {
   after_script = 'after_script'
 }
 
+export enum CommandTypePriority {
+  git = 1,
+  before_install = 2,
+  install = 3,
+  before_script = 4,
+  script = 5,
+  before_cache = 6,
+  restore_cache = 7,
+  store_cache = 8,
+  after_success = 9,
+  after_failure = 10,
+  before_deploy = 11,
+  deploy = 12,
+  after_deploy = 13,
+  after_script = 14
+}
+
 export enum JobStage {
   test = 'test',
   deploy = 'deploy'
