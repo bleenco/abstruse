@@ -82,7 +82,7 @@ export function getImages(): Promise<any> {
           const imgs = images.filter(image => {
             if (image.RepoTags && image.RepoTags.length) {
               const tag = image.RepoTags[0].split(':')[0];
-              return imagesDir.indexOf(tag) !== -1;
+              return dirs.indexOf(tag) !== -1;
             } else {
               return false;
             }
