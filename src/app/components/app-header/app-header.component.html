@@ -1,26 +1,11 @@
-<header class="nav is-hidden-mobile">
+<header class="nav main-nav is-hidden-mobile">
   <div class="container">
     <div class="nav-left">
       <a class="nav-item nav-logo" routerLink="/">
-        <img src="images/abstruse-text-logo.svg">
-      </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
-        <i class="ionicon ion-pie-graph"></i>
-        Dashboard
-      </a>
-      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
-        <i class="ionicon ion-ios-people"></i>
-        Team
-      </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
-        <i class="ionicon ion-code"></i>
-        Repositories
-      </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
-        <i class="ionicon ion-ios-folder"></i>
-        Images
+        <img src="images/abstruse-text-logo-white.svg">
       </a>
     </div>
+    <div class="nav-center"></div>
     <div class="nav-right">
       <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
         <img src="/images/icons/notification.svg">
@@ -33,6 +18,19 @@
           </div>
         </div>
       </a> -->
+
+      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
+        Dashboard
+      </a>
+      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+        Team
+      </a>
+      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
+        Repositories
+      </a>
+      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
+        Images
+      </a>
 
       <a class="nav-item user-item" (click)="toggleMenu()" [class.is-open]="menuDropped" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
@@ -62,6 +60,20 @@
     </div>
   </div>
 </header>
+
+<!-- <div class="nav-header-context is-hidden-mobile">
+  <div class="container">
+    <a class="breadcrumb-item">
+      <span>Builds</span>
+    </a>
+    <a class="breadcrumb-item">
+      <span>Build Details</span>
+    </a>
+    <a class="breadcrumb-item">
+      <span>Job</span>
+    </a>
+  </div>
+</div> -->
 
 <div class="mobile-switch-view is-hidden-tablet is-mobile is-mobile-only">
   <button type="button" (click)="switchToDesktopView()" *ngIf="view === 'mobile'">

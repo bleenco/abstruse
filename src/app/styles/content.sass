@@ -1,10 +1,9 @@
 .content
   width: 100%
-  background: $background-button
+  background: $background
   position: relative
   z-index: 10
-  border-radius: 4px
-  margin-top: 10px
+  margin-top: 15px
   margin-bottom: 100px
 
   +mobile
@@ -99,26 +98,12 @@
         background: rgba($green-secondary, 0.4)
         color: darken($green, 10)
 
-.list-header
-  background: $border
-  color: $color-secondary
-  font-size: 14px
-  display: flex
-  align-items: center
-  height: 36px
-  border-radius: 4px
-  margin-bottom: 10px !important
-
-  .column
-    padding: 0 10px !important
-
 .list-item
   height: 100px
   color: $color
   font-size: 13px
   cursor: pointer
   background: $background
-  border-radius: 3px
   border: 1px solid $divider
   display: flex
   align-items: center
@@ -148,7 +133,7 @@
       margin-top: 0
 
   &.columns
-    margin: 5px 0
+    margin: 10px 0
 
     +mobile
       margin: 10px 0
@@ -169,7 +154,7 @@
       white-space: pre-wrap
 
   &:hover
-    background: darken($background, 3)
+    background: $hover-item-background
 
   .column
     padding: 0 10px !important
@@ -251,7 +236,7 @@
 
   &.is-success
     border-left: 10px solid $green
-    border-top: 0
+    border-top: 1px solid $border
 
     +mobile
       border-left: 0
@@ -259,9 +244,9 @@
 
   &.is-running
     border-left: 10px solid $yellow
-    border-top: 0
-    -webkit-animation: pulsate 3s infinite ease-in-out
-    animation: pulsate 3s infinite ease-in-out
+    -webkit-animation: pulsate 2s infinite ease-in-out
+    animation: pulsate 2s infinite ease-in-out
+    border-top: 1px solid $border
 
     +mobile
       border-left: 0
@@ -269,7 +254,7 @@
 
   &.is-errored
     border-left: 10px solid $red
-    border-top: 0
+    border-top: 1px solid $border
 
     +mobile
       border-left: 0
@@ -277,7 +262,7 @@
 
   &.is-queued
     border-left: 10px solid $grey-light
-    border-top: 0
+    border-top: 1px solid $border
 
     +mobile
       border-left: 0
