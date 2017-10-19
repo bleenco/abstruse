@@ -26,7 +26,7 @@ describe('Builds', () => {
     return Promise.resolve()
       .then((): any => browser.wait(() => element(by.css('.is-info')).isPresent()))
       .then(() => expect(element(by.css('.is-info')).getText())
-        .to.eventually.have.string('No builds has been runned yet.'));
+        .to.eventually.have.string('No builds have been run yet.'));
   });
 
   it('should start new build (send open_pull_request event)', () => {
