@@ -39,13 +39,36 @@ export function buildDockerImage(data: ImageData): void {
           imageBuilder.next({ name: data.name, output: d.toString() });
         });
         output.on('finish', () => {
-          msg.message = `image ${data.name} build successfully completed`;
+          msg = {
+            message: `image ${data.name} build successfully completed`,
+            type: 'info',
+            notify: false
+          };
+          logger.next(msg);
+        });
+        output.on('error', () => {
+          msg = {
+            message: `error while building image ${data.name}`,
+            type: 'error',
+            notify: true
+          };
+          logger.next(msg);
+        });
+        output.on('end', () => {
+          msg = {
+            message: `image ${data.name} build successfully completed`,
+            type: 'info',
+            notify: false
+          };
           logger.next(msg);
         });
       })
       .catch(err => {
-        msg.message = `error while building image ${data.name} (${err})`;
-        msg.type = 'error';
+        msg = {
+          message: `error while building image ${data.name} (${err})`,
+          type: 'error',
+          notify: true
+        };
         logger.next(msg);
       });
   });
@@ -79,24 +102,28 @@ export function getImages(): Promise<any> {
     fs.readdir(imagesDir).then(dirs => {
       docker.listImages()
         .then(images => {
-          const imgs = images.filter(image => {
-            if (image.RepoTags && image.RepoTags.length) {
-              const tag = image.RepoTags[0].split(':')[0];
-              return dirs.indexOf(tag) !== -1;
-            } else {
+          let imgs = dirs.map(d => {
+            let index = images.findIndex(i => {
+              if (i.RepoTags) {
+                return i.RepoTags.findIndex(t => t.startsWith(d)) !== -1;
+              }
+
               return false;
+            });
+            if (index !== -1) {
+              return {
+                name: d,
+                version: images[index].RepoTags.find(t => t.startsWith(d)).split(':')[1],
+                created: format(new Date(images[index].Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
+                createdAgo: distanceInWordsToNow(new Date(images[index].Created * 1000)),
+                size: getHumanSize(images[index].Size),
+                dockerfile: null,
+                initsh: null
+              };
+            } else {
+              return null;
             }
-          }).map(image => {
-            return {
-              name: image.RepoTags[0].split(':')[0],
-              version: image.RepoTags[0].split(':')[1],
-              created: format(new Date(image.Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
-              createdAgo: distanceInWordsToNow(new Date(image.Created * 1000)),
-              size: getHumanSize(image.Size),
-              dockerfile: null,
-              initsh: null
-            };
-          });
+          }).filter(Boolean);
 
           Promise.all(imgs.map(img => {
             const dockerfile = getFilePath(`images/${img.name}/Dockerfile`);
