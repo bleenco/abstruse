@@ -88,7 +88,7 @@ describe('Repository', () => {
         return element.all(by.css('.green')).count().then(count => count === 1);
       }))
       .then(() => element(by.css('.green')).getAttribute('innerHTML'))
-      .then(html => expect(html).to.includes('Build has been runned successfully'))
+      .then(html => expect(html).to.includes('Build has been run successfully'))
       .then(() => delay(1000))
       .then(() => browser.get('/'))
       .then(() => isLoaded())
