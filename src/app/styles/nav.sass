@@ -1,26 +1,24 @@
 .nav
-  min-height: 60px
+  height: 65px
   width: 100%
-  background: $background
-  border-bottom: 1px solid $border
   z-index: 90 !important
-  background: $white
+  background: $header-background
   position: relative
 
+  &.main-nav
+    box-shadow: 1px 2px 5px rgba($black, 0.2)
+
   .nav-item
-    color: $color !important
+    color: $white !important
     font-size: 14px
     margin-right: 15px
+    font-weight: 700
+    font-family: $font-family-semibold
 
     i
       font-size: 20px !important
       margin-right: 10px
       color: $color-secondary
-
-    &:hover, &.is-active
-
-      i
-        color: $color
 
     &.notification-item
       cursor: pointer
@@ -90,15 +88,15 @@
             background: $background
 
     &.user-item
-      margin-top: 9px
-      margin-right: 0
+      margin-top: 13px
+      margin-right: -10px
       height: 40px
       display: inline-flex
       align-items: center
       justify-content: flex-start
 
       &.is-open
-        background: $white
+        background: transparent
 
       span
         font-size: 14px
@@ -107,8 +105,8 @@
 
       i
         position: absolute
-        top: 18px
-        right: 0
+        top: 22px
+        right: -10px
         font-size: 12px !important
 
     img.nav-item-icon
@@ -118,7 +116,7 @@
 
     &.nav-logo
       margin-right: 15px
-      margin-left: 0
+      margin-left: -10px
 
       img
         min-height: 20px
@@ -131,24 +129,24 @@
       height: 30px
       border-radius: 50%
       margin-right: 30px
+      background: $grey-light
 
     .ion-chevron-down
       display: block
       float: left
       margin-left: 10px
-      color: $color-secondary
+      color: $white
 
   .nav-dropdown
     position: absolute
     z-index: 100
     width: 200px
-    top: 65px
-    right: 15px
+    top: 60px
+    right: -8px
     padding-top: 12px
     background: $background
-    border: 1px solid $border
-    border-radius: 4px
-    box-shadow: 1px 2px 3px rgba(10, 10, 10, 0.1)
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26)
+    border: 1px solid #fbfbfc
 
     &:after
       display: block
@@ -182,11 +180,13 @@
 
     .version-link
       font-size: 10px
-      color: $grey-light
+      color: $grey
       padding: 5px 10px
       position: relative
       display: block
       text-align: center
+      font-weight: $weight-normal
+      font-family: $font-family-regular
 
       i
         position: absolute
@@ -251,3 +251,58 @@
       float: left
       margin-top: 10px
       margin-left: 5px
+
+.nav-header-context
+  width: 100%
+  height: 42px
+  background: $header-context-background
+  z-index: 90
+  font-size: 13px
+  color: $white
+  margin-top: -1px
+  display: flex
+  align-items: center
+
+  .breadcrumb-item
+    color: $white
+    display: inline-block
+    padding: 12px 6px
+    position: relative
+    font-family: $weight-semibold
+    font-weight: 700
+    margin-right: 15px
+
+    &:before
+      content: ' '
+      display: block
+      width: 0
+      height: 0
+      border-top: 21px solid transparent
+      border-bottom: 21px solid transparent
+      border-left: 10px solid rgba(255, 255, 255, .3)
+      position: absolute
+      top: 50%
+      margin-top: -21px
+      margin-left: 1px
+      left: 100%
+      z-index: 3
+
+    &:after
+      content: ' '
+      display: block
+      width: 0
+      height: 0
+      border-top: 21px solid transparent
+      border-bottom: 21px solid transparent
+      border-left: 10px solid #1798de
+      position: absolute
+      top: 50%
+      margin-top: -21px
+      left: 100%
+      z-index: 3
+
+    &:last-child
+      &:before
+        display: none
+      &:after
+        display: none
