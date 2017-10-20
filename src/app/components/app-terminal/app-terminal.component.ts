@@ -124,11 +124,15 @@ export class AppTerminalComponent implements OnInit {
         }
       }
 
-      this.commands = this.commands.map((cmd, i) => {
-        const v = i === this.commands.length - 1 || cmd.visible;
-        cmd.visible = v ? true : false;
-        return cmd;
-      });
+      if (this.commands && this.commands.length) {
+        this.commands = this.commands.map((cmd, i) => {
+          const v = i === this.commands.length - 1 || cmd.visible;
+          cmd.visible = v ? true : false;
+          return cmd;
+        });
+      } else {
+        this.commands.push({ command: output, visible: true, time: '.', output: '' });
+      }
     }
 
     setTimeout(() => {
