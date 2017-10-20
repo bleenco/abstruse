@@ -68,7 +68,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
-        if (event.type === 'data' || event.type === 'exit') {
+        if (event.type === 'data' || event.type === 'exit' || event.type === 'container') {
           if (typeof event.data === 'string') {
             this.ngZone.run(() => this.terminalInput = event.data);
           }

@@ -22,7 +22,7 @@ export interface SpawnedProcessOutput {
 }
 
 export interface ProcessOutput {
-  type: 'data' | 'exit' | 'container' | 'exposed ports' | 'containerInfo';
+  type: 'data' | 'exit' | 'container' | 'exposed ports' | 'containerInfo' | 'containerError';
   data: any;
 }
 
@@ -121,7 +121,11 @@ export function startBuildProcess(
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
-        if (event.type === 'containerInfo') {
+        if (event.type === 'containerError') {
+          const msg = red(event.data.json.message) || red(event.data);
+          observer.next({ type: 'exit', data: msg });
+          observer.error(msg);
+        } else if (event.type === 'containerInfo') {
           observer.next({
             type: 'exposed ports',
             data: { type: 'ports', info: event.data.NetworkSettings.Ports }

@@ -39,7 +39,10 @@ export function createContainer(
     .then(container => container.inspect())
     .then(info => observer.next({ type: 'containerInfo', data: info }))
     .then(() => observer.complete())
-    .catch(err => observer.error(err));
+    .catch(err => {
+      observer.next({ type: 'containerError', data: err });
+      observer.error(err);
+    });
   });
 }
 
