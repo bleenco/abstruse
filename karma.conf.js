@@ -84,7 +84,13 @@ module.exports = (config) => {
     colors: true,
     logLevel: config.LOG_ERROR,
     autoWatch: false,
-    browsers: ['Chrome'],
+    browsers: ['chrome'],
+    customLaunchers: {
+      chrome: {
+        base: 'Chrome',
+        flags: ['--headless', '--no-sandbox', '--disable-gpu']
+      }
+    },
     mime: { 'text/x-typescript': ['ts', 'tsx'] },
     singleRun: true,
     concurrency: 1,
