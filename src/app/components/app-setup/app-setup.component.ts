@@ -8,6 +8,7 @@ export interface ServerStatus {
   sqlite: boolean;
   docker: boolean;
   dockerRunning: boolean;
+  git: boolean;
 }
 
 export interface User {
@@ -40,7 +41,8 @@ export class AppSetupComponent implements OnInit {
     this.serverStatus = {
       sqlite: false,
       docker: false,
-      dockerRunning: false
+      dockerRunning: false,
+      git: false
     };
 
     this.readyToSetup = false;

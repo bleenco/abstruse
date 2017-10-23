@@ -15,3 +15,18 @@ export function isSQLiteInstalled(): Observable<boolean> {
     });
   });
 }
+
+export function isGitInstalled(): Observable<boolean> {
+  return new Observable((observer: Observer<boolean>) => {
+    const git = spawn('which', ['git']);
+    git.on('close', code => {
+      if (code === 0) {
+        observer.next(true);
+      } else {
+        observer.next(false);
+      }
+
+      observer.complete();
+    });
+  });
+}

@@ -375,7 +375,9 @@ describe('Api Server Routes Unit Tests', () => {
 
     it(`status should return true`, () => {
       return sendGetRequest({}, `api/setup/status`).then(res => {
-        expect(res).to.deep.equal({ data: { docker: true, dockerRunning: true, sqlite: true } });
+        expect(res).to.deep.equal({
+          data: { docker: true, dockerRunning: true, sqlite: true, git: true }
+        });
       });
     });
 
