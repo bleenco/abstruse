@@ -223,7 +223,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         'fi',
         '',
         '# example for giving docker access to abstruse user',
-        'if [ -f /var/run/docker.sock ]; then',
+        'if [ -e /var/run/docker.sock ]; then',
         '  sudo chown -R 1000:100 /var/run/docker.sock > /dev/null 2>&1',
         'fi'
       ].join('\n')
