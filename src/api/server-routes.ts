@@ -558,6 +558,7 @@ export function setupRoutes(): express.Router {
 
   router.get('/ready', (req: express.Request, res: express.Response) => {
     Observable.merge(...[
+      system.isGitInstalled(),
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
@@ -588,18 +589,24 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
-    system.isSQLiteInstalled().subscribe(sqlite => {
-      docker.isDockerInstalled().subscribe(dockerInstalled => {
-        if (dockerInstalled) {
-          docker.isDockerRunning().subscribe(dockerRunning => {
-            const data = { sqlite: sqlite, docker: dockerInstalled, dockerRunning: dockerRunning };
-            res.status(200).json({ data: data });
-          });
-        } else {
-          const data = { sqlite: sqlite, docker: false, dockerRunning: false };
-          res.status(200).json({ data: data });
-        }
-      });
+    Observable.concat(...[
+      system.isGitInstalled(),
+      system.isSQLiteInstalled(),
+      docker.isDockerInstalled()
+    ])
+    .toArray()
+    .subscribe(data => {
+      if (data[2]) {
+        docker.isDockerRunning().subscribe(dockerRunning => {
+          const status = {
+            sqlite: data[1], docker: data[2], dockerRunning: dockerRunning, git: data[0] };
+          res.status(200).json({ data: status });
+        });
+      } else {
+        const status = {
+          sqlite: data[1], docker: false, dockerRunning: false, git: data[0] };
+        res.status(200).json({ data: status });
+      }
     });
   });
 
