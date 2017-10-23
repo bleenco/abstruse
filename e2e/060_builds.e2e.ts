@@ -24,8 +24,8 @@ describe('Builds', () => {
 
   it('should open first page with zero builds', () => {
     return Promise.resolve()
-      .then((): any => browser.wait(() => element(by.css('.is-info')).isPresent()))
-      .then(() => expect(element(by.css('.is-info')).getText())
+      .then((): any => browser.wait(() => element(by.css('.notification')).isPresent()))
+      .then(() => expect(element(by.css('.notification')).getText())
         .to.eventually.have.string('No builds have been run yet.'));
   });
 
