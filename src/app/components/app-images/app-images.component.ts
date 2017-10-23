@@ -148,7 +148,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.form = {
       name: 'nameless_image',
       dockerfile: [
-        'FROM ubuntu:17.10',
+        'FROM ubuntu:17.04',
         '',
         'ENV DEBIAN_FRONTEND=noninteractive',
         '',
