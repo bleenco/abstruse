@@ -15,12 +15,12 @@ We saw many projects relying on outdated open source continuous integration (CI)
 
 Not convinced yet? We compared **[Abstruse 1.0.0](https://github.com/bleenco/abstruse)** with the most popular open source CI platform of all times -- **[Jenkins 2.60.3](https://github.com/jenkinsci/jenkins)** -- and measured the time of execution, CPU and memory consumption while running [Java-Design-Patterns 1.17.0](https://github.com/iluwatar/java-design-patterns) and [Angular 5.0.0-beta.7](https://github.com/angular/angular) tests.
 
-*We used the following machine for benchmarking: 
+*We used the following machine for benchmarking:
 Intel i7-4700HQ @ 2.40GHz CPU, 12GB DDR3 1600 MHz, 256 SSD.*
 
 ### **Abstruse vs Jenkins**
-When testing Java-Design-Patterns 1.17.0 (*Figure 1*), Abstruse 1.0.0 outperforms Jenkins 2.60.3 by 22.15% in time, 52.36% in CPU consumption and 45.96% in memory use.
-When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 22.15% in time, 6.27% in CPU consumption and 35.49% in memory use. 
+When testing Java-Design-Patterns 1.17.0 (*Figure 1*), Abstruse 1.0.0 outperforms Jenkins 2.60.3 by 25.84% in time, 52.36% in CPU consumption and 45.96% in memory use.
+When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 25.84% in time, 6.27% in CPU consumption and 35.49% in memory use.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/3041169/31200826-a2b4292c-a95c-11e7-8d73-c395f7b37355.jpg">
