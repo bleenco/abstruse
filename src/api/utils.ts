@@ -18,6 +18,8 @@ import * as temp from 'temp';
 import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
 import * as nodeRsa from 'node-rsa';
 import * as glob from 'glob';
+import { CommandType, CommandTypePriority } from './config';
+import { JobProcess } from './process-manager';
 
 const defaultConfig = {
   url: null,
@@ -244,4 +246,16 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
         }
       });
     });
+}
+
+export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {
+  let commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
+  return commands.sort((a, b) => {
+    if (CommandTypePriority[a.type] > CommandTypePriority[b.type]) {
+      return 1;
+    } else if (CommandTypePriority[a.type] < CommandTypePriority[b.type]) {
+      return -1;
+    }
+    return proc.commands.indexOf(a) - proc.commands.indexOf(b);
+  });
 }

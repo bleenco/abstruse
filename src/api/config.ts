@@ -32,10 +32,10 @@ export enum CommandTypePriority {
   store_cache = 8,
   after_success = 9,
   after_failure = 10,
-  before_deploy = 11,
-  deploy = 12,
-  after_deploy = 13,
-  after_script = 14
+  after_script = 11,
+  before_deploy = 12,
+  deploy = 13,
+  after_deploy = 14
 }
 
 export enum JobStage {
@@ -518,9 +518,15 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   });
 
   if (deployCommands.length) {
+    const gitCommands = [
+      { command: clone, type: CommandType.git },
+      { command: fetch, type: CommandType.git },
+      { command: checkout, type: CommandType.git }
+    ];
+
     data.push({
-      commands: installCommands.concat(deployCommands),
-      env: globalEnv,
+      commands: gitCommands.concat(installCommands).concat(deployCommands),
+      env: globalEnv.concat('DEPLOY'),
       stage: JobStage.deploy,
       image: config.image
     });
