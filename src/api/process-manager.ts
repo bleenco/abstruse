@@ -17,7 +17,7 @@ import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
 import { killContainer } from './docker';
 import { logger, LogMessageType } from './logger';
 import { blue, yellow, green, cyan } from 'chalk';
-import { getConfig, getHttpJsonResponse, getBitBucketAccessToken } from './utils';
+import { getConfig, getHttpJsonResponse, getBitBucketAccessToken, prepareCommands } from './utils';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 import { decrypt } from './security';
 import { userId } from './socket';
@@ -38,7 +38,7 @@ export interface JobMessage {
 export interface JobProcess {
   build_id?: number;
   job_id?: number;
-  status?: 'queued' | 'running' | 'cancelled' | 'errored';
+  status?: 'queued' | 'running' | 'cancelled' | 'errored' | 'success';
   image_name?: string;
   log?: string[];
   commands?: { command: string, type: CommandType }[];
@@ -63,6 +63,7 @@ const config: any = getConfig();
 export let jobProcesses: Subject<JobProcess> = new Subject();
 export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({});
 export let terminalEvents: Subject<JobProcessEvent> = new Subject();
+export let buildStatuses: Subject<any> = new Subject();
 export let buildSub: { [id: number]: Subscription } = {};
 export let processes: JobProcess[] = [];
 
@@ -93,6 +94,40 @@ function execJob(proc: JobProcess): Observable<{}> {
     processes.push(proc);
   }
 
+  const buildProcesses = processes.filter(p => p.build_id === proc.build_id);
+  if (proc.env.findIndex(e => e === 'DEPLOY') === -1 || buildProcesses.length === 1
+    || !buildProcesses.filter(p => p.status != 'success' && p.job_id != proc.job_id).length) {
+      return startJobProcess(proc);
+  }
+
+  return new Observable(observer => {
+    return buildStatuses
+      .filter(bs => bs.build_id === proc.build_id)
+      .subscribe(event => {
+        const testProcesses = processes.filter(p => {
+          return p.build_id === proc.build_id && p.job_id != proc.job_id;
+        });
+
+        if (testProcesses.length) {
+          if (proc.job_id != event.job_id) {
+            const notSucceded = testProcesses.filter(p => p.status != 'success');
+            const queuedOrRunning = testProcesses.filter(p => {
+              return p.status === 'queued' || p.status === 'running';
+            });
+            if (!notSucceded.length) {
+              startJobProcess(proc).subscribe(() => observer.complete());
+            } else if (!queuedOrRunning.length) {
+                stopJob(proc.job_id).then(() => observer.complete());
+            }
+          } else {
+            observer.complete();
+          }
+        }
+      });
+  });
+}
+
+export function startJobProcess(proc: JobProcess): Observable<{}> {
   return new Observable(observer => {
     getRepositoryByBuildId(proc.build_id)
       .then(repository => {
@@ -134,6 +169,7 @@ function execJob(proc: JobProcess): Observable<{}> {
               observer.complete();
             }
           }, err => {
+            proc.status = 'errored';
             const time = new Date();
             const msg: LogMessageType = {
               message: `[error]: ${err}`, type: 'error', notify: false
@@ -162,6 +198,12 @@ function execJob(proc: JobProcess): Observable<{}> {
                   data: 'build failed',
                   additionalData: time.getTime()
                 });
+
+                buildStatuses.next({
+                  status: 'errored',
+                  build_id: proc.build_id,
+                  job_id: proc.job_id
+                });
               })
               .then(() => {
                 jobEvents.next({
@@ -181,6 +223,7 @@ function execJob(proc: JobProcess): Observable<{}> {
                 observer.complete();
               });
           }, () => {
+            proc.status = 'success';
             const time = new Date();
             dbJob.getLastRunId(proc.job_id)
               .then(runId => {
@@ -195,6 +238,8 @@ function execJob(proc: JobProcess): Observable<{}> {
               })
               .then(() => getBuildStatus(proc.build_id))
               .then(status => {
+                buildStatuses.next({status: status, build_id: proc.build_id, job_id: proc.job_id});
+
                 if (status === 'success') {
                   return updateBuild({ id: proc.build_id, end_time: time })
                     .then(() => getLastRunId(proc.build_id))

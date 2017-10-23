@@ -10,7 +10,7 @@ const argv = minimist(process.argv.slice(2), {
 });
 
 const specFiles = glob.sync(path.resolve(__dirname, './unit/**/*.spec.*'));
-const mo = new Mocha({ timeout: 60000, reporter: 'spec' });
+const mo = new Mocha({ timeout: 180000, reporter: 'spec' });
 
 Promise.resolve()
   .then((): any => {

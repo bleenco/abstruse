@@ -1,6 +1,6 @@
 import * as docker from './docker';
 import * as child_process from 'child_process';
-import { generateRandomId, getFilePath } from './utils';
+import { generateRandomId, getFilePath, prepareCommands } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { green, red, bold, yellow, blue, cyan } from 'chalk';
@@ -26,18 +26,6 @@ export interface ProcessOutput {
   data: any;
 }
 
-export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {
-  let commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
-  return commands.sort((a, b) => {
-    if (CommandTypePriority[a.type] > CommandTypePriority[b.type]) {
-      return 1;
-    } else if (CommandTypePriority[a.type] < CommandTypePriority[b.type]) {
-      return -1;
-    }
-    return proc.commands.indexOf(a) - proc.commands.indexOf(b);
-  });
-}
-
 export function startBuildProcess(
   proc: JobProcess,
   variables: string[],
@@ -58,9 +46,8 @@ export function startBuildProcess(
     const gitTypes = [CommandType.git];
     const installTypes = [CommandType.before_install, CommandType.install];
     const scriptTypes = [CommandType.before_script, CommandType.script,
-      CommandType.after_success, CommandType.after_failure];
-    const deployTypes = [CommandType.before_deploy, CommandType.deploy,
-      CommandType.after_deploy, CommandType.after_script];
+      CommandType.after_success, CommandType.after_failure, CommandType.after_script];
+    const deployTypes = [CommandType.before_deploy, CommandType.deploy, CommandType.after_deploy];
     const gitCommands = prepareCommands(proc, gitTypes);
     const installCommands = prepareCommands(proc, installTypes);
     const scriptCommands = prepareCommands(proc, scriptTypes);

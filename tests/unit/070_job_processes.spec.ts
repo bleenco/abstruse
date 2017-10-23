@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { prepareCommands } from '../../src/api/process';
+import { prepareCommands } from '../../src/api/utils';
 import { CommandType } from '../../src/api/config';
 
 chai.use(chaiAsPromised);
