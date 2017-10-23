@@ -1,3 +1,25 @@
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/bleenco/abstruse/compare/v1.1.0...v1.2.0) (2017-10-23)
+
+
+### Bug Fixes
+
+* **image:** fix default image docker permissions ([92fab44](https://github.com/bleenco/abstruse/commit/92fab44))
+* **image-message:** adds error message to job output when image doesn't exists ([f53abf0](https://github.com/bleenco/abstruse/commit/f53abf0))
+* **images:** add image build status to system log and show all builded images ([0626eb1](https://github.com/bleenco/abstruse/commit/0626eb1)), closes [#241](https://github.com/bleenco/abstruse/issues/241)
+* **images:** fixed bug of not showing docker images ([7c79080](https://github.com/bleenco/abstruse/commit/7c79080)), closes [#242](https://github.com/bleenco/abstruse/issues/242)
+* **readme:** corrected sentence in README ([aa76406](https://github.com/bleenco/abstruse/commit/aa76406))
+
+
+### Features
+
+* **config:** demo mode added to config ([40efd07](https://github.com/bleenco/abstruse/commit/40efd07))
+* **deploy:** deploy commands must execute in extra job only if other jobs succeeded (closes [#230](https://github.com/bleenco/abstruse/issues/230)) ([3ff9b59](https://github.com/bleenco/abstruse/commit/3ff9b59))
+* **ordering:** execute commands using correct priority order ([89e5cf6](https://github.com/bleenco/abstruse/commit/89e5cf6))
+* **status:** check git installation (closes [#249](https://github.com/bleenco/abstruse/issues/249)) ([d389d6d](https://github.com/bleenco/abstruse/commit/d389d6d))
+
+
+
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/bleenco/abstruse/compare/1.0.0-beta.1...1.1.0) (2017-10-13)
 
