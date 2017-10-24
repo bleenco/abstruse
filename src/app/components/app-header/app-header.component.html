@@ -5,7 +5,24 @@
         <img src="images/abstruse-text-logo-white.svg">
       </a>
     </div>
-    <div class="nav-center"></div>
+    <div class="nav-center">
+      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
+        <!-- <img src="/images/icons/menu_dashboard.svg" class="icon"> -->
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+        <!-- <img src="/images/icons/menu_team.svg" class="icon"> -->
+        <span>Team</span>
+      </a>
+      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
+        <!-- <img src="/images/icons/menu_repositories.svg" class="icon"> -->
+        <span>Repositories</span>
+      </a>
+      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
+        <!-- <img src="/images/icons/menu_images.svg" class="icon"> -->
+        <span>Images</span>
+      </a>
+    </div>
     <div class="nav-right">
       <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
         <img src="/images/icons/notification.svg">
@@ -18,19 +35,6 @@
           </div>
         </div>
       </a> -->
-
-      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
-        Dashboard
-      </a>
-      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
-        Team
-      </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
-        Repositories
-      </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
-        Images
-      </a>
 
       <a class="nav-item user-item" (click)="toggleMenu()" [class.is-open]="menuDropped" *ngIf="user">
         <img class="nav-avatar" [src]="user.avatar">
