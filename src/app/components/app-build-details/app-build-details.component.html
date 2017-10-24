@@ -34,7 +34,7 @@
                   </div>
                   <div class="column is-2" [class.is-hidden]="status !== 'success' && status !== 'failed'"></div>
                   <div class="column is-2" *ngIf="userId && build?.hasPermission">
-                    <button class="button is-fullwidth dark" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
+                    <button class="button is-fullwidth" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/restart.svg">
@@ -44,7 +44,7 @@
                     </button>
                   </div>
                   <div class="column is-2" *ngIf="build?.hasPermission" [class.is-hidden]="status === 'success' || status === 'failed'">
-                    <button class="button is-fullwidth dark" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
+                    <button class="button is-fullwidth" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
                           <img src="images/icons/stop.svg">
