@@ -59,7 +59,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-right .nav-item:nth-child(1)'));
+    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(1)'));
     expect(de.nativeElement.textContent).toContain('Dashboard');
   }));
 
@@ -73,7 +73,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-right .nav-item:nth-child(2)'));
+    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(2)'));
     expect(de.nativeElement.textContent).toContain('Team');
   }));
 
@@ -87,7 +87,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-right .nav-item:nth-child(3)'));
+    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(3)'));
     expect(de.nativeElement.textContent).toContain('Repositories');
   }));
 
@@ -101,7 +101,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-right .nav-item:nth-child(4)'));
+    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(4)'));
     expect(de.nativeElement.textContent).toContain('Images');
   }));
 
@@ -136,7 +136,7 @@ describe('Header Component', () => {
     spyOn(localStorage, 'getItem').and.callFake(() => null);
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-right .nav-item:nth-child(1)'));
+    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(1)'));
     expect(de.nativeElement.textContent).toContain('Repositories');
   }));
 });

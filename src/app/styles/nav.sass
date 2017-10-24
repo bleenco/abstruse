@@ -1,5 +1,5 @@
 .nav
-  height: 65px
+  height: 55px
   width: 100%
   z-index: 90 !important
   background: $header-background
@@ -14,6 +14,13 @@
     margin-right: 15px
     font-weight: 700
     font-family: $font-family-semibold
+
+    .icon
+      display: block
+      float: left
+      width: 25px
+      height: 25px
+      margin-right: 5px
 
     i
       font-size: 20px !important
@@ -88,7 +95,7 @@
             background: $background
 
     &.user-item
-      margin-top: 13px
+      margin-top: 7px
       margin-right: -10px
       height: 40px
       display: inline-flex
@@ -105,7 +112,7 @@
 
       i
         position: absolute
-        top: 22px
+        top: 17px
         right: -10px
         font-size: 12px !important
 
@@ -144,9 +151,9 @@
     top: 60px
     right: -8px
     padding-top: 12px
-    background: $background
+    background: $header-background
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26)
-    border: 1px solid #fbfbfc
+    border: 1px solid $header-background-dark
 
     &:after
       display: block
@@ -154,33 +161,34 @@
       transform: rotate(-45deg)
       width: 12px
       height: 12px
-      background: $white
-      border-top: 1px solid $border
-      border-right: 1px solid $border
+      background: $header-background
+      border-top: 1px solid $header-background-dark
+      border-right: 1px solid $header-background-dark
       position: absolute
       top: -6px
       right: 10px
 
     .nav-dropdown-item
       display: block
-      color: $color-secondary
+      color: $white
       padding: 10px
       font-size: 12px
       position: relative
       text-align: center
-      font-weight: 600
+      font-weight: 700
+      font-family: $font-family-semibold
 
       &:last-child
         border-bottom-left-radius: 4px
         border-bottom-right-radius: 4px
 
       &:hover
-        background: $background
-        color: $color
+        background: $header-background-dark
+        color: $white
 
     .version-link
       font-size: 10px
-      color: $grey
+      color: $white
       padding: 5px 10px
       position: relative
       display: block
@@ -193,17 +201,19 @@
         font-size: 14px !important
         top: 0
         right: 0
-        color: $grey-light
+        color: $white
+
+      &:hover
+        color: $white
 
   &.sub-nav
-    background: transparent
-    padding-top: 40px
-    padding-bottom: 15px
-    margin-bottom: 10px
+    background: $hover-item-background
+    padding-top: 30px
+    padding-bottom: 30px
     display: flex
     align-items: center
     z-index: 80 !important
-    border-bottom: none
+    box-shadow: 1px 2px 0 rgba($header-background, 0.1)
 
     +mobile
       display: none
@@ -214,7 +224,7 @@
 
         h1
           color: $color
-          font-size: 18px
+          font-size: 20px
           font-weight: $weight-semibold
 
           +mobile
@@ -251,58 +261,3 @@
       float: left
       margin-top: 10px
       margin-left: 5px
-
-.nav-header-context
-  width: 100%
-  height: 42px
-  background: $header-context-background
-  z-index: 90
-  font-size: 13px
-  color: $white
-  margin-top: -1px
-  display: flex
-  align-items: center
-
-  .breadcrumb-item
-    color: $white
-    display: inline-block
-    padding: 12px 6px
-    position: relative
-    font-family: $weight-semibold
-    font-weight: 700
-    margin-right: 15px
-
-    &:before
-      content: ' '
-      display: block
-      width: 0
-      height: 0
-      border-top: 21px solid transparent
-      border-bottom: 21px solid transparent
-      border-left: 10px solid rgba(255, 255, 255, .3)
-      position: absolute
-      top: 50%
-      margin-top: -21px
-      margin-left: 1px
-      left: 100%
-      z-index: 3
-
-    &:after
-      content: ' '
-      display: block
-      width: 0
-      height: 0
-      border-top: 21px solid transparent
-      border-bottom: 21px solid transparent
-      border-left: 10px solid #1798de
-      position: absolute
-      top: 50%
-      margin-top: -21px
-      left: 100%
-      z-index: 3
-
-    &:last-child
-      &:before
-        display: none
-      &:after
-        display: none

@@ -134,6 +134,11 @@
     border-color: #F7981C
     color: $white
 
+  &.dark
+    background: $header-background
+    color: $white
+    border-color: $header-background-dark
+
   &:hover, &.is-hovered
     background-image: linear-gradient(0deg, #EAEEF3 0%, #FFFFFF 100%)
     border: 1px solid $border
@@ -158,6 +163,11 @@
       background: linear-gradient(to bottom, #F09219, #E96012)
       border-color: #F09219
       color: $white
+
+    &.dark
+      background: $header-background-dark
+      color: $white
+      border-color: $header-background-dark
 
   &:active, &.is-active
     color: $color-secondary
@@ -191,8 +201,8 @@
 
   .group-button
     height: 36px
-    background-image: linear-gradient(-1deg, #1991EB 2%, #2DA1F8 98%)
-    border: 1px solid #1585D8
+    background: $header-background-dark
+    border: 1px solid $header-background
     color: $white
     padding: 6px  12px
     font-family: $font-family-semibold
@@ -220,8 +230,8 @@
       border-bottom-right-radius: 4px
 
     &.is-active, &:hover
-      background-image: linear-gradient(-180deg, #0C73C1 2%, #196BAA 98%)
-      border: 1px solid #1468A7
+      background: $header-background
+      border: 1px solid $header-background
 
   &.bright
 
