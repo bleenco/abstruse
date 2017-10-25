@@ -56,7 +56,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         enabled: false
       },
       contextMenu: false,
-      fontFamily: 'RobotoMono',
+      fontFamily: 'monaco, menlo, monospace',
       fontSize: 12,
       scrollBeyondLastLine: false,
       roundedSelection: false,
