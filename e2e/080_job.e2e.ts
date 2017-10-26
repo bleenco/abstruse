@@ -80,4 +80,31 @@ describe('Job Details', () => {
       .then(() => delay(1000))
       .then((): any => element.all(by.css(`[name="btn-stop"]`)).first().click()));
   });
+
+  it('should restart job and start debug mode', () => {
+    return browser.get('/job/5')
+      .then((): any => browser.wait(() => element(by.css(`[name="btn-restart"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="btn-restart"]`)).isEnabled()))
+      .then((): any => browser.wait(() => {
+        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-restart"]`)));
+      }))
+      .then(() => browser.wait(
+        ExpectedConditions.presenceOf(element(by.css(`[name="btn-restart"]`)))))
+      .then(() => delay(1000))
+      .then((): any => element(by.css(`[name="btn-restart"]`)).click())
+      .then(() => element.all(by.css(`.ssh-container`)).count())
+      .then(cnt => expect(cnt).to.equals(0))
+      .then((): any => browser.wait(() => element(by.css(`[name="btn-debug"]`)).isEnabled()))
+      .then((): any => browser.wait(() => {
+        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-debug"]`)));
+      }))
+      .then((): any => element(by.css(`[name="btn-debug"]`)).click())
+      .then(() => delay(500))
+      .then(() => element.all(by.css(`.ssh-container`)).count())
+      .then(cnt => expect(cnt).to.equals(1))
+      .then((): any => element(by.css(`[name="btn-debug"]`)).click())
+      .then(() => delay(500))
+      .then(() => element.all(by.css(`.ssh-container`)).count())
+      .then(cnt => expect(cnt).to.equals(0));
+  });
 });
