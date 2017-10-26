@@ -2,7 +2,7 @@ import * as docker from './docker';
 import * as child_process from 'child_process';
 import { generateRandomId, getFilePath, prepareCommands } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
-import { Observable } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { green, red, bold, yellow, blue, cyan } from 'chalk';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
@@ -31,130 +31,170 @@ export function startBuildProcess(
   variables: string[],
   jobTimeout: number,
   idleTimeout: number
-): Observable<ProcessOutput> {
-  return new Observable(observer => {
-    const image = proc.image_name;
+): Subject<ProcessOutput | boolean> {
+  const debug: Subject<boolean> = new Subject();
+  let containerStarted = false;
+  let sub: Subscription;
 
-    const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
-      .map(cmd => cmd.command.replace('export', ''))
-      .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
-      .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
-      .concat(variables)
-      .filter(Boolean);
-
-    const gitTypes = [CommandType.git];
-    const installTypes = [CommandType.before_install, CommandType.install];
-    const scriptTypes = [CommandType.before_script, CommandType.script,
-      CommandType.after_success, CommandType.after_failure, CommandType.after_script];
-    const deployTypes = [CommandType.before_deploy, CommandType.deploy, CommandType.after_deploy];
-    const gitCommands = prepareCommands(proc, gitTypes);
-    const installCommands = prepareCommands(proc, installTypes);
-    const scriptCommands = prepareCommands(proc, scriptTypes);
-    const deployCommands = prepareCommands(proc, deployTypes);
-
-    let restoreCache: Observable<any> = Observable.empty();
-    let saveCache: Observable<any> = Observable.empty();
-    if (proc.repo_name && proc.branch && proc.cache) {
-      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
-      let cacheHostPath = getFilePath(`cache/${cacheFile}`);
-      let cacheContainerPath = `/home/abstruse/${cacheFile}`;
-      let copyRestoreCmd = [
-        `if [ -e ${cacheHostPath} ]; `,
-        `then docker cp ${cacheHostPath} ${name}:/home/abstruse; fi`
-      ].join('');
-      let restoreCmd = [
-        `if [ -e ${cacheContainerPath} ]; `,
-        `then tar xf ${cacheContainerPath} -C /; fi`
-      ].join('');
-
-      restoreCache = Observable.concat(...[
-        executeOutsideContainer(copyRestoreCmd),
-        docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
-      ]);
-
-      let cacheFolders = proc.cache.map(folder => {
-        if (folder.startsWith('/')) {
-          return folder;
-        } else {
-          return `/home/abstruse/build/${folder}`;
+  const output = debug
+    .switchMap(isDebug => {
+      if (isDebug) {
+        if (sub) {
+          sub.unsubscribe();
         }
-      }).join(' ');
 
-      let tarCmd = [
-        `if [ ! -e ${cacheContainerPath} ]; `,
-        `then tar cfz ${cacheContainerPath} ${cacheFolders}; fi`,
-      ].join('');
-      let saveTarCmd = [,
-        `if [ ! -e ${cacheHostPath} ]; `,
-        `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
-      ].join('');
+        return Observable.never();
+      } else {
+        return Observable.create(observer => {
+          const image = proc.image_name;
 
-      saveCache = Observable.concat(...[
-        docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }),
-        executeOutsideContainer(saveTarCmd)
-      ]);
-    }
+          const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
+          const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
+            .map(cmd => cmd.command.replace('export', ''))
+            .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
+            .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
+            .concat(variables)
+            .filter(Boolean);
 
-    const sub = docker.createContainer(name, image, envs)
-      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(restoreCache)
-      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
-      .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
-        return Observable.throw('job timeout');
-      }))
-      .subscribe((event: ProcessOutput) => {
-        if (event.type === 'containerError') {
-          const msg = red(event.data.json.message) || red(event.data);
-          observer.next({ type: 'exit', data: msg });
-          observer.error(msg);
-        } else if (event.type === 'containerInfo') {
-          observer.next({
-            type: 'exposed ports',
-            data: { type: 'ports', info: event.data.NetworkSettings.Ports }
-          });
-        } else if (event.type === 'exit') {
-          if (Number(event.data) !== 0) {
-            const msg = [
-              `build: ${proc.build_id} job: ${proc.job_id} =>`,
-              `last executed command exited with code ${event.data}`
-            ].join(' ');
-            const tmsg = `[error]: executed command returned exit code ${event.data}`;
-            observer.next({ type: 'exit', data: red(tmsg) });
-            observer.error(msg);
-            docker.killContainer(name)
-              .then(() => {
-                sub.unsubscribe();
-                observer.complete();
-              })
-              .catch(err => console.error(err));
+          const gitTypes = [CommandType.git];
+          const installTypes = [CommandType.before_install, CommandType.install];
+          const scriptTypes = [CommandType.before_script, CommandType.script,
+            CommandType.after_success, CommandType.after_failure, CommandType.after_script];
+          const deployTypes = [CommandType.before_deploy, CommandType.deploy,
+            CommandType.after_deploy];
+          const gitCommands = prepareCommands(proc, gitTypes);
+          const installCommands = prepareCommands(proc, installTypes);
+          const scriptCommands = prepareCommands(proc, scriptTypes);
+          const deployCommands = prepareCommands(proc, deployTypes);
+
+          let restoreCache: Observable<any> = Observable.empty();
+          let saveCache: Observable<any> = Observable.empty();
+          if (proc.repo_name && proc.branch && proc.cache) {
+            let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
+            let cacheHostPath = getFilePath(`cache/${cacheFile}`);
+            let cacheContainerPath = `/home/abstruse/${cacheFile}`;
+            let copyRestoreCmd = [
+              `if [ -e ${cacheHostPath} ]; `,
+              `then docker cp ${cacheHostPath} ${name}:/home/abstruse; fi`
+            ].join('');
+            let restoreCmd = [
+              `if [ -e ${cacheContainerPath} ]; `,
+              `then tar xf ${cacheContainerPath} -C /; fi`
+            ].join('');
+
+            restoreCache = Observable.concat(...[
+              executeOutsideContainer(copyRestoreCmd),
+              docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
+            ]);
+
+            let cacheFolders = proc.cache.map(folder => {
+              if (folder.startsWith('/')) {
+                return folder;
+              } else {
+                return `/home/abstruse/build/${folder}`;
+              }
+            }).join(' ');
+
+            let tarCmd = [
+              `if [ ! -e ${cacheContainerPath} ]; `,
+              `then tar cfz ${cacheContainerPath} ${cacheFolders}; fi`,
+            ].join('');
+            let saveTarCmd = [,
+              `if [ ! -e ${cacheHostPath} ]; `,
+              `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
+            ].join('');
+
+            saveCache = Observable.concat(...[
+              docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }),
+              executeOutsideContainer(saveTarCmd)
+            ]);
           }
-        } else {
-          observer.next(event);
-        }
-      }, err => {
-        observer.error(err);
-        docker.killContainer(name)
-          .then(() => {
+
+          let start: Observable<any> = Observable.empty();
+          let clean: Observable<any> = Observable.empty();
+          if (!containerStarted) {
+            start = docker.createContainer(name, image, envs);
+            containerStarted = true;
+          } else {
+            clean = docker.attachExec(name, {
+              command: 'find . -name . -o -prune -exec rm -rf -- {} +;',
+              type: CommandType.before_git
+            });
+          }
+
+          if (sub) {
             sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(err => console.error(err));
-      }, () => {
-        const msg = '[success]: build returned exit code 0';
-        observer.next({ type: 'exit', data: green(msg) });
-        docker.killContainer(name)
-          .then(() => {
-            sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(err => console.error(err));
-      });
-  });
+          }
+
+          sub = Observable.concat(...[start, clean])
+            .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
+            .concat(restoreCache)
+            .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
+            .concat(saveCache)
+            .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
+            .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+            .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
+            .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
+              return Observable.throw('job timeout');
+            }))
+            .subscribe((event: ProcessOutput) => {
+              if (event.type === 'containerError') {
+                const msg = red(event.data.json.message) || red(event.data);
+                observer.next({ type: 'exit', data: msg });
+                observer.error(msg);
+              } else if (event.type === 'containerInfo') {
+                observer.next({
+                  type: 'exposed ports',
+                  data: { type: 'ports', info: event.data.NetworkSettings.Ports }
+                });
+              } else if (event.type === 'exit') {
+                if (Number(event.data) !== 0) {
+                  const msg = [
+                    `build: ${proc.build_id} job: ${proc.job_id} =>`,
+                    `last executed command exited with code ${event.data}`
+                  ].join(' ');
+                  const tmsg = `[error]: executed command returned exit code ${event.data}`;
+                  observer.next({ type: 'exit', data: red(tmsg) });
+                  observer.error(msg);
+                  docker.killContainer(name)
+                    .then(() => {
+                      sub.unsubscribe();
+                      observer.complete();
+                    })
+                    .catch(err => console.error(err));
+                }
+              } else {
+                observer.next(event);
+              }
+            }, err => {
+              observer.error(err);
+              docker.killContainer(name)
+                .then(() => {
+                  sub.unsubscribe();
+                  observer.complete();
+                })
+                .catch(err => console.error(err));
+            }, () => {
+              const msg = '[success]: build returned exit code 0';
+              observer.next({ type: 'exit', data: green(msg) });
+              docker.killContainer(name)
+                .then(() => {
+                  sub.unsubscribe();
+                  observer.complete();
+                })
+                .catch(err => console.error(err));
+            });
+        });
+      }
+    });
+
+  const inputObserver: any = {
+    next(isDebug: boolean) {
+      debug.next(isDebug);
+    }
+  };
+
+  return Subject.create(inputObserver, output);
 }
 
 function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
