@@ -48,6 +48,7 @@ export interface JobProcess {
   env?: string[];
   job?: Observable<any>;
   exposed_ports?: string;
+  debug?: boolean;
 }
 
 export interface JobProcessEvent {
@@ -169,138 +170,14 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
               observer.complete();
             }
           }, err => {
-            proc.status = 'errored';
-            const time = new Date();
             const msg: LogMessageType = {
               message: `[error]: ${err}`, type: 'error', notify: false
             };
-            logger.next(msg);
-
-            dbJob.getLastRunId(proc.job_id)
-              .then(runId => {
-                const data = {
-                  id: runId,
-                  end_time: time,
-                  status: 'failed',
-                  log: proc.log.join('')
-                };
-
-                return dbJobRuns.updateJobRun(data);
-              })
-              .then(build => updateBuild({ id: proc.build_id, end_time: time }))
-              .then(id => updateBuildRun({ id: id, end_time: time }))
-              .then(() => getBuild(proc.build_id))
-              .then(build => sendFailureStatus(build, build.id))
-              .then(() => {
-                jobEvents.next({
-                  type: 'process',
-                  build_id: proc.build_id,
-                  data: 'build failed',
-                  additionalData: time.getTime()
-                });
-
-                buildStatuses.next({
-                  status: 'errored',
-                  build_id: proc.build_id,
-                  job_id: proc.job_id
-                });
-              })
-              .then(() => {
-                jobEvents.next({
-                  type: 'process',
-                  build_id: proc.build_id,
-                  job_id: proc.job_id,
-                  data: 'job failed',
-                  additionalData: time.getTime()
-                });
-              })
-              .then(() => observer.complete())
-              .catch(err => {
-                const msg: LogMessageType = {
-                  message: `[error]: ${err}`, type: 'error', notify: false
-                };
-                logger.next(msg);
-                observer.complete();
-              });
+            jobFailed(proc, msg)
+              .then(() => observer.complete());
           }, () => {
-            proc.status = 'success';
-            const time = new Date();
-            dbJob.getLastRunId(proc.job_id)
-              .then(runId => {
-                const data = {
-                  id: runId,
-                  end_time: time,
-                  status: 'success',
-                  log: proc.log.join('')
-                };
-
-                return dbJobRuns.updateJobRun(data);
-              })
-              .then(() => getBuildStatus(proc.build_id))
-              .then(status => {
-                buildStatuses.next({status: status, build_id: proc.build_id, job_id: proc.job_id});
-
-                if (status === 'success') {
-                  return updateBuild({ id: proc.build_id, end_time: time })
-                    .then(() => getLastRunId(proc.build_id))
-                    .then(id => updateBuildRun({ id: id, end_time: time} ))
-                    .then(() => getBuild(proc.build_id))
-                    .then(build => sendSuccessStatus(build, build.id))
-                    .then(() => {
-                      jobEvents.next({
-                        type: 'process',
-                        build_id: proc.build_id,
-                        data: 'build succeeded',
-                        additionalData: time.getTime()
-                      });
-                    });
-                } else if (status === 'failed') {
-                  return getBuild(proc.build_id)
-                    .then(build => updateBuild({ id: proc.build_id, end_time: time }))
-                    .then(() => getLastRunId(proc.build_id))
-                    .then(id => updateBuildRun({ id: id, end_time: time} ))
-                    .then(() => getBuild(proc.build_id))
-                    .then(build => sendFailureStatus(build, build.id))
-                    .then(() => {
-                      jobEvents.next({
-                        type: 'process',
-                        build_id: proc.build_id,
-                        data: 'build failed',
-                        additionalData: time.getTime()
-                      });
-                    });
-                } else {
-                  return Promise.resolve();
-                }
-              })
-              .then(() => {
-                jobEvents.next({
-                  type: 'process',
-                  build_id: proc.build_id,
-                  job_id: proc.job_id,
-                  data: 'job succeded',
-                  additionalData: time.getTime()
-                });
-                observer.complete();
-              })
-              .catch(err => {
-                const msg: LogMessageType = {
-                  message: `[error]: ${err}`, type: 'error', notify: false
-                };
-                logger.next(msg);
-
-                jobEvents.next({
-                  type: 'process',
-                  build_id: proc.build_id,
-                  job_id: proc.job_id,
-                  data: 'job failed',
-                  additionalData: time.getTime()
-                });
-
-                getLastRunId(proc.build_id).then(id => updateBuildRun({ id: id, end_time: time} ));
-
-                observer.complete();
-              });
+            jobSucceded(proc)
+              .then(() => observer.complete());
           });
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
@@ -465,6 +342,13 @@ export function stopJob(jobId: number): Promise<void> {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
+}
+
+export function debugJob(jobId: number, debug: boolean): Promise<void> {
+  return new Promise((resolve, reject) => {
+    let process = processes.find(p => p.job_id === Number(jobId));
+    process.debug = debug;
+  });
 }
 
 export function startBuild(data: any, buildConfig?: any): Promise<any> {
@@ -673,7 +557,8 @@ function queueJob(jobId: number): Promise<void> {
         env: data.env,
         image_name: data.image,
         exposed_ports: null,
-        log: []
+        log: [],
+        debug: false
       };
 
       jobProcesses.next(jobProcess);
@@ -683,5 +568,144 @@ function queueJob(jobId: number): Promise<void> {
         job_id: job.id,
         data: 'job queued'
       });
+    });
+}
+
+function jobSucceded(proc: JobProcess): Promise<any> {
+  return Promise.resolve()
+    .then(() => {
+      proc.status = 'success';
+      const time = new Date();
+      return dbJob.getLastRunId(proc.job_id)
+        .then(runId => {
+          const data = {
+            id: runId,
+            end_time: time,
+            status: 'success',
+            log: proc.log.join('')
+          };
+
+          return dbJobRuns.updateJobRun(data);
+        })
+        .then(() => getBuildStatus(proc.build_id))
+        .then(status => {
+          buildStatuses.next({status: status, build_id: proc.build_id, job_id: proc.job_id});
+
+          if (status === 'success') {
+            return updateBuild({ id: proc.build_id, end_time: time })
+              .then(() => getLastRunId(proc.build_id))
+              .then(id => updateBuildRun({ id: id, end_time: time} ))
+              .then(() => getBuild(proc.build_id))
+              .then(build => sendSuccessStatus(build, build.id))
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  data: 'build succeeded',
+                  additionalData: time.getTime()
+                });
+              });
+          } else if (status === 'failed') {
+            return getBuild(proc.build_id)
+              .then(build => updateBuild({ id: proc.build_id, end_time: time }))
+              .then(() => getLastRunId(proc.build_id))
+              .then(id => updateBuildRun({ id: id, end_time: time} ))
+              .then(() => getBuild(proc.build_id))
+              .then(build => sendFailureStatus(build, build.id))
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  data: 'build failed',
+                  additionalData: time.getTime()
+                });
+              });
+          } else {
+            return Promise.resolve();
+          }
+        })
+        .then(() => {
+          jobEvents.next({
+            type: 'process',
+            build_id: proc.build_id,
+            job_id: proc.job_id,
+            data: 'job succeded',
+            additionalData: time.getTime()
+          });
+        })
+        .catch(err => {
+          const msg: LogMessageType = {
+            message: `[error]: ${err}`, type: 'error', notify: false
+          };
+          logger.next(msg);
+
+          jobEvents.next({
+            type: 'process',
+            build_id: proc.build_id,
+            job_id: proc.job_id,
+            data: 'job failed',
+            additionalData: time.getTime()
+          });
+
+          getLastRunId(proc.build_id).then(id => updateBuildRun({ id: id, end_time: time} ));
+          Promise.resolve();
+        });
+    });
+}
+
+function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
+  return Promise.resolve()
+    .then(() => {
+      proc.status = 'errored';
+      const time = new Date();
+      if (msg) {
+        logger.next(msg);
+      }
+
+      return dbJob.getLastRunId(proc.job_id)
+        .then(runId => {
+          const data = {
+            id: runId,
+            end_time: time,
+            status: 'failed',
+            log: proc.log.join('')
+          };
+
+          return dbJobRuns.updateJobRun(data);
+        })
+        .then(build => updateBuild({ id: proc.build_id, end_time: time }))
+        .then(id => updateBuildRun({ id: id, end_time: time }))
+        .then(() => getBuild(proc.build_id))
+        .then(build => sendFailureStatus(build, build.id))
+        .then(() => {
+          jobEvents.next({
+            type: 'process',
+            build_id: proc.build_id,
+            data: 'build failed',
+            additionalData: time.getTime()
+          });
+
+          buildStatuses.next({
+            status: 'errored',
+            build_id: proc.build_id,
+            job_id: proc.job_id
+          });
+        })
+        .then(() => {
+          jobEvents.next({
+            type: 'process',
+            build_id: proc.build_id,
+            job_id: proc.job_id,
+            data: 'job failed',
+            additionalData: time.getTime()
+          });
+        })
+        .catch(err => {
+          const msg: LogMessageType = {
+            message: `[error]: ${err}`, type: 'error', notify: false
+          };
+          logger.next(msg);
+          Promise.resolve();
+        });
     });
 }

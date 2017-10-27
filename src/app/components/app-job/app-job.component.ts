@@ -42,6 +42,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   commitMessage: string;
   dateTime: string;
   dateTimeToNow: string;
+  debug: boolean;
 
   constructor(
     private socketService: SocketService,
@@ -59,6 +60,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.id = null;
     this.sshd = null;
     this.vnc = null;
+    this.debug = false;
   }
 
   ngOnInit() {
@@ -88,6 +90,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
             const port = portData['5900/tcp'][0].HostPort;
             this.vnc = `${document.location.hostname}:${port}`;
           }
+        } else if (event.type === 'debug') {
+          const debug = event.data || false;
+          this.debug = debug;
         }
       });
 
@@ -197,6 +202,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.sshd = null;
     this.vnc = null;
     this.socketService.emit({ type: 'stopJob', data: { jobId: this.id } });
+  }
+
+  debugMode(e: MouseEvent): void {
+    this.socketService.emit({ type: 'debugJob', data: { jobId: this.id, debug: this.debug } });
   }
 
   terminalOutput(e: any): void {

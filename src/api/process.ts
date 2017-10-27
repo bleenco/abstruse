@@ -2,7 +2,7 @@ import * as docker from './docker';
 import * as child_process from 'child_process';
 import { generateRandomId, getFilePath, prepareCommands } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { green, red, bold, yellow, blue, cyan } from 'chalk';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
@@ -26,6 +26,7 @@ export interface ProcessOutput {
   data: any;
 }
 
+export const debugging: Subject<any> = new Subject();
 export function startBuildProcess(
   proc: JobProcess,
   variables: string[],
@@ -48,7 +49,11 @@ export function startBuildProcess(
     const scriptTypes = [CommandType.before_script, CommandType.script,
       CommandType.after_success, CommandType.after_failure, CommandType.after_script];
     const deployTypes = [CommandType.before_deploy, CommandType.deploy, CommandType.after_deploy];
-    const gitCommands = prepareCommands(proc, gitTypes);
+    let gitCommands = prepareCommands(proc, gitTypes);
+    /* gitCommands = [{
+      command: 'find . -name . -o -prune -exec rm -rf -- {} +',
+      type: CommandType.git
+    }].concat(gitCommands); */
     const installCommands = prepareCommands(proc, installTypes);
     const scriptCommands = prepareCommands(proc, scriptTypes);
     const deployCommands = prepareCommands(proc, deployTypes);
@@ -95,64 +100,77 @@ export function startBuildProcess(
         executeOutsideContainer(saveTarCmd)
       ]);
     }
-
-    const sub = docker.createContainer(name, image, envs)
-      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(restoreCache)
-      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
-      .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
-        return Observable.throw('job timeout');
-      }))
-      .subscribe((event: ProcessOutput) => {
-        if (event.type === 'containerError') {
-          const msg = red(event.data.json.message) || red(event.data);
-          observer.next({ type: 'exit', data: msg });
-          observer.error(msg);
-        } else if (event.type === 'containerInfo') {
-          observer.next({
-            type: 'exposed ports',
-            data: { type: 'ports', info: event.data.NetworkSettings.Ports }
-          });
-        } else if (event.type === 'exit') {
-          if (Number(event.data) !== 0) {
-            const msg = [
-              `build: ${proc.build_id} job: ${proc.job_id} =>`,
-              `last executed command exited with code ${event.data}`
-            ].join(' ');
-            const tmsg = `[error]: executed command returned exit code ${event.data}`;
-            observer.next({ type: 'exit', data: red(tmsg) });
-            observer.error(msg);
-            docker.killContainer(name)
-              .then(() => {
-                sub.unsubscribe();
-                observer.complete();
-              })
-              .catch(err => console.error(err));
+    docker.createContainer(name, image, envs).toPromise().then(container => {
+      observer.next({
+        type: 'exposed ports',
+        data: { type: 'ports', info: container.data.NetworkSettings.Ports }
+      });
+      debugging
+        .filter(val => Number(val.jobId) === Number(proc.job_id))
+        .switchMap(debug => {
+          if (debug.debug) {
+            return Observable.never();
+          } else {
+            return Observable
+              .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
+              .concat(restoreCache)
+              .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
+              .concat(saveCache)
+              .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
+              .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+              .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
+              .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
+                return Observable.throw('job timeout');
+              }));
           }
-        } else {
-          observer.next(event);
-        }
-      }, err => {
-        observer.error(err);
-        docker.killContainer(name)
-          .then(() => {
-            sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(err => console.error(err));
-      }, () => {
-        const msg = '[success]: build returned exit code 0';
-        observer.next({ type: 'exit', data: green(msg) });
-        docker.killContainer(name)
-          .then(() => {
-            sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(err => console.error(err));
+        })
+        /* .subscribe(); */
+        .subscribe((event: ProcessOutput) => {
+          if (event.type === 'containerError') {
+            const msg = red(event.data.json.message) || red(event.data);
+            observer.next({ type: 'exit', data: msg });
+            observer.error(msg);
+          } else if (event.type === 'containerInfo') {
+            observer.next({
+              type: 'exposed ports',
+              data: { type: 'ports', info: event.data.NetworkSettings.Ports }
+            });
+          } else if (event.type === 'exit') {
+            if (Number(event.data) !== 0) {
+              const msg = [
+                `build: ${proc.build_id} job: ${proc.job_id} =>`,
+                `last executed command exited with code ${event.data}`
+              ].join(' ');
+              const tmsg = `[error]: executed command returned exit code ${event.data}`;
+              observer.next({ type: 'exit', data: red(tmsg) });
+              observer.error(msg);
+              docker.killContainer(name)
+                .then(() => {
+                  observer.complete();
+                })
+                .catch(err => console.error(err));
+            }
+          } else {
+            observer.next(event);
+          }
+        }, err => {
+          observer.error(err);
+          docker.killContainer(name)
+            .then(() => {
+              observer.complete();
+            })
+            .catch(err => console.error(err));
+        }, () => {
+          const msg = '[success]: build returned exit code 0';
+          observer.next({ type: 'exit', data: green(msg) });
+          docker.killContainer(name)
+            .then(() => {
+              observer.complete();
+            })
+            .catch(err => console.error(err));
+        });
+
+        debugging.next({ jobId: proc.job_id, debug: false });
       });
   });
 }

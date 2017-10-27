@@ -144,24 +144,34 @@
             </div>
 
           </div>
-          <div class="column is-12 is-hidden-mobile" *ngIf="jobRun?.status === 'running' && sshd && vnc && userId">
+          <div class="column is-12 is-hidden-mobile"> <!-- *ngIf="jobRun?.status === 'running' && sshd && vnc && userId" -->
             <div class="ssh-container">
-              <span class="icon">
-                <img src="images/icons/ssh.svg">
-              </span>
-              <span>SSH and VNC Daemon is enabled in this container.</span>
-              <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
-                SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
-                <img src="images/icons/copy.svg">
-              </code>
-              <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
-                VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
-                <img src="images/icons/copy.svg">
-              </code>
-              <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
-                password: abstrusePass
-                <img src="images/icons/copy.svg">
-              </code>
+                <div class="columns">
+                  <div class="column is-11">
+                    <span class="icon">
+                      <img src="images/icons/ssh.svg">
+                    </span>
+                    <span>SSH and VNC Daemon is enabled in this container.</span>
+                    <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
+                      SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
+                      <img src="images/icons/copy.svg">
+                    </code>
+                    <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
+                      VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
+                      <img src="images/icons/copy.svg">
+                    </code>
+                    <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
+                      password: abstrusePass
+                      <img src="images/icons/copy.svg">
+                    </code>
+                  </div>
+                  <div class="column is-1">
+                      <!-- <label>Debug:</label> -->
+                      <!-- <span>Debug:</span> -->
+                      Debug:
+                      <app-toggle [(ngModel)]="debug" name="debug" (click)="debugMode($event)"></app-toggle>
+                  </div>
+                </div>
             </div>
           </div>
           <div class="column is-12">
