@@ -5,6 +5,7 @@ import * as temp from 'temp';
 import { getHttpJsonResponse } from './utils';
 
 export enum CommandType {
+  before_git = 'before_git',
   git = 'git',
   before_install = 'before_install',
   install = 'install',
@@ -22,6 +23,7 @@ export enum CommandType {
 }
 
 export enum CommandTypePriority {
+  before_git = 0,
   git = 1,
   before_install = 2,
   install = 3,

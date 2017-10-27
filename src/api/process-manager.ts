@@ -1,4 +1,4 @@
-import { startBuildProcess } from './process';
+import { startBuildProcess, ProcessOutput } from './process';
 import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import {
   insertBuild,
@@ -142,8 +142,9 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
         const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
         const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 
-        buildSub[proc.job_id] = startBuildProcess(proc, envVariables, jobTimeout, idleTimeout)
-          .subscribe(event => {
+        const buildProcess = startBuildProcess(proc, envVariables, jobTimeout, idleTimeout);
+        buildSub[proc.job_id] = buildProcess
+          .subscribe((event: ProcessOutput) => {
             const msg: JobProcessEvent = {
               build_id: proc.build_id,
               job_id: proc.job_id,
@@ -302,6 +303,15 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
                 observer.complete();
               });
           });
+
+          // start normal process, without debug mode
+          buildProcess.next(false);
+
+          setTimeout(() => {
+            buildProcess.next(true);
+
+            setTimeout(() => buildProcess.next(false), 5000);
+          }, 5000);
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
       .then(runId => {
