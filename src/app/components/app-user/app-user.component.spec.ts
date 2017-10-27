@@ -139,8 +139,8 @@ describe('User Component', () => {
       fixture.detectChanges();
       const de = fixture.debugElement.query(By.css('h1'));
       expect(de.nativeElement.textContent).toBe('Permissions');
-      expect(fixture.componentInstance.restrictedRepositories.length).toBe(1);
-      expect(fixture.componentInstance.repositories.length).toBe(2);
+      expect(fixture.componentInstance.restrictedRepositories.length).toBe(0);
+      expect(fixture.componentInstance.repositories.length).toBe(3);
     });
   });
 

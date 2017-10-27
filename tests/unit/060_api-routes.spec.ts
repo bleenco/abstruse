@@ -40,8 +40,9 @@ describe('Api Server Routes Unit Tests', () => {
       return sendGetRequest({}, `api/repositories?keyword=`).then(repo => {
         expect(repo['data'][0]['full_name']).to.equal('Izak88/bterm');
         expect(repo['data'][0]['id']).to.equal(1);
-        expect(repo['data'][1]['full_name']).to.equal('jkuri/d3-bundle');
-        expect(repo['data'][1]['id']).to.equal(2);
+        expect(repo['data'][1]['full_name']).to.equal('izak88/d3-bundle');
+        expect(repo['data'][1]['id']).to.equal(5);
+        expect(repo['data'].length).to.equal(2);
       });
     });
 
@@ -51,6 +52,7 @@ describe('Api Server Routes Unit Tests', () => {
         expect(repo['data'][0]['id']).to.equal(1);
         expect(repo['data'][1]['full_name']).to.equal('jkuri/d3-bundle');
         expect(repo['data'][1]['id']).to.equal(2);
+        expect(repo['data'].length).to.equal(5);
       });
     });
 
@@ -60,6 +62,7 @@ describe('Api Server Routes Unit Tests', () => {
         expect(repo['data'][0]['id']).to.equal(1);
         expect(repo['data'][1]['full_name']).to.equal('izak88/d3-bundle');
         expect(repo['data'][1]['id']).to.equal(5);
+        expect(repo['data'].length).to.equal(2);
       });
     });
 
