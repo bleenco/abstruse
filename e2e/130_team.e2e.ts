@@ -18,6 +18,14 @@ describe('Teams', () => {
       }));
   });
 
+  it(`logged in user can see all repositories he has permission to`, () => {
+    return browser.get('/repositories')
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => element.all(by.css('.list-item-slim')).count())
+      .then(cnt => expect(cnt).to.equals(5));
+  });
+
   it('should add new user', () => {
     return browser.get('/team')
       .then((): any => browser.wait(() => {
@@ -48,10 +56,10 @@ describe('Teams', () => {
       .then((): any => browser.wait(() => element(by.css(`[name="tab-permissions"]`)).isEnabled()))
       .then((): any => element(by.css('[name="tab-permissions"]')).click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 5);
+        return element.all(by.css('.border-green')).count().then(count => count === 4);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-red')).count().then(count => count === 0);
+        return element.all(by.css('.border-red')).count().then(count => count === 1);
       }))
       .then((): any => browser.wait(() => element.all(by.css(`[name="btn-removePermission"]`))
         .first().isPresent()))
@@ -63,11 +71,11 @@ describe('Teams', () => {
       .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
       .then((): any => element.all(by.css('[name="btn-removePermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 4);
+        return element.all(by.css('.border-green')).count().then(count => count === 3);
       }))
       .then((): any => browser.wait(() => {
         return element.all(by.css('.border-red')).count()
-          .then(count => count === 1);
+          .then(count => count === 2);
       }))
       .then((): any => browser.wait(() => element.all(by.css(`[name="btn-addPermission"]`))
         .first().isPresent()))
@@ -79,10 +87,10 @@ describe('Teams', () => {
       .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
       .then((): any => element.all(by.css('[name="btn-addPermission"]')).first().click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-green')).count().then(count => count === 5);
+        return element.all(by.css('.border-green')).count().then(count => count === 4);
       }))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.border-red')).count().then(count => count === 0);
+        return element.all(by.css('.border-red')).count().then(count => count === 1);
       }));
   });
 
@@ -140,6 +148,14 @@ describe('Teams', () => {
       .then(present => expect(present).to.equals(false));
   });
 
+  it(`as annonymous user can see public repositories`, () => {
+    return browser.get('/repositories')
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => element.all(by.css('.list-item-slim')).count())
+      .then(cnt => expect(cnt).to.equals(4));
+  });
+
   it(`logout admin user and login with non admin user`, () => {
     return browser.get('/login')
       .then(() => isLoaded())
@@ -147,6 +163,14 @@ describe('Teams', () => {
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
       .then(() => element(by.css('.login-button')).click())
       .then(() => isLoaded());
+  });
+
+  it(`logged in user can see all repositories he has permission to`, () => {
+    return browser.get('/repositories')
+      .then(() => isLoaded())
+      .then(() => delay(1000))
+      .then((): any => element.all(by.css('.list-item-slim')).count())
+      .then(cnt => expect(cnt).to.equals(4));
   });
 
   it(`non admin user should see dashboard`, () => {

@@ -193,4 +193,32 @@ describe('Repository', () => {
       .then(() => element(by.css('.form-input[name="api_url"]')).getAttribute('value'))
       .then(txt => expect(txt).to.equals('https://api.github.com2'));
   });
+
+  it('should redirect to bterm repository, and mark its as private', () => {
+    return  browser.get('/repositories')
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item')).count().then(count => count === 2);
+      }))
+      .then((): any => element.all(by.css('.list-item')).first().click())
+      .then((): any => browser.wait(() => element(by.css(`[name="btn-settings"]`)).isPresent()))
+      .then((): any => browser.wait(() => {
+        return ExpectedConditions.elementToBeClickable(element(by.css(`[name="btn-settings"]`)));
+      }))
+      .then((): any => element(by.css('[name="btn-settings"]')).click())
+      .then(() => browser.wait(() => element(by.css('.toggle-button')).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`.toggle-button`)).isEnabled()))
+      .then(() => element(by.css(`.toggle-button`)).click())
+      .then((): any => browser.wait(() => element(by.css(`[name="save-settings"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="save-settings"]`)).isEnabled()))
+      .then((): any => browser.wait(() => ExpectedConditions.elementToBeClickable(
+        element(by.css(`[name="save-settings"]`)))))
+      .then(() => element(by.css(`[name="save-settings"]`)))
+      .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
+      .then(() => element(by.css(`[name="save-settings"]`)).click())
+      .then(() => browser.get('/repo/1?tab=settings'))
+      .then((): any => isLoaded())
+      .then(() => browser.wait(() => element(by.css('.toggle-button')).isPresent()))
+      .then(() => element.all(by.css('.toggle-button enabled')).count())
+      .then(cnt => expect(cnt).to.equals(0));
+  });
 });

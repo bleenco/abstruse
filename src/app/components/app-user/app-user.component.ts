@@ -70,10 +70,9 @@ export class AppUserComponent implements OnInit {
       });
 
     this.route.params
-      .switchMap((params: Params) => this.api.getRepositories(''))
+      .switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
       .subscribe(repositories => {
-        this.repositories =
-          repositories.filter(r => r.permissions.findIndex(p => p.permission) !== -1);
+        this.repositories = repositories;
         this.repositories.forEach((repo: any, i) => {
           this.api.getBadge(repo.id).subscribe(badge => {
             if (badge.ok) {
@@ -82,13 +81,19 @@ export class AppUserComponent implements OnInit {
           });
         });
 
-        this.restrictedRepositories =
-          repositories.filter(r => r.permissions.findIndex(p => !p.permission) !== -1);
-        this.restrictedRepositories.forEach((repo: any, i) => {
-          this.api.getBadge(repo.id).subscribe(badge => {
-            if (badge.ok) {
-              this.restrictedRepositories[i].status_badge = badge._body;
-            }
+        this.api.getRepositories('', this.user.id).subscribe(userRepositories => {
+          this.restrictedRepositories =
+            repositories.filter(r => userRepositories.findIndex(ur => ur.id === r.id) === -1);
+
+          this.restrictedRepositories.forEach((repo: any, i) => {
+            this.api.getBadge(repo.id).subscribe(badge => {
+              if (badge.ok) {
+                this.restrictedRepositories[i].status_badge = badge._body;
+              }
+            });
+          });
+          this.repositories = this.repositories.filter(r => {
+            return this.restrictedRepositories.findIndex(rr => rr.id === r.id) === -1;
           });
         });
       });
