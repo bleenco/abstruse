@@ -50,10 +50,11 @@
       text-decoration: underline
 
     &.bold
-      font-family: $font-family-bold
+      font-family: $font-family-semibold
 
     &.larger
-      font-size: 17px
+      font-size: 15px
+      font-family: $font-family-semibold
 
       +mobile
         padding: 5px 0
@@ -103,10 +104,11 @@
   color: $color
   font-size: 13px
   cursor: pointer
-  background: $background
+  background: $white
   border: 1px solid $divider
   display: flex
   align-items: center
+  font-family: $font-family-semibold
 
   +mobile
     display: block
@@ -201,6 +203,8 @@
       width: 100%
 
       span
+        font-size: 16px
+        font-family: $font-family-semibold
 
         +mobile
           text-align: center
@@ -208,7 +212,6 @@
         &.span-branch
           font-size: 13px
           display: inline-block
-          color: $color
 
           img
             display: block
@@ -271,7 +274,7 @@
   .avatar-icon
     width: 50px
     height: 50px
-    border-radius: 50px
+    border-radius: 5px
     margin: 0 15px 0 5px
 
   span
@@ -281,7 +284,7 @@
       text-decoration: underline
 
     &.bold
-      font-family: $font-family-bold
+      font-family: $font-family-semibold
 
   .icon-and-text
     display: inline-flex
@@ -315,7 +318,7 @@
       font-size: 15px
 
     .env-text
-      font-size: 15px
+      font-size: 14px
 
 .message-center
   display: block
@@ -421,14 +424,14 @@ progress
     width: 30px
     height: 30px
     border: 1px solid $border
-    border-radius: 50%
+    border-radius: 5px
     z-index: 11
 
 .avatar-img
   display: block
   max-width: 50px
   height: 50px
-  border-radius: 50%
+  border-radius: 5px
 
 
 .data-label

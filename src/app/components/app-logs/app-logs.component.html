@@ -11,7 +11,7 @@
 
     </div>
     <div class="nav-right">
-      <div class="group-buttons">
+      <div class="group-buttons bright">
         <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="changeShowType('all')">All Logs</button>
         <button class="group-button" [ngClass]="{ 'is-active': show === 'info' }" (click)="changeShowType('info')">Info</button>
         <button class="group-button" [ngClass]="{ 'is-active': show === 'warning' }" (click)="changeShowType('warning')">Warnings</button>
@@ -50,7 +50,7 @@
               </div>
             </div>
             <div layout-align="center" *ngIf="logs?.length" align="center" class="more-button-container">
-              <button type="button" class="button dark" name="btn-loadmore" (click)="fetch($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
+              <button type="button" class="button" name="btn-loadmore" (click)="fetch($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
                 <img src="/images/icons/more.svg">
                 Load more
               </button>

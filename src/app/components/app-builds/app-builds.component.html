@@ -11,7 +11,7 @@
 
     </div>
     <div class="nav-right">
-      <div class="group-buttons">
+      <div class="group-buttons bright">
         <button class="group-button" [ngClass]="{ 'is-active': show === 'all' }" (click)="showAllBuilds()">
           <i class="ionicon ion-network"></i>
           All Builds
@@ -41,7 +41,7 @@
 
           <div class="column is-12" *ngIf="!builds?.length">
             <div class="notification">
-              No builds have been run yet.
+              <p>No builds have been run yet.</p>
             </div>
           </div>
 

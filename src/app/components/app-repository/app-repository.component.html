@@ -10,7 +10,7 @@
     </div>
     <div class="nav-center"></div>
     <div class="nav-right">
-      <div class="group-buttons" *ngIf="userId">
+      <div class="group-buttons bright" *ngIf="userId">
         <button class="group-button" name="btn-builds" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">
           <i class="ionicon ion-hammer"></i>
           Builds
@@ -68,7 +68,7 @@
               <app-build-item [build]="build"></app-build-item>
             </div>
             <div layout-align="center" *ngIf="repo?.builds?.length" align="center" class="more-button-container">
-              <button type="button" class="button dark" name="btn-loadmore" (click)="fetchBuilds($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
+              <button type="button" class="button" name="btn-loadmore" (click)="fetchBuilds($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
                 <img src="/images/icons/more.svg">
                 Load more builds
               </button>
