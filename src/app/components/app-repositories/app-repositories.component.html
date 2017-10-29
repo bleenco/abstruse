@@ -34,7 +34,7 @@
     <div class="column is-12">
       <div class="content">
         <div *ngIf="loading">
-          <img src="images/icons/flickr.svg" class="main-loader">
+          <img src="/images/icons/flickr.svg" class="main-loader">
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
@@ -48,19 +48,19 @@
             <div class="columns list-item list-item-slim" *ngFor="let repo of repositories; let i = index;" (click)="gotoRepository($event, repo.id)">
               <div class="column is-3">
                 <span class="icon">
-                  <img src="images/icons/git-repository.svg">
+                  <img src="/images/icons/git-repository.svg">
                 </span>
                 <span class="bold">{{ repo.full_name }}</span>
               </div>
               <div class="column is-5">
                 <span class="icon">
-                  <img src="images/icons/github-white.svg">
+                  <img src="/images/icons/github-white.svg">
                 </span>
                 <span>{{ repo.html_url }}</span>
               </div>
               <div class="column is-2">
                 <span class="icon">
-                  <img src="images/icons/git-branch.svg">
+                  <img src="/images/icons/git-branch.svg">
                 </span>
                 <span>{{ repo.default_branch }}</span>
               </div>

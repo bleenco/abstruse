@@ -26,7 +26,7 @@
     <div class="column is-12">
       <div class="content">
         <div class="container" *ngIf="loading">
-          <img src="images/icons/flickr.svg" class="main-loader">
+          <img src="/images/icons/flickr.svg" class="main-loader">
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
@@ -51,7 +51,7 @@
             </div>
             <div layout-align="center" *ngIf="logs?.length" align="center" class="more-button-container">
               <button type="button" class="button dark" name="btn-loadmore" (click)="fetch($event)" [class.is-loading]="fetching" [class.is-hidden]="hideMoreButton">
-                <img src="images/icons/more.svg">
+                <img src="/images/icons/more.svg">
                 Load more
               </button>
             </div>

@@ -4,7 +4,7 @@
       <span class="command" [innerHTML]="cmd.command"></span>
       <span class="time" *ngIf="cmd.time">{{ cmd.time }}</span>
       <span class="command-loader" *ngIf="!cmd.time">
-        <img src="images/icons/spinner.svg">
+        <img src="/images/icons/spinner.svg">
       </span>
     </div>
     <pre class="output" [class.is-hidden]="!cmd.visible" [innerHTML]="cmd.output"></pre>

@@ -23,9 +23,7 @@ module.exports = {
       { test: /\.ts$/, loaders: ['ts-loader?silent=true'] },
     ]
   },
-  stats: {
-    warnings: false
-  },
+  stats: 'errors-only',
   node: {
     console: false,
     global: false,
