@@ -2,8 +2,9 @@
   height: 75px
   width: 100%
   z-index: 90 !important
-  background-color: #000
+  background-color: $white
   position: relative
+  box-shadow: 1px 2px 5px rgba($black, 0.1)
 
   .nav-logo
     margin-left: -10px
@@ -12,7 +13,7 @@
       height: 20px
 
   .nav-item:not(.nav-logo)
-    color: $white !important
+    color: $color !important
     font-size: 13px
     margin-right: 15px
     font-weight: 700
@@ -28,7 +29,7 @@
     i
       font-size: 20px !important
       margin-right: 10px
-      color: $white
+      color: $color
 
     &.notification-item
       cursor: pointer
@@ -58,7 +59,7 @@
         border-radius: 5px
         padding-top: 12px
         padding-bottom: 12px
-        background: $background
+        background: $white
         box-shadow: 1px 2px 3px rgba(10, 10, 10, 0.1)
         border: 1px solid $border
         z-index: 100
@@ -68,7 +69,7 @@
           position: absolute
           top: -7.5px
           right: 35px
-          background: $background
+          background: $white
           width: 15px
           height: 15px
           transform: rotate(-45deg)
@@ -138,7 +139,7 @@
       display: block
       float: left
       margin-left: 10px
-      color: $white
+      color: $color
 
   .nav-dropdown
     position: absolute
@@ -147,8 +148,9 @@
     top: 65px
     right: -8px
     padding-top: 12px
-    background: $black
-    border: 1px solid #222
+    background: $white
+    border: 1px solid $border
+    border-radius: 4px
 
     &:after
       display: block
@@ -156,16 +158,16 @@
       transform: rotate(-45deg)
       width: 12px
       height: 12px
-      background: $black
-      border-top: 1px solid #222
-      border-right: 1px solid #222
+      background: $white
+      border-top: 1px solid $border
+      border-right: 1px solid $border
       position: absolute
       top: -6px
       right: 10px
 
     .nav-dropdown-item
       display: block
-      color: $white
+      color: $color
       padding: 10px
       font-size: 12px
       position: relative
@@ -178,12 +180,12 @@
         border-bottom-right-radius: 4px
 
       &:hover
-        background: #222
-        color: $white
+        background: $white
+        color: $color
 
     .version-link
       font-size: 10px
-      color: $white
+      color: $color
       padding: 5px 10px
       position: relative
       display: block
@@ -195,10 +197,10 @@
         font-size: 14px !important
         top: 0
         right: 0
-        color: $white !important
+        color: $color !important
 
       &:hover
-        color: $white
+        color: $color
 
   &.sub-nav
     background: $white
@@ -206,7 +208,7 @@
     padding-bottom: 30px
     display: flex
     align-items: center
-    z-index: 80 !important
+    z-index: 95 !important
     box-shadow: 1px 2px 5px rgba($black, 0.1)
     border-bottom: none
     height: 50px
@@ -223,7 +225,6 @@
           font-size: 18px
           font-weight: $weight-normal
           margin-left: -10px
-          margin-top: 5px
 
           +mobile
             display: none
