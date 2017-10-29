@@ -1,16 +1,19 @@
 .nav
-  height: 55px
+  height: 75px
   width: 100%
   z-index: 90 !important
-  background: $header-background
+  background-color: #000
   position: relative
 
-  &.main-nav
-    box-shadow: 1px 2px 5px rgba($black, 0.2)
+  .nav-logo
+    margin-left: -10px
 
-  .nav-item
+    img
+      height: 20px
+
+  .nav-item:not(.nav-logo)
     color: $white !important
-    font-size: 14px
+    font-size: 13px
     margin-right: 15px
     font-weight: 700
     font-family: $font-family-semibold
@@ -25,7 +28,7 @@
     i
       font-size: 20px !important
       margin-right: 10px
-      color: $color-secondary
+      color: $white
 
     &.notification-item
       cursor: pointer
@@ -95,11 +98,13 @@
             background: $background
 
     &.user-item
-      margin-top: 7px
+      margin-top: 17px
       height: 40px
+      min-height: 40px
       display: inline-flex
       align-items: center
       justify-content: flex-start
+      border-bottom: none !important
 
       &.is-open
         background: transparent
@@ -111,29 +116,21 @@
 
       i
         position: absolute
-        top: 17px
+        top: 26px
         right: -10px
-        font-size: 12px !important
+        font-size: 14px !important
 
     img.nav-item-icon
       width: 20px
       height: 20px
       margin-right: 10px
 
-    &.nav-logo
-      margin-right: 15px
-      margin-left: -10px
-
-      img
-        min-height: 20px
-        height: 20px
-
     .nav-avatar
       display: block
       float: left
-      width: 30px
-      height: 30px
-      border-radius: 50%
+      width: 35px
+      min-height: 35px
+      border-radius: 5px
       margin-right: 10px
       background: $grey-light
 
@@ -147,12 +144,11 @@
     position: absolute
     z-index: 100
     width: 200px
-    top: 60px
+    top: 65px
     right: -8px
     padding-top: 12px
-    background: $header-background
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26)
-    border: 1px solid $header-background-dark
+    background: $black
+    border: 1px solid #222
 
     &:after
       display: block
@@ -160,9 +156,9 @@
       transform: rotate(-45deg)
       width: 12px
       height: 12px
-      background: $header-background
-      border-top: 1px solid $header-background-dark
-      border-right: 1px solid $header-background-dark
+      background: $black
+      border-top: 1px solid #222
+      border-right: 1px solid #222
       position: absolute
       top: -6px
       right: 10px
@@ -182,7 +178,7 @@
         border-bottom-right-radius: 4px
 
       &:hover
-        background: $header-background-dark
+        background: #222
         color: $white
 
     .version-link
@@ -192,27 +188,28 @@
       position: relative
       display: block
       text-align: center
-      font-weight: $weight-normal
-      font-family: $font-family-regular
+      font-family: $font-family-semibold
 
       i
         position: absolute
         font-size: 14px !important
         top: 0
         right: 0
-        color: $white
+        color: $white !important
 
       &:hover
         color: $white
 
   &.sub-nav
-    background: $hover-item-background
+    background: $white
     padding-top: 30px
     padding-bottom: 30px
     display: flex
     align-items: center
     z-index: 80 !important
-    box-shadow: 1px 2px 0 rgba($header-background, 0.1)
+    box-shadow: 1px 2px 5px rgba($black, 0.1)
+    border-bottom: none
+    height: 50px
 
     +mobile
       display: none
@@ -223,8 +220,10 @@
 
         h1
           color: $color
-          font-size: 20px
-          font-weight: $weight-semibold
+          font-size: 18px
+          font-weight: $weight-normal
+          margin-left: -10px
+          margin-top: 5px
 
           +mobile
             display: none

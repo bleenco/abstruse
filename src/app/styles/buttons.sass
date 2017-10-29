@@ -118,7 +118,7 @@
     &[disabled]
       background: lighten($red, 5)
       border-color: $red
-      color: $white
+      color: $color
 
   &.white
     background: transparent
@@ -176,6 +176,7 @@
     background: #E9EDF1
     border: 1px solid #DFE3E9
     pointer-events: none
+    color: $color
 
   img
     width: 14px
@@ -208,7 +209,7 @@
     font-family: $font-family-semibold
     font-weight: 700
     text-transform: uppercase
-    font-size: 12px
+    font-size: 11px
     outline: none
     cursor: pointer
     display: inline-flex
@@ -236,9 +237,10 @@
   &.bright
 
     .group-button
-      background-image: linear-gradient(0deg, #F2F4F7 0%, #FFFFFF 100%)
+      background-image: linear-gradient(0deg, #F7FBFD 0%, #FFFFFF 100%)
       border: 1px solid $border
       color: $color-secondary
+      margin-left: -1px
 
       &.is-active, &:hover
         background: $white
