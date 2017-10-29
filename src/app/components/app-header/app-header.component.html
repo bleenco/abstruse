@@ -2,30 +2,26 @@
   <div class="container">
     <div class="nav-left">
       <a class="nav-item nav-logo" routerLink="/">
-        <img src="images/abstruse-text-logo-white.svg">
+        <img src="/images/abstruse-text-logo-white.svg">
       </a>
     </div>
     <div class="nav-center">
       <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
-        <!-- <img src="/images/icons/menu_dashboard.svg" class="icon"> -->
         <span>Dashboard</span>
       </a>
       <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
-        <!-- <img src="/images/icons/menu_team.svg" class="icon"> -->
         <span>Team</span>
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
-        <!-- <img src="/images/icons/menu_repositories.svg" class="icon"> -->
         <span>Repositories</span>
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
-        <!-- <img src="/images/icons/menu_images.svg" class="icon"> -->
         <span>Images</span>
       </a>
     </div>
     <div class="nav-right">
       <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
-        <img src="/images/icons/notification.svg">
+        <img src="//images/icons/notification.svg">
         <div class="notify-num-container" *ngIf="notifications?.length">
           <span>{{ notifications?.length }}</span>
         </div>
@@ -58,7 +54,7 @@
       </a>
 
       <a class="nav-item" *ngIf="!user" routerLink="/login">
-        <img src="images/icons/login.svg" class="nav-item-icon">
+        <img src="/images/icons/login.svg" class="nav-item-icon">
         Login
       </a>
     </div>
@@ -89,7 +85,7 @@
 
 <div class="mobile-nav is-hidden-tablet is-mobile is-mobile-only">
   <a routerLink="/">
-    <img class="mobile-nav-logo" src="images/abstruse-text-logo.svg">
+    <img class="mobile-nav-logo" src="/images/abstruse-text-logo.svg">
   </a>
   <a routerLink="/login" *ngIf="!user">
     <i class="ionicon ion-log-in"></i>

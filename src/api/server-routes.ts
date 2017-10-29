@@ -78,7 +78,7 @@ export function webRoutes(): express.Router {
   router.use('/css', express.static(resolve(__dirname, '../app/css'), { index: false }));
   router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
   router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
-  router.use('/css/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+  router.use('/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
   router.use('/monaco', express.static(resolve(__dirname, '../app/monaco'), { index: false }));
   router.use('/avatars', express.static(getFilePath('avatars'), { index: false }));
 
