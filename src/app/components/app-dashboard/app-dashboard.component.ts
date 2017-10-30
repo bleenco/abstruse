@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StatsService } from '../../services/stats.service';
+import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs/Subscription';
 import { schemeCategory20b } from 'd3';
 
@@ -18,7 +19,7 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
   cpuCores: number[];
   containers: any[];
 
-  constructor(private statsService: StatsService) {
+  constructor(private statsService: StatsService, private socketService: SocketService) {
     this.loading = true;
 
     this.colors = schemeCategory20b;
@@ -65,5 +66,15 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
     }
 
     this.statsService.stop();
+  }
+
+  stopJob(e: MouseEvent, container: string): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const job = container.split('_');
+    if (job.length === 3) {
+      this.socketService.emit({ type: 'stopJob', data: { jobId: job[2] } });
+    }
   }
 }

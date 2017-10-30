@@ -154,6 +154,12 @@ export function startBuildProcess(
           })
           .catch(err => console.error(err));
       });
+
+    return () => {
+      if (sub) {
+        sub.unsubscribe();
+      }
+    };
   });
 }
 

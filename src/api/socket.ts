@@ -9,6 +9,7 @@ import {
   jobEvents,
   restartJob,
   stopJob,
+  debugJob,
   restartBuild,
   stopBuild,
   terminalEvents
@@ -217,6 +218,18 @@ export class SocketServer {
                 }
               break;
 
+              case 'debugJob':
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  debugJob(event.data.jobId, event.data.debug)
+                    .then(() => {
+                      conn.next({ type: 'job debug', data: event.data.jobId });
+                    });
+                }
+              break;
+
               case 'subscribeToJobOutput':
                 const jobId = parseInt(event.data.jobId, 10);
                 const idx = processes.findIndex(proc => proc.job_id === jobId);
@@ -224,6 +237,7 @@ export class SocketServer {
                   const proc = processes[idx];
                   conn.next({ type: 'data', data: proc.log.join('\n') });
                   conn.next({ type: 'exposed ports', data: proc.exposed_ports || null });
+                  conn.next({ type: 'debug', data: proc.debug || null });
                 }
 
                 const index = this.clients.findIndex(client => client.connection === conn);

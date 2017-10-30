@@ -42,6 +42,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   commitMessage: string;
   dateTime: string;
   dateTimeToNow: string;
+  debug = false;
 
   constructor(
     private socketService: SocketService,
@@ -88,6 +89,9 @@ export class AppJobComponent implements OnInit, OnDestroy {
             const port = portData['5900/tcp'][0].HostPort;
             this.vnc = `${document.location.hostname}:${port}`;
           }
+        } else if (event.type === 'debug') {
+          const debug = event.data || 'false';
+          this.debug = debug === 'true';
         }
       });
 
@@ -95,7 +99,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
     this.sub = this.socketService.outputEvents
       .filter(event => event.type === 'process')
-      .filter(event => event.job_id === parseInt(<any>this.id, 10))
+      .filter(event => parseInt(event.job_id, 10) === parseInt(<any>this.id, 10))
       .subscribe(event => {
         if (!this.jobRun) {
           return;
@@ -187,6 +191,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.processing = true;
     this.sshd = null;
     this.vnc = null;
+    this.debug = false;
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
   }
 
@@ -196,7 +201,15 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.processing = true;
     this.sshd = null;
     this.vnc = null;
+    this.debug = false;
     this.socketService.emit({ type: 'stopJob', data: { jobId: this.id } });
+  }
+
+  debugMode(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    this.debug = !this.debug;
+    this.socketService.emit({ type: 'debugJob', data: { jobId: this.id, debug: this.debug } });
   }
 
   terminalOutput(e: any): void {

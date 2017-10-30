@@ -27,7 +27,7 @@
                     </div>
                     <span class="build-icon">
                       <img src="/images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
-                      <img src="/images/icons/flickr.svg" *ngIf="jobRun?.status === 'running'">
+                      <img src="/images/icons/flickr.svg" *ngIf="jobRun?.status === 'running' && !debug">
                       <img src="/images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
                       <img src="/images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
                     </span>
@@ -149,7 +149,7 @@
               <span class="icon">
                 <img src="/images/icons/ssh.svg">
               </span>
-              <span>SSH and VNC Daemon is enabled in this container.</span>
+              <span class="span-ssh">SSH and VNC Daemon is enabled in this container.</span>
               <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
                 SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
                 <img src="/images/icons/copy.svg">
@@ -162,6 +162,14 @@
                 password: abstrusePass
                 <img src="/images/icons/copy.svg">
               </code>
+              <div class="debug">
+                <button [class.is-hidden]="debug" class="button" name="btn-debug" type="button" (click)="debugMode($event)">
+                  <div class="centered">
+                    <i class="ionicon ion-android-lock"></i>
+                    <span class="span-debug">Debug</span>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
           <div class="column is-12">
