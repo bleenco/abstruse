@@ -29,6 +29,7 @@ describe('Build Details', () => {
       })))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isPresent()))
       .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isEnabled()))
+      .then((): any => browser.wait(() => element(by.css(`[name="restart-build"]`)).isDisplayed()))
       .then((): any => element.all(by.css(`[name="restart-build"]`)).first().click())
       .then((): any => element.all(by.css('.list-item')).count())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
@@ -47,6 +48,9 @@ describe('Build Details', () => {
           .getAttribute('innerHTML').then(html => html.trim() === '00:08'));
       })
       .then(() => delay(2000))
+      .then((): any => browser.wait(() => element(by.css(`[name="stop-job"]`)).isPresent()))
+      .then((): any => browser.wait(() => element(by.css(`[name="stop-job"]`)).isEnabled()))
+      .then((): any => browser.wait(() => element(by.css(`[name="stop-job"]`)).isDisplayed()))
       .then(() => element.all(by.css(`[name="stop-job"]`)).first().click())
       .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
         return cnt === 0;

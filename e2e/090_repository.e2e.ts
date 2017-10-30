@@ -83,13 +83,18 @@ describe('Repository', () => {
       .then((): any => browser.wait(() => {
         return element(by.css(`[name="run-build-from-config"]`)).isEnabled();
       }))
-      .then((): any => element(by.css('[name="run-build-from-config"]')).click())
+      .then((): any => browser.wait(() => {
+        const selector = `[name="run-build-from-config"]`;
+        return ExpectedConditions.elementToBeClickable(element(by.css(selector)));
+      }))
+      .then(() => delay(2000))
+      .then((): any => element(by.css(`[name="run-build-from-config"]`)).click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.green')).count().then(count => count === 1);
       }))
       .then(() => element(by.css('.green')).getAttribute('innerHTML'))
       .then(html => expect(html).to.includes('Build has been run successfully'))
-      .then(() => delay(1000))
+      .then(() => delay(2000))
       .then(() => browser.get('/'))
       .then(() => isLoaded())
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
