@@ -91,12 +91,14 @@ export class AppTerminalComponent implements OnInit {
             re = new RegExp('(' + c + ')' + '[\\s\\S]+');
           }
           let time = times[i] ? Number(times[i]) : null;
-
           let out = output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : '';
           out = out.replace(retime, '');
 
           out = out.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
           out = out.replace(/(\[error\]: .*)/igm, '<span class="ansi-red-fg">$1</span>');
+          if (output.includes('[exectime]: stopped')) {
+            out = out.replace('stopped', '');
+          }
 
           return acc.concat({
             command: curr.replace('==&gt;', '').trim(),
@@ -107,12 +109,14 @@ export class AppTerminalComponent implements OnInit {
         }, this.commands);
       } else {
         if (output.includes('[exectime]')) {
-          let retime = new RegExp('\\[exectime\]: \\d*', 'igm');
-          let match = output.match(retime);
-          let time = Number((Number(match[0].replace('[exectime]: ', '')) / 10).toFixed(0));
+          if (output !== '[exectime]: stopped') {
+            let retime = new RegExp('\\[exectime\]: \\d*', 'igm');
+            let match = output.match(retime);
+            let time = Number((Number(match[0].replace('[exectime]: ', '')) / 10).toFixed(0));
 
-          if (this.commands[this.commands.length - 1]) {
-            this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : '0ms';
+            if (this.commands[this.commands.length - 1]) {
+              this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : '0ms';
+            }
           }
         } else {
           output = output.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
@@ -122,6 +126,19 @@ export class AppTerminalComponent implements OnInit {
             this.commands[this.commands.length - 1].output += output;
           }
         }
+      }
+
+      if (output.includes('[exectime]: stopped')) {
+        if (this.commands[this.commands.length - 1]) {
+          this.commands[this.commands.length - 1].time = 'stopped';
+        }
+
+        this.commands.push({
+          command: 'Execution stopped, entered in debug mode.',
+          visible: true,
+          output: '',
+          time: '...'
+        });
       }
 
       if (this.commands && this.commands.length) {

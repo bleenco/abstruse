@@ -8,6 +8,7 @@ import { CommandType } from './config';
 import { yellow, green, red } from 'chalk';
 import { ProcessOutput } from './process';
 import { Readable } from 'stream';
+import { processes } from './process-manager';
 
 export const docker = new dockerode();
 
@@ -240,12 +241,20 @@ export function getContainersStats(): Observable<any> {
                     let data = JSON.parse(rawJson);
 
                     if (data && data.precpu_stats.system_cpu_usage) {
+                      const jobId = container.Names[0].split('_')[2] || -1;
+                      const job = processes.find(p => p.job_id === Number(jobId));
+                      let debug = false;
+                      if (job) {
+                        debug = job.debug || false;
+                      }
+
                       const stats = {
                         id: container.Id,
                         name: container.Names[0].substr(1) || '',
                         cpu: getCpuData(data),
                         network: getNetworkData(data),
-                        memory: getMemory(data)
+                        memory: getMemory(data),
+                        debug: debug
                       };
 
                       stream.destroy();
