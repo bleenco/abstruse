@@ -50,6 +50,11 @@ describe('Builds', () => {
         return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isEnabled();
       }))
       .then(() => delay(2000))
+      .then(() => element.all(by.css('.list-item:nth-child(1) .stop-build')).first())
+      .then(ele => browser.executeScript('arguments[0].scrollIntoView();', ele.getWebElement()))
+      .then((): any => browser.wait(() => {
+        return element.all(by.css('.list-item:nth-child(1) .stop-build')).first().isDisplayed();
+      }))
       .then((): any => element.all(by.css('.list-item:nth-child(1) .stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
@@ -116,6 +121,7 @@ describe('Builds', () => {
         });
       })
       .then(() => delay(2000))
+      .then((): any => browser.wait(() => element.all(by.css('.stop-build')).first().isDisplayed()))
       .then((): any => element.all(by.css('.stop-build')).first().click())
       .then((): any => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
