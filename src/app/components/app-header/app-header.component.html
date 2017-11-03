@@ -4,8 +4,12 @@
       <a class="nav-item nav-logo" routerLink="/">
         <img src="/images/abstruse-text-logo.svg">
       </a>
+      <div class="nav-search-container">
+        <input type="text" placeholder="Search commits, builds by number, ...">
+        <img src="/images/icons/search.svg" class="icon">
+      </div>
     </div>
-    <div class="nav-center">
+    <div class="nav-right">
       <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
         <span>Dashboard</span>
       </a>
@@ -18,8 +22,6 @@
       <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
         <span>Images</span>
       </a>
-    </div>
-    <div class="nav-right">
       <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
         <img src="//images/icons/notification.svg">
         <div class="notify-num-container" *ngIf="notifications?.length">
