@@ -1,6 +1,6 @@
-import { red, green, blue, magenta, cyan, yellow, white, bgWhite, black, bgBlack } from 'chalk';
 import { insertLog } from './db/log';
 import { Subject, Observable } from 'rxjs';
+import chalk from 'chalk';
 
 export interface LogMessageType {
   message: string;
@@ -19,7 +19,8 @@ logger
   .map((msg: any) => {
     const time = getDateTime();
     const message = [
-      white('['), bgBlack(white(time)), white(']'), ': ', colorizeMessage(msg.message)
+      chalk.white('['),
+      chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
     ].join('');
     console.log(message);
   })
@@ -28,11 +29,14 @@ logger
 
 function colorizeMessage(msg: LogMessageType): LogMessageType {
   if (msg.type === 'info') {
-    msg.message = msg.message.replace(/\[(.*)\]/, yellow('[') + green('$1') + yellow(']'));
+    msg.message = msg.message.replace(/\[(.*)\]/, chalk.yellow('[') +
+      chalk.green('$1') + chalk.yellow(']'));
   } else if (msg.type === 'error') {
-    msg.message = msg.message.replace(/\[(.*)\]/, yellow('[') + red('$1') + yellow(']'));
+    msg.message = msg.message.replace(/\[(.*)\]/, chalk.yellow('[') +
+      chalk.red('$1') + chalk.yellow(']'));
   } else if (msg.type === 'warning') {
-    msg.message = msg.message.replace(/\[(.*)\]/, yellow('[') + yellow('$1') + yellow(']'));
+    msg.message = msg.message.replace(/\[(.*)\]/, chalk.yellow('[') +
+      chalk.yellow('$1') + chalk.yellow(']'));
   }
 
   return msg;

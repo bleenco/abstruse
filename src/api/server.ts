@@ -4,7 +4,6 @@ import * as bodyParser from 'body-parser';
 import { Observable } from 'rxjs';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
-import { yellow, cyan } from 'chalk';
 import * as session from 'express-session';
 import * as uuid from 'uuid';
 import { logger, LogMessageType } from './logger';

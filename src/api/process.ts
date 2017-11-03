@@ -3,9 +3,9 @@ import * as child_process from 'child_process';
 import { generateRandomId, getFilePath, prepareCommands } from './utils';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
-import { green, red, bold, yellow, blue, cyan } from 'chalk';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
+import chalk from 'chalk';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -109,7 +109,7 @@ export function startBuildProcess(
       }))
       .subscribe((event: ProcessOutput) => {
         if (event.type === 'containerError') {
-          const msg = red(event.data.json.message) || red(event.data);
+          const msg = chalk.red(event.data.json.message) || chalk.red(event.data);
           observer.next({ type: 'exit', data: msg });
           observer.error(msg);
         } else if (event.type === 'containerInfo') {
@@ -124,7 +124,7 @@ export function startBuildProcess(
               `last executed command exited with code ${event.data}`
             ].join(' ');
             const tmsg = `[error]: executed command returned exit code ${event.data}`;
-            observer.next({ type: 'exit', data: red(tmsg) });
+            observer.next({ type: 'exit', data: chalk.red(tmsg) });
             observer.error(msg);
             docker.killContainer(name)
               .then(() => {
@@ -146,7 +146,7 @@ export function startBuildProcess(
           .catch(err => console.error(err));
       }, () => {
         const msg = '[success]: build returned exit code 0';
-        observer.next({ type: 'exit', data: green(msg) });
+        observer.next({ type: 'exit', data: chalk.green(msg) });
         docker.killContainer(name)
           .then(() => {
             sub.unsubscribe();
