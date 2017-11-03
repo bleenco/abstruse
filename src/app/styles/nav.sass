@@ -53,7 +53,7 @@ a.nav-item:not(.button)
 .nav-left,
 .nav-right
   +overflow-touch
-  align-items: stretch
+  align-items: center
   display: flex
   flex-grow: 1
   flex-shrink: 0
@@ -70,7 +70,7 @@ a.nav-item:not(.button)
   justify-content: flex-end
 
 .nav-center
-  align-items: stretch
+  align-items: center
   display: flex
   flex-grow: 0
   flex-shrink: 0
@@ -79,23 +79,24 @@ a.nav-item:not(.button)
   margin-right: auto
 
 .nav
-  align-items: stretch
-  background-color: $white
+  align-items: center
   display: flex
   position: relative
   text-align: center
   z-index: 10
   & > .container
-    align-items: stretch
     display: flex
     width: 100%
+    height: 50px
+    align-items: center
 
 .nav
-  height: 75px
+  height: 50px
   width: 100%
   z-index: 90 !important
-  background-color: $white
+  background-color: #F9FAFB
   position: relative
+  border-bottom: 1px solid #E0E0EA
 
   .nav-logo
     margin-left: -10px
@@ -105,9 +106,8 @@ a.nav-item:not(.button)
 
   .nav-item:not(.nav-logo)
     color: $color !important
-    font-size: 14px
-    margin-right: 15px
-    font-weight: 700
+    font-size: 12px
+    margin-right: 8px
     font-family: $font-family-semibold
 
     .icon
@@ -190,7 +190,7 @@ a.nav-item:not(.button)
             background: $background
 
     &.user-item
-      margin-top: 17px
+      margin-top: 2px
       height: 40px
       min-height: 40px
       display: inline-flex
@@ -231,12 +231,13 @@ a.nav-item:not(.button)
       float: left
       margin-left: 10px
       color: $color
+      margin-top: -10px
 
   .nav-dropdown
     position: absolute
     z-index: 100
     width: 200px
-    top: 65px
+    top: 55px
     right: -8px
     padding-top: 12px
     background: $white
@@ -300,8 +301,6 @@ a.nav-item:not(.button)
     display: flex
     align-items: center
     z-index: 80 !important
-    box-shadow: 1px 2px 5px rgba($black, 0.1)
-    border-bottom: none
     height: 50px
 
     +mobile
@@ -351,3 +350,43 @@ a.nav-item:not(.button)
       float: left
       margin-top: 10px
       margin-left: 5px
+
+
+.nav-search-container
+  width: 500px
+  background: $white
+  height: 30px
+  border-radius: 3px
+  border: 1px solid #E0E0EA
+  margin-left: 30px
+  position: relative
+
+  .icon
+    position: absolute
+    right: 10px
+    top: 2px
+    width: 15px
+
+  input
+    padding-top: 4px
+    height: 26px
+    width: 100%
+    margin: 0
+    padding-right: 40px
+    padding-left: 10px
+    font-size: 12px
+    outline: none
+    border: none
+    color: #D5D6E3
+
+    &::-webkit-input-placeholder
+      color: #D5D6E3
+
+    &::-moz-placeholder
+      color: #D5D6E3
+
+    &:-ms-input-placeholder
+      color: #D5D6E3
+
+    &:-moz-placeholder
+      color: #D5D6E3
