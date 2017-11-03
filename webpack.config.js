@@ -1,5 +1,5 @@
 const { resolve } = require('path');
-const AoTPlugin = require('@ngtools/webpack').AotPlugin;
+const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const compression = require('compression-webpack-plugin');
@@ -16,7 +16,9 @@ module.exports = function (options, webpackOptions) {
   let config = {};
 
   config = webpackMerge({}, config, {
-    entry: getEntry(options),
+    entry: {
+      app: root('src/app/main.ts')
+    },
     resolve: {
       extensions: ['.ts', '.js', '.json'],
       modules: ['node_modules', nodeModules]
@@ -38,7 +40,7 @@ module.exports = function (options, webpackOptions) {
         { context: './node_modules/monaco-editor/min/', from: '**/*', to: 'monaco' }
       ]),
     ],
-    stats: 'errors-only'
+    stats: 'minimal'
   });
 
   config = webpackMerge({}, config, {
@@ -71,7 +73,7 @@ module.exports = function (options, webpackOptions) {
       hot: false,
       inline: true,
       overlay: true,
-      stats: 'errors-only',
+      stats: 'minimal',
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
@@ -87,30 +89,18 @@ module.exports = function (options, webpackOptions) {
     config = webpackMerge({}, config, getDevStylesConfig());
   }
 
-  if (options.aot) {
-    console.log(`Running build with AoT compilation...`)
 
-    config = webpackMerge({}, config, {
-      module: {
-        rules: [{ test: /\.ts$/, loader: '@ngtools/webpack' }]
-      },
-      plugins: [
-        new AoTPlugin({ tsConfigPath: root('src/app/tsconfig.json') })
-      ]
-    });
-  } else {
-    config = webpackMerge({}, config, {
-      module: {
-        rules: [{ test: /\.ts$/, loader: '@ngtools/webpack' }]
-      },
-      plugins: [
-        new AoTPlugin({
-          tsConfigPath: root('src/app/tsconfig.json'),
-          skipCodeGeneration: true
-        })
-      ]
-    });
-  }
+  config = webpackMerge({}, config, {
+    module: {
+      rules: [{ test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/, loader: '@ngtools/webpack' }]
+    },
+    plugins: [
+      new AngularCompilerPlugin({
+        tsConfigPath: root('src/app/tsconfig.json'),
+        entryModule: 'src/app/app.module#AppModule'
+      })
+    ]
+  });
 
   if (options.serve) {
     return portfinder.getPortPromise().then(port => {
