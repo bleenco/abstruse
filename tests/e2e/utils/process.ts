@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
-import { blue, yellow } from 'chalk';
 const treeKill = require('tree-kill');
+import chalk from 'chalk';
 
 interface ExecOptions {
   silent?: boolean;
@@ -31,8 +31,8 @@ function _run(options: ExecOptions, cmd: string, args: string[]): Promise<Proces
       .join(', ')
       .replace(/^(.+)$/, ' [$1]');
 
-    console.log(blue(`Running \`${cmd} ${args.map(x => `"${x}"`).join(' ')}\`${flags}...`));
-    console.log(blue(`CWD: ${cwd}`));
+    console.log(chalk.blue(`Running \`${cmd} ${args.map(x => `"${x}"`).join(' ')}\`${flags}...`));
+    console.log(chalk.blue(`CWD: ${cwd}`));
     const spawnOptions: any = {cwd};
 
     if (process.platform.startsWith('win')) {
@@ -68,7 +68,7 @@ function _run(options: ExecOptions, cmd: string, args: string[]): Promise<Proces
       data.toString()
         .split(/[\n\r]+/)
         .filter(line => line !== '')
-        .forEach(line => console.error(yellow('  ' + line)));
+        .forEach(line => console.error(chalk.yellow('  ' + line)));
     });
 
     childProcess.on('close', (code: number) => {
@@ -99,8 +99,8 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
       .join(', ')
       .replace(/^(.+)$/, ' [$1]');
 
-    console.log(blue(`Running \`${cmd} ${args.map(x => `"${x}"`).join(' ')}\`${flags}...`));
-    console.log(blue(`CWD: ${cwd}`));
+    console.log(chalk.blue(`Running \`${cmd} ${args.map(x => `"${x}"`).join(' ')}\`${flags}...`));
+    console.log(chalk.blue(`CWD: ${cwd}`));
     const spawnOptions: any = {cwd, env: Object.assign({}, process.env, { FORCE_COLOR: true })};
 
     if (process.platform.startsWith('win')) {
@@ -134,7 +134,7 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
       data.toString()
         .split(/[\n\r]+/)
         .filter(line => line !== '')
-        .forEach(line => console.error(yellow('  ' + line)));
+        .forEach(line => console.error(chalk.yellow('  ' + line)));
     });
 
     childProcess.on('close', (code: number) => {
@@ -162,7 +162,7 @@ export function killProcess(pid: number): Promise<null> {
 
 export function exitCode(cmd: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    console.log(blue(`Running \`${cmd}\`...`));
+    console.log(chalk.blue(`Running \`${cmd}\`...`));
     child_process.exec(cmd).on('exit', code => {
       resolve(code);
     });

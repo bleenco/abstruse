@@ -1,8 +1,8 @@
-import { blue, bold, green, red, yellow, white } from 'chalk';
 import * as glob from 'glob';
 import * as path from 'path';
 import * as minimist from 'minimist';
 import { abstruse, killAllProcesses } from './e2e/utils/process';
+import chalk from 'chalk';
 
 Error.stackTraceLimit = Infinity;
 
@@ -99,11 +99,11 @@ testsToRun.reduce((previous, relativeName) => {
   });
 }, Promise.resolve())
   .then(() => {
-    console.log(green('Done.'));
+    console.log(chalk.green('Done.'));
     process.exit(0);
   }, err => {
     console.log('\n');
-    console.error(red(`Test "${currentFileName}" failed...`));
+    console.error(chalk.red(`Test "${currentFileName}" failed...`));
     process.exit(1);
   });
 
@@ -113,11 +113,16 @@ function encode(str) {
 
 function printHeader(testName) {
   const text = `${++index} of ${testsToRun.length}`;
-  console.log(green(`Running "${bold(blue(testName))}" (${bold(white(text))})...`));
+  const msg = [
+    `Running "${chalk.bold(chalk.blue(testName))}" `,
+    `(${chalk.bold(chalk.white(text))})...`
+  ].join('');
+  console.log(msg);
 }
 
 function printFooter(testName, startTime) {
   const t = Math.round((Date.now() - startTime) / 10) / 100;
-  console.log(green('Last step took ') + bold(blue(`${t}`)) + green('s...'));
+  console.log(chalk.green('Last step took ') +
+    chalk.bold(chalk.blue(`${t}`)) + chalk.green('s...'));
   console.log('');
 }
