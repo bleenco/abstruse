@@ -5,10 +5,10 @@ import * as utils from './utils';
 import * as dockerode from 'dockerode';
 import { Writable } from 'stream';
 import { CommandType } from './config';
-import { yellow, green, red } from 'chalk';
 import { ProcessOutput } from './process';
 import { Readable } from 'stream';
 import { processes } from './process-manager';
+import chalk from 'chalk';
 
 export const docker = new dockerode();
 
@@ -65,11 +65,11 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     }
 
     if (cmd.type === CommandType.store_cache) {
-      observer.next({ type: 'data', data: yellow('==> saving cache ...') + '\r' });
+      observer.next({ type: 'data', data: chalk.yellow('==> saving cache ...') + '\r' });
     } else if (cmd.type === CommandType.restore_cache) {
-      observer.next({ type: 'data', data: yellow('==> restoring cache ...') + '\r' });
+      observer.next({ type: 'data', data: chalk.yellow('==> restoring cache ...') + '\r' });
     } else {
-      observer.next({ type: 'data', data: yellow('==> ' + command) + '\r' });
+      observer.next({ type: 'data', data: chalk.yellow('==> ' + command) + '\r' });
     }
 
     const container = docker.getContainer(id);

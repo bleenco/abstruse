@@ -1,6 +1,5 @@
 import { getBitBucketAccessToken, getConfig } from './utils';
 import { logger, LogMessageType } from './logger';
-import { yellow, red, blue, bold, cyan } from 'chalk';
 import * as request from 'request';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {

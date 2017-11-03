@@ -20,7 +20,6 @@ import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
 import * as express from 'express';
-import { yellow, red, blue, green } from 'chalk';
 import { sessionParser } from './server';
 import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';

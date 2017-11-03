@@ -15,7 +15,6 @@ import { Observable } from 'rxjs';
 import * as uuid from 'uuid';
 import * as request from 'request';
 import * as temp from 'temp';
-import { blue, yellow, magenta, cyan, bold, red } from 'chalk';
 import * as nodeRsa from 'node-rsa';
 import * as glob from 'glob';
 import { CommandType, CommandTypePriority } from './config';

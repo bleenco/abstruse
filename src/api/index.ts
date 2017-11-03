@@ -16,7 +16,7 @@ import { logger, LogMessageType } from './logger';
 import { initSetup, getAbstruseVersion } from './utils';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
-import { green } from 'chalk';
+import chalk from 'chalk';
 
 const server = new ExpressServer({ port: 6500 });
 const socket = new SocketServer({ port: 6501 });
@@ -26,7 +26,7 @@ initSetup()
   .then(() => {
     const version = getAbstruseVersion();
     const msg: LogMessageType = {
-      message: `[server] starting Abstruse CI version ${green(version)} ...`,
+      message: `[server] starting Abstruse CI version ${chalk.green(version)} ...`,
       type: 'info',
       notify: false
     };
