@@ -7,19 +7,15 @@
     </div>
     <div class="nav-center">
       <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
-        <i class="ionicon ion-ios-pie"></i>
         <span>Dashboard</span>
       </a>
       <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
-        <i class="ionicon ion-person-stalker"></i>
         <span>Team</span>
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
-        <i class="ionicon ion-ios-paper"></i>
         <span>Repositories</span>
       </a>
       <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
-        <i class="ionicon ion-images"></i>
         <span>Images</span>
       </a>
     </div>

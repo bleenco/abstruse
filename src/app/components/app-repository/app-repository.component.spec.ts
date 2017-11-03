@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgUploaderModule } from 'ngx-uploader';
+import { NgUploaderModule } from 'ngx-uploader/src/ngx-uploader/module/ngx-uploader.module';
 import { Observable } from 'rxjs/Observable';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 const buildsData: any = require('json-loader!../../testing/xhr-data/builds.json');
