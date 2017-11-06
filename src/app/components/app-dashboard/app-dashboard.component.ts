@@ -53,7 +53,7 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
         this.cpuPercent = e.data.load;
         this.cpuCores = e.data.cores.map(core => core.total);
       } else if (e.type === 'containersStats') {
-        this.containers = e.data;
+        this.containers = e.data.filter(container => container && container.name && container.name.startsWith('abstruse'));
       }
     });
 

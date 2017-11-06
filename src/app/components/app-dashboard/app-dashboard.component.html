@@ -43,21 +43,7 @@
               <div class="columns is-multiline" *ngIf="containers?.length">
                 <div class="column is-6" *ngFor="let c of containers; let i = index;">
                   <div class="container-item">
-                    <div class="container-header">
-                      <div class="columns is-multiline">
-                          <div class="column is-6">
-                            {{ c.name }}
-                          </div>
-                          <div class="column is-4">
-                              <span class="data-label-mini yellow" *ngIf="c?.debug">Debugging</span>
-                          </div>
-                          <div class="column is-2">
-                            <span class="icon circle" name="stop-job" (click)="stopJob($event, c.name)">
-                              <i class="ionicon ion-power"></i>
-                            </span>
-                          </div>
-                      </div>
-                    </div>
+                    <div class="container-header">{{ c.name }}</div>
                     <div class="container-data border-bottom">
                       <div class="data-info">
                         <span>Memory Total</span>
