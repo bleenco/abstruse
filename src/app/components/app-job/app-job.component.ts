@@ -106,6 +106,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
         }
 
         if (event.data === 'job started') {
+          this.terminalInput = { clear: true };
           this.jobRun.status = 'running';
           this.jobRun.end_time = null;
           this.jobRun.start_time = event.additionalData;
@@ -187,7 +188,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
   restartJob(e: MouseEvent): void {
     e.preventDefault();
     e.stopPropagation();
-    this.terminalInput = { clear: true };
     this.processing = true;
     this.sshd = null;
     this.vnc = null;

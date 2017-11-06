@@ -69,7 +69,7 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     } else if (cmd.type === CommandType.restore_cache) {
       observer.next({ type: 'data', data: chalk.yellow('==> restoring cache ...') + '\r' });
     } else {
-      observer.next({ type: 'data', data: chalk.yellow('==> ' + command) + '\r' });
+      observer.next({ type: 'data', data: chalk.yellow('==> ' + command) + '\r\n' });
     }
 
     const container = docker.getContainer(id);
@@ -89,13 +89,12 @@ export function attachExec(id: string, cmd: any): Observable<any> {
 
       ws.on('finish', () => {
         const duration = new Date().getTime() - startTime;
-        observer.next({ type: 'data', data: `[exectime]: ${duration}` });
         observer.next({ type: 'exit', data: exitCode });
         observer.complete();
       });
 
       ws._write = (chunk, enc, next) => {
-        const str = chunk.toString();
+        let str = chunk.toString('utf8');
 
         if (str.includes('[error]')) {
           const splitted = str.split(' ');
@@ -104,7 +103,11 @@ export function attachExec(id: string, cmd: any): Observable<any> {
         } else if (str.includes('[success]')) {
           exitCode = 0;
           ws.end();
-        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
+        } else if (!str.includes('/usr/bin/abstruse \'' + cmd.command) && !str.startsWith('>')) {
+          if (str.includes('//') && str.includes('@')) {
+            str = str.replace(/\/\/(.*)@/, '//');
+          }
+
           observer.next({ type: 'data', data: str });
         }
 
