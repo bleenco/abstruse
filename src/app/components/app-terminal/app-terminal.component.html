@@ -1,12 +1,1 @@
-<div class="window-terminal-container dracula-ansi-theme" [class.is-hidden]="noData" slimScroll [options]="scrollOptions" [scrollEvents]="scrollEvents">
-  <div class="terminal" *ngFor="let cmd of commands; let i = index;" [id]="i">
-    <div class="command-line" (click)="toggleCommand(i)" [class.is-opened]="cmd.visible">
-      <span class="command" [innerHTML]="cmd.command"></span>
-      <span class="time" *ngIf="cmd.time">{{ cmd.time }}</span>
-      <span class="command-loader" *ngIf="!cmd.time">
-        <img src="/images/icons/spinner.svg">
-      </span>
-    </div>
-    <pre class="output" [class.is-hidden]="!cmd.visible" [innerHTML]="cmd.output"></pre>
-  </div>
-</div>
+<div id="hterm" class="window-terminal-container"></div>

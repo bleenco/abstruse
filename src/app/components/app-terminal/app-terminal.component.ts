@@ -8,8 +8,7 @@ import {
   Inject
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import * as AnsiUp from 'ansi_up';
-import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
+import * as hterm from 'hterm-bundle';
 
 @Component({
   selector: 'app-terminal',
@@ -18,37 +17,38 @@ import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
 export class AppTerminalComponent implements OnInit {
   @Input() data: any;
   @Input() options: { size: 'normal' | 'large' };
-  au: any;
-  commands: { command: string, visible: boolean, output: string, time: string }[];
-  noData: boolean;
-  initScroll: boolean;
-  scrollOptions: ISlimScrollOptions;
-  scrollEvents: EventEmitter<SlimScrollEvent>;
+  hterm: hterm.Terminal;
 
   constructor(
     private elementRef: ElementRef,
     @Inject(DOCUMENT) private document: any
   ) {
-    this.scrollOptions = {
-      barBackground: '#666',
-      gridBackground: '#000',
-      barBorderRadius: '10',
-      barWidth: '7',
-      gridWidth: '7',
-      barMargin: '2px 5px',
-      gridMargin: '2px 5px',
-      gridBorderRadius: '10',
-      alwaysVisible: false
-    };
-
-    this.scrollEvents = new EventEmitter<SlimScrollEvent>();
+    hterm.hterm.defaultStorage = new hterm.lib.Storage.Local();
+    this.hterm = new hterm.hterm.Terminal();
   }
 
   ngOnInit() {
-    this.au = new AnsiUp.default();
-    this.au.use_classes = true;
-    this.commands = [];
-    this.noData = true;
+    this.hterm.onTerminalReady = () => {
+      this.hterm.setWindowTitle = () => {};
+      this.hterm.prefs_.set('cursor-color', 'transparent');
+      this.hterm.prefs_.set('font-family', 'monaco, menlo, monospace');
+      this.hterm.prefs_.set('font-size', 12);
+      this.hterm.prefs_.set('audible-bell-sound', '');
+      this.hterm.prefs_.set('font-smoothing', 'subpixel-antialiased');
+      this.hterm.prefs_.set('enable-bold', false);
+      this.hterm.prefs_.set('backspace-sends-backspace', true);
+      this.hterm.prefs_.set('cursor-blink', false);
+      this.hterm.prefs_.set('receive-encoding', 'raw');
+      this.hterm.prefs_.set('send-encoding', 'raw');
+      this.hterm.prefs_.set('alt-sends-what', 'browser-key');
+      this.hterm.prefs_.set('scrollbar-visible', false);
+      this.hterm.prefs_.set('enable-clipboard-notice', false);
+      this.hterm.prefs_.set('background-color', 'transparent');
+      this.hterm.onVTKeystroke = () => {};
+    };
+
+    this.hterm.decorate(document.querySelector('#hterm'));
+    this.hterm.installKeyboard(null);
   }
 
   ngOnChanges(changes: SimpleChange) {
@@ -56,145 +56,18 @@ export class AppTerminalComponent implements OnInit {
       return;
     }
 
-    this.noData = false;
-
     if (typeof this.data.clear !== 'undefined') {
-      this.commands = [];
-    } else {
-      let output: string = this.au.ansi_to_html(this.data);
-      const regex = /==[&gt;|>](.*)/g;
-      let match;
-      let commands: string[] = [];
-
-      if (output.match(regex)) {
-        while (match = regex.exec(output)) {
-          commands.push(match[0]);
-        }
-
-        if (commands.length > 1) {
-          this.commands = [];
-        }
-
-        let retime = new RegExp('\\[exectime\\]: \\d*', 'igm');
-        let times = [];
-        while (match = retime.exec(output)) {
-          let t = match[0].replace(/\[exectime\]: /igm, '');
-          times.push((t / 10).toFixed(0));
-        }
-
-        this.commands = commands.reduce((acc, curr, i) => {
-          let next = commands[i + 1] || '';
-          next = next.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-          const c = curr.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
-          let re = new RegExp('(' + c + ')(' + '[\\s\\S]+' + ')(' + next + ')');
-          if (!output.match(re)) {
-            re = new RegExp('(' + c + ')' + '[\\s\\S]+');
-          }
-          let time = times[i] ? Number(times[i]) : null;
-          let out = output.match(re) && output.match(re)[2] ? output.match(re)[2].trim() : '';
-          out = out.replace(retime, '');
-
-          out = out.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
-          out = out.replace(/(\[error\]: .*)/igm, '<span class="ansi-red-fg">$1</span>');
-          if (output.includes('[exectime]: stopped')) {
-            out = out.replace('stopped', '');
-          }
-
-          return acc.concat({
-            command: curr.replace('==&gt;', '').trim(),
-            visible: i === commands.length - 1 ? true : false,
-            output: out,
-            time: time ? this.getDuration(time) : ''
-          });
-        }, this.commands);
-      } else {
-        if (output.includes('[exectime]')) {
-          if (output !== '[exectime]: stopped') {
-            let retime = new RegExp('\\[exectime\]: \\d*', 'igm');
-            let match = output.match(retime);
-            let time = Number((Number(match[0].replace('[exectime]: ', '')) / 10).toFixed(0));
-
-            if (this.commands[this.commands.length - 1]) {
-              this.commands[this.commands.length - 1].time = time ? this.getDuration(time) : '0ms';
-            }
-          }
-        } else {
-          output = output.replace(/(\[success\]: .*)/igm, '<span class="ansi-green-fg">$1</span>');
-          output = output.replace(/(\[error\]: .*)/igm, '<span class="ansi-red-fg">$1</span>');
-
-          if (this.commands[this.commands.length - 1]) {
-            this.commands[this.commands.length - 1].output += output;
-          }
-        }
-      }
-
-      if (output.includes('[exectime]: stopped')) {
-        if (this.commands[this.commands.length - 1]) {
-          this.commands[this.commands.length - 1].time = 'stopped';
-        }
-
-        this.commands.push({
-          command: 'Execution stopped, entered in debug mode.',
-          visible: true,
-          output: '',
-          time: '...'
-        });
-      }
-
-      if (this.commands && this.commands.length) {
-        this.commands = this.commands.map((cmd, i) => {
-          const v = i === this.commands.length - 1 || cmd.visible;
-          cmd.visible = v ? true : false;
-          return cmd;
-        });
-      } else {
-        this.commands.push({ command: output, visible: true, time: '.', output: '' });
-      }
+      this.hterm.keyboard.terminal.wipeContents();
+      return;
     }
 
-    setTimeout(() => {
-      const ev: SlimScrollEvent = {
-        type: 'scrollToBottom',
-        easing: 'linear',
-        duration: 50
-      };
-      this.scrollEvents.emit(ev);
-    }, 50);
-  }
 
-  toggleCommand(index: number) {
-    this.commands[index].visible = !this.commands[index].visible;
-    setTimeout(() => this.recalculate());
-  }
-
-  recalculate(): void {
-    const event: SlimScrollEvent = {
-      type: 'recalculate',
-      easing: 'linear'
-    };
-
-    this.scrollEvents.emit(event);
-  }
-
-  getDuration(millis: number): string {
-    const dur = {};
-    const units = [
-      {label: 'ms', mod: 100 }, // millis
-      {label: 'sec', mod: 60 },
-      {label: 'min', mod: 60 },
-      {label: 'h', mod: 24 },
-      {label: 'd', mod: 31 }
-    ];
-    units.forEach(u => millis = (millis - (dur[u.label] = (millis % u.mod))) / u.mod);
-    const nonZero = (u) => { return dur[u.label]; };
-    dur.toString = () => {
-      return units
-        .reverse()
-        .filter(nonZero)
-        .map(u => dur[u.label] + u.label)
-        .join(', ');
-    };
-
-    return dur.toString();
+    /* this.hterm.io.println(this.data); */
+    this.hterm.io.print(this.data);
+    if (this.hterm.keyboard.terminal
+      && this.hterm.keyboard.terminal.scrollPort_
+      && this.hterm.keyboard.terminal.scrollPort_.isScrolledEnd) {
+        this.hterm.keyboard.terminal.scrollEnd();
+    }
   }
 }
