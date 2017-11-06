@@ -1,80 +1,51 @@
-<header class="nav main-nav is-hidden-mobile">
+<header class="header">
   <div class="container">
-    <div class="nav-left">
-      <a class="nav-item nav-logo" routerLink="/">
-        <img src="/images/abstruse-text-logo.svg">
+    <div class="header-left">
+      <a class="header-item" routerLink="/">
+        <img src="/images/abstruse-logo.svg" class="abstruse-logo" alt="Abstruse CI">
       </a>
-      <div class="nav-search-container">
-        <input type="text" placeholder="Search commits, builds by number, ...">
-        <img src="/images/icons/search.svg" class="icon">
-      </div>
-    </div>
-    <div class="nav-right">
-      <a class="nav-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
+      <a class="header-item is-hidden-mobile" routerLink="/" routerLinkActive="is-active">
+        <span>Builds</span>
+      </a>
+      <a class="header-item is-hidden-mobile" routerLink="/dashboard" routerLinkActive="is-active" name="dashboard" *ngIf="user || demo">
         <span>Dashboard</span>
       </a>
-      <a class="nav-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
+      <a class="header-item nav-team is-hidden-mobile" routerLink="/team" routerLinkActive="is-active" *ngIf="user">
         <span>Team</span>
       </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
+      <a class="header-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
         <span>Repositories</span>
       </a>
-      <a class="nav-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
+      <a class="header-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
         <span>Images</span>
       </a>
-      <!-- <a class="nav-item notification-item is-hidden-mobile" *ngIf="user" (click)="toggleNotify()">
-        <img src="//images/icons/notification.svg">
-        <div class="notify-num-container" *ngIf="notifications?.length">
-          <span>{{ notifications?.length }}</span>
-        </div>
-        <div class="notification-dropdown" *ngIf="notifyDropped">
-          <div class="notification-item" *ngFor="let notify of notifications; let i = index;">
-            <span [ngClass]="{ error: notify.type === 'error' }">{{ notify.message }}</span>
+    </div>
+    <div class="header-right">
+      <div class="header-item">
+        <span class="header-user-span user-item" (click)="menuDropped = !menuDropped">
+          <img src="https://avatars1.githubusercontent.com/u/1796022?s=460&v=4" alt="Jan Kuri" class="avatar-img">
+          <i class="ionicon ion-chevron-down"></i>
+        </span>
+        <div class="header-dropdown-menu" *ngIf="menuDropped">
+          <div class="header-dropdown-heading">
+            <a class="version-link" href="https://github.com/bleenco/abstruse" target="_blank">
+              Abstruse {{ version }}
+            </a>
           </div>
-        </div>
-      </a> -->
-
-      <a class="nav-item user-item" (click)="toggleMenu()" [class.is-open]="menuDropped" *ngIf="user">
-        <img class="nav-avatar" [src]="user.avatar">
-        <i class="ion ion-chevron-down"></i>
-
-        <div class="nav-dropdown" *ngIf="menuDropped">
-          <a class="nav-dropdown-item" [routerLink]="['/user', user?.id]">
+          <a class="header-dropdown-link" [routerLink]="['/user', user?.id]">
             Settings
           </a>
-          <a class="nav-dropdown-item" routerLink="/logs">
+          <a class="header-dropdown-link" routerLink="/logs">
             System Logs
           </a>
-          <a class="nav-dropdown-item" (click)="logout()">
+          <a class="header-dropdown-link nav-dropdown-item" (click)="logout()">
             Logout
           </a>
-          <a class="version-link" href="https://github.com/bleenco/abstruse" target="_blank">
-            Abstruse {{ version }}
-          </a>
         </div>
-      </a>
-
-      <a class="nav-item" *ngIf="!user" routerLink="/login">
-        <img src="/images/icons/login.svg" class="nav-item-icon">
-        Login
-      </a>
+      </div>
     </div>
   </div>
 </header>
-
-<!-- <div class="nav-header-context is-hidden-mobile">
-  <div class="container">
-    <a class="breadcrumb-item">
-      <span>Builds</span>
-    </a>
-    <a class="breadcrumb-item">
-      <span>Build Details</span>
-    </a>
-    <a class="breadcrumb-item">
-      <span>Job</span>
-    </a>
-  </div>
-</div> -->
 
 <div class="mobile-switch-view is-hidden-tablet is-mobile is-mobile-only">
   <button type="button" (click)="switchToDesktopView()" *ngIf="view === 'mobile'">

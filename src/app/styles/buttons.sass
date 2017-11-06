@@ -112,8 +112,8 @@
 
   &.red
     background: linear-gradient(to bottom, #F95359, #DD151C)
-    color: $white
-    border-color: $red
+    color: $white !important
+    border-color: $red !important
 
     &[disabled]
       background: lighten($red, 5)
@@ -123,6 +123,12 @@
   &.white
     background: transparent
     border-color: $white
+
+  &.black
+    background: $black
+    color: $white
+    border-color: $black
+    border-radius: 4px
 
   &.blue
     background-image: linear-gradient(-1deg, #1991EB 2%, #2DA1F8 98%)
@@ -144,6 +150,11 @@
     border: 1px solid $border
     color: $color-secondary
     border-radius: 4px
+
+    &.black
+      background: $black
+      color: $white
+      border-color: $black
 
     &.green
       background-image: linear-gradient(-1deg, #1E930B 3%, #1E9D09 100%)
@@ -240,7 +251,13 @@
       background-image: linear-gradient(0deg, #F7FBFD 0%, #FFFFFF 100%)
       border: 1px solid $border
       color: $color-secondary
-      margin-left: -1px
+      margin-left: 5px
+      border-radius: 4px
+      height: 30px
+      display: inline-flex
+      align-items: center
+      padding: 0 10px
+      line-height: 1.8
 
       &.is-active, &:hover
         background: $white

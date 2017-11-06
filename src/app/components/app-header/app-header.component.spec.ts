@@ -49,6 +49,20 @@ describe('Header Component', () => {
     expect(fixture.componentInstance.user.email).toBe('john@gmail.com');
   }));
 
+  it('should expect item text to include Builds', async(() => {
+    spyOn(localStorage, 'getItem').and.callFake(() => {
+      return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZ21haWwuY29tIiwiaWQiOjE'
+        + 'sImZ1bGxuYW1lIjoiSm9obiBXYXluZSIsInBhc3N3b3JkIjoiY2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YW'
+        + 'NmZWJlZTUiLCJhZG1pbiI6MSwiYXZhdGFyIjoiL2F2YXRhcnMvdXNlci5zdmciLCJjcmVhdGVkX2F0IjoxN'
+        + 'TA3Mjg2NDUzOTYwLCJ1cGRhdGVkX2F0IjoxNTA3Mjg2NDUzOTYwLCJpYXQiOjE1MDczMDY1NzF9.tKDsUid'
+        + 'LjHKVjb9IT612yf6yMM1DtT5H9fmn5wIBdhE';
+    });
+
+    fixture.detectChanges();
+    const de = fixture.debugElement.query(By.css('.header-left .header-item:nth-child(2)'));
+    expect(de.nativeElement.textContent).toContain('Builds');
+  }));
+
   it('should expect item text to include Dashboard', async(() => {
     spyOn(localStorage, 'getItem').and.callFake(() => {
       return 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZ21haWwuY29tIiwiaWQiOjE'
@@ -59,7 +73,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(1)'));
+    const de = fixture.debugElement.query(By.css('.header-left .header-item:nth-child(3)'));
     expect(de.nativeElement.textContent).toContain('Dashboard');
   }));
 
@@ -73,7 +87,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(2)'));
+    const de = fixture.debugElement.query(By.css('.header-left .header-item:nth-child(4)'));
     expect(de.nativeElement.textContent).toContain('Team');
   }));
 
@@ -87,7 +101,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(3)'));
+    const de = fixture.debugElement.query(By.css('.header-left .header-item:nth-child(5)'));
     expect(de.nativeElement.textContent).toContain('Repositories');
   }));
 
@@ -101,7 +115,7 @@ describe('Header Component', () => {
     });
 
     fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(4)'));
+    const de = fixture.debugElement.query(By.css('.header-left .header-item:nth-child(6)'));
     expect(de.nativeElement.textContent).toContain('Images');
   }));
 
@@ -122,21 +136,5 @@ describe('Header Component', () => {
       deMenu.triggerEventHandler('click', { button: 0 });
     }
     expect(fixture.componentInstance.menuDropped).toBe(true);
-  }));
-
-  it('should expect navigation item to be null when anonymous user access page', async(() => {
-    spyOn(localStorage, 'getItem').and.callFake(() => null);
-
-    fixture.detectChanges();
-    const deMenu = fixture.debugElement.query(By.css('.user-item'));
-    expect(deMenu).toBeNull();
-  }));
-
-  it('should expect item text not to include Dashboard for anonymous user', async(() => {
-    spyOn(localStorage, 'getItem').and.callFake(() => null);
-
-    fixture.detectChanges();
-    const de = fixture.debugElement.query(By.css('.nav-center .nav-item:nth-child(1)'));
-    expect(de.nativeElement.textContent).toContain('Repositories');
   }));
 });

@@ -119,14 +119,19 @@
   padding: 15px 10px
   background: #fcfcfc
   border: 1px solid $border
-  font-size: 13px
+  font-size: 12px
+  justify-content: space-between
 
   span
     margin: 0 10px 0 0
 
   .debug
-    margin-left: 30px
-    margin-right: 5px
+    line-height: 0.7
+    max-width: 120px
+    font-family: $font-family-semibold
+
+    i
+      margin-top: -5px
 
   .icon
     margin-left: 10px
@@ -144,7 +149,7 @@
       width: 16px
       height: 16px
       float: right
-      margin-left: 15px
+      margin-left: 10px
       cursor: pointer
 
 .build-history-btn-container
@@ -159,7 +164,7 @@
     margin: 0
     border-radius: 5px
     border: 1px solid $divider
-    padding: 5px 20px
+    padding: 5px 5px 5px 20px
     cursor: pointer
 
     &.hide
