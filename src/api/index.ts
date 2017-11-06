@@ -17,9 +17,9 @@ import { initSetup, getAbstruseVersion } from './utils';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
+import * as expressWs from 'express-ws';
 
 const server = new ExpressServer({ port: 6500 });
-const socket = new SocketServer({ port: 6501 });
 
 initSetup()
   .then(() => db.create())
@@ -32,14 +32,17 @@ initSetup()
     };
     logger.next(msg);
   })
-  .then(() => {
-    Observable
-      .merge(...[server.start(), socket.start(), generateKeys()])
-      .subscribe(data => {
-        const msg: LogMessageType = { message: data, type: 'info', notify: false };
-        logger.next(msg);
-      }, err => {
-        const msg: LogMessageType = { message: err, type: 'error', notify: false };
-        logger.next(msg);
-      });
-  });
+  .then(() =>
+    server.start().subscribe(app => {
+      const socket = new SocketServer({ app: expressWs(app) });
+
+      Observable
+        .merge(...[socket.start(), generateKeys()])
+        .subscribe(data => {
+          const msg: LogMessageType = { message: data, type: 'info', notify: false };
+          logger.next(msg);
+        }, err => {
+          const msg: LogMessageType = { message: err, type: 'error', notify: false };
+          logger.next(msg);
+        });
+  }));

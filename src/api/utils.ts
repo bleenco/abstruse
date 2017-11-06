@@ -25,7 +25,6 @@ const defaultConfig = {
   secret: 'thisIsSecret',
   jwtSecret: 'abstruseSecret4321!!',
   port: 6500,
-  wsport: 6501,
   concurrency: 10,
   idleTimeout: 600,
   jobTimeout: 3600,

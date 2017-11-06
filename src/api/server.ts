@@ -14,7 +14,7 @@ export interface ServerConfig {
 
 export interface IExpressServer {
   config: ServerConfig;
-  start(): Observable<string>;
+  start(): Observable<express.Application>;
 }
 
 export const sessionParser = session({
@@ -30,7 +30,7 @@ export class ExpressServer implements IExpressServer {
     this.config = config;
   }
 
-  start(): Observable<string> {
+  start(): Observable<express.Application> {
     return new Observable(observer => {
       const app: express.Application = express();
       app.use(cors());
@@ -53,15 +53,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/badge', routes.badgeRoutes());
       app.use(routes.webRoutes());
 
-
-      app.listen(this.config.port, () => {
-        const msg: LogMessageType = {
-          message: `[http]: server running on port ${this.config.port}`,
-          type: 'info',
-          notify: false
-        };
-        logger.next(msg);
-      });
+      observer.next(app);
     });
   }
 }

@@ -26,7 +26,7 @@ import { ICpuData, cpu } from './stats/cpu';
 import { decodeJwt } from './security';
 
 export interface ISocketServerOptions {
-  port: number;
+  app: express.Application;
 }
 
 export interface IOutput {
@@ -50,7 +50,7 @@ export class SocketServer {
 
   start(): Observable<string> {
     return new Observable(observer => {
-      this.createRxServer(this.options)
+      this.createRxServer(this.options.app)
         .map(data => {
           this.token = data.conn.protocol;
           this.connectingClient = data.session;
@@ -287,27 +287,29 @@ export class SocketServer {
     });
   }
 
-  private createRxServer = (options: ws.ServerOptions) => {
+  private createRxServer = (appplication: any) => {
     return new Observable((observer: Observer<any>) => {
       let config: any = getConfig();
+      const expressApp = appplication.app;
       let server;
 
       if (config.ssl) {
         server = https.createServer({
           cert: readFileSync(config.sslcert),
           key: readFileSync(config.sslkey)
-        }, express());
+        }, expressApp);
       } else {
-        server = http.createServer();
+        server = http.createServer(expressApp);
       }
 
-      server.listen(options.port);
-      const msg: LogMessageType = {
-        message: `[socket]: server running at port ${options.port}`,
-        type: 'info',
-        notify: false
-      };
-      logger.next(msg);
+      server.listen(config.port, () => {
+        const msg: LogMessageType = {
+          message: `[server]: API and Socket Server running at port ${config.port}`,
+          type: 'info',
+          notify: false
+        };
+        logger.next(msg);
+      });
 
       let wss: ws.Server = new ws.Server({
         verifyClient: (info: any, done) => {
