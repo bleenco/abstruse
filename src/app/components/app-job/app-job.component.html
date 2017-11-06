@@ -146,30 +146,28 @@
           </div>
           <div class="column is-12 is-hidden-mobile" *ngIf="jobRun?.status === 'running' && sshd && vnc && userId">
             <div class="ssh-container">
-              <span class="icon">
-                <img src="/images/icons/ssh.svg">
-              </span>
-              <span class="span-ssh">SSH and VNC Daemon is enabled in this container.</span>
-              <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
-                SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
-                <img src="/images/icons/copy.svg">
-              </code>
-              <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
-                VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
-                <img src="/images/icons/copy.svg">
-              </code>
-              <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
-                password: abstrusePass
-                <img src="/images/icons/copy.svg">
-              </code>
-              <div class="debug">
-                <button [class.is-hidden]="debug" class="button" name="btn-debug" type="button" (click)="debugMode($event)">
-                  <div class="centered">
-                    <i class="ionicon ion-android-lock"></i>
-                    <span class="span-debug">Debug</span>
-                  </div>
-                </button>
+              <div>
+                <span class="icon">
+                  <img src="/images/icons/ssh.svg">
+                </span>
+                <span class="span-ssh">SSH and VNC enabled.</span>
+                <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
+                  SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
+                  <img src="/images/icons/copy.svg">
+                </code>
+                <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
+                  VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
+                  <img src="/images/icons/copy.svg">
+                </code>
+                <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
+                  password: abstrusePass
+                  <img src="/images/icons/copy.svg">
+                </code>
               </div>
+              <button [class.is-hidden]="debug" class="button is-small debug black" name="btn-debug" type="button" (click)="debugMode($event)">
+                <i class="ionicon ion-android-lock"></i>
+                Debug
+              </button>
             </div>
           </div>
           <div class="column is-12">
