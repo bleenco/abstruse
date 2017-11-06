@@ -37,18 +37,8 @@ describe('Terminal Component', () => {
     .createComponent(AppTerminalComponent);
   });
 
-  it('should expect noData to be undefined', () => {
-    expect(fixture.componentInstance.noData).toBeUndefined();
-  });
-
-  it('should expect noData to be true', () => {
+  it('should expect hterm to be defined', () => {
     fixture.detectChanges();
-    expect(fixture.componentInstance.noData).toBe(true);
-  });
-
-  it('should expect duration to convert into human readable string', () => {
-    fixture.detectChanges();
-    const duration = fixture.componentInstance.getDuration(2142412421421);
-    expect(duration).toBe('26d, 9h, 36min, 54sec, 21ms');
+    expect(fixture.componentInstance.hterm).toBeDefined();
   });
 });
