@@ -32,7 +32,7 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.setWindowTitle = () => {};
       this.hterm.prefs_.set('cursor-color', 'transparent');
       this.hterm.prefs_.set('font-family', 'monaco, menlo, monospace');
-      this.hterm.prefs_.set('font-size', 12);
+      this.hterm.prefs_.set('font-size', 11);
       this.hterm.prefs_.set('audible-bell-sound', '');
       this.hterm.prefs_.set('font-smoothing', 'subpixel-antialiased');
       this.hterm.prefs_.set('enable-bold', false);
@@ -43,7 +43,25 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.prefs_.set('alt-sends-what', 'browser-key');
       this.hterm.prefs_.set('scrollbar-visible', false);
       this.hterm.prefs_.set('enable-clipboard-notice', false);
-      this.hterm.prefs_.set('background-color', 'transparent');
+      this.hterm.prefs_.set('background-color', '#000000');
+      this.hterm.prefs_.set('foreground-color', '#f8f8f2');
+      this.hterm.prefs_.set('color-palette-overrides',
+        ['#282a36',
+         '#ff5555',
+         '#50fa7b',
+         '#F3FB97',
+         '#bd93f9',
+         '#ff79c6',
+         '#8be9fd',
+         '#bbbbbb',
+         '#555555',
+         '#ff5555',
+         '#50fa7b',
+         '#F3FB97',
+         '#bd93f9',
+         '#ff79c6',
+         '#8be9fd',
+         '#ffffff']);
       this.hterm.onVTKeystroke = () => {};
     };
 
@@ -61,8 +79,6 @@ export class AppTerminalComponent implements OnInit {
       return;
     }
 
-
-    /* this.hterm.io.println(this.data); */
     this.hterm.io.print(this.data);
     if (this.hterm.keyboard.terminal
       && this.hterm.keyboard.terminal.scrollPort_
