@@ -147,12 +147,10 @@
           <div class="column is-12 is-hidden-mobile" *ngIf="jobRun?.status === 'running' && sshd && vnc && userId">
             <div class="ssh-container">
               <div>
-                <span class="icon">
-                  <img src="/images/icons/ssh.svg">
-                </span>
+                <img src="/images/icons/ssh.svg" class="ssh-icon">
                 <span class="span-ssh">SSH and VNC enabled.</span>
-                <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l root'">
-                  SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l root
+                <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l abstruse'">
+                  SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse
                   <img src="/images/icons/copy.svg">
                 </code>
                 <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
@@ -164,9 +162,9 @@
                   <img src="/images/icons/copy.svg">
                 </code>
               </div>
-              <button [class.is-hidden]="debug" class="button is-small debug black" name="btn-debug" type="button" (click)="debugMode($event)">
+              <button [class.is-hidden]="debug" class="button is-small debug" name="btn-debug" type="button" (click)="debugMode($event)">
                 <i class="ionicon ion-android-lock"></i>
-                Debug
+                Start Debug
               </button>
             </div>
           </div>
