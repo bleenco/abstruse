@@ -1,3 +1,25 @@
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/bleenco/abstruse/compare/v1.2.0...v1.3.0) (2017-11-06)
+
+
+### Bug Fixes
+
+* **colors:** fix button colors ([acb610c](https://github.com/bleenco/abstruse/commit/acb610c))
+* **dashboard:** only show abstruse generated docker containers ([47fb3f1](https://github.com/bleenco/abstruse/commit/47fb3f1))
+* **editor:** switch to monospace font in monaco editor ([25e3728](https://github.com/bleenco/abstruse/commit/25e3728))
+* **fonts:** fix fonts paths ([5055d90](https://github.com/bleenco/abstruse/commit/5055d90))
+* **permissions:** private repositories should be hidden if user don't have permissions (closes [#262](https://github.com/bleenco/abstruse/issues/262)) ([82c75bf](https://github.com/bleenco/abstruse/commit/82c75bf))
+* **style:** header z-index ([ccc7af1](https://github.com/bleenco/abstruse/commit/ccc7af1))
+* **style:** removed scrollbars from header ([651b88d](https://github.com/bleenco/abstruse/commit/651b88d))
+
+
+### Features
+
+* **debug:** stop execution when enter debug mode ([1343a9d](https://github.com/bleenco/abstruse/commit/1343a9d))
+* **header:** header styles ([825fe04](https://github.com/bleenco/abstruse/commit/825fe04))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/bleenco/abstruse/compare/v1.1.0...v1.2.0) (2017-10-23)
 
