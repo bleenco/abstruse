@@ -5,7 +5,7 @@
 # Abstruse
 
 [![AbstruseCI](https://ci.bleenco.io/badge/1)](https://ci.bleenco.io/repo/1)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/gitterHQ/gitter)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/bleenco/abstruse)
 
 *The majority of widely used browsers (except IE) are tested on BrowserStack.*
 
