@@ -181,6 +181,11 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         '',
         'RUN cd /home/abstruse && sudo chown -Rv 1000:100 /home/abstruse',
         '',
+        'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
+        'CMD ["/entry.sh"]',
+        '',
+        'EXPOSE 22 5900',
+        '',
         '# --------------------------------------------------------------------------------------------------------------------------------',
         '',
         '# your commands go below: ',
@@ -199,14 +204,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         '# example; install docker',
         'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.09.0-ce.tgz \\',
         '    && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \\',
-        '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz',
-        '',
-        '# commands below should be there for builds to work properly',
-        '',
-        'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
-        'CMD ["/entry.sh"]',
-        '',
-        'EXPOSE 22 5900'
+        '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz'
       ].join('\n'),
       initsh: [
         '# export CHROME_BIN',
