@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 COLOR_NC="\e[0m"
 COLOR_GREEN="\e[0;32m"
