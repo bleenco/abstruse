@@ -24,7 +24,7 @@ mkdir ~/abstruse-config
 2. Run Image
 
 ```sh
-docker run -dit --restart always -v /var/run/docker.sock:/var/run/docker.sock -v ~/abstruse-config:/root/.abstruse -p 6500:6500 -p 6501:6501 bleenco/abstruse
+docker run -dit --restart always -v /var/run/docker.sock:/var/run/docker.sock -v ~/abstruse-config:/root/.abstruse -p 6500:6500 bleenco/abstruse
 ```
 
 Note that we are exposing hosts `/var/run/docker.sock` to `abstruse` image. This is the only way you persist native `docker` performance.
