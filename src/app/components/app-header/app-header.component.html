@@ -21,9 +21,9 @@
       </a>
     </div>
     <div class="header-right">
-      <div class="header-item">
+      <div class="header-item" *ngIf="user">
         <span class="header-user-span user-item" (click)="menuDropped = !menuDropped">
-          <img src="https://avatars1.githubusercontent.com/u/1796022?s=460&v=4" alt="Jan Kuri" class="avatar-img">
+          <img [src]="user.avatar" class="avatar-img">
           <i class="ionicon ion-chevron-down"></i>
         </span>
         <div class="header-dropdown-menu" *ngIf="menuDropped">
@@ -42,6 +42,10 @@
             Logout
           </a>
         </div>
+      </div>
+      <div class="header-item" *ngIf="!user" routerLink="/login">
+        <img src="/images/icons/login.svg" class="nav-item-icon">
+        Login
       </div>
     </div>
   </div>
