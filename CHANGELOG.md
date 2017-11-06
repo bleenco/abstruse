@@ -1,3 +1,8 @@
+<a name="1.3.1"></a>
+## [1.3.1](https://github.com/bleenco/abstruse/compare/v1.3.0...v1.3.1) (2017-11-06)
+
+* **default-image**: update default `nameless_image` to ubuntu 17.10 and Chromium instead of Google Chrome
+
 <a name="1.3.0"></a>
 # [1.3.0](https://github.com/bleenco/abstruse/compare/v1.2.0...v1.3.0) (2017-11-06)
 
