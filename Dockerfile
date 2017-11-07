@@ -29,6 +29,10 @@ RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sq
 # Stage 3 image
 FROM alpine:3.6
 
+ARG VCS_REF=n/a
+ARG VERSION=dev
+ARG BUILD_DATE=n/a
+
 LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.name="abstruse" \
@@ -36,8 +40,9 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
       org.label-schema.url="https://abstruse.bleenco.io/" \
       org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
       org.label-schema.vendor="Bleenco" \
-      org.label-schema.vcs-ref="n/a" \
-      org.label-schema.version="dev"
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.version=$VERSION \
+      org.label-schema.build-date=$BUILD_DATE
 
 WORKDIR /app
 
