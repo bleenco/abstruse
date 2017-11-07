@@ -1,16 +1,6 @@
 # Stage 1 image
 FROM mhart/alpine-node:8 as base
 
-LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
-      org.label-schema.schema-version="1.0" \
-      org.label-schema.name="abstruse" \
-      org.label-schema.description="Continuous integration platform, simple, scalable and fast" \
-      org.label-schema.url="https://abstruse.bleenco.io/" \
-      org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
-      org.label-schema.vendor="Bleenco" \
-      org.label-schema.vcs-ref="n/a" \
-      org.label-schema.version="dev"
-
 ENV DOCKER_VERSION=17.09.0-ce
 
 RUN apk --no-cache add openssl \
@@ -18,6 +8,7 @@ RUN apk --no-cache add openssl \
     && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \
     && ln -s /tmp/docker/docker /usr/bin/docker && chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz \
     && apk del openssl
+
 
 # Stage 2 image
 FROM base as build
@@ -37,6 +28,16 @@ RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sq
 
 # Stage 3 image
 FROM alpine:3.6
+
+LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.name="abstruse" \
+      org.label-schema.description="Continuous integration platform, simple, scalable and fast" \
+      org.label-schema.url="https://abstruse.bleenco.io/" \
+      org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
+      org.label-schema.vendor="Bleenco" \
+      org.label-schema.vcs-ref="n/a" \
+      org.label-schema.version="dev"
 
 WORKDIR /app
 
