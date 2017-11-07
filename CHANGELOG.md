@@ -1,3 +1,18 @@
+<a name="1.3.2"></a>
+## [1.3.2](https://github.com/bleenco/abstruse/compare/v1.3.1...v1.3.2) (2017-11-07)
+
+
+### Bug Fixes
+
+* **header:** remove hardcoded avatar ([f1f6405](https://github.com/bleenco/abstruse/commit/f1f6405))
+
+
+### Features
+
+* **API:** run API & Socket Server on same single port ([78fd624](https://github.com/bleenco/abstruse/commit/78fd624))
+
+
+
 <a name="1.3.1"></a>
 ## [1.3.1](https://github.com/bleenco/abstruse/compare/v1.3.0...v1.3.1) (2017-11-06)
 
