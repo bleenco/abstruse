@@ -15,6 +15,12 @@
 
 [https://ci.bleenco.io](https://ci.bleenco.io)
 
+### Quick Start (Video)
+
+Video presents how easy is to install Abstruse CI and run sample build (2mins).
+
+[https://www.youtube.com/watch?v=xmizxTGk92k](https://www.youtube.com/watch?v=xmizxTGk92k)
+
 ## Why Abstruse?
 We saw many projects relying on outdated open source continuous integration (CI) solutions that were widely adopted in the past, but unfortunately cannot answer new requirements from the industry. On the other hand, commercial CI solutions have all this great features (i.e. Travis CI), but they cost money. Hence, numerous organizations decide to cut costs and go with legacy open source CI solutions or not use CI solutions at all. This kills the code quality and increases software maintenance costs. We want to change this and equip developers with the commercial-grade open source CI solution that differentiates from the rest by simplicity, scalability and up-to-date technology stack.
 
