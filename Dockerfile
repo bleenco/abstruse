@@ -46,7 +46,7 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
 
 WORKDIR /app
 
-RUN apk --no-cache add tini sqlite git
+RUN apk --no-cache add tini sqlite git wget
 
 COPY --from=base /usr/bin/node /usr/bin/
 COPY --from=base /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
@@ -56,6 +56,9 @@ COPY --from=build /app/package.json /app/
 COPY --from=build /app/prod_node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/src/files ./src/files
+
+HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
+    CMD wget -q -O- http://localhost:6500/status || exit 1
 
 EXPOSE 6500
 
