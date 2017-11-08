@@ -22,14 +22,12 @@ describe('Job Details', () => {
       }))
       .then((): any => element(by.css('.restart-job')).click())
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 0);
+        return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 1);
-      }))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .output')).count().then(cnt => cnt === 1);
-      }))
+      .then(() => browser.switchTo().frame( element( by.tagName( 'iframe' )).getWebElement()))
+      .then(() => element.all(by.css('x-row')).count())
+      .then(cnt => expect(cnt).to.be.greaterThan(0))
+      .then(() => browser.driver.switchToParentFrame())
       .then((): any => browser.wait(() => {
         return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();
       })
@@ -63,11 +61,15 @@ describe('Job Details', () => {
       })))
       .then(() => browser.get('/job/5'))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .command')).count().then(cnt => cnt === 3);
+        return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
+      .then(() => browser.switchTo().frame( element( by.tagName( 'iframe' )).getWebElement()))
+      .then(() => element.all(by.css('x-row')).count())
+      .then(cnt => expect(cnt).to.be.greaterThan(0))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('.terminal .output')).count().then(cnt => cnt === 3);
+        return element.all(by.css('x-row')).count().then(cnt => cnt > 10);
       }))
+      .then(() => browser.driver.switchToParentFrame())
       .then((): any => browser.wait(() => {
         return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();
       })
