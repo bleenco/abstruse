@@ -1,13 +1,8 @@
-@import 'terminal/material-dark-ansi'
-@import 'terminal/batman-ansi'
-@import 'terminal/dracula-ansi'
-
 .window-terminal-container
   position: relative
   display: block
   color: #ffffff
   margin: 0
-  font-family: $font-family-roboto-mono
   padding: 0
   height: 100%
   background: #000000
@@ -17,63 +12,5 @@
   +mobile
     height: 400px
 
-    .command
-      font-size: 11px !important
-
-    .output
-      font-size: 11px !important
-
-  .terminal
-    display: block
-    text-align: left
-    padding: 0
-    margin: 0
-    width: 100%
-
-    .command-line
-      display: flex
-      align-items: center
-      margin: 0 5px
-      cursor: pointer
-      height: 28px
-      position: relative
-      padding-left: 15px
-      background: #111
-      font-family: $font-family-roboto-mono
-
-      .command
-        font-size: 11px
-        color: $white
-
-      .time
-        position: absolute
-        display: block
-        font-size: 11px
-        right: 10px
-        color: $white
-
-      .command-loader
-        position: absolute
-        right: 10px
-        top: 4px
-        display: block
-        overflow: hidden
-        width: 16px
-        height: 16px
-
-        svg
-          width: 16px
-          height: 16px
-
-    .output
-      display: inline-block
-      width: 100%
-      color: #ffffff
-      margin: 0 !important
-      font-family: $font-family-roboto-mono
-      font-size: 11px
-      padding: 0 25px 0 25px !important
-      background: #000000
-      white-space: pre-wrap
-      word-wrap: break-word
-      font-weight: $weight-normal !important
+  iframe
+    padding: 10px
