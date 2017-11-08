@@ -14,7 +14,7 @@
     "build:prod": "npm run build && npm run build:app:prod",
     "build:app": "webpack --env.dev --progress",
     "build:app:prod": "webpack --env.aot --env.prod -p",
-    "build-image": "GIT_REV=$(git rev-parse --short HEAD); docker build -t bleenco/abstruse:${npm_package_version} --label org.label-schema.version=\"${npm_package_version}\" --label org.label-schema.vcs-ref=\"${GIT_REV}\" .",
+    "build-image": "IMAGE_NAME=bleenco/abstruse:${npm_package_version}-dev DOCKER_TAG=${npm_package_version}-dev SOURCE_COMMIT=`git rev-parse HEAD` hooks/build",
     "start": "webpack-dev-server --env.dev --env.serve --progress --hot",
     "start:aot": "webpack-dev-server --env.aot --env.dev --env.serve --progress --hot",
     "lint": "tslint ./src/**/*.ts",
