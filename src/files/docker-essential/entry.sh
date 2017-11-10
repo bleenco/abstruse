@@ -3,7 +3,7 @@
 VNC_STORE_PWD_FILE=/home/abstruse/.vnc/passwd
 if [ ! -e "${VNC_STORE_PWD_FILE}" -o -n "${VNC_PASSWORD}" ]; then
   mkdir -vp /home/abstruse/.vnc
-  x11vnc -storepasswd ${VNC_PASSWORD:-abstruse} ${VNC_STORE_PWD_FILE}
+  x11vnc -storepasswd ${VNC_PASSWORD:-abstruse} ${VNC_STORE_PWD_FILE} &> /dev/null
 fi
 
 export CHROME=${CHROME:-/opt/google/chrome/google-chrome}

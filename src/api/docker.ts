@@ -110,7 +110,8 @@ export function attachExec(id: string, cmd: any): Observable<any> {
         } else if (str.includes('[success]')) {
           exitCode = 0;
           ws.end();
-        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
+        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>') &&
+          !str.startsWith('abstruse@')) {
           if (str.includes('//') && str.includes('@')) {
             str = str.replace(/\/\/(.*)@/, '//');
           }
