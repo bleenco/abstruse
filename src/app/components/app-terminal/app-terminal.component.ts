@@ -22,10 +22,10 @@ const terminalColorPallete = ['rgb(40, 42, 54)', 'rgb(255, 85, 85)', 'rgb(80, 25
 })
 export class AppTerminalComponent implements OnInit {
   @Input() data: any;
-  @Input() options: { size: 'normal' | 'large', newline: boolean };
+  @Input() options: { size: 'normal' | 'large' };
   hterm: hterm.Terminal;
   terminalReady: boolean;
-  unwritenChanges: string[];
+  unwritenChanges: string;
 
   constructor(
     private elementRef: ElementRef,
@@ -34,7 +34,7 @@ export class AppTerminalComponent implements OnInit {
     hterm.hterm.defaultStorage = new hterm.lib.Storage.Local();
     this.hterm = new hterm.hterm.Terminal();
     this.terminalReady = false;
-    this.unwritenChanges = [];
+    this.unwritenChanges = '';
   }
 
   ngOnInit() {
@@ -62,9 +62,9 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.prefs_.set('color-palette-overrides', terminalColorPallete);
 
       this.terminalReady = true;
-      if (this.unwritenChanges.length) {
-        this.unwritenChanges.forEach(p => this.printToTerminal(p));
-        this.unwritenChanges = [];
+      if (this.unwritenChanges) {
+        this.printToTerminal(this.unwritenChanges);
+        this.unwritenChanges = '';
       }
     };
 
@@ -83,19 +83,14 @@ export class AppTerminalComponent implements OnInit {
     }
 
     if (!this.terminalReady) {
-      this.unwritenChanges.push(this.data);
+      this.unwritenChanges += this.data;
     } else {
       this.printToTerminal(this.data);
     }
   }
 
   printToTerminal(data: string) {
-    if (this.options.newline) {
-      this.hterm.io.println(data);
-    } else {
-      this.hterm.io.print(data);
-    }
-
+    this.hterm.io.print(this.data);
     if (this.hterm.keyboard.terminal
       && this.hterm.keyboard.terminal.scrollPort_
       && this.hterm.keyboard.terminal.scrollPort_.isScrolledEnd) {

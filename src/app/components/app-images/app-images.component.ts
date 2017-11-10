@@ -1,22 +1,21 @@
-import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, Inject, EventEmitter } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
+import * as ansiUp from 'ansi_up';
+import { SlimScrollEvent, ISlimScrollOptions } from 'ngx-slimscroll';
 import { Subscription } from 'rxjs/Subscription';
 
 export interface IImage {
   name: string;
   dockerfile: string;
   initsh: string;
-  base: boolean;
 }
 
 export interface ImageBuildType {
   name: string;
   layers: { id: string, status: string, progress: string, progressDetail: any }[];
 }
-
-export const allowedCommands: string[] = ['FROM', 'ENV', 'RUN', 'COPY'];
 
 @Component({
   selector: 'app-images',
@@ -29,19 +28,15 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   form: IImage;
   imageBuilds: ImageBuildType[];
   imageBuildsText: string;
+  imageBuildLog: string;
+  au: any;
   building: boolean;
   success: boolean;
-  baseImages: any[];
-  baseImage: string;
-  customImages: any[];
+  images: any[];
   tab: string;
+  scrollOptions: ISlimScrollOptions;
+  scrollEvents: EventEmitter<SlimScrollEvent>;
   sub: Subscription;
-  approve: boolean;
-  terminalOptions:  { size: 'small' | 'large', newline: boolean };
-  terminalInput: any;
-  baseImageOptions: { key: any, value: string }[];
-  imageTypeOptions: { key: any, value: string }[];
-  dangerousCommands: string[];
 
   constructor(
     private socketService: SocketService,
@@ -49,16 +44,9 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     private api: ApiService,
     @Inject(DOCUMENT) private document: any
   ) {
-    this.baseImages = [];
-    this.baseImage = '';
-    this.customImages = [];
-    this.baseImageOptions = [];
-    this.dangerousCommands = [];
     this.loading = true;
-    this.approve = false;
     this.imageBuilds = [];
-    this.imageTypeOptions = [{ key: false, value: 'Custom Image' }, { key: true, value: 'Base Image' }];
-    this.terminalOptions = { size: 'large', newline: true };
+    this.imageBuildLog = '';
 
     this.editorOptions = {
       lineNumbers: true,
@@ -84,10 +72,27 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     };
 
     this.initEditorOptions = Object.assign({}, this.editorOptions, { language: 'plaintext' });
+
+    this.au = new ansiUp.default();
     this.building = false;
     this.tab = 'images';
 
-    this.resetForm(!!this.baseImages.length);
+    this.resetForm();
+
+    this.scrollOptions = {
+      barBackground: '#666',
+      gridBackground: '#000',
+      barBorderRadius: '10',
+      barWidth: '7',
+      gridWidth: '7',
+      barMargin: '2px 5px',
+      gridMargin: '2px 5px',
+      gridBorderRadius: '10',
+      alwaysVisible: false
+    };
+
+    this.scrollEvents = new EventEmitter<SlimScrollEvent>();
+    this.images = [];
   }
 
   ngOnInit() {
@@ -96,17 +101,15 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.sub = this.socketService.outputEvents
       .filter(event => event.type === 'imageBuildProgress')
       .subscribe(event => {
-        this.form.name = event.data.name;
         let output;
         try {
-          output = JSON.parse(event.data.output);
+          output = JSON.parse(event.data.output.replace('\r\n', ''));
         } catch (e) {
           output = null;
         }
 
         if (output) {
           this.building = true;
-          this.tab = 'build';
         }
 
         if (output && output.id && output.progressDetail) {
@@ -128,10 +131,12 @@ export class AppImagesComponent implements OnInit, OnDestroy {
             this.fetchImages();
             this.tab = 'images';
           } else {
-            this.zone.run(() => this.terminalInput = output.stream);
+            this.imageBuildLog += this.au.ansi_to_html(output.stream);
+            this.scrollToBottom();
           }
         } else if (output && output.errorDetail) {
-          this.zone.run(() => this.terminalInput = `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`);
+          this.imageBuildLog += `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`;
+          this.scrollToBottom();
         }
       });
 
@@ -139,129 +144,108 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.fetchImages();
   }
 
-  resetForm(imageType: boolean): void {
-    if (imageType) {
-      this.form = {
-        name: 'nameless_image',
-        dockerfile: [
-          'FROM ' + this.baseImage,
-          '',
-          'COPY init.sh /home/abstruse/init.sh',
-          '',
-          '# your commands go below: ',
-          '# example; install Chromium',
-          'RUN sudo apt-get install chromium-browser libgconf2-dev -y',
-          '',
-          '# example; install nvm (Node Version Manager)',
-          'RUN cd /home/abstruse \\',
-          '    && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.4/install.sh | bash \\',
-          '    && export NVM_DIR="$HOME/.nvm" \\',
-          '    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"',
-          '',
-          '# example; install sqlite3',
-          'RUN sudo apt-get install sqlite3 -y',
-          '',
-          '# example; install docker',
-          'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.09.0-ce.tgz \\',
-          '    && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \\',
-          '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz'
-        ].join('\n'),
-        initsh: [
-          '# export CHROME_BIN',
-          'export CHROME_BIN=/usr/bin/chromium-browser',
-          '# here you define scripts that should be loaded or static env variables',
-          '# example for `nvm` or Node Version Manager',
-          'if [ -d /home/abstruse/.nvm ]; then',
-          '  source /home/abstruse/.nvm/nvm.sh',
-          'fi',
-          '# giving docker access to abstruse user',
-          'if [ -e /var/run/docker.sock ]; then',
-          '  sudo chown -R 1000:100 /var/run/docker.sock > /dev/null 2>&1',
-          'fi'
-        ].join('\n'),
-        base: !imageType
-      };
-    } else {
-      this.form = {
-        name: 'abstruse_builder',
-        dockerfile: [
-          'FROM ubuntu:17.10',
-          '',
-          'ENV DEBIAN_FRONTEND=noninteractive',
-          '',
-          '# please do not edit between lines or image on abstruse will not work properly',
-          '',
-          '# -------------------------------------------------------------------------------------------',
-          '',
-          'RUN set -xe \\',
-          '    && apt-get update \\',
-          '    && apt-get install -y --no-install-recommends ca-certificates curl build-essential \\',
-          '    && apt-get install -y --no-install-recommends libssl-dev git python \\',
-          '    && apt-get install -y --no-install-recommends sudo \\',
-          '    && apt-get install -y --no-install-recommends xvfb x11vnc fluxbox xterm openssh-server',
-          '',
-          'RUN useradd -u 1000 -g 100 -G sudo --shell /bin/bash -m --home-dir /home/abstruse abstruse \\',
-          '    && echo \'abstruse ALL=(ALL) NOPASSWD:ALL\' >> /etc/sudoers \\',
-          '    && echo \'abstruse:abstrusePass\' | chpasswd',
-          '',
-          'COPY fluxbox /etc/init.d/',
-          'COPY x11vnc /etc/init.d/',
-          'COPY xvfb /etc/init.d/',
-          'COPY entry.sh /',
-          '',
-          'COPY abstruse-pty /usr/bin/abstruse-pty',
-          'COPY abstruse-exec.sh /usr/bin/abstruse',
-          '',
-          'USER abstruse',
-          'WORKDIR /home/abstruse/build',
-          '',
-          'RUN cd /home/abstruse && sudo chown -Rv 1000:100 /home/abstruse',
-          '',
-          'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
-          'CMD ["/entry.sh"]',
-          '',
-          'EXPOSE 22 5900'
-        ].join('\n'),
-        initsh: '',
-        base: !imageType
-      };
-    }
+  resetForm(): void {
+    this.form = {
+      name: 'nameless_image',
+      dockerfile: [
+        'FROM ubuntu:17.10',
+        '',
+        'ENV DEBIAN_FRONTEND=noninteractive',
+        '',
+        '# please do not edit between lines or image on abstruse will not work properly',
+        '',
+        '# -------------------------------------------------------------------------------------------------------------------------------',
+        '',
+        'RUN set -xe \\',
+        '    && apt-get update \\',
+        '    && apt-get install -y --no-install-recommends ca-certificates curl build-essential \\',
+        '    && apt-get install -y --no-install-recommends libssl-dev git python \\',
+        '    && apt-get install -y --no-install-recommends sudo \\',
+        '    && apt-get install -y --no-install-recommends xvfb x11vnc fluxbox xterm openssh-server',
+        '',
+        'RUN useradd -u 1000 -g 100 -G sudo --shell /bin/bash -m --home-dir /home/abstruse abstruse \\',
+        '    && echo \'abstruse ALL=(ALL) NOPASSWD:ALL\' >> /etc/sudoers \\',
+        '    && echo \'abstruse:abstrusePass\' | chpasswd',
+        '',
+        'COPY fluxbox /etc/init.d/',
+        'COPY x11vnc /etc/init.d/',
+        'COPY xvfb /etc/init.d/',
+        'COPY entry.sh /',
+        '',
+        'COPY init.sh /home/abstruse/init.sh',
+        'COPY abstruse-pty /usr/bin/abstruse-pty',
+        'COPY abstruse-exec.sh /usr/bin/abstruse',
+        '',
+        'USER abstruse',
+        'WORKDIR /home/abstruse/build',
+        '',
+        'RUN cd /home/abstruse && sudo chown -Rv 1000:100 /home/abstruse',
+        '',
+        'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
+        'CMD ["/entry.sh"]',
+        '',
+        'EXPOSE 22 5900',
+        '',
+        '# --------------------------------------------------------------------------------------------------------------------------------',
+        '',
+        '# your commands go below: ',
+        '# example; install Chromium',
+        'RUN sudo apt-get install chromium-browser libgconf2-dev -y',
+        '',
+        '# example; install nvm (Node Version Manager)',
+        'RUN cd /home/abstruse \\',
+        '    && curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.4/install.sh | bash \\',
+        '    && export NVM_DIR="$HOME/.nvm" \\',
+        '    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"',
+        '',
+        '# example; install sqlite3',
+        'RUN sudo apt-get install sqlite3 -y',
+        '',
+        '# example; install docker',
+        'RUN curl -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-17.09.0-ce.tgz \\',
+        '    && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \\',
+        '    && sudo ln -s /tmp/docker/docker /usr/bin/docker && sudo chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz'
+      ].join('\n'),
+      initsh: [
+        '# export CHROME_BIN',
+        'export CHROME_BIN=/usr/bin/chromium-browser',
+        '# here you define scripts that should be loaded or static env variables',
+        '# example for `nvm` or Node Version Manager',
+        'if [ -d /home/abstruse/.nvm ]; then',
+        '  source /home/abstruse/.nvm/nvm.sh',
+        'fi',
+        '',
+        '# example for giving docker access to abstruse user',
+        'if [ -e /var/run/docker.sock ]; then',
+        '  sudo chown -R 1000:100 /var/run/docker.sock > /dev/null 2>&1',
+        'fi'
+      ].join('\n')
+    };
   }
 
-  editImage(index: number, base: boolean): void {
-    if (base) {
-      this.form.name = this.baseImages[index].name;
-      this.form.dockerfile = this.baseImages[index].dockerfile;
-      this.form.initsh = this.baseImages[index].initsh;
-    } else {
-      this.form.name = this.customImages[index].name;
-      this.form.dockerfile = this.customImages[index].dockerfile;
-      this.form.initsh = this.customImages[index].initsh;
-    }
-    this.form.base = base;
+  editImage(index: number): void {
+    this.form.name = this.images[index].name;
+    this.form.dockerfile = this.images[index].dockerfile;
+    this.form.initsh = this.images[index].initsh;
     this.tab = 'build';
   }
 
   fetchImages(): void {
     this.loading = true;
     this.api.imagesList().subscribe(data => {
-      this.customImages = [];
-      this.baseImages = [];
-      data.forEach(image => {
-        if (image.base) {
-          this.baseImages.push(image);
-        } else {
-          this.customImages.push(image);
+      this.resetForm();
+      this.images = data.map(image => {
+        if (!image.dockerfile) {
+          image.dockerfile = this.form.dockerfile;
         }
+
+        if (!image.initsh) {
+          image.initsh = this.form.initsh;
+        }
+
+        return image;
       });
 
-      this.baseImageOptions = [];
-      if (this.baseImages.length) {
-        this.baseImages.forEach(i => this.baseImageOptions.push({ key: i.name, value: i.name}));
-        this.baseImage = this.baseImages[0].name;
-      }
-
-      this.resetForm(!!this.baseImages.length);
       this.loading = false;
     });
   }
@@ -294,9 +278,19 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         progress: null,
         progressDetail: null
       });
-
       return this.imageBuilds[imageBuildIndex].layers.length - 1;
     }
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      const ev: SlimScrollEvent = {
+        type: 'scrollToBottom',
+        easing: 'linear',
+        duration: 50
+      };
+      this.scrollEvents.emit(ev);
+    });
   }
 
   ngOnDestroy() {
@@ -308,43 +302,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   buildImage(): void {
-    this.checkImage() ? this.approve = true : this.startBuild();
-  }
-
-  checkImage(): boolean {
-    this.dangerousCommands = [];
-    let image = this.form.dockerfile.split('\n').filter(i => {
-      return i[0] !== '#' && i.length && i[0] !== ' ';
-    });
-    image.forEach(c => {
-      let command = c.split(' ');
-      if (command) {
-        if (allowedCommands.indexOf(command[0]) === -1
-          && this.dangerousCommands.indexOf(command[0]) === -1) {
-            this.dangerousCommands.push(command[0]);
-        }
-      }
-    });
-
-    return !!this.dangerousCommands.length;
-  }
-
-  startBuild(): void {
     this.building = true;
-    this.approve = false;
     this.socketService.emit({ type: 'buildImage', data: this.form });
-  }
-
-  changeBaseImageSelect(e: Event): void {
-    let tmp = this.form.dockerfile.split('\n');
-    if (tmp) {
-      tmp[0] = `FROM ${e}`;
-    }
-
-    this.form.dockerfile = tmp.join('\n');
-  }
-
-  changeImageTypeSelect(e: Event): void {
-    this.resetForm(!e);
   }
 }

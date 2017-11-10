@@ -40,7 +40,7 @@ import {
 import { insertEnvironmentVariable, removeEnvironmentVariable } from './db/environment-variable';
 import { getLogs } from './db/log';
 import { imageExists } from './docker';
-import { getImages, buildAbstruseBaseImage } from './image-builder';
+import { getImages } from './image-builder';
 import { checkApiRequestAuth } from './security';
 import {
   checkConfigPresence,
@@ -768,11 +768,6 @@ export function imagesRoutes(): express.Router {
     getImages()
       .then(images => res.status(200).json({ data: images }))
       .catch(err => res.status(200).json({ status: false }));
-  });
-
-  router.post('/build-base', (req: express.Request, res: express.Response) => {
-    buildAbstruseBaseImage();
-    res.status(200).json({ data: true });
   });
 
   return router;

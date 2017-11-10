@@ -4,6 +4,7 @@ import { CommonModule }       from '@angular/common';
 import { HttpModule }         from '@angular/http';
 import { FormsModule }        from '@angular/forms';
 import { NgUploaderModule }   from 'ngx-uploader';
+import { NgSlimScrollModule } from 'ngx-slimscroll';
 import { NgDatepickerModule } from 'ng2-datepicker/ng2-datepicker';
 
 import { AuthGuardProvider, AuthGuard }      from './services/auth-guard.service';
@@ -55,6 +56,7 @@ import { ToTimePipe }                   from './pipes/to-time.pipe';
     FormsModule,
     HttpModule,
     NgUploaderModule,
+    NgSlimScrollModule,
     NgDatepickerModule
   ],
   declarations: [
@@ -92,6 +94,7 @@ import { ToTimePipe }                   from './pipes/to-time.pipe';
     FormsModule,
     HttpModule,
     NgUploaderModule,
+    NgSlimScrollModule,
     NgDatepickerModule
   ]
 })
