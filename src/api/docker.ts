@@ -180,7 +180,9 @@ export function killContainer(id: string): Promise<void> {
       container = docker.getContainer(id);
       container.inspect()
         .then(containerInfo => {
-          if (containerInfo.State.Status === 'running') {
+          if (containerInfo.State.Status === 'exited') {
+            return container.remove();
+          } else if (containerInfo.State.Status === 'running') {
             return container.kill().then(() => container.remove());
           } else {
             return Promise.resolve();
