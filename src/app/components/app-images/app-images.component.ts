@@ -182,6 +182,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         'RUN cd /home/abstruse && sudo chown -Rv 1000:100 /home/abstruse',
         '',
         'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
+        'ENTRYPOINT ["/bin/bash"]',
         'CMD ["/entry.sh"]',
         '',
         'EXPOSE 22 5900',
