@@ -47,8 +47,7 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.prefs_.set('font-size', 11);
       this.hterm.prefs_.set('audible-bell-sound', '');
       this.hterm.prefs_.set('font-smoothing', 'subpixel-antialiased');
-      this.hterm.prefs_.set('enable-bold', false);
-      this.hterm.prefs_.set('backspace-sends-backspace', true);
+      this.hterm.prefs_.set('enable-bold', true);
       this.hterm.prefs_.set('cursor-blink', false);
       this.hterm.prefs_.set('receive-encoding', 'raw');
       this.hterm.prefs_.set('send-encoding', 'raw');
@@ -57,9 +56,9 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.prefs_.set('enable-clipboard-notice', false);
       this.hterm.prefs_.set('background-color', '#000000');
       this.hterm.prefs_.set('foreground-color', '#f8f8f2');
-      hterm.lib.colors.stockColorPalette.splice(0, terminalColorPallete.length)
-      hterm.lib.colors.stockColorPalette = terminalColorPallete.concat(
-        hterm.lib.colors.stockColorPalette);
+      hterm.lib.colors.stockColorPalette.splice(0, terminalColorPallete.length);
+      hterm.lib.colors.stockColorPalette = terminalColorPallete
+        .concat(hterm.lib.colors.stockColorPalette);
       this.hterm.prefs_.set('color-palette-overrides', terminalColorPallete);
 
       this.terminalReady = true;
@@ -82,8 +81,6 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.keyboard.terminal.wipeContents();
       return;
     }
-
-    console.log(this.data);
 
     if (!this.terminalReady) {
       this.unwritenChanges += this.data;
