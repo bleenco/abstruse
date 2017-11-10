@@ -23,11 +23,12 @@ export class AppSelectboxComponent implements OnChanges {
   }
 
   set value(val: string) {
-    let ind = this.data.findIndex(d => d.key === val);
-    if (ind !== -1) {
-      this.index = ind;
-      this.onChangeCallback(this.data[this.index].key);
+    if (!val) {
+      return;
     }
+
+    this.index = this.data.findIndex(d => d.key === val);
+    this.onChangeCallback(this.data[this.index].key);
   }
 
   ngOnChanges(changes: SimpleChanges) {

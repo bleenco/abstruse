@@ -55,7 +55,6 @@ export function initSetup(): Promise<string> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
     .then(() => ensureDirectory(getFilePath('images')))
-    .then(() => ensureDirectory(getFilePath('base-images')))
     .then(() => {
       const srcDir = resolve(__dirname, '../../src/files/docker-essential');
       const destDir = getFilePath('docker-essential');

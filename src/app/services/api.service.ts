@@ -99,10 +99,6 @@ export class ApiService {
     return this.post(`${this.url}/setup/db/init`, {});
   }
 
-  buildAbstruseBaseImage(): Observable<any> {
-    return this.post(`${this.url}/images/build-base`, {});
-  }
-
   loginRequired(): Observable<any> {
     return this.get(`${this.url}/setup/login-required`);
   }

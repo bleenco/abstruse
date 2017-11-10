@@ -14,7 +14,7 @@
           <i class="ionicon ion-ios-paper-outline"></i>
           Images
         </button>
-        <button class="group-button" name="tab-build-image" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm(!!baseImages.length);">
+        <button class="group-button" name="tab-build-image" [ngClass]="{ 'is-active': tab === 'build' }" (click)="tab = 'build'; resetForm();">
           <i class="ionicon ion-hammer"></i>
           Build Image
         </button>
@@ -36,8 +36,21 @@
 
         <div *ngIf="tab === 'images'">
           <div class="content-box image-builder-box">
+            <div class="columns is-multiline" *ngIf="images?.length">
+              <div class="column is-4" *ngFor="let i of images; let index = index;">
+                <div class="image-item">
+                  <h2>{{ i.name }}</h2>
+                  <span class="version">{{ i.version }}</span>
+                  <img src="/images/logos/docker.svg" class="docker-img">
+                  <span class="time">{{ i.created }}</span>
+                  <span class="time">Created {{ i.createdAgo }} ago</span>
+                  <span class="size">Size {{ i.size }}</span>
+                  <button type="button" class="button is-fullwidth" (click)="editImage(index)">Edit Image</button>
+                </div>
+              </div>
+            </div>
 
-            <div class="columns" *ngIf="!baseImages?.length">
+            <div class="columns" *ngIf="!images?.length">
               <div class="column is-12">
                 <div class="message">
                   <div class="columns">
@@ -45,47 +58,10 @@
                       <i class="ion ion-information"></i>
                     </div>
                     <div class="column is-11">
-                      <p><strong>No Base Images found.</strong></p>
+                      <p><strong>No Docker images built with Abstruse found.</strong></p>
                       <p>It is important to build images using <a (click)="tab = 'build'">this</a> form so files needed for Abstruse to work are included.</p>
                       <p>Images built using Abstruse form are later easily upgradeable as config files are stored with the application.</p>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="content-box" *ngIf="baseImages?.length">
-              <div class="content-box-header">
-                <h1>Base Images</h1>
-              </div>
-              <div class="columns is-multiline">
-                <div class="column is-3" *ngFor="let i of baseImages; let index = index;">
-                  <div class="base-image-item">
-                    <h2>{{ i.name }}</h2>
-                    <span class="version">{{ i.version }}</span>
-                    <img src="/images/logos/docker.svg" class="docker-img">
-                    <span class="time">{{ i.created }}</span>
-                    <span class="size">Size {{ i.size }}</span>
-                    <button type="button" class="button is-small" (click)="editImage(index, true)">Edit Image</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="content-box" *ngIf="customImages?.length">
-              <div class="content-box-header">
-                <h1>Custom Images</h1>
-              </div>
-              <div class="columns is-multiline">
-                <div class="column is-4" *ngFor="let i of customImages; let index = index;">
-                  <div class="image-item">
-                    <h2>{{ i.name }}</h2>
-                    <span class="version">{{ i.version }}</span>
-                    <img src="/images/logos/docker.svg" class="docker-img">
-                    <span class="time">{{ i.created }}</span>
-                    <span class="time">Created {{ i.createdAgo }} ago</span>
-                    <span class="size">Size {{ i.size }}</span>
-                    <button type="button" class="button is-fullwidth" (click)="editImage(index, false)">Edit Image</button>
                   </div>
                 </div>
               </div>
@@ -98,55 +74,14 @@
           <div class="content-box image-builder-box" *ngIf="!building">
             <div class="columns is-multiline">
               <div class="column is-12">
-                <div class="content-box approve" *ngIf="approve">
-                  <div class="columns is-multiline">
-                    <div class="column is-12">
-                      <h1>Warning:</h1>
-                    </div>
-                    <div class="column is-12">
-                        <div class="column is-12">
-                            Your docker file contains commands that can cause Abstruse to work incorrectly ({{dangerousCommands}}).
-                        </div>
-                        <div class="column is-12">
-                          Are you sure, you want to build that image?
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                      <button class="button is-fullwidth" name="btn-build" type="button" (click)="startBuild()">
-                        <i class="ionicon ion-checkmark"></i>
-                        <span>Build</span>
-                      </button>
-                    </div>
-                    <div class="column is-6">
-                      <button class="button is-fullwidth" name="btn-cancel" type="button" (click)="approve = false">
-                        <i class="ionicon ion-close"></i>
-                        <span>Cancel</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
                 <h2>Image name</h2>
                 <input type="text" class="image-name-input" [(ngModel)]="form.name" placeholder="Image Name">
-                <div class="columns is-multiline" *ngIf="baseImages?.length">
-                  <div class="column is-6">
-                    <h2>Image Type</h2>
-                    <app-selectbox [data]="imageTypeOptions" (ngModelChange)="changeImageTypeSelect($event)" name="imageType" [(ngModel)]="form.base"></app-selectbox>
-                  </div>
-                  <div class="column is-6">
-                    <div *ngIf="!form.base">
-                      <h2>Base Image</h2>
-                      <app-selectbox [data]="baseImageOptions" (ngModelChange)="changeBaseImageSelect($event)" name="baseImageOptions" [(ngModel)]="baseImage"></app-selectbox>
-                    </div>
-                  </div>
-                </div>
                 <h2>Dockerfile</h2>
                 <app-editor [options]="editorOptions" [(ngModel)]="form.dockerfile" class="editor-large"></app-editor>
-                <div *ngIf="!form.base">
-                  <h2>init.sh</h2>
-                  <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
-                </div>
+                <h2>init.sh</h2>
+                <app-editor [options]="initEditorOptions" [(ngModel)]="form.initsh" class="editor-small"></app-editor>
                 <div class="images-buttons-container">
-                  <button type="button" class="button w300 green" (click)="buildImage()" name="build-image-btn" [disabled]="approve">Build Image</button>
+                  <button type="button" class="button w300 green" (click)="buildImage()" name="build-image-btn">Build Image</button>
                 </div>
               </div>
             </div>
@@ -156,7 +91,7 @@
             <p class="has-text-centered">
               Building image <strong>{{ form.name }}</strong> <span *ngIf="imageBuildsText">({{ imageBuildsText }} layers)</span> ...
             </p>
-            <app-terminal [data]="terminalInput" [options]="terminalOptions"></app-terminal>
+            <pre class="image-build-log" [innerHTML]="imageBuildLog | safeHtml" *ngIf="imageBuildLog" slimScroll [options]="scrollOptions" [scrollEvents]="scrollEvents"></pre>
           </div>
         </div>
 
