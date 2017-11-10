@@ -37,11 +37,23 @@ export function createContainer(
         '5900/tcp': [{ HostPort: '' }]
       }
     } as any)
+    .then(container => {
+      const msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
+        `starting container ` +  style.yellow.open + name + ' ' + style.yellow.close +
+        `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
+        `... ` + style.bold.close;
+      observer.next({ type: 'data', data: msg });
+      return container;
+    })
     .then(container => container.start())
     .then(container => container.inspect())
     .then(info => observer.next({ type: 'containerInfo', data: info }))
+    .then(() => {
+      observer.next({ type: 'data', data: 'done.\r\n' });
+    })
     .then(() => observer.complete())
     .catch(err => {
+      observer.next({ type: 'data', data: 'error.\r\n' });
       observer.next({ type: 'containerError', data: err });
       observer.error(err);
     });
@@ -184,7 +196,7 @@ export function killContainer(id: string): Promise<void> {
           if (containerInfo.State.Status === 'exited') {
             return container.remove();
           } else if (containerInfo.State.Status === 'running') {
-            return container.kill().then(() => container.remove());
+            return container.kill();
           } else {
             return Promise.resolve();
           }
