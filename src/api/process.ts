@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
 import chalk from 'chalk';
+import * as style from 'ansi-styles';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -123,7 +124,9 @@ export function startBuildProcess(
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
             ].join(' ');
-            const tmsg = chalk.bold(`[error]: executed command returned exit code ${event.data}`);
+            const tmsg = style.red.open + style.bold.open +
+              `[error]: executed command returned exit code ${event.data}` +
+              style.bold.close + style.red.close;
             observer.next({ type: 'exit', data: chalk.red(tmsg) });
             observer.error(msg);
             docker.killContainer(name)
@@ -145,7 +148,9 @@ export function startBuildProcess(
           })
           .catch(err => console.error(err));
       }, () => {
-        const msg = chalk.bold('[success]: build returned exit code 0');
+        const msg = style.green.open + style.bold.open +
+          '[success]: build returned exit code 0' +
+          style.bold.close + style.green.close;
         observer.next({ type: 'exit', data: chalk.green(msg) });
         docker.killContainer(name)
           .then(() => {

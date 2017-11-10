@@ -39,7 +39,7 @@ export interface JobProcess {
   job_id?: number;
   status?: 'queued' | 'running' | 'cancelled' | 'errored' | 'success';
   image_name?: string;
-  log?: string[];
+  log?: string;
   commands?: { command: string, type: CommandType }[];
   cache?: string[];
   repo_name?: string;
@@ -153,7 +153,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
 
             terminalEvents.next(msg);
             if (event.data && event.type === 'data') {
-              proc.log.push(event.data);
+              proc.log += event.data;
             } else if (event.data && event.type === 'exposed ports') {
               proc.exposed_ports = event.data;
             } else if (event.type === 'container') {
@@ -165,7 +165,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
               };
               jobEvents.next(ev);
             } else if (event.type === 'exit') {
-              proc.log.push(event.data);
+              proc.log += event.data;
               observer.complete();
             }
           }, err => {
@@ -397,7 +397,7 @@ export function debugJob(jobId: number, debug: boolean): Promise<void> {
       };
 
       terminalEvents.next(msg);
-      process.log.push(`[exectime]: stopped`);
+      process.log += `[exectime]: stopped`;
     }
   });
 }
@@ -608,7 +608,7 @@ function queueJob(jobId: number): Promise<void> {
         env: data.env,
         image_name: data.image,
         exposed_ports: null,
-        log: [],
+        log: '',
         debug: false
       };
 
@@ -633,7 +633,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
             id: runId,
             end_time: time,
             status: 'success',
-            log: proc.log.join('')
+            log: proc.log
           };
 
           return dbJobRuns.updateJobRun(data);
@@ -719,7 +719,7 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
             id: runId,
             end_time: time,
             status: 'failed',
-            log: proc.log.join('')
+            log: proc.log
           };
 
           return dbJobRuns.updateJobRun(data);
