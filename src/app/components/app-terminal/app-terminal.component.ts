@@ -43,15 +43,14 @@ export class AppTerminalComponent implements OnInit {
     this.hterm.onTerminalReady = () => {
       this.hterm.setWindowTitle = () => {};
       this.hterm.prefs_.set('cursor-color', 'transparent');
-      this.hterm.prefs_.set('font-family', 'monaco, menlo, monospace');
-      this.hterm.prefs_.set('font-size', 11);
+      this.hterm.prefs_.set('font-family', 'monaco, Menlo, monospace');
+      this.hterm.prefs_.set('font-size', 12);
       this.hterm.prefs_.set('audible-bell-sound', '');
       this.hterm.prefs_.set('font-smoothing', 'subpixel-antialiased');
       this.hterm.prefs_.set('enable-bold', true);
       this.hterm.prefs_.set('cursor-blink', false);
       this.hterm.prefs_.set('receive-encoding', 'raw');
       this.hterm.prefs_.set('send-encoding', 'raw');
-      this.hterm.prefs_.set('alt-sends-what', 'browser-key');
       this.hterm.prefs_.set('scrollbar-visible', false);
       this.hterm.prefs_.set('enable-clipboard-notice', false);
       this.hterm.prefs_.set('background-color', '#000000');
@@ -90,7 +89,7 @@ export class AppTerminalComponent implements OnInit {
   }
 
   printToTerminal(data: string) {
-    this.hterm.io.print(this.data);
+    this.hterm.io.writeUTF8(this.data);
     if (this.hterm.keyboard.terminal
       && this.hterm.keyboard.terminal.scrollPort_
       && this.hterm.keyboard.terminal.scrollPort_.isScrolledEnd) {

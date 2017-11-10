@@ -234,7 +234,7 @@ export class SocketServer {
                 const idx = processes.findIndex(proc => proc.job_id === jobId);
                 if (idx !== -1) {
                   const proc = processes[idx];
-                  conn.next({ type: 'data', data: proc.log.join('\n') });
+                  conn.next({ type: 'data', data: proc.log });
                   conn.next({ type: 'exposed ports', data: proc.exposed_ports || null });
                   conn.next({ type: 'debug', data: proc.debug || null });
                 }

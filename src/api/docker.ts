@@ -9,6 +9,7 @@ import { ProcessOutput } from './process';
 import { Readable } from 'stream';
 import { processes } from './process-manager';
 import chalk from 'chalk';
+import * as style from 'ansi-styles';
 
 export const docker = new dockerode();
 
@@ -65,15 +66,17 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     }
 
     if (cmd.type === CommandType.store_cache) {
-      observer.next({
-        type: 'data',
-        data: chalk.bold(chalk.yellow('==> saving cache ...')) + '\r\n' });
+      const msg = style.yellow.open + style.bold.open + '==> storing cache ...' +
+        style.bold.close + style.yellow.close + '\r\n';
+      observer.next({ type: 'data', data: msg });
     } else if (cmd.type === CommandType.restore_cache) {
-      observer.next({
-        type: 'data',
-        data: chalk.bold(chalk.yellow('==> restoring cache ...')) + '\r\n' });
+      const msg = style.yellow.open + style.bold.open + '==> restoring cache ...' +
+        style.bold.close + style.yellow.close + '\r\n';
+      observer.next({ type: 'data', data: msg });
     } else {
-      observer.next({ type: 'data', data: chalk.bold(chalk.yellow('==> ' + command)) + '\r\n' });
+      const msg = style.yellow.open + style.bold.open + '==> ' + command +
+        style.bold.close + style.yellow.close + '\r\n';
+      observer.next({ type: 'data', data: msg });
     }
 
     const container = docker.getContainer(id);
