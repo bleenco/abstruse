@@ -67,13 +67,13 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     if (cmd.type === CommandType.store_cache) {
       observer.next({
         type: 'data',
-        data: chalk.yellow('==> saving cache ...') + '\r\n' });
+        data: chalk.bold(chalk.yellow('==> saving cache ...')) + '\r\n' });
     } else if (cmd.type === CommandType.restore_cache) {
       observer.next({
         type: 'data',
-        data: chalk.yellow('==> restoring cache ...') + '\r\n' });
+        data: chalk.bold(chalk.yellow('==> restoring cache ...')) + '\r\n' });
     } else {
-      observer.next({ type: 'data', data: chalk.yellow('==> ' + command) + '\r\n' });
+      observer.next({ type: 'data', data: chalk.bold(chalk.yellow('==> ' + command)) + '\r\n' });
     }
 
     const container = docker.getContainer(id);
@@ -98,7 +98,7 @@ export function attachExec(id: string, cmd: any): Observable<any> {
       });
 
       ws._write = (chunk, enc, next) => {
-        let str = chunk.toString('utf8');
+        let str = chunk.toString();
 
         if (str.includes('[error]')) {
           const splitted = str.split(' ');
@@ -107,7 +107,7 @@ export function attachExec(id: string, cmd: any): Observable<any> {
         } else if (str.includes('[success]')) {
           exitCode = 0;
           ws.end();
-        } else if (!str.includes('/usr/bin/abstruse \'' + cmd.command) && !str.startsWith('>')) {
+        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>')) {
           if (str.includes('//') && str.includes('@')) {
             str = str.replace(/\/\/(.*)@/, '//');
           }

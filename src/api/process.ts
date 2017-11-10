@@ -123,7 +123,7 @@ export function startBuildProcess(
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
             ].join(' ');
-            const tmsg = `[error]: executed command returned exit code ${event.data}`;
+            const tmsg = chalk.bold(`[error]: executed command returned exit code ${event.data}`);
             observer.next({ type: 'exit', data: chalk.red(tmsg) });
             observer.error(msg);
             docker.killContainer(name)
@@ -145,7 +145,7 @@ export function startBuildProcess(
           })
           .catch(err => console.error(err));
       }, () => {
-        const msg = '[success]: build returned exit code 0';
+        const msg = chalk.bold('[success]: build returned exit code 0');
         observer.next({ type: 'exit', data: chalk.green(msg) });
         docker.killContainer(name)
           .then(() => {
