@@ -1,5 +1,5 @@
 const { resolve } = require('path');
-const AngularCompilerPlugin = require('@ngtools/webpack').AngularCompilerPlugin;
+const { AngularCompilerPlugin } = require('@ngtools/webpack');
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const compression = require('compression-webpack-plugin');
@@ -17,7 +17,9 @@ module.exports = function (options, webpackOptions) {
 
   config = webpackMerge({}, config, {
     entry: {
-      app: root('src/app/main.ts')
+      app: webpackOptions.p ? root('src/app/main.prod.ts') : root('src/app/main.ts'),
+      styles: root('src/app/styles.ts'),
+      polyfills: root('src/app/polyfills.ts')
     },
     resolve: {
       extensions: ['.ts', '.js', '.json'],
@@ -95,10 +97,7 @@ module.exports = function (options, webpackOptions) {
       rules: [{ test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/, loader: '@ngtools/webpack' }]
     },
     plugins: [
-      new AngularCompilerPlugin({
-        tsConfigPath: root('src/app/tsconfig.json'),
-        entryModule: 'src/app/app.module#AppModule'
-      })
+      new AngularCompilerPlugin({ tsConfigPath: root('src/app/tsconfig.json') })
     ]
   });
 
@@ -116,14 +115,6 @@ function root(path) {
   return resolve(__dirname, path);
 }
 
-function getEntry(options) {
-  if (options.aot) {
-    return { app: root('src/app/main.aot.ts') };
-  } else {
-    return { app: root('src/app/main.ts'), polyfills: root('src/app/polyfills.ts') };
-  }
-}
-
 function getDevelopmentConfig() {
   return {
     devtool: 'inline-source-map',
@@ -133,6 +124,7 @@ function getDevelopmentConfig() {
       ]
     },
     plugins: [
+      new webpack.EnvironmentPlugin({ 'NODE_ENV': 'development' }),
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.NamedModulesPlugin(),
       new webpack.optimize.CommonsChunkPlugin({
@@ -153,6 +145,7 @@ function getDevelopmentConfig() {
 function getProductionPlugins() {
   return {
     plugins: [
+      new webpack.EnvironmentPlugin({ 'NODE_ENV': 'production' }),
       new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 })
     ]
   };
