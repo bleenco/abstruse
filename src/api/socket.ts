@@ -230,8 +230,8 @@ export class SocketServer {
               break;
 
               case 'subscribeToJobOutput':
-                const jobId = parseInt(event.data.jobId, 10);
-                const idx = processes.findIndex(proc => proc.job_id === jobId);
+                const jobId = Number(event.data.jobId);
+                const idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
                 if (idx !== -1) {
                   const proc = processes[idx];
                   conn.next({ type: 'data', data: proc.log });

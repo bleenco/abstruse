@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -50,7 +50,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
     private timeService: TimeService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private ngZone: NgZone,
     @Inject(DOCUMENT) private document: any,
     private titleService: Title
   ) {
@@ -70,9 +69,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.termSub = this.socketService.outputEvents
       .subscribe(event => {
         if (event.type === 'data' || event.type === 'exit' || event.type === 'container') {
-          if (typeof event.data === 'string') {
-            this.ngZone.run(() => this.terminalInput = event.data);
-          }
+          this.terminalInput = event.data;
         } else if (event.type === 'job stopped' && event.data === this.id) {
           this.processing = false;
         } else if (event.type === 'job restarted' && event.data === this.id) {
