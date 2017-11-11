@@ -1,3 +1,19 @@
+<a name="1.3.4"></a>
+## [1.3.4](https://github.com/bleenco/abstruse/compare/v1.3.3...v1.3.4) (2017-11-11)
+
+
+### Bug Fixes
+
+* **container:** stop container and cleanup after build properly ([d04e438](https://github.com/bleenco/abstruse/commit/d04e438))
+* **terminal:** fix terminal output before terminal ready ([41317d9](https://github.com/bleenco/abstruse/commit/41317d9))
+
+
+### Performance Improvements
+
+* **container:** force remove container instead of graceful stop ([2e5e2af](https://github.com/bleenco/abstruse/commit/2e5e2af))
+
+
+
 <a name="1.3.3"></a>
 ## [1.3.3](https://github.com/bleenco/abstruse/compare/v1.3.1...v1.3.3) (2017-11-11)
 
