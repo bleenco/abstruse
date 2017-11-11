@@ -61,7 +61,7 @@ export class AppTerminalComponent implements OnInit {
       this.hterm.prefs_.set('color-palette-overrides', terminalColorPallete);
 
       this.terminalReady = true;
-      if (this.unwritenChanges) {
+      if (this.unwritenChanges !== '') {
         this.printToTerminal(this.unwritenChanges);
         this.unwritenChanges = '';
       }
