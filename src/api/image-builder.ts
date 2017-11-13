@@ -80,6 +80,37 @@ export function buildDockerImage(data: ImageData): void {
   });
 }
 
+export function deleteImage(data: ImageData): void {
+  let msg: LogMessageType = {
+    message: `starting image delete ${data.name}`,
+    type: 'info',
+    notify: false
+  };
+  logger.next(msg);
+
+  try {
+    docker.getImage(data.name).remove(() => {
+      const folderPath =
+        data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
+      fs.remove(folderPath);
+
+      msg = {
+        message: `Image ${data.name} successfully deleted`,
+        type: 'info',
+        notify: false
+      };
+      logger.next(msg);
+    });
+  } catch {
+    msg = {
+      message: `error removeing docker image ${data.name}`,
+      type: 'error',
+      notify: false
+    };
+    logger.next(msg);
+  }
+}
+
 function prepareDirectory(data: ImageData): Promise<void> {
   const folderPath =
     data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);

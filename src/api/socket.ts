@@ -14,7 +14,7 @@ import {
   stopBuild,
   terminalEvents
 } from './process-manager';
-import { imageBuilderObs, buildDockerImage } from './image-builder';
+import { imageBuilderObs, buildDockerImage, deleteImage } from './image-builder';
 import { getConfig } from './utils';
 import * as https from 'https';
 import * as http from 'http';
@@ -146,6 +146,17 @@ export class SocketServer {
                   conn.next({ type: 'request_received' });
                   const imageData = event.data;
                   buildDockerImage(imageData);
+                }
+              }
+              break;
+
+              case 'deleteImage': {
+                if (this.clients[clientIndex].username === 'anonymous') {
+                  conn.next({ type: 'error', data: 'not authorized' });
+                } else {
+                  conn.next({ type: 'request_received' });
+                  const imageData = event.data;
+                  deleteImage(imageData);
                 }
               }
               break;
