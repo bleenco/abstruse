@@ -40,7 +40,7 @@ import {
 import { insertEnvironmentVariable, removeEnvironmentVariable } from './db/environment-variable';
 import { getLogs } from './db/log';
 import { imageExists } from './docker';
-import { getImages, buildAbstruseBaseImage } from './image-builder';
+import { getImages, buildAbstruseBaseImage, deleteImage, buildDockerImage } from './image-builder';
 import { checkApiRequestAuth } from './security';
 import {
   checkConfigPresence,
@@ -773,6 +773,20 @@ export function imagesRoutes(): express.Router {
   router.post('/build-base', (req: express.Request, res: express.Response) => {
     buildAbstruseBaseImage();
     res.status(200).json({ data: true });
+  });
+
+  router.post('/build', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req).then(() => {
+      buildDockerImage(req.body);
+      res.status(200).json({ data: true });
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.post('/delete', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req).then(() => {
+      deleteImage(req.body);
+      res.status(200).json({ data: true });
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;

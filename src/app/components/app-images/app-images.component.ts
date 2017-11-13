@@ -242,6 +242,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
   removeImage(index: number, base: boolean): void {
     this.removeingImage = true;
+    window.scrollTo(0, 0);
     this.updateForm(index, base);
   }
 
@@ -324,7 +325,12 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   buildImage(): void {
-    this.checkImage() ? this.approve = true : this.startBuild();
+    if (this.checkImage()) {
+      this.approve = true;
+      window.scrollTo(0, 0);
+    } else {
+      this.startBuild();
+    }
   }
 
   checkImage(): boolean {

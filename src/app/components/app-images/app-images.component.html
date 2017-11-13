@@ -169,7 +169,7 @@
                   <div class="column is-6">
                     <div *ngIf="!form.base">
                       <h2>Base Image</h2>
-                      <app-selectbox [data]="baseImageOptions" (ngModelChange)="changeBaseImageSelect($event)" name="baseImageOptions" [(ngModel)]="baseImage"></app-selectbox>
+                      <app-selectbox [data]="baseImageOptions" (ngModelChange)="changeBaseImageSelect($event)" name="baseImage" [(ngModel)]="baseImage"></app-selectbox>
                     </div>
                   </div>
                 </div>
