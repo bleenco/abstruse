@@ -92,7 +92,7 @@ export class AppTerminalComponent implements OnInit {
     if (this.options.newline) {
       this.hterm.io.println(data);
     } else {
-      this.hterm.io.writeUTF8(this.data);
+      this.hterm.io.writeUTF8(data);
     }
 
     if (this.hterm.keyboard.terminal
