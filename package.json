@@ -150,7 +150,6 @@
     "monaco-editor": "^0.10.1",
     "multer": "^1.3.0",
     "ng2-datepicker": "^2.1.3",
-    "ngx-slimscroll": "^3.4.1",
     "ngx-uploader": "^4.1.0",
     "node-rsa": "^0.4.2",
     "node-sass": "^4.5.3",

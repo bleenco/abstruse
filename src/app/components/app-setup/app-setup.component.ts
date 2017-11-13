@@ -87,6 +87,8 @@ export class AppSetupComponent implements OnInit {
             this.step = 'db';
           }
         });
+
+        this.apiService.buildAbstruseBaseImage().subscribe(() => {});
       } else {
         this.loading = false;
         this.step = 'done';
