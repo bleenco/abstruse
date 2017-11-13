@@ -37,6 +37,34 @@
         <div *ngIf="tab === 'images'">
           <div class="content-box image-builder-box">
 
+            <div class="content-box approve" *ngIf="removeingImage">
+              <div class="columns is-multiline">
+                <div class="column is-12">
+                  <h1>Warning:</h1>
+                </div>
+                <div class="column is-12">
+                    <div class="column is-12">
+                        Are you sure you want to delete image {{form.name}}?
+                    </div>
+                    <div class="column is-12">
+                      This step cannot be revert once delete is performed.
+                    </div>
+                </div>
+                <div class="column is-6">
+                  <button class="button is-fullwidth" name="btn-build" type="button" (click)="startDelete()">
+                    <i class="ionicon ion-checkmark"></i>
+                    <span>Delete</span>
+                  </button>
+                </div>
+                <div class="column is-6">
+                  <button class="button is-fullwidth" name="btn-cancel" type="button" (click)="removeingImage = false">
+                    <i class="ionicon ion-close"></i>
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="columns" *ngIf="!baseImages?.length">
               <div class="column is-12">
                 <div class="message">
@@ -61,6 +89,9 @@
               <div class="columns is-multiline">
                 <div class="column is-3" *ngFor="let i of baseImages; let index = index;">
                   <div class="base-image-item">
+                    <div class="remove-image" *ngIf="baseImages.length > 1">
+                      <i class="ionicon ion-close pointer" (click)="removeImage(index, true)"></i>
+                    </div>
                     <h2>{{ i.name }}</h2>
                     <span class="version">{{ i.version }}</span>
                     <img src="/images/logos/docker.svg" class="docker-img">
@@ -79,6 +110,9 @@
               <div class="columns is-multiline">
                 <div class="column is-4" *ngFor="let i of customImages; let index = index;">
                   <div class="image-item">
+                    <div class="remove-image">
+                        <i class="ionicon ion-close pointer" (click)="removeImage(index, false)"></i>
+                    </div>
                     <h2>{{ i.name }}</h2>
                     <span class="version">{{ i.version }}</span>
                     <img src="/images/logos/docker.svg" class="docker-img">

@@ -32,6 +32,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   building: boolean;
   editingImage: boolean;
   success: boolean;
+  removeingImage: boolean;
   baseImages: any[];
   baseImage: string;
   customImages: any[];
@@ -87,6 +88,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.initEditorOptions = Object.assign({}, this.editorOptions, { language: 'plaintext' });
     this.building = false;
     this.editingImage = false;
+    this.removeingImage = false;
     this.tab = 'images';
 
     this.resetForm(!!this.baseImages.length);
@@ -234,6 +236,16 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
   editImage(index: number, base: boolean): void {
     this.editingImage = true;
+    this.updateForm(index, base);
+    this.tab = 'build';
+  }
+
+  removeImage(index: number, base: boolean): void {
+    this.removeingImage = true;
+    this.updateForm(index, base);
+  }
+
+  updateForm(index: number, base: boolean): void {
     if (base) {
       this.form.name = this.baseImages[index].name;
       this.form.dockerfile = this.baseImages[index].dockerfile;
@@ -244,7 +256,6 @@ export class AppImagesComponent implements OnInit, OnDestroy {
       this.form.initsh = this.customImages[index].initsh;
     }
     this.form.base = base;
-    this.tab = 'build';
   }
 
   fetchImages(): void {
@@ -340,6 +351,18 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.building = true;
     this.approve = false;
     this.socketService.emit({ type: 'buildImage', data: this.form });
+  }
+
+  startDelete(): void {
+    this.removeingImage = false;
+    if (this.form.base) {
+      let index = this.baseImages.findIndex(i => i.name === this.form.name);
+      this.baseImages.splice(index, 1);
+    } else {
+      let index = this.customImages.findIndex(i => i.name === this.form.name);
+      this.customImages.splice(index, 1);
+    }
+    this.socketService.emit({ type: 'deleteImage', data: this.form });
   }
 
   changeBaseImageSelect(e: Event): void {
