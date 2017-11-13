@@ -11,6 +11,7 @@ export interface ImageData {
   name: string;
   dockerfile: string;
   initsh: string;
+  base: boolean;
 }
 
 export interface ImageBuildOutput {
@@ -21,9 +22,14 @@ export interface ImageBuildOutput {
 export const imageBuilder: Subject<ImageBuildOutput> = new Subject();
 export const imageBuilderObs = imageBuilder.share();
 
+export function buildAbstruseBaseImage(): void {
+  buildDockerImage(defaultBaseImage);
+}
+
 export function buildDockerImage(data: ImageData): void {
   prepareDirectory(data).then(() => {
-    const folderPath = getFilePath(`images/${data.name}`);
+    const folderPath =
+      data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
     const src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
 
     let msg: LogMessageType = {
@@ -75,7 +81,8 @@ export function buildDockerImage(data: ImageData): void {
 }
 
 function prepareDirectory(data: ImageData): Promise<void> {
-  const folderPath = getFilePath(`images/${data.name}`);
+  const folderPath =
+    data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
   const dockerFilePath = join(folderPath, 'Dockerfile');
   const initShFilePath = join(folderPath, 'init.sh');
   const essentialFolderPath = getFilePath(`docker-essential`);
@@ -97,7 +104,15 @@ function prepareDirectory(data: ImageData): Promise<void> {
 
 export function getImages(): Promise<any> {
   return new Promise((resolve, reject) => {
-    const imagesDir = getFilePath(`images`);
+    Promise.all([getImagesInDirectory('images'), getImagesInDirectory('base-images')])
+      .then(imgs => resolve(imgs.reduce((a, b) => a.concat(b))));
+  });
+}
+
+
+function getImagesInDirectory(path: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const imagesDir = getFilePath(path);
 
     fs.readdir(imagesDir).then(dirs => {
       docker.listImages()
@@ -126,8 +141,8 @@ export function getImages(): Promise<any> {
           }).filter(Boolean);
 
           Promise.all(imgs.map(img => {
-            const dockerfile = getFilePath(`images/${img.name}/Dockerfile`);
-            const initsh = getFilePath(`images/${img.name}/init.sh`);
+            const dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
+            const initsh = getFilePath(`${path}/${img.name}/init.sh`);
 
             if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
               return fs.readFile(dockerfile)
@@ -135,6 +150,7 @@ export function getImages(): Promise<any> {
                   return fs.readFile(initsh).then(initshContents => {
                     img.dockerfile = dockerfileContents.toString();
                     img.initsh = initshContents.toString();
+                    img.base = path === 'base-images';
 
                     return img;
                   });
@@ -149,3 +165,47 @@ export function getImages(): Promise<any> {
     });
   });
 }
+
+let defaultBaseImage: ImageData = {
+  name: 'abstruse_builder',
+  dockerfile: [
+    'FROM ubuntu:17.10',
+    '',
+    'ENV DEBIAN_FRONTEND=noninteractive',
+    '',
+    '# please do not edit between lines or image on abstruse will not work properly',
+    '',
+    '# -------------------------------------------------------------------------------------------',
+    '',
+    'RUN set -xe \\',
+    '    && apt-get update \\',
+    '    && apt-get install -y --no-install-recommends ca-certificates curl build-essential \\',
+    '    && apt-get install -y --no-install-recommends libssl-dev git python \\',
+    '    && apt-get install -y --no-install-recommends sudo \\',
+    '    && apt-get install -y --no-install-recommends xvfb x11vnc fluxbox xterm openssh-server',
+    '',
+    'RUN useradd -u 1000 -g 100 -G sudo --shell /bin/bash -m --home-dir /home/abstruse abstruse \\',
+    '    && echo \'abstruse ALL=(ALL) NOPASSWD:ALL\' >> /etc/sudoers \\',
+    '    && echo \'abstruse:abstrusePass\' | chpasswd',
+    '',
+    'COPY fluxbox /etc/init.d/',
+    'COPY x11vnc /etc/init.d/',
+    'COPY xvfb /etc/init.d/',
+    'COPY entry.sh /',
+    '',
+    'COPY abstruse-pty /usr/bin/abstruse-pty',
+    'COPY abstruse-exec.sh /usr/bin/abstruse',
+    '',
+    'USER abstruse',
+    'WORKDIR /home/abstruse/build',
+    '',
+    'RUN cd /home/abstruse && sudo chown -Rv 1000:100 /home/abstruse',
+    '',
+    'RUN sudo chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*',
+    'CMD ["/entry.sh"]',
+    '',
+    'EXPOSE 22 5900'
+  ].join('\n'),
+  initsh: '',
+  base: true
+};
