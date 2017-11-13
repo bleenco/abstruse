@@ -60,3 +60,7 @@ export function sendGetRequest(data: any, uri: string, header?: any): Promise<vo
     });
   });
 }
+
+export function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

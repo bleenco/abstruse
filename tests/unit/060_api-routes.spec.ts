@@ -300,5 +300,11 @@ describe('Api Server Routes Unit Tests', () => {
         expect(res).to.deep.equal({ data: 0 });
       });
     });
+
+    it(`build base image should return true`, () => {
+      return sendRequest({}, 'api/images/build-base').then(res => {
+        expect(res).to.deep.equal({ data: true });
+      });
+    });
   });
 });

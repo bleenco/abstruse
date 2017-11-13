@@ -31,4 +31,12 @@ describe('Server Status', () => {
       .then(el => el.getAttribute('src'))
       .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
   });
+
+  it(`should have git installed`, () => {
+    return browser.get('/setup')
+      .then(() => isLoaded())
+      .then(() => element(by.css('[name="git-installed-icon"]')))
+      .then(el => el.getAttribute('src'))
+      .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
+  });
 });
