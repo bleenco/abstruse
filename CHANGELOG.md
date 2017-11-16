@@ -1,3 +1,77 @@
+<a name="1.3.5"></a>
+## [1.3.5](https://github.com/bleenco/abstruse/compare/v1.3.1...v1.3.5) (2017-11-16)
+
+
+### Bug Fixes
+
+* **console:** console on Linux ([efd99d3](https://github.com/bleenco/abstruse/commit/efd99d3))
+* **container:** stop container and cleanup after build properly ([ae6202e](https://github.com/bleenco/abstruse/commit/ae6202e))
+* **docker:** stop container or kill if not going nice way ([925684d](https://github.com/bleenco/abstruse/commit/925684d))
+* **header:** remove hardcoded avatar ([f1f6405](https://github.com/bleenco/abstruse/commit/f1f6405))
+* **output:** fix terminal output issues ([e0fd26a](https://github.com/bleenco/abstruse/commit/e0fd26a))
+* **terminal:** fix terminal output before terminal ready ([5ff62b9](https://github.com/bleenco/abstruse/commit/5ff62b9))
+* **terminal:** terminal output before terminal ready ([c18a814](https://github.com/bleenco/abstruse/commit/c18a814))
+
+
+### Features
+
+* **API:** run API & Socket Server on same single port ([78fd624](https://github.com/bleenco/abstruse/commit/78fd624))
+* **base-image:** build base image during setup process (closes [#277](https://github.com/bleenco/abstruse/issues/277)) ([ddebe08](https://github.com/bleenco/abstruse/commit/ddebe08))
+* **base-image:** build base image during setup process (closes [#277](https://github.com/bleenco/abstruse/issues/277)) ([f0fdf78](https://github.com/bleenco/abstruse/commit/f0fdf78))
+* **build:** output container information ([416560b](https://github.com/bleenco/abstruse/commit/416560b))
+* **docker:** Add a post push hook to make sure the latest tag gets built. ([217071d](https://github.com/bleenco/abstruse/commit/217071d))
+* **docker:** Added healthcheck to dockerfile ([5e46608](https://github.com/bleenco/abstruse/commit/5e46608))
+* **docker:** Preliminary work for automated dockerhub builds. ([18c83af](https://github.com/bleenco/abstruse/commit/18c83af))
+* **dockerfile:** Add build command to npm scripts. ([8ed216f](https://github.com/bleenco/abstruse/commit/8ed216f))
+* **dockerfile:** Addition of dockerfile for building Abstruse image ([ae993ca](https://github.com/bleenco/abstruse/commit/ae993ca))
+* **hterm:** hterm integration ([eac7aa4](https://github.com/bleenco/abstruse/commit/eac7aa4))
+* **images:** removeing docker images ([92504d2](https://github.com/bleenco/abstruse/commit/92504d2))
+* **xterm:** implementation of xterm terminal ([90521b5](https://github.com/bleenco/abstruse/commit/90521b5))
+
+
+### Performance Improvements
+
+* **container:** force remove container instead of graceful stop ([c9093fe](https://github.com/bleenco/abstruse/commit/c9093fe))
+
+
+
+<a name="1.3.4"></a>
+## [1.3.4](https://github.com/bleenco/abstruse/compare/v1.3.1...v1.3.4) (2017-11-16)
+
+
+### Bug Fixes
+
+* **console:** console on Linux ([efd99d3](https://github.com/bleenco/abstruse/commit/efd99d3))
+* **container:** stop container and cleanup after build properly ([ae6202e](https://github.com/bleenco/abstruse/commit/ae6202e))
+* **docker:** stop container or kill if not going nice way ([925684d](https://github.com/bleenco/abstruse/commit/925684d))
+* **header:** remove hardcoded avatar ([f1f6405](https://github.com/bleenco/abstruse/commit/f1f6405))
+* **output:** fix terminal output issues ([e0fd26a](https://github.com/bleenco/abstruse/commit/e0fd26a))
+* **terminal:** fix terminal output before terminal ready ([5ff62b9](https://github.com/bleenco/abstruse/commit/5ff62b9))
+* **terminal:** terminal output before terminal ready ([c18a814](https://github.com/bleenco/abstruse/commit/c18a814))
+
+
+### Features
+
+* **API:** run API & Socket Server on same single port ([78fd624](https://github.com/bleenco/abstruse/commit/78fd624))
+* **base-image:** build base image during setup process (closes [#277](https://github.com/bleenco/abstruse/issues/277)) ([ddebe08](https://github.com/bleenco/abstruse/commit/ddebe08))
+* **base-image:** build base image during setup process (closes [#277](https://github.com/bleenco/abstruse/issues/277)) ([f0fdf78](https://github.com/bleenco/abstruse/commit/f0fdf78))
+* **build:** output container information ([416560b](https://github.com/bleenco/abstruse/commit/416560b))
+* **docker:** Add a post push hook to make sure the latest tag gets built. ([217071d](https://github.com/bleenco/abstruse/commit/217071d))
+* **docker:** Added healthcheck to dockerfile ([5e46608](https://github.com/bleenco/abstruse/commit/5e46608))
+* **docker:** Preliminary work for automated dockerhub builds. ([18c83af](https://github.com/bleenco/abstruse/commit/18c83af))
+* **dockerfile:** Add build command to npm scripts. ([8ed216f](https://github.com/bleenco/abstruse/commit/8ed216f))
+* **dockerfile:** Addition of dockerfile for building Abstruse image ([ae993ca](https://github.com/bleenco/abstruse/commit/ae993ca))
+* **hterm:** hterm integration ([eac7aa4](https://github.com/bleenco/abstruse/commit/eac7aa4))
+* **images:** removeing docker images ([92504d2](https://github.com/bleenco/abstruse/commit/92504d2))
+* **xterm:** implementation of xterm terminal ([90521b5](https://github.com/bleenco/abstruse/commit/90521b5))
+
+
+### Performance Improvements
+
+* **container:** force remove container instead of graceful stop ([c9093fe](https://github.com/bleenco/abstruse/commit/c9093fe))
+
+
+
 <a name="1.3.4"></a>
 ## [1.3.4](https://github.com/bleenco/abstruse/compare/v1.3.3...v1.3.4) (2017-11-11)
 
