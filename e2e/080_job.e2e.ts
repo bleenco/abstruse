@@ -24,10 +24,8 @@ describe('Job Details', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
-      .then(() => browser.switchTo().frame( element( by.tagName( 'iframe' )).getWebElement()))
-      .then(() => element.all(by.css('x-row')).count())
+      .then(() => element.all(by.css('.xterm-rows > div')).count())
       .then(cnt => expect(cnt).to.be.greaterThan(0))
-      .then(() => browser.driver.switchToParentFrame())
       .then((): any => browser.wait(() => {
         return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();
       })
@@ -63,11 +61,10 @@ describe('Job Details', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
-      .then(() => browser.switchTo().frame( element( by.tagName( 'iframe' )).getWebElement()))
-      .then(() => element.all(by.css('x-row')).count())
+      .then(() => element.all(by.css('.xterm-rows > div')).count())
       .then(cnt => expect(cnt).to.be.greaterThan(0))
       .then((): any => browser.wait(() => {
-        return element.all(by.css('x-row')).count().then(cnt => cnt > 10);
+        return element.all(by.css('.xterm-rows > div')).count().then(cnt => cnt > 10);
       }))
       .then(() => browser.driver.switchToParentFrame())
       .then((): any => browser.wait(() => {
