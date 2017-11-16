@@ -94,7 +94,10 @@ module.exports = function (options, webpackOptions) {
 
   config = webpackMerge({}, config, {
     module: {
-      rules: [{ test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/, loader: '@ngtools/webpack' }]
+      rules: [
+        { test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/, loader: '@ngtools/webpack' },
+        { test: /node_modules.+xterm.+\.map$/, loader: 'ignore-loader' }
+      ]
     },
     plugins: [
       new AngularCompilerPlugin({ tsConfigPath: root('src/app/tsconfig.json') })
@@ -155,7 +158,7 @@ function getDevStylesConfig() {
   return {
     module: {
       rules: [
-        { test: /\.css$/, use: ['style-loader', 'css-loader'], exclude: [root('src')] },
+        { test: /\.css$/, use: ['style-loader', 'css-loader'], include: [root('src/app/styles')] },
         { test: /\.css$/, use: ['to-string-loader', 'css-loader'], exclude: [root('src/app/styles')] },
         { test: /\.scss$|\.sass$/, use: ['style-loader', 'css-loader', 'sass-loader'], include: [root('src/app/styles') ] },
         { test: /\.scss$|\.sass$/, use: ['to-string-loader', 'css-loader', 'sass-loader'], exclude: [root('src/app/styles')] },

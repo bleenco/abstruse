@@ -1,13 +1,185 @@
+@import '../../../node_modules/xterm/src/xterm.css'
+
 .window-terminal-container
   position: relative
-  display: block
-  color: #ffffff
+  display: inline-block
+  color: #ffffff !important
   background: #000000
-  height: 600px
-  -webkit-font-smoothing: auto
+  height: 700px
+  width: 100%
+  font-family: Monaco, monospace
+  font-size: 12px
+  padding: 5px 10px
+
+  span
+    color: #ffffff
 
   +mobile
     height: 400px
 
-  iframe
-    padding: 10px
+  .terminal-cursor
+    background: transparent
+    border: none
+    font-size: 0
+
+  .xterm-viewport
+    width: calc(100% + 26px) !important
+    height: 100%
+    background-color: #000000
+    color: #f8f8f2 !important
+    overflow: auto
+
+  .xterm-theme-default
+    font-family: monaco, monospace
+    color: $white
+    width: 100%
+    height: 100%
+    font-size: 12px
+    white-space: nowrap
+    overflow: hidden
+
+  .theme-fg-color
+    color: #f8f8f2 !important
+
+  .theme-bg-color
+    color: #000000 !important
+
+  .theme-bg
+    background-color: #000000 !important
+
+  .theme-fg
+    background-color: #f8f8f2 !important
+
+  .theme-fg-fill
+    fill: #f8f8f2 !important
+
+  .xterm-rows
+    +unselectable
+    color: #f8f8f2
+
+  .terminal  .xterm-color-0
+    color: #282A36
+
+
+  .terminal  .xterm-bg-color-0
+    background-color: #282A36
+
+
+  .terminal  .xterm-color-1
+    color: #FF5555
+
+
+  .terminal  .xterm-bg-color-1
+    background-color: #FF5555
+
+
+  .terminal  .xterm-color-2
+    color: #50FA7B
+
+
+  .terminal  .xterm-bg-color-2
+    background-color: #50FA7B
+
+
+  .terminal  .xterm-color-3
+    color: #F3FB97
+
+
+  .terminal  .xterm-bg-color-3
+    background-color: #F3FB97
+
+
+  .terminal  .xterm-color-4
+    color: #BD93F9
+
+
+  .terminal  .xterm-bg-color-4
+    background-color: #BD93F9
+
+
+  .terminal  .xterm-color-5
+    color: #FF79C6
+
+
+  .terminal  .xterm-bg-color-5
+    background-color: #FF79C6
+
+
+  .terminal  .xterm-color-6
+    color: #8BE9FD
+
+
+  .terminal  .xterm-bg-color-6
+    background-color: #8BE9FD
+
+
+  .terminal  .xterm-color-7
+    color: #bbbbbb
+
+
+  .terminal  .xterm-bg-color-7
+    background-color: #bbbbbb
+
+
+  .terminal  .xterm-color-8
+    color: #555555
+
+
+  .terminal  .xterm-bg-color-8
+    background-color: #555555
+
+
+  .terminal  .xterm-color-9
+    color: #ff5555
+
+
+  .terminal  .xterm-bg-color-9
+    background-color: #ff5555
+
+
+  .terminal  .xterm-color-10
+    color: #50FA7B
+
+
+  .terminal  .xterm-bg-color-10
+    background-color: #50FA7B
+
+
+  .terminal  .xterm-color-11
+    color: #F3FB97
+
+
+  .terminal  .xterm-bg-color-11
+    background-color: #F3FB97
+
+
+  .terminal  .xterm-color-12
+    color: #BD93F9
+
+
+  .terminal  .xterm-bg-color-12
+    background-color: #BD93F9
+
+
+  .terminal  .xterm-color-13
+    color: #FF79C6
+
+
+  .terminal  .xterm-bg-color-13
+    background-color: #FF79C6
+
+
+  .terminal  .xterm-color-14
+    color: #8BE9FD
+
+
+  .terminal  .xterm-bg-color-14
+    background-color: #8BE9FD
+
+
+  .terminal  .xterm-color-15
+    color: #ffffff
+
+
+  .terminal  .xterm-bg-color-15
+    background-color: #ffffff
