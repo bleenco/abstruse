@@ -44,8 +44,8 @@ export enum JobStage {
 }
 
 export interface Build {
+  image?: string;
   env?: string;
-  rvm?: string;
 }
 
 export interface Matrix {
@@ -372,7 +372,35 @@ function parseMatrix(matrix: any | null): Matrix {
     return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
-      const include = matrix.map((m: Build) => m);
+      let image = null;
+      let env = null;
+
+      const include = matrix.map((m: Build) => {
+        if (m.image) {
+          if (m.image.includes('\n')) {
+            let splitted = m.image.split('\n');
+            image = splitted[0];
+            if (splitted[1].startsWith('env:')) {
+              env = splitted[1].replace('env:', '').trim();
+            }
+          } else {
+            image = m.image;
+          }
+        } else if (m.env) {
+          if (m.env.includes('\n')) {
+            let splitted = m.env.split('\n');
+            env = splitted[0].split(' ');
+            if (splitted[1].startsWith('image:')) {
+              image = splitted[1].replace('image:', '').trim();
+            }
+          } else {
+            env = m.env;
+          }
+        }
+
+        return { image, env };
+      });
+
       return { include: include, exclude: [], allow_failures: [] };
     } else if (typeof matrix === 'object') {
       let include = [];
@@ -471,7 +499,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       commands: installCommands.concat(testCommands),
       env: env,
       stage: JobStage.test,
-      image: config.image
+      image: i.image || config.image
     };
   })).concat(config.jobs.include.map((job, i) => {
     const env = globalEnv.concat(job.env && job.env.global || []);
