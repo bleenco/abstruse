@@ -41,7 +41,7 @@ describe('Docker Images', () => {
     return sendGetRequest({}, `api/images`).then(imgs => expect(imgs['data']).to.deep.equals([]));
   });
 
-  it('Should send create base image request and then list all docker images', () => {
+  xit('Should send create base image request and then list all docker images', () => {
     return sendRequest({}, `api/images/build-base`)
       .then(status => expect(status['data']).to.equal(true))
       .then(() => delay(10000))
@@ -52,7 +52,7 @@ describe('Docker Images', () => {
       });
   });
 
-  it('Should build test image from base image and then list it', () => {
+  xit('Should build test image from base image and then list it', () => {
     const img: ImageData = {
       name: 'test-unit-custom-image',
       dockerfile: 'FROM abstruse_builder',
@@ -77,7 +77,7 @@ describe('Docker Images', () => {
       });
   });
 
-  it(`should delete that last created image and check that it's deleted everywhere`, () => {
+  xit(`should delete that last created image and check that it's deleted everywhere`, () => {
     const del: ImageData = {
       name: 'test-unit-custom-image',
       dockerfile: '',
