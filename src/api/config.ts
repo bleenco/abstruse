@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs';
-import * as yaml from 'yamljs';
+import * as yaml from 'js-yaml';
 import * as temp from 'temp';
 import { getHttpJsonResponse } from './utils';
 
@@ -129,7 +129,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
         }
       })
       .then(() => readAbstruseConfigFile(cloneDir))
-      .then(config => yaml.parse(config))
+      .then(config => yaml.load(config))
       .then(json => parseConfig(json))
       .then(parsed => generateJobsAndEnv(repository, parsed))
       .then(result => resolve(result))
@@ -152,7 +152,7 @@ export function parseConfig(data: any): Config {
 export function parseConfigFromRaw(repository: Repository, raw: string): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     return Promise.resolve()
-      .then(() => yaml.parse(raw))
+      .then(() => yaml.load(raw))
       .then(json => parseConfig(json))
       .then(parsed => generateJobsAndEnv(repository, parsed))
       .then(result => resolve(result))
@@ -372,35 +372,7 @@ function parseMatrix(matrix: any | null): Matrix {
     return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
-      let image = null;
-      let env = null;
-
-      const include = matrix.map((m: Build) => {
-        if (m.image) {
-          if (m.image.includes('\n')) {
-            let splitted = m.image.split('\n');
-            image = splitted[0];
-            if (splitted[1].startsWith('env:')) {
-              env = splitted[1].replace('env:', '').trim();
-            }
-          } else {
-            image = m.image;
-          }
-        } else if (m.env) {
-          if (m.env.includes('\n')) {
-            let splitted = m.env.split('\n');
-            env = splitted[0].split(' ');
-            if (splitted[1].startsWith('image:')) {
-              image = splitted[1].replace('image:', '').trim();
-            }
-          } else {
-            env = m.env;
-          }
-        }
-
-        return { image, env };
-      });
-
+      const include = matrix.map((m: Build) => m);
       return { include: include, exclude: [], allow_failures: [] };
     } else if (typeof matrix === 'object') {
       let include = [];

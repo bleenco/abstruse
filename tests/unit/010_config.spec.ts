@@ -246,10 +246,10 @@ describe('Common Configuration Options', () => {
       const parsed = parseConfig(data);
       const expected = {
         include: [
-          { image: null, env: 'SCRIPT=lint node_js=8' },
-          { image: null, env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
-          { image: null, env: 'SCRIPT=test:protractor node_js=8' },
-          { image: null, env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         exclude: [],
         allow_failures: []
