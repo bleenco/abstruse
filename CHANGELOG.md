@@ -1,3 +1,13 @@
+<a name="1.3.6"></a>
+## [1.3.6](https://github.com/bleenco/abstruse/compare/v1.3.5...v1.3.6) (2017-11-20)
+
+
+### Features
+
+* **build-matrix:** allow to build jobs on specific image ([a980c7c](https://github.com/bleenco/abstruse/commit/a980c7c))
+
+
+
 <a name="1.3.5"></a>
 ## [1.3.5](https://github.com/bleenco/abstruse/compare/v1.3.1...v1.3.5) (2017-11-16)
 
