@@ -215,7 +215,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
           'COPY xvfb /etc/init.d/',
           'COPY entry.sh /',
           '',
-          'COPY abstruse-pty /usr/bin/abstruse-pty',
+          'COPY abstruse-pty-amd64 /usr/bin/abstruse-pty',
           'COPY abstruse-exec.sh /usr/bin/abstruse',
           '',
           'USER abstruse',
