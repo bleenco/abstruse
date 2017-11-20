@@ -215,10 +215,10 @@ describe('Common Configuration Options', () => {
       data = { language: null, cache: null, branches: null, env: null };
       data = Object.assign(data, {
         matrix: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ]
       });
     });
@@ -246,10 +246,10 @@ describe('Common Configuration Options', () => {
       const parsed = parseConfig(data);
       const expected = {
         include: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { image: null, env: 'SCRIPT=lint node_js=8' },
+          { image: null, env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { image: null, env: 'SCRIPT=test:protractor node_js=8' },
+          { image: null, env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         exclude: [],
         allow_failures: []
@@ -261,10 +261,10 @@ describe('Common Configuration Options', () => {
     it(`should parse data properly when matrix is defined as array in include`, () => {
       data = Object.assign(data, { matrix: {
         include: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         exclude: [],
         allow_failures: []
@@ -272,10 +272,10 @@ describe('Common Configuration Options', () => {
       const parsed = parseConfig(data);
       const expected = {
         include: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         exclude: [],
         allow_failures: []
@@ -288,10 +288,10 @@ describe('Common Configuration Options', () => {
       data = Object.assign(data, { matrix: {
         include: [],
         exclude: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         allow_failures: []
       }});
@@ -299,10 +299,10 @@ describe('Common Configuration Options', () => {
       const expected = {
         include: [],
         exclude: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ],
         allow_failures: []
       };
@@ -315,10 +315,10 @@ describe('Common Configuration Options', () => {
         include: [],
         exclude: [],
         allow_failures: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ]
       }});
       const parsed = parseConfig(data);
@@ -326,10 +326,10 @@ describe('Common Configuration Options', () => {
         include: [],
         exclude: [],
         allow_failures: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ]
       };
 
@@ -339,31 +339,31 @@ describe('Common Configuration Options', () => {
     it(`should parse data properly when matrix is defined in all properties`, () => {
       data = Object.assign(data, { matrix: {
         include: [
-          { node_js: '7', env: 'SCRIPT=lint' }
+          { env: 'SCRIPT=lint node_js=7' }
         ],
         exclude: [
-          { node_js: '6', env: 'SCRIPT=test:protractor' }
+          {env: 'SCRIPT=test:protractor node_js=6' }
         ],
         allow_failures: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ]
       }});
       const parsed = parseConfig(data);
       const expected = {
         include: [
-          { node_js: '7', env: 'SCRIPT=lint' }
+          { env: 'SCRIPT=lint node_js=7' }
         ],
         exclude: [
-          { node_js: '6', env: 'SCRIPT=test:protractor' }
+          { env: 'SCRIPT=test:protractor node_js=6' }
         ],
         allow_failures: [
-          { node_js: '8', env: 'SCRIPT=lint' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_e2e.js' },
-          { node_js: '8', env: 'SCRIPT=test:protractor' },
-          { node_js: '8', env: 'NODE_SCRIPT=./tests/run_unit.js' }
+          { env: 'SCRIPT=lint node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_e2e.js node_js=8' },
+          { env: 'SCRIPT=test:protractor node_js=8' },
+          { env: 'NODE_SCRIPT=./tests/run_unit.js node_js=8' }
         ]
       };
 

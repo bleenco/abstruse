@@ -101,8 +101,12 @@ describe('Docker Images', () => {
         })
         .then(() => docker.listImages())
         .then(imgs => {
-          imgs = imgs.filter(i => i.RepoTags.findIndex(rt => rt === del.name) !== -1);
-          expect(imgs.length).to.equals(0);
+          if (imgs) {
+            imgs = imgs.filter(i => {
+              return i.RepoTags && i.RepoTags.findIndex(rt => rt === del.name) !== -1;
+            });
+            expect(imgs.length).to.equals(0);
+          }
         })
         .then(() => fs.readdir(join(tempRoot, '/.abstruse/images')))
         .then(dirs => expect(dirs).to.deep.equals([]))
