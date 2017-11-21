@@ -37,12 +37,12 @@ describe('Terminal Component', () => {
     .createComponent(AppTerminalComponent);
   });
 
-  it('should expect termReady to be false', () => {
-    expect(fixture.componentInstance.terminalReady).toBe(false);
+  it('should expect term to be defined', () => {
+    expect(fixture.componentInstance.term).toBeDefined();
   });
 
-  it('should expect term to be defined', () => {
+  it('should expect data to be undefined', () => {
     fixture.detectChanges();
-    expect(fixture.componentInstance.term).toBeDefined();
+    expect(fixture.componentInstance.data).toBeUndefined();
   });
 });
