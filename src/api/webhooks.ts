@@ -67,7 +67,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
 
           return startBuild(buildData);
         })
-        .then(() => res.status(200).json({ msg: 'ok' }))
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
         .catch(err => {
           console.error(err);
           res.status(400).json({ error: err });
@@ -79,7 +79,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
         writeJsonFile(getFilePath('config.json'), config)
           .then(() => createGitHubPullRequest(payload))
           .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
+          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
           .catch(err => {
             console.error(err);
             res.status(400).json({ error: err });
@@ -93,7 +93,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           writeJsonFile(getFilePath('config.json'), config)
             .then(() => synchronizeGitHubPullRequest(payload))
             .then(build => startBuild(build))
-            .then(() => res.status(200).json({ msg: 'ok' }))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
             .catch(err => {
               console.error(err);
               res.status(400).json({ error: err });
@@ -124,7 +124,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           writeJsonFile(getFilePath('config.json'), config)
             .then(() => synchronizeGitHubPullRequest(payload))
             .then(build => startBuild(build))
-            .then(() => res.status(200).json({ msg: 'ok' }))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
             .catch(err => {
               console.error(err);
               res.status(400).json({ error: err });
@@ -179,7 +179,7 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
 
         return startBuild(buildData);
       })
-      .then(() => res.status(200).json({ msg: 'ok' }))
+      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
       .catch(err => {
         console.error(err);
         res.status(400).json({ error: err });
@@ -232,7 +232,7 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
       .then(() => synchronizeBitbucketPullRequest(payload))
       .then(build => startBuild(build))
-      .then(() => res.status(200).json({ msg: 'ok' }))
+      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
       .catch(err => {
         console.error(err);
         res.status(400).json({ error: err });
@@ -287,7 +287,7 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
 
         return startBuild(buildData);
       })
-      .then(() => res.status(200).json({ msg: 'ok' }))
+      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
       .catch(err => {
         console.error(err);
         res.status(400).json({ error: err });
@@ -309,7 +309,7 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
       .then(() => synchronizeGitLabPullRequest(payload))
       .then(build => startBuild(build))
-      .then(() => res.status(200).json({ msg: 'ok' }))
+      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
       .catch(err => {
         console.error(err);
         res.status(400).json({ error: err });
@@ -370,7 +370,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
 
         return startBuild(buildData);
       })
-      .then(() => res.status(200).json({ msg: 'ok' }))
+      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
       .catch(err => {
         console.error(err);
         res.status(400).json({ error: err });
@@ -399,7 +399,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
           writeJsonFile(getFilePath('config.json'), config)
           .then(() => createGogsPullRequest(payload))
           .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
+          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
           .catch(err => {
             console.error(err);
             res.status(400).json({ error: err });
@@ -412,7 +412,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
           writeJsonFile(getFilePath('config.json'), config)
           .then(() => synchronizeGogsPullRequest(payload))
           .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
+          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
           .catch(err => {
             console.error(err);
             res.status(400).json({ error: err });
@@ -443,7 +443,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
           writeJsonFile(getFilePath('config.json'), config)
           .then(() => synchronizeGogsPullRequest(payload))
           .then(build => startBuild(build))
-          .then(() => res.status(200).json({ msg: 'ok' }))
+          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
           .catch(err => {
             console.error(err);
             res.status(400).json({ error: err });

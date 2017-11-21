@@ -1,9 +1,10 @@
 import { requestReopened, header } from '../../../webhooks/github/PullRequestEvent';
 import { sendGitHubRequest } from '../../../utils/utils';
+import { stopBuild } from '../../../utils/utils';
 
 export default function() {
   return Promise.resolve()
     .then(() => sendGitHubRequest(requestReopened, header))
-    .then(resp => resp.msg === 'ok' ? Promise.resolve() : Promise.reject(resp))
+    .then(resp => resp.msg === 'ok' ? stopBuild(resp.data.buildId) : Promise.reject(resp))
     .catch(err => Promise.reject(err));
 }
