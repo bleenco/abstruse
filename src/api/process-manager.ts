@@ -408,6 +408,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
   let pr = null;
   let sha = null;
   let branch = null;
+  let buildData = null;
 
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
@@ -476,43 +477,37 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
       return insertBuildRun(data);
     })
     .then(() => getBuild(data.build_id))
-    .then(buildData => {
-      sendPendingStatus(buildData, buildData.id)
-      .then(() => {
-        return config.reduce((prev, cfg, i) => {
-          return prev.then(() => {
-            let dataJob = null;
-
-            return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
-              .then(job => dataJob = job)
-              .then(() => getLastRunId(data.build_id))
-              .then(lastRunId => {
-                const jobRun = {
-                  start_time: new Date,
-                  status: 'queued',
-                  build_run_id: lastRunId,
-                  job_id: dataJob.id
-                };
-
-                return dbJobRuns.insertJobRun(jobRun);
-              })
-              .then(() => queueJob(dataJob.id));
-          });
-        }, Promise.resolve());
-      })
-      .then(() => getLastBuild(userId || null))
-      .then(lastBuild => {
-        jobEvents.next({
-          type: 'process',
-          build_id: data.build_id,
-          repository_id: repoId,
-          data: 'build added',
-          additionalData: lastBuild
-        });
-      })
-      .then(() => getDepracatedBuilds(buildData))
-      .then(builds => Promise.all(builds.map(build => stopBuild(build))));
+    .then(bdata => buildData = bdata)
+    .then(() => sendPendingStatus(buildData, buildData.id))
+    .then(() => {
+      return Promise.all(config.map(cfg => {
+        let dataJob = null;
+        return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
+          .then(job => dataJob = job)
+          .then(() => getLastRunId(data.build_id))
+          .then(lastRunId => {
+            const jobRun = {
+              start_time: new Date,
+              status: 'queued',
+              build_run_id: lastRunId,
+              job_id: dataJob.id
+            };
+            return dbJobRuns.insertJobRun(jobRun);
+          }).then(() => queueJob(dataJob.id));
+        }));
     })
+    .then(() => getLastBuild(userId || null))
+    .then(lastBuild => {
+      jobEvents.next({
+        type: 'process',
+        build_id: data.build_id,
+        repository_id: repoId,
+        data: 'build added',
+        additionalData: lastBuild
+      });
+    })
+    .then(() => getDepracatedBuilds(buildData))
+    .then(builds => Promise.all(builds.map(build => stopBuild(build))))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
@@ -551,11 +546,7 @@ export function restartBuild(buildId: number): Promise<any> {
           }));
         })
         .then(() => {
-          return jobs.reduce((prev, curr) => {
-            return prev.then(() => {
-              return stopJob(curr.id).then(() => queueJob(curr.id));
-            });
-          }, Promise.resolve());
+          return Promise.all(jobs.map(job => stopJob(job.id).then(() => queueJob(job.id))));
         })
         .then(() => getBuild(buildId))
         .then(build => sendPendingStatus(build, build.id))
@@ -579,12 +570,7 @@ export function restartBuild(buildId: number): Promise<any> {
 
 export function stopBuild(buildId: number): Promise<any> {
   return getBuild(buildId)
-    .then(build => {
-      const jobs = build.jobs;
-      return jobs.reduce((prev, current) => {
-        return prev.then(() => stopJob(current.id));
-      }, Promise.resolve());
-    })
+    .then(build => Promise.all(build.jobs.map(job => stopJob(job.id))))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
@@ -698,8 +684,8 @@ function jobSucceded(proc: JobProcess): Promise<any> {
             additionalData: time.getTime()
           });
 
-          getLastRunId(proc.build_id).then(id => updateBuildRun({ id: id, end_time: time} ));
-          Promise.resolve();
+          return getLastRunId(proc.build_id)
+            .then(id => updateBuildRun({ id: id, end_time: time} ));
         });
     });
 }
@@ -756,7 +742,6 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
             message: `[error]: ${err}`, type: 'error', notify: false
           };
           logger.next(msg);
-          Promise.resolve();
         });
     });
 }

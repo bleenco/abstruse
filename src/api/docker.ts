@@ -196,8 +196,7 @@ export function killContainer(id: string): Promise<void> {
           if (containerInfo.State.Status === 'exited') {
             return container.remove();
           } else if (containerInfo.State.Status === 'running') {
-            return  container.stop()
-              .then(container => container.remove());
+            return container.kill();
           } else {
             return Promise.resolve();
           }
