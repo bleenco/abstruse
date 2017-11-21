@@ -1,10 +1,21 @@
 <a name="1.3.6"></a>
-## [1.3.6](https://github.com/bleenco/abstruse/compare/v1.3.5...v1.3.6) (2017-11-20)
+## [1.3.6](https://github.com/bleenco/abstruse/compare/v1.3.5...v1.3.6) (2017-11-21)
+
+
+### Bug Fixes
+
+* **terminal:** fixed terminal output issue ([1753441](https://github.com/bleenco/abstruse/commit/1753441))
 
 
 ### Features
 
-* **build-matrix:** allow to build jobs on specific image ([a980c7c](https://github.com/bleenco/abstruse/commit/a980c7c))
+* **build-matrix:** allow to build jobs on specific image ([f24513b](https://github.com/bleenco/abstruse/commit/f24513b))
+* **containers:** stop container gracefully before removing ([c04f8b4](https://github.com/bleenco/abstruse/commit/c04f8b4))
+
+
+### Performance Improvements
+
+* **jobs:** start & stop build jobs in parallel rather than in sequence ([c107585](https://github.com/bleenco/abstruse/commit/c107585))
 
 
 
