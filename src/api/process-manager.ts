@@ -182,8 +182,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
       .then(() => dbJob.getLastRunId(proc.job_id))
       .then(runId => {
         const time = new Date();
-        const data = {
-          id: runId, start_time: time, end_time: null, status: 'running', log: '' };
+        const data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
         return dbJobRuns.updateJobRun(data)
           .then(() => {
             const data = {
@@ -508,6 +507,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     })
     .then(() => getDepracatedBuilds(buildData))
     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
+    .then(() => ({ buildId: buildData.id }))
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);

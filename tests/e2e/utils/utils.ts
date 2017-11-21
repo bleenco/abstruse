@@ -1,6 +1,9 @@
 import * as crypto from 'crypto';
 import * as request from 'request';
 import { exec } from 'child_process';
+import * as dockerode from 'dockerode';
+
+const docker = new dockerode();
 
 export function sendGitHubRequest(data: any, headers: any): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -112,4 +115,14 @@ export function sendGogsRequest(data: any, headers: any): Promise<any> {
       }
     });
   });
+}
+
+export function stopBuild(buildId: string): Promise<any[]> {
+  return docker.listContainers({ all: true })
+    .then(containers => {
+      containers = containers.filter(c => c.Names[0].startsWith(`/abstruse_${buildId}`));
+      return Promise.all(containers.map(containerInfo => {
+        return docker.getContainer(containerInfo.Id).kill();
+      }));
+    });
 }
