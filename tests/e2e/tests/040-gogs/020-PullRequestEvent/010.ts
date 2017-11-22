@@ -1,10 +1,17 @@
 import { pullRequestOpened, header } from '../../../webhooks/gogs/PullRequestEvents';
 import { sendGogsRequest } from '../../../utils/utils';
-import { stopBuild } from '../../../utils/utils';
+import { stopBuild, delay } from '../../../utils/utils';
 
 export default function() {
   return Promise.resolve()
     .then(() => sendGogsRequest(pullRequestOpened, header))
-    .then(resp => resp.msg === 'ok' ? stopBuild(resp.data.buildId) : Promise.reject(resp))
+    .then(resp => {
+      if (resp.msg === 'ok') {
+        return delay(3000)
+          .then(() => stopBuild(resp.data.buildId));
+      } else {
+        Promise.reject(resp);
+      }
+    })
     .catch(err => Promise.reject(err));
 }
