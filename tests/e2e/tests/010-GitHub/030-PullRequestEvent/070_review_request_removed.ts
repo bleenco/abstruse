@@ -6,4 +6,4 @@ export default function() {
     .then(() => sendGitHubRequest(requestReviewRequestRemoved, header))
     .then(resp => resp.msg === 'ok' ? Promise.resolve() : Promise.reject(resp))
     .catch(err => Promise.reject(err));
-}“
+}

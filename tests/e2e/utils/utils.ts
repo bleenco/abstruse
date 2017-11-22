@@ -120,9 +120,22 @@ export function sendGogsRequest(data: any, headers: any): Promise<any> {
 export function stopBuild(buildId: string): Promise<any[]> {
   return docker.listContainers({ all: true })
     .then(containers => {
-      containers = containers.filter(c => c.Names[0].startsWith(`/abstruse_${buildId}`));
+      containers = containers.filter(c => c.Names[0].startsWith(`/abstruse_${buildId}_`));
       return Promise.all(containers.map(containerInfo => {
-        return docker.getContainer(containerInfo.Id).kill();
+        if (containerInfo.State === 'exited') {
+          return docker.getContainer(containerInfo.Id).remove();
+        } else if (containerInfo.State === 'running') {
+          const container = docker.getContainer(containerInfo.Id);
+
+          return container.stop()
+            .then(container => container.remove());
+        } else {
+          return Promise.resolve();
+        }
       }));
     });
+}
+
+export function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
