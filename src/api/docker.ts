@@ -193,14 +193,13 @@ export function killContainer(id: string): Promise<void> {
       container = docker.getContainer(id);
       container.inspect()
         .then(containerInfo => {
-          if (containerInfo.State.Status === 'exited') {
-            return container.remove();
-          } else if (containerInfo.State.Status === 'running') {
+          if (containerInfo.State.Status === 'running') {
             return container.kill();
           } else {
             return Promise.resolve();
           }
         })
+        .then(() => removeContainer(id))
         .then(() => resolve())
         .catch(err => {
           if (err.statusCode === 404) {
@@ -216,7 +215,18 @@ export function killContainer(id: string): Promise<void> {
 }
 
 export function removeContainer(id: string): Promise<void> {
-  return docker.getContainer(id).remove();
+  return new Promise(resolve => {
+    try {
+      let container = docker.getContainer(id);
+
+      return container.inspect()
+        .then(containerInfo => container.remove())
+        .then(() => resolve())
+        .catch(() => resolve());
+    } catch {
+      resolve();
+    }
+  });
 }
 
 export function imageExists(name: string): Observable<boolean> {
