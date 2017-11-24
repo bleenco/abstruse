@@ -1,12 +1,14 @@
 import * as docker from './docker';
 import * as child_process from 'child_process';
-import { generateRandomId, getFilePath, prepareCommands } from './utils';
+import { generateRandomId, prepareCommands } from './utils';
+import { getFilePath } from './setup';
 import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
 import chalk from 'chalk';
 import * as style from 'ansi-styles';
+import { deploy } from './deploy';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
@@ -37,7 +39,9 @@ export function startBuildProcess(
     const image = proc.image_name;
 
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
-    const envs = proc.commands.filter(cmd => cmd.command.startsWith('export'))
+    const envs = proc.commands.filter(cmd => {
+        return typeof cmd.command === 'string' && cmd.command.startsWith('export');
+      })
       .map(cmd => cmd.command.replace('export', ''))
       .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
       .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
@@ -48,11 +52,18 @@ export function startBuildProcess(
     const installTypes = [CommandType.before_install, CommandType.install];
     const scriptTypes = [CommandType.before_script, CommandType.script,
       CommandType.after_success, CommandType.after_failure, CommandType.after_script];
-    const deployTypes = [CommandType.before_deploy, CommandType.deploy, CommandType.after_deploy];
     const gitCommands = prepareCommands(proc, gitTypes);
     const installCommands = prepareCommands(proc, installTypes);
     const scriptCommands = prepareCommands(proc, scriptTypes);
-    const deployCommands = prepareCommands(proc, deployTypes);
+    let beforeDeployCommands = prepareCommands(proc, [CommandType.before_deploy]);
+    const afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
+    const deployCommands = prepareCommands(proc, [CommandType.deploy]);
+    let deployPreferences;
+    if (deployCommands.length) {
+      deployPreferences = deployCommands
+        .map(p => p.command)
+        .reduce((a, b) => Object.assign(b, a));
+    }
 
     let restoreCache: Observable<any> = Observable.empty();
     let saveCache: Observable<any> = Observable.empty();
@@ -103,14 +114,17 @@ export function startBuildProcess(
       .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(saveCache)
       .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(deploy(deployPreferences, name, envs))
+      .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
         if (event.type === 'containerError') {
-          const msg = chalk.red(event.data.json.message) || chalk.red(event.data);
+          const msg =
+            chalk.red((event.data.json && event.data.json.message) || event.data);
           observer.next({ type: 'exit', data: msg });
           observer.error(msg);
         } else if (event.type === 'containerInfo') {
