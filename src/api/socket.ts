@@ -2,7 +2,7 @@ import * as ws from 'ws';
 import * as uuid from 'uuid';
 import { Observable, Observer, Subject, Subscription } from 'rxjs';
 import { logger, LogMessageType } from './logger';
-import * as docker from './docker';
+import { getContainersStats } from './docker-stats';
 import {
   processes,
   startBuild,
@@ -15,7 +15,7 @@ import {
   terminalEvents
 } from './process-manager';
 import { imageBuilderObs, buildDockerImage, deleteImage } from './image-builder';
-import { getConfig } from './utils';
+import { getConfig } from './setup';
 import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
@@ -283,7 +283,7 @@ export class SocketServer {
 
               case 'subscribeToStats':
                 this.clients[clientIndex].sub = Observable.merge(...[
-                  memory(), cpu(), docker.getContainersStats()
+                  memory(), cpu(), getContainersStats()
                 ]).subscribe(event => conn.next(event));
               break;
 

@@ -1,4 +1,5 @@
-import { getBitBucketAccessToken, getConfig } from './utils';
+import { getBitBucketAccessToken } from './utils';
+import { getConfig } from './setup';
 import { logger, LogMessageType } from './logger';
 import * as request from 'request';
 

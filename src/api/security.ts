@@ -4,7 +4,7 @@ import * as express from 'express';
 import { getUser } from './db/user';
 import * as nodeRsa from 'node-rsa';
 import { RSA } from 'rsa-compat';
-import { getFilePath, config } from './utils';
+import { getFilePath, config } from './setup';
 import { existsSync, exists, writeFile } from './fs';
 import { readFileSync } from 'fs';
 import { logger, LogMessageType } from './logger';

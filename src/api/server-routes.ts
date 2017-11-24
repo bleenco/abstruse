@@ -6,7 +6,6 @@ import { resolve, extname, relative } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
 import { readFileSync } from 'fs';
-import { getFilePath, generateBadgeHtml, getConfig } from './utils';
 import { reinitializeDatabase } from './db/migrations';
 import {
   usersExists,
@@ -50,11 +49,14 @@ import {
   getConfigRawFile,
   parseConfigFromRaw
 } from './config';
+import { getHttpJsonResponse, generateBadgeHtml } from './utils';
 import {
-  getHttpJsonResponse,
   getCacheFilesFromPattern,
-  deleteCacheFilesFromPattern
-} from './utils';
+  deleteCacheFilesFromPattern,
+  getFilePath,
+  getConfig,
+  getRootDir
+} from './setup';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
 
@@ -62,7 +64,7 @@ const config: any = getConfig();
 
 const storage: multer.StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, utils.getFilePath('avatars'));
+    cb(null, getFilePath('avatars'));
   },
   filename: (req, file, cb) => {
     const ext = extname(file.originalname);
@@ -222,7 +224,7 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/upload-avatar', upload.any(), (req: express.Request, res: express.Response) => {
-    const avatar = '/' + relative(utils.getRootDir(), req.files[0].path);
+    const avatar = '/' + relative(getRootDir(), req.files[0].path);
     getUser(req.body.userId)
       .then(user => {
         user.avatar = avatar;
