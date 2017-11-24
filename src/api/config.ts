@@ -525,7 +525,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     ];
 
     data.push({
-      commands: gitCommands.concat(installCommands).concat(deployCommands),
+      commands: gitCommands.concat(deployCommands),
       env: globalEnv.concat('DEPLOY'),
       stage: JobStage.deploy,
       image: config.image

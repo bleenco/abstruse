@@ -1,5 +1,6 @@
 import { docker } from './docker';
-import { getFilePath, getHumanSize } from './utils';
+import { getHumanSize } from './utils';
+import { getFilePath } from './setup';
 import * as fs from 'fs-extra';
 import { logger, LogMessageType } from './logger';
 import { join } from 'path';
@@ -89,7 +90,7 @@ export function deleteImage(data: ImageData): void {
   logger.next(msg);
 
   try {
-    docker.getImage(data.name).remove(() => {
+    docker.getImage(data.name).remove({ force: true }, () => {
       const folderPath =
         data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
       fs.remove(folderPath);

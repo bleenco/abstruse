@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
-import { getConfig, getFilePath  } from './utils';
+import { getConfig, getFilePath  } from './setup';
 import {
   pingGitHubRepository,
   pingBitbucketRepository,

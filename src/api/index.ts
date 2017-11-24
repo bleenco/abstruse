@@ -1,19 +1,20 @@
 import * as minimist from 'minimist';
 
-const utils = require('./utils');
+const setup = require('./setup');
 const os = require('os');
 const path = require('path');
 const argv = minimist(process.argv.slice(2), {
   string: ['dir']
 });
 
-utils.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
+setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
 
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
 import { Observable } from 'rxjs';
 import { logger, LogMessageType } from './logger';
-import { initSetup, getAbstruseVersion } from './utils';
+import { getAbstruseVersion } from './utils';
+import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
