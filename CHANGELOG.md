@@ -1,3 +1,20 @@
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/bleenco/abstruse/compare/v1.3.6...v1.4.0) (2017-12-04)
+
+
+### Bug Fixes
+
+* **containers:** remove killed containers ([b90e6df](https://github.com/bleenco/abstruse/commit/b90e6df))
+* **socket:** fix build permissions on new triggered build appearing on UI ([6c25f23](https://github.com/bleenco/abstruse/commit/6c25f23))
+
+
+### Features
+
+* **deploy:** support for aws codeDeploy service ([252afd0](https://github.com/bleenco/abstruse/commit/252afd0))
+* **deploy:** support for deploy to aws s3 ([f7b35b5](https://github.com/bleenco/abstruse/commit/f7b35b5))
+
+
+
 <a name="1.3.6"></a>
 ## [1.3.6](https://github.com/bleenco/abstruse/compare/v1.3.5...v1.3.6) (2017-11-21)
 
