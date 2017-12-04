@@ -20,7 +20,6 @@ import { getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import { getConfig } from './setup';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 import { decrypt } from './security';
-import { userId } from './socket';
 
 export interface BuildMessage {
   type: string;
@@ -496,7 +495,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
           }).then(() => queueJob(dataJob.id));
         }));
     })
-    .then(() => getLastBuild(userId || null))
+    .then(() => getLastBuild(null))
     .then(lastBuild => {
       jobEvents.next({
         type: 'process',

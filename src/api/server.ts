@@ -35,7 +35,6 @@ export class ExpressServer implements IExpressServer {
       const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
-      app.use(sessionParser);
       app.use('/webhooks', webhooks);
       app.use('/api/setup', routes.setupRoutes());
       app.use('/api/user', routes.userRoutes());
