@@ -101,7 +101,6 @@
     "@types/temp": "^0.8.31",
     "@types/uuid": "^3.4.3",
     "@types/webpack-dev-server": "^2.9.1",
-    "@types/ws": "3.2.0",
     "@types/yamljs": "^0.2.30",
     "add-asset-html-webpack-plugin": "^2.1.2",
     "angular2-jwt": "^0.2.3",
@@ -180,7 +179,6 @@
     "webpack-dev-server": "^2.9.4",
     "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
     "webpack-merge": "^4.1.1",
-    "ws": "^3.2.0",
     "xterm": "2.9.2",
     "yamljs": "^0.3.0",
     "zone.js": "0.8.18"
