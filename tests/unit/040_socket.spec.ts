@@ -26,7 +26,7 @@ describe('Socket Security', () => {
       .then(() => process.chdir(join(__dirname, '../')))
       .then(() => {
         tempRoot = temp.mkdirSync('abstruse-socket-tests');
-        console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
+        console.log(`Using "${tempRoot}" as temporary directory for socket unit tests.`);
       })
       .then(() => abstruse(tempRoot, false))
       .then(() => sendRequest(registerData, 'api/user/create'));
@@ -35,7 +35,7 @@ describe('Socket Security', () => {
   after(() => killAllProcesses());
 
   it(`should receive initial 'time' event after connected to socket server`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -47,7 +47,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger build image on 'buildImage' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -66,7 +66,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -83,7 +83,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'subscribeToImageBuilder' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -104,7 +104,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -121,7 +121,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'stopBuild' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -140,7 +140,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -157,7 +157,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'restartBuild' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -176,7 +176,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -193,7 +193,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'restartJob' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -212,7 +212,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -229,7 +229,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'stopJob' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -248,7 +248,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -265,7 +265,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'debugJob' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -285,7 +285,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -302,7 +302,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'subscribeToLogs' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -321,7 +321,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);
@@ -338,7 +338,7 @@ describe('Socket Security', () => {
   });
 
   it(`should not have permissions to trigger 'subscribeToNotifications' event`, (done) => {
-    socket = new ws('ws://localhost:6500', null);
+    socket = new ws('ws://localhost:6500');
 
     socket.on('message', (data: any) => {
       data = JSON.parse(data);
@@ -358,7 +358,7 @@ describe('Socket Security', () => {
 
     sendRequest(loginData, 'api/user/login')
       .then((jwt: any) => {
-        socket = new ws('ws://localhost:6500', jwt.data);
+        socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
         socket.on('message', (data: any) => {
           data = JSON.parse(data);

@@ -25,6 +25,7 @@ import { sessionParser } from './server';
 import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';
 import { decodeJwt } from './security';
+import { getLastBuild } from './db/build';
 
 export interface ISocketServerOptions {
   app: express.Application;
@@ -111,6 +112,19 @@ export class SocketServer {
         send: (message: any) => client.socket.send(JSON.stringify(message))
       };
       this.addClient(client);
+
+      client.send({ type: 'time', data: new Date().getTime() });
+      jobEvents.subscribe(event => {
+        if (event.data === 'build added') {
+          getLastBuild(client.session.userId)
+            .then(lastBuild => {
+              event.additionalData = lastBuild;
+              client.send(event);
+            });
+        } else {
+          client.send(event);
+        }
+      });
 
       socket.on('message', event => this.handleEvent(JSON.parse(event), client));
       socket.on('close', (code, message) => this.removeClient(socket));

@@ -495,14 +495,13 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
           }).then(() => queueJob(dataJob.id));
         }));
     })
-    .then(() => getLastBuild(null))
     .then(lastBuild => {
       jobEvents.next({
         type: 'process',
         build_id: data.build_id,
         repository_id: repoId,
         data: 'build added',
-        additionalData: lastBuild
+        additionalData: null
       });
     })
     .then(() => getDepracatedBuilds(buildData))
