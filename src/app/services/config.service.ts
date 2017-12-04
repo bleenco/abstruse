@@ -11,8 +11,14 @@ export class ConfigService {
     let wssProto = location.protocol === 'https:' ? 'wss' : 'ws';
     let proto = location.protocol;
     let port = location.port === '8000' ? 6500 : location.port;
+    let token = localStorage.getItem('abs-token') || null;
+
     this.url = `${proto}//${location.hostname}:${port}`;
-    this.wsurl = `${wssProto}://${location.hostname}:${port}`;
+    if (token) {
+      this.wsurl = `${wssProto}://${location.hostname}:${port}/?token=${token}`;
+    } else {
+      this.wsurl = `${wssProto}://${location.hostname}:${port}`;
+    }
   }
 }
 

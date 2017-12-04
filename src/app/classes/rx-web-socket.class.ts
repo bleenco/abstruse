@@ -29,7 +29,7 @@ export class RxWebSocket {
   get out(): Observable<any> {
     if (!this._out) {
       this._out = Observable.create((subscriber: Subscriber<any>) => {
-        this.socket = new WebSocket(this.config.wsurl, localStorage.getItem('abs-token') || null);
+        this.socket = new WebSocket(this.config.wsurl);
 
         if (this.willOpen) {
           this.willOpen();
