@@ -74,7 +74,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.processing = false;
         } else if (event.type === 'job restarted' && event.data === this.id) {
           this.processing = false;
-          this.terminalInput = { clear: true };
         } else if (event.type === 'exposed ports') {
           const portData = event.data && event.data.info || null;
 
@@ -191,6 +190,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.vnc = null;
     this.debug = false;
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
+    this.terminalInput = { clear: true };
   }
 
   stopJob(e: MouseEvent): void {

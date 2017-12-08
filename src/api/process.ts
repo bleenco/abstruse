@@ -115,7 +115,7 @@ export function startBuildProcess(
       .concat(saveCache)
       .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(deploy(deployPreferences, name, envs))
+      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
