@@ -189,6 +189,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.sshd = null;
     this.vnc = null;
     this.debug = false;
+    this.terminalInput = { clear: true };
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
     this.terminalInput = { clear: true };
   }
