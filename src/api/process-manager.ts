@@ -63,7 +63,6 @@ const config: any = getConfig();
 export let jobProcesses: Subject<JobProcess> = new Subject();
 export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({});
 export let terminalEvents: Subject<JobProcessEvent> = new Subject();
-export let buildStatuses: Subject<any> = new Subject();
 export let buildSub: { [id: number]: Subscription } = {};
 export let processes: JobProcess[] = [];
 
@@ -86,7 +85,7 @@ jobProcesses
   .mergeMap(process => execJob(process), concurrency)
   .subscribe();
 
-function execJob(proc: JobProcess): Observable<{}> {
+function execJob(proc: JobProcess): Observable<any> {
   const index = processes.findIndex(process => process.job_id === proc.job_id);
   if (index !== -1) {
     processes[index] = proc;
@@ -95,36 +94,23 @@ function execJob(proc: JobProcess): Observable<{}> {
   }
 
   const buildProcesses = processes.filter(p => p.build_id === proc.build_id);
-  if (proc.env.findIndex(e => e === 'DEPLOY') === -1 || buildProcesses.length === 1
-    || !buildProcesses.filter(p => p.status != 'success' && p.job_id != proc.job_id).length) {
-      return startJobProcess(proc);
-  }
-
-  return new Observable(observer => {
-    return buildStatuses
-      .filter(bs => bs.build_id === proc.build_id)
-      .subscribe(event => {
-        const testProcesses = processes.filter(p => {
-          return p.build_id === proc.build_id && p.job_id != proc.job_id;
-        });
-
-        if (testProcesses.length) {
-          if (proc.job_id != event.job_id) {
-            const notSucceded = testProcesses.filter(p => p.status != 'success');
-            const queuedOrRunning = testProcesses.filter(p => {
-              return p.status === 'queued' || p.status === 'running';
-            });
-            if (!notSucceded.length) {
-              startJobProcess(proc).subscribe(() => observer.complete());
-            } else if (!queuedOrRunning.length) {
-                stopJob(proc.job_id).then(() => observer.complete());
-            }
-          } else {
-            observer.complete();
-          }
-        }
-      });
+  const testProcesses = buildProcesses.filter(proc => {
+    return proc.env.findIndex(e => e === 'DEPLOY') === -1;
   });
+  const queuedOrRunning = testProcesses.filter(p => {
+    return p.status === 'queued' || p.status === 'running';
+  });
+  const succeded = testProcesses.filter(p => p.status === 'success');
+  const isDeploy = proc.env.findIndex(e => e === 'DEPLOY') !== -1 ? true : false;
+
+  if (!isDeploy || succeded.length === testProcesses.length) {
+    return startJobProcess(proc);
+  } else if (queuedOrRunning.length) {
+    // give some time (5s) to check again other processes
+    return Observable.timer(5000).map(() => jobProcesses.next(proc));
+  } else {
+    return Observable.fromPromise(stopJob(proc.job_id));
+  }
 }
 
 export function startJobProcess(proc: JobProcess): Observable<{}> {
@@ -625,8 +611,6 @@ function jobSucceded(proc: JobProcess): Promise<any> {
         })
         .then(() => getBuildStatus(proc.build_id))
         .then(status => {
-          buildStatuses.next({status: status, build_id: proc.build_id, job_id: proc.job_id});
-
           if (status === 'success') {
             return updateBuild({ id: proc.build_id, end_time: time })
               .then(() => getLastRunId(proc.build_id))
@@ -719,12 +703,6 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
             build_id: proc.build_id,
             data: 'build failed',
             additionalData: time.getTime()
-          });
-
-          buildStatuses.next({
-            status: 'errored',
-            build_id: proc.build_id,
-            job_id: proc.job_id
           });
         })
         .then(() => {
