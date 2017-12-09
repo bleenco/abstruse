@@ -54,12 +54,10 @@ export class SocketServer {
   }
 
   start(): Observable<string> {
-    return new Observable(observer => {
-      this.setupServer(this.options.app);
-    });
+    return new Observable(observer => this.setupServer(this.options.app));
   }
 
-  private setupServer = (application: any) => {
+  private setupServer(application: any): void {
     let config: any = getConfig();
     let server = null;
 
@@ -67,9 +65,9 @@ export class SocketServer {
       server = https.createServer({
         cert: readFileSync(config.sslcert),
         key: readFileSync(config.sslkey)
-      }, application.app);
+      }, application);
     } else {
-      server = http.createServer(application.app);
+      server = http.createServer(application);
     }
 
     const wss: uws.Server = new uws.Server({
@@ -140,11 +138,11 @@ export class SocketServer {
     });
   }
 
-  private addClient(client: Client) {
+  private addClient(client: Client): void {
     this.clients.push(client);
   }
 
-  private removeClient(socket: uws.Socket) {
+  private removeClient(socket: uws.Socket): void {
     const index = this.clients.findIndex(c => c.socket === socket);
     const client = this.clients[index];
     const msg: LogMessageType = {
@@ -157,7 +155,7 @@ export class SocketServer {
     this.clients.splice(index, 1);
   }
 
-  private handleEvent(event: any, client: Client) {
+  private handleEvent(event: any, client: Client): void {
     switch (event.type) {
       case 'login': {
         const token = event.data;

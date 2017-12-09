@@ -18,7 +18,6 @@ import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
-import * as expressWs from 'express-ws';
 
 const server = new ExpressServer({ port: 6500 });
 
@@ -35,8 +34,7 @@ initSetup()
   })
   .then(() =>
     server.start().subscribe(app => {
-      const socket = new SocketServer({ app: expressWs(app) });
-
+      const socket = new SocketServer({ app: app });
       Observable
         .merge(...[socket.start(), generateKeys()])
         .subscribe(data => {
