@@ -1,3 +1,14 @@
+<a name="1.4.1"></a>
+## [1.4.1](https://github.com/bleenco/abstruse/compare/v1.4.0...v1.4.1) (2017-12-09)
+
+
+### Bug Fixes
+
+* **entry:** fix container entry point to not output vnc and stuff logs ([d0b9d90](https://github.com/bleenco/abstruse/commit/d0b9d90))
+* **sessions:** improve stavility of socket sessions ([bafd4f0](https://github.com/bleenco/abstruse/commit/bafd4f0))
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/bleenco/abstruse/compare/v1.3.6...v1.4.0) (2017-12-04)
 
