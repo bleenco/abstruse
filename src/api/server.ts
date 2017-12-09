@@ -5,8 +5,11 @@ import { Observable } from 'rxjs';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
 import * as session from 'express-session';
-import * as uuid from 'uuid';
 import { logger, LogMessageType } from './logger';
+import { getRootDir } from './setup';
+import * as connectsqlite3 from 'connect-sqlite3';
+
+const SQLiteStore = connectsqlite3(session);
 
 export interface ServerConfig {
   port: number;
@@ -18,6 +21,7 @@ export interface IExpressServer {
 }
 
 export const sessionParser = session({
+  store: new SQLiteStore({ dir: getRootDir() }),
   saveUninitialized: false,
   secret: 'sessionSecret',
   resave: false
