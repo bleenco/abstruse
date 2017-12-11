@@ -57,12 +57,12 @@ export function startBuildProcess(
     const scriptCommands = prepareCommands(proc, scriptTypes);
     let beforeDeployCommands = prepareCommands(proc, [CommandType.before_deploy]);
     const afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
-    const deployCommands = prepareCommands(proc, [CommandType.deploy]);
+    let deployCommands = prepareCommands(proc, [CommandType.deploy]);
+
     let deployPreferences;
-    if (deployCommands.length) {
-      deployPreferences = deployCommands
-        .map(p => p.command)
-        .reduce((a, b) => Object.assign(b, a));
+    if (deployCommands.length && typeof deployCommands[0].command === 'object') {
+      deployPreferences = deployCommands.reduce((curr, acc) => Object.assign(acc, curr.command));
+      deployCommands = [];
     }
 
     let restoreCache: Observable<any> = Observable.empty();
@@ -116,6 +116,7 @@ export function startBuildProcess(
       .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd)))
       .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(deploy(deployPreferences, name, envs))
       .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
