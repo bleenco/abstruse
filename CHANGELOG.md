@@ -1,3 +1,13 @@
+<a name="1.4.2"></a>
+## [1.4.2](https://github.com/bleenco/abstruse/compare/v1.4.1...v1.4.2) (2017-12-11)
+
+
+### Features
+
+* **fonts:** switch to SourceSansPro ([91278be](https://github.com/bleenco/abstruse/commit/91278be))
+
+
+
 <a name="1.4.1"></a>
 ## [1.4.1](https://github.com/bleenco/abstruse/compare/v1.4.0...v1.4.1) (2017-12-09)
 
