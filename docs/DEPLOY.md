@@ -31,6 +31,9 @@ deploy:
 ...
 ```
 
+To deploy this way in some cases it's necessary to include some steps in docker image. If that is so, the steps are described on documentation pages of specific providers.
+
 Currently we support next providers:
-- [aws s3](./DEPLOY_S3.md)
-- [aws CodeDeployment](./DEPLOY_CODEDEPLOY.md)
+- [AWS s3](./DEPLOY_S3.md)
+- [AWS CodeDeployment](./DEPLOY_CODEDEPLOY.md)
+- [AWS Elastic Beanstalk](./DEPLOY_ELASTIC.md)

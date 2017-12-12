@@ -2,6 +2,10 @@
 
 Abstruse CI can automatically upload your build to Amazon S3 storage after a successful build.
 
+In order to get deployment with AWS CodeDeploy working, the [`AWS Command Line Interface`](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) need to be installed in the container. That can be done in two ways:
+- using extra step in `.abstruse.yml` in `before_deployment` section (e.g. `sudo apt-get install awscli -y`)
+- include installation step in [docker image](./IMAGES.md)
+
 For a minimal configuration, you can add the following to your config file `.abstruse.yml`.
 
 ```
@@ -24,7 +28,7 @@ Once you're logged into the system you need to follow next steps:
 2. In the list of `repositories` click on your repository.
 3. In the right top corner click on button `Settings`.
 4. In the box `Environment Variables` you'll see three fields. In the first field `Name` you'll need to put a name of a variables, like we
-see in an above example, if you need would like to save `access key` and `secret access key`, the names should be `accessKeyId` and `secretAccessKey`, otherwise it won't work. In the second field enter your key (you can get it on your Amazon Console). In the last field, you can choose if you want to encrypt (hide) that data from other users (recommended) or not. If you choose to encrypt your value, this value cannot be seen again, will if you don't encrypt, the value will be normally seen al the time in the system.
+see in an above example, if you need would like to save `access key` and `secret access key`, the names should be `accessKeyId` and `secretAccessKey`, otherwise it won't work. In the second field enter your key (you can get it on your Amazon Console). In the last field, you can choose if you want to encrypt (hide) that data from other users (recommended) or not. If you choose to encrypt your value, this value cannot be seen again, while if you don't encrypt, the value will be normally seen al the time in the system.
 5. Click on button `Add Variable`.
 
 ### Optional parameters
