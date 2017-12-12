@@ -2,6 +2,8 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { findFromEnvVariables, deploy } from '../../src/api/deploy';
 import { s3Deploy } from '../../src/api/deploy/aws-s3';
+import { codeDeploy } from '../../src/api/deploy/aws-code-deploy';
+import { elasticDeploy } from '../../src/api/deploy/aws-elastic';
 import { join } from 'path';
 import * as temp from 'temp';
 import { abstruse, killAllProcesses } from '../e2e/utils/process';
@@ -73,7 +75,7 @@ describe('Deploying with AWS Services', () => {
           data: 'Deployment provider azure is not supported.'
         });
       },
-      () => Promise.reject(-1));
+      () => Promise.reject(1));
   });
 
   it(`should return error on calling deploy with s3 provider but insufficent data`, () => {
@@ -119,19 +121,36 @@ describe('Deploying with AWS Services', () => {
       .catch(err => false);
   });
 
-  it(`should return error on calling aws CodeDeploy without region data`, () => {
+  it(`should return error on calling awsCodeDeploy without region and deploymentGroup data`, () => {
     let preferences = { provider: 'codeDeploy', application: 'test' };
     let variables = ['accessKeyId=2fwfwa21gmoescfge', 'secretAccessKey=test'];
     let outputs = [];
 
-    return s3Deploy(preferences, 'unit_test_abstruse_container', variables)
+    return codeDeploy(preferences, 'unit_test_abstruse_container', variables)
       .subscribe(status => {
         outputs.push(status);
       },
       err => {
         expect(outputs.length).to.equals(2);
-        expect(outputs[0].data).to.includes('bucket is not set in yml config file');
+        expect(outputs[0].data).to.includes('deploymentGroup is not set in yml config file');
         expect(outputs[1].data).to.includes('region is not set in environment variables or');
+      },
+      () => false);
+  });
+
+  it(`should return error on calling awsElastic without application and environment data`, () => {
+    let preferences = { provider: 'elastic' };
+    let variables = ['accessKeyId=2fwfwa21gmoescfge', 'secretAccessKey=test', 'region=test'];
+    let outputs = [];
+
+    return elasticDeploy(preferences, 'unit_test_abstruse_container', variables)
+      .subscribe(status => {
+        outputs.push(status);
+      },
+      err => {
+        expect(outputs.length).to.equals(2);
+        expect(outputs[0].data).to.includes('application is not set in yml config file');
+        expect(outputs[1].data).to.includes('environmentName is not set in yml config file');
       },
       () => false);
   });
