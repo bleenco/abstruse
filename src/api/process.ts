@@ -61,7 +61,8 @@ export function startBuildProcess(
 
     let deployPreferences;
     if (deployCommands.length && typeof deployCommands[0].command === 'object') {
-      deployPreferences = deployCommands.reduce((curr, acc) => Object.assign(acc, curr.command));
+      deployPreferences =
+        deployCommands.reduce((curr, acc) => Object.assign(acc.command, curr), {});
       deployCommands = [];
     }
 

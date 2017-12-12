@@ -85,29 +85,17 @@ export function codeDeploy(
       style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
 
-      // 2. install awscli and set credentials
-      let command = { type: CommandType.deploy, command: 'sudo apt-get install awscli -y' };
+      // 2. set credentials for awscli
+      let command = {
+        type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
+      };
       attachExec(container, command)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = `apt-get install awscli failed`;
-            observer.next({ type: 'containerError', data: msg});
-            return Promise.reject(-1);
-          }
-
-          command = {
-            type: CommandType.deploy,
-            command: `aws configure set aws_access_key_id ${accessKeyId}`
-          };
-
-          return attachExec(container, command).toPromise();
-        })
-        .then(result => {
-          if (!(result && result.data === 0)) {
             const msg = 'aws configure aws_access_key_id failed';
             observer.next({ type: 'containerError', data: msg});
-            return Promise.reject(-1);
+            return Promise.reject(1);
           }
 
           command = {
@@ -121,7 +109,7 @@ export function codeDeploy(
           if (!(result && result.data === 0)) {
             const msg = 'aws configure aws_secret_access_key failed';
             observer.next({ type: 'containerError', data: msg});
-            return Promise.reject(-1);
+            return Promise.reject(1);
           }
 
           command = {
@@ -134,7 +122,7 @@ export function codeDeploy(
           if (!(result && result.data === 0)) {
             const msg = 'aws configure region failed';
             observer.next({ type: 'containerError', data: msg});
-            return Promise.reject(-1);
+            return Promise.reject(1);
           }
 
           // 3. check if deployment-group exists (otherwise create it)
@@ -155,7 +143,7 @@ export function codeDeploy(
                   if (!(result && result.data === 0)) {
                     const msg = 'create-deployment-group failed';
                     observer.next({ type: 'containerError', data: msg});
-                    return Promise.reject(-1);
+                    return Promise.reject(1);
                   }
 
                   Promise.resolve();
@@ -163,7 +151,7 @@ export function codeDeploy(
             } else {
               const msg = `deployment group doesn't exists and arn parameter is empty`;
               observer.next({ type: 'containerError', data: msg});
-              return Promise.reject(-1);
+              return Promise.reject(1);
             }
           } else {
             Promise.resolve();
@@ -191,7 +179,7 @@ export function codeDeploy(
             const msg = 'ApplicationStore can only be s3 or github,'
               + ' other stores are not supported';
             observer.next({ type: 'containerError', data: msg});
-            return Promise.reject(-1);
+            return Promise.reject(1);
           }
 
           return attachExec(container, command)
@@ -200,7 +188,7 @@ export function codeDeploy(
               if (!(result && result.data === 0)) {
                 const msg = 'create-deployment failed';
                 observer.next({ type: 'containerError', data: msg});
-                return Promise.reject(-1);
+                return Promise.reject(1);
               }
 
               Promise.resolve();

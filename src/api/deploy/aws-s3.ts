@@ -82,24 +82,12 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = `creating appspec.yml failed`;
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
-        // 3. install awscli and set credentials
-        let command = { type: CommandType.deploy, command: 'sudo apt-get install awscli -y' };
-
-        return attachExec(container, command).toPromise();
-      })
-      .then(result => {
-        if (!(result && result.data === 0)) {
-          const msg = `apt-get install awscli failed`;
-          observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
-        }
-
+        // 3. set credentials for awscli
         let command = {
-          type: CommandType.deploy,
-          command: `aws configure set aws_access_key_id ${accessKeyId}`
+          type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
         };
 
         return attachExec(container, command).toPromise();
@@ -108,7 +96,7 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = 'aws configure aws_access_key_id failed';
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
         let command = {
@@ -122,7 +110,7 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = 'aws configure aws_secret_access_key failed';
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
         let command = {
@@ -135,7 +123,7 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = 'aws configure region failed';
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
         // 4. check if application allready exists (otherwise create it)
@@ -159,7 +147,7 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = `aws deploy failed`;
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
         // 5. deploy
@@ -176,7 +164,7 @@ export function s3Deploy(
         if (!(result && result.data === 0)) {
           const msg = `aws deploy push failed`;
           observer.next({ type: 'containerError', data: msg});
-          return Promise.reject(-1);
+          return Promise.reject(1);
         }
 
         let msg = style.yellow.open + style.bold.open + '==> deployment completed successfully!'

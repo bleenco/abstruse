@@ -1,6 +1,7 @@
 import { Observable, Observer } from 'rxjs';
 import { s3Deploy } from './deploy/aws-s3';
 import { codeDeploy } from './deploy/aws-code-deploy';
+import { elasticDeploy } from './deploy/aws-elastic';
 
 export function deploy(preferences: any, container: string, variables: string[]): Observable<any> {
   return new Observable((observer: Observer<any>) => {
@@ -23,6 +24,8 @@ function deployProvider(provider, preferences, container, variables): Observable
       return s3Deploy(preferences, container, variables);
     case 'codeDeploy':
       return codeDeploy(preferences, container, variables);
+    case 'elastic':
+      return elasticDeploy(preferences, container, variables);
     default:
       return new Observable((observer: Observer<any>) => {
         observer.error({
