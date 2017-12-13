@@ -41,6 +41,7 @@ export interface Client {
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
   socket: uws.Socket;
   send: Function;
+  subscriptions: { stats: Subscription };
 }
 
 export class SocketServer {
@@ -107,7 +108,8 @@ export class SocketServer {
         sessionID: socket.upgradeReq.sessionID,
         session: socket.upgradeReq.session,
         socket: socket,
-        send: (message: any) => client.socket.send(JSON.stringify(message))
+        send: (message: any) => client.socket.send(JSON.stringify(message)),
+        subscriptions: { stats: null }
       };
       this.addClient(client);
 
@@ -306,9 +308,16 @@ export class SocketServer {
       break;
 
       case 'subscribeToStats':
-        Observable.merge(...[
-          memory(), cpu(), getContainersStats()
-        ]).subscribe(event => client.send(event));
+        client.subscriptions.stats =
+          Observable.merge(...[
+            memory(), cpu(), getContainersStats()
+          ]).subscribe(event => client.send(event));
+      break;
+
+      case 'unsubscribeFromStats':
+        if (client.subscriptions.stats) {
+          client.subscriptions.stats.unsubscribe();
+        }
       break;
     }
   }

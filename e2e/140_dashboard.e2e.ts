@@ -34,8 +34,8 @@ describe('Dashboard', () => {
 
   it('should go to dashboard and see memory widget', () => {
     return  browser.get('/dashboard')
-    .then((): any => browser.wait(() => element(by.css('[name="memory-usage"]')).isPresent()))
-    .then(() => element(by.css('[name="memory-usage"]')).getCssValue('width'))
-    .then(width => expect(width).to.not.equals('0px'));
+      .then((): any => browser.wait(() => element(by.css('[name="memory-usage"]')).isPresent()))
+      .then(() => element(by.css('[name="memory-usage"]')).getCssValue('width'))
+      .then(width => expect(width).to.not.equals('0px'));
   });
 });

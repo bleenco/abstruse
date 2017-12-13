@@ -137,8 +137,12 @@ export function attachExec(id: string, cmd: any): Observable<any> {
   });
 }
 
+export function listContainers(): Promise<dockerode.ContainerInfo[]> {
+  return docker.listContainers();
+}
+
 export function stopAllContainers(): Promise<any[]> {
-  return docker.listContainers()
+  return listContainers()
     .then(containers => {
       return Promise.all(containers.map(containerInfo => {
         return docker.getContainer(containerInfo.Id).stop();
@@ -254,4 +258,43 @@ export function isDockerInstalled(): Observable<boolean> {
       observer.complete();
     });
   });
+}
+
+export function calculateContainerStats(
+  container: dockerode.ContainerInfo,
+  processes: any
+): Promise<any> {
+  return docker.getContainer(container.Id).stats()
+    .then(stream => {
+      let json = '';
+      return new Promise((resolve, reject) => {
+        stream.on('data', buf => {
+          let rawJson = json + buf.toString();
+          try {
+            let data = JSON.parse(rawJson);
+
+            if (data && data.precpu_stats.system_cpu_usage) {
+              const jobId = container.Names[0].split('_')[2] || -1;
+              const job = processes.find(p => p.job_id === Number(jobId));
+              let debug = false;
+              if (job) {
+                debug = job.debug || false;
+              }
+
+              const stats = {
+                id: container.Id,
+                name: container.Names[0].substr(1) || '',
+                debug: debug,
+                data: data
+              };
+
+              stream.destroy();
+              resolve(stats);
+            }
+          } catch (e) {
+            json = rawJson;
+          }
+        });
+      });
+    });
 }
