@@ -1,58 +1,39 @@
 import { Observable, Observer } from 'rxjs';
 import * as utils from './utils';
-import * as dockerode from 'dockerode';
+import { listContainers,  calculateContainerStats } from './docker';
 import { processes } from './process-manager';
-
-export const docker = new dockerode();
 
 export function getContainersStats(): Observable<any> {
   return new Observable(observer => {
-    Observable
+    const sub = Observable
       .interval(2000)
       .timeInterval()
       .mergeMap(() => {
-        return docker.listContainers().then(containers => {
-          return Promise.all(containers.map(container => {
-            return docker.getContainer(container.Id).stats().then((stream: any) => {
-              let json = '';
-              return new Promise(resolve => {
-                stream.on('data', buf => {
-                  let rawJson = json + buf.toString();
-                  try {
-                    let data = JSON.parse(rawJson);
-
-                    if (data && data.precpu_stats.system_cpu_usage) {
-                      const jobId = container.Names[0].split('_')[2] || -1;
-                      const job = processes.find(p => p.job_id === Number(jobId));
-                      let debug = false;
-                      if (job) {
-                        debug = job.debug || false;
-                      }
-
-                      const stats = {
-                        id: container.Id,
-                        name: container.Names[0].substr(1) || '',
-                        cpu: getCpuData(data),
-                        network: getNetworkData(data),
-                        memory: getMemory(data),
-                        debug: debug
-                      };
-
-                      stream.destroy();
-                      resolve(stats);
-                    }
-                  } catch (e) {
-                    json = rawJson;
-                  }
-                });
-              });
-            });
-          })).then(stats => stats);
-        });
+        return listContainers()
+          .then(containers => Promise.all(containers.map(c => getContainerStats(c))));
       })
       .map(stats => observer.next({ type: 'containersStats', data: stats }))
       .subscribe();
+
+    return () => {
+      if (sub) {
+        sub.unsubscribe();
+      }
+    };
   }).share();
+}
+
+function getContainerStats(container: any): Promise<any> {
+  return calculateContainerStats(container, processes).then(stats => {
+    return {
+      id: stats.id,
+      name: stats.name,
+      cpu: getCpuData(stats.data),
+      network: getNetworkData(stats.data),
+      memory: getMemory(stats.data),
+      debug: stats.debug
+    };
+  });
 }
 
 function getCpuData(json: any): { usage: string, cores: number } {
