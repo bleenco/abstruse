@@ -8,7 +8,6 @@ import { logger, LogMessageType } from './logger';
 import { getContainersStats } from './docker-stats';
 import {
   processes,
-  startBuild,
   jobEvents,
   restartJob,
   stopJob,

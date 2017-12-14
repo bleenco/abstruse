@@ -47,6 +47,7 @@ export function startBuildProcess(
       .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
       .concat(variables)
       .filter(Boolean);
+    const variableValues = variables.map(v => v.split('=')[1] || '');
 
     const gitTypes = [CommandType.git];
     const installTypes = [CommandType.before_install, CommandType.install];
@@ -83,7 +84,9 @@ export function startBuildProcess(
 
       restoreCache = Observable.concat(...[
         executeOutsideContainer(copyRestoreCmd),
-        docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
+        docker.attachExec(
+          name, { command: restoreCmd, type: CommandType.restore_cache }, variableValues
+        )
       ]);
 
       let cacheFolders = proc.cache.map(folder => {
@@ -104,21 +107,21 @@ export function startBuildProcess(
       ].join('');
 
       saveCache = Observable.concat(...[
-        docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }),
+        docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }, variableValues),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
 
     const sub = docker.createContainer(name, image, envs)
-      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(restoreCache)
-      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
+      .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
+      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(deploy(deployPreferences, name, envs))
-      .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');

@@ -61,7 +61,7 @@ export function startContainer(id: string): Promise<dockerode.Container> {
   return docker.getContainer(id).start();
 }
 
-export function attachExec(id: string, cmd: any): Observable<any> {
+export function attachExec(id: string, cmd: any, variables: string[]): Observable<any> {
   return new Observable(observer => {
     const startTime = new Date().getTime();
     let exitCode = 255;
@@ -123,6 +123,11 @@ export function attachExec(id: string, cmd: any): Observable<any> {
           !str.startsWith('abstruse@')) {
           if (str.includes('//') && str.includes('@')) {
             str = str.replace(/\/\/(.*)@/, '//');
+          }
+
+          let variable = variables.find(v => str.indexOf(v) >= 0);
+          if (typeof variable !== 'undefined') {
+            str = str.replace(variable, '******');
           }
 
           observer.next({ type: 'data', data: str });

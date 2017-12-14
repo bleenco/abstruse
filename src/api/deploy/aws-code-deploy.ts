@@ -10,6 +10,7 @@ export function codeDeploy(
   preferences: any, container: string, variables: string[]
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
+    const variableValues = variables.map(v => v.split('=')[1] || '');
 
     // 1. check preferences
     const application = preferences.application;
@@ -89,7 +90,7 @@ export function codeDeploy(
       let command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
-      attachExec(container, command)
+      attachExec(container, command, variableValues)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -103,7 +104,7 @@ export function codeDeploy(
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return attachExec(container, command).toPromise();
+          return attachExec(container, command, variableValues).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -116,7 +117,7 @@ export function codeDeploy(
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return attachExec(container, command).toPromise();
+          return attachExec(container, command, variableValues).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -126,7 +127,7 @@ export function codeDeploy(
           }
 
           // 3. check if deployment-group exists (otherwise create it)
-          return depGroupExists(container, application, deployGroup);
+          return depGroupExists(container, application, deployGroup, variableValues);
         })
         .then(exists => {
           if (!exists) {
@@ -137,7 +138,7 @@ export function codeDeploy(
                   + ` --deployment-group-name ${deployGroup} --service-role-arn ${arn}`
               };
 
-              return attachExec(container, command)
+              return attachExec(container, command, variableValues)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -182,7 +183,7 @@ export function codeDeploy(
             return Promise.reject(1);
           }
 
-          return attachExec(container, command)
+          return attachExec(container, command, variableValues)
             .toPromise()
             .then(result => {
               if (!(result && result.data === 0)) {
@@ -211,12 +212,12 @@ export function codeDeploy(
   });
 }
 
-function depGroupExists(container, application, group): Promise<any> {
+function depGroupExists(container, application, group, variableValues): Promise<any> {
   return new Promise((resolve, reject) => {
     const command = `aws deploy get-deployment-group --application-name ${application}`
       + ` --deployment-group ${group}`;
     let groupExists = false;
-    attachExec(container, { type: CommandType.deploy, command: command})
+    attachExec(container, { type: CommandType.deploy, command: command}, variableValues)
       .subscribe(event => {
         if (event && event.type && event.type === 'exit') {
           if (event.data === 0) {
