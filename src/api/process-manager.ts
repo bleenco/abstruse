@@ -115,16 +115,9 @@ function execJob(proc: JobProcess): Observable<any> {
 
 export function startJobProcess(proc: JobProcess): Observable<{}> {
   return new Observable(observer => {
-    getRepositoryByBuildId(proc.build_id)
-      .then(repository => {
-        const envVariables: string[] = repository.variables.map(v => {
-          if (!!v.encrypted) {
-            return `${v.name}=${decrypt(v.value)}`;
-          } else {
-            return `${v.name}=${v.value}`;
-          }
-        });
-
+    getRepositoryByBuildId(proc.build_id).then(repository => {
+      return getBuild(proc.build_id).then(build => {
+        const envVariables = prepareEnvironmentVariables(repository, build, proc);
         const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
         const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 
@@ -164,27 +157,28 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
             jobSucceded(proc)
               .then(() => observer.complete());
           });
-      })
-      .then(() => dbJob.getLastRunId(proc.job_id))
-      .then(runId => {
-        const time = new Date();
-        const data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
-        return dbJobRuns.updateJobRun(data)
-          .then(() => {
-            const data = {
-              type: 'process',
-              build_id: proc.build_id,
-              job_id: proc.job_id,
-              data: 'job started',
-              additionalData: time.getTime()
-            };
-            jobEvents.next(data);
-          });
-      })
-      .catch(err => {
-        const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
-        logger.next(msg);
       });
+    })
+    .then(() => dbJob.getLastRunId(proc.job_id))
+    .then(runId => {
+      const time = new Date();
+      const data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
+      return dbJobRuns.updateJobRun(data)
+        .then(() => {
+          const data = {
+            type: 'process',
+            build_id: proc.build_id,
+            job_id: proc.job_id,
+            data: 'job started',
+            additionalData: time.getTime()
+          };
+          jobEvents.next(data);
+        });
+    })
+    .catch(err => {
+      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      logger.next(msg);
+    });
   });
 }
 
@@ -721,4 +715,107 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
           logger.next(msg);
         });
     });
+}
+
+function prepareEnvironmentVariables(repository: any, build: any, proc: JobProcess): string[] {
+  let secureVariables = false;
+  let envVariables: string[] = repository.variables.map(v => {
+    if (!!v.encrypted) {
+      secureVariables = true;
+      return `${v.name}=${decrypt(v.value)}`;
+    } else {
+      return `${v.name}=${v.value}`;
+    }
+  });
+  let commit;
+  if (build.data.pull_request && build.data.pull_request.head && build.data.pull_request.head.sha) {
+    commit = build.data.pull_request.head.sha;
+  } else if (build.data.after) {
+    commit = build.data.after;
+  } else if (build.data.sha) {
+    commit = build.data.sha;
+  } else if (
+    build.data.object_attributes && build.data.object_attributes.last_commit
+    && build.data.object_attributes.last_commit.id
+  ) {
+    commit = build.data.object_attributes.last_commit.id;
+  } else if (
+    build.data.push && build.data.push.changes[0]
+    && build.data.push.changes[0].commits[0] && build.data.push.changes[0].commits[0].hash
+  ) {
+    commit = build.data.push.changes[0].commits[0].hash;
+  } else if (
+    build.data.pullrequest && build.data.pullrequest.source
+    && build.data.pullrequest.source.commit && build.data.pullrequest.source.commit.hash
+  ) {
+    commit = build.data.pullrequest.source.commit.hash;
+  } else if (build.data.commit.id && build.data.commit.id) {
+    commit = build.data.commit.id;
+  }
+
+  envVariables.push(`ABSTRUSE_COMMIT=${commit}`);
+  envVariables.push(`ABSTRUSE_SECURE_ENV_VARS=${secureVariables}`);
+  envVariables.push(`ABSTRUSE_BUILD_ID=${proc.build_id}`);
+  envVariables.push(`ABSTRUSE_JOB_ID=${proc.job_id}`);
+  envVariables.push(`ABSTRUSE_TEST_RESULT=`);
+  envVariables.push(`ABSTRUSE_BUILD_DIR=`);
+
+  if (build.pr) {
+    let branch;
+    if (
+      build.data.pull_request && build.data.pull_request.head && build.data.pull_request.head.ref
+    ) {
+      branch = build.data.pull_request.head.ref;
+    } else if (
+      build.data.pullrequest && build.data.pullrequest.source
+      && build.data.pullrequest.source.branch && build.data.pullrequest.source.branch.name
+    ) {
+      branch = build.data.pullrequest.source.branch.name;
+    } else if (build.data.object_attributes && build.data.object_attributes.source_branch) {
+      branch = build.data.object_attributes.source_branch;
+    } else if (build.data.pull_request && build.data.pull_request.head_branch) {
+      branch = build.data.pull_request.head_branch;
+    }
+
+    let sha;
+    if (
+      build.data.pull_request && build.data.pull_request.head && build.data.pull_request.head.sha
+    ) {
+      sha = build.data.pull_request.head.sha;
+    } else if (
+      build.data.pullrequest && build.data.pullrequest.source
+      && build.data.pullrequest.source.commit && build.data.pullrequest.source.commit.hash
+    ) {
+      sha = build.data.pullrequest.source.commit.hash;
+    } else if (
+      build.data.object_attributes && build.data.object_attributes.last_commit
+      && build.data.object_attributes.last_commit.id
+    ) {
+      sha = build.data.object_attributes.last_commit.id;
+    } else if (build.data.pull_request && build.data.pull_request.merge_commit_sha) {
+      sha = build.data.pull_request.merge_commit_sha;
+    }
+    envVariables.push(`ABSTRUSE_BRANCH=${build.branch}`);
+    envVariables.push(`ABSTRUSE_EVENT_TYPE=pull_request`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST=${build.pr}`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_BRANCH=${branch}`);
+    envVariables.push(`ABSTRUSE_TAG=`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_SHA=${sha}`);
+  } else if (build.data && build.data.ref && build.data.ref.startsWith('refs/tags/')) {
+    envVariables.push(`ABSTRUSE_BRANCH=${build.data.ref.replace('refs/tags/', '')}`);
+    envVariables.push(`ABSTRUSE_EVENT_TYPE=tag`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST=false`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_BRANCH=`);
+    envVariables.push(`ABSTRUSE_TAG=${build.data.ref.replace('refs/tags/', '')}`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_SHA=`);
+  } else {
+    envVariables.push(`ABSTRUSE_BRANCH=${build.branch}`);
+    envVariables.push(`ABSTRUSE_EVENT_TYPE=push`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST=false`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_BRANCH=`);
+    envVariables.push(`ABSTRUSE_TAG=`);
+    envVariables.push(`ABSTRUSE_PULL_REQUEST_SHA=`);
+  }
+
+  return envVariables;
 }

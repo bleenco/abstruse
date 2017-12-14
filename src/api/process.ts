@@ -25,7 +25,8 @@ export interface SpawnedProcessOutput {
 }
 
 export interface ProcessOutput {
-  type: 'data' | 'exit' | 'container' | 'exposed ports' | 'containerInfo' | 'containerError';
+  type: 'data' | 'exit' | 'container' | 'exposed ports'
+    | 'containerInfo' | 'containerError' | 'scriptEnded';
   data: any;
 }
 
@@ -112,12 +113,14 @@ export function startBuildProcess(
       ]);
     }
 
+    let scriptExecuted = false;
     const sub = docker.createContainer(name, image, envs)
       .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(restoreCache)
       .concat(...installCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(saveCache)
       .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
+      .concat(scriptStatus())
       .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd, variableValues)))
       .concat(deploy(deployPreferences, name, envs))
@@ -127,7 +130,15 @@ export function startBuildProcess(
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
-        if (event.type === 'containerError') {
+        if (event.type === 'scriptEnded') {
+          scriptExecuted = true;
+          // TODO, update env variable ABSTRUSE_TEST_RESULT=0
+
+        } else if (event.type === 'containerError') {
+          if (!scriptExecuted) {
+            // TODO, update env variable ABSTRUSE_TEST_RESULT=1
+          }
+
           const msg =
             chalk.red((event.data.json && event.data.json.message) || event.data);
           observer.next({ type: 'exit', data: msg });
@@ -139,6 +150,10 @@ export function startBuildProcess(
           });
         } else if (event.type === 'exit') {
           if (Number(event.data) !== 0) {
+            if (!scriptExecuted) {
+              // TODO, update env variable ABSTRUSE_TEST_RESULT=${event.data}
+            }
+
             const msg = [
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
@@ -198,6 +213,13 @@ function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
       observer.next({ type: 'exit', data: code.toString() });
       observer.complete();
     });
+  });
+}
+
+function scriptStatus(): Observable<ProcessOutput> {
+  return new Observable(observer => {
+    observer.next({ type: 'scriptEnded', data: true });
+    observer.complete();
   });
 }
 

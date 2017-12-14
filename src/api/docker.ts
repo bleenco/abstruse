@@ -89,56 +89,54 @@ export function attachExec(id: string, cmd: any, variables: string[]): Observabl
     }
 
     const container = docker.getContainer(id);
-    const attachOpts = {
-      stream: true,
-      stdin: true,
-      stdout: true,
-      stderr: true
+    const attachOptions = {
+      Cmd: ['/usr/bin/abstruse-pty', cmd.command, ' && echo "[success]: 0"'],
+      Env: variables,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true
     };
 
-    container.attach(attachOpts, (err, stream: any) => {
-      if (err) {
-        observer.error(err);
-      }
+    container.exec(attachOptions)
+      .then(exec => exec.start({ hijack: true, stdin: true }))
+      .then(stream => {
+        const ws = new Writable();
 
-      const ws = new Writable();
+        ws.on('finish', () => {
+          const duration = new Date().getTime() - startTime;
+          observer.next({ type: 'exit', data: exitCode });
+          observer.complete();
+        });
 
-      ws.on('finish', () => {
-        const duration = new Date().getTime() - startTime;
-        observer.next({ type: 'exit', data: exitCode });
-        observer.complete();
+        ws._write = (chunk, enc, next) => {
+          let str = chunk.toString();
+
+          if (str.includes('[error]')) {
+            const splitted = str.split(' ');
+            exitCode = splitted[splitted.length - 1] || 1;
+            ws.end();
+          } else if (str.includes('[success]')) {
+            exitCode = 0;
+            ws.end();
+          } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>') &&
+            !str.startsWith('abstruse@')) {
+            if (str.includes('//') && str.includes('@')) {
+              str = str.replace(/\/\/(.*)@/, '//');
+            }
+
+            let variable = variables.find(v => str.indexOf(v) >= 0);
+            if (typeof variable !== 'undefined') {
+              str = str.replace(variable, '******');
+            }
+
+            observer.next({ type: 'data', data: str });
+          }
+
+          next();
+        };
+
+        container.modem.demuxStream(stream.output, ws, ws);
       });
-
-      ws._write = (chunk, enc, next) => {
-        let str = chunk.toString();
-
-        if (str.includes('[error]')) {
-          const splitted = str.split(' ');
-          exitCode = splitted[splitted.length - 1] || 1;
-          ws.end();
-        } else if (str.includes('[success]')) {
-          exitCode = 0;
-          ws.end();
-        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>') &&
-          !str.startsWith('abstruse@')) {
-          if (str.includes('//') && str.includes('@')) {
-            str = str.replace(/\/\/(.*)@/, '//');
-          }
-
-          let variable = variables.find(v => str.indexOf(v) >= 0);
-          if (typeof variable !== 'undefined') {
-            str = str.replace(variable, '******');
-          }
-
-          observer.next({ type: 'data', data: str });
-        }
-
-        next();
-      };
-
-      stream.pipe(ws);
-      stream.write('/usr/bin/abstruse \'' + cmd.command + '\'\r');
-    });
   });
 }
 
