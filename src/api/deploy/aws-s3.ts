@@ -9,6 +9,7 @@ export function s3Deploy(
   preferences: any, container: string, variables: string[]
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
+    const variableValues = variables.map(v => v.split('=')[1] || '');
 
     // 1. check preferences
     const bucket = preferences.bucket;
@@ -62,7 +63,7 @@ export function s3Deploy(
       observer.next({ type: 'data', data: msg });
 
       // 2. check if appspec.yml exists (otherwise create it)
-      appSpecExists(container).then(exists => {
+      appSpecExists(container, variableValues).then(exists => {
         let commands = [];
         if (!exists) {
           commands.push(
@@ -75,7 +76,7 @@ export function s3Deploy(
         }
 
         return Observable
-          .concat(...commands.map(command => attachExec(container, command)))
+          .concat(...commands.map(command => attachExec(container, command, variableValues)))
           .toPromise();
       })
       .then(result => {
@@ -90,7 +91,7 @@ export function s3Deploy(
           type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
         };
 
-        return attachExec(container, command).toPromise();
+        return attachExec(container, command, variableValues).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -104,7 +105,7 @@ export function s3Deploy(
           command: `aws configure set aws_secret_access_key ${secretAccessKey}`
         };
 
-        return attachExec(container, command).toPromise();
+        return attachExec(container, command, variableValues).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -117,7 +118,7 @@ export function s3Deploy(
           type: CommandType.deploy, command: `aws configure set region ${region}`
         };
 
-        return attachExec(container, command).toPromise();
+        return attachExec(container, command, variableValues).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -127,7 +128,7 @@ export function s3Deploy(
         }
 
         // 4. check if application allready exists (otherwise create it)
-        return applicationExists(container, preferences.bucket);
+        return applicationExists(container, preferences.bucket, variableValues);
       })
       .then(exists => {
         let application = [
@@ -140,7 +141,7 @@ export function s3Deploy(
         }
 
         return Observable
-          .concat(...application.map(command => attachExec(container, command)))
+          .concat(...application.map(command => attachExec(container, command, variableValues)))
           .toPromise();
       })
       .then(result => {
@@ -158,7 +159,7 @@ export function s3Deploy(
             + ` --s3-location s3://${preferences.bucket}/${zipName}.zip`
         };
 
-        return attachExec(container, deploy).toPromise();
+        return attachExec(container, deploy, variableValues).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -183,10 +184,10 @@ export function s3Deploy(
   });
 }
 
-function appSpecExists(container): Promise<any> {
+function appSpecExists(container: any, variableValues: string[]): Promise<any> {
   return new Promise((resolve, reject) => {
     let appSpec = false;
-    attachExec(container, { type: CommandType.deploy, command: 'ls'})
+    attachExec(container, { type: CommandType.deploy, command: 'ls'}, variableValues)
       .subscribe(event => {
         if (event && event.data) {
           if (String(event.data).indexOf('appspec.yml') != -1) {
@@ -199,11 +200,11 @@ function appSpecExists(container): Promise<any> {
   });
 }
 
-function applicationExists(container, application): Promise<any> {
+function applicationExists(container: any, application: string, variables: string[]): Promise<any> {
   return new Promise((resolve, reject) => {
     const getApplicationCommand = 'aws deploy list-applications';
     let appExists = false;
-    attachExec(container, { type: CommandType.deploy, command: getApplicationCommand })
+    attachExec(container, { type: CommandType.deploy, command: getApplicationCommand }, variables)
     .subscribe(event => {
       if (event && event.data) {
         if (String(event.data).indexOf(application) != -1) {

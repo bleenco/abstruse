@@ -9,6 +9,8 @@ export function elasticDeploy(
   preferences: any, container: string, variables: string[]
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
+    const variableValues = variables.map(v => v.split('=')[1] || '');
+
     // 1. check preferences
     const application = preferences.application;
     let accessKeyId = findFromEnvVariables(variables, 'accessKeyId');
@@ -106,7 +108,7 @@ export function elasticDeploy(
       let command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
-      attachExec(container, command)
+      attachExec(container, command, variableValues)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -120,7 +122,7 @@ export function elasticDeploy(
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return attachExec(container, command).toPromise();
+          return attachExec(container, command, variableValues).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -133,7 +135,7 @@ export function elasticDeploy(
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return attachExec(container, command).toPromise();
+          return attachExec(container, command, variableValues).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -160,11 +162,11 @@ export function elasticDeploy(
             };
           }
 
-          return attachExec(container, command).toPromise();
+          return attachExec(container, command, variableValues).toPromise();
         })
         .then(() => {
           // 3. check if environment exists
-          return environmentExists(container, environmentName);
+          return environmentExists(container, environmentName, variableValues);
         })
         .then(exists => {
           if (exists) {
@@ -176,7 +178,7 @@ export function elasticDeploy(
                   + ` --template-name "${environmentTemplate}"`
               };
 
-              return attachExec(container, command)
+              return attachExec(container, command, variableValues)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -194,7 +196,7 @@ export function elasticDeploy(
                   + ` --solution-stack-name "${solutionStackName}"`
               };
 
-              return attachExec(container, command)
+              return attachExec(container, command, variableValues)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -233,12 +235,12 @@ export function elasticDeploy(
   });
 }
 
-function environmentExists(container, environment): Promise<any> {
+function environmentExists(container, environment, variableValues): Promise<any> {
   return new Promise((resolve, reject) => {
     const getEnvCommand = `aws elasticbeanstalk describe-environments --environment-names`
       + ` "${environment}"`;
     let envExists = false;
-    attachExec(container, { type: CommandType.deploy, command: getEnvCommand })
+    attachExec(container, { type: CommandType.deploy, command: getEnvCommand }, variableValues)
     .subscribe(event => {
       if (event && event.data) {
         if (String(event.data).indexOf(environment) != -1) {
