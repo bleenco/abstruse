@@ -26,6 +26,7 @@ import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';
 import { decodeJwt } from './security';
 import { getLastBuild } from './db/build';
+import { Subscribable } from 'rxjs/Observable';
 
 export interface ISocketServerOptions {
   app: express.Application;
@@ -41,7 +42,7 @@ export interface Client {
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
   socket: uws.Socket;
   send: Function;
-  subscriptions: { stats: Subscription };
+  subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
 }
 
 export class SocketServer {
@@ -109,7 +110,7 @@ export class SocketServer {
         session: socket.upgradeReq.session,
         socket: socket,
         send: (message: any) => client.socket.send(JSON.stringify(message)),
-        subscriptions: { stats: null }
+        subscriptions: { stats: null, jobOutput: null, logs: null }
       };
       this.addClient(client);
 
@@ -147,6 +148,13 @@ export class SocketServer {
   private removeClient(socket: uws.Socket): void {
     const index = this.clients.findIndex(c => c.socket === socket);
     const client = this.clients[index];
+
+    Object.keys(client.subscriptions).forEach(sub => {
+      if (client.subscriptions[sub]) {
+        client.subscriptions[sub].unsubscribe();
+      }
+    });
+
     const msg: LogMessageType = {
       message: `[socket]: user ${client.session.email} from ${client.session.ip} disconnected`,
       type: 'info',
@@ -276,13 +284,13 @@ export class SocketServer {
         const idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
         if (idx !== -1) {
           const proc = processes[idx];
-          client.send({ type: 'data', data: proc.log });
+          client.send({ type: 'jobLog', data: proc.log });
           client.send({ type: 'exposed ports', data: proc.exposed_ports || null });
           client.send({ type: 'debug', data: proc.debug || null });
         }
 
-        terminalEvents
-          .filter(e => e.job_id === parseInt(event.data.jobId, 10))
+        client.subscriptions.jobOutput = terminalEvents
+          .filter(e => Number(e.job_id) === Number(event.data.jobId))
           .subscribe(output => client.send(output));
       break;
 
@@ -291,7 +299,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          logger.subscribe(msg => client.send(msg));
+          client.subscriptions.logs = logger.subscribe(msg => client.send(msg));
         }
       break;
 

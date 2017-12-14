@@ -55,9 +55,9 @@ int main(int argc, char *argv[]) {
     if (WIFEXITED(status)) {
       const int code = WEXITSTATUS(status);
       if (code == 0) {
-        printf("\n[abstruse_success]: 0\n");
+        printf("\n[success]: 0\n");
       } else {
-        printf("\n[abstruse_error]: %d\n", code);
+        printf("\n[error]: %d\n", code);
       }
 
       return code;

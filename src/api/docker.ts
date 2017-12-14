@@ -99,6 +99,7 @@ export function dockerExec(id: string, cmd: any, env: string[] = []): Observable
       .then(exec => exec.start())
       .then(stream => {
         const ws = new Writable();
+        ws.setDefaultEncoding('utf8');
 
         ws.on('finish', () => {
           const duration = new Date().getTime() - startTime;
@@ -107,20 +108,19 @@ export function dockerExec(id: string, cmd: any, env: string[] = []): Observable
         });
 
         ws._write = (chunk, enc, next) => {
-          let str = chunk.toString();
+          let str = chunk.toString('utf8');
 
-          if (str.includes('[abstruse_error]')) {
+          if (str.includes('[error]')) {
             const splitted = str.split(' ');
-            exitCode = splitted[splitted.length - 1] || 1;
+            exitCode = Number(splitted[splitted.length - 1]) || 1;
             ws.end();
-          } else if (str.includes('[abstruse_success]')) {
+          } else if (str.includes('[success]')) {
             exitCode = 0;
             ws.end();
-          } else if (!str.startsWith('>') && !str.startsWith('abstruse@')) {
+          } else {
             if (str.includes('//') && str.includes('@')) {
               str = str.replace(/\/\/(.*)@/, '//');
             }
-
             observer.next({ type: 'data', data: str });
           }
 
@@ -128,6 +128,7 @@ export function dockerExec(id: string, cmd: any, env: string[] = []): Observable
         };
 
         container.modem.demuxStream(stream.output, ws, ws);
+        stream.output.on('end', () => ws.end());
       })
       .catch(err => observer.error(err));
   });
