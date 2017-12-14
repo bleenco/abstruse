@@ -25,20 +25,15 @@ int main(int argc, char *argv[]) {
   } else {
     close(fd[0]);
 
-    const char * initrc = "source /home/abstruse/init.sh\n";
-    write(fd[1], initrc, strlen(initrc));
-
-    int i;
-    int strsize = 0;
-    for (i = 1; i < argc; i++) {
-      strsize += strlen(argv[1]);
-      if (argc > i + 1) {
-        strsize++;
-      }
+    const char *initsh = "/home/abstruse/init.sh";
+    if (access(initsh, F_OK) != -1) {
+      const char *initrc = "source /home/abstruse/init.sh\n";
+      write(fd[1], initrc, strlen(initrc));
     }
 
-    char * cmdstring;
-    cmdstring = malloc(strsize);
+    int i;
+    char *cmdstring = NULL;
+    cmdstring = malloc(1024);
     cmdstring[0] = '\0';
 
     for (i = 1; i < argc; i++) {
@@ -59,8 +54,14 @@ int main(int argc, char *argv[]) {
 
     if (WIFEXITED(status)) {
       const int code = WEXITSTATUS(status);
+      if (code == 0) {
+        printf("\n[abstruse_success]: 0\n");
+      } else {
+        printf("\n[abstruse_error]: %d\n", code);
+      }
+
       return code;
-    } 
+    }
   }
 }
 

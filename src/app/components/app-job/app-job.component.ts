@@ -96,14 +96,13 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
     this.sub = this.socketService.outputEvents
       .filter(event => event.type === 'process')
-      .filter(event => parseInt(event.job_id, 10) === parseInt(<any>this.id, 10))
+      .filter(event => Number(event.job_id) === Number(this.id))
       .subscribe(event => {
         if (!this.jobRun) {
           return;
         }
 
         if (event.data === 'job started') {
-          this.terminalInput = { clear: true };
           this.jobRun.status = 'running';
           this.jobRun.end_time = null;
           this.jobRun.start_time = event.additionalData;
@@ -111,7 +110,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
           this.jobRun.status = 'success';
           this.jobRun.end_time = event.additionalData;
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
-        } else if (event.data == 'job failed') {
+        } else if (event.data === 'job failed' || event.data === 'job stopped') {
           this.jobRun.status = 'failed';
           this.jobRun.end_time = event.additionalData;
           this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
@@ -189,7 +188,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.sshd = null;
     this.vnc = null;
     this.debug = false;
-    this.terminalInput = { clear: true };
     this.socketService.emit({ type: 'restartJob', data: { jobId: this.id } });
     this.terminalInput = { clear: true };
   }

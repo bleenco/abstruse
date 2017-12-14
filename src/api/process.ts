@@ -83,7 +83,7 @@ export function startBuildProcess(
 
       restoreCache = Observable.concat(...[
         executeOutsideContainer(copyRestoreCmd),
-        docker.attachExec(name, { command: restoreCmd, type: CommandType.restore_cache })
+        docker.dockerExec(name, { command: restoreCmd, type: CommandType.restore_cache })
       ]);
 
       let cacheFolders = proc.cache.map(folder => {
@@ -104,29 +104,28 @@ export function startBuildProcess(
       ].join('');
 
       saveCache = Observable.concat(...[
-        docker.attachExec(name, { command: tarCmd, type: CommandType.store_cache }),
+        docker.dockerExec(name, { command: tarCmd, type: CommandType.store_cache }),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
 
     const sub = docker.createContainer(name, image, envs)
-      .concat(...gitCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...gitCommands.map(cmd => docker.dockerExec(name, cmd)))
       .concat(restoreCache)
-      .concat(...installCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...installCommands.map(cmd => docker.dockerExec(name, cmd)))
       .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...beforeDeployCommands.map(cmd => docker.attachExec(name, cmd)))
-      .concat(...deployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...scriptCommands.map(cmd => docker.dockerExec(name, cmd)))
+      .concat(...beforeDeployCommands.map(cmd => docker.dockerExec(name, cmd)))
+      .concat(...deployCommands.map(cmd => docker.dockerExec(name, cmd)))
       .concat(deploy(deployPreferences, name, envs))
-      .concat(...afterDeployCommands.map(cmd => docker.attachExec(name, cmd)))
+      .concat(...afterDeployCommands.map(cmd => docker.dockerExec(name, cmd)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
         return Observable.throw('job timeout');
       }))
       .subscribe((event: ProcessOutput) => {
         if (event.type === 'containerError') {
-          const msg =
-            chalk.red((event.data.json && event.data.json.message) || event.data);
+          const msg = chalk.red((event.data.json && event.data.json.message) || event.data);
           observer.next({ type: 'exit', data: msg });
           observer.error(msg);
         } else if (event.type === 'containerInfo') {

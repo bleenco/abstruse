@@ -8,7 +8,7 @@ import { join } from 'path';
 import * as temp from 'temp';
 import { abstruse, killAllProcesses } from '../e2e/utils/process';
 import { ImageData } from '../../src/api/image-builder';
-import { createContainer, killContainer, attachExec } from '../../src/api/docker';
+import { createContainer, killContainer } from '../../src/api/docker';
 import * as utils from '../../src/api/utils';
 import { sendGetRequest, sendRequest } from '../helpers/utils';
 import * as dockerode from 'dockerode';
@@ -109,16 +109,6 @@ describe('Deploying with AWS Services', () => {
         expect(outputs[0].data).to.includes('region is not set in environment variables or');
       },
       () => false);
-  });
-
-  it(`should install aws cli in container`, () => {
-    let command = { type: CommandType.deploy, command: 'sudo apt-get install awscli -y' };
-    return attachExec('unit_test_abstruse_container', command)
-      .toPromise()
-      .then(status => {
-        expect(status).to.deep.equals({ type: 'exit', data: 0 });
-      })
-      .catch(err => false);
   });
 
   it(`should return error on calling awsCodeDeploy without region and deploymentGroup data`, () => {
