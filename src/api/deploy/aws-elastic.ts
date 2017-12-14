@@ -1,5 +1,5 @@
 import { Observable, Observer } from 'rxjs';
-import { attachExec } from '../docker';
+import { dockerExec } from '../docker';
 import { CommandType } from '../config';
 import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
@@ -106,7 +106,7 @@ export function elasticDeploy(
       let command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
-      attachExec(container, command)
+      dockerExec(container, command)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -120,7 +120,7 @@ export function elasticDeploy(
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return attachExec(container, command).toPromise();
+          return dockerExec(container, command).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -133,7 +133,7 @@ export function elasticDeploy(
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return attachExec(container, command).toPromise();
+          return dockerExec(container, command).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -160,7 +160,7 @@ export function elasticDeploy(
             };
           }
 
-          return attachExec(container, command).toPromise();
+          return dockerExec(container, command).toPromise();
         })
         .then(() => {
           // 3. check if environment exists
@@ -176,7 +176,7 @@ export function elasticDeploy(
                   + ` --template-name "${environmentTemplate}"`
               };
 
-              return attachExec(container, command)
+              return dockerExec(container, command)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -194,7 +194,7 @@ export function elasticDeploy(
                   + ` --solution-stack-name "${solutionStackName}"`
               };
 
-              return attachExec(container, command)
+              return dockerExec(container, command)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -238,7 +238,7 @@ function environmentExists(container, environment): Promise<any> {
     const getEnvCommand = `aws elasticbeanstalk describe-environments --environment-names`
       + ` "${environment}"`;
     let envExists = false;
-    attachExec(container, { type: CommandType.deploy, command: getEnvCommand })
+    dockerExec(container, { type: CommandType.deploy, command: getEnvCommand })
     .subscribe(event => {
       if (event && event.data) {
         if (String(event.data).indexOf(environment) != -1) {

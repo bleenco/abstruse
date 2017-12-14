@@ -1,5 +1,5 @@
 import { Observable, Observer } from 'rxjs';
-import { attachExec } from '../docker';
+import { dockerExec } from '../docker';
 import { CommandType } from '../config';
 import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
@@ -89,7 +89,7 @@ export function codeDeploy(
       let command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
-      attachExec(container, command)
+      dockerExec(container, command)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -103,7 +103,7 @@ export function codeDeploy(
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return attachExec(container, command).toPromise();
+          return dockerExec(container, command).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -116,7 +116,7 @@ export function codeDeploy(
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return attachExec(container, command).toPromise();
+          return dockerExec(container, command).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -137,7 +137,7 @@ export function codeDeploy(
                   + ` --deployment-group-name ${deployGroup} --service-role-arn ${arn}`
               };
 
-              return attachExec(container, command)
+              return dockerExec(container, command)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -182,7 +182,7 @@ export function codeDeploy(
             return Promise.reject(1);
           }
 
-          return attachExec(container, command)
+          return dockerExec(container, command)
             .toPromise()
             .then(result => {
               if (!(result && result.data === 0)) {
@@ -216,7 +216,7 @@ function depGroupExists(container, application, group): Promise<any> {
     const command = `aws deploy get-deployment-group --application-name ${application}`
       + ` --deployment-group ${group}`;
     let groupExists = false;
-    attachExec(container, { type: CommandType.deploy, command: command})
+    dockerExec(container, { type: CommandType.deploy, command: command})
       .subscribe(event => {
         if (event && event.type && event.type === 'exit') {
           if (event.data === 0) {

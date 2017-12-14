@@ -45,9 +45,7 @@ export function createContainer(
     .then(container => container.start())
     .then(container => container.inspect())
     .then(info => observer.next({ type: 'containerInfo', data: info }))
-    .then(() => {
-      observer.next({ type: 'data', data: 'done.\r\n' });
-    })
+    .then(() => observer.next({ type: 'data', data: 'done.\r\n' }))
     .then(() => observer.complete())
     .catch(err => {
       observer.next({ type: 'data', data: 'error.\r\n' });
@@ -61,7 +59,7 @@ export function startContainer(id: string): Promise<dockerode.Container> {
   return docker.getContainer(id).start();
 }
 
-export function attachExec(id: string, cmd: any): Observable<any> {
+export function dockerExec(id: string, cmd: any, env: string[] = []): Observable<any> {
   return new Observable(observer => {
     const startTime = new Date().getTime();
     let exitCode = 255;
@@ -89,51 +87,49 @@ export function attachExec(id: string, cmd: any): Observable<any> {
     }
 
     const container = docker.getContainer(id);
-    const attachOpts = {
-      stream: true,
-      stdin: true,
-      stdout: true,
-      stderr: true
+    const execOptions = {
+      Cmd: ['/usr/bin/abstruse-pty', cmd.command],
+      Env: env,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true
     };
 
-    container.attach(attachOpts, (err, stream: any) => {
-      if (err) {
-        observer.error(err);
-      }
+    container.exec(execOptions)
+      .then(exec => exec.start())
+      .then(stream => {
+        const ws = new Writable();
 
-      const ws = new Writable();
+        ws.on('finish', () => {
+          const duration = new Date().getTime() - startTime;
+          observer.next({ type: 'exit', data: exitCode });
+          observer.complete();
+        });
 
-      ws.on('finish', () => {
-        const duration = new Date().getTime() - startTime;
-        observer.next({ type: 'exit', data: exitCode });
-        observer.complete();
-      });
+        ws._write = (chunk, enc, next) => {
+          let str = chunk.toString();
 
-      ws._write = (chunk, enc, next) => {
-        let str = chunk.toString();
+          if (str.includes('[abstruse_error]')) {
+            const splitted = str.split(' ');
+            exitCode = splitted[splitted.length - 1] || 1;
+            ws.end();
+          } else if (str.includes('[abstruse_success]')) {
+            exitCode = 0;
+            ws.end();
+          } else if (!str.startsWith('>') && !str.startsWith('abstruse@')) {
+            if (str.includes('//') && str.includes('@')) {
+              str = str.replace(/\/\/(.*)@/, '//');
+            }
 
-        if (str.includes('[error]')) {
-          const splitted = str.split(' ');
-          exitCode = splitted[splitted.length - 1] || 1;
-          ws.end();
-        } else if (str.includes('[success]')) {
-          exitCode = 0;
-          ws.end();
-        } else if (!str.includes('/usr/bin/abstruse') && !str.startsWith('>') &&
-          !str.startsWith('abstruse@')) {
-          if (str.includes('//') && str.includes('@')) {
-            str = str.replace(/\/\/(.*)@/, '//');
+            observer.next({ type: 'data', data: str });
           }
 
-          observer.next({ type: 'data', data: str });
-        }
+          next();
+        };
 
-        next();
-      };
-
-      stream.pipe(ws);
-      stream.write('/usr/bin/abstruse \'' + cmd.command + '\'\r');
-    });
+        container.modem.demuxStream(stream.output, ws, ws);
+      })
+      .catch(err => observer.error(err));
   });
 }
 
