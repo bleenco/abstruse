@@ -190,7 +190,9 @@
                   <i class="ionicon ion-refresh"></i>
                 </span>
                 <span class="icon circle" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing" [class.is-hidden]="job?.status === 'success' || job?.status === 'failed'">
-                  <i class="ionicon ion-stop"></i>
+                  <i class="icon">
+                    <img src="/images/icons/stop.svg">
+                  </i>
                 </span>
               </div>
             </div>
