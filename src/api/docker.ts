@@ -5,6 +5,7 @@ import * as dockerode from 'dockerode';
 import { Writable } from 'stream';
 import { CommandType } from './config';
 import { ProcessOutput } from './process';
+import * as envVars from './env-variables';
 import chalk from 'chalk';
 import * as style from 'ansi-styles';
 
@@ -59,9 +60,8 @@ export function startContainer(id: string): Promise<dockerode.Container> {
   return docker.getContainer(id).start();
 }
 
-export function dockerExec(id: string, cmd: any, env: string[] = []): Observable<any> {
+export function dockerExec(id: string, cmd: any, env: envVars.EnvVariables = {}): Observable<any> {
   return new Observable(observer => {
-    const startTime = new Date().getTime();
     let exitCode = 255;
     let command;
 
@@ -89,7 +89,7 @@ export function dockerExec(id: string, cmd: any, env: string[] = []): Observable
     const container = docker.getContainer(id);
     const execOptions = {
       Cmd: ['/usr/bin/abstruse-pty', cmd.command],
-      Env: env,
+      Env: envVars.serialize(env),
       AttachStdout: true,
       AttachStderr: true,
       Tty: true
@@ -102,7 +102,11 @@ export function dockerExec(id: string, cmd: any, env: string[] = []): Observable
         ws.setDefaultEncoding('utf8');
 
         ws.on('finish', () => {
-          const duration = new Date().getTime() - startTime;
+          if (cmd.type === CommandType.script) {
+            envVars.set(env, 'ABSTRUSE_TEST_RESULT', exitCode);
+          }
+
+          observer.next({ type: 'env', data: env });
           observer.next({ type: 'exit', data: exitCode });
           observer.complete();
         });
