@@ -1,3 +1,21 @@
+<a name="1.4.3"></a>
+## [1.4.3](https://github.com/bleenco/abstruse/compare/v1.4.2...v1.4.3) (2017-12-16)
+
+
+### Bug Fixes
+
+* **console:** add safety to check job id before output to console ([92a393b](https://github.com/bleenco/abstruse/commit/92a393b))
+* **deploy:** enable custom deploy or with predefined deploy providers (closes [#304](https://github.com/bleenco/abstruse/issues/304)) ([a0225bc](https://github.com/bleenco/abstruse/commit/a0225bc))
+* **stats:** unsubscribe from stats subscription when leaving dashboard ([4b73041](https://github.com/bleenco/abstruse/commit/4b73041))
+
+
+### Features
+
+* **deploy:** support for deploy to AWS Elastic Beanstalk ([4913c2c](https://github.com/bleenco/abstruse/commit/4913c2c))
+* **envs:** add abstruse defined ENV variables (closes [#311](https://github.com/bleenco/abstruse/issues/311)) ([717d78b](https://github.com/bleenco/abstruse/commit/717d78b))
+
+
+
 <a name="1.4.2"></a>
 ## [1.4.2](https://github.com/bleenco/abstruse/compare/v1.4.1...v1.4.2) (2017-12-11)
 
