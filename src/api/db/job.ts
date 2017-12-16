@@ -11,8 +11,7 @@ export function getJob(jobId: number, userId?: number): Promise<any> {
           .andWhere('permissions.permission', true)
           .orWhere('public', true);
         }
-      }},
-      'runs']})
+      }}, 'runs']})
       .then(job => {
         if (!job) {
           reject();

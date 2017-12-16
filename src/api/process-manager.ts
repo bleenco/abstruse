@@ -40,6 +40,7 @@ export interface JobProcess {
   status?: 'queued' | 'running' | 'cancelled' | 'errored' | 'success';
   image_name?: string;
   log?: string;
+  requestData: any;
   commands?: { command: string, type: CommandType }[];
   cache?: string[];
   repo_name?: string;
@@ -564,14 +565,19 @@ export function stopBuild(buildId: number): Promise<any> {
 
 function queueJob(jobId: number): Promise<void> {
   let job = null;
+  let requestData = null;
+
   return dbJob.getJob(jobId)
     .then(jobData => job = jobData)
+    .then(() => getBuild(job.builds_id))
+    .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
     .then(() => {
       const data = JSON.parse(job.data);
       const jobProcess: JobProcess = {
         build_id: job.builds_id,
         job_id: jobId,
         status: 'queued',
+        requestData: requestData,
         commands: data.commands,
         cache: data.cache || null,
         repo_name: job.build.repository.full_name || null,
