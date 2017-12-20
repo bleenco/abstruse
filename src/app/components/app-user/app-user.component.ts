@@ -147,6 +147,14 @@ export class AppUserComponent implements OnInit {
     });
   }
 
+  removeToken(id: number): void {
+    this.api.removeToken(id).subscribe(event => {
+      if (event) {
+        this.fetchUser();
+      }
+    });
+  }
+
   gotoRepository(e: MouseEvent, id: number): void {
     e.preventDefault();
     e.stopPropagation();

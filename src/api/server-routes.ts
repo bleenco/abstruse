@@ -29,7 +29,7 @@ import {
 import { getBuilds, getBuild } from './db/build';
 import { getJob } from './db/job';
 import { getJobRuns, getJobRunsBetween } from './db/job-run';
-import { insertAccessToken, getAccessTokens } from './db/access-token';
+import { insertAccessToken, getAccessTokens, removeAccessToken } from './db/access-token';
 import {
   updatePermission,
   getUserRepositoryPermissions,
@@ -218,6 +218,15 @@ export function userRoutes(): express.Router {
     checkApiRequestAuth(req)
       .then(() => {
         insertAccessToken(req.body)
+          .then(() => res.status(200).json({ data: true }))
+          .catch(() => res.status(200).json({ data: false }));
+      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+  });
+
+  router.get('/remove-token/:id', (req: express.Request, res: express.Response) => {
+    checkApiRequestAuth(req)
+      .then(() => {
+        removeAccessToken(req.params.id)
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
       }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
