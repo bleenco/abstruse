@@ -136,7 +136,7 @@
                       <span>{{ token.created_at | date:'medium' }}</span>
                     </div>
                     <div class="column is-1 justify-center">
-                      <i class="ionicon ion-close pointer"></i>
+                      <i class="ionicon ion-close pointer" name="btn-removeToken" (click)="removeToken(token.id)"></i>
                     </div>
                   </div>
                 </div>

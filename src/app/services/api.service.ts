@@ -119,6 +119,10 @@ export class ApiService {
     return this.post(`${this.url}/user/add-token`, data, true);
   }
 
+  removeToken(id: number): Observable<any> {
+    return this.get(`${this.url}/user/remove-token/${id}`, null, true);
+  }
+
   getUsers(): Observable<any> {
     return this.get(`${this.url}/user`, null, true);
   }

@@ -25,3 +25,11 @@ export function insertAccessToken(data: any): Promise<any> {
       .then(token => !token ? reject(token) : resolve(token.toJSON()));
   });
 }
+
+export function removeAccessToken(id: number): Promise<any> {
+  return new Promise((resolve, reject) => {
+    new AccessToken({ id: id }).destroy()
+      .then(() => resolve(true))
+      .catch(() => reject());
+  });
+}
