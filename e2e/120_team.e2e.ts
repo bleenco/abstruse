@@ -265,7 +265,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equal(1));
   });
 
-  xit(`non admin user can remove his access token`, () => {
+  it(`non admin user can remove his access token`, () => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -273,7 +273,8 @@ describe('Teams', () => {
       .then((): any => element(by.css('[name="tab-tokens"]')).click())
       .then(() => element.all(by.css('.access-token-item')).count())
       .then(cnt => expect(cnt).to.equal(1))
-      .then((): any => element.all(by.css('.ion-close')).first().click())
+      .then((): any => element.all(by.css('[name="btn-removeToken"]')).first().click())
+      .then(() => delay(100))
       .then(() => element.all(by.css('.access-token-item')).count())
       .then(cnt => expect(cnt).to.equal(0));
   });

@@ -15,6 +15,23 @@ describe('Images', () => {
     return  browser.get('/images')
       .then(() => element.all(by.css('.image-item')).count())
       .then(cnt => expect(cnt).to.equals(0))
+      .then(() => element.all(by.css('.base-image-item')).count())
+      .then(cnt => {
+        if (cnt > 0) {
+          Promise.resolve();
+        } else {
+          return browser.wait(() => element(by.css(`[name="tab-build-image"]`)).isPresent())
+            .then((): any => element(by.css('[name="tab-build-image"]')).click())
+            .then((): any => browser.wait(() => {
+              return element(by.css(`[name="build-image-btn"]`)).isPresent();
+            }))
+            .then((): any => browser.wait(() => {
+              return element(by.css(`[name="build-image-btn"]`)).isEnabled();
+            }))
+            .then(() => element.all(by.css(`[name="build-image-btn"]`)).first().click());
+        }
+      })
+      .then(() => delay(5000))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.base-image-item')).count()
           .then(cnt => cnt === 1));
@@ -74,7 +91,7 @@ describe('Images', () => {
       .then(txt => expect(txt).to.equals('FROM test-protractor-base-image'));
   });
 
-  xit('should delete last base image and see only one base image', () => {
+  it('should try to delete last base image and cancel it at last warning', () => {
     return  browser.get('/images')
       .then((): any => {
         return browser.wait(() => element.all(by.css('.base-image-item')).count()
@@ -84,16 +101,16 @@ describe('Images', () => {
       .then(() => browser.wait(() => element(by.css('.ion-close')).isDisplayed()))
       .then(() => element(by.css('.ion-close')).click())
       .then(() => element.all(by.css('.ion-close')).count())
-      .then(cnt => expect(cnt).to.equals(3))
+      .then(cnt => expect(cnt).to.equals(4))
       .then(() => browser.wait(() => element(by.css('.ion-checkmark')).isPresent()))
       .then(() => browser.wait(() => element(by.css('.ion-checkmark')).isDisplayed()))
-      .then(() => element(by.css('.ion-checkmark')).click())
+      .then(() => element.all(by.css('.ion-close')).first().click())
       .then(() => delay(500))
       .then((): any => {
         return browser.wait(() => element.all(by.css('.base-image-item')).count()
-          .then(cnt => cnt === 1));
+          .then(cnt => cnt === 2));
       })
       .then(() => element.all(by.css('.ion-close')).count())
-      .then(cnt => expect(cnt).to.equals(0));
+      .then(cnt => expect(cnt).to.equals(3));
   });
 });
