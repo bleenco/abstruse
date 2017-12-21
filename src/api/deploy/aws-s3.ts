@@ -4,9 +4,10 @@ import { CommandType } from '../config';
 import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
 import chalk from 'chalk';
+import * as envVars from '../env-variables';
 
 export function s3Deploy(
-  preferences: any, container: string, variables: string[]
+  preferences: any, container: string, variables: envVars.EnvVariables
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
 
@@ -75,7 +76,7 @@ export function s3Deploy(
         }
 
         return Observable
-          .concat(...commands.map(command => dockerExec(container, command)))
+          .concat(...commands.map(command => dockerExec(container, command, variables)))
           .toPromise();
       })
       .then(result => {
@@ -90,7 +91,7 @@ export function s3Deploy(
           type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
         };
 
-        return dockerExec(container, command).toPromise();
+        return dockerExec(container, command, variables).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -104,7 +105,7 @@ export function s3Deploy(
           command: `aws configure set aws_secret_access_key ${secretAccessKey}`
         };
 
-        return dockerExec(container, command).toPromise();
+        return dockerExec(container, command, variables).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -117,7 +118,7 @@ export function s3Deploy(
           type: CommandType.deploy, command: `aws configure set region ${region}`
         };
 
-        return dockerExec(container, command).toPromise();
+        return dockerExec(container, command, variables).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -140,7 +141,7 @@ export function s3Deploy(
         }
 
         return Observable
-          .concat(...application.map(command => dockerExec(container, command)))
+          .concat(...application.map(command => dockerExec(container, command, variables)))
           .toPromise();
       })
       .then(result => {
@@ -158,7 +159,7 @@ export function s3Deploy(
             + ` --s3-location s3://${preferences.bucket}/${zipName}.zip`
         };
 
-        return dockerExec(container, deploy).toPromise();
+        return dockerExec(container, deploy, variables).toPromise();
       })
       .then(result => {
         if (!(result && result.data === 0)) {
@@ -183,7 +184,7 @@ export function s3Deploy(
   });
 }
 
-function appSpecExists(container): Promise<any> {
+function appSpecExists(container: string): Promise<any> {
   return new Promise((resolve, reject) => {
     let appSpec = false;
     dockerExec(container, { type: CommandType.deploy, command: 'ls'})
@@ -199,7 +200,7 @@ function appSpecExists(container): Promise<any> {
   });
 }
 
-function applicationExists(container, application): Promise<any> {
+function applicationExists(container: string, application: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const getApplicationCommand = 'aws deploy list-applications';
     let appExists = false;

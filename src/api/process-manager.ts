@@ -20,6 +20,7 @@ import { getHttpJsonResponse, getBitBucketAccessToken } from './utils';
 import { getConfig } from './setup';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 import { decrypt } from './security';
+import * as envVars from './env-variables';
 
 export interface BuildMessage {
   type: string;
@@ -118,18 +119,24 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
   return new Observable(observer => {
     getRepositoryByBuildId(proc.build_id)
       .then(repository => {
-        const envVariables: string[] = repository.variables.map(v => {
+        let envs = envVars.generate(proc);
+        let secureVarirables = false;
+        repository.variables.forEach(v => {
           if (!!v.encrypted) {
-            return `${v.name}=${decrypt(v.value)}`;
+            secureVarirables = true;
+            envVars.set(envs, v.name, decrypt(v.value), true);
           } else {
-            return `${v.name}=${v.value}`;
+            envVars.set(envs, v.name, v.value);
           }
         });
+
+        envVars.set(envs, 'ABSTRUSE_SECURE_ENV_VARS', secureVarirables);
 
         const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
         const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 
-        buildSub[proc.job_id] = startBuildProcess(proc, envVariables, jobTimeout, idleTimeout)
+        buildSub[proc.job_id] =
+          startBuildProcess(proc, envs, jobTimeout, idleTimeout)
           .subscribe(event => {
             const msg: JobProcessEvent = {
               build_id: proc.build_id,

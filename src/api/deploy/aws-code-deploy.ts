@@ -5,9 +5,10 @@ import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
 import { error } from 'util';
 import chalk from 'chalk';
+import * as envVars from '../env-variables';
 
 export function codeDeploy(
-  preferences: any, container: string, variables: string[]
+  preferences: any, container: string, variables: envVars.EnvVariables
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
 
@@ -89,7 +90,7 @@ export function codeDeploy(
       let command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
-      dockerExec(container, command)
+      dockerExec(container, command, variables)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -103,7 +104,7 @@ export function codeDeploy(
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return dockerExec(container, command).toPromise();
+          return dockerExec(container, command, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -116,7 +117,7 @@ export function codeDeploy(
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return dockerExec(container, command).toPromise();
+          return dockerExec(container, command, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
@@ -137,7 +138,7 @@ export function codeDeploy(
                   + ` --deployment-group-name ${deployGroup} --service-role-arn ${arn}`
               };
 
-              return dockerExec(container, command)
+              return dockerExec(container, command, variables)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
@@ -182,7 +183,7 @@ export function codeDeploy(
             return Promise.reject(1);
           }
 
-          return dockerExec(container, command)
+          return dockerExec(container, command, variables)
             .toPromise()
             .then(result => {
               if (!(result && result.data === 0)) {
@@ -211,7 +212,7 @@ export function codeDeploy(
   });
 }
 
-function depGroupExists(container, application, group): Promise<any> {
+function depGroupExists(container: string, application: string, group: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const command = `aws deploy get-deployment-group --application-name ${application}`
       + ` --deployment-group ${group}`;

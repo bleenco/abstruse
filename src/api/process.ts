@@ -33,7 +33,7 @@ export interface ProcessOutput {
 
 export function startBuildProcess(
   proc: JobProcess,
-  variables: string[],
+  envs: envVars.EnvVariables,
   jobTimeout: number,
   idleTimeout: number
 ): Observable<ProcessOutput> {
@@ -41,15 +41,17 @@ export function startBuildProcess(
     const image = proc.image_name;
     const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
 
-    let envs = envVars.generate(proc);
-    const initEnvs = proc.commands.filter(cmd => {
-        return typeof cmd.command === 'string' && cmd.command.startsWith('export');
-      })
+    proc.commands
+      .filter(cmd => typeof cmd.command === 'string' && cmd.command.startsWith('export'))
       .map(cmd => cmd.command.replace('export', ''))
       .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
       .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
-      .concat(variables)
-      .filter(Boolean);
+      .forEach(env => {
+        const splitted = env.split('=');
+        if (splitted.length > 1) {
+          envVars.set(envs, splitted[0], splitted[1]);
+        }
+      });
 
     const gitTypes = [CommandType.git];
     const installTypes = [CommandType.before_install, CommandType.install];
@@ -88,7 +90,8 @@ export function startBuildProcess(
 
       restoreCache = Observable.concat(...[
         executeOutsideContainer(copyRestoreCmd),
-        docker.dockerExec(name, { command: restoreCmd, type: CommandType.restore_cache, env: envs })
+        docker.dockerExec(
+          name, { command: restoreCmd, type: CommandType.restore_cache, env: envs })
       ]);
 
       let cacheFolders = proc.cache.map(folder => {
@@ -109,12 +112,14 @@ export function startBuildProcess(
       ].join('');
 
       saveCache = Observable.concat(...[
-        docker.dockerExec(name, { command: tarCmd, type: CommandType.store_cache, env: envs }),
+        docker.dockerExec(
+          name, { command: tarCmd, type: CommandType.store_cache, env: envs }),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
 
-    const sub = docker.createContainer(name, image, initEnvs)
+    const sub = docker.createContainer(name, image, envs)
+      .concat(docker.dockerPwd(name, envs))
       .concat(...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .concat(restoreCache)
       .concat(...installCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
@@ -122,7 +127,7 @@ export function startBuildProcess(
       .concat(...scriptCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .concat(...beforeDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .concat(...deployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(deploy(deployPreferences, name, initEnvs))
+      .concat(deploy(deployPreferences, name, envs))
       .concat(...afterDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
       .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {

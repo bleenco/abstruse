@@ -14,7 +14,7 @@ export const docker = new dockerode();
 export function createContainer(
   name: string,
   image: string,
-  envs: string[]
+  envs: envVars.EnvVariables
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     docker.createContainer({
@@ -23,7 +23,7 @@ export function createContainer(
       Tty: true,
       OpenStdin: true,
       StdinOnce: false,
-      Env: envs || [],
+      Env: envVars.serialize(envs) || [],
       Binds: ['/var/run/docker.sock:/var/run/docker.sock'],
       Privileged: true,
       ExposedPorts: {
@@ -60,7 +60,9 @@ export function startContainer(id: string): Promise<dockerode.Container> {
   return docker.getContainer(id).start();
 }
 
-export function dockerExec(id: string, cmd: any, env: envVars.EnvVariables = {}): Observable<any> {
+export function dockerExec(
+  id: string, cmd: any, env: envVars.EnvVariables = {}
+): Observable<any> {
   return new Observable(observer => {
     let exitCode = 255;
     let command;
@@ -125,6 +127,13 @@ export function dockerExec(id: string, cmd: any, env: envVars.EnvVariables = {})
             if (str.includes('//') && str.includes('@')) {
               str = str.replace(/\/\/(.*)@/, '//');
             }
+
+            const variable =
+              Object.keys(env).find(k => env[k].secure && str.indexOf(env[k].value) >= 0);
+            if (typeof variable !== 'undefined') {
+              str = str.replace(env[variable].value, '******');
+            }
+
             observer.next({ type: 'data', data: str });
           }
 
@@ -135,6 +144,22 @@ export function dockerExec(id: string, cmd: any, env: envVars.EnvVariables = {})
         stream.output.on('end', () => ws.end());
       })
       .catch(err => observer.error(err));
+  });
+}
+
+export function dockerPwd(id: string, env: envVars.EnvVariables): Observable<ProcessOutput> {
+  return new Observable(observer => {
+    dockerExec(id, { type: CommandType.before_install, command: 'pwd'}, env)
+      .subscribe(event => {
+        if (event && event.data && event.type === 'data') {
+          envVars.set(env, 'ABSTRUSE_BUILD_DIR', event.data.replace('\r\n', ''));
+        }
+      },
+      err => observer.error(err),
+      () => {
+        observer.next({ type: 'env', data: env });
+        observer.complete();
+      });
   });
 }
 
