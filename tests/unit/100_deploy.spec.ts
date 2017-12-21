@@ -50,24 +50,26 @@ describe('Deploying with AWS Services', () => {
   });
 
   it(`should return null when there is no variables`, () => {
-    let result = findFromEnvVariables([], '');
+    let result = findFromEnvVariables({}, '');
     expect(result).to.equals(null);
   });
 
   it(`should return null when variables doesn't exists`, () => {
-    let result = findFromEnvVariables(['secretAccessKey=1feges2'], 'accessKey');
+    let result =
+      findFromEnvVariables({'secretAccessKey': { value: '1feges2', secure: false }}, 'accessKey');
     expect(result).to.equals(null);
   });
 
   it(`should return value when variable exists`, () => {
-    let result = findFromEnvVariables(['accessKey=1feges2'], 'accessKey');
+    let result =
+      findFromEnvVariables({'accessKey': { value: '1feges2', secure: false }}, 'accessKey');
     expect(result).to.equals('1feges2');
   });
 
   it(`should return unsupported provider on calling deploy on azure`, () => {
     let preferences = { provider: 'azure' };
 
-    return deploy(preferences, 'unit_test_abstruse_container', [])
+    return deploy(preferences, 'unit_test_abstruse_container', {})
       .subscribe(status => {},
       err => {
         expect(err).to.deep.equals({
@@ -82,7 +84,7 @@ describe('Deploying with AWS Services', () => {
     let preferences = { provider: 's3', bucket: 'test' };
     let outputs = [];
 
-    return deploy(preferences, 'unit_test_abstruse_container', [])
+    return deploy(preferences, 'unit_test_abstruse_container', {})
       .subscribe(status => {
         outputs.push(status);
       },
@@ -97,7 +99,10 @@ describe('Deploying with AWS Services', () => {
 
   it(`should return error on calling s3 deploy without region data`, () => {
     let preferences = { provider: 's3', bucket: 'test' };
-    let variables = ['accessKeyId=2fwfwa21gmoescfge', 'secretAccessKey=test'];
+    let variables = {
+      'accessKeyId': { value: '2fwfwa21gmoescfge', secure: false },
+      'secretAccessKey': { value: 'test', secure: false }
+    };
     let outputs = [];
 
     return s3Deploy(preferences, 'unit_test_abstruse_container', variables)
@@ -113,7 +118,10 @@ describe('Deploying with AWS Services', () => {
 
   it(`should return error on calling awsCodeDeploy without region and deploymentGroup data`, () => {
     let preferences = { provider: 'codeDeploy', application: 'test' };
-    let variables = ['accessKeyId=2fwfwa21gmoescfge', 'secretAccessKey=test'];
+    let variables = {
+      'accessKeyId': { value: '2fwfwa21gmoescfge', secure: false },
+      'secretAccessKey': { value: 'test', secure: false }
+    };
     let outputs = [];
 
     return codeDeploy(preferences, 'unit_test_abstruse_container', variables)
@@ -130,7 +138,11 @@ describe('Deploying with AWS Services', () => {
 
   it(`should return error on calling awsElastic without application and environment data`, () => {
     let preferences = { provider: 'elastic' };
-    let variables = ['accessKeyId=2fwfwa21gmoescfge', 'secretAccessKey=test', 'region=test'];
+    let variables = {
+      'accessKeyId': { value: '2fwfwa21gmoescfge', secure: true },
+      'secretAccessKey': { value: 'test', secure: false },
+      'region': { value: 'test', secure: false }
+    };
     let outputs = [];
 
     return elasticDeploy(preferences, 'unit_test_abstruse_container', variables)
