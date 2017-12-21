@@ -43,7 +43,18 @@ export function buildDockerImage(data: ImageData): void {
     docker.buildImage({ context: folderPath, src: src }, { t: data.name })
       .then(output => {
         output.on('data', d => {
-          imageBuilder.next({ name: data.name, output: d.toString() });
+          const output = d.toString();
+          const parsed = JSON.parse(output);
+
+          if (parsed && parsed.errorDetail) {
+            const error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';
+            imageBuilder.next({
+              name: data.name,
+              output: `error while building image ${data.name} ${error}`
+            });
+          } else {
+            imageBuilder.next({ name: data.name, output: output });
+          }
         });
         output.on('finish', () => {
           msg = {
@@ -59,6 +70,7 @@ export function buildDockerImage(data: ImageData): void {
             type: 'error',
             notify: true
           };
+          imageBuilder.next({ name: data.name, output: msg.message });
           logger.next(msg);
         });
         output.on('end', () => {
@@ -77,6 +89,7 @@ export function buildDockerImage(data: ImageData): void {
           notify: true
         };
         logger.next(msg);
+        imageBuilder.next({ name: data.name, output: msg.message });
       });
   });
 }
