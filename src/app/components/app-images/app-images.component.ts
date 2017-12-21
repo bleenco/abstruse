@@ -39,6 +39,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   tab: string;
   sub: Subscription;
   approve: boolean;
+  buildingError: string;
   terminalOptions:  { size: 'small' | 'large', newline: boolean };
   terminalInput: any;
   baseImageOptions: { key: any, value: string }[];
@@ -53,6 +54,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   ) {
     this.baseImages = [];
     this.baseImage = '';
+    this.buildingError = '';
     this.customImages = [];
     this.baseImageOptions = [];
     this.dangerousCommands = [];
@@ -135,7 +137,10 @@ export class AppImagesComponent implements OnInit, OnDestroy {
             this.zone.run(() => this.terminalInput = output.stream);
           }
         } else if (output && output.errorDetail) {
-          this.zone.run(() => this.terminalInput = `<span style="color:rgb(255,85,85);">${output.errorDetail.message}</span>`);
+          this.zone.run(() => this.terminalInput = output.errorDetail.message);
+        } else if (event.data.output && event.data.output.startsWith('error while building image')) {
+          this.building = false;
+          this.buildingError = event.data.output;
         }
       });
 
@@ -144,6 +149,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   resetForm(imageType: boolean): void {
+    this.buildingError = '';
     this.editingImage = false;
 
     if (imageType) {
@@ -257,6 +263,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
       this.form.initsh = this.customImages[index].initsh;
     }
     this.form.base = base;
+    this.buildingError = '';
   }
 
   fetchImages(): void {
@@ -325,6 +332,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   }
 
   buildImage(): void {
+    this.buildingError = '';
     if (this.checkImage()) {
       this.approve = true;
       window.scrollTo(0, 0);

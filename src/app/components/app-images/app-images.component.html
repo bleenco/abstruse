@@ -159,6 +159,14 @@
                     </div>
                   </div>
                 </div>
+                <div class="columns is-multiline error-item" *ngIf="buildingError">
+                  <div class="column is-12">
+                    Error (check your build configurations):
+                  </div>
+                  <div class="column is-12">
+                    {{buildingError}}
+                  </div>
+                </div>
                 <h2>Image name</h2>
                 <input type="text" class="image-name-input" [(ngModel)]="form.name" placeholder="Image Name">
                 <div class="columns is-multiline" *ngIf="baseImages?.length && !editingImage">
