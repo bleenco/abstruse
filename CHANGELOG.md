@@ -1,3 +1,17 @@
+<a name="1.4.4"></a>
+## [1.4.4](https://github.com/bleenco/abstruse/compare/v1.4.3...v1.4.4) (2017-12-21)
+
+
+### Bug Fixes
+
+* **images:** keep image configurations if build fails (closes [#316](https://github.com/bleenco/abstruse/issues/316)) ([fb8e0cc](https://github.com/bleenco/abstruse/commit/fb8e0cc))
+* **tests:** fix docker images protractor tests (closes [#319](https://github.com/bleenco/abstruse/issues/319)) ([e8b7d51](https://github.com/bleenco/abstruse/commit/e8b7d51))
+* **tests:** fix images unit tests ([9ef5544](https://github.com/bleenco/abstruse/commit/9ef5544))
+* **tokens:** remove access token ([86cd34a](https://github.com/bleenco/abstruse/commit/86cd34a))
+* **variables:** hide sensitive data from terminal output (closes [#301](https://github.com/bleenco/abstruse/issues/301)) ([6cb71d9](https://github.com/bleenco/abstruse/commit/6cb71d9))
+
+
+
 <a name="1.4.3"></a>
 ## [1.4.3](https://github.com/bleenco/abstruse/compare/v1.4.2...v1.4.3) (2017-12-16)
 
