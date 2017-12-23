@@ -44,7 +44,11 @@ export function buildDockerImage(data: ImageData): void {
       .then(output => {
         output.on('data', d => {
           const output = d.toString();
-          const parsed = JSON.parse(output);
+          let parsed = null;
+
+          try {
+            parsed = JSON.parse(output);
+          } catch (e) { }
 
           if (parsed && parsed.errorDetail) {
             const error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';

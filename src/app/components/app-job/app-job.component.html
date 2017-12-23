@@ -169,7 +169,13 @@
             </div>
           </div>
           <div class="column is-12">
-            <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+            <div class="terminal-container">
+              <app-terminal [data]="terminalInput" (outputData)="terminalOutput($event)" [options]="terminalOptions"></app-terminal>
+              <a class="view-raw-log" *ngIf="jobRun?.status !== 'running'" [href]="'/api/jobs/' + job?.id + '/log'" target="_blank">
+                <i class="ionicon ion-document-text"></i>
+                View Raw Log
+              </a>
+            </div>
           </div>
         </div>
       </div>

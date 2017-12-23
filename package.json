@@ -164,6 +164,7 @@
     "sass-loader": "^6.0.6",
     "shebang": "0.0.1",
     "source-map-loader": "^0.2.3",
+    "strip-ansi": "^4.0.0",
     "style-loader": "^0.19.0",
     "temp": "^0.8.3",
     "to-string-loader": "^1.1.5",
