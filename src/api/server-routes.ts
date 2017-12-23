@@ -27,7 +27,7 @@ import {
   saveRepositorySettings
 } from './db/repository';
 import { getBuilds, getBuild } from './db/build';
-import { getJob } from './db/job';
+import { getJob, getLastRun } from './db/job';
 import { getJobRuns, getJobRunsBetween } from './db/job-run';
 import { insertAccessToken, getAccessTokens, removeAccessToken } from './db/access-token';
 import {
@@ -59,6 +59,7 @@ import {
 } from './setup';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
+import * as stripAnsi from 'strip-ansi';
 
 const config: any = getConfig();
 
@@ -130,18 +131,23 @@ export function buildRoutes(): express.Router {
 export function jobRoutes(): express.Router {
   const router = express.Router();
 
+  router.get('/:id/log', (req: express.Request, res: express.Response) => {
+    getLastRun(req.params.id).then(jobRun => {
+      if (jobRun && jobRun.log) {
+        const log = stripAnsi(jobRun.log.replace(/\r\n/g, '<br/>'));
+        return res.status(200).type('html').send(log);
+      } else {
+        return res.status(404).json({ data: 'not found' });
+      }
+    })
+    .catch(err => res.status(200).json({ err: err }));
+  });
+
   router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
-    if (req.params.userid) {
-      getJob(req.params.id, req.params.userid).then(job => {
-        return res.status(200).json({ data: job });
-      })
-      .catch(err => res.status(200).json({ err: err }));
-    } else {
-      getJob(req.params.id, req.params.userid).then(job => {
-        return res.status(200).json({ data: job });
-      })
-      .catch(err => res.status(200).json({ err: err }));
-    }
+    getJob(req.params.id, req.params.userid).then(job => {
+      return res.status(200).json({ data: job });
+    })
+    .catch(err => res.status(200).json({ err: err }));
   });
 
   return router;
