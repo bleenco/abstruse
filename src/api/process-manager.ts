@@ -50,6 +50,7 @@ export interface JobProcess {
   job?: Observable<any>;
   exposed_ports?: string;
   debug?: boolean;
+  allow_failure?: boolean;
 }
 
 export interface JobProcessEvent {
@@ -240,8 +241,14 @@ export function restartJob(jobId: number): Promise<void> {
         additionalData: time.getTime()
       });
     })
-    .then(() => getBuild(job.builds_id))
-    .then(build => sendPendingStatus(build, build.id))
+    .then(() => {
+      if (job.data && !JSON.parse(job.data).allow_failure) {
+        return getBuild(job.builds_id)
+          .then(build => sendPendingStatus(build, build.id));
+      } else {
+        Promise.resolve();
+      }
+    })
     .catch(err => {
       const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
@@ -708,15 +715,33 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
         })
         .then(build => updateBuild({ id: proc.build_id, end_time: time }))
         .then(id => updateBuildRun({ id: id, end_time: time }))
-        .then(() => getBuild(proc.build_id))
-        .then(build => sendFailureStatus(build, build.id))
-        .then(() => {
-          jobEvents.next({
-            type: 'process',
-            build_id: proc.build_id,
-            data: 'build failed',
-            additionalData: time.getTime()
-          });
+        .then(() => getBuildStatus(proc.build_id))
+        .then(status => {
+          if (status === 'success') {
+            return getBuild(proc.build_id)
+              .then(build => sendSuccessStatus(build, build.id))
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  data: 'build succeeded',
+                  additionalData: time.getTime()
+                });
+              });
+          } else if (status === 'failed') {
+            return getBuild(proc.build_id)
+              .then(build => sendFailureStatus(build, build.id))
+              .then(() => {
+                jobEvents.next({
+                  type: 'process',
+                  build_id: proc.build_id,
+                  data: 'build failed',
+                  additionalData: time.getTime()
+                });
+              });
+          } else {
+            Promise.resolve();
+          }
         })
         .then(() => {
           jobEvents.next({

@@ -194,19 +194,31 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     let favicon = 'images/favicon-queued.png';
 
     if (this.build && this.build.jobs) {
-      if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+      status = 'success';
+      favicon = 'images/favicon.png';
+
+      let index = this.build.jobs.findIndex(job => {
+        return job.status === 'queued' && job.data && !job.data.allow_failure;
+      });
+      if (index !== -1) {
+        status = 'queued';
+        favicon = 'images/favicon-queued.png';
+      }
+
+      index = this.build.jobs.findIndex(job => {
+        return job.status === 'failed' && job.data && !job.data.allow_failure;
+      });
+      if (index !== -1) {
         status = 'failed';
         favicon = 'images/favicon-error.png';
       }
 
-      if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
+      index = this.build.jobs.findIndex(job => {
+        return job.status === 'running' && job.data && !job.data.allow_failure;
+      });
+      if (index !== -1) {
         status = 'running';
         favicon = 'images/favicon-running.png';
-      }
-
-      if (this.build.jobs.length === this.build.jobs.filter(j => j.status === 'success').length) {
-        status = 'success';
-        favicon = 'images/favicon.png';
       }
     }
 
