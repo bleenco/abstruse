@@ -119,10 +119,8 @@ export function dockerExec(
           if (str.includes('[error]')) {
             const splitted = str.split(' ');
             exitCode = Number(splitted[splitted.length - 1]) || 1;
-            ws.end();
           } else if (str.includes('[success]')) {
             exitCode = 0;
-            ws.end();
           } else {
             if (str.includes('//') && str.includes('@')) {
               str = str.replace(/\/\/(.*)@/, '//');
