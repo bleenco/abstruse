@@ -52,6 +52,10 @@ For more details on benchmarking visit our [benchmarking section](docs/BENCHMARK
 * [Installation](docs/INSTALLATION.md)
 * [Integrating Git Providers](docs/INTEGRATING_GIT_PROVIDERS.md)
 
+## Working with us
+
+We would love to receive community support. Whether fixing bugs or creating new features - we would appreciate it! Please read our [guideline](CONTRIBUTION.md) for contribution and don't forget to check our [issues list](https://github.com/bleenco/abstruse/issues).
+
 ## License
 
 The MIT License
