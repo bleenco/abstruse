@@ -18,7 +18,8 @@ export class AppTerminalComponent implements OnInit {
     let xterm: any = <any>xterminal;
     xterm.loadAddon('fit');
     this.term = new xterm({
-      cols: 120
+      cols: 120,
+      scrollback: 100000
     });
   }
 
