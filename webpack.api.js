@@ -23,7 +23,18 @@ module.exports = {
       { test: /\.ts$/, loaders: ['ts-loader?silent=true'] },
     ]
   },
-  stats: 'errors-only',
+  stats: { 
+    assets: false,
+    chunks: false,
+    chunkModules: false,
+    colors: true,
+    timings: true,
+    children: false,
+    cachedAssets: false,
+    chunkOrigins: false,
+    modules: false,
+    warnings: false
+  },
   node: {
     console: false,
     global: false,

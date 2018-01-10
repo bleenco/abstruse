@@ -62,6 +62,7 @@
     "uws": "^9.14.0"
   },
   "devDependencies": {
+    "@angular-devkit/build-optimizer": "0.0.36",
     "@angular/animations": "5.1.0",
     "@angular/common": "5.1.0",
     "@angular/compiler": "5.1.0",
