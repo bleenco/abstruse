@@ -7,6 +7,8 @@ const html = require('html-webpack-plugin');
 const copy = require('copy-webpack-plugin');
 const extract = require('extract-text-webpack-plugin');
 const { LicenseWebpackPlugin } = require('license-webpack-plugin');
+const { PurifyPlugin } = require('@angular-devkit/build-optimizer');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const portfinder = require('portfinder');
 const nodeModules = resolve(__dirname, 'node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "app"];
@@ -43,7 +45,17 @@ module.exports = function (options, webpackOptions) {
         { context: './node_modules/monaco-editor/min/', from: '**/*', to: 'monaco' }
       ]),
     ],
-    stats: 'minimal'
+    stats: { 
+      assets: false,
+      chunks: false,
+      chunkModules: false,
+      colors: true,
+      timings: true,
+      children: false,
+      cachedAssets: false,
+      chunkOrigins: false,
+      modules: false
+    }
   });
 
   config = webpackMerge({}, config, {
@@ -76,7 +88,17 @@ module.exports = function (options, webpackOptions) {
       hot: false,
       inline: true,
       overlay: true,
-      stats: 'minimal',
+      stats: { 
+        assets: false,
+        chunks: false,
+        chunkModules: false,
+        colors: true,
+        timings: true,
+        children: false,
+        cachedAssets: false,
+        chunkOrigins: false,
+        modules: false
+      },
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000
@@ -150,8 +172,29 @@ function getProductionPlugins() {
   return {
     plugins: [
       new webpack.EnvironmentPlugin({ 'NODE_ENV': 'production' }),
+      new LicenseWebpackPlugin({ pattern: /^(MIT|ISC|BSD.*)$/, suppressErrors: true, perChunkOutput: false, outputFilename: `3rdpartylicenses.txt` }),
+      new PurifyPlugin(),
+      new webpack.HashedModuleIdsPlugin(),
+      new webpack.optimize.ModuleConcatenationPlugin(),
+      new UglifyJSPlugin({
+        sourceMap: false,
+        parallel: true,
+        uglifyOptions: {
+          ecma: 6,
+          warnings: false,
+          ie8: false,
+          mangle: {
+            safari10: true,
+          },
+          compress: { typeofs: false, pure_getters: true, passes: 3 },
+          output: {
+            ascii_only: true,
+            comments: false,
+            webkit: true,
+          },
+        }
+      }),
       new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 }),
-      new LicenseWebpackPlugin({ pattern: /^(MIT|ISC|BSD.*)$/, suppressErrors: true, perChunkOutput: false, outputFilename: `3rdpartylicenses.txt` })
     ]
   };
 }
