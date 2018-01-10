@@ -147,6 +147,7 @@
     "karma-jasmine": "^1.1.1",
     "karma-spec-reporter": "0.0.31",
     "karma-webpack": "^2.0.6",
+    "license-webpack-plugin": "^1.1.1",
     "minimist": "^1.2.0",
     "mocha": "^4.0.1",
     "monaco-editor": "^0.10.1",
