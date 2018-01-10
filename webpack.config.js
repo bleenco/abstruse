@@ -13,6 +13,18 @@ const portfinder = require('portfinder');
 const nodeModules = resolve(__dirname, 'node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "app"];
 
+const stats = { 
+  assets: false,
+  chunks: false,
+  chunkModules: false,
+  colors: true,
+  timings: true,
+  children: false,
+  cachedAssets: false,
+  chunkOrigins: false,
+  modules: false
+};
+
 module.exports = function (options, webpackOptions) {
   options = options || {};
 
@@ -45,17 +57,7 @@ module.exports = function (options, webpackOptions) {
         { context: './node_modules/monaco-editor/min/', from: '**/*', to: 'monaco' }
       ]),
     ],
-    stats: { 
-      assets: false,
-      chunks: false,
-      chunkModules: false,
-      colors: true,
-      timings: true,
-      children: false,
-      cachedAssets: false,
-      chunkOrigins: false,
-      modules: false
-    }
+    stats: stats
   });
 
   config = webpackMerge({}, config, {
@@ -88,17 +90,7 @@ module.exports = function (options, webpackOptions) {
       hot: false,
       inline: true,
       overlay: true,
-      stats: { 
-        assets: false,
-        chunks: false,
-        chunkModules: false,
-        colors: true,
-        timings: true,
-        children: false,
-        cachedAssets: false,
-        chunkOrigins: false,
-        modules: false
-      },
+      stats: stats,
       watchOptions: {
         aggregateTimeout: 300,
         poll: 1000

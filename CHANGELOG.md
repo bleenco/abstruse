@@ -1,3 +1,18 @@
+<a name="1.4.5"></a>
+## [1.4.5](https://github.com/bleenco/abstruse/compare/v1.4.4...v1.4.5) (2018-01-10)
+
+
+### Bug Fixes
+
+* **terminal:** increase default 1000 numbers scrollback in terminal output ([6c3bc6a](https://github.com/bleenco/abstruse/commit/6c3bc6a))
+
+
+### Features
+
+* **logs:** added ability to view raw job logs ([276e7d3](https://github.com/bleenco/abstruse/commit/276e7d3))
+
+
+
 <a name="1.4.4"></a>
 ## [1.4.4](https://github.com/bleenco/abstruse/compare/v1.4.3...v1.4.4) (2017-12-21)
 
