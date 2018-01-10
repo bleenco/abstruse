@@ -6,6 +6,7 @@ const compression = require('compression-webpack-plugin');
 const html = require('html-webpack-plugin');
 const copy = require('copy-webpack-plugin');
 const extract = require('extract-text-webpack-plugin');
+const { LicenseWebpackPlugin } = require('license-webpack-plugin');
 const portfinder = require('portfinder');
 const nodeModules = resolve(__dirname, 'node_modules');
 const entryPoints = ["inline", "polyfills", "sw-register", "styles", "vendor", "app"];
@@ -149,7 +150,8 @@ function getProductionPlugins() {
   return {
     plugins: [
       new webpack.EnvironmentPlugin({ 'NODE_ENV': 'production' }),
-      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 })
+      new compression({ asset: "[path].gz[query]", algorithm: "gzip", test: /\.js$|\.html$/, threshold: 10240, minRatio: 0.8 }),
+      new LicenseWebpackPlugin({ pattern: /^(MIT|ISC|BSD.*)$/, suppressErrors: true, perChunkOutput: false, outputFilename: `3rdpartylicenses.txt` })
     ]
   };
 }
