@@ -21,6 +21,14 @@ Video presents how easy is to install Abstruse CI and run sample build (2mins).
 
 [https://www.youtube.com/watch?v=xmizxTGk92k](https://www.youtube.com/watch?v=xmizxTGk92k)
 
+### Preview
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/34916601-54380424-f93b-11e7-9b74-edd388b1f454.png">
+</p>
+
+More screenshots can be found [here](docs/SCREENSHOTS.md)
+
 ## Why Abstruse?
 We saw many projects relying on outdated open source continuous integration (CI) solutions that were widely adopted in the past, but unfortunately cannot answer new requirements from the industry. On the other hand, commercial CI solutions have all this great features (i.e. Travis CI), but they cost money. Hence, numerous organizations decide to cut costs and go with legacy open source CI solutions or not use CI solutions at all. This kills the code quality and increases software maintenance costs. We want to change this and equip developers with the commercial-grade open source CI solution that differentiates from the rest by simplicity, scalability and up-to-date technology stack.
 
