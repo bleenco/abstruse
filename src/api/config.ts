@@ -67,6 +67,7 @@ export interface JobsAndEnv {
   image: string;
   version?: string;
   cache?: string[];
+  allow_failure?: boolean;
 }
 
 export interface Repository {
@@ -372,8 +373,14 @@ function parseMatrix(matrix: any | null): Matrix {
     return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
-      const include = matrix.map((m: Build) => m);
-      return { include: include, exclude: [], allow_failures: [] };
+      const include = matrix.filter(m => !m.allow_failures).map((m: Build) => m);
+      const allowFailures = matrix.find(m => !!m.allow_failures);
+
+      return {
+        include: include,
+        exclude: [],
+        allow_failures: allowFailures && allowFailures.allow_failures || []
+      };
     } else if (typeof matrix === 'object') {
       let include = [];
       let exclude = [];
@@ -512,6 +519,13 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     // apply cache to each job
     d.cache = config.cache;
 
+    // apply allow_failure to each job
+    if (config.matrix.allow_failures.filter(af => d.env.find(e => e.includes(af.env))).length) {
+      d.allow_failure = true;
+    } else {
+      d.allow_failure = false;
+    }
+
     d.commands = d.commands.filter(cmd => !!cmd.command);
 
     return d;
@@ -528,7 +542,8 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       commands: gitCommands.concat(deployCommands),
       env: globalEnv.concat('DEPLOY'),
       stage: JobStage.deploy,
-      image: config.image
+      image: config.image,
+      allow_failure: false
     });
   }
 
