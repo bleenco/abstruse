@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgUploaderModule } from 'ngx-uploader/src/ngx-uploader/module/ngx-uploader.module';
+import { NgUploaderModule } from 'ngx-uploader';
 import { Observable } from 'rxjs/Observable';
 const userData: any = require('json-loader!../../testing/xhr-data/user.json');
 const repositoriesData: any = require('json-loader!../../testing/xhr-data/repositories.json');

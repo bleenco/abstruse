@@ -4,7 +4,7 @@ import { CommonModule }       from '@angular/common';
 import { HttpModule }         from '@angular/http';
 import { FormsModule }        from '@angular/forms';
 import { NgUploaderModule }   from 'ngx-uploader';
-import { NgDatepickerModule } from 'ng2-datepicker/ng2-datepicker';
+import { NgDatepickerModule } from 'ng2-datepicker';
 
 import { AuthGuardProvider, AuthGuard }      from './services/auth-guard.service';
 import { AccessGuardProvider, AccessGuard }  from './services/access-guard.service';
