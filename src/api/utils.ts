@@ -108,28 +108,28 @@ export function generateBadgeHtml(status: string): string {
 }
 
 export function getBitBucketAccessToken(clientCredentials: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let options = {
-        url: `https://${clientCredentials}@bitbucket.org/site/oauth2/access_token`,
-        method: 'POST',
-        formData: { grant_type: 'client_credentials' }
-      };
+  return new Promise((resolve, reject) => {
+    let options = {
+      url: `https://${clientCredentials}@bitbucket.org/site/oauth2/access_token`,
+      method: 'POST',
+      formData: { grant_type: 'client_credentials' }
+    };
 
-      request(options, (err, response, body) => {
-        if (err) {
-          reject(err);
+    request(options, (err, response, body) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (response.statusCode < 300 && response.statusCode >= 200) {
+          resolve(JSON.parse(body));
         } else {
-          if (response.statusCode < 300 && response.statusCode >= 200) {
-            resolve(JSON.parse(body));
-          } else {
-            reject({
-              statusCode: response.statusCode,
-              response: body
-            });
-          }
+          reject({
+            statusCode: response.statusCode,
+            response: body
+          });
         }
-      });
+      }
     });
+  });
 }
 
 export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {

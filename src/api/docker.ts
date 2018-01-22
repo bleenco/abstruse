@@ -35,24 +35,24 @@ export function createContainer(
         '5900/tcp': [{ HostPort: '' }]
       }
     } as any)
-    .then(container => {
-      const msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
-        `starting container ` +  style.yellow.open + name + ' ' + style.yellow.close +
-        `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
-        `... ` + style.bold.close;
-      observer.next({ type: 'data', data: msg });
-      return container;
-    })
-    .then(container => container.start())
-    .then(container => container.inspect())
-    .then(info => observer.next({ type: 'containerInfo', data: info }))
-    .then(() => observer.next({ type: 'data', data: 'done.\r\n' }))
-    .then(() => observer.complete())
-    .catch(err => {
-      observer.next({ type: 'data', data: 'error.\r\n' });
-      observer.next({ type: 'containerError', data: err });
-      observer.error(err);
-    });
+      .then(container => {
+        const msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
+          `starting container ` + style.yellow.open + name + ' ' + style.yellow.close +
+          `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
+          `... ` + style.bold.close;
+        observer.next({ type: 'data', data: msg });
+        return container;
+      })
+      .then(container => container.start())
+      .then(container => container.inspect())
+      .then(info => observer.next({ type: 'containerInfo', data: info }))
+      .then(() => observer.next({ type: 'data', data: 'done.\r\n' }))
+      .then(() => observer.complete())
+      .catch(err => {
+        observer.next({ type: 'data', data: 'error.\r\n' });
+        observer.next({ type: 'containerError', data: err });
+        observer.error(err);
+      });
   });
 }
 
@@ -149,7 +149,7 @@ export function dockerExec(
 
 export function dockerPwd(id: string, env: envVars.EnvVariables): Observable<ProcessOutput> {
   return new Observable(observer => {
-    dockerExec(id, { type: CommandType.before_install, command: 'pwd'}, env)
+    dockerExec(id, { type: CommandType.before_install, command: 'pwd' }, env)
       .subscribe(event => {
         if (event && event.data && event.type === 'data') {
           envVars.set(env, 'ABSTRUSE_BUILD_DIR', event.data.replace('\r\n', ''));

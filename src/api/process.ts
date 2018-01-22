@@ -27,7 +27,7 @@ export interface SpawnedProcessOutput {
 
 export interface ProcessOutput {
   type: 'data' | 'exit' | 'container' | 'exposed ports' | 'containerInfo' | 'containerError' |
-        'env';
+  'env';
   data: any;
 }
 
@@ -56,8 +56,8 @@ export function startBuildProcess(
     const gitTypes = [CommandType.git];
     const installTypes = [CommandType.before_install, CommandType.install];
     const scriptTypes = [CommandType.before_script, CommandType.script,
-                         CommandType.after_success, CommandType.after_failure,
-                         CommandType.after_script];
+    CommandType.after_success, CommandType.after_failure,
+    CommandType.after_script];
 
     const gitCommands = prepareCommands(proc, gitTypes);
     const installCommands = prepareCommands(proc, installTypes);
@@ -178,8 +178,8 @@ export function startBuildProcess(
           .catch(err => console.error(err));
       }, () => {
         const msg = style.green.open + style.bold.open +
-                    '\r\n[success]: build returned exit code 0' +
-                    style.bold.close + style.green.close;
+          '\r\n[success]: build returned exit code 0' +
+          style.bold.close + style.green.close;
         observer.next({ type: 'exit', data: chalk.green(msg) });
         docker.killContainer(name)
           .then(() => {

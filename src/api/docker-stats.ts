@@ -1,6 +1,6 @@
 import { Observable, Observer } from 'rxjs';
 import * as utils from './utils';
-import { listContainers,  calculateContainerStats } from './docker';
+import { listContainers, calculateContainerStats } from './docker';
 import { processes } from './process-manager';
 
 export function getContainersStats(): Observable<any> {
