@@ -4,7 +4,9 @@
   <div class="container">
     <div class="nav-left is-hidden-mobile">
       <span class="nav-item">
-        <h1>Builds</h1>
+        <h1 *ngIf="show === 'all'">Latest builds</h1>
+        <h1 *ngIf="show === 'commits'">Commits</h1>
+        <h1 *ngIf="show === 'pr'">Pull requests</h1>
       </span>
     </div>
     <div class="nav-center is-hidden-mobile">
