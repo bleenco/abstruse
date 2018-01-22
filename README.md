@@ -24,7 +24,7 @@ Video presents how easy is to install Abstruse CI and run sample build (2mins).
 ### Preview
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/34916601-54380424-f93b-11e7-9b74-edd388b1f454.png">
+  <img src="https://user-images.githubusercontent.com/1796022/35201536-9103e1e8-ff1c-11e7-9461-1dc168629597.png">
 </p>
 
 More screenshots can be found [here](docs/SCREENSHOTS.md)
