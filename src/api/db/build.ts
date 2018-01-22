@@ -12,14 +12,14 @@ export function getBuilds(
       .query(q => {
         if (userId) {
           q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
-          .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
-          .where('permissions.users_id', userId)
-          .andWhere(function() {
-            this.where('permissions.permission', true).orWhere('repositories.public', true);
-          });
+            .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+            .where('permissions.users_id', userId)
+            .andWhere(function () {
+              this.where('permissions.permission', true).orWhere('repositories.public', true);
+            });
         } else {
           q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
-          .where('repositories.public', true);
+            .where('repositories.public', true);
         }
 
         if (filter === 'pr') {
@@ -29,10 +29,10 @@ export function getBuilds(
         }
 
         q.orderBy('id', 'DESC')
-        .offset(offset)
-        .limit(limit);
+          .offset(offset)
+          .limit(limit);
       })
-      .fetchAll({ withRelated: ['repository.permissions', 'jobs.runs' ]})
+      .fetchAll({ withRelated: ['repository.permissions', 'jobs.runs'] })
       .then(builds => {
         if (!builds) {
           reject();
@@ -48,6 +48,7 @@ export function getBuilds(
               job.status = job.runs[job.runs.length - 1].status;
             }
 
+            delete job.runs;
             return job;
           });
 
@@ -75,17 +76,19 @@ export function getBuild(id: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
       .query(q => q.where('id', id))
-      .fetch({ withRelated: [{'repository.permissions': (query) => {
+      .fetch({
+        withRelated: [{
+          'repository.permissions': (query) => {
             if (userId) {
               query.where('permissions.users_id', userId)
-              .andWhere('permissions.permission', true)
-              .orWhere('public', true);
+                .andWhere('permissions.permission', true)
+                .orWhere('public', true);
             }
           }
         },
-        'repository.access_token',
-        'jobs.runs',
-        'runs.job_runs']
+          'repository.access_token',
+          'jobs.runs',
+          'runs.job_runs']
       })
       .then(build => {
         if (!build) {
@@ -140,13 +143,13 @@ export function getBuild(id: number, userId?: number): Promise<any> {
         new BuildRun()
           .query(q => {
             q.innerJoin('builds', 'builds.id', 'build_runs.build_id')
-            .where('builds.repositories_id', build.repositories_id)
-            .andWhere('builds.id', '<=', build.id)
-            .whereNotNull('build_runs.start_time')
-            .whereNotNull('build_runs.end_time')
-            .orderBy('build_runs.id', 'desc');
+              .where('builds.repositories_id', build.repositories_id)
+              .andWhere('builds.id', '<=', build.id)
+              .whereNotNull('build_runs.start_time')
+              .whereNotNull('build_runs.end_time')
+              .orderBy('build_runs.id', 'desc');
           })
-          .fetch({ withRelated: 'job_runs'})
+          .fetch({ withRelated: 'job_runs' })
           .then(lastBuild => {
             if (lastBuild) {
               build.lastBuild = lastBuild.toJSON();
@@ -165,45 +168,48 @@ export function getBuild(id: number, userId?: number): Promise<any> {
 export function getLastBuild(userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build().query(q => q.orderBy('id', 'desc'))
-    .fetch({ withRelated: [{'repository.permissions': (query) => {
-          if (userId) {
-            query.where('permissions.users_id', userId)
-            .andWhere('permissions.permission', true)
-            .orWhere('public', true);
+      .fetch({
+        withRelated: [{
+          'repository.permissions': (query) => {
+            if (userId) {
+              query.where('permissions.users_id', userId)
+                .andWhere('permissions.permission', true)
+                .orWhere('public', true);
+            }
           }
-        }
-      },
-      'jobs.runs']})
-    .then(build => {
-      if (!build) {
-        reject(build);
-      }
-
-      build = build.toJSON();
-      build.jobs = build.jobs.map(job => {
-        if (job.runs.length > 0) {
-          job.end_time = job.runs[job.runs.length - 1].end_time;
-          job.start_time = job.runs[job.runs.length - 1].start_time;
-          job.status = job.runs[job.runs.length - 1].status;
+        },
+          'jobs.runs']
+      })
+      .then(build => {
+        if (!build) {
+          reject(build);
         }
 
-        return job;
-      });
+        build = build.toJSON();
+        build.jobs = build.jobs.map(job => {
+          if (job.runs.length > 0) {
+            job.end_time = job.runs[job.runs.length - 1].end_time;
+            job.start_time = job.runs[job.runs.length - 1].start_time;
+            job.status = job.runs[job.runs.length - 1].status;
+          }
 
-      userId = parseInt(<any>userId, 10);
-      if (build.repository.permissions && build.repository.permissions.length) {
-        let index = build.repository.permissions.findIndex(p => p.users_id === userId);
-        if (index !== -1 && build.repository.permissions[index].permission) {
-          build.hasPermission = true;
+          return job;
+        });
+
+        userId = parseInt(<any>userId, 10);
+        if (build.repository.permissions && build.repository.permissions.length) {
+          let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+          if (index !== -1 && build.repository.permissions[index].permission) {
+            build.hasPermission = true;
+          } else {
+            build.hasPermission = false;
+          }
         } else {
           build.hasPermission = false;
         }
-      } else {
-        build.hasPermission = false;
-      }
 
-      resolve(build);
-    });
+        resolve(build);
+      });
   });
 }
 
@@ -254,7 +260,7 @@ export function updateBuild(data: any): Promise<boolean> {
 export function getBuildRepositoryId(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build({ id: buildId }).fetch()
-    .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id));
+      .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id));
   });
 }
 
@@ -274,50 +280,50 @@ export function getBuildStatus(buildId: number): Promise<any> {
               return curr;
             } else if (curr === 'success' && accu !== 'failed'
               && accu !== 'running' && accu !== 'queued') {
-                return curr;
+              return curr;
             }
 
             return accu;
           })));
       });
-    });
+  });
 }
 
 export function getDepracatedBuilds(build: any): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build({ repositories_id: build.repositories_id })
-    .query(q => {
-      q.whereNull('end_time')
-      .andWhereNot('id', build.id);
+      .query(q => {
+        q.whereNull('end_time')
+          .andWhereNot('id', build.id);
 
-      if (build.pr) {
-        q.where('pr', build.pr);
-      }
-    })
-    .fetchAll()
-    .then(builds => {
-      if (!builds) {
-        reject();
-      }
+        if (build.pr) {
+          q.where('pr', build.pr);
+        }
+      })
+      .fetchAll()
+      .then(builds => {
+        if (!builds) {
+          reject();
+        }
 
-      builds = builds.toJSON();
-      if (!build.pr) {
-        builds = builds.filter(b => {
-          if (build.data.before) {
-            return build.data.before === b.data.before;
-          } else if (build.data.before_sha) {
-            return build.data.before_sha === b.data.before_sha;
-          } else if (build.data.object_attributes && build.data.object_attributes.before_sha) {
-            return build.data.object_attributes.before_sha
-              === b.data.object_attributes.before_sha;
-          }
+        builds = builds.toJSON();
+        if (!build.pr) {
+          builds = builds.filter(b => {
+            if (build.data.before) {
+              return build.data.before === b.data.before;
+            } else if (build.data.before_sha) {
+              return build.data.before_sha === b.data.before_sha;
+            } else if (build.data.object_attributes && build.data.object_attributes.before_sha) {
+              return build.data.object_attributes.before_sha
+                === b.data.object_attributes.before_sha;
+            }
 
-          return false;
-        });
-      }
-      builds = builds.map(b => b.id);
+            return false;
+          });
+        }
+        builds = builds.map(b => b.id);
 
-      resolve(builds);
-    });
+        resolve(builds);
+      });
   });
 }

@@ -53,7 +53,7 @@
     <span class="build-time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime <= (currentTime - build?.minRunningJobStartTime)">{{ currentTime - build?.minRunningJobStartTime | toTime }} </span>
     <span class="build-time" *ngIf="build?.status !== 'running' && build?.maxCompletedJobTime">{{ build?.maxCompletedJobTime | toTime }}</span>
   </div>
-  <div class="column is-1 justify-end" *ngIf="build?.userId && build?.hasPermission">
+  <div class="column is-1 justify-end" *ngIf="build?.hasPermission">
     <span class="icon circle restart-build" (click)="restartBuild($event, build.id)" [class.disabled]="processingRequest">
       <i class="ionicon ion-refresh"></i>
     </span>

@@ -294,11 +294,12 @@ export function repositoryRoutes(): express.Router {
     }
   });
 
-  router.get('/:id/builds/:limit/:offset', (req: express.Request, res: express.Response) => {
-    getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset)
-      .then(builds => res.status(200).json({ data: builds }))
-      .catch(err => res.status(200).json({ status: false }));
-  });
+  router.get('/:id/builds/:limit/:offset/:userid?',
+    (req: express.Request, res: express.Response) => {
+      getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset, req.params.userid)
+        .then(builds => res.status(200).json({ data: builds }))
+        .catch(err => res.status(200).json({ status: false }));
+    });
 
   router.post('/add', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
