@@ -614,8 +614,8 @@ function checkoutShaOrPr(
     if (fetch && checkout) {
       spawnGit(fetch.split(' '))
         .then(() => spawnGit(checkout.split(' '))
-        .then(() => resolve())
-        .catch(err => reject(err)));
+          .then(() => resolve())
+          .catch(err => reject(err)));
     } else {
       resolve();
     }

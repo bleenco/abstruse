@@ -26,7 +26,7 @@ initSetup()
   .then(() => {
     const version = getAbstruseVersion();
     const msg: LogMessageType = {
-      message: `[server] starting Abstruse CI version ${chalk.green(version)} ...`,
+      message: `[server]: starting Abstruse CI version ${chalk.green(version)} ...`,
       type: 'info',
       notify: false
     };
@@ -44,4 +44,4 @@ initSetup()
           const msg: LogMessageType = { message: err, type: 'error', notify: false };
           logger.next(msg);
         });
-  }));
+    }));

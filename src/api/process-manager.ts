@@ -137,41 +137,41 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
 
         buildSub[proc.job_id] =
           startBuildProcess(proc, envs, jobTimeout, idleTimeout)
-          .subscribe(event => {
-            const msg: JobProcessEvent = {
-              build_id: proc.build_id,
-              job_id: proc.job_id,
-              type: event.type,
-              data: event.data
-            };
-
-            terminalEvents.next(msg);
-            if (event.data && event.type === 'data') {
-              proc.log += event.data;
-            } else if (event.data && event.type === 'exposed ports') {
-              proc.exposed_ports = event.data;
-            } else if (event.type === 'container') {
-              const ev: JobProcessEvent = {
-                type: 'process',
+            .subscribe(event => {
+              const msg: JobProcessEvent = {
                 build_id: proc.build_id,
                 job_id: proc.job_id,
+                type: event.type,
                 data: event.data
               };
-              jobEvents.next(ev);
-            } else if (event.type === 'exit') {
-              proc.log += event.data;
-              observer.complete();
-            }
-          }, err => {
-            const msg: LogMessageType = {
-              message: `[error]: ${err}`, type: 'error', notify: false
-            };
-            jobFailed(proc, msg)
-              .then(() => observer.complete());
-          }, () => {
-            jobSucceded(proc)
-              .then(() => observer.complete());
-          });
+
+              terminalEvents.next(msg);
+              if (event.data && event.type === 'data') {
+                proc.log += event.data;
+              } else if (event.data && event.type === 'exposed ports') {
+                proc.exposed_ports = event.data;
+              } else if (event.type === 'container') {
+                const ev: JobProcessEvent = {
+                  type: 'process',
+                  build_id: proc.build_id,
+                  job_id: proc.job_id,
+                  data: event.data
+                };
+                jobEvents.next(ev);
+              } else if (event.type === 'exit') {
+                proc.log += event.data;
+                observer.complete();
+              }
+            }, err => {
+              const msg: LogMessageType = {
+                message: `[error]: ${err}`, type: 'error', notify: false
+              };
+              jobFailed(proc, msg)
+                .then(() => observer.complete());
+            }, () => {
+              jobSucceded(proc)
+                .then(() => observer.complete());
+            });
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
       .then(runId => {
@@ -281,7 +281,7 @@ export function stopJob(jobId: number): Promise<void> {
               .then(build => {
                 return updateBuild({ id: build.id, end_time: time })
                   .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: time} ))
+                  .then(id => updateBuildRun({ id: id, end_time: time }))
                   .then(() => sendSuccessStatus(build, build.id))
                   .then(() => {
                     jobEvents.next({
@@ -312,8 +312,8 @@ export function stopJob(jobId: number): Promise<void> {
               .then(build => {
                 return updateBuild({ id: build.id, end_time: time })
                   .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: time} ))
-                  .then(() =>  sendFailureStatus(build, build.id))
+                  .then(id => updateBuildRun({ id: id, end_time: time }))
+                  .then(() => sendFailureStatus(build, build.id))
                   .then(() => {
                     jobEvents.next({
                       type: 'process',
@@ -348,7 +348,7 @@ export function stopJob(jobId: number): Promise<void> {
     .then(runId => dbJobRuns.getRun(runId))
     .then(jobRun => {
       if (!jobRun.end_time) {
-        return dbJobRuns.updateJobRun({id: jobRun.id, end_time: time, status: 'failed' });
+        return dbJobRuns.updateJobRun({ id: jobRun.id, end_time: time, status: 'failed' });
       }
     })
     .then(() => dbJob.getJob(jobId))
@@ -487,7 +487,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
             };
             return dbJobRuns.insertJobRun(jobRun);
           }).then(() => queueJob(dataJob.id));
-        }));
+      }));
     })
     .then(lastBuild => {
       jobEvents.next({
@@ -627,7 +627,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
           if (status === 'success') {
             return updateBuild({ id: proc.build_id, end_time: time })
               .then(() => getLastRunId(proc.build_id))
-              .then(id => updateBuildRun({ id: id, end_time: time} ))
+              .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
               .then(build => sendSuccessStatus(build, build.id))
               .then(() => {
@@ -642,7 +642,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
             return getBuild(proc.build_id)
               .then(build => updateBuild({ id: proc.build_id, end_time: time }))
               .then(() => getLastRunId(proc.build_id))
-              .then(id => updateBuildRun({ id: id, end_time: time} ))
+              .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
               .then(build => sendFailureStatus(build, build.id))
               .then(() => {
@@ -681,7 +681,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
           });
 
           return getLastRunId(proc.build_id)
-            .then(id => updateBuildRun({ id: id, end_time: time} ));
+            .then(id => updateBuildRun({ id: id, end_time: time }));
         });
     });
 }

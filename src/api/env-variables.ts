@@ -22,7 +22,7 @@ export function serialize(envs: EnvVariables): string[] {
 export function unserialize(envs: string[]): EnvVariables {
   return envs.reduce((acc, curr) => {
     const splitted = curr.split('=');
-    acc = Object.assign({}, acc, { [splitted[0]]: { value: splitted[1], secure: false }});
+    acc = Object.assign({}, acc, { [splitted[0]]: { value: splitted[1], secure: false } });
     return acc;
   }, {});
 }
@@ -31,23 +31,23 @@ export function generate(data: any): EnvVariables {
   const envs = init();
   const request = data.requestData;
   const commit = request.data.pull_request && request.data.pull_request.head
-                 && request.data.pull_request.head.sha ||
-                 request.data.head_commit && request.data.head_commit.id ||
-                 request.data.sha ||
-                 request.data.object_attributes && request.data.object_attributes.last_commit &&
-                 request.data.object_attributes.last_commit.id ||
-                 request.data.push && request.data.push.changes[0].commits[0].hash ||
-                 request.data.pullrequest && request.data.pullrequest.source &&
-                 request.data.pullrequest.source.commit &&
-                 request.data.pullrequest.source.commit.hash ||
-                 request.data.commit || '';
+    && request.data.pull_request.head.sha ||
+    request.data.head_commit && request.data.head_commit.id ||
+    request.data.sha ||
+    request.data.object_attributes && request.data.object_attributes.last_commit &&
+    request.data.object_attributes.last_commit.id ||
+    request.data.push && request.data.push.changes[0].commits[0].hash ||
+    request.data.pullrequest && request.data.pullrequest.source &&
+    request.data.pullrequest.source.commit &&
+    request.data.pullrequest.source.commit.hash ||
+    request.data.commit || '';
   const prBranch = request.pr ? request.data.pull_request && request.data.pull_request.head &&
-                  request.data.pull_request.head.ref ||
-                  request.data.pullrequest && request.data.pullrequest.source &&
-                  request.data.pullrequest.source.branch &&
-                  request.data.pullrequest.source.branch.name ||
-                  request.data.object_attributes && request.data.object_attributes.source_branch ||
-                  request.data.pull_request && request.data.pull_request.head_branch : '';
+    request.data.pull_request.head.ref ||
+    request.data.pullrequest && request.data.pullrequest.source &&
+    request.data.pullrequest.source.branch &&
+    request.data.pullrequest.source.branch.name ||
+    request.data.object_attributes && request.data.object_attributes.source_branch ||
+    request.data.pull_request && request.data.pull_request.head_branch : '';
   const tag = request.ref && request.ref.startsWith('refs/tags/') ?
     request.ref.replace('refs/tags/', '') : null;
 

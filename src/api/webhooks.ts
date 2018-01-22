@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
-import { getConfig, getFilePath  } from './setup';
+import { getConfig, getFilePath } from './setup';
 import {
   pingGitHubRepository,
   pingBitbucketRepository,
@@ -11,7 +11,8 @@ import {
   createGitHubPullRequest,
   createGogsPullRequest,
   synchronizeGitHubPullRequest,
-  synchronizeGogsPullRequest } from './db/repository';
+  synchronizeGogsPullRequest
+} from './db/repository';
 import { startBuild } from './process-manager';
 import { writeJsonFile } from './fs';
 
@@ -54,7 +55,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
         .then(() => pingGitHubRepository(payload))
         .then(repo => res.status(200).json({ msg: 'ok' }))
         .catch(err => res.status(400).json(err));
-    break;
+      break;
     case 'push':
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingGitHubRepository(payload))
@@ -72,23 +73,23 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
           console.error(err);
           res.status(400).json({ error: err });
         });
-    break;
+      break;
     case 'pull_request':
       switch (payload.action) {
         case 'opened':
-        writeJsonFile(getFilePath('config.json'), config)
-          .then(() => createGitHubPullRequest(payload))
-          .then(build => startBuild(build))
-          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-          .catch(err => {
-            console.error(err);
-            res.status(400).json({ error: err });
-          });
-        break;
+          writeJsonFile(getFilePath('config.json'), config)
+            .then(() => createGitHubPullRequest(payload))
+            .then(build => startBuild(build))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
+          break;
         case 'closed':
           // should kill all jobs related to this PR?
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'reopened':
           writeJsonFile(getFilePath('config.json'), config)
             .then(() => synchronizeGitHubPullRequest(payload))
@@ -98,28 +99,28 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
               console.error(err);
               res.status(400).json({ error: err });
             });
-        break;
+          break;
         case 'assigned':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'unassigned':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'review_requested':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'review_request_removed':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'labeled':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'unlabeled':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'edited':
           res.status(200).json({ msg: 'ok' });
-        break;
+          break;
         case 'synchronize':
           writeJsonFile(getFilePath('config.json'), config)
             .then(() => synchronizeGitHubPullRequest(payload))
@@ -129,12 +130,12 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
               console.error(err);
               res.status(400).json({ error: err });
             });
-        break;
+          break;
       }
-    break;
+      break;
     default:
       res.status(200).json({ msg: 'ok' });
-    break;
+      break;
   }
 });
 
@@ -169,21 +170,21 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
   switch (ev) {
     case 'repo:push':
       writeJsonFile(getFilePath('config.json'), config)
-      .then(() => pingBitbucketRepository(payload))
-      .then(repo => {
-        const buildData = {
-          data: payload,
-          start_time: new Date(),
-          repositories_id: repo.id
-        };
+        .then(() => pingBitbucketRepository(payload))
+        .then(repo => {
+          const buildData = {
+            data: payload,
+            start_time: new Date(),
+            repositories_id: repo.id
+          };
 
-        return startBuild(buildData);
-      })
-      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-      .catch(err => {
-        console.error(err);
-        res.status(400).json({ error: err });
-      });
+          return startBuild(buildData);
+        })
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
       break;
     case 'repo:commit_status_created':
       res.status(200).json({ msg: 'ok' });
@@ -230,13 +231,13 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
     case 'pullrequest:created':
     case 'pullrequest:updated':
       writeJsonFile(getFilePath('config.json'), config)
-      .then(() => synchronizeBitbucketPullRequest(payload))
-      .then(build => startBuild(build))
-      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-      .catch(err => {
-        console.error(err);
-        res.status(400).json({ error: err });
-      });
+        .then(() => synchronizeBitbucketPullRequest(payload))
+        .then(build => startBuild(build))
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
       break;
     case 'pullrequest:fulfilled':
       res.status(200).json({ msg: 'ok' });
@@ -277,21 +278,21 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
   switch (ev) {
     case 'Push Hook':
       writeJsonFile(getFilePath('config.json'), config)
-      .then(() => pingGitLabRepository(payload))
-      .then(repo => {
-        const buildData = {
-          data: payload,
-          start_time: new Date(),
-          repositories_id: repo.id
-        };
+        .then(() => pingGitLabRepository(payload))
+        .then(repo => {
+          const buildData = {
+            data: payload,
+            start_time: new Date(),
+            repositories_id: repo.id
+          };
 
-        return startBuild(buildData);
-      })
-      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-      .catch(err => {
-        console.error(err);
-        res.status(400).json({ error: err });
-      });
+          return startBuild(buildData);
+        })
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
       break;
     case 'Wiki Page Hook':
       res.status(200).json({ msg: 'ok' });
@@ -307,13 +308,13 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
       break;
     case 'Merge Request Hook':
       writeJsonFile(getFilePath('config.json'), config)
-      .then(() => synchronizeGitLabPullRequest(payload))
-      .then(build => startBuild(build))
-      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-      .catch(err => {
-        console.error(err);
-        res.status(400).json({ error: err });
-      });
+        .then(() => synchronizeGitLabPullRequest(payload))
+        .then(build => startBuild(build))
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
       break;
     case 'Tag Push Hook':
       res.status(200).json({ msg: 'ok' });
@@ -360,21 +361,21 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
   switch (ev) {
     case 'push':
       writeJsonFile(getFilePath('config.json'), config)
-      .then(() => pingGogsRepository(payload))
-      .then(repo => {
-        const buildData = {
-          data: payload,
-          start_time: new Date(),
-          repositories_id: repo.id
-        };
+        .then(() => pingGogsRepository(payload))
+        .then(repo => {
+          const buildData = {
+            data: payload,
+            start_time: new Date(),
+            repositories_id: repo.id
+          };
 
-        return startBuild(buildData);
-      })
-      .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-      .catch(err => {
-        console.error(err);
-        res.status(400).json({ error: err });
-      });
+          return startBuild(buildData);
+        })
+        .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+        .catch(err => {
+          console.error(err);
+          res.status(400).json({ error: err });
+        });
       break;
     case 'create':
       res.status(200).json({ msg: 'ok' });
@@ -397,26 +398,26 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
       switch (payload.action) {
         case 'opened':
           writeJsonFile(getFilePath('config.json'), config)
-          .then(() => createGogsPullRequest(payload))
-          .then(build => startBuild(build))
-          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-          .catch(err => {
-            console.error(err);
-            res.status(400).json({ error: err });
-          });
+            .then(() => createGogsPullRequest(payload))
+            .then(build => startBuild(build))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
           break;
         case 'closed':
           res.status(200).json({ msg: 'ok' });
           break;
         case 'reopened':
           writeJsonFile(getFilePath('config.json'), config)
-          .then(() => synchronizeGogsPullRequest(payload))
-          .then(build => startBuild(build))
-          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-          .catch(err => {
-            console.error(err);
-            res.status(400).json({ error: err });
-          });
+            .then(() => synchronizeGogsPullRequest(payload))
+            .then(build => startBuild(build))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
           break;
         case 'label_updated':
           res.status(200).json({ msg: 'ok' });
@@ -441,19 +442,19 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
           break;
         case 'synchronized':
           writeJsonFile(getFilePath('config.json'), config)
-          .then(() => synchronizeGogsPullRequest(payload))
-          .then(build => startBuild(build))
-          .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
-          .catch(err => {
-            console.error(err);
-            res.status(400).json({ error: err });
-          });
+            .then(() => synchronizeGogsPullRequest(payload))
+            .then(build => startBuild(build))
+            .then(buildData => res.status(200).json({ msg: 'ok', data: buildData }))
+            .catch(err => {
+              console.error(err);
+              res.status(400).json({ error: err });
+            });
           break;
         default:
           break;
       }
     default:
-    break;
+      break;
   }
 });
 

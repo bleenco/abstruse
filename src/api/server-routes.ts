@@ -107,21 +107,21 @@ export function buildRoutes(): express.Router {
         getBuilds(req.params.limit, req.params.offset, req.params.filter).then(builds => {
           return res.status(200).json({ data: builds });
         })
-        .catch(err => res.status(200).json({ err: err }));
+          .catch(err => res.status(200).json({ err: err }));
       }
-  });
+    });
 
   router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
     if (req.params.userid) {
       getBuild(req.params.id, req.params.userid).then(build => {
         return res.status(200).json({ data: build });
       })
-      .catch(err => res.status(200).json({ err: err }));
+        .catch(err => res.status(200).json({ err: err }));
     } else {
       getBuild(req.params.id).then(build => {
         return res.status(200).json({ data: build });
       })
-      .catch(err => res.status(200).json({ err: err }));
+        .catch(err => res.status(200).json({ err: err }));
     }
   });
 
@@ -140,14 +140,14 @@ export function jobRoutes(): express.Router {
         return res.status(404).json({ data: 'not found' });
       }
     })
-    .catch(err => res.status(200).json({ err: err }));
+      .catch(err => res.status(200).json({ err: err }));
   });
 
   router.get('/:id/:userid?', (req: express.Request, res: express.Response) => {
     getJob(req.params.id, req.params.userid).then(job => {
       return res.status(200).json({ data: job });
     })
-    .catch(err => res.status(200).json({ err: err }));
+      .catch(err => res.status(200).json({ err: err }));
   });
 
   return router;
@@ -341,27 +341,27 @@ export function repositoryRoutes(): express.Router {
 
       return checkRepositoryAccess(repository);
     })
-    .then(hasAccess => {
-      if (!hasAccess) {
-        res.status(200).json({ data: { read: false, config: false, parsedcfg: false } });
-      } else {
-        return checkConfigPresence(repository);
-      }
-    })
-    .then(configPresence => {
-      if (!configPresence) {
-        res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
-      } else {
-        return getRemoteParsedConfig(repository);
-      }
-    })
-    .then(parsedCfg => {
-      if (!parsedCfg) {
-        res.status(200).json({ data: { read: true, config: true, parsedcfg: false } });
-      } else {
-        res.status(200).json({ data: { read: true, config: true, parsedcfg: parsedCfg } });
-      }
-    }).catch(err => res.status(200).json({ err: err }));
+      .then(hasAccess => {
+        if (!hasAccess) {
+          res.status(200).json({ data: { read: false, config: false, parsedcfg: false } });
+        } else {
+          return checkConfigPresence(repository);
+        }
+      })
+      .then(configPresence => {
+        if (!configPresence) {
+          res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
+        } else {
+          return getRemoteParsedConfig(repository);
+        }
+      })
+      .then(parsedCfg => {
+        if (!parsedCfg) {
+          res.status(200).json({ data: { read: true, config: true, parsedcfg: false } });
+        } else {
+          res.status(200).json({ data: { read: true, config: true, parsedcfg: parsedCfg } });
+        }
+      }).catch(err => res.status(200).json({ err: err }));
   });
 
   router.get('/trigger-test-build/:id', (req: express.Request, res: express.Response) => {
@@ -551,7 +551,7 @@ export function badgeRoutes(): express.Router {
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
     getRepositoryBadge(req.params.id).then(status => {
-      res.writeHead(200, {'Content-Type': 'image/svg+xml'});
+      res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
       res.write(generateBadgeHtml(status));
       res.end();
     }).catch(err => res.status(200).json({ status: false }));
@@ -561,7 +561,7 @@ export function badgeRoutes(): express.Router {
     getRepositoryId(req.params.owner, req.params.repository)
       .then(id => getRepositoryBadge(id))
       .then(status => {
-        res.writeHead(200, {'Content-Type': 'image/svg+xml'});
+        res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
         res.write(generateBadgeHtml(status));
         res.end();
       }).catch(err => res.status(200).json({ status: false }));
@@ -583,15 +583,15 @@ export function setupRoutes(): express.Router {
       Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
       Observable.fromPromise(usersExists())
     ])
-    .toArray()
-    .subscribe(data => {
-      const isFalse = data.findIndex(x => !x);
-      if (isFalse === -1) {
-        res.status(200).json({ data: true });
-      } else {
-        res.status(200).json({ data: false });
-      }
-    });
+      .toArray()
+      .subscribe(data => {
+        const isFalse = data.findIndex(x => !x);
+        if (isFalse === -1) {
+          res.status(200).json({ data: true });
+        } else {
+          res.status(200).json({ data: false });
+        }
+      });
   });
 
   router.get('/db', (req: express.Request, res: express.Response) => {
@@ -599,10 +599,10 @@ export function setupRoutes(): express.Router {
       Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
       Observable.fromPromise(usersExists())
     ])
-    .toArray()
-    .subscribe(data => {
-      return res.status(200).json({ data: data.findIndex(x => !x) === -1 });
-    });
+      .toArray()
+      .subscribe(data => {
+        return res.status(200).json({ data: data.findIndex(x => !x) === -1 });
+      });
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
@@ -611,20 +611,22 @@ export function setupRoutes(): express.Router {
       system.isSQLiteInstalled(),
       docker.isDockerInstalled()
     ])
-    .toArray()
-    .subscribe(data => {
-      if (data[2]) {
-        docker.isDockerRunning().subscribe(dockerRunning => {
+      .toArray()
+      .subscribe(data => {
+        if (data[2]) {
+          docker.isDockerRunning().subscribe(dockerRunning => {
+            const status = {
+              sqlite: data[1], docker: data[2], dockerRunning: dockerRunning, git: data[0]
+            };
+            res.status(200).json({ data: status });
+          });
+        } else {
           const status = {
-            sqlite: data[1], docker: data[2], dockerRunning: dockerRunning, git: data[0] };
+            sqlite: data[1], docker: false, dockerRunning: false, git: data[0]
+          };
           res.status(200).json({ data: status });
-        });
-      } else {
-        const status = {
-          sqlite: data[1], docker: false, dockerRunning: false, git: data[0] };
-        res.status(200).json({ data: status });
-      }
-    });
+        }
+      });
   });
 
   router.post('/db/init', (req: express.Request, res: express.Response) => {
@@ -678,7 +680,7 @@ export function permissionRoutes(): express.Router {
       }).catch(err => res.status(200).json({ status: false }));
     } else {
       getUserBuildPermissions(req.params.buildId).then(perm => res.status(200).json({ data: perm }))
-      .catch(err => res.status(200).json({ status: false }));
+        .catch(err => res.status(200).json({ status: false }));
     }
   });
 
@@ -705,7 +707,7 @@ export function environmentVariableRoutes(): express.Router {
       insertEnvironmentVariable(req.body)
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/remove/:id', (req: express.Request, res: express.Response) => {

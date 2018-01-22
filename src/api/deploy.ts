@@ -12,9 +12,7 @@ export function deploy(
       const provider = preferences.provider;
       deployProvider(provider, preferences, container, variables).subscribe(event => {
         observer.next(event);
-      },
-      err => observer.error(err),
-      () => observer.complete());
+      }, err => observer.error(err), () => observer.complete());
     } else {
       observer.complete();
     }

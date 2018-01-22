@@ -208,8 +208,8 @@ function getImagesInDirectory(path: string): Promise<any> {
               return Promise.resolve(img);
             }
           }))
-          .then(imgs => resolve(imgs))
-          .catch(err => reject(err));
+            .then(imgs => resolve(imgs))
+            .catch(err => reject(err));
         });
     });
   });

@@ -174,7 +174,7 @@ export class SocketServer {
         client.session.email = decoded ? decoded.email : 'anonymous';
         client.session.isAdmin = decoded ? decoded.admin : false;
       }
-      break;
+        break;
 
       case 'logout': {
         const email = client.session.email;
@@ -183,7 +183,7 @@ export class SocketServer {
         client.session.email = 'anonymous';
         client.session.isAdmin = false;
       }
-      break;
+        break;
 
       case 'buildImage': {
         if (client.session.email === 'anonymous') {
@@ -194,7 +194,7 @@ export class SocketServer {
           buildDockerImage(imageData);
         }
       }
-      break;
+        break;
 
       case 'deleteImage': {
         if (client.session.email === 'anonymous') {
@@ -205,7 +205,7 @@ export class SocketServer {
           deleteImage(imageData);
         }
       }
-      break;
+        break;
 
       case 'subscribeToImageBuilder': {
         if (client.session.email === 'anonymous') {
@@ -217,7 +217,7 @@ export class SocketServer {
           });
         }
       }
-      break;
+        break;
 
       case 'stopBuild':
         if (client.session.email === 'anonymous') {
@@ -229,7 +229,7 @@ export class SocketServer {
               client.send({ type: 'build stopped', data: event.data.buildId });
             });
         }
-      break;
+        break;
 
       case 'restartBuild':
         if (client.session.email === 'anonymous') {
@@ -241,7 +241,7 @@ export class SocketServer {
               client.send({ type: 'build restarted', data: event.data.buildId });
             });
         }
-      break;
+        break;
 
       case 'restartJob':
         if (client.session.email === 'anonymous') {
@@ -253,7 +253,7 @@ export class SocketServer {
               client.send({ type: 'job restarted', data: event.data.jobId });
             });
         }
-      break;
+        break;
 
       case 'stopJob':
         if (client.session.email === 'anonymous') {
@@ -265,7 +265,7 @@ export class SocketServer {
               client.send({ type: 'job stopped', data: event.data.jobId });
             });
         }
-      break;
+        break;
 
       case 'debugJob':
         if (client.session.email === 'anonymous') {
@@ -277,7 +277,7 @@ export class SocketServer {
               client.send({ type: 'job debug', data: event.data.jobId });
             });
         }
-      break;
+        break;
 
       case 'subscribeToJobOutput':
         const jobId = Number(event.data.jobId);
@@ -292,7 +292,7 @@ export class SocketServer {
         client.subscriptions.jobOutput = terminalEvents
           .filter(e => Number(e.job_id) === Number(event.data.jobId))
           .subscribe(output => client.send(output));
-      break;
+        break;
 
       case 'subscribeToLogs':
         if (client.session.email === 'anonymous') {
@@ -301,7 +301,7 @@ export class SocketServer {
           client.send({ type: 'request_received' });
           client.subscriptions.logs = logger.subscribe(msg => client.send(msg));
         }
-      break;
+        break;
 
       case 'subscribeToNotifications':
         if (client.session.email === 'anonymous') {
@@ -313,20 +313,20 @@ export class SocketServer {
             client.send(notify);
           });
         }
-      break;
+        break;
 
       case 'subscribeToStats':
         client.subscriptions.stats =
           Observable.merge(...[
             memory(), cpu(), getContainersStats()
           ]).subscribe(event => client.send(event));
-      break;
+        break;
 
       case 'unsubscribeFromStats':
         if (client.subscriptions.stats) {
           client.subscriptions.stats.unsubscribe();
         }
-      break;
+        break;
     }
   }
 }
