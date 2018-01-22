@@ -171,7 +171,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
       case 'queued': favicon = 'images/favicon-queued.png'; break;
       case 'failed': favicon = 'images/favicon-error.png'; break;
       case 'running': favicon = 'images/favicon-running.png'; break;
-      case 'success': favicon = 'images/favicon.png'; break;
+      case 'success': favicon = 'images/favicon-success.png'; break;
       default: favicon = 'images/favicon.png'; break;
     }
 

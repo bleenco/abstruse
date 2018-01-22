@@ -206,7 +206,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
       if (this.build.jobs.length === this.build.jobs.filter(j => j.status === 'success').length) {
         status = 'success';
-        favicon = 'images/favicon.png';
+        favicon = 'images/favicon-success.png';
       }
     }
 
