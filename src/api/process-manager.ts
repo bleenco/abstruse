@@ -61,7 +61,7 @@ export interface JobProcessEvent {
   additionalData?: any;
 }
 
-const config: any = getConfig();
+let config: any = getConfig();
 export let jobProcesses: Subject<JobProcess> = new Subject();
 export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({});
 export let terminalEvents: Subject<JobProcessEvent> = new Subject();
@@ -72,7 +72,7 @@ jobEvents
   .filter(event => !!event.build_id && !!event.job_id)
   .share()
   .subscribe(event => {
-    const msg: LogMessageType = {
+    let msg: LogMessageType = {
       message: `[build]: build: ${event.build_id} job: ${event.job_id} => ${event.data}`,
       type: 'info',
       notify: false
@@ -82,28 +82,28 @@ jobEvents
   });
 
 // main scheduler
-const concurrency = config.concurrency || 10;
+let concurrency = config.concurrency || 10;
 jobProcesses
   .mergeMap(process => execJob(process), concurrency)
   .subscribe();
 
 function execJob(proc: JobProcess): Observable<any> {
-  const index = processes.findIndex(process => process.job_id === proc.job_id);
+  let index = processes.findIndex(process => process.job_id === proc.job_id);
   if (index !== -1) {
     processes[index] = proc;
   } else {
     processes.push(proc);
   }
 
-  const buildProcesses = processes.filter(p => p.build_id === proc.build_id);
-  const testProcesses = buildProcesses.filter(proc => {
+  let buildProcesses = processes.filter(p => p.build_id === proc.build_id);
+  let testProcesses = buildProcesses.filter(proc => {
     return proc.env.findIndex(e => e === 'DEPLOY') === -1;
   });
-  const queuedOrRunning = testProcesses.filter(p => {
+  let queuedOrRunning = testProcesses.filter(p => {
     return p.status === 'queued' || p.status === 'running';
   });
-  const succeded = testProcesses.filter(p => p.status === 'success');
-  const isDeploy = proc.env.findIndex(e => e === 'DEPLOY') !== -1 ? true : false;
+  let succeded = testProcesses.filter(p => p.status === 'success');
+  let isDeploy = proc.env.findIndex(e => e === 'DEPLOY') !== -1 ? true : false;
 
   if (!isDeploy || succeded.length === testProcesses.length) {
     return startJobProcess(proc);
@@ -132,13 +132,13 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
 
         envVars.set(envs, 'ABSTRUSE_SECURE_ENV_VARS', secureVarirables);
 
-        const jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
-        const idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
+        let jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
+        let idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 
         buildSub[proc.job_id] =
           startBuildProcess(proc, envs, jobTimeout, idleTimeout)
             .subscribe(event => {
-              const msg: JobProcessEvent = {
+              let msg: JobProcessEvent = {
                 build_id: proc.build_id,
                 job_id: proc.job_id,
                 type: event.type,
@@ -151,7 +151,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
               } else if (event.data && event.type === 'exposed ports') {
                 proc.exposed_ports = event.data;
               } else if (event.type === 'container') {
-                const ev: JobProcessEvent = {
+                let ev: JobProcessEvent = {
                   type: 'process',
                   build_id: proc.build_id,
                   job_id: proc.job_id,
@@ -163,7 +163,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
                 observer.complete();
               }
             }, err => {
-              const msg: LogMessageType = {
+              let msg: LogMessageType = {
                 message: `[error]: ${err}`, type: 'error', notify: false
               };
               jobFailed(proc, msg)
@@ -175,11 +175,11 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
       .then(runId => {
-        const time = new Date();
-        const data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
+        let time = new Date();
+        let data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
         return dbJobRuns.updateJobRun(data)
           .then(() => {
-            const data = {
+            let data = {
               type: 'process',
               build_id: proc.build_id,
               job_id: proc.job_id,
@@ -190,14 +190,14 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
           });
       })
       .catch(err => {
-        const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+        let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
         logger.next(msg);
       });
   });
 }
 
 export function restartJob(jobId: number): Promise<void> {
-  const time = new Date();
+  let time = new Date();
   let job = null;
   let process = processes.find(p => p.job_id === Number(jobId));
   if (process && process.debug) {
@@ -243,14 +243,14 @@ export function restartJob(jobId: number): Promise<void> {
     .then(() => getBuild(job.builds_id))
     .then(build => sendPendingStatus(build, build.id))
     .catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
 }
 
 
 export function stopJob(jobId: number): Promise<void> {
-  const time = new Date();
+  let time = new Date();
   let process = processes.find(p => p.job_id === Number(jobId));
   if (process && process.debug) {
     process.debug = false;
@@ -292,7 +292,7 @@ export function stopJob(jobId: number): Promise<void> {
                     });
                   })
                   .catch(err => {
-                    const msg: LogMessageType = {
+                    let msg: LogMessageType = {
                       message: `[error]: ${err}`,
                       type: 'error',
                       notify: false
@@ -300,7 +300,7 @@ export function stopJob(jobId: number): Promise<void> {
                     logger.next(msg);
                   });
               }).catch(err => {
-                const msg: LogMessageType = {
+                let msg: LogMessageType = {
                   message: `[error]: ${err}`,
                   type: 'error',
                   notify: false
@@ -323,7 +323,7 @@ export function stopJob(jobId: number): Promise<void> {
                     });
                   })
                   .catch(err => {
-                    const msg: LogMessageType = {
+                    let msg: LogMessageType = {
                       message: `[error]: ${err}`,
                       type: 'error',
                       notify: false
@@ -331,7 +331,7 @@ export function stopJob(jobId: number): Promise<void> {
                     logger.next(msg);
                   });
               }).catch(err => {
-                const msg: LogMessageType = {
+                let msg: LogMessageType = {
                   message: `[error]: ${err}`,
                   type: 'error',
                   notify: false
@@ -340,7 +340,7 @@ export function stopJob(jobId: number): Promise<void> {
               });
           }
         }).catch(err => {
-          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
           logger.next(msg);
         });
     })
@@ -353,7 +353,7 @@ export function stopJob(jobId: number): Promise<void> {
     })
     .then(() => dbJob.getJob(jobId))
     .then(job => {
-      const data = {
+      let data = {
         type: 'process',
         build_id: job.builds_id,
         job_id: job.id,
@@ -367,14 +367,14 @@ export function stopJob(jobId: number): Promise<void> {
         delete buildSub[jobId];
       }
     }).catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
 }
 
 export function debugJob(jobId: number, debug: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
-    const time = new Date();
+    let time = new Date();
     let process = processes.find(p => p.job_id === Number(jobId));
     process.debug = debug;
 
@@ -382,7 +382,7 @@ export function debugJob(jobId: number, debug: boolean): Promise<void> {
       buildSub[jobId].unsubscribe();
       delete buildSub[jobId];
 
-      const msg: JobProcessEvent = {
+      let msg: JobProcessEvent = {
         build_id: process.build_id,
         job_id: Number(jobId),
         type: 'data',
@@ -405,10 +405,10 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
 
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
-      const isGithub = repository.github_id || false;
-      const isBitbucket = repository.bitbucket_id || false;
-      const isGitlab = repository.gitlab_id || false;
-      const isGogs = repository.gogs_id || false;
+      let isGithub = repository.github_id || false;
+      let isBitbucket = repository.bitbucket_id || false;
+      let isGitlab = repository.gitlab_id || false;
+      let isGogs = repository.gogs_id || false;
 
       if (isGithub) {
         if (data.data.pull_request) {
@@ -423,8 +423,8 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
         }
       } else if (isBitbucket) {
         if (data.data.push) {
-          const push = data.data.push.changes[data.data.push.changes.length - 1];
-          const commit = push.commits[push.commits.length - 1];
+          let push = data.data.push.changes[data.data.push.changes.length - 1];
+          let commit = push.commits[push.commits.length - 1];
           sha = commit.hash;
           branch = push.new.type === 'branch' ? push.new.name : 'master';
         } else if (data.data.pullrequest) {
@@ -443,7 +443,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
 
       branch = branch || repository.default_branch || 'master';
 
-      const repo = {
+      let repo = {
         clone_url: repository.clone_url,
         branch: branch,
         pr: pr,
@@ -479,7 +479,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
           .then(job => dataJob = job)
           .then(() => getLastRunId(data.build_id))
           .then(lastRunId => {
-            const jobRun = {
+            let jobRun = {
               start_time: new Date,
               status: 'queued',
               build_run_id: lastRunId,
@@ -502,13 +502,13 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
     .then(() => ({ buildId: buildData.id }))
     .catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
 }
 
 export function restartBuild(buildId: number): Promise<any> {
-  const time = new Date();
+  let time = new Date();
   let buildData;
   let accessToken;
 
@@ -552,11 +552,11 @@ export function restartBuild(buildId: number): Promise<any> {
           });
         })
         .catch(err => {
-          const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
           logger.next(msg);
         });
     }).catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
 }
@@ -565,7 +565,7 @@ export function stopBuild(buildId: number): Promise<any> {
   return getBuild(buildId)
     .then(build => Promise.all(build.jobs.map(job => stopJob(job.id))))
     .catch(err => {
-      const msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);
     });
 }
@@ -579,8 +579,8 @@ function queueJob(jobId: number): Promise<void> {
     .then(() => getBuild(job.builds_id))
     .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
     .then(() => {
-      const data = JSON.parse(job.data);
-      const jobProcess: JobProcess = {
+      let data = JSON.parse(job.data);
+      let jobProcess: JobProcess = {
         build_id: job.builds_id,
         job_id: jobId,
         status: 'queued',
@@ -610,10 +610,10 @@ function jobSucceded(proc: JobProcess): Promise<any> {
   return Promise.resolve()
     .then(() => {
       proc.status = 'success';
-      const time = new Date();
+      let time = new Date();
       return dbJob.getLastRunId(proc.job_id)
         .then(runId => {
-          const data = {
+          let data = {
             id: runId,
             end_time: time,
             status: 'success',
@@ -667,7 +667,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
           });
         })
         .catch(err => {
-          const msg: LogMessageType = {
+          let msg: LogMessageType = {
             message: `[error]: ${err}`, type: 'error', notify: false
           };
           logger.next(msg);
@@ -690,14 +690,14 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
   return Promise.resolve()
     .then(() => {
       proc.status = 'errored';
-      const time = new Date();
+      let time = new Date();
       if (msg) {
         logger.next(msg);
       }
 
       return dbJob.getLastRunId(proc.job_id)
         .then(runId => {
-          const data = {
+          let data = {
             id: runId,
             end_time: time,
             status: 'failed',
@@ -728,7 +728,7 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
           });
         })
         .catch(err => {
-          const msg: LogMessageType = {
+          let msg: LogMessageType = {
             message: `[error]: ${err}`, type: 'error', notify: false
           };
           logger.next(msg);

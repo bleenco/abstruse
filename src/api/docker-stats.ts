@@ -5,7 +5,7 @@ import { processes } from './process-manager';
 
 export function getContainersStats(): Observable<any> {
   return new Observable(observer => {
-    const sub = Observable
+    let sub = Observable
       .interval(2000)
       .timeInterval()
       .mergeMap(() => {
@@ -37,11 +37,11 @@ function getContainerStats(container: any): Promise<any> {
 }
 
 function getCpuData(json: any): { usage: string, cores: number } {
-  const postCpuStats = json.cpu_stats;
-  const preCpuStats = json.precpu_stats;
-  const total = preCpuStats.cpu_usage.total_usage - postCpuStats.cpu_usage.total_usage;
-  const curr = preCpuStats.system_cpu_usage - postCpuStats.system_cpu_usage;
-  const perc = isNaN(total / (total + curr) * 100) ? 0 : total / (total + curr) * 100;
+  let postCpuStats = json.cpu_stats;
+  let preCpuStats = json.precpu_stats;
+  let total = preCpuStats.cpu_usage.total_usage - postCpuStats.cpu_usage.total_usage;
+  let curr = preCpuStats.system_cpu_usage - postCpuStats.system_cpu_usage;
+  let perc = isNaN(total / (total + curr) * 100) ? 0 : total / (total + curr) * 100;
 
   return {
     usage: perc.toFixed(2) + '%',
@@ -51,7 +51,7 @@ function getCpuData(json: any): { usage: string, cores: number } {
 
 function getNetworkData(json: any): { in: string, out: string } {
   if (json.networks && json.networks['eth0']) {
-    const net = json.networks['eth0'];
+    let net = json.networks['eth0'];
     return {
       in: utils.getHumanSize(net.rx_bytes),
       out: utils.getHumanSize(net.tx_bytes)
@@ -62,7 +62,7 @@ function getNetworkData(json: any): { in: string, out: string } {
 }
 
 function getMemory(json: any): { total: string, usage: string, percent: string } {
-  const memStats = json.memory_stats;
+  let memStats = json.memory_stats;
   let memory = memStats.usage / memStats.limit * 100;
   memory = isNaN(memory) ? 0 : memory;
   return {

@@ -122,7 +122,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
       .then(files => repository.file_tree = files)
       .then(() => {
         if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          const err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
+          let err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
           return Promise.reject(err);
         } else {
           return Promise.resolve();
@@ -138,7 +138,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
 }
 
 export function parseConfig(data: any): Config {
-  const main = parseJob(data);
+  let main = parseJob(data);
   main.matrix = parseMatrix(data.matrix || null);
 
   if (data.jobs) {
@@ -233,7 +233,7 @@ export function getConfigRawFile(repository: Repository): Promise<any> {
 }
 
 function parseJob(data: any): Config {
-  const config: Config = {
+  let config: Config = {
     image: null,
     os: null,
     stage: data.stage || 'test',
@@ -372,7 +372,7 @@ function parseMatrix(matrix: any | null): Matrix {
     return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
-      const include = matrix.map((m: Build) => m);
+      let include = matrix.map((m: Build) => m);
       return { include: include, exclude: [], allow_failures: [] };
     } else if (typeof matrix === 'object') {
       let include = [];
@@ -407,19 +407,19 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   // global and matrix environment variables
-  const globalEnv = config.env && config.env.global || [];
-  const matrixEnv = config.env && config.env.matrix || [];
+  let globalEnv = config.env && config.env.global || [];
+  let matrixEnv = config.env && config.env.matrix || [];
 
   // 1. clone repository
-  const splitted = repo.clone_url.split('/');
-  const name = splitted[splitted.length - 1].replace(/\.git/, '');
+  let splitted = repo.clone_url.split('/');
+  let name = splitted[splitted.length - 1].replace(/\.git/, '');
   // TODO: update to ${ABSTRUSE_BUILD_DIR}
   if (repo.access_token) {
     repo.clone_url = repo.clone_url.replace('//', `//${repo.access_token}@`);
   }
 
   let cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
-  const clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
+  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
 
   // 2. fetch & checkout
   let fetch = null;
@@ -439,11 +439,11 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   // 3. generate commands
-  const installCommands = []
+  let installCommands = []
     .concat(config.before_install || [])
     .concat(config.install || []);
 
-  const testCommands = []
+  let testCommands = []
     .concat(config.before_script || [])
     .concat(config.script || [])
     .concat(config.before_cache || [])
@@ -451,14 +451,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     .concat(config.after_failure || [])
     .concat(config.after_script || []);
 
-  const deployCommands = []
+  let deployCommands = []
     .concat(config.before_deploy || [])
     .concat(config.deploy || [])
     .concat(config.after_deploy || []);
 
   // 4. generate jobs outta commands
   data = data.concat(matrixEnv.map(menv => {
-    const env = globalEnv.concat(menv);
+    let env = globalEnv.concat(menv);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
@@ -466,7 +466,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       image: config.image
     };
   })).concat(config.matrix.include.map(i => {
-    const env = globalEnv.concat(i.env || []);
+    let env = globalEnv.concat(i.env || []);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
@@ -474,13 +474,13 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       image: i.image || config.image
     };
   })).concat(config.jobs.include.map((job, i) => {
-    const env = globalEnv.concat(job.env && job.env.global || []);
+    let env = globalEnv.concat(job.env && job.env.global || []);
 
-    const jobInstallCommands = []
+    let jobInstallCommands = []
       .concat(job.before_install || [])
       .concat(job.install || []);
 
-    const jobTestCommands = []
+    let jobTestCommands = []
       .concat(job.before_script || [])
       .concat(job.script || [])
       .concat(job.before_cache || [])
@@ -488,7 +488,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       .concat(job.after_failure || [])
       .concat(job.after_script || []);
 
-    const jobDeployCommands = []
+    let jobDeployCommands = []
       .concat(job.before_deploy || [])
       .concat(job.deploy || [])
       .concat(job.after_deploy || []);
@@ -518,7 +518,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   });
 
   if (deployCommands.length) {
-    const gitCommands = [
+    let gitCommands = [
       { command: clone, type: CommandType.git },
       { command: fetch, type: CommandType.git },
       { command: checkout, type: CommandType.git }
@@ -543,7 +543,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
     let test = false;
 
     branches.ignore.forEach(ignored => {
-      const regex: RegExp = new RegExp(ignored);
+      let regex: RegExp = new RegExp(ignored);
       if (regex.test(branch)) {
         if (!ignore) {
           ignore = true;
@@ -556,7 +556,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
     }
 
     branches.test.forEach(tested => {
-      const regex: RegExp = new RegExp(tested);
+      let regex: RegExp = new RegExp(tested);
       if (regex.test(branch)) {
         if (!test) {
           test = true;
@@ -570,7 +570,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 
 function spawnGit(args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
-    const git = spawn('git', args, { detached: true });
+    let git = spawn('git', args, { detached: true });
 
     git.stdout.on('data', data => {
       data = data.toString();

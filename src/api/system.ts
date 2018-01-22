@@ -3,7 +3,7 @@ import { Observable, Observer } from 'rxjs';
 
 export function isSQLiteInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    const sqlite = spawn('which', ['sqlite3']);
+    let sqlite = spawn('which', ['sqlite3']);
     sqlite.on('close', code => {
       if (code === 0) {
         observer.next(true);
@@ -18,7 +18,7 @@ export function isSQLiteInstalled(): Observable<boolean> {
 
 export function isGitInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    const git = spawn('which', ['git']);
+    let git = spawn('which', ['git']);
     git.on('close', code => {
       if (code === 0) {
         observer.next(true);

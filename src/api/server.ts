@@ -9,7 +9,7 @@ import { logger, LogMessageType } from './logger';
 import { getRootDir } from './setup';
 import * as connectsqlite3 from 'connect-sqlite3';
 
-const SQLiteStore = connectsqlite3(session);
+let SQLiteStore = connectsqlite3(session);
 
 export interface ServerConfig {
   port: number;
@@ -20,7 +20,7 @@ export interface IExpressServer {
   start(): Observable<express.Application>;
 }
 
-export const sessionParser = session({
+export let sessionParser = session({
   store: new SQLiteStore({ dir: getRootDir() }),
   saveUninitialized: false,
   secret: 'sessionSecret',
@@ -36,7 +36,7 @@ export class ExpressServer implements IExpressServer {
 
   start(): Observable<express.Application> {
     return new Observable(observer => {
-      const app: express.Application = express();
+      let app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
       app.use('/webhooks', webhooks);

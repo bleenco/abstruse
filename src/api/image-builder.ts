@@ -20,8 +20,8 @@ export interface ImageBuildOutput {
   output: any;
 }
 
-export const imageBuilder: Subject<ImageBuildOutput> = new Subject();
-export const imageBuilderObs = imageBuilder.share();
+export let imageBuilder: Subject<ImageBuildOutput> = new Subject();
+export let imageBuilderObs = imageBuilder.share();
 
 export function buildAbstruseBaseImage(): void {
   buildDockerImage(defaultBaseImage);
@@ -29,9 +29,9 @@ export function buildAbstruseBaseImage(): void {
 
 export function buildDockerImage(data: ImageData): void {
   prepareDirectory(data).then(() => {
-    const folderPath =
+    let folderPath =
       data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
-    const src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
+    let src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
 
     let msg: LogMessageType = {
       message: `starting image build ${data.name}`,
@@ -43,7 +43,7 @@ export function buildDockerImage(data: ImageData): void {
     docker.buildImage({ context: folderPath, src: src }, { t: data.name })
       .then(output => {
         output.on('data', d => {
-          const output = d.toString();
+          let output = d.toString();
           let parsed = null;
 
           try {
@@ -51,7 +51,7 @@ export function buildDockerImage(data: ImageData): void {
           } catch (e) { }
 
           if (parsed && parsed.errorDetail) {
-            const error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';
+            let error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';
             imageBuilder.next({
               name: data.name,
               output: `error while building image ${data.name} ${error}`
@@ -108,7 +108,7 @@ export function deleteImage(data: ImageData): void {
 
   try {
     docker.getImage(data.name).remove({ force: true }, () => {
-      const folderPath =
+      let folderPath =
         data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
       fs.remove(folderPath);
 
@@ -130,11 +130,11 @@ export function deleteImage(data: ImageData): void {
 }
 
 function prepareDirectory(data: ImageData): Promise<void> {
-  const folderPath =
+  let folderPath =
     data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
-  const dockerFilePath = join(folderPath, 'Dockerfile');
-  const initShFilePath = join(folderPath, 'init.sh');
-  const essentialFolderPath = getFilePath(`docker-essential`);
+  let dockerFilePath = join(folderPath, 'Dockerfile');
+  let initShFilePath = join(folderPath, 'init.sh');
+  let essentialFolderPath = getFilePath(`docker-essential`);
 
   return fs.remove(folderPath)
     .then(() => fs.ensureDir(folderPath))
@@ -142,7 +142,7 @@ function prepareDirectory(data: ImageData): Promise<void> {
     .then(() => fs.writeFile(dockerFilePath, data.dockerfile, 'utf8'))
     .then(() => fs.writeFile(initShFilePath, data.initsh, 'utf8'))
     .catch(err => {
-      const msg: LogMessageType = {
+      let msg: LogMessageType = {
         message: `error preparing ${folderPath} for docker image build`,
         type: 'error',
         notify: false
@@ -161,7 +161,7 @@ export function getImages(): Promise<any> {
 
 function getImagesInDirectory(path: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    const imagesDir = getFilePath(path);
+    let imagesDir = getFilePath(path);
 
     fs.readdir(imagesDir).then(dirs => {
       docker.listImages()
@@ -190,8 +190,8 @@ function getImagesInDirectory(path: string): Promise<any> {
           }).filter(Boolean);
 
           Promise.all(imgs.map(img => {
-            const dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
-            const initsh = getFilePath(`${path}/${img.name}/init.sh`);
+            let dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
+            let initsh = getFilePath(`${path}/${img.name}/init.sh`);
 
             if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
               return fs.readFile(dockerfile)

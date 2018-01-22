@@ -35,7 +35,7 @@ export function generateJwt(data: any): Promise<string> {
 
 export function decodeJwt(token: string): any {
   try {
-    const decoded = jwt.verify(token, config.jwtSecret);
+    let decoded = jwt.verify(token, config.jwtSecret);
     return decoded;
   } catch (err) {
     return false;
@@ -48,7 +48,7 @@ export function calculateMd5(str: string): string {
 
 export function checkApiRequestAuth(req: express.Request): Promise<void> {
   return new Promise((resolve, reject) => {
-    const token = req.get('abstruse-ci-token');
+    let token = req.get('abstruse-ci-token');
     if (!token) {
       reject('Authentication failed.');
     } else {
@@ -71,10 +71,10 @@ export function checkApiRequestAuth(req: express.Request): Promise<void> {
 }
 
 export function encrypt(str: string): string {
-  const publicKeyPath = getFilePath(config.publicKey);
+  let publicKeyPath = getFilePath(config.publicKey);
   if (existsSync(publicKeyPath)) {
-    const key = readFileSync(publicKeyPath, 'utf8').toString();
-    const rsa = new nodeRsa(key);
+    let key = readFileSync(publicKeyPath, 'utf8').toString();
+    let rsa = new nodeRsa(key);
 
     return rsa.encrypt(str, 'base64');
   } else {
@@ -83,10 +83,10 @@ export function encrypt(str: string): string {
 }
 
 export function decrypt(str: string): string {
-  const privateKeyPath = getFilePath(config.privateKey);
+  let privateKeyPath = getFilePath(config.privateKey);
   if (existsSync(privateKeyPath)) {
-    const key = readFileSync(privateKeyPath, 'utf8').toString();
-    const rsa = new nodeRsa(key);
+    let key = readFileSync(privateKeyPath, 'utf8').toString();
+    let rsa = new nodeRsa(key);
 
     return rsa.decrypt(str, 'utf8');
   } else {
@@ -96,15 +96,15 @@ export function decrypt(str: string): string {
 
 export function generateKeys(): Observable<string> {
   return new Observable(observer => {
-    const publicKeyPath = getFilePath(config.publicKey);
-    const privateKeyPath = getFilePath(config.privateKey);
+    let publicKeyPath = getFilePath(config.publicKey);
+    let privateKeyPath = getFilePath(config.privateKey);
 
     if (existsSync(publicKeyPath) && existsSync(privateKeyPath)) {
       observer.complete();
     } else {
-      const bitlen = 4096;
-      const exp = 65537;
-      const options = { public: true, pem: true, internal: true };
+      let bitlen = 4096;
+      let exp = 65537;
+      let options = { public: true, pem: true, internal: true };
 
       RSA.generateKeypair(bitlen, exp, options, (err, keypair) => {
         if (err) {

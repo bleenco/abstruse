@@ -8,17 +8,17 @@ export interface LogMessageType {
   notify: boolean;
 }
 
-export const logger: Subject<LogMessageType> = new Subject();
+export let logger: Subject<LogMessageType> = new Subject();
 
 logger
   .filter((msg: LogMessageType) => !!msg.message && msg.message !== '')
   .mergeMap((msg: LogMessageType) => {
-    const message = { message: msg.message, type: msg.type, notify: msg.notify };
+    let message = { message: msg.message, type: msg.type, notify: msg.notify };
     return Observable.fromPromise(insertLog(colorizeMessage(message)));
   })
   .map((msg: any) => {
-    const time = getDateTime();
-    const message = [
+    let time = getDateTime();
+    let message = [
       chalk.white('['),
       chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
     ].join('');

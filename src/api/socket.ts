@@ -72,14 +72,14 @@ export class SocketServer {
       server = http.createServer(application);
     }
 
-    const wss: uws.Server = new uws.Server({
+    let wss: uws.Server = new uws.Server({
       verifyClient: (info: any, done) => {
-        const ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
-        const query = querystring.parse(info.req.url.substring(2));
-        const user = { id: null, email: 'anonymous', isAdmin: false };
+        let ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
+        let query = querystring.parse(info.req.url.substring(2));
+        let user = { id: null, email: 'anonymous', isAdmin: false };
 
         if (query.token) {
-          const userData = decodeJwt(query.token as string);
+          let userData = decodeJwt(query.token as string);
           if (userData) {
             user.id = userData.id;
             user.email = userData.email;
@@ -87,7 +87,7 @@ export class SocketServer {
           }
         }
 
-        const msg: LogMessageType = {
+        let msg: LogMessageType = {
           message: `[socket]: user ${user.email} connected from ${ip}`,
           type: 'info',
           notify: false
@@ -105,7 +105,7 @@ export class SocketServer {
     });
 
     wss.on('connection', socket => {
-      const client: Client = {
+      let client: Client = {
         sessionID: socket.upgradeReq.sessionID,
         session: socket.upgradeReq.session,
         socket: socket,
@@ -132,7 +132,7 @@ export class SocketServer {
     });
 
     server.listen(config.port, () => {
-      const msg: LogMessageType = {
+      let msg: LogMessageType = {
         message: `[server]: API and Socket Server running at port ${config.port}`,
         type: 'info',
         notify: false
@@ -146,8 +146,8 @@ export class SocketServer {
   }
 
   private removeClient(socket: uws.Socket): void {
-    const index = this.clients.findIndex(c => c.socket === socket);
-    const client = this.clients[index];
+    let index = this.clients.findIndex(c => c.socket === socket);
+    let client = this.clients[index];
 
     Object.keys(client.subscriptions).forEach(sub => {
       if (client.subscriptions[sub]) {
@@ -155,7 +155,7 @@ export class SocketServer {
       }
     });
 
-    const msg: LogMessageType = {
+    let msg: LogMessageType = {
       message: `[socket]: user ${client.session.email} from ${client.session.ip} disconnected`,
       type: 'info',
       notify: false
@@ -168,8 +168,8 @@ export class SocketServer {
   private handleEvent(event: any, client: Client): void {
     switch (event.type) {
       case 'login': {
-        const token = event.data;
-        const decoded = !!token ? decodeJwt(token) : false;
+        let token = event.data;
+        let decoded = !!token ? decodeJwt(token) : false;
         client.session.userId = decoded ? decoded.id : null;
         client.session.email = decoded ? decoded.email : 'anonymous';
         client.session.isAdmin = decoded ? decoded.admin : false;
@@ -177,8 +177,8 @@ export class SocketServer {
         break;
 
       case 'logout': {
-        const email = client.session.email;
-        const userId = client.session.userId;
+        let email = client.session.email;
+        let userId = client.session.userId;
         client.session.userId = null;
         client.session.email = 'anonymous';
         client.session.isAdmin = false;
@@ -190,7 +190,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          const imageData = event.data;
+          let imageData = event.data;
           buildDockerImage(imageData);
         }
       }
@@ -201,7 +201,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          const imageData = event.data;
+          let imageData = event.data;
           deleteImage(imageData);
         }
       }
@@ -280,10 +280,10 @@ export class SocketServer {
         break;
 
       case 'subscribeToJobOutput':
-        const jobId = Number(event.data.jobId);
-        const idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
+        let jobId = Number(event.data.jobId);
+        let idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
         if (idx !== -1) {
-          const proc = processes[idx];
+          let proc = processes[idx];
           client.send({ type: 'jobLog', data: proc.log });
           client.send({ type: 'exposed ports', data: proc.exposed_ports || null });
           client.send({ type: 'debug', data: proc.debug || null });
@@ -309,7 +309,7 @@ export class SocketServer {
         } else {
           client.send({ type: 'request_received' });
           logger.filter(msg => !!msg.notify).subscribe(msg => {
-            const notify = { notification: msg, type: 'notification' };
+            let notify = { notification: msg, type: 'notification' };
             client.send(notify);
           });
         }

@@ -9,7 +9,7 @@ import * as envVars from './env-variables';
 import chalk from 'chalk';
 import * as style from 'ansi-styles';
 
-export const docker = new dockerode();
+export let docker = new dockerode();
 
 export function createContainer(
   name: string,
@@ -36,7 +36,7 @@ export function createContainer(
       }
     } as any)
       .then(container => {
-        const msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
+        let msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
           `starting container ` + style.yellow.open + name + ' ' + style.yellow.close +
           `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
           `... ` + style.bold.close;
@@ -75,21 +75,21 @@ export function dockerExec(
     }
 
     if (cmd.type === CommandType.store_cache) {
-      const msg = style.yellow.open + style.bold.open + '==> storing cache ...' +
+      let msg = style.yellow.open + style.bold.open + '==> storing cache ...' +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     } else if (cmd.type === CommandType.restore_cache) {
-      const msg = style.yellow.open + style.bold.open + '==> restoring cache ...' +
+      let msg = style.yellow.open + style.bold.open + '==> restoring cache ...' +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     } else {
-      const msg = style.yellow.open + style.bold.open + '==> ' + command +
+      let msg = style.yellow.open + style.bold.open + '==> ' + command +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     }
 
-    const container = docker.getContainer(id);
-    const execOptions = {
+    let container = docker.getContainer(id);
+    let execOptions = {
       Cmd: ['/usr/bin/abstruse-pty', cmd.command],
       Env: envVars.serialize(env),
       AttachStdout: true,
@@ -100,7 +100,7 @@ export function dockerExec(
     container.exec(execOptions)
       .then(exec => exec.start())
       .then(stream => {
-        const ws = new Writable();
+        let ws = new Writable();
         ws.setDefaultEncoding('utf8');
 
         ws.on('finish', () => {
@@ -117,7 +117,7 @@ export function dockerExec(
           let str = chunk.toString('utf8');
 
           if (str.includes('[error]')) {
-            const splitted = str.split(' ');
+            let splitted = str.split(' ');
             exitCode = Number(splitted[splitted.length - 1]) || 1;
             ws.end();
           } else if (str.includes('[success]')) {
@@ -128,7 +128,7 @@ export function dockerExec(
               str = str.replace(/\/\/(.*)@/, '//');
             }
 
-            const variable =
+            let variable =
               Object.keys(env).find(k => env[k].secure && str.indexOf(env[k].value) >= 0);
             if (typeof variable !== 'undefined') {
               str = str.replace(env[variable].value, '******');
@@ -258,7 +258,7 @@ export function removeContainer(id: string): Promise<void> {
 
 export function imageExists(name: string): Observable<boolean> {
   return new Observable(observer => {
-    const image = spawn('docker', ['inspect', '--type=image', name]);
+    let image = spawn('docker', ['inspect', '--type=image', name]);
     image.on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();
@@ -278,7 +278,7 @@ export function isDockerRunning(): Observable<boolean> {
 
 export function isDockerInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    const which = spawn('which', ['docker']);
+    let which = spawn('which', ['docker']);
     which.on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();
@@ -300,14 +300,14 @@ export function calculateContainerStats(
             let data = JSON.parse(rawJson);
 
             if (data && data.precpu_stats.system_cpu_usage) {
-              const jobId = container.Names[0].split('_')[2] || -1;
-              const job = processes.find(p => p.job_id === Number(jobId));
+              let jobId = container.Names[0].split('_')[2] || -1;
+              let job = processes.find(p => p.job_id === Number(jobId));
               let debug = false;
               if (job) {
                 debug = job.debug || false;
               }
 
-              const stats = {
+              let stats = {
                 id: container.Id,
                 name: container.Names[0].substr(1) || '',
                 debug: debug,

@@ -38,8 +38,8 @@ export function startBuildProcess(
   idleTimeout: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const image = proc.image_name;
-    const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
+    let image = proc.image_name;
+    let name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
 
     proc.commands
       .filter(cmd => typeof cmd.command === 'string' && cmd.command.startsWith('export'))
@@ -47,23 +47,23 @@ export function startBuildProcess(
       .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
       .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
       .forEach(env => {
-        const splitted = env.split('=');
+        let splitted = env.split('=');
         if (splitted.length > 1) {
           envVars.set(envs, splitted[0], splitted[1]);
         }
       });
 
-    const gitTypes = [CommandType.git];
-    const installTypes = [CommandType.before_install, CommandType.install];
-    const scriptTypes = [CommandType.before_script, CommandType.script,
+    let gitTypes = [CommandType.git];
+    let installTypes = [CommandType.before_install, CommandType.install];
+    let scriptTypes = [CommandType.before_script, CommandType.script,
     CommandType.after_success, CommandType.after_failure,
     CommandType.after_script];
 
-    const gitCommands = prepareCommands(proc, gitTypes);
-    const installCommands = prepareCommands(proc, installTypes);
-    const scriptCommands = prepareCommands(proc, scriptTypes);
+    let gitCommands = prepareCommands(proc, gitTypes);
+    let installCommands = prepareCommands(proc, installTypes);
+    let scriptCommands = prepareCommands(proc, scriptTypes);
     let beforeDeployCommands = prepareCommands(proc, [CommandType.before_deploy]);
-    const afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
+    let afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
     let deployCommands = prepareCommands(proc, [CommandType.deploy]);
 
     let deployPreferences;
@@ -118,7 +118,7 @@ export function startBuildProcess(
       ]);
     }
 
-    const sub = docker.createContainer(name, image, envs)
+    let sub = docker.createContainer(name, image, envs)
       .concat(docker.dockerPwd(name, envs))
       .concat(...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .concat(restoreCache)
@@ -139,7 +139,7 @@ export function startBuildProcess(
             envs = event.data;
           }
         } else if (event.type === 'containerError') {
-          const msg = chalk.red((event.data.json && event.data.json.message) || event.data);
+          let msg = chalk.red((event.data.json && event.data.json.message) || event.data);
           observer.next({ type: 'exit', data: msg });
           observer.error(msg);
         } else if (event.type === 'containerInfo') {
@@ -149,11 +149,11 @@ export function startBuildProcess(
           });
         } else if (event.type === 'exit') {
           if (Number(event.data) !== 0) {
-            const msg = [
+            let msg = [
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
             ].join(' ');
-            const tmsg = style.red.open + style.bold.open +
+            let tmsg = style.red.open + style.bold.open +
               `\r\n[error]: executed command returned exit code ${event.data}` +
               style.bold.close + style.red.close;
             observer.next({ type: 'exit', data: chalk.red(tmsg) });
@@ -177,7 +177,7 @@ export function startBuildProcess(
           })
           .catch(err => console.error(err));
       }, () => {
-        const msg = style.green.open + style.bold.open +
+        let msg = style.green.open + style.bold.open +
           '\r\n[success]: build returned exit code 0' +
           style.bold.close + style.green.close;
         observer.next({ type: 'exit', data: chalk.green(msg) });
@@ -199,7 +199,7 @@ export function startBuildProcess(
 
 function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    const proc = child_process.exec(cmd);
+    let proc = child_process.exec(cmd);
 
     proc.stdout.on('data', data => console.log(data.toString()));
     proc.stderr.on('data', data => console.log(data.toString()));
@@ -215,12 +215,12 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
   return new Promise(resolve => {
     let stdout = '';
     let stderr = '';
-    const command = child_process.spawn(cmd, args);
+    let command = child_process.spawn(cmd, args);
 
     command.stdout.on('data', data => stdout += data);
     command.stderr.on('data', data => stderr += data);
     command.on('exit', exit => {
-      const output = { stdout, stderr, exit };
+      let output = { stdout, stderr, exit };
       resolve(output);
     });
   });

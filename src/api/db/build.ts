@@ -220,7 +220,7 @@ export function getLastRunId(buildId: number): Promise<any> {
         if (!build) {
           reject();
         }
-        const runs = build.related('runs').toJSON();
+        let  runs = build.related('runs').toJSON();
 
         resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
       });

@@ -7,7 +7,7 @@ import * as temp from 'temp';
 import * as glob from 'glob';
 import { getHumanSize } from './utils';
 
-const defaultConfig = {
+let defaultConfig = {
   url: null,
   secret: 'thisIsSecret',
   jwtSecret: 'abstruseSecret4321!!',
@@ -44,13 +44,13 @@ export function initSetup(): Promise<string> {
     .then(() => ensureDirectory(getFilePath('images')))
     .then(() => ensureDirectory(getFilePath('base-images')))
     .then(() => {
-      const srcDir = resolve(__dirname, '../../src/files/docker-essential');
-      const destDir = getFilePath('docker-essential');
+      let srcDir = resolve(__dirname, '../../src/files/docker-essential');
+      let destDir = getFilePath('docker-essential');
       return copyFile(srcDir, destDir);
     })
     .then(() => {
-      const avatarDir = resolve(__dirname, '../../src/files/avatars');
-      const destDir = getFilePath('avatars');
+      let avatarDir = resolve(__dirname, '../../src/files/avatars');
+      let destDir = getFilePath('avatars');
       return copyFile(avatarDir, destDir);
     })
     .then(() => getConfig());
@@ -69,24 +69,24 @@ export function getFilePath(relativePath: string): string {
 }
 
 export function makeAbstruseDir(): Promise<null> {
-  const abstruseDir = getRootDir();
+  let abstruseDir = getRootDir();
   return ensureDirectory(abstruseDir);
 }
 
 export function makeCacheDir(): Promise<null> {
-  const cachePath = getFilePath('cache');
+  let cachePath = getFilePath('cache');
   return ensureDirectory(cachePath);
 }
 
 export function createTempDir(): Promise<string> {
-  const tempDir = getFilePath(`cache/${uuid()}`);
+  let tempDir = getFilePath(`cache/${uuid()}`);
   return ensureDirectory(tempDir)
     .then(() => tempDir);
 }
 
 export function writeDefaultConfig(): void {
   ensureDirSync(getRootDir());
-  const configPath = getFilePath('config.json');
+  let configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   getConfig();
 }
@@ -101,8 +101,8 @@ export function getConfig(): string {
 }
 
 export function getCacheFilesFromPattern(pattern: string): any[] {
-  const cacheFolder = getFilePath('cache');
-  const search = glob.sync(join(cacheFolder, pattern));
+  let cacheFolder = getFilePath('cache');
+  let search = glob.sync(join(cacheFolder, pattern));
 
   return [].concat(search.map(result => {
     return {
@@ -114,8 +114,8 @@ export function getCacheFilesFromPattern(pattern: string): any[] {
 
 export function deleteCacheFilesFromPattern(pattern): Promise<void> {
   return new Promise((resolve, reject) => {
-    const cacheFolder = getFilePath('cache');
-    const search = glob.sync(join(cacheFolder, pattern));
+    let cacheFolder = getFilePath('cache');
+    let search = glob.sync(join(cacheFolder, pattern));
 
     Promise.all(search.map(result => remove(result)))
       .then(() => resolve())
