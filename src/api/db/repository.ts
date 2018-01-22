@@ -6,7 +6,7 @@ import { URL } from 'url';
 export function getRepository(id: number, userId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     new Repository({ id: id })
-      .fetch({ withRelated: [ 'access_token', 'variables', 'permissions' ] })
+      .fetch({ withRelated: ['access_token', 'variables', 'permissions'] })
       .then(repo => {
         if (!repo) {
           reject(repo);
@@ -31,7 +31,12 @@ export function getRepository(id: number, userId?: string): Promise<any> {
   });
 }
 
-export function getRepositoryBuilds(id: number, limit: number, offset: number): Promise<any> {
+export function getRepositoryBuilds(
+  id: number,
+  limit: number,
+  offset: number,
+  userid: number
+): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build().query(qb => {
       qb.where('repositories_id', id);
@@ -39,29 +44,42 @@ export function getRepositoryBuilds(id: number, limit: number, offset: number): 
       qb.limit(limit);
       qb.offset(offset);
     })
-    .fetchAll({ withRelated: ['jobs.runs', 'repository.permissions'] })
-    .then(builds => {
-      if (!builds) {
-        reject();
-      }
+      .fetchAll({ withRelated: ['jobs.runs', 'repository.permissions'] })
+      .then(builds => {
+        if (!builds) {
+          reject();
+        }
 
-      builds = builds.toJSON();
-      builds = builds.map(build => {
-        build.jobs = build.jobs.map(job => {
-          if (job.runs.length > 0) {
-            job.end_time = job.runs[job.runs.length - 1].end_time;
-            job.start_time = job.runs[job.runs.length - 1].start_time;
-            job.status = job.runs[job.runs.length - 1].status;
+        builds = builds.toJSON();
+        builds = builds.map(build => {
+          build.jobs = build.jobs.map(job => {
+            if (job.runs.length > 0) {
+              job.end_time = job.runs[job.runs.length - 1].end_time;
+              job.start_time = job.runs[job.runs.length - 1].start_time;
+              job.status = job.runs[job.runs.length - 1].status;
+            }
+
+            delete job.runs;
+            return job;
+          });
+
+          userid = Number(userid);
+          if (build.repository.permissions && build.repository.permissions.length) {
+            const index = build.repository.permissions.findIndex(p => p.users_id === userid);
+            if (index !== -1 && build.repository.permissions[index].permission) {
+              build.hasPermission = true;
+            } else {
+              build.hasPermission = false;
+            }
+          } else {
+            build.hasPermission = false;
           }
 
-          return job;
+          return build;
         });
 
-        return build;
-      });
-
-      resolve(builds);
-    }).catch(err => reject(err));
+        resolve(builds);
+      }).catch(err => reject(err));
   });
 }
 
@@ -148,28 +166,32 @@ export function getRepositories(keyword: string, userId?: string): Promise<any[]
 
       if (userId) {
         q.innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
-        .where('permissions.users_id', userId)
-        .andWhere(function() {
-          this.where('permissions.permission', true).orWhere('public', true);
-        });
+          .where('permissions.users_id', userId)
+          .andWhere(function () {
+            this.where('permissions.permission', true).orWhere('public', true);
+          });
       } else {
         q.where('repositories.public', true);
       }
-    }).fetchAll({ withRelated: [{'permissions': (query) => {
-      if (userId) {
-        query.where('permissions.users_id', userId);
-      } else {
-        return false;
-      }
-    }}] })
-    .then(repos => {
-      if (!repos) {
-        reject();
-      }
-      repos = repos.toJSON();
+    }).fetchAll({
+      withRelated: [{
+        'permissions': (query) => {
+          if (userId) {
+            query.where('permissions.users_id', userId);
+          } else {
+            return false;
+          }
+        }
+      }]
+    })
+      .then(repos => {
+        if (!repos) {
+          reject();
+        }
+        repos = repos.toJSON();
 
-      resolve(repos);
-    });
+        resolve(repos);
+      });
   });
 }
 
@@ -243,27 +265,27 @@ export function pingGitHubRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-          .then(result => {
-            if (!result) {
-              reject(result);
-            } else {
-              let repository = result.toJSON();
-              return addRepositoryPermissionToEveryone(result.id)
-                .then(() => resolve(repository))
-                .catch(err => reject(err));
-            }
-          })
-          .catch(err => reject(err));
-      } else {
-        repo.save(saveData, { method: 'update', require: false })
-          .then(result => {
-            if (!result) {
-              reject(result);
-            } else {
-              resolve(result.toJSON());
-            }
-          })
-          .catch(err => reject(err));
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                let repository = result.toJSON();
+                return addRepositoryPermissionToEveryone(result.id)
+                  .then(() => resolve(repository))
+                  .catch(err => reject(err));
+              }
+            })
+            .catch(err => reject(err));
+        } else {
+          repo.save(saveData, { method: 'update', require: false })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
+            .catch(err => reject(err));
         }
       });
   });
@@ -296,42 +318,42 @@ export function pingBitbucketRepository(data: any): Promise<any> {
               }
             })
             .catch(err => reject(err));
-          }
-        });
-});
+        }
+      });
+  });
 }
 
 export function pingGitLabRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     const saveData = generateGitLabRepositoryData(data);
     new Repository().where({ gitlab_id: saveData.gitlab_id }).fetch()
-    .then(repo => {
-      if (!repo) {
-        new Repository().save(saveData, { method: 'insert' })
-        .then(result => {
-          if (!result) {
-            reject(result);
-          } else {
-            let repository = result.toJSON();
+      .then(repo => {
+        if (!repo) {
+          new Repository().save(saveData, { method: 'insert' })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                let repository = result.toJSON();
 
-            return addRepositoryPermissionToEveryone(repository.id)
-            .then(() => resolve(repository))
+                return addRepositoryPermissionToEveryone(repository.id)
+                  .then(() => resolve(repository))
+                  .catch(err => reject(err));
+              }
+            })
+            .catch(err => reject(err));
+        } else {
+          repo.save(saveData, { method: 'update', require: false })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
             .catch(err => reject(err));
         }
-      })
-      .catch(err => reject(err));
-    } else {
-      repo.save(saveData, { method: 'update', require: false })
-        .then(result => {
-          if (!result) {
-            reject(result);
-          } else {
-            resolve(result.toJSON());
-          }
-        })
-        .catch(err => reject(err));
-      }
-    });
+      });
   });
 }
 
@@ -342,28 +364,28 @@ export function pingGogsRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-          .then(result => {
-            if (!result) {
-              reject(result);
-            } else {
-              let repository = result.toJSON();
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                let repository = result.toJSON();
 
-              return addRepositoryPermissionToEveryone(repository.id)
-                .then(() => resolve(repository))
-                .catch(err => reject(err));
-            }
-          })
-          .catch(err => reject(err));
-      } else {
-        repo.save(saveData, { method: 'update', require: false })
-          .then(result => {
-            if (!result) {
-              reject(result);
-            } else {
-              resolve(result.toJSON());
-            }
-          })
-          .catch(err => reject(err));
+                return addRepositoryPermissionToEveryone(repository.id)
+                  .then(() => resolve(repository))
+                  .catch(err => reject(err));
+              }
+            })
+            .catch(err => reject(err));
+        } else {
+          repo.save(saveData, { method: 'update', require: false })
+            .then(result => {
+              if (!result) {
+                reject(result);
+              } else {
+                resolve(result.toJSON());
+              }
+            })
+            .catch(err => reject(err));
         }
       });
   });

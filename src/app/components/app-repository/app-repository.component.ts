@@ -81,7 +81,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     };
 
     this.accessTokensOptions = [];
-    this.yesNoOptions = [ { key: 0, value: 'No' }, { key: 1, value: 'Yes' } ];
+    this.yesNoOptions = [{ key: 0, value: 'No' }, { key: 1, value: 'Yes' }];
     this.repositoryProviders = [
       { key: 'github', value: 'GitHub' },
       { key: 'gitlab', value: 'GitLab' },
@@ -126,7 +126,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
         }
 
         if (event.data === 'build added' && event.repository_id
-            && event.repository_id === this.id && event.additionalData) {
+          && event.repository_id === this.id && event.additionalData) {
           if (!this.repo.builds) {
             this.repo.builds = [];
           }
@@ -144,22 +144,22 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
               case 'job succeded':
                 status = 'success';
                 this.repo.builds[index].jobs[jobIndex].end_time = event.additionalData;
-              break;
+                break;
               case 'job queued':
                 status = 'queued';
-              break;
+                break;
               case 'job started':
                 status = 'running';
                 this.repo.builds[index].jobs[jobIndex].start_time = event.additionalData;
-              break;
+                break;
               case 'job failed':
                 status = 'failed';
                 this.repo.builds[index].jobs[jobIndex].start_time = event.additionalData;
-              break;
+                break;
               case 'job stopped':
                 status = 'failed';
                 this.repo.builds[index].jobs[jobIndex].end_time = event.additionalData;
-              break;
+                break;
             }
 
             this.repo.builds[index].jobs[jobIndex].status = status;
@@ -219,14 +219,14 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  fetchBuilds(e?: MouseEvent): void {
+  fetchBuilds(e?: Event): void {
     if (e && e.preventDefault) {
       e.preventDefault();
       e.stopPropagation();
     }
 
     this.fetching = true;
-    this.api.getRepositoryBuilds(this.id, this.limit, this.offset).subscribe(builds => {
+    this.api.getRepositoryBuilds(this.id, this.limit, this.offset, this.userId || null).subscribe(builds => {
       if (!this.repo.builds) {
         this.repo.builds = [];
       }

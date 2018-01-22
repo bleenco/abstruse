@@ -67,8 +67,12 @@ export class ApiService {
     return this.get(`${this.url}/repositories/id/${id}`, null, true);
   }
 
-  getRepositoryBuilds(id: string, limit: number, offset: number): Observable<any> {
-    return this.get(`${this.url}/repositories/${id}/builds/${limit}/${offset}`, null, true);
+  getRepositoryBuilds(id: string, limit: number, offset: number, userId: string): Observable<any> {
+    if (userId) {
+      return this.get(`${this.url}/repositories/${id}/builds/${limit}/${offset}/${userId}`, null, true);
+    } else {
+      return this.get(`${this.url}/repositories/${id}/builds/${limit}/${offset}`, null, true);
+    }
   }
 
   addRepository(data: any): Observable<any> {
