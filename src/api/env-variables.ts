@@ -21,16 +21,16 @@ export function serialize(envs: EnvVariables): string[] {
 
 export function unserialize(envs: string[]): EnvVariables {
   return envs.reduce((acc, curr) => {
-    const splitted = curr.split('=');
+    let splitted = curr.split('=');
     acc = Object.assign({}, acc, { [splitted[0]]: { value: splitted[1], secure: false } });
     return acc;
   }, {});
 }
 
 export function generate(data: any): EnvVariables {
-  const envs = init();
-  const request = data.requestData;
-  const commit = request.data.pull_request && request.data.pull_request.head
+  let envs = init();
+  let request = data.requestData;
+  let commit = request.data.pull_request && request.data.pull_request.head
     && request.data.pull_request.head.sha ||
     request.data.head_commit && request.data.head_commit.id ||
     request.data.sha ||
@@ -41,14 +41,14 @@ export function generate(data: any): EnvVariables {
     request.data.pullrequest.source.commit &&
     request.data.pullrequest.source.commit.hash ||
     request.data.commit || '';
-  const prBranch = request.pr ? request.data.pull_request && request.data.pull_request.head &&
+  let prBranch = request.pr ? request.data.pull_request && request.data.pull_request.head &&
     request.data.pull_request.head.ref ||
     request.data.pullrequest && request.data.pullrequest.source &&
     request.data.pullrequest.source.branch &&
     request.data.pullrequest.source.branch.name ||
     request.data.object_attributes && request.data.object_attributes.source_branch ||
     request.data.pull_request && request.data.pull_request.head_branch : '';
-  const tag = request.ref && request.ref.startsWith('refs/tags/') ?
+  let tag = request.ref && request.ref.startsWith('refs/tags/') ?
     request.ref.replace('refs/tags/', '') : null;
 
   set(envs, 'ABSTRUSE_BRANCH', request.branch);
@@ -60,7 +60,7 @@ export function generate(data: any): EnvVariables {
   set(envs, 'ABSTRUSE_PULL_REQUEST_BRANCH', prBranch);
   set(envs, 'ABSTRUSE_TAG', tag);
 
-  const prSha = request.pr ? commit : '';
+  let prSha = request.pr ? commit : '';
   set(envs, 'ABSTRUSE_PULL_REQUEST_SHA', prSha);
 
   return envs;

@@ -23,7 +23,7 @@ export interface JobProcess {
 
 export function getAbstruseVersion(): string {
   try {
-    const pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
+    let pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
     return pkgJson.version;
   } catch (e) {
     console.log(e);
@@ -36,9 +36,9 @@ export function getHumanSize(bytes: number, decimals = 2): string {
     return '0 Bytes';
   }
 
-  const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const k = 1000;
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  let sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  let k = 1000;
+  let i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
 }
@@ -49,7 +49,7 @@ export function generateRandomId(): string {
 
 export function getHttpJsonResponse(url: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    const options = {
+    let options = {
       url: url,
       headers: {
         'User-Agent': 'request'

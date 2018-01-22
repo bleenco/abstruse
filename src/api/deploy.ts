@@ -9,7 +9,7 @@ export function deploy(
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
     if (preferences) {
-      const provider = preferences.provider;
+      let provider = preferences.provider;
       deployProvider(provider, preferences, container, variables).subscribe(event => {
         observer.next(event);
       }, err => observer.error(err), () => observer.complete());
