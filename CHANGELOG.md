@@ -1,3 +1,13 @@
+<a name="1.4.6"></a>
+## [1.4.6](https://github.com/bleenco/abstruse/compare/v1.4.5...v1.4.6) (2018-01-22)
+
+
+### Bug Fixes
+
+* **permissions:** fix permissions on repository/builds section ([0d356f4](https://github.com/bleenco/abstruse/commit/0d356f4))
+
+
+
 <a name="1.4.5"></a>
 ## [1.4.5](https://github.com/bleenco/abstruse/compare/v1.4.4...v1.4.5) (2018-01-10)
 
