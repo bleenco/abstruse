@@ -4,36 +4,31 @@ import { getBuild } from './build';
 export function getJob(jobId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Job()
-      .query(q => q.where('id', jobId))
-      .fetch({ withRelated: [{'build.repository.permissions': (query) => {
+      .query(q => {
         if (userId) {
-          query.where('permissions.users_id', userId)
-          .andWhere('permissions.permission', true)
-          .orWhere('public', true);
+          q.innerJoin('builds', 'builds.id', 'jobs.builds_id')
+            .innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+            .where('permissions.users_id', userId)
+            .andWhere(function () {
+              this.where('permissions.permission', true).orWhere('repositories.public', true);
+            });
+        } else {
+          q.innerJoin('builds', 'builds.id', 'jobs.builds_id')
+            .innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .where('repositories.public', true);
         }
-      }}, 'runs']})
+
+        q.where('jobs.id', jobId);
+      })
+      .fetch({ withRelated: ['runs', 'build.repository.permissions'] })
       .then(job => {
         if (!job) {
-          reject();
-        }
-        job = job.toJSON();
-
-        userId = parseInt(<any>userId, 10);
-        if (job.build
-          && job.build.repository
-          && job.build.repository.permissions
-          && job.build.repository.permissions.length) {
-            let index = job.build.repository.permissions.findIndex(p => p.users_id === userId);
-            if (index !== -1 && job.build.repository.permissions[index].permission) {
-              job.hasPermission = true;
-            } else {
-              job.hasPermission = false;
-            }
+          reject('Error while fetching job!');
         } else {
-          job.hasPermission = false;
+          const json = Object.assign({}, job.toJSON(), { hasPermission: true });
+          resolve(json);
         }
-
-        resolve(job);
       });
   });
 }

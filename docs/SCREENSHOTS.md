@@ -1,4 +1,4 @@
-# AbstruseCI in action
+## Abstruse in action
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/1796022/34916601-54380424-f93b-11e7-9b74-edd388b1f454.png">

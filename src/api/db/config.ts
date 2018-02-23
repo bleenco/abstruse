@@ -12,8 +12,7 @@ const dbConfig = Object.assign({}, config.db, {
   migrations: {
     tableName: 'knex_migrations',
     directory: setup.getFilePath('migrations')
-  },
-  debug: true
+  }
 });
 
 if (dbConfig.connection.filename) {

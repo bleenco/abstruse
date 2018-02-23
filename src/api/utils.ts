@@ -97,11 +97,11 @@ export function generateBadgeHtml(status: string): string {
         <path fill="${background}" d="M50 0h50v20H50z"></path>
         <path fill="url(#b)" d="M0 0h100v20H0z"></path>
       </g>
-      <g fill="#fff" font-family="Verdana,Geneva,sans-serif" font-size="10">
-        <text x="4" y="15" fill="#010101" fill-opacity=".3">abstruse</text>
-        <text x="4" y="14">abstruse</text>
-        <text x="53" y="15" fill="#010101" fill-opacity=".3">${status}</text>
-        <text x="53" y="14">${status}</text>
+      <g fill="#fff" font-family="Helvetica,sans-serif" font-size="10">
+        <text x="6" y="15" fill="#010101" fill-opacity=".3">abstruse</text>
+        <text x="6" y="14">abstruse</text>
+        <text x="55" y="15" fill="#010101" fill-opacity=".3">${status}</text>
+        <text x="55" y="14">${status}</text>
       </g>
     </svg>
   `;

@@ -107,7 +107,10 @@ export function getRepositoryBadge(id: number): Promise<string> {
         withRelated: [
           { 'builds': query => query.where('pr', null).orderBy('id', 'desc').limit(1) },
           { 'builds.runs': query => query.orderBy('id', 'desc').limit(1) },
-          { 'builds.runs.job_runs': query => query.groupBy('job_id', 'max(id)') }
+          { 'builds.runs.job_runs': query => {
+            query.groupBy('job_id');
+            query.orderBy('id', 'desc').limit(1);
+          }}
         ]
       } as any)
       .then(repo => {
