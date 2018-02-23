@@ -75,21 +75,27 @@ export function getBuilds(
 export function getBuild(id: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
-      .query(q => q.where('id', id))
-      .fetch({
-        withRelated: [{
-          'repository.permissions': (query) => {
-            if (userId) {
-              query.where('permissions.users_id', userId)
-                .andWhere('permissions.permission', true)
-                .orWhere('public', true);
-            }
-          }
-        },
-          'repository.access_token',
-          'jobs.runs',
-          'runs.job_runs']
+      .query(q => {
+        if (userId) {
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+            .where('permissions.users_id', userId)
+            .andWhere(function () {
+              this.where('permissions.permission', true).orWhere('repositories.public', true);
+            });
+        } else {
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .where('repositories.public', true);
+        }
+
+        q.where('builds.id', id);
       })
+      .fetch({ withRelated: [
+        'repository.permissions',
+        'repository.access_token',
+        'jobs.runs',
+        'runs.job_runs'
+      ] })
       .then(build => {
         if (!build) {
           reject();
@@ -220,7 +226,7 @@ export function getLastRunId(buildId: number): Promise<any> {
         if (!build) {
           reject();
         }
-        let  runs = build.related('runs').toJSON();
+        let runs = build.related('runs').toJSON();
 
         resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
       });
