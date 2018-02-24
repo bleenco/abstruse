@@ -1,3 +1,13 @@
+<a name="1.5.1"></a>
+## [1.5.1](https://github.com/bleenco/abstruse/compare/v1.5.0...v1.5.1) (2018-02-24)
+
+
+### Bug Fixes
+
+* **memory-leak:** fix container statistics memory leak (unresolved promise) ([5410c33](https://github.com/bleenco/abstruse/commit/5410c33))
+
+
+
 <a name="1.4.6"></a>
 ## [1.4.6](https://github.com/bleenco/abstruse/compare/v1.4.5...v1.4.6) (2018-01-22)
 
