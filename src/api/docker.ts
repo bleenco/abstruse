@@ -8,8 +8,10 @@ import { ProcessOutput } from './process';
 import * as envVars from './env-variables';
 import chalk from 'chalk';
 import * as style from 'ansi-styles';
+import { platform } from 'os';
 
-export let docker = new dockerode();
+export const docker = new dockerode();
+const binds = platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'];
 
 export function createContainer(
   name: string,
@@ -24,7 +26,7 @@ export function createContainer(
       OpenStdin: true,
       StdinOnce: false,
       Env: envVars.serialize(envs) || [],
-      Binds: ['/var/run/docker.sock:/var/run/docker.sock'],
+      Binds: binds,
       Privileged: true,
       ExposedPorts: {
         '22/tcp': {},
@@ -290,37 +292,23 @@ export function calculateContainerStats(
   container: dockerode.ContainerInfo,
   processes: any
 ): Promise<any> {
-  return docker.getContainer(container.Id).stats()
-    .then(stream => {
-      let json = '';
-      return new Promise((resolve, reject) => {
-        stream.on('data', buf => {
-          let rawJson = json + buf.toString();
-          try {
-            let data = JSON.parse(rawJson);
+  return docker.getContainer(container.Id).stats({ stream: false })
+    .then(stats => {
+      const data = stats;
+      if (data && data.precpu_stats.system_cpu_usage) {
+        const jobId = container.Names[0].split('_')[2] || -1;
+        const job = processes.find(p => p.job_id === Number(jobId));
+        const debug = job && job.debug || false;
+        const stats = {
+          id: container.Id,
+          name: container.Names[0].substr(1) || '',
+          debug: debug,
+          data: data
+        };
 
-            if (data && data.precpu_stats.system_cpu_usage) {
-              let jobId = container.Names[0].split('_')[2] || -1;
-              let job = processes.find(p => p.job_id === Number(jobId));
-              let debug = false;
-              if (job) {
-                debug = job.debug || false;
-              }
-
-              let stats = {
-                id: container.Id,
-                name: container.Names[0].substr(1) || '',
-                debug: debug,
-                data: data
-              };
-
-              stream.destroy();
-              resolve(stats);
-            }
-          } catch (e) {
-            json = rawJson;
-          }
-        });
-      });
+        return stats;
+      } else {
+        return null;
+      }
     });
 }

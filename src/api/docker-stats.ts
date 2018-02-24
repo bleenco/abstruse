@@ -12,7 +12,7 @@ export function getContainersStats(): Observable<any> {
         return listContainers()
           .then(containers => Promise.all(containers.map(c => getContainerStats(c))));
       })
-      .map(stats => observer.next({ type: 'containersStats', data: stats }))
+      .map(stats => observer.next({ type: 'containersStats', data: stats.filter(Boolean) }))
       .subscribe();
 
     return () => {
@@ -25,14 +25,18 @@ export function getContainersStats(): Observable<any> {
 
 function getContainerStats(container: any): Promise<any> {
   return calculateContainerStats(container, processes).then(stats => {
-    return {
-      id: stats.id,
-      name: stats.name,
-      cpu: getCpuData(stats.data),
-      network: getNetworkData(stats.data),
-      memory: getMemory(stats.data),
-      debug: stats.debug
-    };
+    if (stats) {
+      return {
+        id: stats.id,
+        name: stats.name,
+        cpu: getCpuData(stats.data),
+        network: getNetworkData(stats.data),
+        memory: getMemory(stats.data),
+        debug: stats.debug
+      };
+    } else {
+      return null;
+    }
   });
 }
 
