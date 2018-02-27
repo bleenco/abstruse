@@ -1,8 +1,8 @@
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/35203440-7d911df4-ff28-11e7-8018-01eee01367f0.png">
+<p align="center" style="margin: 20px 0 40px 0;">
+  <img src="https://user-images.githubusercontent.com/1796022/36752913-da367a10-1c04-11e8-88e4-4ce18372843d.png">
 </p>
 
-# Abstruse
+## Abstruse
 
 [![AbstruseCI](https://ci.bleenco.io/badge/1)](https://ci.bleenco.io/repo/1)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/bleenco/abstruse)
@@ -66,9 +66,10 @@ We would love to receive community support. Whether fixing bugs or creating new 
 
 ## License
 
+```
 The MIT License
 
-Copyright (c) 2017 Bleenco GmbH http://bleenco.com
+Copyright (c) 2018 Bleenco GmbH https://bleenco.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -87,3 +88,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+```
