@@ -4,37 +4,37 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 
 import { RouterTestingModule } from '@angular/router/testing';
-import { SpyLocation }         from '@angular/common/testing';
-import { MockBackend }         from '@angular/http/testing';
+import { SpyLocation } from '@angular/common/testing';
+import { MockBackend } from '@angular/http/testing';
 
-import { click }               from './testing';
+import { click } from '../testing';
 
 // r - for relatively obscure router symbols
-import * as r                         from '@angular/router';
+import * as r from '@angular/router';
 import { Router, RouterLinkWithHref } from '@angular/router';
 
-import { By }                 from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { DebugElement, Type } from '@angular/core';
-import { Location }           from '@angular/common';
+import { Location } from '@angular/common';
 
-import { AppModule }              from './app.module';
-import { AppComponent }           from './app.component';
-import { AppBuildsComponent }     from './components/app-builds';
+import { AppModule } from './app.module';
+import { AppComponent } from './app.component';
+import { AppBuildsComponent } from './components/app-builds';
 
-let comp:     AppComponent;
-let fixture:  ComponentFixture<AppComponent>;
-let page:     Page;
-let router:   Router;
+let comp: AppComponent;
+let fixture: ComponentFixture<AppComponent>;
+let page: Page;
+let router: Router;
 let location: SpyLocation;
 
 describe('AppComponent & RouterTestingModule', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ AppModule, RouterTestingModule ],
-      providers: [ MockBackend ]
+      imports: [AppModule, RouterTestingModule],
+      providers: [MockBackend]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   xit('should navigate to "Builds List" immediately', async(() => {
@@ -152,10 +152,10 @@ function createComponent() {
 }
 
 class Page {
-  aboutLinkDe:     DebugElement;
+  aboutLinkDe: DebugElement;
   dashboardLinkDe: DebugElement;
-  heroesLinkDe:    DebugElement;
-  recordedEvents:  any[]  =  [];
+  heroesLinkDe: DebugElement;
+  recordedEvents: any[] = [];
 
   // for debugging
   comp: AppComponent;
@@ -175,14 +175,14 @@ class Page {
   constructor() {
     router.events.subscribe(e => this.recordedEvents.push(e));
     const links = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
-    this.aboutLinkDe     = links[2];
+    this.aboutLinkDe = links[2];
     this.dashboardLinkDe = links[0];
-    this.heroesLinkDe    = links[1];
+    this.heroesLinkDe = links[1];
 
     // for debugging
-    this.comp    = comp;
+    this.comp = comp;
     this.fixture = fixture;
-    this.router  = router;
+    this.router = router;
   }
 }
 
