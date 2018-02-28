@@ -240,9 +240,9 @@ export class ApiService {
   }
 
   private get(url: string, searchParams: HttpParams = null, auth = false): Observable<any> {
-    const headers = new HttpHeaders();
+    let headers = new HttpHeaders();
     if (auth) {
-      headers['abstruse-ci-token'] = localStorage.getItem('abs-token');
+      headers = headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
     }
 
     return this.http.get(url, { params: searchParams, headers: headers })
@@ -253,9 +253,9 @@ export class ApiService {
   }
 
   private post(url: string, data: any, auth = false): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     if (auth) {
-      headers['abstruse-ci-token'] = localStorage.getItem('abs-token');
+      headers = headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
     }
     const options = { headers: headers };
 

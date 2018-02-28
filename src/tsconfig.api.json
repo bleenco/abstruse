@@ -9,5 +9,8 @@
   },
   "files": [
     "./api/index.ts"
+  ],
+  "include": [
+    "api/**/*"
   ]
 }

@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
 import * as session from 'express-session';
@@ -9,7 +9,7 @@ import { logger, LogMessageType } from './logger';
 import { getRootDir } from './setup';
 import * as connectsqlite3 from 'connect-sqlite3';
 
-let SQLiteStore = connectsqlite3(session);
+const SQLiteStore = connectsqlite3(session);
 
 export interface ServerConfig {
   port: number;
@@ -36,7 +36,7 @@ export class ExpressServer implements IExpressServer {
 
   start(): Observable<express.Application> {
     return new Observable(observer => {
-      let app: express.Application = express();
+      const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
       app.use('/webhooks', webhooks);

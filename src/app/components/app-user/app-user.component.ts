@@ -4,6 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
+import { switchMap } from 'rxjs/operators';
 
 export interface IAccessToken {
   token: string;
@@ -59,7 +60,9 @@ export class AppUserComponent implements OnInit {
 
   fetchUser(): void {
     this.route.params
-      .switchMap((params: Params) => this.api.getUser(params.id))
+      .pipe(
+        switchMap((params: Params) => this.api.getUser(params.id))
+      )
       .subscribe((user: any) => {
         if (user) {
           this.user = user;
@@ -70,7 +73,9 @@ export class AppUserComponent implements OnInit {
       });
 
     this.route.params
-      .switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
+      .pipe(
+        switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
+      )
       .subscribe(repositories => {
         this.repositories = repositories;
         this.repositories.forEach((repo: any, i) => {
@@ -163,18 +168,18 @@ export class AppUserComponent implements OnInit {
   }
 
   updateRepositoryPermissions(userId: number, repositoryId: number, permission: boolean): void {
-    let data = { user: userId, repository: repositoryId, permission: permission };
+    const data = { user: userId, repository: repositoryId, permission: permission };
     this.api.updateRepositoryPermission(data).subscribe(event => {
       if (event) {
         if (!permission) {
-          let index = this.repositories.findIndex(r => r.id === repositoryId);
+          const index = this.repositories.findIndex(r => r.id === repositoryId);
           if (index !== -1) {
             this.restrictedRepositories =
               this.restrictedRepositories.concat(this.repositories[index]);
             this.repositories.splice(index, 1);
           }
         } else {
-          let index = this.restrictedRepositories.findIndex(r => r.id === repositoryId);
+          const index = this.restrictedRepositories.findIndex(r => r.id === repositoryId);
           if (index !== -1) {
             this.repositories = this.repositories.concat(this.restrictedRepositories[index]);
             this.restrictedRepositories.splice(index, 1);

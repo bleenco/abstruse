@@ -6,10 +6,10 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "dist",
+      "outDir": "dist/app",
       "assets": [
         "assets",
-        "favicon.ico"
+        { "glob": "**/*", "input": "../node_modules/monaco-editor/min", "output": "./assets/monaco" }
       ],
       "index": "index.html",
       "main": "main.ts",
