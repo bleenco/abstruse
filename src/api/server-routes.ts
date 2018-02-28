@@ -552,7 +552,10 @@ export function badgeRoutes(): express.Router {
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
     getRepositoryBadge(req.params.id).then(status => {
-      res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+      res.writeHead(200, {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'no-cache'
+      });
       res.write(generateBadgeHtml(status));
       res.end();
     }).catch(err => res.status(200).json({ status: false }));
@@ -562,7 +565,10 @@ export function badgeRoutes(): express.Router {
     getRepositoryId(req.params.owner, req.params.repository)
       .then(id => getRepositoryBadge(id))
       .then(status => {
-        res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
+        res.writeHead(200, {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'no-cache'
+        });
         res.write(generateBadgeHtml(status));
         res.end();
       }).catch(err => res.status(200).json({ status: false }));
