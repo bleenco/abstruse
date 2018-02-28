@@ -6,7 +6,9 @@ const uglify = require('uglifyjs-webpack-plugin');
 module.exports = {
   context: __dirname,
   target: 'node',
-  resolve: { extensions: ['.ts', '.js'] },
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
   entry: {
     index: path.join(root, 'src/api/index.ts')
   },
@@ -20,7 +22,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      { test: /\.ts$/, loaders: ['ts-loader?silent=true'] },
+      { test: /\.ts$/, loader: 'ts-loader', options: { configFile: path.join(root, './src/tsconfig.api.json'), silent: true } }
     ]
   },
   stats: {
@@ -48,6 +50,6 @@ module.exports = {
     sqlite3: 'commonjs sqlite3',
     dockerode: 'commonjs dockerode',
     'rsa-compat': 'commonjs rsa-compat',
-    'uws': 'commonjs uws'
+    uws: 'commonjs uws'
   }
 };

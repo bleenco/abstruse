@@ -3,11 +3,11 @@
     <div class="container">
       <div class="columns is-multiline">
         <div class="container" *ngIf="loading">
-          <img src="/images/icons/flickr.svg" class="main-loader">
+          <img src="/assets/images/icons/flickr.svg" class="main-loader">
         </div>
         <div class="column is-4 is-offset-4" *ngIf="!loading">
           <div class="setup-logo">
-            <img src="/images/abstruse-text-logo.svg">
+            <img src="/assets/images/abstruse-text-logo.svg">
           </div>
         </div>
         <div class="column is-4 is-offset-4">
@@ -26,7 +26,7 @@
             </div>
           </form>
           <a *ngIf="!loading && !required" class="button centered-anonymous" routerLink="/">
-            <img src="/images/icons/anonymous.svg">
+            <img src="/assets/images/icons/anonymous.svg">
             Continue as anonymous
           </a>
         </div>

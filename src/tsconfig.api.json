@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist/api",
+    "baseUrl": "./",
+    "module": "commonjs",
+    "target": "es2015",
+    "types": ["node", "bookshelf"]
+  },
+  "files": [
+    "./api/index.ts"
+  ]
+}

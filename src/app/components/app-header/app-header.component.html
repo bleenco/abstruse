@@ -2,7 +2,7 @@
   <div class="container">
     <div class="header-left">
       <a class="header-item" routerLink="/">
-        <img src="/images/abstruse-logo.svg" class="abstruse-logo" alt="Abstruse CI">
+        <img src="/assets/images/abstruse-logo.svg" class="abstruse-logo" alt="Abstruse CI">
       </a>
       <a class="header-item is-hidden-mobile" routerLink="/" routerLinkActive="is-active">
         <span>Builds</span>
@@ -16,7 +16,7 @@
       <a class="header-item is-hidden-mobile" routerLink="/repositories" routerLinkActive="is-active">
         <span>Repositories</span>
       </a>
-      <a class="header-item is-hidden-mobile" routerLink="/images" routerLinkActive="is-active" *ngIf="user">
+      <a class="header-item is-hidden-mobile" routerLink="/assets/images" routerLinkActive="is-active" *ngIf="user">
         <span>Images</span>
       </a>
     </div>
@@ -60,7 +60,7 @@
 
 <div class="mobile-nav is-hidden-tablet is-mobile is-mobile-only">
   <a routerLink="/">
-    <img class="mobile-nav-logo" src="/images/abstruse-text-logo.svg">
+    <img class="mobile-nav-logo" src="/assets/images/abstruse-text-logo.svg">
   </a>
   <a routerLink="/login" *ngIf="!user">
     <i class="ionicon ion-log-in"></i>

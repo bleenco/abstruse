@@ -1,7 +1,9 @@
 import { Injectable, Provider } from '@angular/core';
-import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angular/http';
+import { HttpClient, HttpResponse, HttpParams, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { catchError, map } from 'rxjs/operators';
 import { IAccessToken } from '../components/app-user';
 
 @Injectable()
@@ -10,9 +12,9 @@ export class ApiService {
   loc: Location;
   port: string;
 
-  constructor(private http: Http, private router: Router) {
+  constructor(private http: HttpClient, private router: Router) {
     this.loc = window.location;
-    this.port = this.loc.port === '8000' ? ':6500' : `:${this.loc.port}`; // dev mode
+    this.port = this.loc.port === '4200' ? ':6500' : `:${this.loc.port}`; // dev mode
     this.url = `${this.loc.protocol}//${this.loc.hostname}${this.port}/api`;
   }
 
@@ -51,8 +53,8 @@ export class ApiService {
   }
 
   getRepositories(keyword: string, userId?: string): Observable<any> {
-    const params = new URLSearchParams();
-    params.append('keyword', keyword);
+    const params = new HttpParams();
+    params.set('keyword', keyword);
     if (userId) {
       return this.get(`${this.url}/repositories/${userId}`, params, true);
     }
@@ -225,61 +227,54 @@ export class ApiService {
   }
 
   customGet(url: string, searchParams: any = null): Observable<any> {
-    let params = new URLSearchParams();
+    const params = new HttpParams();
     Object.keys(searchParams).forEach(key => {
-      params.append(key, searchParams[key]);
+      params.set(key, searchParams[key]);
     });
 
-    return this.http.get(url, { search: params })
-      .map(res => res.json())
-      .catch(this.handleError);
+    return this.http.get(url, { params: params })
+      .pipe(
+        map((x: any) => x.data),
+        catchError(this.handleError)
+      );
   }
 
-  private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
-    let headers = new Headers();
+  private get(url: string, searchParams: HttpParams = null, auth = false): Observable<any> {
+    const headers = new HttpHeaders();
     if (auth) {
-      headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
+      headers['abstruse-ci-token'] = localStorage.getItem('abs-token');
     }
 
-    return this.http.get(url, { search: searchParams, headers: headers })
-      .map(this.extractData)
-      .catch(this.handleError);
+    return this.http.get(url, { params: searchParams, headers: headers })
+      .pipe(
+        map((x: any) => x.data),
+        catchError(this.handleError)
+      );
   }
 
   private post(url: string, data: any, auth = false): Observable<any> {
-    let headers = new Headers({ 'Content-Type': 'application/json' });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     if (auth) {
-      headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
+      headers['abstruse-ci-token'] = localStorage.getItem('abs-token');
     }
-    let options = new RequestOptions({ headers: headers });
+    const options = { headers: headers };
 
     return this.http.post(url, data, options)
-      .map(this.extractData)
-      .catch(this.handleError);
+      .pipe(
+        map((x: any) => x.data),
+        catchError(this.handleError)
+      );
   }
 
-  private extractData(res: Response) {
-    if (res.status !== 200) {
-      localStorage.removeItem('abs-token');
-      this.router.navigate(['/login']);
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occurred:', error.error.message);
     } else {
-      let body = res.json();
-      return body && typeof body.data !== 'undefined' ? body.data : {};
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
     }
-  }
-
-  private handleError(error: Response | any) {
-    let errMsg: string;
-    if (error instanceof Response) {
-      const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-    } else {
-      errMsg = error.message ? error.message : error.toString();
-    }
-
-    console.error(errMsg);
-    return Observable.throw(errMsg);
+    return new ErrorObservable('Something bad happened; please try again later.');
   }
 }
 

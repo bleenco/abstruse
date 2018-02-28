@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Input, SimpleChange, Inject } from '@angular/core';
+import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Terminal, ITheme } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
@@ -6,7 +6,7 @@ import * as fit from 'xterm/lib/addons/fit/fit';
   selector: 'app-terminal',
   templateUrl: 'app-terminal.component.html'
 })
-export class AppTerminalComponent implements OnInit {
+export class AppTerminalComponent implements OnInit, OnChanges {
   @Input() data: any;
   @Input() options: { size: 'normal' | 'large', newline: boolean };
   term: any;
@@ -49,7 +49,7 @@ export class AppTerminalComponent implements OnInit {
     this.term.fit();
   }
 
-  ngOnChanges(changes: SimpleChange) {
+  ngOnChanges(changes: SimpleChanges) {
      if (!this.data) {
       return;
     }

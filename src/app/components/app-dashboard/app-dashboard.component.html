@@ -19,7 +19,7 @@
     <div class="column is-12">
       <div class="content">
         <div class="container" *ngIf="loading">
-          <img src="/images/icons/flickr.svg" class="main-loader">
+          <img src="/assets/images/icons/flickr.svg" class="main-loader">
         </div>
 
         <div class="columns is-multiline" *ngIf="!loading">
@@ -130,7 +130,7 @@
                 <h3>Total CPU Usage</h3>
               </div>
               <div *ngIf="!cpuCores?.length">
-                <img src="/images/icons/flickr.svg" class="main-loader">
+                <img src="/assets/images/icons/flickr.svg" class="main-loader">
               </div>
               <div *ngIf="cpuCores?.length">
                 <app-progress-chart [percent]="cpuPercent"></app-progress-chart>
@@ -142,7 +142,7 @@
                 <h3>CPU Cores Utilization</h3>
               </div>
               <div *ngIf="!cpuCores?.length">
-                <img src="/images/icons/flickr.svg" class="main-loader">
+                <img src="/assets/images/icons/flickr.svg" class="main-loader">
               </div>
               <div *ngIf="cpuCores?.length">
                 <div class="info-data-container" *ngFor="let core of cpuCores; let i = index">

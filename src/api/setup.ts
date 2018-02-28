@@ -1,13 +1,14 @@
 import { join, resolve } from 'path';
 import { existsSync, copyFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
+import { homedir } from 'os';
 import { ensureDirSync, statSync, remove } from 'fs-extra';
 import * as uuid from 'uuid';
 import * as temp from 'temp';
 import * as glob from 'glob';
 import { getHumanSize } from './utils';
 
-let defaultConfig = {
+const defaultConfig = {
   url: null,
   secret: 'thisIsSecret',
   jwtSecret: 'abstruseSecret4321!!',
@@ -31,7 +32,7 @@ let defaultConfig = {
   }
 };
 
-export let abstruseHome = null;
+export let abstruseHome = `${homedir()}/.abstruse`;
 export let config: any = defaultConfig;
 
 export function setHome(dirPath: string): void {

@@ -1,12 +1,12 @@
 import { NgModule }           from '@angular/core';
 import { RouterModule }       from '@angular/router';
 import { CommonModule }       from '@angular/common';
-import { HttpModule }         from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { FormsModule }        from '@angular/forms';
 import { NgUploaderModule }   from 'ngx-uploader';
 import { NgDatepickerModule } from 'ng2-datepicker';
 
-import { AuthGuardProvider, AuthGuard }      from './services/auth-guard.service';
+import { AuthGuard } from './services/auth-guard.service';
 import { AccessGuardProvider, AccessGuard }  from './services/access-guard.service';
 
 
@@ -53,7 +53,7 @@ import { ToTimePipe }                   from './pipes/to-time.pipe';
     ]),
     CommonModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     NgUploaderModule,
     NgDatepickerModule
   ],
@@ -83,14 +83,14 @@ import { ToTimePipe }                   from './pipes/to-time.pipe';
     AppToggleComponent
   ],
   providers: [
-    AuthGuardProvider,
+    AuthGuard,
     AccessGuardProvider
   ],
   exports: [
     RouterModule,
     CommonModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     NgUploaderModule,
     NgDatepickerModule
   ]

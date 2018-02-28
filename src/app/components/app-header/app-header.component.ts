@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService, NotificationType } from '../../services/notification.service';
-const pkgJson = require('../../../../package.json');
+import * as pkgJson from '../../../../package.json';
 
 @Component({
   selector: 'app-header',
@@ -40,7 +40,7 @@ export class AppHeaderComponent implements OnInit {
     });
 
     this.notifications = [];
-    this.version = pkgJson.version;
+    this.version = (<any>pkgJson).version;
     this.demo = false;
   }
 
