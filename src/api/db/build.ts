@@ -54,7 +54,7 @@ export function getBuilds(
 
           userId = parseInt(<any>userId, 10);
           if (build.repository.permissions && build.repository.permissions.length) {
-            let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+            const index = build.repository.permissions.findIndex(p => p.users_id === userId);
             if (index !== -1 && build.repository.permissions[index].permission) {
               build.hasPermission = true;
             } else {
@@ -133,7 +133,7 @@ export function getBuild(id: number, userId?: number): Promise<any> {
 
         userId = parseInt(<any>userId, 10);
         if (build.repository.permissions && build.repository.permissions.length) {
-          let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+          const index = build.repository.permissions.findIndex(p => p.users_id === userId);
           if (index !== -1 && build.repository.permissions[index].permission) {
             build.hasPermission = true;
           } else {
@@ -202,9 +202,9 @@ export function getLastBuild(userId?: number): Promise<any> {
           return job;
         });
 
-        userId = parseInt(<any>userId, 10);
+        userId = Number(userId);
         if (build.repository.permissions && build.repository.permissions.length) {
-          let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+          const index = build.repository.permissions.findIndex(p => p.users_id === userId);
           if (index !== -1 && build.repository.permissions[index].permission) {
             build.hasPermission = true;
           } else {
@@ -226,7 +226,7 @@ export function getLastRunId(buildId: number): Promise<any> {
         if (!build) {
           reject();
         }
-        let runs = build.related('runs').toJSON();
+        const runs = build.related('runs').toJSON();
 
         resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
       });

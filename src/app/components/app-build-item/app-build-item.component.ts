@@ -26,10 +26,11 @@ export class AppBuildItemComponent implements OnInit {
   constructor(
     private socketService: SocketService,
     private apiService: ApiService,
-    private timeService: TimeService) {
-      this.currentTime = new Date().getTime();
-      this.buildCreated = '';
-    }
+    private timeService: TimeService
+  ) {
+    this.currentTime = new Date().getTime();
+    this.buildCreated = '';
+  }
 
   ngOnInit() {
     this.setData();

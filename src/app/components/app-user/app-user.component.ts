@@ -80,8 +80,8 @@ export class AppUserComponent implements OnInit {
         this.repositories = repositories;
         this.repositories.forEach((repo: any, i) => {
           this.api.getBadge(repo.id).subscribe(badge => {
-            if (badge.ok) {
-              this.repositories[i].status_badge = badge._body;
+            if (badge) {
+              this.repositories[i].status_badge = badge;
             }
           });
         });
@@ -92,8 +92,8 @@ export class AppUserComponent implements OnInit {
 
           this.restrictedRepositories.forEach((repo: any, i) => {
             this.api.getBadge(repo.id).subscribe(badge => {
-              if (badge.ok) {
-                this.restrictedRepositories[i].status_badge = badge._body;
+              if (badge) {
+                this.restrictedRepositories[i].status_badge = badge;
               }
             });
           });

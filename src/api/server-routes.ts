@@ -546,7 +546,7 @@ export function repositoryRoutes(): express.Router {
 }
 
 export function badgeRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
     getRepositoryBadge(req.params.id).then(status => {

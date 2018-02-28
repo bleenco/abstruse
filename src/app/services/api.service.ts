@@ -19,7 +19,7 @@ export class ApiService {
   }
 
   getBadge(id: number): Observable<any> {
-    return this.http.get(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
+    return this.customGet(`${this.loc.protocol}//${this.loc.hostname}${this.port}/badge/${id}`);
   }
 
   getLogs(limit: number, offset: number, type: string): Observable<any> {
@@ -227,43 +227,45 @@ export class ApiService {
   }
 
   customGet(url: string, searchParams: any = null): Observable<any> {
-    const params = new HttpParams();
-    Object.keys(searchParams).forEach(key => {
-      params.set(key, searchParams[key]);
+    let params = new HttpParams();
+    Object.keys(searchParams || {}).forEach(key => {
+      params = params.append(key, searchParams[key]);
     });
 
-    return this.http.get(url, { params: params })
+    return this.http.get(url, { responseType: 'text' })
       .pipe(
-        map((x: any) => x.data),
         catchError(this.handleError)
       );
   }
 
   private get(url: string, searchParams: HttpParams = null, auth = false): Observable<any> {
     let headers = new HttpHeaders();
-    if (auth) {
+    if (auth && localStorage.getItem('abs-token')) {
       headers = headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
     }
 
     return this.http.get(url, { params: searchParams, headers: headers })
       .pipe(
-        map((x: any) => x.data),
+        map(this.extractData),
         catchError(this.handleError)
       );
   }
 
   private post(url: string, data: any, auth = false): Observable<any> {
-    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    if (auth) {
-      headers = headers.append('abstruse-ci-token', localStorage.getItem('abs-token'));
+    let headers = new HttpHeaders();
+    if (auth && localStorage.getItem('abs-token')) {
+      headers = headers.append('abstruse-ci-token', localStorage.getItem('abs-token') || null);
     }
-    const options = { headers: headers };
 
-    return this.http.post(url, data, options)
+    return this.http.post(url, data, { headers })
       .pipe(
-        map((x: any) => x.data),
+        map(this.extractData),
         catchError(this.handleError)
       );
+  }
+
+  private extractData(body: any) {
+    return body && typeof body.data !== 'undefined' ? body.data : body;
   }
 
   private handleError(error: HttpErrorResponse) {

@@ -244,9 +244,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
   }
 
   fetchBadge(): void {
-    this.api.getBadge(parseInt(this.id, 10)).subscribe(event => {
-      if (event.ok) {
-        this.statusBadge = event._body.replace(/ \r/g, '').trim();
+    this.api.getBadge(Number(this.id)).subscribe(event => {
+      if (event) {
+        this.statusBadge = event.replace(/ \r/g, '').trim();
       }
     });
   }

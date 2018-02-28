@@ -159,7 +159,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
     }
 
     if (this.document.getElementById('favicon')) {
-      this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+      this.document.getElementById('favicon').setAttribute('href', '/assets/images/favicon.png');
     }
 
     this.titleService.setTitle('Abstruse CI');
@@ -168,11 +168,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
   setFavicon(): void {
     let favicon;
     switch (this.jobRun.status) {
-      case 'queued': favicon = 'images/favicon-queued.png'; break;
-      case 'failed': favicon = 'images/favicon-error.png'; break;
-      case 'running': favicon = 'images/favicon-running.png'; break;
-      case 'success': favicon = 'images/favicon-success.png'; break;
-      default: favicon = 'images/favicon.png'; break;
+      case 'queued': favicon = '/assets/images/favicon-queued.png'; break;
+      case 'failed': favicon = '/assets/images/favicon-error.png'; break;
+      case 'running': favicon = '/assets/images/favicon-running.png'; break;
+      case 'success': favicon = '/assets/images/favicon-success.png'; break;
+      default: favicon = '/assets/images/favicon.png'; break;
     }
 
     const name = this.job.build.repository.full_name;

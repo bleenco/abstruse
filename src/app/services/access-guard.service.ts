@@ -14,7 +14,7 @@ export class AccessGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     return new Observable(observer => {
-      let userData: any = this.authService.getData();
+      const userData: any = this.authService.getData();
       const userId = userData && userData.id || null;
 
       if (route.url && route.url[0]) {

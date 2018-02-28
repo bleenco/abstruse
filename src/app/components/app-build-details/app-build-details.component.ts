@@ -166,7 +166,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     }
 
     if (this.document.getElementById('favicon')) {
-      this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+      this.document.getElementById('favicon').setAttribute('href', '/assets/images/favicon.png');
     }
     this.titleService.setTitle('Abstruse CI');
   }
@@ -191,22 +191,22 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
   getBuildStatus(): string {
     let status = 'queued';
-    let favicon = 'images/favicon-queued.png';
+    let favicon = '/assets/images/favicon-queued.png';
 
     if (this.build && this.build.jobs) {
       if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
         status = 'failed';
-        favicon = 'images/favicon-error.png';
+        favicon = '/assets/images/favicon-error.png';
       }
 
       if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
         status = 'running';
-        favicon = 'images/favicon-running.png';
+        favicon = '/assets/images/favicon-running.png';
       }
 
       if (this.build.jobs.length === this.build.jobs.filter(j => j.status === 'success').length) {
         status = 'success';
-        favicon = 'images/favicon-success.png';
+        favicon = '/assets/images/favicon-success.png';
       }
     }
 
