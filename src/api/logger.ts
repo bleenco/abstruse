@@ -1,5 +1,6 @@
 import { insertLog } from './db/log';
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import chalk from 'chalk';
 
 export interface LogMessageType {

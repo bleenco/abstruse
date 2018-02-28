@@ -1,4 +1,4 @@
-import { join, resolve } from 'path';
+import * as path from 'path';
 import { existsSync, copyFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { homedir } from 'os';
@@ -45,13 +45,13 @@ export function initSetup(): Promise<string> {
     .then(() => ensureDirectory(getFilePath('images')))
     .then(() => ensureDirectory(getFilePath('base-images')))
     .then(() => {
-      let srcDir = resolve(__dirname, '../../src/files/docker-essential');
-      let destDir = getFilePath('docker-essential');
+      const srcDir = path.resolve(__dirname, '../../src/files/docker-essential');
+      const destDir = getFilePath('docker-essential');
       return copyFile(srcDir, destDir);
     })
     .then(() => {
-      let avatarDir = resolve(__dirname, '../../src/files/avatars');
-      let destDir = getFilePath('avatars');
+      const avatarDir = path.resolve(__dirname, '../../src/files/avatars');
+      const destDir = getFilePath('avatars');
       return copyFile(avatarDir, destDir);
     })
     .then(() => getConfig());
@@ -62,32 +62,32 @@ export function appReady(): boolean {
 }
 
 export function getRootDir(): string {
-  return join(abstruseHome, '.abstruse');
+  return path.join(abstruseHome, '.abstruse');
 }
 
 export function getFilePath(relativePath: string): string {
-  return join(getRootDir(), relativePath);
+  return path.join(getRootDir(), relativePath);
 }
 
 export function makeAbstruseDir(): Promise<null> {
-  let abstruseDir = getRootDir();
+  const abstruseDir = getRootDir();
   return ensureDirectory(abstruseDir);
 }
 
 export function makeCacheDir(): Promise<null> {
-  let cachePath = getFilePath('cache');
+  const cachePath = getFilePath('cache');
   return ensureDirectory(cachePath);
 }
 
 export function createTempDir(): Promise<string> {
-  let tempDir = getFilePath(`cache/${uuid()}`);
+  const tempDir = getFilePath(`cache/${uuid()}`);
   return ensureDirectory(tempDir)
     .then(() => tempDir);
 }
 
 export function writeDefaultConfig(): void {
   ensureDirSync(getRootDir());
-  let configPath = getFilePath('config.json');
+  const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   getConfig();
 }
@@ -102,8 +102,8 @@ export function getConfig(): string {
 }
 
 export function getCacheFilesFromPattern(pattern: string): any[] {
-  let cacheFolder = getFilePath('cache');
-  let search = glob.sync(join(cacheFolder, pattern));
+  const cacheFolder = getFilePath('cache');
+  const search = glob.sync(path.join(cacheFolder, pattern));
 
   return [].concat(search.map(result => {
     return {
@@ -115,8 +115,8 @@ export function getCacheFilesFromPattern(pattern: string): any[] {
 
 export function deleteCacheFilesFromPattern(pattern): Promise<void> {
   return new Promise((resolve, reject) => {
-    let cacheFolder = getFilePath('cache');
-    let search = glob.sync(join(cacheFolder, pattern));
+    const cacheFolder = getFilePath('cache');
+    const search = glob.sync(path.join(cacheFolder, pattern));
 
     Promise.all(search.map(result => remove(result)))
       .then(() => resolve())

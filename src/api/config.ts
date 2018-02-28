@@ -105,9 +105,9 @@ export interface Config {
 export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEnv[]> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
-    let branch = repository.type === 'bitbucket' ? 'master' : repository.branch;
-    let sha = repository.sha || null;
-    let pr = repository.pr || null;
+    const branch = repository.type === 'bitbucket' ? 'master' : repository.branch;
+    const sha = repository.sha || null;
+    const pr = repository.pr || null;
     let cloneDir = null;
 
     if (repository.access_token) {
@@ -122,7 +122,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
       .then(files => repository.file_tree = files)
       .then(() => {
         if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          let err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
+          const err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
           return Promise.reject(err);
         } else {
           return Promise.resolve();
@@ -138,7 +138,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
 }
 
 export function parseConfig(data: any): Config {
-  let main = parseJob(data);
+  const main = parseJob(data);
   main.matrix = parseMatrix(data.matrix || null);
 
   if (data.jobs) {
@@ -163,7 +163,7 @@ export function parseConfigFromRaw(repository: Repository, raw: string): Promise
 export function checkRepositoryAccess(repository: Repository): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
-    let branch = repository.branch;
+    const branch = repository.branch;
     let cloneDir = null;
 
     if (repository.access_token) {
@@ -181,7 +181,7 @@ export function checkRepositoryAccess(repository: Repository): Promise<boolean> 
 export function checkConfigPresence(repository: Repository): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
-    let branch = repository.branch;
+    const branch = repository.branch;
     let cloneDir = null;
 
     if (repository.access_token) {
@@ -207,7 +207,7 @@ export function checkConfigPresence(repository: Repository): Promise<boolean> {
 export function getConfigRawFile(repository: Repository): Promise<any> {
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
-    let branch = repository.branch;
+    const branch = repository.branch;
     let cloneDir = null;
 
     if (repository.access_token) {
@@ -233,7 +233,7 @@ export function getConfigRawFile(repository: Repository): Promise<any> {
 }
 
 function parseJob(data: any): Config {
-  let config: Config = {
+  const config: Config = {
     image: null,
     os: null,
     stage: data.stage || 'test',
@@ -372,7 +372,7 @@ function parseMatrix(matrix: any | null): Matrix {
     return { include: [], exclude: [], allow_failures: [] };
   } else {
     if (Array.isArray(matrix)) {
-      let include = matrix.map((m: Build) => m);
+      const include = matrix.map((m: Build) => m);
       return { include: include, exclude: [], allow_failures: [] };
     } else if (typeof matrix === 'object') {
       let include = [];
@@ -407,19 +407,19 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   // global and matrix environment variables
-  let globalEnv = config.env && config.env.global || [];
-  let matrixEnv = config.env && config.env.matrix || [];
+  const globalEnv = config.env && config.env.global || [];
+  const matrixEnv = config.env && config.env.matrix || [];
 
   // 1. clone repository
-  let splitted = repo.clone_url.split('/');
-  let name = splitted[splitted.length - 1].replace(/\.git/, '');
+  const splitted = repo.clone_url.split('/');
+  const name = splitted[splitted.length - 1].replace(/\.git/, '');
   // TODO: update to ${ABSTRUSE_BUILD_DIR}
   if (repo.access_token) {
     repo.clone_url = repo.clone_url.replace('//', `//${repo.access_token}@`);
   }
 
-  let cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
-  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
+  const cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
+  const clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
 
   // 2. fetch & checkout
   let fetch = null;
@@ -439,11 +439,11 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   // 3. generate commands
-  let installCommands = []
+  const installCommands = []
     .concat(config.before_install || [])
     .concat(config.install || []);
 
-  let testCommands = []
+  const testCommands = []
     .concat(config.before_script || [])
     .concat(config.script || [])
     .concat(config.before_cache || [])
@@ -451,14 +451,14 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
     .concat(config.after_failure || [])
     .concat(config.after_script || []);
 
-  let deployCommands = []
+  const deployCommands = []
     .concat(config.before_deploy || [])
     .concat(config.deploy || [])
     .concat(config.after_deploy || []);
 
   // 4. generate jobs outta commands
   data = data.concat(matrixEnv.map(menv => {
-    let env = globalEnv.concat(menv);
+    const env = globalEnv.concat(menv);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
@@ -466,7 +466,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       image: config.image
     };
   })).concat(config.matrix.include.map(i => {
-    let env = globalEnv.concat(i.env || []);
+    const env = globalEnv.concat(i.env || []);
     return {
       commands: installCommands.concat(testCommands),
       env: env,
@@ -474,13 +474,13 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       image: i.image || config.image
     };
   })).concat(config.jobs.include.map((job, i) => {
-    let env = globalEnv.concat(job.env && job.env.global || []);
+    const env = globalEnv.concat(job.env && job.env.global || []);
 
-    let jobInstallCommands = []
+    const jobInstallCommands = []
       .concat(job.before_install || [])
       .concat(job.install || []);
 
-    let jobTestCommands = []
+    const jobTestCommands = []
       .concat(job.before_script || [])
       .concat(job.script || [])
       .concat(job.before_cache || [])
@@ -488,7 +488,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       .concat(job.after_failure || [])
       .concat(job.after_script || []);
 
-    let jobDeployCommands = []
+    const jobDeployCommands = []
       .concat(job.before_deploy || [])
       .concat(job.deploy || [])
       .concat(job.after_deploy || []);
@@ -518,7 +518,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   });
 
   if (deployCommands.length) {
-    let gitCommands = [
+    const gitCommands = [
       { command: clone, type: CommandType.git },
       { command: fetch, type: CommandType.git },
       { command: checkout, type: CommandType.git }
@@ -543,7 +543,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
     let test = false;
 
     branches.ignore.forEach(ignored => {
-      let regex: RegExp = new RegExp(ignored);
+      const regex: RegExp = new RegExp(ignored);
       if (regex.test(branch)) {
         if (!ignore) {
           ignore = true;
@@ -556,7 +556,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
     }
 
     branches.test.forEach(tested => {
-      let regex: RegExp = new RegExp(tested);
+      const regex: RegExp = new RegExp(tested);
       if (regex.test(branch)) {
         if (!test) {
           test = true;
@@ -570,7 +570,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 
 function spawnGit(args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
-    let git = spawn('git', args, { detached: true });
+    const git = spawn('git', args, { detached: true });
 
     git.stdout.on('data', data => {
       data = data.toString();
@@ -595,7 +595,7 @@ function checkoutShaOrPr(
   return new Promise((resolve, reject) => {
     let fetch = null;
     let checkout = null;
-    let gitDir = `--git-dir ${dir}/.git`;
+    const gitDir = `--git-dir ${dir}/.git`;
 
     if (pr) {
       if (type === 'github') {

@@ -4,32 +4,32 @@ import { logger, LogMessageType } from './logger';
 import * as request from 'request';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
+  const config: any = getConfig();
   if (build.repository && build.repository.access_token) {
     if (build.repository.github_id) {
-      let sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
+      const sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
         build.data.sha;
-      let name = build.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const name = build.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusSuccess(gitUrl, abstruseUrl,
         build.repository.access_token);
     } else if (build.repository.bitbucket_id) {
-      let sha = build.data.sha;
-      let name = build.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+      const sha = build.data.sha;
+      const name = build.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
         + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
         build.repository.access_token);
     } else if (build.repository.gitlab_id) {
-      let id = build.data.project_id ?
+      const id = build.data.project_id ?
         build.data.project_id : build.data.object_attributes.target_project_id;
-      let sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitLabStatusSuccess(gitUrl, abstruseUrl,
         build.repository.access_token);
@@ -37,9 +37,9 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
       return Promise.resolve();
     }
   } else {
-    let name = build.repository && build.repository.full_name ||
+    const name = build.repository && build.repository.full_name ||
       build.data.repository.full_name;
-    let msg: LogMessageType = {
+    const msg: LogMessageType = {
       message: `[error]: repository: ${name} => access token is not set`,
       type: 'error',
       notify: true
@@ -51,39 +51,39 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
 }
 
 export function sendPendingStatus(buildData: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
+  const config: any = getConfig();
   if (buildData.repository && buildData.repository.access_token) {
     if (buildData.repository.github_id) {
-      let sha = buildData.data.after || buildData.data.pull_request &&
+      const sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
-      let name = buildData.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const name = buildData.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else if (buildData.repository.bitbucket_id) {
-      let sha = buildData.data.sha;
-      let name = buildData.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+      const sha = buildData.data.sha;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
         + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setBitbucketStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else if (buildData.repository.gitlab_id) {
-      let id = buildData.data.project_id ?
+      const id = buildData.data.project_id ?
         buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else {
       return Promise.resolve();
     }
   } else {
-    let name = buildData.repository && (buildData.repository.full_name ||
+    const name = buildData.repository && (buildData.repository.full_name ||
       buildData.data.repository.full_name);
-    let msg: LogMessageType = {
+    const msg: LogMessageType = {
       message: `[error]: repository: ${name} => access token is not set`,
       type: 'error',
       notify: true
@@ -95,39 +95,39 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
 }
 
 export function sendFailureStatus(buildData: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
+  const config: any = getConfig();
   if (buildData.repository && buildData.repository.access_token) {
     if (buildData.repository.github_id) {
-      let sha = buildData.data.after || buildData.data.pull_request &&
+      const sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
-      let name = buildData.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const name = buildData.repository.full_name;
+      const gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else if (buildData.repository.bitbucket_id) {
-      let sha = buildData.data.sha;
-      let name = buildData.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+      const sha = buildData.data.sha;
+      const name = buildData.data.repository.full_name;
+      const gitUrl = `https://api.bitbucket.org/2.0/repositories`
         + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else if (buildData.repository.gitlab_id) {
-      let id = buildData.data.project_id ?
+      const id = buildData.data.project_id ?
         buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
+      const sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+      const gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+      const abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
     } else {
       return Promise.resolve();
     }
   } else {
-    let name = buildData.repository && buildData.repository.full_name ||
+    const name = buildData.repository && buildData.repository.full_name ||
       buildData.data.repository.full_name;
-    let msg: LogMessageType = {
+    const msg: LogMessageType = {
       message: `[error]: repository: ${name} => access token is not set`,
       type: 'error',
       notify: true
@@ -140,14 +140,14 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
 
 function setGitHubStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'success',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build succeeded',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'Authorization': `token ${token}`,
     'User-Agent': 'Abstruse'
   };
@@ -157,14 +157,14 @@ function setGitHubStatusSuccess(
 
 function setGitHubStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'pending',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build is running',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'Authorization': `token ${token}`,
     'User-Agent': 'Abstruse'
   };
@@ -174,14 +174,14 @@ function setGitHubStatusPending(
 
 function setGitHubStatusError(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'error',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build errored',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'Authorization': `token ${token}`,
     'User-Agent': 'Abstruse'
   };
@@ -191,14 +191,14 @@ function setGitHubStatusError(
 
 function setGitHubStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'failure',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build failed',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'Authorization': `token ${token}`,
     'User-Agent': 'Abstruse'
   };
@@ -208,14 +208,14 @@ function setGitHubStatusFailure(
 
 function setGitLabStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'success',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build succeeded',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'PRIVATE-TOKEN': token
   };
 
@@ -224,14 +224,14 @@ function setGitLabStatusSuccess(
 
 function setGitLabStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'pending',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build is running',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'PRIVATE-TOKEN': token
   };
 
@@ -240,14 +240,14 @@ function setGitLabStatusPending(
 
 function setGitLabStatusError(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'error',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build errored',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'PRIVATE-TOKEN': token
   };
 
@@ -256,14 +256,14 @@ function setGitLabStatusError(
 
 function setGitLabStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
-  let data = {
+  const data = {
     'state': 'failure',
     'target_url': abstruseUrl,
     'description': 'The Abstruse CI build failed',
     'context': 'continuous-integration/abstruse'
   };
 
-  let header = {
+  const header = {
     'PRIVATE-TOKEN': token
   };
 
@@ -274,8 +274,8 @@ function setBitbucketStatusSuccess(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = response.access_token;
-      let statusData = {
+      const access_token = response.access_token;
+      const statusData = {
         'state': 'SUCCESSFUL',
         'url': abstruseUrl,
         'description': 'The Abstruse CI build succeeded',
@@ -283,7 +283,7 @@ function setBitbucketStatusSuccess(
         'key': 'continuous-integration/abstruse'
       };
 
-      let header = {
+      const header = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${access_token}`
       };
@@ -297,8 +297,8 @@ function setBitbucketStatusPending(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = response.access_token;
-      let statusData = {
+      const access_token = response.access_token;
+      const statusData = {
         'state': 'INPROGRESS',
         'url': abstruseUrl,
         'description': 'The Abstruse CI build is running',
@@ -306,7 +306,7 @@ function setBitbucketStatusPending(
         'key': 'continuous-integration/abstruse'
       };
 
-      let header = {
+      const header = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${access_token}`
       };
@@ -320,8 +320,8 @@ function setBitbucketStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
-      let access_token = response.access_token;
-      let statusData = {
+      const access_token = response.access_token;
+      const statusData = {
         'state': 'FAILED',
         'url': abstruseUrl,
         'description': 'The Abstruse CI build failed',
@@ -329,7 +329,7 @@ function setBitbucketStatusFailure(
         'key': 'continuous-integration/abstruse'
       };
 
-      let header = {
+      const header = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${access_token}`
       };
@@ -341,7 +341,7 @@ function setBitbucketStatusFailure(
 
 function sendRequest(url: string, data: any, headers: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
+    const options = {
       url: url,
       method: 'POST',
       headers: headers,
@@ -350,7 +350,7 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
 
     request(options, (err, response, body) => {
       if (err) {
-        let msg: LogMessageType = {
+        const msg: LogMessageType = {
           message: `[http]: request to ${url} failed with code ${err}`,
           type: 'error',
           notify: false
@@ -360,7 +360,7 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
         reject(err);
       } else {
         if (response.statusCode < 300 && response.statusCode >= 200) {
-          let msg: LogMessageType = {
+          const msg: LogMessageType = {
             message: `[http]: request to ${url} successful`,
             type: 'info',
             notify: false
@@ -369,7 +369,7 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
 
           resolve(body);
         } else {
-          let msg: LogMessageType = {
+          const msg: LogMessageType = {
             message: `[http]: request to ${url} failed with error code ${response.statusCode}`,
             type: 'error',
             notify: false

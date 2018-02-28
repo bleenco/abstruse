@@ -1,8 +1,8 @@
-import { resolve } from 'path';
+import * as path from 'path';
 import { readFileSync } from 'fs';
 import * as request from 'request';
 import { CommandType, CommandTypePriority } from './config';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 
 
 export interface JobProcess {
@@ -23,7 +23,8 @@ export interface JobProcess {
 
 export function getAbstruseVersion(): string {
   try {
-    let pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
+    const pkgJson =
+      JSON.parse(readFileSync(path.resolve(__dirname, '../../package.json')).toString());
     return pkgJson.version;
   } catch (e) {
     console.log(e);
@@ -36,9 +37,9 @@ export function getHumanSize(bytes: number, decimals = 2): string {
     return '0 Bytes';
   }
 
-  let sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  let k = 1000;
-  let i = Math.floor(Math.log(bytes) / Math.log(k));
+  const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const k = 1000;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
 }
@@ -49,7 +50,7 @@ export function generateRandomId(): string {
 
 export function getHttpJsonResponse(url: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
+    const options = {
       url: url,
       headers: {
         'User-Agent': 'request'
@@ -109,7 +110,7 @@ export function generateBadgeHtml(status: string): string {
 
 export function getBitBucketAccessToken(clientCredentials: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
+    const options = {
       url: `https://${clientCredentials}@bitbucket.org/site/oauth2/access_token`,
       method: 'POST',
       formData: { grant_type: 'client_credentials' }
@@ -133,7 +134,7 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
 }
 
 export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {
-  let commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
+  const commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
   return commands.sort((a, b) => {
     if (CommandTypePriority[a.type] > CommandTypePriority[b.type]) {
       return 1;

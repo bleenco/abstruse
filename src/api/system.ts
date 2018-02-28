@@ -1,9 +1,10 @@
 import { spawn } from 'child_process';
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 
 export function isSQLiteInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    let sqlite = spawn('which', ['sqlite3']);
+    const sqlite = spawn('which', ['sqlite3']);
     sqlite.on('close', code => {
       if (code === 0) {
         observer.next(true);
@@ -18,7 +19,7 @@ export function isSQLiteInstalled(): Observable<boolean> {
 
 export function isGitInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    let git = spawn('which', ['git']);
+    const git = spawn('which', ['git']);
     git.on('close', code => {
       if (code === 0) {
         observer.next(true);

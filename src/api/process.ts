@@ -3,7 +3,7 @@ import * as child_process from 'child_process';
 import { generateRandomId, prepareCommands } from './utils';
 import { getFilePath } from './setup';
 import { getRepositoryByBuildId } from './db/repository';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
 import * as envVars from './env-variables';
@@ -38,8 +38,8 @@ export function startBuildProcess(
   idleTimeout: number
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
-    let image = proc.image_name;
-    let name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
+    const image = proc.image_name;
+    const name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
 
     proc.commands
       .filter(cmd => typeof cmd.command === 'string' && cmd.command.startsWith('export'))
@@ -47,24 +47,24 @@ export function startBuildProcess(
       .reduce((acc, curr) => acc.concat(curr.split(' ')), [])
       .concat(proc.env.reduce((acc, curr) => acc.concat(curr.split(' ')), []))
       .forEach(env => {
-        let splitted = env.split('=');
+        const splitted = env.split('=');
         if (splitted.length > 1) {
           envVars.set(envs, splitted[0], splitted[1]);
         }
       });
 
-    let gitTypes = [CommandType.git];
-    let installTypes = [CommandType.before_install, CommandType.install];
-    let scriptTypes = [CommandType.before_script, CommandType.script,
+    const gitTypes = [CommandType.git];
+    const installTypes = [CommandType.before_install, CommandType.install];
+    const scriptTypes = [CommandType.before_script, CommandType.script,
     CommandType.after_success, CommandType.after_failure,
     CommandType.after_script];
 
-    let gitCommands = prepareCommands(proc, gitTypes);
-    let installCommands = prepareCommands(proc, installTypes);
-    let scriptCommands = prepareCommands(proc, scriptTypes);
-    let beforeDeployCommands = prepareCommands(proc, [CommandType.before_deploy]);
-    let afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
-    let deployCommands = prepareCommands(proc, [CommandType.deploy]);
+    const gitCommands = prepareCommands(proc, gitTypes);
+    const installCommands = prepareCommands(proc, installTypes);
+    const scriptCommands = prepareCommands(proc, scriptTypes);
+    const beforeDeployCommands = prepareCommands(proc, [CommandType.before_deploy]);
+    const afterDeployCommands = prepareCommands(proc, [CommandType.after_deploy]);
+    let deployCommands: any = prepareCommands(proc, [CommandType.deploy]);
 
     let deployPreferences;
     if (deployCommands.length && typeof deployCommands[0].command === 'object') {
@@ -76,14 +76,14 @@ export function startBuildProcess(
     let restoreCache: Observable<any> = Observable.empty();
     let saveCache: Observable<any> = Observable.empty();
     if (proc.repo_name && proc.branch && proc.cache) {
-      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
-      let cacheHostPath = getFilePath(`cache/${cacheFile}`);
-      let cacheContainerPath = `/home/abstruse/${cacheFile}`;
-      let copyRestoreCmd = [
+      const cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
+      const cacheHostPath = getFilePath(`cache/${cacheFile}`);
+      const cacheContainerPath = `/home/abstruse/${cacheFile}`;
+      const copyRestoreCmd = [
         `if [ -e ${cacheHostPath} ]; `,
         `then docker cp ${cacheHostPath} ${name}:/home/abstruse; fi`
       ].join('');
-      let restoreCmd = [
+      const restoreCmd = [
         `if [ -e ${cacheContainerPath} ]; `,
         `then tar xf ${cacheContainerPath} -C /; fi`
       ].join('');
@@ -94,7 +94,7 @@ export function startBuildProcess(
           name, { command: restoreCmd, type: CommandType.restore_cache, env: envs })
       ]);
 
-      let cacheFolders = proc.cache.map(folder => {
+      const cacheFolders = proc.cache.map(folder => {
         if (folder.startsWith('/')) {
           return folder;
         } else {
@@ -102,11 +102,11 @@ export function startBuildProcess(
         }
       }).join(' ');
 
-      let tarCmd = [
+      const tarCmd = [
         `if [ ! -e ${cacheContainerPath} ]; `,
         `then tar cfz ${cacheContainerPath} ${cacheFolders}; fi`,
       ].join('');
-      let saveTarCmd = [,
+      const saveTarCmd = [,
         `if [ ! -e ${cacheHostPath} ]; `,
         `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
       ].join('');
@@ -118,7 +118,7 @@ export function startBuildProcess(
       ]);
     }
 
-    let sub = docker.createContainer(name, image, envs)
+    const sub = docker.createContainer(name, image, envs)
       .concat(docker.dockerPwd(name, envs))
       .concat(...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
       .concat(restoreCache)
@@ -139,7 +139,7 @@ export function startBuildProcess(
             envs = event.data;
           }
         } else if (event.type === 'containerError') {
-          let msg = chalk.red((event.data.json && event.data.json.message) || event.data);
+          const msg = chalk.red((event.data.json && event.data.json.message) || event.data);
           observer.next({ type: 'exit', data: msg });
           observer.error(msg);
         } else if (event.type === 'containerInfo') {
@@ -149,11 +149,11 @@ export function startBuildProcess(
           });
         } else if (event.type === 'exit') {
           if (Number(event.data) !== 0) {
-            let msg = [
+            const msg = [
               `build: ${proc.build_id} job: ${proc.job_id} =>`,
               `last executed command exited with code ${event.data}`
             ].join(' ');
-            let tmsg = style.red.open + style.bold.open +
+            const tmsg = style.red.open + style.bold.open +
               `\r\n[error]: executed command returned exit code ${event.data}` +
               style.bold.close + style.red.close;
             observer.next({ type: 'exit', data: chalk.red(tmsg) });
@@ -175,9 +175,9 @@ export function startBuildProcess(
             sub.unsubscribe();
             observer.complete();
           })
-          .catch(err => console.error(err));
+          .catch(error => console.error(error));
       }, () => {
-        let msg = style.green.open + style.bold.open +
+        const msg = style.green.open + style.bold.open +
           '\r\n[success]: build returned exit code 0' +
           style.bold.close + style.green.close;
         observer.next({ type: 'exit', data: chalk.green(msg) });
@@ -199,7 +199,7 @@ export function startBuildProcess(
 
 function executeOutsideContainer(cmd: string): Observable<ProcessOutput> {
   return new Observable(observer => {
-    let proc = child_process.exec(cmd);
+    const proc = child_process.exec(cmd);
 
     proc.stdout.on('data', data => console.log(data.toString()));
     proc.stderr.on('data', data => console.log(data.toString()));
@@ -215,12 +215,12 @@ export function spawn(cmd: string, args: string[]): Promise<SpawnedProcessOutput
   return new Promise(resolve => {
     let stdout = '';
     let stderr = '';
-    let command = child_process.spawn(cmd, args);
+    const command = child_process.spawn(cmd, args);
 
     command.stdout.on('data', data => stdout += data);
     command.stderr.on('data', data => stderr += data);
     command.on('exit', exit => {
-      let output = { stdout, stderr, exit };
+      const output = { stdout, stderr, exit };
       resolve(output);
     });
   });

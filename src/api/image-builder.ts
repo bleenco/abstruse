@@ -4,7 +4,8 @@ import { getFilePath } from './setup';
 import * as fs from 'fs-extra';
 import { logger, LogMessageType } from './logger';
 import { join } from 'path';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import * as glob from 'glob';
 import { format, distanceInWordsToNow } from 'date-fns';
 
@@ -29,9 +30,9 @@ export function buildAbstruseBaseImage(): void {
 
 export function buildDockerImage(data: ImageData): void {
   prepareDirectory(data).then(() => {
-    let folderPath =
+    const folderPath =
       data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
-    let src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
+      const src = glob.sync(folderPath + '/**/*').map(filePath => filePath.split('/').pop());
 
     let msg: LogMessageType = {
       message: `starting image build ${data.name}`,
@@ -43,15 +44,15 @@ export function buildDockerImage(data: ImageData): void {
     docker.buildImage({ context: folderPath, src: src }, { t: data.name })
       .then(output => {
         output.on('data', d => {
-          let output = d.toString();
+          const out = d.toString();
           let parsed = null;
 
           try {
-            parsed = JSON.parse(output);
+            parsed = JSON.parse(out);
           } catch (e) { }
 
           if (parsed && parsed.errorDetail) {
-            let error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';
+            const error = parsed.errorDetail.error ? `(${parsed.errorDetail.error})` : '';
             imageBuilder.next({
               name: data.name,
               output: `error while building image ${data.name} ${error}`
@@ -108,7 +109,7 @@ export function deleteImage(data: ImageData): void {
 
   try {
     docker.getImage(data.name).remove({ force: true }, () => {
-      let folderPath =
+      const folderPath =
         data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
       fs.remove(folderPath);
 
@@ -130,11 +131,11 @@ export function deleteImage(data: ImageData): void {
 }
 
 function prepareDirectory(data: ImageData): Promise<void> {
-  let folderPath =
+  const folderPath =
     data.base ? getFilePath(`base-images/${data.name}`) : getFilePath(`images/${data.name}`);
-  let dockerFilePath = join(folderPath, 'Dockerfile');
-  let initShFilePath = join(folderPath, 'init.sh');
-  let essentialFolderPath = getFilePath(`docker-essential`);
+  const dockerFilePath = join(folderPath, 'Dockerfile');
+  const initShFilePath = join(folderPath, 'init.sh');
+  const essentialFolderPath = getFilePath(`docker-essential`);
 
   return fs.remove(folderPath)
     .then(() => fs.ensureDir(folderPath))
@@ -142,7 +143,7 @@ function prepareDirectory(data: ImageData): Promise<void> {
     .then(() => fs.writeFile(dockerFilePath, data.dockerfile, 'utf8'))
     .then(() => fs.writeFile(initShFilePath, data.initsh, 'utf8'))
     .catch(err => {
-      let msg: LogMessageType = {
+      const msg: LogMessageType = {
         message: `error preparing ${folderPath} for docker image build`,
         type: 'error',
         notify: false
@@ -161,13 +162,13 @@ export function getImages(): Promise<any> {
 
 function getImagesInDirectory(path: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    let imagesDir = getFilePath(path);
+    const imagesDir = getFilePath(path);
 
     fs.readdir(imagesDir).then(dirs => {
       docker.listImages()
         .then(images => {
-          let imgs = dirs.map(d => {
-            let index = images.findIndex(i => {
+          const imgs = dirs.map(d => {
+            const index = images.findIndex(i => {
               if (i.RepoTags) {
                 return i.RepoTags.findIndex(t => t.startsWith(d)) !== -1;
               }
@@ -190,8 +191,8 @@ function getImagesInDirectory(path: string): Promise<any> {
           }).filter(Boolean);
 
           Promise.all(imgs.map(img => {
-            let dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
-            let initsh = getFilePath(`${path}/${img.name}/init.sh`);
+            const dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
+            const initsh = getFilePath(`${path}/${img.name}/init.sh`);
 
             if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
               return fs.readFile(dockerfile)
@@ -208,14 +209,14 @@ function getImagesInDirectory(path: string): Promise<any> {
               return Promise.resolve(img);
             }
           }))
-            .then(imgs => resolve(imgs))
+            .then(ims => resolve(ims))
             .catch(err => reject(err));
         });
     });
   });
 }
 
-let defaultBaseImage: ImageData = {
+const defaultBaseImage: ImageData = {
   name: 'abstruse_builder',
   dockerfile: [
     'FROM ubuntu:17.10',

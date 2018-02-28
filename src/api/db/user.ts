@@ -9,7 +9,7 @@ export function getUser(id: number): Promise<any> {
         if (!user) {
           reject(user);
         } else {
-          let result = user.toJSON();
+          const result = user.toJSON();
           delete result.password;
           result.access_tokens = result.access_tokens.map(token => {
             delete token.token;
@@ -61,7 +61,7 @@ export function updateUser(data: any): Promise<any> {
 export function updateUserPassword(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
     generatePassword(data.password).then(generatedPassword => {
-      let userData = { password: generatedPassword };
+      const userData = { password: generatedPassword };
       new User({ id: data.id }).save(userData, { method: 'update', require: false })
         .then(user => {
           if (!user) {
@@ -119,7 +119,7 @@ export function createUser(data: any): Promise<boolean> {
         if (!result) {
           reject(result);
         }
-        let user = result.toJSON();
+        const user = result.toJSON();
 
         return addRepositoryPermissions(user.id)
           .then(() => resolve(true))

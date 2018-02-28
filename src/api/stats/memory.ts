@@ -1,5 +1,5 @@
 import { totalmem, freemem } from 'os';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { IOutput } from '../socket';
 
 export interface IMemoryData {

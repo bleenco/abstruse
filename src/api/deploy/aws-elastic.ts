@@ -1,4 +1,5 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 import { dockerExec } from '../docker';
 import { CommandType } from '../config';
 import { findFromEnvVariables } from '../deploy';
@@ -17,23 +18,23 @@ export function elasticDeploy(
     let region = findFromEnvVariables(variables, 'region');
     let version = findFromEnvVariables(variables, 'version');
     let description = preferences.description;
-    let s3Bucket = preferences.s3Bucket;
-    let codeCommit = preferences.codeCommit;
+    const s3Bucket = preferences.s3Bucket;
+    const codeCommit = preferences.codeCommit;
     let applicationType = preferences.applicationType;
-    let environmentName = preferences.environmentName;
-    let solutionStackName = preferences.solutionStackName;
-    let environmentTemplate = preferences.environmentTemplate;
+    const environmentName = preferences.environmentName;
+    const solutionStackName = preferences.solutionStackName;
+    const environmentTemplate = preferences.environmentTemplate;
     let errors = false;
 
     if (!application) {
       const msg = chalk.red('application is not set in yml config file \r\n');
-      observer.next({ type: 'data', data: msg});
+      observer.next({ type: 'data', data: msg });
       errors = true;
     }
 
     if (!environmentName) {
       const msg = chalk.red('environmentName is not set in yml config file \r\n');
-      observer.next({ type: 'data', data: msg});
+      observer.next({ type: 'data', data: msg });
       errors = true;
     }
 
@@ -43,7 +44,7 @@ export function elasticDeploy(
       } else {
         const msg = chalk.red('accessKeyId is not set in environment '
           + 'variables or in yml config \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
@@ -54,7 +55,7 @@ export function elasticDeploy(
       } else {
         const msg = chalk.red('secretAccessKey is not set in environment variables or'
           + ' in yml config \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
@@ -65,7 +66,7 @@ export function elasticDeploy(
       } else {
         const msg =
           chalk.red('region is not set in environment variables or in yml config file \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
@@ -75,7 +76,7 @@ export function elasticDeploy(
     if (s3Bucket && codeCommit) {
       const msg = chalk.red('Specify a source bundle in S3 bucket or a commit in an AWS CodeCommit'
         + 'repository, but not both. \r\n');
-      observer.next({ type: 'data', data: msg});
+      observer.next({ type: 'data', data: msg });
       errors = true;
     } else if (s3Bucket) {
       sourceRepository = 'S3';
@@ -99,54 +100,54 @@ export function elasticDeploy(
         applicationType = 'zip';
       }
 
-      let msg = style.yellow.open + style.bold.open + '==> deploy started' +
-      style.bold.close + style.yellow.close + '\r\n';
+      const msg = style.yellow.open + style.bold.open + '==> deploy started' +
+        style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
 
       // 2. set credentials for awscli
-      let command = {
+      const command = {
         type: CommandType.deploy, command: `aws configure set aws_access_key_id ${accessKeyId}`
       };
       dockerExec(container, command, variables)
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_access_key_id failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_access_key_id failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
-          let command = {
+          const cmd = {
             type: CommandType.deploy,
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return dockerExec(container, command, variables).toPromise();
+          return dockerExec(container, cmd, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_secret_access_key failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_secret_access_key failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
-          let command = {
+          const cmd = {
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return dockerExec(container, command, variables).toPromise();
+          return dockerExec(container, cmd, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure region failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure region failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
           // 3. create-application-version
-          let command;
+          let cmd;
           if (s3Bucket || codeCommit) {
-            command = {
+            cmd = {
               type: CommandType.deploy, command: `aws elasticbeanstalk create-application-version`
                 + ` --application-name "${application}" --version-label "${version}"`
                 + ` --description "${description}" --source-build-information`
@@ -154,7 +155,7 @@ export function elasticDeploy(
                 + ` SourceLocation="${sourceLocation}" --auto-create-application`
             };
           } else {
-            command = {
+            cmd = {
               type: CommandType.deploy, command: `aws elasticbeanstalk create-application-version`
                 + ` --application-name "${application}" --version-label "${version}"`
                 + ` --description "${description}" --auto-create-application`
@@ -171,36 +172,36 @@ export function elasticDeploy(
           if (exists) {
             // 4. create-environment
             if (environmentTemplate) {
-              let command = {
+              const cmd = {
                 type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
                   + ` --application-name "${application}" --environment-name "${environmentName}"`
                   + ` --template-name "${environmentTemplate}"`
               };
 
-              return dockerExec(container, command, variables)
+              return dockerExec(container, cmd, variables)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
-                    const msg = 'aws create environment failed';
-                    observer.next({ type: 'containerError', data: msg});
+                    const mes = 'aws create environment failed';
+                    observer.next({ type: 'containerError', data: mes });
                     return Promise.reject(1);
                   }
 
                   return Promise.resolve();
                 });
             } else if (solutionStackName) {
-              let command = {
+              const cmd = {
                 type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
                   + ` --application-name "${application}" --environment-name "${environmentName}"`
                   + ` --solution-stack-name "${solutionStackName}"`
               };
 
-              return dockerExec(container, command, variables)
+              return dockerExec(container, cmd, variables)
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
-                    const msg = 'aws create environment failed';
-                    observer.next({ type: 'containerError', data: msg});
+                    const mes = 'aws create environment failed';
+                    observer.next({ type: 'containerError', data: mes });
                     return Promise.reject(1);
                   }
 
@@ -208,19 +209,19 @@ export function elasticDeploy(
                 });
             }
 
-            const msg = `Environment with name ${environmentName} doesn't exists, environment `
+            const m = `Environment with name ${environmentName} doesn't exists, environment `
               + `template-name or solution-stack-name has to be provided in deploy configuration`
               + ` to successfully create new environment`;
-            observer.next({ type: 'containerError', data: msg});
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           } else {
             return Promise.resolve();
           }
         })
         .then(() => {
-          let msg = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
+          const m = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
             + style.bold.close + style.yellow.close + '\r\n';
-          observer.next({ type: 'data', data: msg });
+          observer.next({ type: 'data', data: m });
           observer.complete();
         })
         .catch(err => {
@@ -240,14 +241,14 @@ function environmentExists(container: string, environment: string): Promise<any>
       + ` "${environment}"`;
     let envExists = false;
     dockerExec(container, { type: CommandType.deploy, command: getEnvCommand })
-    .subscribe(event => {
-      if (event && event.data) {
-        if (String(event.data).indexOf(environment) != -1) {
-          envExists = true;
+      .subscribe(event => {
+        if (event && event.data) {
+          if (String(event.data).indexOf(environment) !== -1) {
+            envExists = true;
+          }
         }
-      }
-    },
-    err => reject(err),
-    () => resolve(envExists));
+      },
+        err => reject(err),
+        () => resolve(envExists));
   });
 }
