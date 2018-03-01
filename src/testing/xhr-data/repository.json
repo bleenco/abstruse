@@ -1,0 +1,41 @@
+{
+  "data":
+    {
+      "id": 1,
+      "github_id": 87624588,
+      "bitbucket_id": null,
+      "gitlab_id": null,
+      "gogs_id": null,
+      "clone_url": "https://github.com/Izak88/bterm.git",
+      "html_url": "https://github.com/Izak88/bterm",
+      "default_branch": "master",
+      "name": "bterm",
+      "full_name": "Izak88/bterm",
+      "description": "Cross-platform terminal emulator",
+      "api_url": "https://api.github.com",
+      "repository_provider": "github",
+      "private": 0,
+      "fork": 1,
+      "user_login": "Izak88",
+      "user_id": "8555269",
+      "user_avatar_url": "https://avatars0.githubusercontent.com/u/8555269?v=4",
+      "user_url": "https://api.github.com/users/Izak88",
+      "user_html_url": "https://github.com/Izak88",
+      "access_tokens_id": null,
+      "public": 1,
+      "data": null,
+      "created_at": 1507286463132,
+      "updated_at": 1507286463132,
+      "permissions": [
+        {
+          "id": 1,
+          "repositories_id": 1,
+          "users_id": 1,
+          "permission": 1,
+          "created_at": 1507286463206,
+          "updated_at": 1507286463206
+        }
+      ],
+      "hasPermission": true
+    }
+}

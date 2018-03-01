@@ -60,6 +60,7 @@ import {
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
 import * as stripAnsi from 'strip-ansi';
+import 'rxjs/add/operator/toArray';
 
 const config: any = getConfig();
 

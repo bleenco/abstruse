@@ -3,6 +3,11 @@ import { Observer } from 'rxjs/Observer';
 import * as utils from './utils';
 import { listContainers, calculateContainerStats } from './docker';
 import { processes } from './process-manager';
+import 'rxjs/add/observable/interval';
+import 'rxjs/add/operator/timeInterval';
+import 'rxjs/add/operator/share';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/map';
 
 export function getContainersStats(): Observable<any> {
   return new Observable(observer => {

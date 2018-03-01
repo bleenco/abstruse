@@ -18,6 +18,7 @@ import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
+import 'rxjs/add/observable/merge';
 
 const server = new ExpressServer({ port: 6500 });
 

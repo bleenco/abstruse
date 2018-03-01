@@ -24,6 +24,7 @@ import { getConfig } from './setup';
 import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
 import { decrypt } from './security';
 import * as envVars from './env-variables';
+import 'rxjs/add/observable/timer';
 
 export interface BuildMessage {
   type: string;

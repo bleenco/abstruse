@@ -6,6 +6,7 @@ import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
 import chalk from 'chalk';
 import * as envVars from '../env-variables';
+import 'rxjs/add/observable/concat';
 
 export function s3Deploy(
   preferences: any, container: string, variables: envVars.EnvVariables

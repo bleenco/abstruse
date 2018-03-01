@@ -1,0 +1,1242 @@
+{
+  "data": [
+    {
+      "id": 5,
+      "branch": "test",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "push": {
+          "changes": [
+            {
+              "forced": false,
+              "old": {
+                "type": "branch",
+                "name": "test",
+                "links": {
+                  "commits": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commits/test"
+                  },
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/refs/branches/test"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/Izak88/d3-bundle/branch/test"
+                  }
+                },
+                "target": {
+                  "hash": "c465eec831e2719a18f025361c2d4e061ca764db",
+                  "links": {
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/c465eec831e2719a18f025361c2d4e061ca764db"
+                    },
+                    "html": {
+                      "href": "https://bitbucket.org/Izak88/d3-bundle/commits/c465eec831e2719a18f025361c2d4e061ca764db"
+                    }
+                  },
+                  "author": {
+                    "raw": "Izak Lipnik <izak.lipnik@gmail.com>",
+                    "type": "author",
+                    "user": {
+                      "username": "Izak88",
+                      "type": "user",
+                      "display_name": "Izak",
+                      "uuid": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/users/Izak88"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/"
+                        },
+                        "avatar": {
+                          "href": "https://bitbucket.org/account/Izak88/avatar/32/"
+                        }
+                      }
+                    }
+                  },
+                  "parents": [
+                    {
+                      "type": "commit",
+                      "hash": "187cca05434b5888c9b8e3bf2c60545877bb1b8a",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/187cca05434b5888c9b8e3bf2c60545877bb1b8a"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/d3-bundle/commits/187cca05434b5888c9b8e3bf2c60545877bb1b8a"
+                        }
+                      }
+                    }
+                  ],
+                  "date": "2017-10-02T06:46:46+00:00",
+                  "message": "test\n",
+                  "type": "commit"
+                }
+              },
+              "links": {
+                "commits": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commits?include=47f058cef3a3fe785b93e7fcda061bb32bf6655e&exclude=c465eec831e2719a18f025361c2d4e061ca764db"
+                },
+                "html": {
+                  "href": "https://bitbucket.org/Izak88/d3-bundle/branches/compare/47f058cef3a3fe785b93e7fcda061bb32bf6655e..c465eec831e2719a18f025361c2d4e061ca764db"
+                },
+                "diff": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/diff/47f058cef3a3fe785b93e7fcda061bb32bf6655e..c465eec831e2719a18f025361c2d4e061ca764db"
+                }
+              },
+              "truncated": false,
+              "commits": [
+                {
+                  "hash": "47f058cef3a3fe785b93e7fcda061bb32bf6655e",
+                  "links": {
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    },
+                    "comments": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/47f058cef3a3fe785b93e7fcda061bb32bf6655e/comments"
+                    },
+                    "patch": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/patch/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    },
+                    "html": {
+                      "href": "https://bitbucket.org/Izak88/d3-bundle/commits/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    },
+                    "diff": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/diff/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    },
+                    "approve": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/47f058cef3a3fe785b93e7fcda061bb32bf6655e/approve"
+                    },
+                    "statuses": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/47f058cef3a3fe785b93e7fcda061bb32bf6655e/statuses"
+                    }
+                  },
+                  "author": {
+                    "raw": "Izak Lipnik <izak.lipnik@gmail.com>",
+                    "type": "author",
+                    "user": {
+                      "username": "Izak88",
+                      "type": "user",
+                      "display_name": "Izak",
+                      "uuid": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/users/Izak88"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/"
+                        },
+                        "avatar": {
+                          "href": "https://bitbucket.org/account/Izak88/avatar/32/"
+                        }
+                      }
+                    }
+                  },
+                  "parents": [
+                    {
+                      "type": "commit",
+                      "hash": "c465eec831e2719a18f025361c2d4e061ca764db",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/c465eec831e2719a18f025361c2d4e061ca764db"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/d3-bundle/commits/c465eec831e2719a18f025361c2d4e061ca764db"
+                        }
+                      }
+                    }
+                  ],
+                  "date": "2017-10-02T06:49:39+00:00",
+                  "message": "test\n",
+                  "type": "commit"
+                }
+              ],
+              "created": false,
+              "closed": false,
+              "new": {
+                "type": "branch",
+                "name": "test",
+                "links": {
+                  "commits": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commits/test"
+                  },
+                  "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/refs/branches/test"
+                  },
+                  "html": {
+                    "href": "https://bitbucket.org/Izak88/d3-bundle/branch/test"
+                  }
+                },
+                "target": {
+                  "hash": "47f058cef3a3fe785b93e7fcda061bb32bf6655e",
+                  "links": {
+                    "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    },
+                    "html": {
+                      "href": "https://bitbucket.org/Izak88/d3-bundle/commits/47f058cef3a3fe785b93e7fcda061bb32bf6655e"
+                    }
+                  },
+                  "author": {
+                    "raw": "Izak Lipnik <izak.lipnik@gmail.com>",
+                    "type": "author",
+                    "user": {
+                      "username": "Izak88",
+                      "type": "user",
+                      "display_name": "Izak",
+                      "uuid": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/users/Izak88"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/"
+                        },
+                        "avatar": {
+                          "href": "https://bitbucket.org/account/Izak88/avatar/32/"
+                        }
+                      }
+                    }
+                  },
+                  "parents": [
+                    {
+                      "type": "commit",
+                      "hash": "c465eec831e2719a18f025361c2d4e061ca764db",
+                      "links": {
+                        "self": {
+                          "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle/commit/c465eec831e2719a18f025361c2d4e061ca764db"
+                        },
+                        "html": {
+                          "href": "https://bitbucket.org/Izak88/d3-bundle/commits/c465eec831e2719a18f025361c2d4e061ca764db"
+                        }
+                      }
+                    }
+                  ],
+                  "date": "2017-10-02T06:49:39+00:00",
+                  "message": "test\n",
+                  "type": "commit"
+                }
+              }
+            }
+          ]
+        },
+        "actor": {
+          "username": "Izak88",
+          "type": "user",
+          "display_name": "Izak",
+          "uuid": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/users/Izak88"
+            },
+            "html": {
+              "href": "https://bitbucket.org/Izak88/"
+            },
+            "avatar": {
+              "href": "https://bitbucket.org/account/Izak88/avatar/32/"
+            }
+          }
+        },
+        "repository": {
+          "scm": "git",
+          "website": "",
+          "name": "d3-bundle",
+          "links": {
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/Izak88/d3-bundle"
+            },
+            "html": {
+              "href": "https://bitbucket.org/Izak88/d3-bundle"
+            },
+            "avatar": {
+              "href": "https://bitbucket.org/Izak88/d3-bundle/avatar/32/"
+            }
+          },
+          "full_name": "Izak88/d3-bundle",
+          "owner": {
+            "username": "Izak88",
+            "type": "user",
+            "display_name": "Izak",
+            "uuid": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/Izak88"
+              },
+              "html": {
+                "href": "https://bitbucket.org/Izak88/"
+              },
+              "avatar": {
+                "href": "https://bitbucket.org/account/Izak88/avatar/32/"
+              }
+            }
+          },
+          "type": "repository",
+          "is_private": true,
+          "uuid": "{a6fa13bf-643a-45f6-a0b2-7324954878de}"
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://bitbucket.org/Izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin test\",\"type\":\"git\"},{\"command\":\"git checkout 47f058cef3a3fe785b93e7fcda061bb32bf6655e .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}]",
+      "start_time": 1507013453470,
+      "end_time": null,
+      "repositories_id": 4,
+      "created_at": 1507013456895,
+      "updated_at": 1507013456895,
+      "repository": {
+        "id": 4,
+        "github_id": null,
+        "bitbucket_id": "{a6fa13bf-643a-45f6-a0b2-7324954878de}",
+        "gitlab_id": null,
+        "gogs_id": null,
+        "clone_url": "https://bitbucket.org/Izak88/d3-bundle.git",
+        "html_url": "https://bitbucket.org/Izak88/d3-bundle",
+        "default_branch": "",
+        "name": "d3-bundle",
+        "full_name": "Izak88/d3-bundle",
+        "description": null,
+        "api_url": "https://api.bitbucket.org/2.0/repositories",
+        "repository_provider": "bitbucket",
+        "private": 1,
+        "fork": null,
+        "user_login": "Izak88",
+        "user_id": "{89aa91f6-b254-4f9f-9fd6-ab5fdf729bca}",
+        "user_avatar_url": "https://bitbucket.org/account/Izak88/avatar/32/",
+        "user_url": "https://api.bitbucket.org/2.0/users/Izak88",
+        "user_html_url": "https://bitbucket.org/Izak88/",
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507013428479,
+        "updated_at": 1507013428479,
+        "permissions": [
+          {
+            "id": 4,
+            "repositories_id": 4,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507013428484,
+            "updated_at": 1507013428484
+          }
+        ]
+      },
+      "jobs": [
+        {
+          "id": 5,
+          "data": "{\"commands\":[{\"command\":\"git clone -q https://bitbucket.org/Izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin test\",\"type\":\"git\"},{\"command\":\"git checkout 47f058cef3a3fe785b93e7fcda061bb32bf6655e .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+          "builds_id": 5,
+          "created_at": 1507013456927,
+          "updated_at": 1507013456927,
+          "runs": [
+            {
+              "id": 5,
+              "start_time": 1507013456976,
+              "end_time": 1507013769656,
+              "status": "failed",
+              "log": "",
+              "job_id": 5,
+              "build_run_id": 5,
+              "created_at": 1507013456934,
+              "updated_at": 1507013769681
+            }
+          ],
+          "end_time": 1507013769656,
+          "start_time": 1507013456976,
+          "status": "failed"
+        }
+      ],
+      "hasPermission": true
+    },
+    {
+      "id": 4,
+      "branch": "master",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "object_kind": "push",
+        "event_name": "push",
+        "before": "52490637121a97e04877ae4d396c38c23c3dbc64",
+        "after": "52490637121a97e04877ae4d396c38c23c3dbc64",
+        "ref": "refs/heads/master",
+        "checkout_sha": "52490637121a97e04877ae4d396c38c23c3dbc64",
+        "message": null,
+        "user_id": 1505971,
+        "user_name": "Izak Lipnik",
+        "user_username": "izak88",
+        "user_email": "izak.lipnik@gmail.com",
+        "user_avatar": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0?s=80&d=identicon",
+        "project_id": 4283451,
+        "project": {
+          "name": "d3-bundle",
+          "description": "",
+          "web_url": "https://gitlab.com/izak88/d3-bundle",
+          "avatar_url": null,
+          "git_ssh_url": "git@gitlab.com:izak88/d3-bundle.git",
+          "git_http_url": "https://gitlab.com/izak88/d3-bundle.git",
+          "namespace": "izak88",
+          "visibility_level": 20,
+          "path_with_namespace": "izak88/d3-bundle",
+          "default_branch": "master",
+          "ci_config_path": null,
+          "homepage": "https://gitlab.com/izak88/d3-bundle",
+          "url": "git@gitlab.com:izak88/d3-bundle.git",
+          "ssh_url": "git@gitlab.com:izak88/d3-bundle.git",
+          "http_url": "https://gitlab.com/izak88/d3-bundle.git"
+        },
+        "commits": [
+          {
+            "id": "52490637121a97e04877ae4d396c38c23c3dbc64",
+            "message": "first commit\n",
+            "timestamp": "2017-10-02T08:34:18+02:00",
+            "url": "https://gitlab.com/izak88/d3-bundle/commit/52490637121a97e04877ae4d396c38c23c3dbc64",
+            "author": {
+              "name": "Izak Lipnik",
+              "email": "izak.lipnik@gmail.com"
+            },
+            "added": [
+              ".abstruse.yml",
+              ".gitignore",
+              ".npmignore",
+              "API.md",
+              "CHANGES.md",
+              "ISSUE_TEMPLATE.md",
+              "LICENSE",
+              "README.md",
+              "d3.sublime-project",
+              "img/axis-v3.png",
+              "img/axis-v4.png",
+              "img/pack-v3.png",
+              "img/pack-v4.png",
+              "img/stratify.png",
+              "index.js",
+              "jenkinsfile",
+              "package-lock.json",
+              "package.json",
+              "rollup.config.js",
+              "rollup.node.js",
+              "test/API.md",
+              "test/CHANGES.md",
+              "test/ISSUE_TEMPLATE.md",
+              "test/LICENSE",
+              "test/README.md",
+              "test/d3-test.js",
+              "test/d3.sublime-project",
+              "test/img/axis-v3.png",
+              "test/img/axis-v4.png",
+              "test/img/pack-v3.png",
+              "test/img/pack-v4.png",
+              "test/img/stratify.png",
+              "test/index.js",
+              "test/jenkinsfile",
+              "test/package-lock.json",
+              "test/package.json",
+              "test/rollup.config.js",
+              "test/rollup.node.js",
+              "test/test-exports.js"
+            ],
+            "modified": [],
+            "removed": []
+          }
+        ],
+        "total_commits_count": 1,
+        "repository": {
+          "name": "d3-bundle",
+          "url": "git@gitlab.com:izak88/d3-bundle.git",
+          "description": "",
+          "homepage": "https://gitlab.com/izak88/d3-bundle",
+          "git_http_url": "https://gitlab.com/izak88/d3-bundle.git",
+          "git_ssh_url": "git@gitlab.com:izak88/d3-bundle.git",
+          "visibility_level": 20
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://gitlab.com/izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}]",
+      "start_time": 1507013781558,
+      "end_time": 1507013809361,
+      "repositories_id": 3,
+      "created_at": 1507013421932,
+      "updated_at": 1507013809379,
+      "repository": {
+        "id": 3,
+        "github_id": null,
+        "bitbucket_id": null,
+        "gitlab_id": 4283451,
+        "gogs_id": null,
+        "clone_url": "https://gitlab.com/izak88/d3-bundle.git",
+        "html_url": "https://gitlab.com/izak88/d3-bundle",
+        "default_branch": "master",
+        "name": "d3-bundle",
+        "full_name": "izak88/d3-bundle",
+        "description": "",
+        "api_url": "https://gitlab.com/api/v4",
+        "repository_provider": "gitlab",
+        "private": 0,
+        "fork": null,
+        "user_login": "izak88",
+        "user_id": "1505971",
+        "user_avatar_url": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0?s=80&d=identicon",
+        "user_url": null,
+        "user_html_url": null,
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507013419032,
+        "updated_at": 1507013419032,
+        "permissions": [
+          {
+            "id": 3,
+            "repositories_id": 3,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507013419038,
+            "updated_at": 1507013419038
+          }
+        ]
+      },
+      "jobs": [
+        {
+          "id": 4,
+          "data": "{\"commands\":[{\"command\":\"git clone -q https://gitlab.com/izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+          "builds_id": 4,
+          "created_at": 1507013421946,
+          "updated_at": 1507013421946,
+          "runs": [
+            {
+              "id": 4,
+              "start_time": 1507013421976,
+              "end_time": 1507013770697,
+              "status": "failed",
+              "log": "",
+              "job_id": 4,
+              "build_run_id": 4,
+              "created_at": 1507013421952,
+              "updated_at": 1507013770712
+            },
+            {
+              "id": 6,
+              "start_time": 1507013781689,
+              "end_time": 1507013809361,
+              "status": "success",
+              "log": "\u001b[33m==> git clone -q https://gitlab.com/izak88/d3-bundle.git -b master .\u001b[39m\rmkdir: created directory '/home/abstruse/.vnc'\r\nstored passwd in file: /home/abstruse/.vnc/passwd\r\n[exectime]: 6275\u001b[33m==> restoring cache ...\u001b[39m\r[exectime]: 358\u001b[33m==> nvm install $NODE_VERSION\u001b[39m\rDownloading and installing node v8.6.0...\r\nDownloading https://nodejs.org/dist/v8.6.0/node-v8.6.0-linux-x64.tar.xz...\r\n\r                                                                           0.0%\r                                                                           0.3%\r                                                                           0.8%\r#                                                                          1.8%\r##                                                                         3.8%\r####                                                                       6.6%\r#######                                                                   10.1%\r##########                                                                14.3%\r###############                                                           21.2%\r##################                                                        26.2%\r####################                                                      29.0%\r######################                                                    31.1%\r#######################                                                   33.1%\r#########################                                                 35.4%\r############################                                              39.2%\r###############################                                           43.9%\r####################################                                      50.5%\r#########################################                                 57.1%\r#############################################                             62.9%\r##################################################                        69.9%\r######################################################                    75.5%\r###########################################################               82.4%\r##############################################################            86.2%\r################################################################          89.9%\r##################################################################        92.1%\r######################################################################## 100.0%\r\nComputing checksum with sha256sum\r\nChecksums matched!\r\nNow using node v8.6.0 (npm v5.3.0)\r\n[exectime]: 7795\u001b[33m==> npm install\u001b[39m\r\u001b[?25l[\u001b[90m..................\u001b[0m] | rollbackFailedOptional: \u001b[34;40mverb\u001b[0m \u001b[35mnpm-session\u001b[0m c74f4187ec49df9\u001b[0m\u001b[K\r[\u001b[7m  \u001b[27m\u001b[90m................\u001b[0m] | loadDep:d3-zoom: \u001b[7msill\u001b[0m \u001b[35minstall\u001b[0m loadAllDepsIntoIdealTree\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] \\ diffTrees: \u001b[7msill\u001b[0m \u001b[35minstall\u001b[0m generateActionsToTake\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] - extract:uglify-js: \u001b[34;40mverb\u001b[0m \u001b[35mlock\u001b[0m using /home/abstruse/.npm/_\u001b[0m\u001b[K\r[\u001b[7m       \u001b[27m\u001b[90m...........\u001b[0m] \\ extract:brace-expansion: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m minimist@1.2.0\u001b[0m\u001b[K\r[\u001b[7m        \u001b[27m\u001b[90m..........\u001b[0m] - extract:balanced-match: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m rollup-plugin-node-\u001b[0m\u001b[K\r[\u001b[7m        \u001b[27m\u001b[90m..........\u001b[0m] | extract:d3-path: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m d3-request@1.0.5\u001b[0m\u001b[K\r[\u001b[7m        \u001b[27m\u001b[90m..........\u001b[0m] / extract:d3-timer: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m d3-geo@1.6.4\u001b[0m\u001b[K\r[\u001b[7m        \u001b[27m\u001b[90m..........\u001b[0m] - extract:function-bind: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m d3-force@1.0.6\u001b[0m\u001b[K\r[\u001b[7m         \u001b[27m\u001b[90m.........\u001b[0m] - extract:d3-collection: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m yargs@3.10.0\u001b[0m\u001b[K\r[\u001b[7m         \u001b[27m\u001b[90m.........\u001b[0m] \\ extract:is-regex: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m magic-string@0.15.2\u001b[0m\u001b[K\r[\u001b[7m         \u001b[27m\u001b[90m.........\u001b[0m] / extract:has: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m source-map-support@0.4.18\u001b[0m\u001b[K\r[\u001b[7m         \u001b[27m\u001b[90m.........\u001b[0m] | extract:d3-color: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m rw@1.3.3\u001b[0m\u001b[K\r[\u001b[7m         \u001b[27m\u001b[90m.........\u001b[0m] - extract:minimist: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m right-align@0.1.3\u001b[0m\u001b[K\r[\u001b[7m          \u001b[27m\u001b[90m........\u001b[0m] | extract:wrappy: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m path-is-absolute@1.0.1\u001b[0m\u001b[K\r[\u001b[7m          \u001b[27m\u001b[90m........\u001b[0m] - extract:d3-polygon: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m          \u001b[27m\u001b[90m........\u001b[0m] - extract:d3-interpolate: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.\u001b[0m\u001b[K\r[\u001b[7m           \u001b[27m\u001b[90m.......\u001b[0m] - extract:resolve: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m           \u001b[27m\u001b[90m.......\u001b[0m] - extract:d3-dsv: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m           \u001b[27m\u001b[90m.......\u001b[0m] - extract:align-text: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:object-keys: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:es-abstract: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] - extract:source-map: \u001b[7msill\u001b[0m \u001b[35mextract\u001b[0m object-inspect@1.3.0\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] \\ finalize:browser-resolve: \u001b[7msill\u001b[0m \u001b[35mfinalize\u001b[0m /home/abstruse/b\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] / finalize:is-function: \u001b[7msill\u001b[0m \u001b[35mfinalize\u001b[0m /home/abstruse/build\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] \\ finalize:rollup-plugin-node-resolve: \u001b[7msill\u001b[0m \u001b[35mfinalize\u001b[0m /home\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] \\ refresh-package-json:uglify-js: \u001b[7msill\u001b[0m \u001b[35mfinalize\u001b[0m /home/abst\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] / refresh-package-json:resolve: \u001b[7msill\u001b[0m \u001b[35mrefresh-package-json\u001b[0m\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] / refresh-package-json:resolve: \u001b[7msill\u001b[0m \u001b[35mrefresh-package-json\u001b[0m\u001b[0m\u001b[K\r[\u001b[7m            \u001b[27m\u001b[90m......\u001b[0m] \\ build:uglify-js: \u001b[7msill\u001b[0m \u001b[35mdoSerial\u001b[0m build 816\u001b[0m\u001b[K\r\r\u001b[K\u001b[?25h\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m As of npm@5, `prepublish` scripts are deprecated.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m Use `prepare` for build steps and `prepublishOnly` for upload-only.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m See the deprecation note in `npm help scripts` for more information.\r\n\u001b[0m\u001b[?25l[\u001b[7m             \u001b[27m\u001b[90m.....\u001b[0m] | prepare:d3: \u001b[30;43mWARN\u001b[0m \u001b[35mprepublish-on-install\u001b[0m See the deprecati\u001b[0m\u001b[K\r\r\u001b[K\u001b[?25h\r\n> d3@4.9.3 prepublish /home/abstruse/build\r\n> npm run test && rollup -c --banner \"$(preamble)\" -f umd -n d3 -o build/d3.js -- index.js && uglifyjs --preamble \"$(preamble)\" build/d3.js -c negate_iife=false -m -o build/d3.min.js\r\n\r\n\r\n> d3@4.9.3 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.3 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n\u001b[?25l[\u001b[7m             \u001b[27m\u001b[90m.....\u001b[0m] \\ prepare:d3: \u001b[32minfo\u001b[0m \u001b[35mlifecycle\u001b[0m d3@4.9.3~prepare: d3@4.9.3\u001b[0m\u001b[K\r\r\u001b[K\u001b[?25hadded 102 packages in 8.373s\r\n[exectime]: 9157\u001b[33m==> saving cache ...\u001b[39m\rtar: Removing leading `/' from member names\r\n[exectime]: 830\u001b[33m==> npm run-script test\u001b[39m\r\r\n> d3@4.9.3 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.3 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n[exectime]: 1365\u001b[32m[success]: build returned exit code 0\u001b[39m",
+              "job_id": 4,
+              "build_run_id": 6,
+              "created_at": 1507013781633,
+              "updated_at": 1507013809364
+            }
+          ],
+          "end_time": 1507013809361,
+          "start_time": 1507013781689,
+          "status": "success"
+        }
+      ],
+      "hasPermission": true
+    },
+    {
+      "id": 3,
+      "branch": "master",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "ref": "refs/heads/master",
+        "before": "5a8a18dd7383b9c070061bcb710cc4076f2a834a",
+        "after": "5a8a18dd7383b9c070061bcb710cc4076f2a834a",
+        "compare_url": "",
+        "commits": [
+          {
+            "id": "5a8a18dd7383b9c070061bcb710cc4076f2a834a",
+            "message": "first commit\n",
+            "url": "https://try.gogs.io/izak88/d3-bundle/commit/5a8a18dd7383b9c070061bcb710cc4076f2a834a",
+            "author": {
+              "name": "Izak Lipnik",
+              "email": "izak.lipnik@gmail.com",
+              "username": "izak88"
+            },
+            "committer": {
+              "name": "Izak Lipnik",
+              "email": "izak.lipnik@gmail.com",
+              "username": "izak88"
+            },
+            "added": [
+              ".abstruse.yml",
+              ".gitignore",
+              ".npmignore",
+              "API.md",
+              "CHANGES.md",
+              "ISSUE_TEMPLATE.md",
+              "LICENSE",
+              "README.md",
+              "d3.sublime-project",
+              "img/axis-v3.png",
+              "img/axis-v4.png",
+              "img/pack-v3.png",
+              "img/pack-v4.png",
+              "img/stratify.png",
+              "index.js",
+              "jenkinsfile",
+              "package-lock.json",
+              "package.json",
+              "rollup.config.js",
+              "rollup.node.js",
+              "test/API.md",
+              "test/CHANGES.md",
+              "test/ISSUE_TEMPLATE.md",
+              "test/LICENSE",
+              "test/README.md",
+              "test/d3-test.js",
+              "test/d3.sublime-project",
+              "test/img/axis-v3.png",
+              "test/img/axis-v4.png",
+              "test/img/pack-v3.png",
+              "test/img/pack-v4.png",
+              "test/img/stratify.png",
+              "test/index.js",
+              "test/jenkinsfile",
+              "test/package-lock.json",
+              "test/package.json",
+              "test/rollup.config.js",
+              "test/rollup.node.js",
+              "test/test-exports.js"
+            ],
+            "removed": [],
+            "modified": [],
+            "timestamp": "0001-01-01T00:00:00Z"
+          }
+        ],
+        "repository": {
+          "id": 11070,
+          "owner": {
+            "id": 15888,
+            "login": "izak88",
+            "full_name": "",
+            "email": "izak.lipnik@gmail.com",
+            "avatar_url": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0",
+            "username": "izak88"
+          },
+          "name": "d3-bundle",
+          "full_name": "izak88/d3-bundle",
+          "description": "",
+          "private": false,
+          "fork": false,
+          "parent": null,
+          "empty": false,
+          "mirror": false,
+          "size": 466944,
+          "html_url": "https://try.gogs.io/izak88/d3-bundle",
+          "ssh_url": "git@try.gogs.io:izak88/d3-bundle.git",
+          "clone_url": "https://try.gogs.io/izak88/d3-bundle.git",
+          "website": "",
+          "stars_count": 0,
+          "forks_count": 0,
+          "watchers_count": 1,
+          "open_issues_count": 0,
+          "default_branch": "master",
+          "created_at": "2017-10-02T05:44:36Z",
+          "updated_at": "2017-10-02T06:02:03Z"
+        },
+        "pusher": {
+          "id": 15888,
+          "login": "izak88",
+          "full_name": "",
+          "email": "izak.lipnik@gmail.com",
+          "avatar_url": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0",
+          "username": "izak88"
+        },
+        "sender": {
+          "id": 15888,
+          "login": "izak88",
+          "full_name": "",
+          "email": "izak.lipnik@gmail.com",
+          "avatar_url": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0",
+          "username": "izak88"
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://try.gogs.io/izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}]",
+      "start_time": 1507013408132,
+      "end_time": null,
+      "repositories_id": 2,
+      "created_at": 1507013410895,
+      "updated_at": 1507013410895,
+      "repository": {
+        "id": 2,
+        "github_id": null,
+        "bitbucket_id": null,
+        "gitlab_id": null,
+        "gogs_id": 11070,
+        "clone_url": "https://try.gogs.io/izak88/d3-bundle.git",
+        "html_url": "https://try.gogs.io/izak88/d3-bundle",
+        "default_branch": "master",
+        "name": "d3-bundle",
+        "full_name": "izak88/d3-bundle",
+        "description": "",
+        "api_url": "https://try.gogs.io",
+        "repository_provider": "gogs",
+        "private": 0,
+        "fork": 0,
+        "user_login": "izak88",
+        "user_id": "15888",
+        "user_avatar_url": "https://secure.gravatar.com/avatar/c27a4cf56134b3956555fc8e1d7cced0",
+        "user_url": null,
+        "user_html_url": null,
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507013408126,
+        "updated_at": 1507013408126,
+        "permissions": [
+          {
+            "id": 2,
+            "repositories_id": 2,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507013408130,
+            "updated_at": 1507013408130
+          }
+        ]
+      },
+      "jobs": [
+        {
+          "id": 3,
+          "data": "{\"commands\":[{\"command\":\"git clone -q https://try.gogs.io/izak88/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"npm run-script test\",\"type\":\"script\"}],\"env\":[\"NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+          "builds_id": 3,
+          "created_at": 1507013410912,
+          "updated_at": 1507013410912,
+          "runs": [
+            {
+              "id": 3,
+              "start_time": 1507013410945,
+              "end_time": 1507013771638,
+              "status": "failed",
+              "log": "",
+              "job_id": 3,
+              "build_run_id": 3,
+              "created_at": 1507013410920,
+              "updated_at": 1507013771652
+            }
+          ],
+          "end_time": 1507013771638,
+          "start_time": 1507013410945,
+          "status": "failed"
+        }
+      ],
+      "hasPermission": true
+    },
+    {
+      "id": 2,
+      "branch": "master",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "ref": "refs/heads/master",
+        "before": "494f47baeda0f20be99ceca28973a5b4e2639fac",
+        "after": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+        "created": false,
+        "deleted": false,
+        "forced": false,
+        "base_ref": null,
+        "compare": "https://github.com/jkuri/d3-bundle/compare/494f47baeda0...8e1c6452d41d",
+        "commits": [
+          {
+            "id": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+            "tree_id": "b26adb425bcdc41d853a4a99d666f7e5922fc412",
+            "distinct": true,
+            "message": "chore(abstruse.yml): make proper config",
+            "timestamp": "2017-09-17T23:57:39+02:00",
+            "url": "https://github.com/jkuri/d3-bundle/commit/8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+            "author": {
+              "name": "Jan Kuri",
+              "email": "jkuri88@gmail.com",
+              "username": "jkuri"
+            },
+            "committer": {
+              "name": "Jan Kuri",
+              "email": "jkuri88@gmail.com",
+              "username": "jkuri"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+              ".abstruse.yml"
+            ]
+          }
+        ],
+        "head_commit": {
+          "id": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+          "tree_id": "b26adb425bcdc41d853a4a99d666f7e5922fc412",
+          "distinct": true,
+          "message": "chore(abstruse.yml): make proper config",
+          "timestamp": "2017-09-17T23:57:39+02:00",
+          "url": "https://github.com/jkuri/d3-bundle/commit/8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+          "author": {
+            "name": "Jan Kuri",
+            "email": "jkuri88@gmail.com",
+            "username": "jkuri"
+          },
+          "committer": {
+            "name": "Jan Kuri",
+            "email": "jkuri88@gmail.com",
+            "username": "jkuri"
+          },
+          "added": [],
+          "removed": [],
+          "modified": [
+            ".abstruse.yml"
+          ]
+        },
+        "repository": {
+          "id": 71424198,
+          "name": "d3-bundle",
+          "full_name": "jkuri/d3-bundle",
+          "owner": {
+            "name": "jkuri",
+            "email": "jkuri88@gmail.com",
+            "login": "jkuri",
+            "id": 1796022,
+            "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/jkuri",
+            "html_url": "https://github.com/jkuri",
+            "followers_url": "https://api.github.com/users/jkuri/followers",
+            "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+            "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+            "organizations_url": "https://api.github.com/users/jkuri/orgs",
+            "repos_url": "https://api.github.com/users/jkuri/repos",
+            "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/jkuri/received_events",
+            "type": "User",
+            "site_admin": false
+          },
+          "private": false,
+          "html_url": "https://github.com/jkuri/d3-bundle",
+          "description": null,
+          "fork": false,
+          "url": "https://github.com/jkuri/d3-bundle",
+          "forks_url": "https://api.github.com/repos/jkuri/d3-bundle/forks",
+          "keys_url": "https://api.github.com/repos/jkuri/d3-bundle/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/jkuri/d3-bundle/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/jkuri/d3-bundle/teams",
+          "hooks_url": "https://api.github.com/repos/jkuri/d3-bundle/hooks",
+          "issue_events_url": "https://api.github.com/repos/jkuri/d3-bundle/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/jkuri/d3-bundle/events",
+          "assignees_url": "https://api.github.com/repos/jkuri/d3-bundle/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/jkuri/d3-bundle/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/jkuri/d3-bundle/tags",
+          "blobs_url": "https://api.github.com/repos/jkuri/d3-bundle/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/jkuri/d3-bundle/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/jkuri/d3-bundle/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/jkuri/d3-bundle/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/jkuri/d3-bundle/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/jkuri/d3-bundle/languages",
+          "stargazers_url": "https://api.github.com/repos/jkuri/d3-bundle/stargazers",
+          "contributors_url": "https://api.github.com/repos/jkuri/d3-bundle/contributors",
+          "subscribers_url": "https://api.github.com/repos/jkuri/d3-bundle/subscribers",
+          "subscription_url": "https://api.github.com/repos/jkuri/d3-bundle/subscription",
+          "commits_url": "https://api.github.com/repos/jkuri/d3-bundle/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/jkuri/d3-bundle/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/jkuri/d3-bundle/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/jkuri/d3-bundle/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/jkuri/d3-bundle/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/jkuri/d3-bundle/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/jkuri/d3-bundle/merges",
+          "archive_url": "https://api.github.com/repos/jkuri/d3-bundle/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/jkuri/d3-bundle/downloads",
+          "issues_url": "https://api.github.com/repos/jkuri/d3-bundle/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/jkuri/d3-bundle/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/jkuri/d3-bundle/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/jkuri/d3-bundle/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/jkuri/d3-bundle/labels{/name}",
+          "releases_url": "https://api.github.com/repos/jkuri/d3-bundle/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/jkuri/d3-bundle/deployments",
+          "created_at": 1476936345,
+          "updated_at": "2016-10-20T04:06:39Z",
+          "pushed_at": 1505685467,
+          "git_url": "git://github.com/jkuri/d3-bundle.git",
+          "ssh_url": "git@github.com:jkuri/d3-bundle.git",
+          "clone_url": "https://github.com/jkuri/d3-bundle.git",
+          "svn_url": "https://github.com/jkuri/d3-bundle",
+          "homepage": null,
+          "size": 34612,
+          "stargazers_count": 0,
+          "watchers_count": 0,
+          "language": "JavaScript",
+          "has_issues": true,
+          "has_projects": true,
+          "has_downloads": true,
+          "has_wiki": true,
+          "has_pages": false,
+          "forks_count": 1,
+          "mirror_url": null,
+          "open_issues_count": 0,
+          "forks": 1,
+          "open_issues": 0,
+          "watchers": 0,
+          "default_branch": "master",
+          "stargazers": 0,
+          "master_branch": "master"
+        },
+        "pusher": {
+          "name": "jkuri",
+          "email": "jkuri88@gmail.com"
+        },
+        "sender": {
+          "login": "jkuri",
+          "id": 1796022,
+          "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/jkuri",
+          "html_url": "https://github.com/jkuri",
+          "followers_url": "https://api.github.com/users/jkuri/followers",
+          "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+          "organizations_url": "https://api.github.com/users/jkuri/orgs",
+          "repos_url": "https://api.github.com/users/jkuri/repos",
+          "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/jkuri/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://github.com/jkuri/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin master\",\"type\":\"git\"},{\"command\":\"git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"before_install\"},{\"command\":\"npm config set spin false\",\"type\":\"before_install\"},{\"command\":\"npm config set progress false\",\"type\":\"before_install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"if [[ \\\"$SCRIPT\\\" ]]; then npm run-script $SCRIPT; fi\",\"type\":\"script\"}],\"env\":[\"SCRIPT=test NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}]",
+      "start_time": 1507013815163,
+      "end_time": 1507013858834,
+      "repositories_id": 1,
+      "created_at": 1507013401050,
+      "updated_at": 1507013858848,
+      "repository": {
+        "id": 1,
+        "github_id": 71424198,
+        "bitbucket_id": null,
+        "gitlab_id": null,
+        "gogs_id": null,
+        "clone_url": "https://github.com/jkuri/d3-bundle.git",
+        "html_url": "https://github.com/jkuri/d3-bundle",
+        "default_branch": "master",
+        "name": "d3-bundle",
+        "full_name": "jkuri/d3-bundle",
+        "description": null,
+        "api_url": "https://api.github.com",
+        "repository_provider": "github",
+        "private": 0,
+        "fork": 0,
+        "user_login": "jkuri",
+        "user_id": "1796022",
+        "user_avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+        "user_url": "https://api.github.com/users/jkuri",
+        "user_html_url": "https://github.com/jkuri",
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507013393389,
+        "updated_at": 1507013393389,
+        "permissions": [
+          {
+            "id": 1,
+            "repositories_id": 1,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507013393394,
+            "updated_at": 1507013393394
+          }
+        ]
+      },
+      "jobs": [
+        {
+          "id": 2,
+          "data": "{\"commands\":[{\"command\":\"git clone -q https://github.com/jkuri/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin master\",\"type\":\"git\"},{\"command\":\"git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"before_install\"},{\"command\":\"npm config set spin false\",\"type\":\"before_install\"},{\"command\":\"npm config set progress false\",\"type\":\"before_install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"if [[ \\\"$SCRIPT\\\" ]]; then npm run-script $SCRIPT; fi\",\"type\":\"script\"}],\"env\":[\"SCRIPT=test NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+          "builds_id": 2,
+          "created_at": 1507013401066,
+          "updated_at": 1507013401066,
+          "runs": [
+            {
+              "id": 2,
+              "start_time": 1507013401103,
+              "end_time": 1507013772733,
+              "status": "failed",
+              "log": "",
+              "job_id": 2,
+              "build_run_id": 2,
+              "created_at": 1507013401073,
+              "updated_at": 1507013772748
+            },
+            {
+              "id": 7,
+              "start_time": 1507013815277,
+              "end_time": 1507013858834,
+              "status": "success",
+              "log": "\u001b[33m==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\u001b[39m\r[exectime]: 17716\u001b[33m==> git fetch origin master\u001b[39m\rFrom https://github.com/jkuri/d3-bundle\r\n * branch              master     -> FETCH_HEAD\r\n[exectime]: 1032\u001b[33m==> git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\u001b[39m\r[exectime]: 373\u001b[33m==> restoring cache ...\u001b[39m\r[exectime]: 407\u001b[33m==> nvm install $NODE_VERSION\u001b[39m\rDownloading and installing node v8.6.0...\r\nDownloading https://nodejs.org/dist/v8.6.0/node-v8.6.0-linux-x64.tar.xz...\r\n\r                                                                           0.0%\r                                                                           0.3%\r                                                                           0.8%\r###                                                                        4.4%\r####                                                                       6.7%\r######                                                                     9.6%\r##########                                                                14.3%\r#############                                                             19.4%\r#################                                                         24.2%\r#####################                                                     30.2%\r##########################                                                36.4%\r#############################                                             40.5%\r################################                                          44.9%\r###################################                                       49.1%\r#####################################                                     52.6%\r#########################################                                 57.2%\r###########################################                               60.2%\r##############################################                            64.3%\r#################################################                         68.6%\r####################################################                      73.4%\r#######################################################                   77.6%\r###########################################################               82.6%\r##############################################################            87.5%\r##################################################################        92.4%\r####################################################################      95.1%\r######################################################################    97.8%\r######################################################################## 100.0%\r\nComputing checksum with sha256sum\r\nChecksums matched!\r\nNow using node v8.6.0 (npm v5.3.0)\r\n[exectime]: 6351\u001b[33m==> npm config set spin false\u001b[39m\r[exectime]: 623\u001b[33m==> npm config set progress false\u001b[39m\r[exectime]: 592\u001b[33m==> npm install\u001b[39m\r\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m As of npm@5, `prepublish` scripts are deprecated.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m Use `prepare` for build steps and `prepublishOnly` for upload-only.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m See the deprecation note in `npm help scripts` for more information.\r\n\u001b[0m\r\n> d3@4.9.1 prepublish /home/abstruse/build\r\n> npm run test && rollup -c --banner \"$(preamble)\" -f umd -n d3 -o build/d3.js -- index.js && uglifyjs --preamble \"$(preamble)\" build/d3.js -c negate_iife=false -m -o build/d3.min.js\r\n\r\n\r\n> d3@4.9.1 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.1 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[34;40mnotice\u001b[0m\u001b[35m\u001b[0m created a lockfile as package-lock.json. You should commit this file.\r\n\u001b[0madded 102 packages in 11.746s\r\n[exectime]: 12507\u001b[33m==> saving cache ...\u001b[39m\rtar: Removing leading `/' from member names\r\n[exectime]: 808\u001b[33m==> if [[ \"$SCRIPT\" ]]; then npm run-script $SCRIPT; fi\u001b[39m\r\r\n> d3@4.9.1 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.1 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n[exectime]: 1250\u001b[32m[success]: build returned exit code 0\u001b[39m",
+              "job_id": 2,
+              "build_run_id": 7,
+              "created_at": 1507013815234,
+              "updated_at": 1507013858838
+            }
+          ],
+          "end_time": 1507013858834,
+          "start_time": 1507013815277,
+          "status": "success"
+        }
+      ],
+      "hasPermission": true
+    },
+    {
+      "id": 1,
+      "branch": "master",
+      "pr": null,
+      "head_id": null,
+      "data": {
+        "ref": "refs/heads/master",
+        "before": "494f47baeda0f20be99ceca28973a5b4e2639fac",
+        "after": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+        "created": false,
+        "deleted": false,
+        "forced": false,
+        "base_ref": null,
+        "compare": "https://github.com/jkuri/d3-bundle/compare/494f47baeda0...8e1c6452d41d",
+        "commits": [
+          {
+            "id": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+            "tree_id": "b26adb425bcdc41d853a4a99d666f7e5922fc412",
+            "distinct": true,
+            "message": "chore(abstruse.yml): make proper config",
+            "timestamp": "2017-09-17T23:57:39+02:00",
+            "url": "https://github.com/jkuri/d3-bundle/commit/8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+            "author": {
+              "name": "Jan Kuri",
+              "email": "jkuri88@gmail.com",
+              "username": "jkuri"
+            },
+            "committer": {
+              "name": "Jan Kuri",
+              "email": "jkuri88@gmail.com",
+              "username": "jkuri"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+              ".abstruse.yml"
+            ]
+          }
+        ],
+        "head_commit": {
+          "id": "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+          "tree_id": "b26adb425bcdc41d853a4a99d666f7e5922fc412",
+          "distinct": true,
+          "message": "chore(abstruse.yml): make proper config",
+          "timestamp": "2017-09-17T23:57:39+02:00",
+          "url": "https://github.com/jkuri/d3-bundle/commit/8e1c6452d41d7a45d0b16d5f711befdbbe2c0320",
+          "author": {
+            "name": "Jan Kuri",
+            "email": "jkuri88@gmail.com",
+            "username": "jkuri"
+          },
+          "committer": {
+            "name": "Jan Kuri",
+            "email": "jkuri88@gmail.com",
+            "username": "jkuri"
+          },
+          "added": [],
+          "removed": [],
+          "modified": [
+            ".abstruse.yml"
+          ]
+        },
+        "repository": {
+          "id": 71424198,
+          "name": "d3-bundle",
+          "full_name": "jkuri/d3-bundle",
+          "owner": {
+            "name": "jkuri",
+            "email": "jkuri88@gmail.com",
+            "login": "jkuri",
+            "id": 1796022,
+            "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/jkuri",
+            "html_url": "https://github.com/jkuri",
+            "followers_url": "https://api.github.com/users/jkuri/followers",
+            "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+            "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+            "organizations_url": "https://api.github.com/users/jkuri/orgs",
+            "repos_url": "https://api.github.com/users/jkuri/repos",
+            "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/jkuri/received_events",
+            "type": "User",
+            "site_admin": false
+          },
+          "private": false,
+          "html_url": "https://github.com/jkuri/d3-bundle",
+          "description": null,
+          "fork": false,
+          "url": "https://github.com/jkuri/d3-bundle",
+          "forks_url": "https://api.github.com/repos/jkuri/d3-bundle/forks",
+          "keys_url": "https://api.github.com/repos/jkuri/d3-bundle/keys{/key_id}",
+          "collaborators_url": "https://api.github.com/repos/jkuri/d3-bundle/collaborators{/collaborator}",
+          "teams_url": "https://api.github.com/repos/jkuri/d3-bundle/teams",
+          "hooks_url": "https://api.github.com/repos/jkuri/d3-bundle/hooks",
+          "issue_events_url": "https://api.github.com/repos/jkuri/d3-bundle/issues/events{/number}",
+          "events_url": "https://api.github.com/repos/jkuri/d3-bundle/events",
+          "assignees_url": "https://api.github.com/repos/jkuri/d3-bundle/assignees{/user}",
+          "branches_url": "https://api.github.com/repos/jkuri/d3-bundle/branches{/branch}",
+          "tags_url": "https://api.github.com/repos/jkuri/d3-bundle/tags",
+          "blobs_url": "https://api.github.com/repos/jkuri/d3-bundle/git/blobs{/sha}",
+          "git_tags_url": "https://api.github.com/repos/jkuri/d3-bundle/git/tags{/sha}",
+          "git_refs_url": "https://api.github.com/repos/jkuri/d3-bundle/git/refs{/sha}",
+          "trees_url": "https://api.github.com/repos/jkuri/d3-bundle/git/trees{/sha}",
+          "statuses_url": "https://api.github.com/repos/jkuri/d3-bundle/statuses/{sha}",
+          "languages_url": "https://api.github.com/repos/jkuri/d3-bundle/languages",
+          "stargazers_url": "https://api.github.com/repos/jkuri/d3-bundle/stargazers",
+          "contributors_url": "https://api.github.com/repos/jkuri/d3-bundle/contributors",
+          "subscribers_url": "https://api.github.com/repos/jkuri/d3-bundle/subscribers",
+          "subscription_url": "https://api.github.com/repos/jkuri/d3-bundle/subscription",
+          "commits_url": "https://api.github.com/repos/jkuri/d3-bundle/commits{/sha}",
+          "git_commits_url": "https://api.github.com/repos/jkuri/d3-bundle/git/commits{/sha}",
+          "comments_url": "https://api.github.com/repos/jkuri/d3-bundle/comments{/number}",
+          "issue_comment_url": "https://api.github.com/repos/jkuri/d3-bundle/issues/comments{/number}",
+          "contents_url": "https://api.github.com/repos/jkuri/d3-bundle/contents/{+path}",
+          "compare_url": "https://api.github.com/repos/jkuri/d3-bundle/compare/{base}...{head}",
+          "merges_url": "https://api.github.com/repos/jkuri/d3-bundle/merges",
+          "archive_url": "https://api.github.com/repos/jkuri/d3-bundle/{archive_format}{/ref}",
+          "downloads_url": "https://api.github.com/repos/jkuri/d3-bundle/downloads",
+          "issues_url": "https://api.github.com/repos/jkuri/d3-bundle/issues{/number}",
+          "pulls_url": "https://api.github.com/repos/jkuri/d3-bundle/pulls{/number}",
+          "milestones_url": "https://api.github.com/repos/jkuri/d3-bundle/milestones{/number}",
+          "notifications_url": "https://api.github.com/repos/jkuri/d3-bundle/notifications{?since,all,participating}",
+          "labels_url": "https://api.github.com/repos/jkuri/d3-bundle/labels{/name}",
+          "releases_url": "https://api.github.com/repos/jkuri/d3-bundle/releases{/id}",
+          "deployments_url": "https://api.github.com/repos/jkuri/d3-bundle/deployments",
+          "created_at": 1476936345,
+          "updated_at": "2016-10-20T04:06:39Z",
+          "pushed_at": 1505685467,
+          "git_url": "git://github.com/jkuri/d3-bundle.git",
+          "ssh_url": "git@github.com:jkuri/d3-bundle.git",
+          "clone_url": "https://github.com/jkuri/d3-bundle.git",
+          "svn_url": "https://github.com/jkuri/d3-bundle",
+          "homepage": null,
+          "size": 34612,
+          "stargazers_count": 0,
+          "watchers_count": 0,
+          "language": "JavaScript",
+          "has_issues": true,
+          "has_projects": true,
+          "has_downloads": true,
+          "has_wiki": true,
+          "has_pages": false,
+          "forks_count": 1,
+          "mirror_url": null,
+          "open_issues_count": 0,
+          "forks": 1,
+          "open_issues": 0,
+          "watchers": 0,
+          "default_branch": "master",
+          "stargazers": 0,
+          "master_branch": "master"
+        },
+        "pusher": {
+          "name": "jkuri",
+          "email": "jkuri88@gmail.com"
+        },
+        "sender": {
+          "login": "jkuri",
+          "id": 1796022,
+          "avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/jkuri",
+          "html_url": "https://github.com/jkuri",
+          "followers_url": "https://api.github.com/users/jkuri/followers",
+          "following_url": "https://api.github.com/users/jkuri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/jkuri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/jkuri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/jkuri/subscriptions",
+          "organizations_url": "https://api.github.com/users/jkuri/orgs",
+          "repos_url": "https://api.github.com/users/jkuri/repos",
+          "events_url": "https://api.github.com/users/jkuri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/jkuri/received_events",
+          "type": "User",
+          "site_admin": false
+        }
+      },
+      "parsed_config": "[{\"commands\":[{\"command\":\"git clone -q https://github.com/jkuri/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin master\",\"type\":\"git\"},{\"command\":\"git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"before_install\"},{\"command\":\"npm config set spin false\",\"type\":\"before_install\"},{\"command\":\"npm config set progress false\",\"type\":\"before_install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"if [[ \\\"$SCRIPT\\\" ]]; then npm run-script $SCRIPT; fi\",\"type\":\"script\"}],\"env\":[\"SCRIPT=test NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}]",
+      "start_time": 1507013872763,
+      "end_time": 1507013912827,
+      "repositories_id": 1,
+      "created_at": 1507013395437,
+      "updated_at": 1507013912845,
+      "repository": {
+        "id": 1,
+        "github_id": 71424198,
+        "bitbucket_id": null,
+        "gitlab_id": null,
+        "gogs_id": null,
+        "clone_url": "https://github.com/jkuri/d3-bundle.git",
+        "html_url": "https://github.com/jkuri/d3-bundle",
+        "default_branch": "master",
+        "name": "d3-bundle",
+        "full_name": "jkuri/d3-bundle",
+        "description": null,
+        "api_url": "https://api.github.com",
+        "repository_provider": "github",
+        "private": 0,
+        "fork": 0,
+        "user_login": "jkuri",
+        "user_id": "1796022",
+        "user_avatar_url": "https://avatars1.githubusercontent.com/u/1796022?v=4",
+        "user_url": "https://api.github.com/users/jkuri",
+        "user_html_url": "https://github.com/jkuri",
+        "access_tokens_id": null,
+        "public": 1,
+        "data": null,
+        "created_at": 1507013393389,
+        "updated_at": 1507013393389,
+        "permissions": [
+          {
+            "id": 1,
+            "repositories_id": 1,
+            "users_id": 1,
+            "permission": 1,
+            "created_at": 1507013393394,
+            "updated_at": 1507013393394
+          }
+        ]
+      },
+      "jobs": [
+        {
+          "id": 1,
+          "data": "{\"commands\":[{\"command\":\"git clone -q https://github.com/jkuri/d3-bundle.git -b master .\",\"type\":\"git\"},{\"command\":\"git fetch origin master\",\"type\":\"git\"},{\"command\":\"git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\",\"type\":\"git\"},{\"command\":\"nvm install $NODE_VERSION\",\"type\":\"before_install\"},{\"command\":\"npm config set spin false\",\"type\":\"before_install\"},{\"command\":\"npm config set progress false\",\"type\":\"before_install\"},{\"command\":\"npm install\",\"type\":\"install\"},{\"command\":\"if [[ \\\"$SCRIPT\\\" ]]; then npm run-script $SCRIPT; fi\",\"type\":\"script\"}],\"env\":[\"SCRIPT=test NODE_VERSION=8\"],\"stage\":\"test\",\"image\":\"abstruse\",\"cache\":[\"node_modules\"]}",
+          "builds_id": 1,
+          "created_at": 1507013395461,
+          "updated_at": 1507013395461,
+          "runs": [
+            {
+              "id": 1,
+              "start_time": 1507013395511,
+              "end_time": 1507013401253,
+              "status": "failed",
+              "log": "\u001b[33m==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\u001b[39m\r\u001b]0;abstruse@a54a701067a9: ~/build\u0007abstruse@a54a701067a9:~/build$ [exectime]: 4879\u001b[31m[error]: executed command returned exit code 255\u001b[39m",
+              "job_id": 1,
+              "build_run_id": 1,
+              "created_at": 1507013395469,
+              "updated_at": 1507013401261
+            },
+            {
+              "id": 8,
+              "start_time": 1507013872866,
+              "end_time": 1507013912827,
+              "status": "success",
+              "log": "\u001b[33m==> git clone -q https://github.com/jkuri/d3-bundle.git -b master .\u001b[39m\r[exectime]: 20395\u001b[33m==> git fetch origin master\u001b[39m\rFrom https://github.com/jkuri/d3-bundle\r\n * branch              master     -> FETCH_HEAD\r\n[exectime]: 1015\u001b[33m==> git checkout 8e1c6452d41d7a45d0b16d5f711befdbbe2c0320 .\u001b[39m\r[exectime]: 399\u001b[33m==> restoring cache ...\u001b[39m\r[exectime]: 489\u001b[33m==> nvm install $NODE_VERSION\u001b[39m\rDownloading and installing node v8.6.0...\r\nDownloading https://nodejs.org/dist/v8.6.0/node-v8.6.0-linux-x64.tar.xz...\r\n\r                                                                           0.0%\r                                                                           0.3%\r                                                                           0.8%\r#                                                                          1.8%\r###                                                                        5.2%\r######                                                                     8.7%\r###########                                                               16.3%\r###############                                                           21.5%\r###################                                                       27.7%\r######################                                                    31.9%\r###########################                                               38.1%\r################################                                          45.1%\r#####################################                                     51.5%\r##########################################                                58.4%\r##############################################                            64.7%\r#################################################                         68.2%\r###################################################                       70.9%\r####################################################                      73.4%\r######################################################                    76.1%\r########################################################                  78.8%\r##########################################################                81.4%\r############################################################              84.0%\r#############################################################             85.5%\r###################################################################       93.7%\r#####################################################################     96.5%\r#######################################################################   99.2%\r######################################################################## 100.0%\r\nComputing checksum with sha256sum\r\nChecksums matched!\r\nNow using node v8.6.0 (npm v5.3.0)\r\n[exectime]: 6442\u001b[33m==> npm config set spin false\u001b[39m\r[exectime]: 579\u001b[33m==> npm config set progress false\u001b[39m\r[exectime]: 652\u001b[33m==> npm install\u001b[39m\r\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m As of npm@5, `prepublish` scripts are deprecated.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m Use `prepare` for build steps and `prepublishOnly` for upload-only.\r\n\u001b[0m\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[30;43mWARN\u001b[0m \u001b[0m\u001b[35mprepublish-on-install\u001b[0m See the deprecation note in `npm help scripts` for more information.\r\n\u001b[0m\r\n> d3@4.9.1 prepublish /home/abstruse/build\r\n> npm run test && rollup -c --banner \"$(preamble)\" -f umd -n d3 -o build/d3.js -- index.js && uglifyjs --preamble \"$(preamble)\" build/d3.js -c negate_iife=false -m -o build/d3.min.js\r\n\r\n\r\n> d3@4.9.1 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.1 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n\u001b[37;40mnpm\u001b[0m \u001b[0m\u001b[34;40mnotice\u001b[0m\u001b[35m\u001b[0m created a lockfile as package-lock.json. You should commit this file.\r\n\u001b[0mup to date in 5.494s\r\n[exectime]: 6322\u001b[33m==> saving cache ...\u001b[39m\r[exectime]: 349\u001b[33m==> if [[ \"$SCRIPT\" ]]; then npm run-script $SCRIPT; fi\u001b[39m\r\r\n> d3@4.9.1 pretest /home/abstruse/build\r\n> rimraf build && mkdir build && json2module package.json > build/package.js && node rollup.node\r\n\r\n\r\n> d3@4.9.1 test /home/abstruse/build\r\n> tape 'test/**/*-test.js'\r\n\r\nTAP version 13\r\n# version matches package.json\r\nok 1 should be equal\r\n# d3.event is a getter for d3Selection.event\r\nok 2 should be equal\r\nok 3 should be equal\r\n# d3 exports everything from d3-array\r\nok 4 d3-array export bisect\r\nok 5 d3-array export bisectRight\r\nok 6 d3-array export bisectLeft\r\nok 7 d3-array export ascending\r\nok 8 d3-array export bisector\r\nok 9 d3-array export cross\r\nok 10 d3-array export descending\r\nok 11 d3-array export deviation\r\nok 12 d3-array export extent\r\nok 13 d3-array export histogram\r\nok 14 d3-array export thresholdFreedmanDiaconis\r\nok 15 d3-array export thresholdScott\r\nok 16 d3-array export thresholdSturges\r\nok 17 d3-array export max\r\nok 18 d3-array export mean\r\nok 19 d3-array export median\r\nok 20 d3-array export merge\r\nok 21 d3-array export min\r\nok 22 d3-array export pairs\r\nok 23 d3-array export permute\r\nok 24 d3-array export quantile\r\nok 25 d3-array export range\r\nok 26 d3-array export scan\r\nok 27 d3-array export shuffle\r\nok 28 d3-array export sum\r\nok 29 d3-array export ticks\r\nok 30 d3-array export tickIncrement\r\nok 31 d3-array export tickStep\r\nok 32 d3-array export transpose\r\nok 33 d3-array export variance\r\nok 34 d3-array export zip\r\n# d3 exports everything from d3-axis\r\nok 35 d3-axis export axisTop\r\nok 36 d3-axis export axisRight\r\nok 37 d3-axis export axisBottom\r\nok 38 d3-axis export axisLeft\r\n# d3 exports everything from d3-brush\r\nok 39 d3-brush export brush\r\nok 40 d3-brush export brushX\r\nok 41 d3-brush export brushY\r\nok 42 d3-brush export brushSelection\r\n# d3 exports everything from d3-chord\r\nok 43 d3-chord export chord\r\nok 44 d3-chord export ribbon\r\n# d3 exports everything from d3-collection\r\nok 45 d3-collection export nest\r\nok 46 d3-collection export set\r\nok 47 d3-collection export map\r\nok 48 d3-collection export keys\r\nok 49 d3-collection export values\r\nok 50 d3-collection export entries\r\n# d3 exports everything from d3-color\r\nok 51 d3-color export color\r\nok 52 d3-color export rgb\r\nok 53 d3-color export hsl\r\nok 54 d3-color export lab\r\nok 55 d3-color export hcl\r\nok 56 d3-color export cubehelix\r\n# d3 exports everything from d3-dispatch\r\nok 57 d3-dispatch export dispatch\r\n# d3 exports everything from d3-drag\r\nok 58 d3-drag export drag\r\nok 59 d3-drag export dragDisable\r\nok 60 d3-drag export dragEnable\r\n# d3 exports everything from d3-dsv\r\nok 61 d3-dsv export dsvFormat\r\nok 62 d3-dsv export csvParse\r\nok 63 d3-dsv export csvParseRows\r\nok 64 d3-dsv export csvFormat\r\nok 65 d3-dsv export csvFormatRows\r\nok 66 d3-dsv export tsvParse\r\nok 67 d3-dsv export tsvParseRows\r\nok 68 d3-dsv export tsvFormat\r\nok 69 d3-dsv export tsvFormatRows\r\n# d3 exports everything from d3-ease\r\nok 70 d3-ease export easeLinear\r\nok 71 d3-ease export easeQuad\r\nok 72 d3-ease export easeQuadIn\r\nok 73 d3-ease export easeQuadOut\r\nok 74 d3-ease export easeQuadInOut\r\nok 75 d3-ease export easeCubic\r\nok 76 d3-ease export easeCubicIn\r\nok 77 d3-ease export easeCubicOut\r\nok 78 d3-ease export easeCubicInOut\r\nok 79 d3-ease export easePoly\r\nok 80 d3-ease export easePolyIn\r\nok 81 d3-ease export easePolyOut\r\nok 82 d3-ease export easePolyInOut\r\nok 83 d3-ease export easeSin\r\nok 84 d3-ease export easeSinIn\r\nok 85 d3-ease export easeSinOut\r\nok 86 d3-ease export easeSinInOut\r\nok 87 d3-ease export easeExp\r\nok 88 d3-ease export easeExpIn\r\nok 89 d3-ease export easeExpOut\r\nok 90 d3-ease export easeExpInOut\r\nok 91 d3-ease export easeCircle\r\nok 92 d3-ease export easeCircleIn\r\nok 93 d3-ease export easeCircleOut\r\nok 94 d3-ease export easeCircleInOut\r\nok 95 d3-ease export easeBounce\r\nok 96 d3-ease export easeBounceIn\r\nok 97 d3-ease export easeBounceOut\r\nok 98 d3-ease export easeBounceInOut\r\nok 99 d3-ease export easeBack\r\nok 100 d3-ease export easeBackIn\r\nok 101 d3-ease export easeBackOut\r\nok 102 d3-ease export easeBackInOut\r\nok 103 d3-ease export easeElastic\r\nok 104 d3-ease export easeElasticIn\r\nok 105 d3-ease export easeElasticOut\r\nok 106 d3-ease export easeElasticInOut\r\n# d3 exports everything from d3-force\r\nok 107 d3-force export forceCenter\r\nok 108 d3-force export forceCollide\r\nok 109 d3-force export forceLink\r\nok 110 d3-force export forceManyBody\r\nok 111 d3-force export forceSimulation\r\nok 112 d3-force export forceX\r\nok 113 d3-force export forceY\r\n# d3 exports everything from d3-format\r\nok 114 d3-format export format\r\nok 115 d3-format export formatPrefix\r\nok 116 d3-format export formatDefaultLocale\r\nok 117 d3-format export formatLocale\r\nok 118 d3-format export formatSpecifier\r\nok 119 d3-format export precisionFixed\r\nok 120 d3-format export precisionPrefix\r\nok 121 d3-format export precisionRound\r\n# d3 exports everything from d3-geo\r\nok 122 d3-geo export geoArea\r\nok 123 d3-geo export geoBounds\r\nok 124 d3-geo export geoCentroid\r\nok 125 d3-geo export geoCircle\r\nok 126 d3-geo export geoClipExtent\r\nok 127 d3-geo export geoContains\r\nok 128 d3-geo export geoDistance\r\nok 129 d3-geo export geoGraticule\r\nok 130 d3-geo export geoGraticule10\r\nok 131 d3-geo export geoInterpolate\r\nok 132 d3-geo export geoLength\r\nok 133 d3-geo export geoPath\r\nok 134 d3-geo export geoAlbers\r\nok 135 d3-geo export geoAlbersUsa\r\nok 136 d3-geo export geoAzimuthalEqualArea\r\nok 137 d3-geo export geoAzimuthalEqualAreaRaw\r\nok 138 d3-geo export geoAzimuthalEquidistant\r\nok 139 d3-geo export geoAzimuthalEquidistantRaw\r\nok 140 d3-geo export geoConicConformal\r\nok 141 d3-geo export geoConicConformalRaw\r\nok 142 d3-geo export geoConicEqualArea\r\nok 143 d3-geo export geoConicEqualAreaRaw\r\nok 144 d3-geo export geoConicEquidistant\r\nok 145 d3-geo export geoConicEquidistantRaw\r\nok 146 d3-geo export geoEquirectangular\r\nok 147 d3-geo export geoEquirectangularRaw\r\nok 148 d3-geo export geoGnomonic\r\nok 149 d3-geo export geoGnomonicRaw\r\nok 150 d3-geo export geoIdentity\r\nok 151 d3-geo export geoProjection\r\nok 152 d3-geo export geoProjectionMutator\r\nok 153 d3-geo export geoMercator\r\nok 154 d3-geo export geoMercatorRaw\r\nok 155 d3-geo export geoOrthographic\r\nok 156 d3-geo export geoOrthographicRaw\r\nok 157 d3-geo export geoStereographic\r\nok 158 d3-geo export geoStereographicRaw\r\nok 159 d3-geo export geoTransverseMercator\r\nok 160 d3-geo export geoTransverseMercatorRaw\r\nok 161 d3-geo export geoRotation\r\nok 162 d3-geo export geoStream\r\nok 163 d3-geo export geoTransform\r\n# d3 exports everything from d3-hierarchy\r\nok 164 d3-hierarchy export cluster\r\nok 165 d3-hierarchy export hierarchy\r\nok 166 d3-hierarchy export pack\r\nok 167 d3-hierarchy export packSiblings\r\nok 168 d3-hierarchy export packEnclose\r\nok 169 d3-hierarchy export partition\r\nok 170 d3-hierarchy export stratify\r\nok 171 d3-hierarchy export tree\r\nok 172 d3-hierarchy export treemap\r\nok 173 d3-hierarchy export treemapBinary\r\nok 174 d3-hierarchy export treemapDice\r\nok 175 d3-hierarchy export treemapSlice\r\nok 176 d3-hierarchy export treemapSliceDice\r\nok 177 d3-hierarchy export treemapSquarify\r\nok 178 d3-hierarchy export treemapResquarify\r\n# d3 exports everything from d3-interpolate\r\nok 179 d3-interpolate export interpolate\r\nok 180 d3-interpolate export interpolateArray\r\nok 181 d3-interpolate export interpolateBasis\r\nok 182 d3-interpolate export interpolateBasisClosed\r\nok 183 d3-interpolate export interpolateDate\r\nok 184 d3-interpolate export interpolateNumber\r\nok 185 d3-interpolate export interpolateObject\r\nok 186 d3-interpolate export interpolateRound\r\nok 187 d3-interpolate export interpolateString\r\nok 188 d3-interpolate export interpolateTransformCss\r\nok 189 d3-interpolate export interpolateTransformSvg\r\nok 190 d3-interpolate export interpolateZoom\r\nok 191 d3-interpolate export interpolateRgb\r\nok 192 d3-interpolate export interpolateRgbBasis\r\nok 193 d3-interpolate export interpolateRgbBasisClosed\r\nok 194 d3-interpolate export interpolateHsl\r\nok 195 d3-interpolate export interpolateHslLong\r\nok 196 d3-interpolate export interpolateLab\r\nok 197 d3-interpolate export interpolateHcl\r\nok 198 d3-interpolate export interpolateHclLong\r\nok 199 d3-interpolate export interpolateCubehelix\r\nok 200 d3-interpolate export interpolateCubehelixLong\r\nok 201 d3-interpolate export quantize\r\n# d3 exports everything from d3-path\r\nok 202 d3-path export path\r\n# d3 exports everything from d3-polygon\r\nok 203 d3-polygon export polygonArea\r\nok 204 d3-polygon export polygonCentroid\r\nok 205 d3-polygon export polygonHull\r\nok 206 d3-polygon export polygonContains\r\nok 207 d3-polygon export polygonLength\r\n# d3 exports everything from d3-quadtree\r\nok 208 d3-quadtree export quadtree\r\n# d3 exports everything from d3-queue\r\nok 209 d3-queue export queue\r\n# d3 exports everything from d3-random\r\nok 210 d3-random export randomUniform\r\nok 211 d3-random export randomNormal\r\nok 212 d3-random export randomLogNormal\r\nok 213 d3-random export randomBates\r\nok 214 d3-random export randomIrwinHall\r\nok 215 d3-random export randomExponential\r\n# d3 exports everything from d3-request\r\nok 216 d3-request export request\r\nok 217 d3-request export html\r\nok 218 d3-request export json\r\nok 219 d3-request export text\r\nok 220 d3-request export xml\r\nok 221 d3-request export csv\r\nok 222 d3-request export tsv\r\n# d3 exports everything from d3-scale\r\nok 223 d3-scale export scaleBand\r\nok 224 d3-scale export scalePoint\r\nok 225 d3-scale export scaleIdentity\r\nok 226 d3-scale export scaleLinear\r\nok 227 d3-scale export scaleLog\r\nok 228 d3-scale export scaleOrdinal\r\nok 229 d3-scale export scaleImplicit\r\nok 230 d3-scale export scalePow\r\nok 231 d3-scale export scaleSqrt\r\nok 232 d3-scale export scaleQuantile\r\nok 233 d3-scale export scaleQuantize\r\nok 234 d3-scale export scaleThreshold\r\nok 235 d3-scale export scaleTime\r\nok 236 d3-scale export scaleUtc\r\nok 237 d3-scale export schemeCategory10\r\nok 238 d3-scale export schemeCategory20b\r\nok 239 d3-scale export schemeCategory20c\r\nok 240 d3-scale export schemeCategory20\r\nok 241 d3-scale export interpolateCubehelixDefault\r\nok 242 d3-scale export interpolateRainbow\r\nok 243 d3-scale export interpolateWarm\r\nok 244 d3-scale export interpolateCool\r\nok 245 d3-scale export interpolateViridis\r\nok 246 d3-scale export interpolateMagma\r\nok 247 d3-scale export interpolateInferno\r\nok 248 d3-scale export interpolatePlasma\r\nok 249 d3-scale export scaleSequential\r\n# d3 exports everything from d3-selection\r\nok 250 d3-selection export event\r\nok 251 d3-selection export creator\r\nok 252 d3-selection export local\r\nok 253 d3-selection export matcher\r\nok 254 d3-selection export mouse\r\nok 255 d3-selection export namespace\r\nok 256 d3-selection export namespaces\r\nok 257 d3-selection export select\r\nok 258 d3-selection export selectAll\r\nok 259 d3-selection export selection\r\nok 260 d3-selection export selector\r\nok 261 d3-selection export selectorAll\r\nok 262 d3-selection export style\r\nok 263 d3-selection export touch\r\nok 264 d3-selection export touches\r\nok 265 d3-selection export window\r\nok 266 d3-selection export customEvent\r\n# d3 exports everything from d3-shape\r\nok 267 d3-shape export arc\r\nok 268 d3-shape export area\r\nok 269 d3-shape export line\r\nok 270 d3-shape export pie\r\nok 271 d3-shape export radialArea\r\nok 272 d3-shape export radialLine\r\nok 273 d3-shape export linkHorizontal\r\nok 274 d3-shape export linkVertical\r\nok 275 d3-shape export linkRadial\r\nok 276 d3-shape export symbol\r\nok 277 d3-shape export symbols\r\nok 278 d3-shape export symbolCircle\r\nok 279 d3-shape export symbolCross\r\nok 280 d3-shape export symbolDiamond\r\nok 281 d3-shape export symbolSquare\r\nok 282 d3-shape export symbolStar\r\nok 283 d3-shape export symbolTriangle\r\nok 284 d3-shape export symbolWye\r\nok 285 d3-shape export curveBasisClosed\r\nok 286 d3-shape export curveBasisOpen\r\nok 287 d3-shape export curveBasis\r\nok 288 d3-shape export curveBundle\r\nok 289 d3-shape export curveCardinalClosed\r\nok 290 d3-shape export curveCardinalOpen\r\nok 291 d3-shape export curveCardinal\r\nok 292 d3-shape export curveCatmullRomClosed\r\nok 293 d3-shape export curveCatmullRomOpen\r\nok 294 d3-shape export curveCatmullRom\r\nok 295 d3-shape export curveLinearClosed\r\nok 296 d3-shape export curveLinear\r\nok 297 d3-shape export curveMonotoneX\r\nok 298 d3-shape export curveMonotoneY\r\nok 299 d3-shape export curveNatural\r\nok 300 d3-shape export curveStep\r\nok 301 d3-shape export curveStepAfter\r\nok 302 d3-shape export curveStepBefore\r\nok 303 d3-shape export stack\r\nok 304 d3-shape export stackOffsetExpand\r\nok 305 d3-shape export stackOffsetDiverging\r\nok 306 d3-shape export stackOffsetNone\r\nok 307 d3-shape export stackOffsetSilhouette\r\nok 308 d3-shape export stackOffsetWiggle\r\nok 309 d3-shape export stackOrderAscending\r\nok 310 d3-shape export stackOrderDescending\r\nok 311 d3-shape export stackOrderInsideOut\r\nok 312 d3-shape export stackOrderNone\r\nok 313 d3-shape export stackOrderReverse\r\n# d3 exports everything from d3-time\r\nok 314 d3-time export timeInterval\r\nok 315 d3-time export timeMillisecond\r\nok 316 d3-time export timeMilliseconds\r\nok 317 d3-time export utcMillisecond\r\nok 318 d3-time export utcMilliseconds\r\nok 319 d3-time export timeSecond\r\nok 320 d3-time export timeSeconds\r\nok 321 d3-time export utcSecond\r\nok 322 d3-time export utcSeconds\r\nok 323 d3-time export timeMinute\r\nok 324 d3-time export timeMinutes\r\nok 325 d3-time export timeHour\r\nok 326 d3-time export timeHours\r\nok 327 d3-time export timeDay\r\nok 328 d3-time export timeDays\r\nok 329 d3-time export timeWeek\r\nok 330 d3-time export timeWeeks\r\nok 331 d3-time export timeSunday\r\nok 332 d3-time export timeSundays\r\nok 333 d3-time export timeMonday\r\nok 334 d3-time export timeMondays\r\nok 335 d3-time export timeTuesday\r\nok 336 d3-time export timeTuesdays\r\nok 337 d3-time export timeWednesday\r\nok 338 d3-time export timeWednesdays\r\nok 339 d3-time export timeThursday\r\nok 340 d3-time export timeThursdays\r\nok 341 d3-time export timeFriday\r\nok 342 d3-time export timeFridays\r\nok 343 d3-time export timeSaturday\r\nok 344 d3-time export timeSaturdays\r\nok 345 d3-time export timeMonth\r\nok 346 d3-time export timeMonths\r\nok 347 d3-time export timeYear\r\nok 348 d3-time export timeYears\r\nok 349 d3-time export utcMinute\r\nok 350 d3-time export utcMinutes\r\nok 351 d3-time export utcHour\r\nok 352 d3-time export utcHours\r\nok 353 d3-time export utcDay\r\nok 354 d3-time export utcDays\r\nok 355 d3-time export utcWeek\r\nok 356 d3-time export utcWeeks\r\nok 357 d3-time export utcSunday\r\nok 358 d3-time export utcSundays\r\nok 359 d3-time export utcMonday\r\nok 360 d3-time export utcMondays\r\nok 361 d3-time export utcTuesday\r\nok 362 d3-time export utcTuesdays\r\nok 363 d3-time export utcWednesday\r\nok 364 d3-time export utcWednesdays\r\nok 365 d3-time export utcThursday\r\nok 366 d3-time export utcThursdays\r\nok 367 d3-time export utcFriday\r\nok 368 d3-time export utcFridays\r\nok 369 d3-time export utcSaturday\r\nok 370 d3-time export utcSaturdays\r\nok 371 d3-time export utcMonth\r\nok 372 d3-time export utcMonths\r\nok 373 d3-time export utcYear\r\nok 374 d3-time export utcYears\r\n# d3 exports everything from d3-time-format\r\nok 375 d3-time-format export timeFormat\r\nok 376 d3-time-format export timeParse\r\nok 377 d3-time-format export utcFormat\r\nok 378 d3-time-format export utcParse\r\nok 379 d3-time-format export timeFormatDefaultLocale\r\nok 380 d3-time-format export timeFormatLocale\r\nok 381 d3-time-format export isoFormat\r\nok 382 d3-time-format export isoParse\r\n# d3 exports everything from d3-timer\r\nok 383 d3-timer export now\r\nok 384 d3-timer export timer\r\nok 385 d3-timer export timerFlush\r\nok 386 d3-timer export timeout\r\nok 387 d3-timer export interval\r\n# d3 exports everything from d3-transition\r\nok 388 d3-transition export transition\r\nok 389 d3-transition export active\r\nok 390 d3-transition export interrupt\r\n# d3 exports everything from d3-voronoi\r\nok 391 d3-voronoi export voronoi\r\n# d3 exports everything from d3-zoom\r\nok 392 d3-zoom export zoom\r\nok 393 d3-zoom export zoomTransform\r\nok 394 d3-zoom export zoomIdentity\r\n\r\n1..394\r\n# tests 394\r\n# pass  394\r\n\r\n# ok\r\n\r\n[exectime]: 1001\u001b[32m[success]: build returned exit code 0\u001b[39m",
+              "job_id": 1,
+              "build_run_id": 8,
+              "created_at": 1507013872823,
+              "updated_at": 1507013912830
+            }
+          ],
+          "end_time": 1507013912827,
+          "start_time": 1507013872866,
+          "status": "success"
+        }
+      ],
+      "hasPermission": true
+    }
+  ]
+}

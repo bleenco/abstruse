@@ -6,6 +6,9 @@
   border-top: 1px solid $border
   border-bottom: 1px solid $border
   border-right: 1px solid $border
+  background: $black
+  border-radius: 6px
+  box-shadow: 0 5px 10px 0 $shadow
 
   .log-line
     display: flex
@@ -13,13 +16,21 @@
     line-height: 1
     font-size: 13px
     height: 40px
-    background: $white
-    color: $color
     margin: 0
-    border-left: 3px solid transparent
+    border-left: 5px solid transparent
+    background: $black
+    color: $white
+
+    &:first-child
+      border-top-left-radius: 6px
+      border-top-right-radius: 6px
+
+    &:last-child
+      border-bottom-left-radius: 6px
+      border-bottom-right-radius: 6px
 
     span
-      color: $color
+      color: $white
 
     &.green
       border-color: $green

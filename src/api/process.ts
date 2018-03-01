@@ -10,6 +10,11 @@ import * as envVars from './env-variables';
 import chalk from 'chalk';
 import * as style from 'ansi-styles';
 import { deploy } from './deploy';
+import 'rxjs/add/observable/empty';
+import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/concat';
+import 'rxjs/add/operator/timeoutWith';
+import 'rxjs/add/operator/takeUntil';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';
