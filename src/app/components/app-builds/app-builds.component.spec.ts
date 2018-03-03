@@ -14,7 +14,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
-const buildsData: any = require('json-loader!../../testing/xhr-data/builds.json');
+import * as buildsData from '../../../testing/xhr-data/builds.json';
 
 describe('Builds Component', () => {
   let fixture: ComponentFixture<AppBuildsComponent>;
@@ -59,7 +59,7 @@ describe('Builds Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeBuilds = buildsData.data;
+      fakeBuilds = (<any>buildsData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       responseBuilds = new Response(optionsBuild);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuilds));

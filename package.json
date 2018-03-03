@@ -33,7 +33,7 @@
     "test": "node ./tests/run_unit.js",
     "test:karma": "ng test",
     "test:e2e": "node ./tests/run_e2e.js",
-    "lint": "ng lint",
+    "lint": "tslint ./src/api/**/*.ts",
     "test:protractor": "node ./tests/run_protractor.js",
     "preprotractor:ci": "npm run webdriver",
     "protractor:ci": "protractor ./protractor.conf.js",
@@ -118,6 +118,7 @@
     "tslint": "~5.9.1",
     "typescript": "~2.5.3",
     "ws": "^4.1.0",
-    "xterm": "^3.1.0"
+    "xterm": "^3.1.0",
+    "yamljs": "^0.3.0"
   }
 }

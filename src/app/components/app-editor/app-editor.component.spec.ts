@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA }          from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppEditorComponent } from './app-editor.component';
@@ -10,11 +10,11 @@ describe('Editor Component', () => {
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      declarations: [ AppEditorComponent, ToTimePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
-      providers: [ WindowService ]
+      declarations: [AppEditorComponent, ToTimePipe],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [WindowService]
     })
-    .createComponent(AppEditorComponent);
+      .createComponent(AppEditorComponent);
   });
 
   it('should expect editor to be null', () => {

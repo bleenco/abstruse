@@ -7,19 +7,19 @@ import { ApiService } from './api.service';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
-const buildsData: any = require('json-loader!../testing/xhr-data/builds.json');
+import * as buildsData from '../../testing/xhr-data/builds.json';
 
 describe('API Service (mockBackend)', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpModule, RouterTestingModule ],
+      imports: [HttpModule, RouterTestingModule],
       providers: [
         ApiService,
         { provide: XHRBackend, useClass: MockBackend }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   it('can instantiate service when inject service', inject([ApiService], (service: ApiService) => {
@@ -28,7 +28,7 @@ describe('API Service (mockBackend)', () => {
 
   it('can instantiate service with "new"', inject([Http, Router], (http: Http, router: Router) => {
     expect(http).not.toBeNull('http should be provided');
-    let service = new ApiService(http, router);
+    const service = new ApiService(http, router);
     expect(service instanceof ApiService).toBe(true, 'new service should be ok');
   }));
 
@@ -45,8 +45,8 @@ describe('API Service (mockBackend)', () => {
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
       service = new ApiService(http, router);
-      fakeBuilds = buildsData.data;
-      let options = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
+      fakeBuilds = (<any>buildsData).data;
+      const options = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       response = new Response(options);
     }));
 

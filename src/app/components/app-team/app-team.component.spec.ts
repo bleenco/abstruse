@@ -1,6 +1,6 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -14,10 +14,10 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { Observable } from 'rxjs/Observable';
-const usersData: any = require('json-loader!../../testing/xhr-data/users.json');
+import * as usersData from '../../../testing/xhr-data/users.json';
 
 describe('Team Component', () => {
-  let comp:    AppTeamComponent;
+  let comp: AppTeamComponent;
   let fixture: ComponentFixture<AppTeamComponent>;
 
   beforeEach(async(() => {
@@ -30,18 +30,18 @@ describe('Team Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppTeamComponent, AppSelectboxComponent ],
-      schemas:      [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule],
+      declarations: [AppTeamComponent, AppSelectboxComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         ConfigService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
+        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-    .createComponent(AppTeamComponent);
+      .createComponent(AppTeamComponent);
     comp = fixture.componentInstance;
   }));
 
@@ -62,7 +62,7 @@ describe('Team Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeUsers = usersData.data;
+      fakeUsers = (<any>usersData).data;
       let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
       responseUsers = new Response(optionsUsers);
 

@@ -1,6 +1,6 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, inject, async } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -21,9 +21,9 @@ describe('SelectBox Component', () => {
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppSelectboxComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule],
+      declarations: [AppSelectboxComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -32,9 +32,9 @@ describe('SelectBox Component', () => {
         NotificationService,
         WindowService,
         StatsService,
-        { provide: XHRBackend, useClass: MockBackend } ]
+        { provide: XHRBackend, useClass: MockBackend }]
     })
-    .createComponent(AppSelectboxComponent);
+      .createComponent(AppSelectboxComponent);
   });
 
   it('should expect el to be undefined', () => {
@@ -42,7 +42,7 @@ describe('SelectBox Component', () => {
   });
 
   it('should expect index to be 0', () => {
-    fixture.componentInstance.data = [ { key: 'a', value: '1234' }, { key: 'b', value: '4321' } ];
+    fixture.componentInstance.data = [{ key: 'a', value: '1234' }, { key: 'b', value: '4321' }];
     fixture.componentInstance.writeValue('a');
     expect(fixture.componentInstance.index).toBe(0);
   });
