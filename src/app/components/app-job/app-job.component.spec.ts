@@ -14,8 +14,8 @@ import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
-const jobData: any = require('json-loader!../../testing/xhr-data/job.json');
-const jobTagData: any = require('json-loader!../../testing/xhr-data/job-tag.json');
+import * as jobData from '../../../testing/xhr-data/job.json';
+import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
 
 describe('Job Component', () => {
   let comp:    AppJobComponent;
@@ -63,7 +63,7 @@ describe('Job Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeJob = jobData.data;
+      fakeJob = (<any>jobData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);
 
@@ -91,7 +91,7 @@ describe('Job Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeJob = jobTagData.data;
+      fakeJob = (<any>jobTagData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);
 

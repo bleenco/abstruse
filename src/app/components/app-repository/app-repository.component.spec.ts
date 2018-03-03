@@ -1,6 +1,6 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,8 +18,9 @@ import { NotificationService } from '../../services/notification.service';
 import { NgUploaderModule } from 'ngx-uploader';
 import { Observable } from 'rxjs/Observable';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
-const buildsData: any = require('json-loader!../../testing/xhr-data/builds.json');
-const repositoryData: any = require('json-loader!../../testing/xhr-data/repository.json');
+import * as buildsData from '../../../testing/xhr-data/builds.json';
+import * as repositoryData from '../../../testing/xhr-data/repository.json';
+
 const badge = `
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" style="shape-rendering:
   geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd;
@@ -46,14 +47,14 @@ const badge = `
 `;
 
 describe('Repository Component', () => {
-  let comp:    AppRepositoryComponent;
+  let comp: AppRepositoryComponent;
   let fixture: ComponentFixture<AppRepositoryComponent>;
 
   beforeEach(async(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ NgUploaderModule, FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppRepositoryComponent, AppHeaderComponent, AppToggleComponent, SafeHtmlPipe ],
-      schemas:      [ NO_ERRORS_SCHEMA ],
+      imports: [NgUploaderModule, FormsModule, RouterTestingModule, HttpModule],
+      declarations: [AppRepositoryComponent, AppHeaderComponent, AppToggleComponent, SafeHtmlPipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -61,9 +62,11 @@ describe('Repository Component', () => {
         ConfigService,
         NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 }, queryParams: { tab: 'builds' } } } } ]
+        { provide: ActivatedRoute, useValue: {
+          params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 }, queryParams: { tab: 'builds' } }
+        } }]
     })
-    .createComponent(AppRepositoryComponent);
+      .createComponent(AppRepositoryComponent);
     comp = fixture.componentInstance;
   }));
 
@@ -81,7 +84,6 @@ describe('Repository Component', () => {
     let responseBadge: Response;
     let fakeBuilds: any[];
     let fakeRepository: any[];
-    let fakeBadge: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       fixture.componentInstance.tab = 'builds';
@@ -89,8 +91,8 @@ describe('Repository Component', () => {
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeBuilds = buildsData.data;
-      fakeRepository = repositoryData.data;
+      fakeBuilds = (<any>buildsData).data;
+      fakeRepository = (<any>repositoryData).data;
       let optionsBuilds = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       responseBuilds = new Response(optionsBuilds);
       let optionsRepo = new ResponseOptions({ status: 200, body: { data: fakeRepository } });
@@ -104,7 +106,7 @@ describe('Repository Component', () => {
         } else if (c.request.url.indexOf('badge') !== -1) {
           c.mockRespond(responseBadge);
         } else if (c.request.url.indexOf('tokens') !== -1) {
-          c.mockRespond(new Response(new ResponseOptions({ status: 200, body: { data: [] }})));
+          c.mockRespond(new Response(new ResponseOptions({ status: 200, body: { data: [] } })));
         } else {
           c.mockRespond(responseRepo);
         }

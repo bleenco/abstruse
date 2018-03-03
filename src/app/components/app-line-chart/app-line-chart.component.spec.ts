@@ -1,6 +1,6 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, inject, async } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,16 +15,16 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-const jobsData: any = require('json-loader!../../testing/xhr-data/jobs.json');
+import * as jobsData from '../../../testing/xhr-data/jobs.json';
 
 describe('Line Chart Component', () => {
   let fixture: ComponentFixture<AppLineChartComponent>;
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppLineChartComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule],
+      declarations: [AppLineChartComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -33,9 +33,9 @@ describe('Line Chart Component', () => {
         NotificationService,
         WindowService,
         StatsService,
-        { provide: XHRBackend, useClass: MockBackend } ]
+        { provide: XHRBackend, useClass: MockBackend }]
     })
-    .createComponent(AppLineChartComponent);
+      .createComponent(AppLineChartComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -57,7 +57,7 @@ describe('Line Chart Component', () => {
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
       statsService = new StatsService(socketService, apiService);
-      fakeJobs = jobsData.data;
+      fakeJobs = (<any>jobsData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeJobs } });
       responseJobs = new Response(optionsBuild);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseJobs));

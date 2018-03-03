@@ -3,6 +3,7 @@ import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angul
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { IAccessToken } from '../components/app-user';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ApiService {
@@ -231,8 +232,9 @@ export class ApiService {
     });
 
     return this.http.get(url, { search: params })
-      .map(res => res.json())
-      .catch(this.handleError);
+      .pipe(
+        map(res => res.json())
+      );
   }
 
   private get(url: string, searchParams: URLSearchParams = null, auth = false): Observable<any> {
@@ -242,7 +244,9 @@ export class ApiService {
     }
 
     return this.http.get(url, { search: searchParams, headers: headers })
-      .map(this.extractData);
+      .pipe(
+        map(this.extractData)
+      );
   }
 
   private post(url: string, data: any, auth = false): Observable<any> {
@@ -253,7 +257,9 @@ export class ApiService {
     let options = new RequestOptions({ headers: headers });
 
     return this.http.post(url, data, options)
-      .map(this.extractData);
+      .pipe(
+        map(this.extractData)
+      );
   }
 
   private extractData(res: Response) {
