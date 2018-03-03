@@ -1,3 +1,13 @@
+<a name="1.5.2"></a>
+## [1.5.2](https://github.com/bleenco/abstruse/compare/v1.5.1...v1.5.2) (2018-03-03)
+
+
+### Bug Fixes
+
+* **badges:** disable cache of build status badges (closes [#342](https://github.com/bleenco/abstruse/issues/342)) ([cbf5a9b](https://github.com/bleenco/abstruse/commit/cbf5a9b))
+
+
+
 <a name="1.5.1"></a>
 ## [1.5.1](https://github.com/bleenco/abstruse/compare/v1.5.0...v1.5.1) (2018-02-24)
 
