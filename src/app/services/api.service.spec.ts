@@ -1,34 +1,35 @@
 import { async, inject, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ApiService } from './api.service';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
-const buildsData: any = require('json-loader!../testing/xhr-data/builds.json');
+import * as buildsData from '../../testing/xhr-data/builds.json';
 
 describe('API Service (mockBackend)', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpModule, RouterTestingModule ],
+      imports: [HttpModule, RouterTestingModule, HttpClientModule],
       providers: [
         ApiService,
         { provide: XHRBackend, useClass: MockBackend }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   it('can instantiate service when inject service', inject([ApiService], (service: ApiService) => {
     expect(service instanceof ApiService).toBe(true);
   }));
 
-  it('can instantiate service with "new"', inject([Http, Router], (http: Http, router: Router) => {
+  it('can instantiate service with "new"', inject([HttpClient, Router], (http: HttpClient, router: Router) => {
     expect(http).not.toBeNull('http should be provided');
-    let service = new ApiService(http, router);
+    const service = new ApiService(http, router);
     expect(service instanceof ApiService).toBe(true, 'new service should be ok');
   }));
 
@@ -42,11 +43,11 @@ describe('API Service (mockBackend)', () => {
     let fakeBuilds: any[];
     let response: Response;
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       service = new ApiService(http, router);
-      fakeBuilds = buildsData.data;
-      let options = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
+      fakeBuilds = (<any>buildsData).data;
+      const options = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       response = new Response(options);
     }));
 

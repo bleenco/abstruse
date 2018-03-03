@@ -4,13 +4,10 @@
     "outDir": "../dist/api",
     "baseUrl": "./",
     "module": "commonjs",
-    "target": "es2015",
+    "target": "es5",
     "types": ["node", "bookshelf"]
   },
-  "files": [
-    "./api/index.ts"
-  ],
   "include": [
-    "api/**/*"
+    "api/**/*.ts"
   ]
 }

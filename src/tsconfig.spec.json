@@ -15,5 +15,10 @@
   "include": [
     "**/*.spec.ts",
     "**/*.d.ts"
+  ],
+  "exclude": [
+    "api/",
+    "main.ts",
+    "polyfills.ts"
   ]
 }

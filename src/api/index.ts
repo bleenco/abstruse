@@ -11,14 +11,13 @@ setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
 
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import { getAbstruseVersion } from './utils';
 import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
-import 'rxjs/add/observable/merge';
 
 const server = new ExpressServer({ port: 6500 });
 

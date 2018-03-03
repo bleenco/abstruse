@@ -1,9 +1,10 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppImagesComponent } from './app-images.component';
 import { ApiService } from '../../services/api.service';
@@ -18,17 +19,17 @@ describe('Images Component', () => {
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppImagesComponent, SafeHtmlPipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppImagesComponent, SafeHtmlPipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         ConfigService,
-        NotificationService ]
+        NotificationService]
     })
-    .createComponent(AppImagesComponent);
+      .createComponent(AppImagesComponent);
   });
 
   it('should expect loading to be false', () => {

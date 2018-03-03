@@ -1,7 +1,8 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -17,18 +18,18 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { NgUploaderModule } from 'ngx-uploader';
 import { Observable } from 'rxjs/Observable';
-const userData: any = require('json-loader!../../testing/xhr-data/user.json');
-const repositoriesData: any = require('json-loader!../../testing/xhr-data/repositories.json');
+import * as userData from '../../../testing/xhr-data/user.json';
+import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
 
 describe('User Component', () => {
-  let comp:    AppUserComponent;
+  let comp: AppUserComponent;
   let fixture: ComponentFixture<AppUserComponent>;
 
   beforeEach(async(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ NgUploaderModule, FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppUserComponent, AppHeaderComponent, AppToggleComponent ],
-      schemas:      [ NO_ERRORS_SCHEMA ],
+      imports: [NgUploaderModule, FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppUserComponent, AppHeaderComponent, AppToggleComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -36,9 +37,9 @@ describe('User Component', () => {
         ConfigService,
         NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
+        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-    .createComponent(AppUserComponent);
+      .createComponent(AppUserComponent);
     comp = fixture.componentInstance;
   }));
 
@@ -56,16 +57,16 @@ describe('User Component', () => {
     let fakeUsers: any[];
     let fakeRepositories: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeUsers = userData.data;
-      fakeRepositories = repositoriesData.data;
-      let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
+      fakeUsers = (<any>userData).data;
+      fakeRepositories = (<any>repositoriesData).data;
+      const optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
       responseUsers = new Response(optionsUsers);
-      let optionsRepos = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });
+      const optionsRepos = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });
       responseRepos = new Response(optionsRepos);
 
       backend.connections.subscribe((c: MockConnection) => {

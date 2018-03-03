@@ -11,20 +11,22 @@
           </div>
         </div>
         <div class="column is-4 is-offset-4">
-          <form class="login-form" *ngIf="!loading" #loginForm="ngForm" (ngSubmit)="doLogin()">
-            <h1>Sign In</h1>
-            <div class="form-field">
-              <label class="form-label">Email Address</label>
-              <input class="form-input" type="text" name="email" placeholder="Email" [(ngModel)]="user.email" required>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Password</label>
-              <input class="form-input" type="password" name="password" placeholder="Password" [(ngModel)]="user.password" required>
-            </div>
-            <div class="form-field">
-              <button type="submit" class="button green login-button" [disabled]="!loginForm.valid">Sign In</button>
-            </div>
-          </form>
+          <div class="login-form" *ngIf="!loading">
+            <form #loginForm="ngForm" (ngSubmit)="doLogin()">
+              <h1>Sign In</h1>
+              <div class="form-field">
+                <label class="form-label">Email Address</label>
+                <input class="form-input" type="text" name="email" placeholder="Email" [(ngModel)]="user.email" required>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Password</label>
+                <input class="form-input" type="password" name="password" placeholder="Password" [(ngModel)]="user.password" required>
+              </div>
+              <div class="form-field">
+                <button type="submit" class="button green login-button" [disabled]="!loginForm.valid">Sign In</button>
+              </div>
+            </form>
+          </div>
           <a *ngIf="!loading && !required" class="button centered-anonymous" routerLink="/">
             <img src="/assets/images/icons/anonymous.svg">
             Continue as anonymous
