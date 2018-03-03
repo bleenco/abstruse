@@ -1,7 +1,7 @@
 # Stage 1 image
 FROM mhart/alpine-node:9 as base
 
-ENV DOCKER_VERSION=17.12.0-ce
+ENV DOCKER_VERSION=17.12.1-ce
 
 RUN apk --no-cache add openssl \
     && wget https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
