@@ -24,8 +24,8 @@ describe('Job Details', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
-      .then(() => element.all(by.css('.xterm-rows > div')).count())
-      .then(cnt => expect(cnt).to.be.greaterThan(0))
+      // .then(() => element.all(by.css('.xterm-rows > div')).count())
+      // .then(cnt => expect(cnt).to.be.greaterThan(0))
       .then((): any => browser.wait(() => {
         return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();
       })
@@ -61,11 +61,11 @@ describe('Job Details', () => {
       .then((): any => browser.wait(() => {
         return element(by.css('app-terminal')).isPresent().then(dis => dis);
       }))
-      .then(() => element.all(by.css('.xterm-rows > div')).count())
-      .then(cnt => expect(cnt).to.be.greaterThan(0))
-      .then((): any => browser.wait(() => {
-        return element.all(by.css('.xterm-rows > div')).count().then(cnt => cnt > 10);
-      }))
+      // .then(() => element.all(by.css('.xterm-rows > div')).count())
+      // .then(cnt => expect(cnt).to.be.greaterThan(0))
+      // .then((): any => browser.wait(() => {
+      //   return element.all(by.css('.xterm-rows > div')).count().then(cnt => cnt > 10);
+      // }))
       .then(() => browser.driver.switchToParentFrame())
       .then((): any => browser.wait(() => {
         return element.all(by.css(`[name="btn-stop"]`)).first().isPresent();

@@ -87,7 +87,7 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
         }
 
         let onGotAmdLoader: any = () => {
-          (<any>window).require.config({ paths: { 'vs': 'monaco/vs' } });
+          (<any>window).require.config({ paths: { 'vs': '/assets/monaco/vs' } });
           (<any>window).require(['vs/editor/editor.main'], () => {
             this.initMonaco(this.opts);
             resolve();
@@ -97,7 +97,7 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
         if (!(<any>window).require) {
           let loaderScript: HTMLScriptElement = this.renderer.createElement('script');
           loaderScript.type = 'text/javascript';
-          loaderScript.src = 'monaco/vs/loader.js';
+          loaderScript.src = '/assets/monaco/vs/loader.js';
           loaderScript.addEventListener('load', onGotAmdLoader);
           this.document.body.appendChild(loaderScript);
         } else {

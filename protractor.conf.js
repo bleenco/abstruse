@@ -4,7 +4,7 @@ exports.config = {
     './e2e/**/*.e2e.ts'
   ],
   capabilities: {
-    browserName: 'chrome',
+    'browserName': 'chrome',
     chromeOptions: {
       args: ['--headless', '--disable-gpu', '--window-size=1024,768']
     }
@@ -19,10 +19,9 @@ exports.config = {
     colors: true,
     bail: true
   },
-  useAllAngular2AppRoots: true,
-  beforeLaunch() {
+  onPrepare() {
     require('ts-node').register({
-      project: 'e2e'
+      project: 'e2e/tsconfig.e2e.json'
     });
   }
 };

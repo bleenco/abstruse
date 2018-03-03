@@ -1,0 +1,20 @@
+=font-face($family, $path, $weight: normal, $style: normal)
+  @font-face
+    font-family: $family
+    src: url('#{$path}.ttf') format('truetype')
+    font-weight: $weight
+    font-style: $style
+
++font-face('SourceSansPro-Thin', '/assets/fonts/SourceSansPro-ExtraLight', 200, 'normal')
++font-face('SourceSansPro-Light', '/assets/fonts/SourceSansPro-Light', 300, 'normal')
++font-face('SourceSansPro-Regular', '/assets/fonts/SourceSansPro-Regular', 400, 'normal')
++font-face('SourceSansPro-SemiBold', '/assets/fonts/SourceSansPro-SemiBold', 600, 'normal')
++font-face('SourceSansPro-Bold', '/assets/fonts/SourceSansPro-Bold', 700, 'normal')
++font-face('SourceSansPro-Extrabold', '/assets/fonts/SourceSansPro-ExtraBold', 900, 'normal')
+
+$font-family-thin: 'SourceSansPro-ExtraLight', sans-serif
+$font-family-light: 'SourceSansPro-Light', sans-serif
+$font-family-regular: 'SourceSansPro-Regular', sans-serif
+$font-family-semibold: 'SourceSansPro-SemiBold', sans-serif
+$font-family-bold: 'SourceSansPro-Bold', sans-serif
+$font-family-black: 'SourceSansPro-Black', sans-serif

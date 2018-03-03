@@ -12,7 +12,7 @@ export class ApiService {
 
   constructor(private http: Http, private router: Router) {
     this.loc = window.location;
-    this.port = this.loc.port === '8000' ? ':6500' : `:${this.loc.port}`; // dev mode
+    this.port = this.loc.port === '4200' ? ':6500' : `:${this.loc.port}`; // dev mode
     this.url = `${this.loc.protocol}//${this.loc.hostname}${this.port}/api`;
   }
 
@@ -242,8 +242,7 @@ export class ApiService {
     }
 
     return this.http.get(url, { search: searchParams, headers: headers })
-      .map(this.extractData)
-      .catch(this.handleError);
+      .map(this.extractData);
   }
 
   private post(url: string, data: any, auth = false): Observable<any> {
@@ -254,8 +253,7 @@ export class ApiService {
     let options = new RequestOptions({ headers: headers });
 
     return this.http.post(url, data, options)
-      .map(this.extractData)
-      .catch(this.handleError);
+      .map(this.extractData);
   }
 
   private extractData(res: Response) {

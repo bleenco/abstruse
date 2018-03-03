@@ -20,7 +20,7 @@ module.exports = {
   ],
   module: {
     rules: [
-      { test: /\.ts$/, loaders: ['ts-loader?silent=true'] },
+      { test: /\.ts$/, loaders: ['ts-loader?silent=true&configFile=src/tsconfig.api.json'] },
     ]
   },
   stats: {

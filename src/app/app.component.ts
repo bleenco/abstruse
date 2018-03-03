@@ -7,7 +7,7 @@ import { ConnectionStates } from './classes/rx-web-socket.class';
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   connected: boolean;
   state: ConnectionStates;
   routing: boolean;

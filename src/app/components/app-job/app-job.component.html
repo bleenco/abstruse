@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <div class="container" *ngIf="loading">
-  <img src="/images/icons/flickr.svg" class="main-loader">
+  <img src="/assets/images/icons/flickr.svg" class="main-loader">
 </div>
 
 <div class="container" [class.hidden]="loading">
@@ -21,15 +21,15 @@
                     </h1>
                     <div class="branch-container">
                       <span class="icon is-small">
-                        <img src="/images/icons/git-branch.svg">
+                        <img src="/assets/images/icons/git-branch.svg">
                       </span>
                       <span *ngIf="job?.build?.branch">{{ job?.build?.branch }}</span>
                     </div>
                     <span class="build-icon">
-                      <img src="/images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
-                      <img src="/images/icons/flickr.svg" *ngIf="jobRun?.status === 'running' && !debug">
-                      <img src="/images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
-                      <img src="/images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
+                      <img src="/assets/images/icons/clock.svg" *ngIf="jobRun?.status === 'queued'">
+                      <img src="/assets/images/icons/flickr.svg" *ngIf="jobRun?.status === 'running' && !debug">
+                      <img src="/assets/images/icons/check-true.svg" *ngIf="jobRun?.status === 'success'">
+                      <img src="/assets/images/icons/check-false.svg" *ngIf="jobRun?.status === 'failed'">
                     </span>
                   </div>
 
@@ -37,7 +37,7 @@
                     <button class="button is-fullwidth" name="btn-stop" type="button" (click)="stopJob($event)" [class.is-hidden]="jobRun.status !== 'running'" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
-                          <img src="/images/icons/stop.svg">
+                          <img src="/assets/images/icons/stop.svg">
                         </span>
                         <span>Stop</span>
                       </div>
@@ -47,7 +47,7 @@
                     <button class="button is-fullwidth restart-job" name="btn-restart" type="button" (click)="restartJob($event)" [disabled]="processing">
                       <div class="centered">
                         <span class="icon">
-                          <img src="/images/icons/restart.svg">
+                          <img src="/assets/images/icons/restart.svg">
                         </span>
                         <span>Restart</span>
                       </div>
@@ -62,7 +62,7 @@
                   <div class="column is-1">
                     <p>
                       <span class="icon">
-                        <img src="/images/icons/git-commit.svg">
+                        <img src="/assets/images/icons/git-commit.svg">
                       </span>
                       <span name="sha" *ngIf="job?.build?.data?.pull_request?.head?.sha">{{ job?.build?.data?.pull_request?.head.sha.slice(0, 7) }}</span>
                       <span name="sha" *ngIf="!job?.build?.data?.pull_request && job?.build?.data?.after">{{ job?.build?.data?.after.slice(0, 7) }}</span>
@@ -97,7 +97,7 @@
                   </div>
                   <div class="column is-1">
                     <p class="total-time">
-                      <img src="/images/icons/clock.svg">
+                      <img src="/assets/images/icons/clock.svg">
                       <span *ngIf="jobRun.status === 'running'">{{ currentTime - jobRun.start_time | toTime }}</span>
                       <span *ngIf="jobRun.status !== 'running' && jobRun.end_time">{{ jobRun.end_time - jobRun.start_time | toTime }}</span>
                     </p>
@@ -134,10 +134,10 @@
                   </div>
 
                   <span class="build-icon">
-                    <img src="/images/icons/clock.svg" *ngIf="status === 'queued'">
-                    <img src="/images/icons/flickr.svg" *ngIf="status === 'running'">
-                    <img src="/images/icons/check-true.svg" *ngIf="status === 'success'">
-                    <img src="/images/icons/check-false.svg" *ngIf="status === 'failed'">
+                    <img src="/assets/images/icons/clock.svg" *ngIf="status === 'queued'">
+                    <img src="/assets/images/icons/flickr.svg" *ngIf="status === 'running'">
+                    <img src="/assets/images/icons/check-true.svg" *ngIf="status === 'success'">
+                    <img src="/assets/images/icons/check-false.svg" *ngIf="status === 'failed'">
                   </span>
                 </div>
               </div>
@@ -147,19 +147,19 @@
           <div class="column is-12 is-hidden-mobile" *ngIf="jobRun?.status === 'running' && sshd && vnc && userId">
             <div class="ssh-container">
               <div>
-                <img src="/images/icons/ssh.svg" class="ssh-icon">
+                <img src="/assets/images/icons/ssh.svg" class="ssh-icon">
                 <span class="span-ssh">SSH and VNC enabled.</span>
                 <code class="ssh-code code-copy" [attr.data-clipboard-text]="'ssh ' + sshd.split(':')[0] + ' -p ' + sshd.split(':')[1] + ' -l abstruse'">
                   SSH: ssh {{ sshd.split(':')[0] }} -p {{ sshd.split(':')[1] }} -l abstruse
-                  <img src="/images/icons/copy.svg">
+                  <img src="/assets/images/icons/copy.svg">
                 </code>
                 <code class="vnc-code code-copy" [attr.data-clipboard-text]="vnc">
                   VNC: {{ vnc.split(':')[0] }} VNC Port: {{ vnc.split(':')[1] }}
-                  <img src="/images/icons/copy.svg">
+                  <img src="/assets/images/icons/copy.svg">
                 </code>
                 <code class="remote-passwd code-copy" [attr.data-clipboard-text]="'abstrusePass'">
                   password: abstrusePass
-                  <img src="/images/icons/copy.svg">
+                  <img src="/assets/images/icons/copy.svg">
                 </code>
               </div>
               <button [class.is-hidden]="debug" class="button is-small debug" name="btn-debug" type="button" (click)="debugMode($event)">
