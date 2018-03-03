@@ -4,6 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
+import { switchMap } from 'rxjs/operators';
 
 export interface IAccessToken {
   token: string;
@@ -59,7 +60,9 @@ export class AppUserComponent implements OnInit {
 
   fetchUser(): void {
     this.route.params
-      .switchMap((params: Params) => this.api.getUser(params.id))
+      .pipe(
+        switchMap((params: Params) => this.api.getUser(params.id))
+      )
       .subscribe((user: any) => {
         if (user) {
           this.user = user;
@@ -70,7 +73,9 @@ export class AppUserComponent implements OnInit {
       });
 
     this.route.params
-      .switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
+      .pipe(
+        switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
+      )
       .subscribe(repositories => {
         this.repositories = repositories;
         this.repositories.forEach((repo: any, i) => {

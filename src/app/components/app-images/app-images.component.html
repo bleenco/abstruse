@@ -28,7 +28,7 @@
     <div class="column is-12">
       <div class="content">
         <div class="container" *ngIf="loading">
-          <img src="/images/icons/flickr.svg" class="main-loader">
+          <img src="/assets/images/icons/flickr.svg" class="main-loader">
         </div>
       </div>
 
@@ -94,7 +94,7 @@
                     </div>
                     <h2>{{ i.name }}</h2>
                     <span class="version">{{ i.version }}</span>
-                    <img src="/images/logos/docker.svg" class="docker-img">
+                    <img src="/assets/images/logos/docker.svg" class="docker-img">
                     <span class="time">{{ i.created }}</span>
                     <span class="size">Size {{ i.size }}</span>
                     <button type="button" class="button is-small" (click)="editImage(index, true)">Edit Image</button>
@@ -115,7 +115,7 @@
                     </div>
                     <h2>{{ i.name }}</h2>
                     <span class="version">{{ i.version }}</span>
-                    <img src="/images/logos/docker.svg" class="docker-img">
+                    <img src="/assets/images/logos/docker.svg" class="docker-img">
                     <span class="time">{{ i.created }}</span>
                     <span class="time">Created {{ i.createdAgo }} ago</span>
                     <span class="size">Size {{ i.size }}</span>
