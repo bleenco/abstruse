@@ -4,40 +4,40 @@
       <div class="columns is-multiline">
         <div class="column is-8 is-offset-2">
           <div class="setup-logo">
-            <img src="/images/abstruse-text-logo.svg">
+            <img src="/assets/images/abstruse-text-logo.svg">
           </div>
         </div>
         <div class="column is-10 is-offset-1">
           <div class="setup-content">
             <h1>
-              <img src="/images/icons/server.svg">
+              <img src="/assets/images/icons/server.svg">
               AbstruseCI Setup
               <span>Configure Abstruse Continous Integration Server</span>
             </h1>
             <hr/>
 
             <div *ngIf="loading">
-              <img src="/images/icons/flickr.svg" class="main-loader">
+              <img src="/assets/images/icons/flickr.svg" class="main-loader">
             </div>
 
             <div *ngIf="!loading">
               <div *ngIf="step === 'config'">
                 <h2>
-                  <img src="/images/icons/server-status.svg">
+                  <img src="/assets/images/icons/server-status.svg">
                   Server Status
                 </h2>
                 <div class="setup-list">
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.docker ? '/images/icons/check-true.svg' : '/images/icons/check-false.svg'" name="docker-installed-icon"> Docker Installed
+                    <img class="icon" [src]="serverStatus.docker ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="docker-installed-icon"> Docker Installed
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.dockerRunning ? '/images/icons/check-true.svg' : '/images/icons/check-false.svg'" name="docker-running-icon"> Docker Running
+                    <img class="icon" [src]="serverStatus.dockerRunning ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="docker-running-icon"> Docker Running
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.sqlite ? '/images/icons/check-true.svg' : '/images/icons/check-false.svg'" name="sqlite3-installed-icon"> SQLite3 Installed
+                    <img class="icon" [src]="serverStatus.sqlite ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="sqlite3-installed-icon"> SQLite3 Installed
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.git ? '/images/icons/check-true.svg' : '/images/icons/check-false.svg'" name="git-installed-icon"> Git Installed
+                    <img class="icon" [src]="serverStatus.git ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="git-installed-icon"> Git Installed
                   </div>
                 </div>
                 <hr/>
@@ -48,7 +48,7 @@
 
               <div *ngIf="step === 'db'">
                 <h2>
-                  <img src="/images/icons/password.svg">
+                  <img src="/assets/images/icons/password.svg">
                   Administrator Account
                 </h2>
                 <form class="password-form" #userForm="ngForm" (ngSubmit)="createUser()">

@@ -16,7 +16,7 @@ describe('Repositories', () => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => {
-        return expect(element(by.css('.is-info')).getText())
+        return expect(element(by.css('.notification')).getText())
           .to.eventually.have.string('No repositories found.');
       });
   });

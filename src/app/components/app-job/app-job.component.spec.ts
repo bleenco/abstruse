@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppJobComponent } from './app-job.component';
 import { ApiService } from '../../services/api.service';
@@ -14,11 +15,11 @@ import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
-const jobData: any = require('json-loader!../../testing/xhr-data/job.json');
-const jobTagData: any = require('json-loader!../../testing/xhr-data/job-tag.json');
+import * as jobData from '../../../testing/xhr-data/job.json';
+import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
 
 describe('Job Component', () => {
-  let comp:    AppJobComponent;
+  let comp: AppJobComponent;
   let fixture: ComponentFixture<AppJobComponent>;
 
   beforeEach(() => {
@@ -31,18 +32,18 @@ describe('Job Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppJobComponent, ToTimePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppJobComponent, ToTimePipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         TimeService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
+        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-    .createComponent(AppJobComponent);
+      .createComponent(AppJobComponent);
     comp = fixture.componentInstance;
   });
 
@@ -58,13 +59,13 @@ describe('Job Component', () => {
     let responseJob: Response;
     let fakeJob: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeJob = jobData.data;
-      let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
+      fakeJob = (<any>jobData).data;
+      const optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);
 
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseJob));
@@ -86,13 +87,13 @@ describe('Job Component', () => {
     let responseJob: Response;
     let fakeJob: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeJob = jobTagData.data;
-      let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
+      fakeJob = (<any>jobTagData).data;
+      const optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);
 
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseJob));

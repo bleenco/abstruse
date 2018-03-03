@@ -19,13 +19,13 @@ import { writeJsonFile } from './fs';
 export let webhooks = express.Router();
 
 webhooks.post('/github', (req: express.Request, res: express.Response) => {
-  let config: any = getConfig();
-  let headers = req.headers;
-  let payload = req.body;
+  const config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
 
-  let sig = headers['x-hub-signature'] as string;
-  let ev = headers['x-github-event'] as string;
-  let id = headers['x-github-delivery'] as string;
+  const sig = headers['x-hub-signature'] as string;
+  const ev = headers['x-github-event'] as string;
+  const id = headers['x-github-delivery'] as string;
 
   if (!sig) {
     return res.status(400).json({ error: 'No X-Hub-Signature found on request' });
@@ -60,7 +60,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingGitHubRepository(payload))
         .then(repo => {
-          let buildData = {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: repo.id
@@ -141,13 +141,13 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
 
 
 webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
-  let config: any = getConfig();
-  let headers = req.headers;
-  let payload = req.body;
+  const config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
 
-  let sig = headers['x-request-uuid'] as string;
-  let ev = headers['x-event-key'] as string;
-  let id = headers['x-hook-uuid'] as string;
+  const sig = headers['x-request-uuid'] as string;
+  const ev = headers['x-event-key'] as string;
+  const id = headers['x-hook-uuid'] as string;
 
   if (!sig) {
     return res.status(400).json({ error: 'No X-Request-UUID found on request' });
@@ -172,7 +172,7 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingBitbucketRepository(payload))
         .then(repo => {
-          let buildData = {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: repo.id
@@ -251,11 +251,11 @@ webhooks.post('/bitbucket', (req: express.Request, res: express.Response) => {
 });
 
 webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
-  let config: any = getConfig();
-  let headers = req.headers;
-  let payload = req.body;
-  let ev = headers['x-gitlab-event'] as string;
-  let sig = headers['x-gitlab-token'] as string;
+  const config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
+  const ev = headers['x-gitlab-event'] as string;
+  const sig = headers['x-gitlab-token'] as string;
 
   if (!sig) {
     return res.status(400).json({ error: 'No X-GitLab-Token found on request' });
@@ -280,7 +280,7 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingGitLabRepository(payload))
         .then(repo => {
-          let buildData = {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: repo.id
@@ -328,13 +328,13 @@ webhooks.post('/gitlab', (req: express.Request, res: express.Response) => {
 });
 
 webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
-  let config: any = getConfig();
-  let headers = req.headers;
-  let payload = req.body;
+  const config: any = getConfig();
+  const headers = req.headers;
+  const payload = req.body;
 
-  let ev = headers['x-gogs-event'] as string;
-  let sig = headers['x-gogs-signature'] as string;
-  let id = headers['x-gogs-delivery'] as string;
+  const ev = headers['x-gogs-event'] as string;
+  const sig = headers['x-gogs-signature'] as string;
+  const id = headers['x-gogs-delivery'] as string;
 
   if (!sig) {
     return res.status(400).json({ error: 'No X-Gogs-Signature found on request' });
@@ -363,7 +363,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
       writeJsonFile(getFilePath('config.json'), config)
         .then(() => pingGogsRepository(payload))
         .then(repo => {
-          let buildData = {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: repo.id
@@ -394,6 +394,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
       break;
     case 'release':
       res.status(200).json({ msg: 'ok' });
+      break;
     case 'pull_request':
       switch (payload.action) {
         case 'opened':
@@ -453,19 +454,20 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
         default:
           break;
       }
+      break;
     default:
       break;
   }
 });
 
 function verifyGithubWebhook(signature: string, payload: any, secret: string): boolean {
-  let computedSig =
+  const computedSig =
     `sha1=${crypto.createHmac('sha1', secret).update(JSON.stringify(payload)).digest('hex')}`;
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(computedSig));
 }
 
 function verifyGogsWebhook(signature: string, payload: any, secret: string): boolean {
-  let computedSig =
+  const computedSig =
     `${crypto.createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex')}`;
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(computedSig));
 }

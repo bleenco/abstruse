@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, inject, async } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppLogsComponent } from './app-logs.component';
 import { ApiService } from '../../services/api.service';
@@ -15,16 +16,16 @@ import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
 import { WindowService } from '../../services/window.service';
 import { StatsService } from '../../services/stats.service';
-const logsData: any = require('json-loader!../../testing/xhr-data/logs.json');
+import * as logsData from '../../../testing/xhr-data/logs.json';
 
 describe('Logs Component', () => {
   let fixture: ComponentFixture<AppLogsComponent>;
 
   beforeEach(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppLogsComponent ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppLogsComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -33,9 +34,9 @@ describe('Logs Component', () => {
         NotificationService,
         WindowService,
         StatsService,
-        { provide: XHRBackend, useClass: MockBackend } ]
+        { provide: XHRBackend, useClass: MockBackend }]
     })
-    .createComponent(AppLogsComponent);
+      .createComponent(AppLogsComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -53,10 +54,10 @@ describe('Logs Component', () => {
     let responseLogs: Response;
     let fakeLogs: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
-      fakeLogs = logsData.data;
-      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeLogs } });
+      fakeLogs = (<any>logsData).data;
+      const optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeLogs } });
       responseLogs = new Response(optionsBuild);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseLogs));
     }));

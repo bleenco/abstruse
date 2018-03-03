@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/combineLatest';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return Observable.combineLatest(...[
+    return combineLatest(...[
       this.apiService.isAppReady(),
       Observable.of(this.authService.isLoggedIn()),
       this.apiService.loginRequired()
@@ -38,7 +38,3 @@ export class AuthGuard implements CanActivate {
     });
   }
 }
-
-export const AuthGuardProvider: Provider = {
-  provide: AuthGuard, useClass: AuthGuard
-};

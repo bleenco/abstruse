@@ -22,7 +22,7 @@ exports.config = {
   useAllAngular2AppRoots: true,
   beforeLaunch() {
     require('ts-node').register({
-      project: 'e2e'
+      project: 'e2e/tsconfig.json'
     });
   }
 };

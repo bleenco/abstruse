@@ -13,9 +13,9 @@ export function getRepository(id: number, userId?: string): Promise<any> {
         }
 
         repo = repo.toJSON();
-        let id = parseInt(<any>userId, 10);
+        const uid = Number(userId);
         if (repo.permissions && repo.permissions.length) {
-          let index = repo.permissions.findIndex(p => p.users_id === id);
+          const index = repo.permissions.findIndex(p => p.users_id === uid);
           if (index !== -1 && repo.permissions[index].permission) {
             repo.hasPermission = true;
           } else {
@@ -65,7 +65,7 @@ export function getRepositoryBuilds(
 
           userid = Number(userid);
           if (build.repository.permissions && build.repository.permissions.length) {
-            let  index = build.repository.permissions.findIndex(p => p.users_id === userid);
+            const index = build.repository.permissions.findIndex(p => p.users_id === userid);
             if (index !== -1 && build.repository.permissions[index].permission) {
               build.hasPermission = true;
             } else {
@@ -107,7 +107,12 @@ export function getRepositoryBadge(id: number): Promise<string> {
         withRelated: [
           { 'builds': query => query.where('pr', null).orderBy('id', 'desc').limit(1) },
           { 'builds.runs': query => query.orderBy('id', 'desc').limit(1) },
-          { 'builds.runs.job_runs': query => query.groupBy('job_id', 'max(id)') }
+          {
+            'builds.runs.job_runs': query => {
+              query.groupBy('job_id');
+              query.orderBy('id', 'desc').limit(1);
+            }
+          }
         ]
       } as any)
       .then(repo => {
@@ -160,30 +165,21 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
 export function getRepositories(keyword: string, userId?: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     new Repository().query(q => {
-      if (keyword !== '') {
+      if (keyword && keyword !== '') {
         q.where('full_name', 'like', `%${keyword}%`).orWhere('clone_url', 'like', `%${keyword}%`);
       }
 
       if (userId) {
         q.innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
-          .where('permissions.users_id', userId)
+          .where('permissions.users_id', Number(userId))
           .andWhere(function () {
-            this.where('permissions.permission', true).orWhere('public', true);
+            this.where('permissions.permission', true).orWhere('repositories.public', true);
           });
       } else {
         q.where('repositories.public', true);
       }
-    }).fetchAll({
-      withRelated: [{
-        'permissions': (query) => {
-          if (userId) {
-            query.where('permissions.users_id', userId);
-          } else {
-            return false;
-          }
-        }
-      }]
     })
+      .fetchAll({ withRelated: 'permissions' })
       .then(repos => {
         if (!repos) {
           reject();
@@ -209,7 +205,7 @@ export function addRepository(data: any): Promise<any> {
         if (!result) {
           reject(result);
         } else {
-          let repository = result.toJSON();
+          const repository = result.toJSON();
           return addRepositoryPermissionToEveryone(repository.id)
             .then(() => resolve(repository))
             .catch(err => reject(err));
@@ -260,7 +256,7 @@ export function updateRepository(data: any): Promise<boolean> {
 
 export function pingGitHubRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let  saveData = generateGitHubRepositoryData(data);
+    const saveData = generateGitHubRepositoryData(data);
     new Repository().where({ github_id: saveData.github_id }).fetch()
       .then(repo => {
         if (!repo) {
@@ -269,7 +265,7 @@ export function pingGitHubRepository(data: any): Promise<any> {
               if (!result) {
                 reject(result);
               } else {
-                let repository = result.toJSON();
+                const repository = result.toJSON();
                 return addRepositoryPermissionToEveryone(result.id)
                   .then(() => resolve(repository))
                   .catch(err => reject(err));
@@ -293,7 +289,7 @@ export function pingGitHubRepository(data: any): Promise<any> {
 
 export function pingBitbucketRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let  saveData = generateBitbucketRepositoryData(data);
+    const saveData = generateBitbucketRepositoryData(data);
     new Repository().where({ bitbucket_id: saveData.bitbucket_id }).fetch()
       .then(repo => {
         if (!repo) {
@@ -302,7 +298,7 @@ export function pingBitbucketRepository(data: any): Promise<any> {
               if (!result) {
                 reject(result);
               } else {
-                let repository = result.toJSON();
+                const repository = result.toJSON();
                 return addRepositoryPermissionToEveryone(result.id)
                   .then(() => resolve(repository))
                   .catch(err => reject(err));
@@ -325,7 +321,7 @@ export function pingBitbucketRepository(data: any): Promise<any> {
 
 export function pingGitLabRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let  saveData = generateGitLabRepositoryData(data);
+    const saveData = generateGitLabRepositoryData(data);
     new Repository().where({ gitlab_id: saveData.gitlab_id }).fetch()
       .then(repo => {
         if (!repo) {
@@ -334,7 +330,7 @@ export function pingGitLabRepository(data: any): Promise<any> {
               if (!result) {
                 reject(result);
               } else {
-                let repository = result.toJSON();
+                const repository = result.toJSON();
 
                 return addRepositoryPermissionToEveryone(repository.id)
                   .then(() => resolve(repository))
@@ -359,7 +355,7 @@ export function pingGitLabRepository(data: any): Promise<any> {
 
 export function pingGogsRepository(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let  saveData = generateGogsRepositoryData(data);
+    const saveData = generateGogsRepositoryData(data);
     new Repository().where({ gogs_id: saveData.gogs_id }).fetch()
       .then(repo => {
         if (!repo) {
@@ -368,7 +364,7 @@ export function pingGogsRepository(data: any): Promise<any> {
               if (!result) {
                 reject(result);
               } else {
-                let repository = result.toJSON();
+                const repository = result.toJSON();
 
                 return addRepositoryPermissionToEveryone(repository.id)
                   .then(() => resolve(repository))
@@ -393,7 +389,7 @@ export function pingGogsRepository(data: any): Promise<any> {
 
 export function createGitHubPullRequest(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let  ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
+    const ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
     new Repository().where({ github_id: ghid }).fetch()
       .then(repo => {
         if (!repo) {
@@ -404,14 +400,14 @@ export function createGitHubPullRequest(data: any): Promise<any> {
       })
       .then(repoData => {
         if (!repoData) {
-          let  repoData = generateGitHubRepositoryData(data);
+          repoData = generateGitHubRepositoryData(data);
           return addRepository(repoData);
         } else {
           return Promise.resolve(repoData);
         }
       })
       .then(repo => {
-        let  buildData = {
+        const buildData = {
           pr: data.number,
           data: data,
           start_time: new Date(),
@@ -426,18 +422,18 @@ export function createGitHubPullRequest(data: any): Promise<any> {
 
 export function createGogsPullRequest(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let repoId = data.repository.id;
+    const repoId = data.repository.id;
     new Repository().where({ gogs_id: repoId }).fetch()
       .then(repo => {
         if (!repo) {
-          let  repoData = generateGogsRepositoryData(data);
+          const repoData = generateGogsRepositoryData(data);
           return addRepository(repoData);
         } else {
           return Promise.resolve(repo.toJSON());
         }
       })
       .then(repo => {
-        let  buildData = {
+        const buildData = {
           pr: data.number,
           data: data,
           start_time: new Date(),
@@ -453,26 +449,26 @@ export function createGogsPullRequest(data: any): Promise<any> {
 export function synchronizeGitHubPullRequest(data: any): Promise<any> {
   let repoId;
   return new Promise((resolve, reject) => {
-    let  ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
+    const ghid = data.base ? data.base.repo.id : data.pull_request.base.repo.id;
     new Repository().where({ github_id: ghid }).fetch()
       .then(repository => {
         if (!repository) {
-          let  repoData = generateGitHubRepositoryData(data);
+          const repoData = generateGitHubRepositoryData(data);
           return addRepository(repoData).then(repo => {
             repoId = repo.id;
           });
         } else {
-          let  repoJson = repository.toJSON();
+          const repoJson = repository.toJSON();
           repoId = repoJson.id;
           return Promise.resolve();
         }
       })
       .then(() => {
-        let  repoData = generateGitHubRepositoryData(data);
+        const repoData = generateGitHubRepositoryData(data);
         return updateRepository(repoData);
       })
       .then(() => {
-        let  buildData = {
+        const buildData = {
           pr: data.pull_request.number,
           data: data,
           start_time: new Date(),
@@ -491,17 +487,17 @@ export function synchronizeBitbucketPullRequest(data: any): Promise<any> {
     new Repository().where({ bitbucket_id: data.repository.uuid }).fetch()
       .then(repository => {
         if (!repository) {
-          let  repoData = generateBitbucketRepositoryData(data);
+          const repoData = generateBitbucketRepositoryData(data);
           return addRepository(repoData).then(repo => repoId = repo.id);
         } else {
-          let  repoJson = repository.toJSON();
+          const repoJson = repository.toJSON();
           repoId = repoJson.id;
-          let  repoData = generateBitbucketRepositoryData(data);
+          const repoData = generateBitbucketRepositoryData(data);
           return updateRepository(repoData);
         }
       })
       .then(() => {
-        let  buildData = {
+        const buildData = {
           pr: data.pull_request ? data.pull_request.id : null,
           data: data,
           start_time: new Date(),
@@ -520,20 +516,20 @@ export function synchronizeGogsPullRequest(data: any): Promise<any> {
     new Repository().where({ gogs_id: repoId }).fetch()
       .then(repository => {
         if (!repository) {
-          let  repoData = generateGogsRepositoryData(data);
+          const repoData = generateGogsRepositoryData(data);
           return addRepository(repoData).then(repo => {
             repoId = repo.id;
           });
         } else {
-          let  repoJson = repository.toJSON();
+          const repoJson = repository.toJSON();
           repoId = repoJson.id;
-          let  repoData = generateGogsRepositoryData(data);
+          const repoData = generateGogsRepositoryData(data);
 
           return updateRepository(repoData);
         }
       })
       .then(() => {
-        let  buildData = {
+        const buildData = {
           pr: data.pull_request ? data.pull_request.id : null,
           data: data,
           start_time: new Date(),
@@ -549,23 +545,23 @@ export function synchronizeGogsPullRequest(data: any): Promise<any> {
 export function synchronizeGitLabPullRequest(data: any): Promise<any> {
   let repoId;
   return new Promise((resolve, reject) => {
-    let  gitlabId = data.project_id ? data.project_id : data.object_attributes.target_project_id;
+    const gitlabId = data.project_id ? data.project_id : data.object_attributes.target_project_id;
     new Repository().where({ gitlab_id: gitlabId }).fetch()
       .then(repository => {
         if (!repository) {
-          let  repoData = generateGitLabRepositoryData(data);
+          const repoData = generateGitLabRepositoryData(data);
           return addRepository(repoData).then(repo => {
             repoId = repo.id;
           });
         } else {
-          let  repoJson = repository.toJSON();
+          const repoJson = repository.toJSON();
           repoId = repoJson.id;
-          let  repoData = generateGitLabRepositoryData(data);
+          const repoData = generateGitLabRepositoryData(data);
           return updateRepository(repoData);
         }
       })
       .then(() => {
-        let  buildData = {
+        const buildData = {
           pr: data.object_attributes.iid,
           data: data,
           start_time: new Date(),
@@ -579,8 +575,8 @@ export function synchronizeGitLabPullRequest(data: any): Promise<any> {
 }
 
 function generateGitHubRepositoryData(data: any): any {
-  let  url = new URL(data.repository.clone_url);
-  let  apiUrl = url.protocol + '//api.' + url.host;
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//api.' + url.host;
 
   return {
     github_id: data.repository.id,
@@ -604,8 +600,8 @@ function generateGitHubRepositoryData(data: any): any {
 }
 
 function generateBitbucketRepositoryData(data: any): any {
-  let  url = new URL(data.repository.links.self.href);
-  let  apiUrl = url.protocol + '//' + url.host + '/2.0/repositories';
+  const url = new URL(data.repository.links.self.href);
+  const apiUrl = url.protocol + '//' + url.host + '/2.0/repositories';
 
   return {
     bitbucket_id: data.repository.uuid,
@@ -628,8 +624,8 @@ function generateBitbucketRepositoryData(data: any): any {
 }
 
 function generateGitLabRepositoryData(data: any): any {
-  let  url = new URL(data.repository.git_http_url || data.project.git_http_url);
-  let  apiUrl = url.protocol + '//' + url.host + '/api/v4';
+  const url = new URL(data.repository.git_http_url || data.project.git_http_url);
+  const apiUrl = url.protocol + '//' + url.host + '/api/v4';
 
   return {
     gitlab_id: data.project_id ? data.project_id : data.object_attributes.target_project_id,
@@ -651,8 +647,8 @@ function generateGitLabRepositoryData(data: any): any {
 }
 
 function generateGogsRepositoryData(data: any): any {
-  let  url = new URL(data.repository.clone_url);
-  let  apiUrl = url.protocol + '//' + url.host;
+  const url = new URL(data.repository.clone_url);
+  const apiUrl = url.protocol + '//' + url.host;
 
   return {
     gogs_id: data.repository.id,

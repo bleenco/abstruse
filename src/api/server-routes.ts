@@ -3,7 +3,7 @@ import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { exists } from './fs';
 import { readFileSync } from 'fs';
 import { reinitializeDatabase } from './db/migrations';
@@ -60,28 +60,27 @@ import {
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
 import * as stripAnsi from 'strip-ansi';
+import 'rxjs/add/operator/toArray';
 
-let config: any = getConfig();
+const config: any = getConfig();
 
-let storage: multer.StorageEngine = multer.diskStorage({
+const storage: multer.StorageEngine = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, getFilePath('avatars'));
   },
   filename: (req, file, cb) => {
-    let ext = extname(file.originalname);
+    const ext = extname(file.originalname);
     cb(null, `${Math.random().toString(36).substring(7)}${ext}`);
   }
 });
 
-let upload: multer.Instance = multer({ storage: storage });
+const upload: multer.Instance = multer({ storage: storage });
 
 export function webRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
-  router.use('/css', express.static(resolve(__dirname, '../app/css'), { index: false }));
-  router.use('/js', express.static(resolve(__dirname, '../app/js'), { index: false }));
-  router.use('/images', express.static(resolve(__dirname, '../app/images'), { index: false }));
-  router.use('/fonts', express.static(resolve(__dirname, '../app/fonts'), { index: false }));
+  router.use('/', express.static(resolve(__dirname, '../app'), { index: false }));
+  router.use('/assets', express.static(resolve(__dirname, '../app/assets'), { index: false }));
   router.use('/monaco', express.static(resolve(__dirname, '../app/monaco'), { index: false }));
   router.use('/avatars', express.static(getFilePath('avatars'), { index: false }));
 
@@ -93,7 +92,7 @@ export function webRoutes(): express.Router {
 }
 
 export function buildRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/limit/:limit/offset/:offset/:filter/:userid?',
     (req: express.Request, res: express.Response) => {
@@ -129,12 +128,12 @@ export function buildRoutes(): express.Router {
 }
 
 export function jobRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/:id/log', (req: express.Request, res: express.Response) => {
     getLastRun(req.params.id).then(jobRun => {
       if (jobRun && jobRun.log) {
-        let log = stripAnsi(jobRun.log.replace(/\r\n/g, '<br/>'));
+        const log = stripAnsi(jobRun.log.replace(/\r\n/g, '<br/>'));
         return res.status(200).type('html').send(log);
       } else {
         return res.status(404).json({ data: 'not found' });
@@ -154,7 +153,7 @@ export function jobRoutes(): express.Router {
 }
 
 export function userRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
@@ -239,7 +238,7 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/upload-avatar', upload.any(), (req: express.Request, res: express.Response) => {
-    let avatar = '/' + relative(getRootDir(), req.files[0].path);
+    const avatar = '/' + relative(getRootDir(), req.files[0].path);
     getUser(req.body.userId)
       .then(user => {
         user.avatar = avatar;
@@ -253,7 +252,7 @@ export function userRoutes(): express.Router {
 }
 
 export function tokenRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
@@ -268,7 +267,7 @@ export function tokenRoutes(): express.Router {
 }
 
 export function repositoryRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/:userid?', (req: express.Request, res: express.Response) => {
     if (req.params.userid) {
@@ -431,7 +430,7 @@ export function repositoryRoutes(): express.Router {
           }
         })
         .then(payload => {
-          let buildData = {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: req.params.id
@@ -494,7 +493,6 @@ export function repositoryRoutes(): express.Router {
           if (repository.repository_provider === 'github') {
             let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
               repository.default_branch;
-            let accessToken = null;
 
             if (repository.access_token) {
               accessToken = repository.access_token.token || null;
@@ -509,14 +507,14 @@ export function repositoryRoutes(): express.Router {
         })
         .then(load => payload = load)
         .then(() => parseConfigFromRaw(repo, req.body.config))
-        .then(config => {
-          let buildData = {
+        .then(cfg => {
+          const buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: req.body.id
           };
 
-          return startBuild(buildData, config);
+          return startBuild(buildData, cfg);
         })
         .then(() => res.status(200).json({ data: true }))
         .catch(err => res.status(200).json({ data: false }));
@@ -526,7 +524,7 @@ export function repositoryRoutes(): express.Router {
   router.get('/get-cache/:id', (req: express.Request, res: express.Response) => {
     getRepository(req.params.id)
       .then(repo => {
-        let searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
+        const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
         res.status(200).json({ data: getCacheFilesFromPattern(searchPattern) });
       })
       .catch(err => res.status(200).json({ err: err }));
@@ -536,7 +534,7 @@ export function repositoryRoutes(): express.Router {
     checkApiRequestAuth(req).then(() => {
       getRepository(req.params.id)
         .then(repo => {
-          let searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
+          const searchPattern = `cache_${repo.full_name.replace('/', '-')}*`;
           return deleteCacheFilesFromPattern(searchPattern);
         })
         .then(() => res.status(200).json({ data: true }))
@@ -548,7 +546,7 @@ export function repositoryRoutes(): express.Router {
 }
 
 export function badgeRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
     getRepositoryBadge(req.params.id).then(status => {
@@ -578,7 +576,7 @@ export function badgeRoutes(): express.Router {
 }
 
 export function setupRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/ready', (req: express.Request, res: express.Response) => {
     Observable.merge(...[
@@ -592,7 +590,7 @@ export function setupRoutes(): express.Router {
     ])
       .toArray()
       .subscribe(data => {
-        let isFalse = data.findIndex(x => !x);
+        const isFalse = data.findIndex(x => !x);
         if (isFalse === -1) {
           res.status(200).json({ data: true });
         } else {
@@ -622,13 +620,13 @@ export function setupRoutes(): express.Router {
       .subscribe(data => {
         if (data[2]) {
           docker.isDockerRunning().subscribe(dockerRunning => {
-            let status = {
+            const status = {
               sqlite: data[1], docker: data[2], dockerRunning: dockerRunning, git: data[0]
             };
             res.status(200).json({ data: status });
           });
         } else {
-          let status = {
+          const status = {
             sqlite: data[1], docker: false, dockerRunning: false, git: data[0]
           };
           res.status(200).json({ data: status });
@@ -653,8 +651,8 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/docker-image', (req: express.Request, res: express.Response) => {
-    imageExists('abstruse').subscribe(exists => {
-      return res.status(200).json({ data: exists });
+    imageExists('abstruse').subscribe(e => {
+      return res.status(200).json({ data: e });
     });
   });
 
@@ -666,7 +664,7 @@ export function setupRoutes(): express.Router {
 }
 
 export function permissionRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/repository/:repoId/user/:userId?', (req: express.Request, res: express.Response) => {
     if (req.params.userId) {
@@ -707,7 +705,7 @@ export function permissionRoutes(): express.Router {
 }
 
 export function environmentVariableRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.post('/add', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req).then(() => {
@@ -729,7 +727,7 @@ export function environmentVariableRoutes(): express.Router {
 }
 
 export function statsRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/job-runs', (req: express.Request, res: express.Response) => {
     getJobRuns()
@@ -747,7 +745,7 @@ export function statsRoutes(): express.Router {
 }
 
 export function logsRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get(`/:limit/:offset/:type`, (req: express.Request, res: express.Response) => {
     getLogs(req.params.limit, req.params.offset, req.params.type)
@@ -759,12 +757,12 @@ export function logsRoutes(): express.Router {
 }
 
 export function keysRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get(`/public`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
-    if (config.publicKey) {
-      let keyPath = config.publicKey;
+    const cfg: any = getConfig();
+    if (cfg.publicKey) {
+      const keyPath = cfg.publicKey;
 
       return res.status(200).json({ key: readFileSync(getFilePath(keyPath)).toString() });
     }
@@ -776,19 +774,19 @@ export function keysRoutes(): express.Router {
 }
 
 export function configRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get(`/demo`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
+    const cfg: any = getConfig();
 
-    return res.status(200).json({ data: config.demo });
+    return res.status(200).json({ data: cfg.demo });
   });
 
   return router;
 }
 
 export function imagesRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/', (req: express.Request, res: express.Response) => {
     getImages()

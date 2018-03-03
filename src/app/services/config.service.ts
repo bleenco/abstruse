@@ -10,7 +10,7 @@ export class ConfigService {
   constructor() {
     let wssProto = location.protocol === 'https:' ? 'wss' : 'ws';
     let proto = location.protocol;
-    let port = location.port === '8000' ? 6500 : location.port;
+    let port = location.port === '4200' ? 6500 : location.port;
     let token = localStorage.getItem('abs-token') || null;
 
     this.url = `${proto}//${location.hostname}:${port}`;

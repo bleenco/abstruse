@@ -1,7 +1,5 @@
-import { DebugElement }           from '@angular/core';
+import { DebugElement } from '@angular/core';
 import { tick, ComponentFixture } from '@angular/core/testing';
-
-export * from './router-stubs';
 
 export function advance(f: ComponentFixture<any>): void {
   tick();
@@ -9,14 +7,14 @@ export function advance(f: ComponentFixture<any>): void {
 }
 
 export function newEvent(eventName: string, bubbles = false, cancelable = false) {
-  let evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
+  const evt = document.createEvent('CustomEvent');  // MUST be 'CustomEvent'
   evt.initCustomEvent(eventName, bubbles, cancelable, null);
   return evt;
 }
 
 export const ButtonClickEvents = {
-   left:  { button: 0 },
-   right: { button: 2 }
+  left: { button: 0 },
+  right: { button: 2 }
 };
 
 export function click(el: DebugElement | HTMLElement, eventObj: any = ButtonClickEvents.left): void {

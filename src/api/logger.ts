@@ -1,6 +1,12 @@
 import { insertLog } from './db/log';
-import { Subject, Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 import chalk from 'chalk';
+import 'rxjs/add/observable/fromPromise';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/share';
 
 export interface LogMessageType {
   message: string;
@@ -8,17 +14,17 @@ export interface LogMessageType {
   notify: boolean;
 }
 
-export let logger: Subject<LogMessageType> = new Subject();
+export const logger: Subject<LogMessageType> = new Subject();
 
 logger
   .filter((msg: LogMessageType) => !!msg.message && msg.message !== '')
   .mergeMap((msg: LogMessageType) => {
-    let message = { message: msg.message, type: msg.type, notify: msg.notify };
+    const message = { message: msg.message, type: msg.type, notify: msg.notify };
     return Observable.fromPromise(insertLog(colorizeMessage(message)));
   })
   .map((msg: any) => {
-    let time = getDateTime();
-    let message = [
+    const time = getDateTime();
+    const message = [
       chalk.white('['),
       chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
     ].join('');

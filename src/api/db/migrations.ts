@@ -2,7 +2,7 @@ import * as knex from 'knex';
 import { Bookshelf } from './config';
 
 export function create(): Promise<null> {
-  let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
+  const schema: knex.SchemaBuilder = Bookshelf.knex.schema;
 
   return new Promise((resolve, reject) => {
     schema.createTableIfNotExists('users', (t: knex.TableBuilder) => {
@@ -126,7 +126,7 @@ export function create(): Promise<null> {
 }
 
 export function dropTables(): Promise<null> {
-  let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
+  const schema: knex.SchemaBuilder = Bookshelf.knex.schema;
 
   return new Promise((resolve, reject) => {
     schema.dropTableIfExists('user')

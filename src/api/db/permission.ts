@@ -72,8 +72,9 @@ export function getUserJobPermissions(jobId: number, userId?: number): Promise<a
 
 export function updatePermission(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
-    let updateData = {
-      repositories_id: data.repository, users_id: data.user, permission: data.permission };
+    const updateData = {
+      repositories_id: data.repository, users_id: data.user, permission: data.permission
+    };
     new Permission()
       .query(q => q.where('repositories_id', data.repository).andWhere('users_id', data.user))
       .save(updateData, { method: 'update', require: false })

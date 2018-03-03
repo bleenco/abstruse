@@ -22,7 +22,7 @@ let allSetups = glob.sync(path.join(e2eRoot, 'setup/**/*.ts'), { nodir: true })
   .map(name => path.relative(e2eRoot, name))
   .sort();
 
-let allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
+const allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
   .map(name => path.relative(e2eRoot, name))
   .sort();
 
@@ -38,18 +38,18 @@ const testsToRun = allSetups
   .concat(allTests
     .filter(name => {
       // Check for naming tests on command line.
-      if (argv._.length == 0) {
+      if (argv._.length === 0) {
         return true;
       }
 
       return argv._.some(argName => {
-        return path.join(process.cwd(), argName) == path.join(__dirname, 'e2e', name)
-          || argName == name
-          || argName == name.replace(/\.ts$/, '');
+        return path.join(process.cwd(), argName) === path.join(__dirname, 'e2e', name)
+          || argName === name
+          || argName === name.replace(/\.ts$/, '');
       });
     }));
 
-if (testsToRun.length == allTests.length) {
+if (testsToRun.length === allTests.length) {
   console.log(`Running ${testsToRun.length} tests`);
 } else {
   console.log(`Running ${testsToRun.length} tests (${allTests.length + allSetups.length} total)`);

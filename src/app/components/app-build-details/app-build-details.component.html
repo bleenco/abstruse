@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <div class="container" *ngIf="loading">
-  <img src="/images/icons/flickr.svg" class="main-loader">
+  <img src="/assets/images/icons/flickr.svg" class="main-loader">
 </div>
 
 <div class="container" *ngIf="!loading">
@@ -21,15 +21,15 @@
                     </h1>
                     <div class="branch-container">
                       <span class="icon">
-                        <img src="/images/icons/git-branch.svg">
+                        <img src="/assets/images/icons/git-branch.svg">
                       </span>
                       <span *ngIf="build?.branch">{{ build?.branch }}</span>
                     </div>
                     <span class="build-icon">
-                      <img src="/images/icons/clock.svg" *ngIf="status === 'queued'">
-                      <img src="/images/icons/flickr.svg" *ngIf="status === 'running'">
-                      <img src="/images/icons/check-true.svg" *ngIf="status === 'success'">
-                      <img src="/images/icons/check-false.svg" *ngIf="status === 'failed'">
+                      <img src="/assets/images/icons/clock.svg" *ngIf="status === 'queued'">
+                      <img src="/assets/images/icons/flickr.svg" *ngIf="status === 'running'">
+                      <img src="/assets/images/icons/check-true.svg" *ngIf="status === 'success'">
+                      <img src="/assets/images/icons/check-false.svg" *ngIf="status === 'failed'">
                     </span>
                   </div>
                   <div class="column is-2" [class.is-hidden]="status !== 'success' && status !== 'failed'"></div>
@@ -37,7 +37,7 @@
                     <button class="button is-fullwidth" name="restart-build" type="button" (click)="restartBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
-                          <img src="/images/icons/restart.svg">
+                          <img src="/assets/images/icons/restart.svg">
                         </span>
                         <span>Restart Build</span>
                       </div>
@@ -47,7 +47,7 @@
                     <button class="button is-fullwidth" name="stop-build" type="button" (click)="stopBuild($event, build.id)" [disabled]="processingBuild">
                       <div class="centered">
                         <span class="icon">
-                          <img src="/images/icons/stop.svg">
+                          <img src="/assets/images/icons/stop.svg">
                         </span>
                         <span>Stop Build</span>
                       </div>
@@ -59,7 +59,7 @@
                   <div class="column is-1">
                     <p class="text-small">
                       <span class="icon">
-                        <img src="/images/icons/git-commit.svg">
+                        <img src="/assets/images/icons/git-commit.svg">
                       </span>
                       <span name="sha" *ngIf="build?.data?.pull_request?.head?.sha">{{ build?.data?.pull_request?.head?.sha.slice(0, 7) }}</span>
                       <span name="sha" *ngIf="!build?.data?.pull_request?.head?.sha && build?.data?.after">{{ build?.data?.after?.slice(0, 7) }}</span>
@@ -98,7 +98,7 @@
                   </div>
                   <div class="column is-1">
                     <p class="total-time" *ngIf="!processingBuild">
-                      <img src="/images/icons/clock.svg">
+                      <img src="/assets/images/icons/clock.svg">
                       <span *ngIf="status !== 'running' && maxCompletedJobTime">{{ maxCompletedJobTime | toTime }}</span>
                       <span *ngIf="status !== 'running' && !maxCompletedJobTime">00:00</span>
                       <span *ngIf="status === 'running' && maxCompletedJobTime > (currentTime - minRunningJobStartTime)">{{ maxCompletedJobTime | toTime }}</span>
@@ -139,10 +139,10 @@
                 </div>
 
                 <span class="build-icon">
-                  <img src="/images/icons/clock.svg" *ngIf="status === 'queued'">
-                  <img src="/images/icons/flickr.svg" *ngIf="status === 'running'">
-                  <img src="/images/icons/check-true.svg" *ngIf="status === 'success'">
-                  <img src="/images/icons/check-false.svg" *ngIf="status === 'failed'">
+                  <img src="/assets/images/icons/clock.svg" *ngIf="status === 'queued'">
+                  <img src="/assets/images/icons/flickr.svg" *ngIf="status === 'running'">
+                  <img src="/assets/images/icons/check-true.svg" *ngIf="status === 'success'">
+                  <img src="/assets/images/icons/check-false.svg" *ngIf="status === 'failed'">
                 </span>
               </div>
             </div>
@@ -158,7 +158,7 @@
               </div>
               <div class="column is-3">
                 <span class="icon is-large">
-                  <img src="/images/logos/docker.svg">
+                  <img src="/assets/images/logos/docker.svg">
                 </span>
                 <span class="version">
                   IMAGE: {{ job?.data?.image }}
@@ -167,7 +167,7 @@
               <div class="column is-4">
                 <div class="icon-and-text">
                   <span class="icon is-medium">
-                    <img src="/images/icons/computing-script.svg">
+                    <img src="/assets/images/icons/computing-script.svg">
                   </span>
                   <span class="env-text">{{ job?.data?.env }}</span>
                 </div>
@@ -191,7 +191,7 @@
                 </span>
                 <span class="icon circle" name="stop-job" (click)="stopJob($event, job.id)" [class.disabled]="job.processing" [class.is-hidden]="job?.status === 'success' || job?.status === 'failed'">
                   <i class="icon">
-                    <img src="/images/icons/stop.svg">
+                    <img src="/assets/images/icons/stop.svg">
                   </i>
                 </span>
               </div>

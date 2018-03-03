@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppBuildsComponent } from './app-builds.component';
 import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
@@ -14,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
-const buildsData: any = require('json-loader!../../testing/xhr-data/builds.json');
+import * as buildsData from '../../../testing/xhr-data/builds.json';
 
 describe('Builds Component', () => {
   let fixture: ComponentFixture<AppBuildsComponent>;
@@ -29,17 +30,17 @@ describe('Builds Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppBuildItemComponent, AppBuildsComponent, ToTimePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppBuildItemComponent, AppBuildsComponent, ToTimePipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         TimeService,
-        { provide: XHRBackend, useClass: MockBackend } ]
+        { provide: XHRBackend, useClass: MockBackend }]
     })
-    .createComponent(AppBuildsComponent);
+      .createComponent(AppBuildsComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -54,13 +55,13 @@ describe('Builds Component', () => {
     let responseBuilds: Response;
     let fakeBuilds: any[];
 
-    beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(async(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeBuilds = buildsData.data;
-      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
+      fakeBuilds = (<any>buildsData).data;
+      const optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       responseBuilds = new Response(optionsBuild);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuilds));
     })));

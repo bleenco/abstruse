@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppBuildDetailsComponent } from './app-build-details.component';
 import { ApiService } from '../../services/api.service';
@@ -15,8 +16,8 @@ import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
 import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
-const buildData: any = require('json-loader!../../testing/xhr-data/build.json');
-const buildTagData: any = require('json-loader!../../testing/xhr-data/build-tag.json');
+import * as buildData from '../../../testing/xhr-data/build.json';
+import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
 
 describe('Build Details Component', () => {
   let fixture: ComponentFixture<AppBuildDetailsComponent>;
@@ -31,9 +32,9 @@ describe('Build Details Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppBuildDetailsComponent, ToTimePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppBuildDetailsComponent, ToTimePipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -41,9 +42,9 @@ describe('Build Details Component', () => {
         TimeService,
         NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
+        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-    .createComponent(AppBuildDetailsComponent);
+      .createComponent(AppBuildDetailsComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -58,13 +59,13 @@ describe('Build Details Component', () => {
     let responseBuild: Response;
     let fakeBuild: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeBuild = buildData.data;
-      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
+      fakeBuild = (<any>buildData).data;
+      const optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
       responseBuild = new Response(optionsBuild);
 
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuild));
@@ -86,13 +87,13 @@ describe('Build Details Component', () => {
     let responseBuild: Response;
     let fakeBuild: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeBuild = buildTagData.data;
-      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
+      fakeBuild = (<any>buildTagData).data;
+      const optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
       responseBuild = new Response(optionsBuild);
 
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuild));

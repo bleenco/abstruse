@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,15 +41,14 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
   dateTimeToNow: string;
 
   constructor(
-    private socketService: SocketService,
-    private apiService: ApiService,
-    private timeService: TimeService,
-    private authService: AuthService,
-    private route: ActivatedRoute,
-    private ngZone: NgZone,
-    private router: Router,
-    @Inject(DOCUMENT) private document: any,
-    private titleService: Title
+    public socketService: SocketService,
+    public apiService: ApiService,
+    public timeService: TimeService,
+    public authService: AuthService,
+    public route: ActivatedRoute,
+    public router: Router,
+    @Inject(DOCUMENT) public document: any,
+    public titleService: Title
   ) {
     this.loading = true;
     this.status = 'queued';
@@ -76,7 +75,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.timeWords = distanceInWordsToNow(this.build.created_at);
         this.previousRuntime = 0;
         if (this.build.lastBuild) {
-          let maxJobTime = Math.max(...this.build.lastBuild.job_runs.map(job => job.end_time - job.start_time));
+          const maxJobTime = Math.max(...this.build.lastBuild.job_runs.map(job => job.end_time - job.start_time));
           maxJobTime ? this.previousRuntime = maxJobTime : this.previousRuntime = 0;
         }
 
@@ -86,7 +85,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.subStatus = this.socketService.outputEvents
           .filter(event => event.type === 'process')
           .subscribe(event => {
-            let index = this.build.jobs.findIndex(job => job.id === event.job_id);
+            const index = this.build.jobs.findIndex(job => job.id === event.job_id);
             if (index !== -1) {
               if (event.data === 'job started') {
                 this.build.jobs[index].status = 'running';
@@ -166,7 +165,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     }
 
     if (this.document.getElementById('favicon')) {
-      this.document.getElementById('favicon').setAttribute('href', 'images/favicon.png');
+      this.document.getElementById('favicon').setAttribute('href', '/assets/images/favicon.png');
     }
     this.titleService.setTitle('Abstruse CI');
   }
@@ -191,22 +190,22 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
   getBuildStatus(): string {
     let status = 'queued';
-    let favicon = 'images/favicon-queued.png';
+    let favicon = '/assets/images/favicon-queued.png';
 
     if (this.build && this.build.jobs) {
       if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
         status = 'failed';
-        favicon = 'images/favicon-error.png';
+        favicon = '/assets/images/favicon-error.png';
       }
 
       if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
         status = 'running';
-        favicon = 'images/favicon-running.png';
+        favicon = '/assets/images/favicon-running.png';
       }
 
       if (this.build.jobs.length === this.build.jobs.filter(j => j.status === 'success').length) {
         status = 'success';
-        favicon = 'images/favicon-success.png';
+        favicon = '/assets/images/favicon-success.png';
       }
     }
 
@@ -242,7 +241,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     e.stopPropagation();
 
     this.previousRuntime = 0;
-    let maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    const maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
     maxJobTime ? this.previousRuntime = maxJobTime : this.previousRuntime = 0;
     this.processingBuild = true;
     this.socketService.emit({ type: 'restartBuild', data: { buildId: id } });
@@ -285,11 +284,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       }
 
       if (this.build.data.sha) {
-        const data = this.build.data;
-        this.committerAvatar = data.committer.avatar_url;
-        this.nameCommitter = data.commit.committer.name;
-        this.authorAvatar = data.author.avatar_url;
-        this.nameAuthor = data.commit.author.name;
+        const d = this.build.data;
+        this.committerAvatar = d.committer.avatar_url;
+        this.nameCommitter = d.commit.committer.name;
+        this.authorAvatar = d.author.avatar_url;
+        this.nameAuthor = d.commit.author.name;
       } else if (this.build.data.head_commit) {
         const commit = this.build.data.head_commit;
         this.committerAvatar = this.build.data.sender.avatar_url;
@@ -356,8 +355,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
         this.apiService.customGet(this.build.repository.api_url + '/users', {
           username: this.build.repository.user_login
-        }).subscribe(data => {
-          this.authorAvatar = data[0].avatar_url;
+        }).subscribe(d => {
+          this.authorAvatar = d[0].avatar_url;
         });
       } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;

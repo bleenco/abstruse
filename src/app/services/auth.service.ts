@@ -1,12 +1,11 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
-import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 import { ApiService } from './api.service';
 import { SocketService } from './socket.service';
+import * as decode from 'jwt-decode';
 
 @Injectable()
 export class AuthService {
-  jwtHelper: JwtHelper;
   userEvents: EventEmitter<string>;
   loginRequired: boolean;
 
@@ -15,7 +14,6 @@ export class AuthService {
     private socket: SocketService,
     private router: Router
   ) {
-    this.jwtHelper = new JwtHelper();
     this.userEvents = new EventEmitter<string>();
 
     this.api.isAppReady().subscribe(ready => {
@@ -44,7 +42,7 @@ export class AuthService {
 
   getData(): Object {
     if (this.isLoggedIn()) {
-      return this.jwtHelper.decodeToken(localStorage.getItem('abs-token'));
+      return decode(localStorage.getItem('abs-token'));
     } else {
       return null;
     }

@@ -1,4 +1,5 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 import { s3Deploy } from './deploy/aws-s3';
 import { codeDeploy } from './deploy/aws-code-deploy';
 import { elasticDeploy } from './deploy/aws-elastic';
@@ -9,7 +10,7 @@ export function deploy(
 ): Observable<any> {
   return new Observable((observer: Observer<any>) => {
     if (preferences) {
-      let provider = preferences.provider;
+      const provider = preferences.provider;
       deployProvider(provider, preferences, container, variables).subscribe(event => {
         observer.next(event);
       }, err => observer.error(err), () => observer.complete());
@@ -41,7 +42,7 @@ function deployProvider(
 }
 
 export function findFromEnvVariables(variables: envVars.EnvVariables, property: string) {
-  let value = variables[property];
+  const value = variables[property];
   if (typeof value !== 'undefined') {
     return value.value;
   }

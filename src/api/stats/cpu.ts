@@ -1,5 +1,5 @@
 import { cpus } from 'os';
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import { IOutput } from '../socket';
 
 export interface ICpuData {
@@ -20,15 +20,15 @@ export function cpu(): Observable<IOutput> {
 
 function cpuLoad(): Promise<ICpuData> {
   return new Promise(resolve => {
-    let start = cpuAverage();
+    const start = cpuAverage();
 
     setTimeout(() => {
-      let end = cpuAverage();
+      const end = cpuAverage();
 
-      let cores = end.cores.map((core, i) => {
-        let coreIdleDiff = core.idle - start.cores[i].idle;
-        let coreTotalDiff = end.total - start.total;
-        let corePercentage = 100 - parseInt(<any>(100 * coreIdleDiff / coreTotalDiff), 10);
+      const cores = end.cores.map((core, i) => {
+        const coreIdleDiff = core.idle - start.cores[i].idle;
+        const coreTotalDiff = end.total - start.total;
+        const corePercentage = 100 - parseInt(<any>(100 * coreIdleDiff / coreTotalDiff), 10);
 
         return {
           idle: 100 - corePercentage,
@@ -36,10 +36,10 @@ function cpuLoad(): Promise<ICpuData> {
         };
       });
 
-      let idleDiff = end.idle - start.idle;
-      let totalDiff = end.total - start.total;
-      let percentage = 100 - parseInt(<any>(100 * idleDiff / totalDiff), 10);
-      let data = { load: percentage, idle: 100 - percentage, cores: cores };
+      const idleDiff = end.idle - start.idle;
+      const totalDiff = end.total - start.total;
+      const percentage = 100 - parseInt(<any>(100 * idleDiff / totalDiff), 10);
+      const data = { load: percentage, idle: 100 - percentage, cores: cores };
 
       resolve(data);
     }, 2000);
@@ -47,13 +47,13 @@ function cpuLoad(): Promise<ICpuData> {
 }
 
 function cpuAverage(): { idle: number, total: number, cores: { idle: number, total: number }[] } {
-  let totalIdle = 0;
-  let totalTick = 0;
-  let cpuData = cpus();
+  const totalIdle = 0;
+  const totalTick = 0;
+  const cpuData = cpus();
 
-  let data = cpuData.map(core => {
-    let coreTotal = Object.keys(core.times).reduce((acc, curr) => acc + core.times[curr], 0);
-    let coreIdle = core.times.idle;
+  const data = cpuData.map(core => {
+    const coreTotal = Object.keys(core.times).reduce((acc, curr) => acc + core.times[curr], 0);
+    const coreIdle = core.times.idle;
 
     return { idle: coreIdle, total: coreTotal };
   }).reduce((acc, curr) => {

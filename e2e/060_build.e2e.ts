@@ -13,7 +13,6 @@ function randomNumber(minimum: number, maximum: number): number {
 }
 
 describe('Build Details', () => {
-  let originalTimeout: number;
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 

@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppRepositoriesComponent } from './app-repositories.component';
 import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
@@ -17,7 +18,7 @@ import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
-const repositoriesData: any = require('json-loader!../../testing/xhr-data/repositories.json');
+import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
 
 describe('Repositories Component', () => {
   let fixture: ComponentFixture<AppRepositoriesComponent>;
@@ -32,9 +33,9 @@ describe('Repositories Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppBuildItemComponent, AppRepositoriesComponent, ToTimePipe, SafeHtmlPipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule, HttpClientModule],
+      declarations: [AppBuildItemComponent, AppRepositoriesComponent, ToTimePipe, SafeHtmlPipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
@@ -42,9 +43,9 @@ describe('Repositories Component', () => {
         TimeService,
         ConfigService,
         NotificationService,
-        { provide: XHRBackend, useClass: MockBackend } ]
+        { provide: XHRBackend, useClass: MockBackend }]
     })
-    .createComponent(AppRepositoriesComponent);
+      .createComponent(AppRepositoriesComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -59,13 +60,13 @@ describe('Repositories Component', () => {
     let responseRepositories: Response;
     let fakeRepositories: any[];
 
-    beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(async(inject([HttpClient, Router, XHRBackend], (http: HttpClient, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
-      fakeRepositories = repositoriesData.data;
-      let optionsRepositories = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });
+      fakeRepositories = (<any>repositoriesData).data;
+      const optionsRepositories = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });
       responseRepositories = new Response(optionsRepositories);
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseRepositories));
     })));

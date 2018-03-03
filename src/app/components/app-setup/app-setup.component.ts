@@ -69,8 +69,7 @@ export class AppSetupComponent implements OnInit {
     this.loading = true;
     this.apiService.getServerStatus().delay(250).subscribe((resp: ServerStatus) => {
       this.serverStatus = resp;
-      const i =
-        Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+      const i = Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
       this.readyToSetup = i === -1 ? true : false;
       this.loading = false;
     });
@@ -87,8 +86,6 @@ export class AppSetupComponent implements OnInit {
             this.step = 'db';
           }
         });
-
-        this.apiService.buildAbstruseBaseImage().subscribe(() => {});
       } else {
         this.loading = false;
         this.step = 'done';
