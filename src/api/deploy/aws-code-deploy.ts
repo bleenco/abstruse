@@ -27,7 +27,7 @@ export function codeDeploy(
 
     if (!application) {
       const msg = chalk.red('application is not set in yml config file \r\n');
-      observer.next({ type: 'data', data: msg});
+      observer.next({ type: 'data', data: msg });
       errors = true;
     }
 
@@ -45,7 +45,7 @@ export function codeDeploy(
 
     if (!deployGroup) {
       const msg = chalk.red('deploymentGroup is not set in yml config file \r\n');
-      observer.next({ type: 'data', data: msg});
+      observer.next({ type: 'data', data: msg });
       errors = true;
     }
 
@@ -55,7 +55,7 @@ export function codeDeploy(
       } else {
         const msg = chalk.red('accessKeyId is not set in environment '
           + 'variables or in yml config \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
@@ -66,7 +66,7 @@ export function codeDeploy(
       } else {
         const msg = chalk.red('secretAccessKey is not set in environment variables or'
           + ' in yml config \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
@@ -76,14 +76,14 @@ export function codeDeploy(
         region = preferences.region;
       } else {
         const msg = chalk.red('region is not set in environment variables or in yml config \r\n');
-        observer.next({ type: 'data', data: msg});
+        observer.next({ type: 'data', data: msg });
         errors = true;
       }
     }
 
     if (!errors) {
       let msg = style.yellow.open + style.bold.open + '==> deploy started' +
-      style.bold.close + style.yellow.close + '\r\n';
+        style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
 
       // 2. set credentials for awscli
@@ -94,8 +94,8 @@ export function codeDeploy(
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_access_key_id failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_access_key_id failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
@@ -108,8 +108,8 @@ export function codeDeploy(
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_secret_access_key failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_secret_access_key failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
@@ -121,8 +121,8 @@ export function codeDeploy(
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure region failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure region failed';
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
@@ -142,16 +142,16 @@ export function codeDeploy(
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
-                    const msg = 'create-deployment-group failed';
-                    observer.next({ type: 'containerError', data: msg});
+                    const m = 'create-deployment-group failed';
+                    observer.next({ type: 'containerError', data: m });
                     return Promise.reject(1);
                   }
 
                   Promise.resolve();
                 });
             } else {
-              const msg = `deployment group doesn't exists and arn parameter is empty`;
-              observer.next({ type: 'containerError', data: msg});
+              const m = `deployment group doesn't exists and arn parameter is empty`;
+              observer.next({ type: 'containerError', data: m });
               return Promise.reject(1);
             }
           } else {
@@ -177,9 +177,9 @@ export function codeDeploy(
           } else if (applicationStore === 'github') {
             command.command += ` --github-location ${location}`;
           } else {
-            const msg = 'ApplicationStore can only be s3 or github,'
+            const m = 'ApplicationStore can only be s3 or github,'
               + ' other stores are not supported';
-            observer.next({ type: 'containerError', data: msg});
+            observer.next({ type: 'containerError', data: m });
             return Promise.reject(1);
           }
 
@@ -187,8 +187,8 @@ export function codeDeploy(
             .toPromise()
             .then(result => {
               if (!(result && result.data === 0)) {
-                const msg = 'create-deployment failed';
-                observer.next({ type: 'containerError', data: msg});
+                const m = 'create-deployment failed';
+                observer.next({ type: 'containerError', data: m });
                 return Promise.reject(1);
               }
 
@@ -196,9 +196,9 @@ export function codeDeploy(
             });
         })
         .then(() => {
-          let msg = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
+          let m = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
             + style.bold.close + style.yellow.close + '\r\n';
-          observer.next({ type: 'data', data: msg });
+          observer.next({ type: 'data', data: m });
           observer.complete();
         })
         .catch(err => {
@@ -217,7 +217,7 @@ function depGroupExists(container: string, application: string, group: string): 
     const command = `aws deploy get-deployment-group --application-name ${application}`
       + ` --deployment-group ${group}`;
     let groupExists = false;
-    dockerExec(container, { type: CommandType.deploy, command: command})
+    dockerExec(container, { type: CommandType.deploy, command: command })
       .subscribe(event => {
         if (event && event.type && event.type === 'exit') {
           if (event.data === 0) {
@@ -225,7 +225,7 @@ function depGroupExists(container: string, application: string, group: string): 
           }
         }
       },
-      err => reject(err),
-      () => resolve(groupExists));
+        err => reject(err),
+        () => resolve(groupExists));
   });
 }

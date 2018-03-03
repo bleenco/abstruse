@@ -111,42 +111,42 @@ export function elasticDeploy(
         .toPromise()
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_access_key_id failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_access_key_id failed';
+            observer.next({ type: 'containerError', data: m});
             return Promise.reject(1);
           }
 
-          let command = {
+          let c = {
             type: CommandType.deploy,
             command: `aws configure set aws_secret_access_key ${secretAccessKey}`
           };
 
-          return dockerExec(container, command, variables).toPromise();
+          return dockerExec(container, c, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure aws_secret_access_key failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure aws_secret_access_key failed';
+            observer.next({ type: 'containerError', data: m});
             return Promise.reject(1);
           }
 
-          let command = {
+          let c = {
             type: CommandType.deploy, command: `aws configure set region ${region}`
           };
 
-          return dockerExec(container, command, variables).toPromise();
+          return dockerExec(container, c, variables).toPromise();
         })
         .then(result => {
           if (!(result && result.data === 0)) {
-            const msg = 'aws configure region failed';
-            observer.next({ type: 'containerError', data: msg});
+            const m = 'aws configure region failed';
+            observer.next({ type: 'containerError', data: m});
             return Promise.reject(1);
           }
 
           // 3. create-application-version
-          let command;
+          let c;
           if (s3Bucket || codeCommit) {
-            command = {
+            c = {
               type: CommandType.deploy, command: `aws elasticbeanstalk create-application-version`
                 + ` --application-name "${application}" --version-label "${version}"`
                 + ` --description "${description}" --source-build-information`
@@ -154,14 +154,14 @@ export function elasticDeploy(
                 + ` SourceLocation="${sourceLocation}" --auto-create-application`
             };
           } else {
-            command = {
+            c = {
               type: CommandType.deploy, command: `aws elasticbeanstalk create-application-version`
                 + ` --application-name "${application}" --version-label "${version}"`
                 + ` --description "${description}" --auto-create-application`
             };
           }
 
-          return dockerExec(container, command, variables).toPromise();
+          return dockerExec(container, c, variables).toPromise();
         })
         .then(() => {
           // 3. check if environment exists
@@ -171,7 +171,7 @@ export function elasticDeploy(
           if (exists) {
             // 4. create-environment
             if (environmentTemplate) {
-              let command = {
+              let c = {
                 type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
                   + ` --application-name "${application}" --environment-name "${environmentName}"`
                   + ` --template-name "${environmentTemplate}"`
@@ -181,15 +181,15 @@ export function elasticDeploy(
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
-                    const msg = 'aws create environment failed';
-                    observer.next({ type: 'containerError', data: msg});
+                    const message = 'aws create environment failed';
+                    observer.next({ type: 'containerError', data: message });
                     return Promise.reject(1);
                   }
 
                   return Promise.resolve();
                 });
             } else if (solutionStackName) {
-              let command = {
+              let c = {
                 type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
                   + ` --application-name "${application}" --environment-name "${environmentName}"`
                   + ` --solution-stack-name "${solutionStackName}"`
@@ -199,8 +199,8 @@ export function elasticDeploy(
                 .toPromise()
                 .then(result => {
                   if (!(result && result.data === 0)) {
-                    const msg = 'aws create environment failed';
-                    observer.next({ type: 'containerError', data: msg});
+                    const message = 'aws create environment failed';
+                    observer.next({ type: 'containerError', data: message });
                     return Promise.reject(1);
                   }
 
@@ -208,19 +208,19 @@ export function elasticDeploy(
                 });
             }
 
-            const msg = `Environment with name ${environmentName} doesn't exists, environment `
+            const m = `Environment with name ${environmentName} doesn't exists, environment `
               + `template-name or solution-stack-name has to be provided in deploy configuration`
               + ` to successfully create new environment`;
-            observer.next({ type: 'containerError', data: msg});
+            observer.next({ type: 'containerError', data: m});
             return Promise.reject(1);
           } else {
             return Promise.resolve();
           }
         })
         .then(() => {
-          let msg = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
+          let m = style.yellow.open + style.bold.open + '==> deployment completed successfully!'
             + style.bold.close + style.yellow.close + '\r\n';
-          observer.next({ type: 'data', data: msg });
+          observer.next({ type: 'data', data: m });
           observer.complete();
         })
         .catch(err => {
@@ -242,7 +242,7 @@ function environmentExists(container: string, environment: string): Promise<any>
     dockerExec(container, { type: CommandType.deploy, command: getEnvCommand })
     .subscribe(event => {
       if (event && event.data) {
-        if (String(event.data).indexOf(environment) != -1) {
+        if (String(event.data).indexOf(environment) !== -1) {
           envExists = true;
         }
       }
