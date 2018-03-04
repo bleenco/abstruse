@@ -57,7 +57,7 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
       let sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
       let name = buildData.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      let gitUrl = `https://${buildData.repository.api_url || 'api.github.com'}/repos/${name}/statuses/${sha}`;
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
@@ -101,7 +101,7 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
       let sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
       let name = buildData.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      let gitUrl = `https://${buildData.repository.api_url || 'api.github.com'}/repos/${name}/statuses/${sha}`;
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
