@@ -12,13 +12,18 @@ export class TimeService {
   }
 
   getCurrentTime(): Observable<any> {
-    return new Observable(observer => this.timer.subscribe(() => {
-      observer.next(new Date().getTime());
-    }))
-      .pipe(share());
+    return new Observable(observer => {
+      const sub = this.timer.subscribe(() => {
+        observer.next(new Date().getTime());
+      });
+
+      return () => {
+        sub.unsubscribe();
+      };
+    }).pipe(share());
   }
 }
 
-export let TimeServiceProvider: Provider = {
+export const TimeServiceProvider: Provider = {
   provide: TimeService, useClass: TimeService
 };
