@@ -46,7 +46,7 @@ export class SocketService {
         return errors.pipe(switchMap(err => {
           this.connectionState.next(ConnectionStates.RETRYING);
           if (navigator.onLine) {
-            return Observable.timer(3000);
+            return timer(3000);
           } else {
             return Observable.fromEvent(window, 'online').pipe(take(1));
           }
@@ -60,7 +60,7 @@ export class SocketService {
   }
 
   emit(msg: any) {
-    let data = typeof msg === 'string' ? msg : JSON.stringify(msg);
+    const data = typeof msg === 'string' ? msg : JSON.stringify(msg);
     this.socket.in.next(data);
   }
 }

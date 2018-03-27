@@ -55,9 +55,7 @@ export class AuthService {
   }
 
   addNewUser(user: any): any {
-    return this.api.createUser(user)
-      .toPromise()
-      .then(data => data);
+    return this.api.createUser(user).toPromise();
   }
 }
 

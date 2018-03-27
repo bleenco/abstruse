@@ -8,10 +8,10 @@ export class ConfigService {
   wsurl: string;
 
   constructor() {
-    let wssProto = location.protocol === 'https:' ? 'wss' : 'ws';
-    let proto = location.protocol;
-    let port = location.port === '4200' ? 6500 : location.port;
-    let token = localStorage.getItem('abs-token') || null;
+    const wssProto = location.protocol === 'https:' ? 'wss' : 'ws';
+    const proto = location.protocol;
+    const port = location.port === '4200' ? 6500 : location.port;
+    const token = localStorage.getItem('abs-token') || null;
 
     this.url = `${proto}//${location.hostname}:${port}`;
     if (token) {

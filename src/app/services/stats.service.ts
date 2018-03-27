@@ -1,7 +1,8 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
 import { SocketService } from './socket.service';
 import { ApiService } from './api.service';
+import { Subscription } from 'rxjs/Subscription';
+import { filter } from 'rxjs/operators';
 
 @Injectable()
 export class StatsService {
@@ -15,7 +16,7 @@ export class StatsService {
   start(): void {
     if (!this.sub) {
       this.sub = this.socketService.outputEvents
-        .filter(e => e.type === 'memory' || e.type === 'cpu' || e.type === 'containersStats')
+        .pipe(filter(e => e.type === 'memory' || e.type === 'cpu' || e.type === 'containersStats'))
         .subscribe(e => this.stats.emit(e));
     }
 
@@ -27,12 +28,11 @@ export class StatsService {
   }
 
   getJobRuns(): Promise<any[]> {
-    return this.apiService.statsJobRuns().toPromise().then(runs => runs);
+    return this.apiService.statsJobRuns().toPromise();
   }
 
   getJobRunsBetween(dateFrom: Date, dateTo: Date): Promise<any[]> {
-    return this.apiService.statsJobRunsBetween(dateFrom.toISOString(), dateTo.toISOString())
-      .toPromise().then(runs => runs);
+    return this.apiService.statsJobRunsBetween(dateFrom.toISOString(), dateTo.toISOString()).toPromise();
   }
 
   humanizeBytes(bytes: number): string {
