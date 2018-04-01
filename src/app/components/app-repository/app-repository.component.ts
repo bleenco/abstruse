@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
-import 'rxjs/add/operator/delay';
+import { delay, filter } from 'rxjs/operators';
 
 export interface IRepoForm {
   id: number;
@@ -119,7 +119,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     }
 
     this.sub = this.socketService.outputEvents
-      .filter(x => x.type !== 'data')
+      .pipe(filter(x => x.type !== 'data'))
       .subscribe(event => {
         if (!this.repo || !event.data) {
           return;
@@ -170,8 +170,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
       });
 
     this.subUpdate = this.socketService.outputEvents
-      .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
-        || event.data === 'build failed')
+      .pipe(
+        filter((event: any) => event.data === 'build restarted' || event.data === 'build succeeded' || event.data === 'build failed')
+      )
       .subscribe(event => {
         let index = this.repo.builds.findIndex(i => i.id === event.build_id);
         if (index !== -1) {
@@ -357,7 +358,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.saving = true;
 
     this.api.saveRepositorySettings(this.form)
-      .delay(1000)
+      .pipe(delay(1000))
       .subscribe(saved => {
         if (saved) {
           this.saving = false;
@@ -369,7 +370,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     this.environmentVariableForm.repositories_id = this.repo.id;
     this.addingEnvVar = true;
     this.api.addNewEnvironmentVariable(this.environmentVariableForm)
-      .delay(500)
+      .pipe(delay(500))
       .subscribe(() => {
         this.addingEnvVar = false;
         this.fetch();

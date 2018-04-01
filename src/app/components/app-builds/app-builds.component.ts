@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs/Subscription';
 import { format, distanceInWordsToNow } from 'date-fns';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-builds',
@@ -43,7 +44,7 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
     this.fetch();
 
     this.subAdded = this.socketService.outputEvents
-      .filter(x => x.type !== 'data')
+      .pipe(filter(x => x.type !== 'data'))
       .subscribe(event => {
         if (!this.builds || !event.data) {
           return;
@@ -60,12 +61,14 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       });
 
     this.sub = this.socketService.outputEvents
-      .filter(x => {
-        x = x.data ? x.data.toString() : '';
-        return x.startsWith('job');
-      })
+      .pipe(
+        filter(x => {
+          x = x.data ? x.data.toString() : '';
+          return x.startsWith('job');
+        })
+      )
       .subscribe(e => {
-        const build = this.builds.findIndex(build => build.id === e.build_id);
+        const build = this.builds.findIndex(b => b.id === e.build_id);
         if (build === -1) {
           return;
         }
@@ -147,7 +150,8 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       build.maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
       build.minRunningJobStartTime = Math.min(...build.jobs
         .filter(job => job.status === 'running')
-        .map(job => job.start_time));
+        .map(job => job.start_time)
+      );
       build.status = status;
       build.userId = this.userId;
       return build;

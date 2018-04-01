@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
 import { Subscription } from 'rxjs/Subscription';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-build-details',
@@ -84,7 +85,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
         this.updateJobTimes();
 
         this.subStatus = this.socketService.outputEvents
-          .filter(event => event.type === 'process')
+          .pipe(filter(event => event.type === 'process'))
           .subscribe(event => {
             let index = this.build.jobs.findIndex(job => job.id === event.job_id);
             if (index !== -1) {
@@ -126,14 +127,13 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
           });
 
         this.sub = this.socketService.outputEvents
-          .filter(event => event.type === 'build stopped' || event.type === 'build restarted')
+          .pipe(filter(event => event.type === 'build stopped' || event.type === 'build restarted'))
           .subscribe(event => {
             this.processingBuild = false;
           });
 
         this.subUpdate = this.socketService.outputEvents
-          .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
-            || event.data === 'build failed')
+          .pipe(filter(event => event.data === 'build restarted' || event.data === 'build succeeded' || event.data === 'build failed'))
           .subscribe(event => {
             if (event.build_id === Number(this.id)) {
               if (event.data === 'build restarted') {
@@ -285,11 +285,11 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
       }
 
       if (this.build.data.sha) {
-        const data = this.build.data;
-        this.committerAvatar = data.committer.avatar_url;
-        this.nameCommitter = data.commit.committer.name;
-        this.authorAvatar = data.author.avatar_url;
-        this.nameAuthor = data.commit.author.name;
+        const buildData = this.build.data;
+        this.committerAvatar = buildData.committer.avatar_url;
+        this.nameCommitter = buildData.commit.committer.name;
+        this.authorAvatar = buildData.author.avatar_url;
+        this.nameAuthor = buildData.commit.author.name;
       } else if (this.build.data.head_commit) {
         const commit = this.build.data.head_commit;
         this.committerAvatar = this.build.data.sender.avatar_url;
@@ -356,8 +356,8 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
         this.apiService.customGet(this.build.repository.api_url + '/users', {
           username: this.build.repository.user_login
-        }).subscribe(data => {
-          this.authorAvatar = data[0].avatar_url;
+        }).subscribe(userData => {
+          this.authorAvatar = userData[0].avatar_url;
         });
       } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;

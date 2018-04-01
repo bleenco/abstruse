@@ -3,6 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import { Subscription } from 'rxjs/Subscription';
+import { filter } from 'rxjs/operators';
 
 export interface IImage {
   name: string;
@@ -100,7 +101,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
     this.loading = false;
 
     this.sub = this.socketService.outputEvents
-      .filter(event => event.type === 'imageBuildProgress')
+      .pipe(filter(event => event.type === 'imageBuildProgress'))
       .subscribe(event => {
         this.form.name = event.data.name;
         let output;

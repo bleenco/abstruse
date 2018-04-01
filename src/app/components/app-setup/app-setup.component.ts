@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { SocketService } from '../../services/socket.service';
 import { AuthService } from '../../services/auth.service';
+import { delay } from 'rxjs/operators';
 
 export interface ServerStatus {
   sqlite: boolean;
@@ -52,57 +53,65 @@ export class AppSetupComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.apiService.isAppReady().delay(250).subscribe(event => {
-      if (event) {
-        this.router.navigate(['/login']);
-      } else {
-        if (this.authService.isLoggedIn()) {
-          this.authService.logout();
-        }
+    this.apiService.isAppReady()
+      .pipe(delay(250))
+      .subscribe(event => {
+        if (event) {
+          this.router.navigate(['/login']);
+        } else {
+          if (this.authService.isLoggedIn()) {
+            this.authService.logout();
+          }
 
-        this.checkConfiguration();
-      }
-    });
+          this.checkConfiguration();
+        }
+      });
   }
 
   checkConfiguration(): void {
     this.loading = true;
-    this.apiService.getServerStatus().delay(250).subscribe((resp: ServerStatus) => {
-      this.serverStatus = resp;
-      const i =
-        Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
-      this.readyToSetup = i === -1 ? true : false;
-      this.loading = false;
-    });
+    this.apiService.getServerStatus()
+      .pipe(delay(250))
+      .subscribe((resp: ServerStatus) => {
+        this.serverStatus = resp;
+        const i =
+          Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+        this.readyToSetup = i === -1 ? true : false;
+        this.loading = false;
+      });
   }
 
   continueToDb(): void {
     this.loading = true;
-    this.apiService.getDatabaseStatus().delay(250).subscribe(dbStatus => {
-      this.loading = false;
-      if (!dbStatus) {
-        this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
-        this.apiService.initializeDatabase().subscribe(event => {
-          if (event) {
-            this.step = 'db';
-          }
-        });
-
-        this.apiService.buildAbstruseBaseImage().subscribe(() => {});
-      } else {
+    this.apiService.getDatabaseStatus()
+      .pipe(delay(250))
+      .subscribe(dbStatus => {
         this.loading = false;
-        this.step = 'done';
-      }
-    });
+        if (!dbStatus) {
+          this.user = { email: '', fullname: '', password: '', confirmPassword: '', admin: true };
+          this.apiService.initializeDatabase().subscribe(event => {
+            if (event) {
+              this.step = 'db';
+            }
+          });
+
+          this.apiService.buildAbstruseBaseImage().subscribe(() => {});
+        } else {
+          this.loading = false;
+          this.step = 'done';
+        }
+      });
   }
 
   createUser(): void {
     this.loading = true;
-    this.apiService.createUser(this.user).delay(250).subscribe(event => {
-      this.loading = false;
-      if (event) {
-        this.step = 'done';
-      }
-    });
+    this.apiService.createUser(this.user)
+      .pipe(delay(250))
+      .subscribe(event => {
+        this.loading = false;
+        if (event) {
+          this.step = 'done';
+        }
+      });
   }
 }
