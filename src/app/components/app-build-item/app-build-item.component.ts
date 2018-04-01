@@ -1,14 +1,15 @@
-import { Component, Input, HostBinding, OnInit } from '@angular/core';
+import { Component, Input, HostBinding, OnInit, OnDestroy } from '@angular/core';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import { TimeService } from '../../services/time.service';
 import { distanceInWordsToNow } from 'date-fns';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-build-item',
   templateUrl: 'app-build-item.component.html',
 })
-export class AppBuildItemComponent implements OnInit {
+export class AppBuildItemComponent implements OnInit, OnDestroy {
   @Input() build: any;
   @HostBinding('class') classes = 'column is-12';
 
@@ -39,7 +40,7 @@ export class AppBuildItemComponent implements OnInit {
     }
 
     this.socketService.outputEvents
-      .filter(x => x.type === 'build restarted' || x.type === 'build stopped')
+      .pipe(filter(x => x.type === 'build restarted' || x.type === 'build stopped'))
       .subscribe(e => this.processingRequest = false);
   }
 
@@ -79,10 +80,10 @@ export class AppBuildItemComponent implements OnInit {
       }
 
       if (this.build.data.sha) {
-        const data = this.build.data;
-        this.committerAvatar = data.committer.avatar_url;
-        this.name = data.commit.committer.name;
-        this.authorAvatar = data.author.avatar_url;
+        const buildData = this.build.data;
+        this.committerAvatar = buildData.committer.avatar_url;
+        this.name = buildData.commit.committer.name;
+        this.authorAvatar = buildData.author.avatar_url;
       } else if (this.build.data.head_commit) {
         const commit = this.build.data.head_commit;
         this.committerAvatar = this.build.data.sender.avatar_url;
@@ -132,8 +133,8 @@ export class AppBuildItemComponent implements OnInit {
 
         this.apiService.customGet(this.build.repository.api_url + '/users', {
           username: this.build.repository.user_login
-        }).subscribe(data => {
-          this.authorAvatar = data[0].avatar_url;
+        }).subscribe(userData => {
+          this.authorAvatar = userData[0].avatar_url;
         });
       } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;

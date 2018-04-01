@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
+import { filter } from 'rxjs/operators';
 import { format, distanceInWordsToNow, distanceInWordsStrict } from 'date-fns';
 import * as Clipboard from 'clipboard';
 
@@ -23,7 +24,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
   job: any;
   jobRun: any;
   terminalReady: boolean;
-  terminalOptions:  { size: 'small' | 'large' };
+  terminalOptions: { size: 'small' | 'large' };
   terminalInput: any;
   timeWords: string;
   previousRuntime: number;
@@ -97,8 +98,10 @@ export class AppJobComponent implements OnInit, OnDestroy {
     this.socketService.emit({ type: 'subscribeToJobOutput', data: { jobId: this.id } });
 
     this.sub = this.socketService.outputEvents
-      .filter(event => event.type === 'process')
-      .filter(event => Number(event.job_id) === Number(this.id))
+      .pipe(
+        filter(event => event.type === 'process'),
+        filter(event => Number(event.job_id) === Number(this.id))
+      )
       .subscribe(event => {
         if (!this.jobRun) {
           return;
@@ -136,7 +139,7 @@ export class AppJobComponent implements OnInit, OnDestroy {
       this.setFavicon();
       this.loading = false;
       const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
-      job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
       if (lastRun) {
         this.previousRuntime = lastRun.end_time - lastRun.start_time;
       }
@@ -239,11 +242,11 @@ export class AppJobComponent implements OnInit, OnDestroy {
       }
 
       if (this.job.build.data.sha) {
-        const data = this.job.build.data;
-        this.committerAvatar = data.committer.avatar_url;
-        this.nameCommitter = data.commit.committer.name;
-        this.authorAvatar = data.author.avatar_url;
-        this.nameAuthor = data.commit.author.name;
+        const buildData = this.job.build.data;
+        this.committerAvatar = buildData.committer.avatar_url;
+        this.nameCommitter = buildData.commit.committer.name;
+        this.authorAvatar = buildData.author.avatar_url;
+        this.nameAuthor = buildData.commit.author.name;
       } else if (this.job.build.data.head_commit) {
         const commit = this.job.build.data.head_commit;
         this.committerAvatar = this.job.build.data.sender.avatar_url;
@@ -310,8 +313,8 @@ export class AppJobComponent implements OnInit, OnDestroy {
 
         this.apiService.customGet(this.job.build.repository.api_url + '/users', {
           username: this.job.build.repository.user_login
-        }).subscribe(data => {
-          this.authorAvatar = data[0].avatar_url;
+        }).subscribe(userData => {
+          this.authorAvatar = userData[0].avatar_url;
         });
       } else if (data.user_avatar) {
         this.authorAvatar = data.user_avatar;
