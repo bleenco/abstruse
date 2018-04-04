@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { of } from 'rxjs/observable/of';
 
 import { AppBuildDetailsComponent } from './app-build-details.component';
 import { ApiService } from '../../services/api.service';
@@ -41,7 +42,7 @@ describe('Build Details Component', () => {
         TimeService,
         NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
+        { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
       .createComponent(AppBuildDetailsComponent);
   });

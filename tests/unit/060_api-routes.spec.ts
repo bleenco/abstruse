@@ -20,7 +20,7 @@ describe('Api Server Routes Unit Tests', () => {
       .then(() => process.chdir(join(__dirname, '../')))
       .then(() => {
         tempRoot = temp.mkdirSync('abstruse-unit');
-        console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
+        console.log(`Using "${tempRoot}" as temporary directory for API routes unit tests.`);
       })
       .then(() => abstruse(tempRoot, false))
       .then(() => fs.removeSync(join(tempRoot, '/.abstruse/abstruse.sqlite')))

@@ -48,7 +48,7 @@ export class SocketService {
           if (navigator.onLine) {
             return timer(3000);
           } else {
-            return Observable.fromEvent(window, 'online').pipe(take(1));
+            return fromEvent(window, 'online').pipe(take(1));
           }
         }));
       })
