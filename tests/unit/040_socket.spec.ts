@@ -34,18 +34,6 @@ describe('Socket Security', () => {
 
   after(() => killAllProcesses());
 
-  it(`should receive initial 'time' event after connected to socket server`, (done) => {
-    socket = new ws('ws://localhost:6500');
-
-    socket.on('message', (data: any) => {
-      data = JSON.parse(data);
-      expect(data).to.have.all.keys('type', 'data');
-      expect(data.type).to.equal('time');
-      expect(data.data).to.not.be.a('null');
-      done();
-    });
-  });
-
   it(`should not have permissions to trigger build image on 'buildImage' event`, (done) => {
     socket = new ws('ws://localhost:6500');
 

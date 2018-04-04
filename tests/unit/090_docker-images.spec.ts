@@ -22,7 +22,7 @@ describe('Docker Images', () => {
       .then(() => process.chdir(join(__dirname, '../')))
       .then(() => {
         tempRoot = temp.mkdirSync('abstruse-unit');
-        console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
+        console.log(`Using "${tempRoot}" as temporary directory for Docker images unit tests.`);
       })
       .then(() => abstruse(tempRoot, true))
       .then(() => fs.removeSync(join(tempRoot, '/.abstruse/abstruse.sqlite')))

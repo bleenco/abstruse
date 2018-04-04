@@ -1,11 +1,12 @@
-import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter }          from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { of } from 'rxjs/observable/of';
 
 import { AppJobComponent } from './app-job.component';
 import { ApiService } from '../../services/api.service';
@@ -18,7 +19,7 @@ import * as jobData from '../../../testing/xhr-data/job.json';
 import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
 
 describe('Job Component', () => {
-  let comp:    AppJobComponent;
+  let comp: AppJobComponent;
   let fixture: ComponentFixture<AppJobComponent>;
 
   beforeEach(() => {
@@ -31,18 +32,18 @@ describe('Job Component', () => {
     });
 
     fixture = TestBed.configureTestingModule({
-      imports: [ FormsModule, RouterTestingModule, HttpModule ],
-      declarations: [ AppJobComponent, ToTimePipe ],
-      schemas: [ NO_ERRORS_SCHEMA ],
+      imports: [FormsModule, RouterTestingModule, HttpModule],
+      declarations: [AppJobComponent, ToTimePipe],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         ApiService,
         AuthService,
         SocketService,
         TimeService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({id: 1}), snapshot: { params: { id: 1 } } } } ]
+        { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-    .createComponent(AppJobComponent);
+      .createComponent(AppJobComponent);
     comp = fixture.componentInstance;
   });
 
