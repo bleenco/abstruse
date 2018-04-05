@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { of } from 'rxjs/observable/of';
 
 import { AppUserComponent } from './app-user.component';
 import { AppHeaderComponent } from '../app-header/app-header.component';
@@ -36,7 +37,7 @@ describe('User Component', () => {
         ConfigService,
         NotificationService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
+        { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
       .createComponent(AppUserComponent);
     comp = fixture.componentInstance;

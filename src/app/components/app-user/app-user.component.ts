@@ -4,7 +4,7 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
 import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, delay } from 'rxjs/operators';
 
 export interface IAccessToken {
   token: string;
@@ -112,14 +112,16 @@ export class AppUserComponent implements OnInit {
     this.user.id = this.route.snapshot.params.id;
     delete this.user.permissions;
     delete this.user.access_tokens;
-    this.api.updateUser(this.user).delay(300).subscribe(event => {
-      if (event) {
-        this.userSaved = true;
-      }
-      this.saving = false;
+    this.api.updateUser(this.user)
+      .pipe(delay(300))
+      .subscribe(event => {
+        if (event) {
+          this.userSaved = true;
+        }
+        this.saving = false;
 
-      this.fetchUser();
-    });
+        this.fetchUser();
+      });
   }
 
   updatePassword(e: Event): void {
@@ -131,14 +133,16 @@ export class AppUserComponent implements OnInit {
 
     this.passwordSaved = null;
     this.savingPassword = true;
-    this.api.updatePassword(form).delay(500).subscribe(event => {
-      if (event) {
-        this.passwordSaved = true;
-      }
+    this.api.updatePassword(form)
+      .pipe(delay(500))
+      .subscribe(event => {
+        if (event) {
+          this.passwordSaved = true;
+        }
 
-      this.password = null;
-      this.savingPassword = false;
-    });
+        this.password = null;
+        this.savingPassword = false;
+      });
   }
 
   addToken(e: MouseEvent): void {

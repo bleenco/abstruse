@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { of } from 'rxjs/observable/of';
 
 import { AppTeamComponent } from './app-team.component';
 import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
@@ -39,7 +40,7 @@ describe('Team Component', () => {
         SocketService,
         ConfigService,
         { provide: XHRBackend, useClass: MockBackend },
-        { provide: ActivatedRoute, useValue: { params: Observable.of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
+        { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
       .createComponent(AppTeamComponent);
     comp = fixture.componentInstance;

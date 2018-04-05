@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
 import { Subject } from 'rxjs/Subject';
+import { filter } from 'rxjs/operators';
 
 export interface NotificationType {
   message: string;
@@ -19,7 +20,7 @@ export class NotificationService {
     this.socket.emit({ type: 'subscribeToNotifications' });
 
     this.socket.outputEvents
-      .filter(e => e.type === 'notification')
+      .pipe(filter(e => e.type === 'notification'))
       .subscribe(e => this.emit(e.notification));
   }
 

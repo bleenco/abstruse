@@ -1,6 +1,13 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, Subscriber, Subscription } from 'rxjs';
 import { RxWebSocket, ConnectionStates } from '../classes/rx-web-socket.class';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Subscriber } from 'rxjs/Subscriber';
+import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { timer } from 'rxjs/observable/timer';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import { share, retryWhen, switchMap, take } from 'rxjs/operators';
 
 @Injectable()
 export class SocketService {
@@ -27,22 +34,25 @@ export class SocketService {
 
   connect(): Observable<any> {
     return new Observable((subscriber: Subscriber<any>) => {
-      let sub = this.socket.out.subscribe(subscriber);
+      const sub = this.socket.out.subscribe(subscriber);
 
       return () => {
         sub.unsubscribe();
       };
     })
-    .share()
-    .retryWhen(errors => errors.switchMap(err => {
-      this.connectionState.next(ConnectionStates.RETRYING);
-
-      if (navigator.onLine) {
-        return Observable.timer(3000);
-      } else {
-        return Observable.fromEvent(window, 'online').take(1);
-      }
-    }));
+    .pipe(
+      share(),
+      retryWhen(errors => {
+        return errors.pipe(switchMap(err => {
+          this.connectionState.next(ConnectionStates.RETRYING);
+          if (navigator.onLine) {
+            return timer(3000);
+          } else {
+            return fromEvent(window, 'online').pipe(take(1));
+          }
+        }));
+      })
+    );
   }
 
   onMessage(): Observable<any> {
@@ -50,7 +60,7 @@ export class SocketService {
   }
 
   emit(msg: any) {
-    let data = typeof msg === 'string' ? msg : JSON.stringify(msg);
+    const data = typeof msg === 'string' ? msg : JSON.stringify(msg);
     this.socket.in.next(data);
   }
 }

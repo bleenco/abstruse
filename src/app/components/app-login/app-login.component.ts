@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { delay } from 'rxjs/operators';
 
 export interface UserLogin {
   email: string;
@@ -47,14 +48,16 @@ export class AppLoginComponent implements OnInit {
 
   doLogin(): void {
     this.loading = true;
-    this.apiService.login(this.user).delay(1000).subscribe(jwt => {
-      if (jwt) {
-        this.authService.login(jwt);
-        this.router.navigate(['/']);
-      } else {
-        this.user = { email: '', password: '' };
-        this.loading = false;
-      }
-    });
+    this.apiService.login(this.user)
+      .pipe(delay(1000))
+      .subscribe(jwt => {
+        if (jwt) {
+          this.authService.login(jwt);
+          this.router.navigate(['/']);
+        } else {
+          this.user = { email: '', password: '' };
+          this.loading = false;
+        }
+      });
   }
 }

@@ -3,9 +3,9 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/combineLatest';
+import { of } from 'rxjs/observable/of';
+import { combineLatest } from 'rxjs/observable/combineLatest';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -16,26 +16,28 @@ export class AuthGuard implements CanActivate {
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return Observable.combineLatest(...[
+    return combineLatest(...[
       this.apiService.isAppReady(),
-      Observable.of(this.authService.isLoggedIn()),
+      of(this.authService.isLoggedIn()),
       this.apiService.loginRequired()
     ])
-    .map(([ready, loggedIn, loginRequired]) => {
-      if (!loginRequired) {
-        return true;
-      } else {
-        if (!ready) {
-          this.router.navigate(['/setup']);
-          return false;
-        } else if (ready && !loggedIn) {
-          this.router.navigate(['/login']);
-          return false;
-        } else if (ready && loggedIn) {
+    .pipe(
+      map(([ready, loggedIn, loginRequired]) => {
+        if (!loginRequired) {
           return true;
+        } else {
+          if (!ready) {
+            this.router.navigate(['/setup']);
+            return false;
+          } else if (ready && !loggedIn) {
+            this.router.navigate(['/login']);
+            return false;
+          } else if (ready && loggedIn) {
+            return true;
+          }
         }
-      }
-    });
+      })
+    );
   }
 }
 

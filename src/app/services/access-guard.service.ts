@@ -3,6 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs/Observable';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
@@ -21,7 +22,7 @@ export class AccessGuard implements CanActivate {
         switch (route.url[0].path) {
           case 'repo':
             this.apiService.getUserRepositoryPermission(route.params.id, userId)
-            .map(permission => !!permission)
+            .pipe(map(permission => !!permission))
             .subscribe(permission => {
               if (!permission) {
                 this.router.navigate(['/']);
@@ -33,7 +34,7 @@ export class AccessGuard implements CanActivate {
           break;
           case 'build':
             this.apiService.getUserBuildPermission(route.params.id, userId)
-            .map(permission => !!permission)
+            .pipe(map(permission => !!permission))
             .subscribe(permission => {
               if (!permission) {
                 this.router.navigate(['/']);
@@ -45,7 +46,7 @@ export class AccessGuard implements CanActivate {
           break;
           case 'job':
             this.apiService.getUserJobPermission(route.params.id, userId)
-            .map(permission => !!permission)
+            .pipe(map(permission => !!permission))
             .subscribe(permission => {
               if (!permission) {
                 this.router.navigate(['/']);
