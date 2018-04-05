@@ -10,7 +10,7 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
       let sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
         build.data.sha;
       let name = build.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      let gitUrl = `https://${build.repository.api_url || 'api.github.com'}/repos/${name}/statuses/${sha}`;
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusSuccess(gitUrl, abstruseUrl,
