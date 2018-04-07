@@ -2,7 +2,8 @@ import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs';
 import * as yaml from 'js-yaml';
 import * as temp from 'temp';
-import { getHttpJsonResponse } from './utils';
+import chalk from 'chalk';
+import { getHttpJsonResponse, getDateTime } from './utils';
 
 export enum CommandType {
   git = 'git',
@@ -164,15 +165,12 @@ export function checkRepositoryAccess(repository: Repository): Promise<boolean> 
   return new Promise((resolve, reject) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch;
-    let cloneDir = null;
-
     if (repository.access_token) {
       cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
     }
 
     createGitTmpDir()
-      .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
+      .then((cloneDir) => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
       .then(() => resolve(true))
       .catch(err => resolve(false));
   });
@@ -574,10 +572,17 @@ function spawnGit(args: string[]): Promise<void> {
 
     git.stdout.on('data', data => {
       data = data.toString();
+      console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.gray('git')}${chalk.yellow(']')}: ${data}`);
       if (/Username/.test(data)) {
         reject('Not authorized');
       }
     });
+    git.stderr.on('data', data => {
+      data = data.toString().trim();
+      const isCloning = /Cloning/.test(data);
+      console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${ isCloning ? chalk.gray('git') : chalk.red('git')}${chalk.yellow(']')}: ${data}`);
+    });
+
 
     git.on('close', code => {
       if (code === 0) {
@@ -650,6 +655,7 @@ function createGitTmpDir(): Promise<string> {
   return new Promise((resolve, reject) => {
     temp.mkdir('abstruse-git', (err, dirPath) => {
       if (err) {
+        console.error(err);
         reject(err);
       } else {
         resolve(dirPath);

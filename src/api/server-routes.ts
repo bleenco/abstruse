@@ -330,8 +330,12 @@ export function repositoryRoutes(): express.Router {
     let repository: Repository = null;
     getRepository(req.params.id).then(repo => {
       let accessToken = null;
-      if (repo.access_token && repo.access_token) {
-        accessToken = repo.access_token.token || null;
+      if (repo.access_token) {
+        if (repo.access_token.is_integration && repo.access_token.token) {
+          accessToken = `x-access-token:${repo.access_token.token}`;
+        } else {
+          accessToken = repo.access_token.token || null;
+        }
       }
       repository = {
         clone_url: repo.clone_url,
@@ -343,14 +347,14 @@ export function repositoryRoutes(): express.Router {
     })
       .then(hasAccess => {
         if (!hasAccess) {
-          res.status(200).json({ data: { read: false, config: false, parsedcfg: false } });
+          throw { data: { read: false, config: false, parsedcfg: false } };
         } else {
           return checkConfigPresence(repository);
         }
       })
       .then(configPresence => {
         if (!configPresence) {
-          res.status(200).json({ data: { read: true, config: false, parsedcfg: false } });
+          throw { data: { read: true, config: false, parsedcfg: false } };
         } else {
           return getRemoteParsedConfig(repository);
         }
@@ -361,7 +365,7 @@ export function repositoryRoutes(): express.Router {
         } else {
           res.status(200).json({ data: { read: true, config: true, parsedcfg: parsedCfg } });
         }
-      }).catch(err => res.status(200).json({ err: err }));
+      }).catch(err => res.status(200).json(err.data ? { data: err.data } : { err: err.message }));
   });
 
   router.get('/trigger-test-build/:id', (req: express.Request, res: express.Response) => {
@@ -379,14 +383,17 @@ export function repositoryRoutes(): express.Router {
             let accessToken = null;
 
             if (repository.access_token) {
-              accessToken = repository.access_token.token || null;
+              // if (repository.access_token.is_integration && repository.access_token.token) {
+              //   accessToken = `x-access-token:${repository.access_token.token}`;
+              // } else {
+                accessToken = repository.access_token.token || null;
+              // }
             }
-
+            var header = { };
             if (accessToken) {
-              url = url.replace('//', `//${accessToken}@`);
+              header['Authorization'] = `token ${accessToken}`;
             }
-
-            return getHttpJsonResponse(url);
+            return getHttpJsonResponse(url, { headers: header });
           } else if (repository.repository_provider === 'gitlab') {
             let url = repository.api_url + '/projects/' +
               repository.gitlab_id + '/repository/branches/master';
@@ -419,7 +426,11 @@ export function repositoryRoutes(): express.Router {
               '/repos/' + repository.full_name + '/branches/master';
             let accessToken = null;
             if (repository.access_token) {
-              accessToken = repository.access_token.token || null;
+              if (repository.access_token.is_integration && repository.access_token.token) {
+                accessToken = `x-access-token:${repository.access_token.token}`;
+              } else {
+                accessToken = repository.access_token.token || null;
+              }
             }
 
             if (accessToken) {
@@ -449,7 +460,11 @@ export function repositoryRoutes(): express.Router {
       .then(repo => {
         let accessToken = null;
         if (repo.access_token) {
-          accessToken = repo.access_token.token || null;
+          if (repo.access_token.is_integration && repo.access_token.token) {
+            accessToken = `x-access-token:${repo.access_token.token}`;
+          } else {
+            accessToken = repo.access_token.token || null;
+          }
         }
         repository = {
           clone_url: repo.clone_url,
@@ -482,7 +497,11 @@ export function repositoryRoutes(): express.Router {
 
           let accessToken = null;
           if (repository.access_token) {
-            accessToken = repository.access_token.token || null;
+            if (repository.access_token.is_integration && repository.access_token.token) {
+              accessToken = `x-access-token:${repository.access_token.token}`;
+            } else {
+              accessToken = repository.access_token.token || null;
+            }
           }
           repo = {
             clone_url: repository.clone_url,
@@ -494,10 +513,6 @@ export function repositoryRoutes(): express.Router {
             let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
               repository.default_branch;
             let accessToken = null;
-
-            if (repository.access_token) {
-              accessToken = repository.access_token.token || null;
-            }
 
             if (accessToken) {
               url = url.replace('//', `//${accessToken}@`);

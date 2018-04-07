@@ -96,7 +96,7 @@
                             </div>
                             <div class="form-field">
                               <label class="form-label">API URL</label>
-                              <input type="text" placeholder="https://api.github.com" name="api_url" [(ngModel)]="form.api_url" class="form-input">
+                              <input type="text" placeholder="https://api.github.com" name="api_url" [(ngModel)]="form.api_url" class="form-input" pattern="https?://(.*)">
                               <p class="helper">Set API URL for git repository provider. Example for GitHub (not GHE) is https://api.github.com</p>
                             </div>
                           </div>
@@ -126,7 +126,7 @@
                         <div class="form-field">
                           <app-selectbox [data]="accessTokensOptions" [(ngModel)]="form.access_tokens_id" name="access_tokens_id" ngDefaultControl></app-selectbox>
                           <p class="helper">
-                            If you cannot find access token that is suitable for this repository then create new one <a routerLink="/settings">here</a>.
+                            If you cannot find access token that is suitable for this repository then create new one <a routerLink="/user/{{userId}}">here</a>.
                           </p>
                         </div>
                         <input type="hidden" name="id" [(ngModel)]="form.id">

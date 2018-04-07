@@ -1,3 +1,4 @@
+import { getDateTime } from './utils';
 import { insertLog } from './db/log';
 import { Subject, Observable } from 'rxjs';
 import chalk from 'chalk';
@@ -40,8 +41,4 @@ function colorizeMessage(msg: LogMessageType): LogMessageType {
   }
 
   return msg;
-}
-
-function getDateTime(): string {
-  return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 }

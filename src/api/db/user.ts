@@ -13,6 +13,7 @@ export function getUser(id: number): Promise<any> {
           delete result.password;
           result.access_tokens = result.access_tokens.map(token => {
             delete token.token;
+            delete token.integration_key;
             return token;
           });
 

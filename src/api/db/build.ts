@@ -1,5 +1,9 @@
-import { Build, BuildRun, Job, JobRun } from './model';
+import { addMinutes, subMinutes } from 'date-fns';
+import { Build, BuildRun, Job, JobRun, Repository } from './model';
+import { updateAccessToken, verifyAccessToken, AccessTokenType } from './access-token';
+import { InstallationAuthorizationType } from '../ghe';
 import { getLastRun } from './job';
+import { logger, LogMessageType } from '../logger';
 
 export function getBuilds(
   limit: number,
@@ -119,25 +123,61 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           return run;
         });
 
-        if (build.repository.access_token && build.repository.access_token) {
-          build.repository.access_token = build.repository.access_token.token;
-        } else {
-          build.repository.access_token = null;
-        }
-
-        userId = parseInt(<any>userId, 10);
-        if (build.repository.permissions && build.repository.permissions.length) {
-          let index = build.repository.permissions.findIndex(p => p.users_id === userId);
-          if (index !== -1 && build.repository.permissions[index].permission) {
-            build.hasPermission = true;
+        return new Promise((resolve, reject) => {
+          userId = parseInt(<any>userId, 10);
+          if (build.repository.permissions && build.repository.permissions.length) {
+            let index = build.repository.permissions.findIndex(p => p.users_id === userId);
+            if (index !== -1 && build.repository.permissions[index].permission) {
+              build.hasPermission = true;
+            } else {
+              build.hasPermission = false;
+            }
           } else {
             build.hasPermission = false;
           }
-        } else {
-          build.hasPermission = false;
-        }
-
-        return build;
+          if (build.repository.access_token) {
+            const accessToken: AccessTokenType = build.repository.access_token;
+            if (build.repository.access_token.is_integration) {
+              let msg: LogMessageType = {
+                message: `[build]: verifying integration token ...`,
+                type: 'info',
+                notify: false
+              };
+              logger.next(msg);
+              verifyAccessToken(build.repository.api_url, accessToken).then((auth: InstallationAuthorizationType) => {
+                updateAccessToken(build.repository.access_token.id, auth.token, auth.expires_at).then(() => {
+                  build.repository.access_token = auth.token;
+                  // setting the expiration so if needed, we can quickly check if the token needs to be re-issued
+                  // later during the build process
+                  build.repository.expires_at = auth.expires_at;
+                  resolve(build);
+                }).catch((err: Error) => {
+                  let msg: LogMessageType = {
+                    message: `[build]: could not update integration token: ${err.message} ...`,
+                    type: 'error',
+                    notify: false
+                  };
+                  logger.next(msg);
+                  resolve(build);
+                });
+              }).catch((err: Error) => {
+                let msg: LogMessageType = {
+                  message: `[build]: could not verify integration token: ${err.message} ...`,
+                  type: 'error',
+                  notify: false
+                };
+                logger.next(msg);
+                reject(err);
+              });
+            } else {
+              build.repository.access_token = build.repository.access_token.token;
+              resolve(build);
+            }
+          } else {
+            build.repository.access_token = null;
+            resolve(build);
+          }
+        }).catch((err: Error) => (reject(err)));
       })
       .then(build => {
         new BuildRun()

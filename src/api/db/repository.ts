@@ -1,7 +1,9 @@
 import { Repository, Build } from './model';
-import { getHttpJsonResponse } from '../utils';
+import { verifyAccessToken } from './access-token';
 import { addRepositoryPermissionToEveryone } from './permission';
 import { URL } from 'url';
+
+
 
 export function getRepository(id: number, userId?: string): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -24,8 +26,19 @@ export function getRepository(id: number, userId?: string): Promise<any> {
         } else {
           repo.hasPermission = false;
         }
-
-        resolve(repo);
+        // if (typeof userId === 'undefined') {
+          verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
+            if (!repo.access_token) repo.access_token = {};
+            repo.access_token.token = auth.token;
+            repo.access_token.expires_at = auth.expires_at;
+            resolve(repo);
+          }).catch((err) => {
+            console.error(err);
+            reject(err);
+          });
+        // } else {
+          // resolve(repo);
+        // }
       })
       .catch(err => reject(err));
   });
@@ -91,10 +104,13 @@ export function getRepositoryOnly(id: number): Promise<any> {
       } else {
         repo = repo.toJSON();
 
-        repo.access_token = repo.access_token && repo.access_token.token ?
-          repo.access_token.token : null;
-
-        resolve(repo);
+        verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
+          repo.expires_at = auth.expires_at;
+          repo.access_token = auth.token;
+          resolve(repo);
+        }).catch((err) => {
+          reject(err);
+        });
       }
     }).catch(err => reject(err));
   });
@@ -151,7 +167,13 @@ export function getRepositoryByBuildId(buildId: number): Promise<any> {
       if (!repo) {
         reject();
       } else {
-        resolve(repo.toJSON());
+        verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
+          repo.expires_at = auth.expires_at;
+          repo.access_token = auth.token;
+          resolve(repo.toJSON());
+        }).catch((err) => {
+          reject(err);
+        });
       }
     });
   });
@@ -579,9 +601,15 @@ export function synchronizeGitLabPullRequest(data: any): Promise<any> {
 }
 
 function generateGitHubRepositoryData(data: any): any {
-  let url = new URL(data.repository.clone_url);
-  let apiUrl = url.protocol + '//api.' + url.host;
-
+  const enterpriseCheck = /(\/api\/v\d)\/repos/i;
+  let url = new URL(data.repository.url);
+  let apiUrl = url.origin;
+  if (enterpriseCheck.test(url.pathname)) {
+    const matches = enterpriseCheck.exec(url.pathname);
+    if (matches && matches[1]) {
+      apiUrl += matches[1];
+    }
+  }
   return {
     github_id: data.repository.id,
     clone_url: data.repository.clone_url,

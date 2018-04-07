@@ -228,6 +228,9 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
     this.fetching = true;
     this.api.getRepositoryBuilds(this.id, this.limit, this.offset, this.userId || null).subscribe(builds => {
+      if (!this.repo) {
+        this.repo = {};
+      }
       if (!this.repo.builds) {
         this.repo.builds = [];
       }

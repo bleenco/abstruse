@@ -1,6 +1,10 @@
 import * as knex from 'knex';
 import { Bookshelf } from './config';
 
+function checkExists(exists) {
+  return Array.isArray(exists) ? exists[exists.length - 1] : exists;
+}
+
 export function create(): Promise<null> {
   let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
 
@@ -18,10 +22,81 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.string('description').notNullable();
       t.string('token').notNullable();
+      t.boolean('is_integration').notNullable().defaultTo(false);
+      t.string('integration_id').nullable();
+      t.string('installation_id').nullable();
+      t.string('integration_key').nullable();
+      t.date('expires_at').nullable();
       t.integer('users_id').notNullable();
       t.foreign('users_id').references('users.id');
       t.timestamps();
     }))
+    .then(() => {
+      schema = Bookshelf.knex.schema;
+      schema.hasColumn('access_tokens', 'is_integration').then((exists) => {
+        if (!checkExists(exists)) {
+          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
+            t.boolean('is_integration').notNullable().defaultTo(false);
+          });
+        }
+      })
+    })
+    .then(() => {
+      schema = Bookshelf.knex.schema;
+      schema.hasColumn('access_tokens', 'integration_id').then((exists) => {
+        if (!checkExists(exists)) {
+          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
+            try {
+              t.string('integration_id').nullable();
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
+      })
+    })
+    .then(() => {
+      schema = Bookshelf.knex.schema;
+      schema.hasColumn('access_tokens', 'installation_id').then((exists) => {
+        if (!checkExists(exists)) {
+          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
+            try {
+              t.string('installation_id').nullable();
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
+      })
+    })
+    .then(() => {
+      schema = Bookshelf.knex.schema;
+      schema.hasColumn('access_tokens', 'integration_key').then((exists) => {
+        if (!checkExists(exists)) {
+          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
+            try {
+              t.string('integration_key').nullable();
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
+      })
+    })
+    .then(() => {
+      schema = Bookshelf.knex.schema;
+      schema.hasColumn('access_tokens', 'expires_at').then((exists) => {
+        if (!checkExists(exists)) {
+          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
+            try {
+              t.date('expires_at').nullable();
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
+      })
+    })
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
@@ -120,7 +195,7 @@ export function create(): Promise<null> {
     .then(() => resolve())
     .catch(err => {
       console.error(err);
-      reject();
+      reject(err);
     });
   });
 }

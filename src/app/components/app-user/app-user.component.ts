@@ -9,6 +9,9 @@ import { switchMap, delay } from 'rxjs/operators';
 export interface IAccessToken {
   token: string;
   description: string;
+  is_integration: boolean;
+  integration_key: string;
+  integration_id: number;
   users_id: number;
 }
 
@@ -53,7 +56,7 @@ export class AppUserComponent implements OnInit {
   ngOnInit() {
     this.tab = 'profile';
     this.loggedUser = this.auth.getData();
-    this.token = { token: '', description: '', users_id: this.route.snapshot.params.id };
+    this.token = { token: '', description: '', is_integration: false, integration_key: '', integration_id: null, users_id: this.route.snapshot.params.id };
 
     this.fetchUser();
   }

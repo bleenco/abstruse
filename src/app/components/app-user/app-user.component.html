@@ -149,18 +149,32 @@
                       <i class="ion ion-alert"></i>
                     </div>
                     <div class="column is-11">
-                      <p>Treat your access tokens with same respect as passwords.</p>
-                      <p>Once you save access token you cannot see it again.</p>
+                      <p>Treat your access tokens with same respect as your passwords.</p>
+                      <p>Once you save the access token you cannot see it again.</p>
                     </div>
                   </div>
+                </div>
+                <div class="form-field">
+                  <label class="form-label is-for-toggle">GitHub App</label>
+                  <app-toggle name="is_integration" [(ngModel)]="token.is_integration"></app-toggle>
+                </div>
+                <div *ngIf="token.is_integration" class="form-field">
+                  <label class="form-label is-for-toggle">GitHub App ID</label>
+                  <input class="form-input" type="text" placeholder="GitHub App ID" name="integration_id" [required]="token.is_integration" [(ngModel)]="token.integration_id">
+                </div>
+                <div *ngIf="token.is_integration" class="form-field">
+                  <label class="form-label is-for-toggle">GitHub App Installation ID</label>
+                  <input class="form-input" type="text" placeholder="Installation ID" name="installation_id" [required]="token.is_integration" [(ngModel)]="token.installation_id">
                 </div>
                 <div class="form-field">
                   <label class="form-label">Token Description</label>
                   <input class="form-input" type="text" placeholder="Access Token Description" name="token_description" required [(ngModel)]="token.description">
                 </div>
                 <div class="form-field">
-                  <label class="form-label">Token</label>
-                  <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
+                  <label *ngIf="!token.is_integration" class="form-label">Token</label>
+                  <label *ngIf="token.is_integration" class="form-label">App Key</label>
+                  <textarea *ngIf="token.is_integration" class="form-input" placeholder="GitHub App Private Key" name="integration_key" required [(ngModel)]="token.integration_key" rows=8></textarea>
+                  <input *ngIf="!token.is_integration" class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
                 </div>
                 <div class="form-field">
                   <button type="submit" name="add-token" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>

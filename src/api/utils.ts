@@ -21,6 +21,10 @@ export interface JobProcess {
   debug?: boolean;
 }
 
+export function getDateTime(): string {
+  return new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
+}
+
 export function getAbstruseVersion(): string {
   try {
     let pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
@@ -47,16 +51,15 @@ export function generateRandomId(): string {
   return Math.random().toString(36).substring(7);
 }
 
-export function getHttpJsonResponse(url: string): Promise<any> {
+export function getHttpJsonResponse(url: string, options?: object): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
-      url: url,
-      headers: {
-        'User-Agent': 'request'
-      }
+    let _options = options || {};
+    _options['url'] = url;
+    _options['headers'] = options['headers'] || {
+      'User-Agent': 'request',
     };
 
-    request(options, (err, resp, body) => {
+    request(_options, (err, resp, body) => {
       if (err) {
         reject(err);
       } else {
