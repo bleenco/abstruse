@@ -85,6 +85,11 @@ describe('Api Server Routes Unit Tests', () => {
         expect(repo['data']['full_name']).to.deep.equal('jkuri/d3-bundle');
       });
     });
+    it(`get repository should not return access token data`, () => {
+      return sendGetRequest({}, 'api/repositories/id/2/1').then(repo => {
+        expect(repo['data']).to.not.include('access_token');
+      });
+    });
 
     it(`get repository should not include access token`, () => {
       return sendGetRequest({}, 'api/repositories/id/2/1').then((repo: any) => {
