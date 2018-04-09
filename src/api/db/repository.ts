@@ -28,7 +28,9 @@ export function getRepository(id: number, userId?: string): Promise<any> {
         }
         // if (typeof userId === 'undefined') {
           verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
-            if (!repo.access_token) repo.access_token = {};
+            if (!repo.access_token) {
+              repo.access_token = {};
+            }
             repo.access_token.token = auth.token;
             repo.access_token.expires_at = auth.expires_at;
             resolve(repo);
@@ -106,7 +108,7 @@ export function getRepositoryOnly(id: number): Promise<any> {
 
         verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
           repo.expires_at = auth.expires_at;
-          repo.access_token = auth.token;
+          repo.access_token = repo.access_token.is_integration ? `x-access-token:${auth.token}` : auth.token;
           resolve(repo);
         }).catch((err) => {
           reject(err);
@@ -601,7 +603,7 @@ export function synchronizeGitLabPullRequest(data: any): Promise<any> {
 }
 
 function generateGitHubRepositoryData(data: any): any {
-  const enterpriseCheck = /(\/api\/v\d)\/repos/i;
+  const enterpriseCheck = /(\/api\/v\d+)\/repos/i;
   let url = new URL(data.repository.url);
   let apiUrl = url.origin;
   if (enterpriseCheck.test(url.pathname)) {
