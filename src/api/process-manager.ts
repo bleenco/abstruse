@@ -96,8 +96,8 @@ function execJob(proc: JobProcess): Observable<any> {
   }
 
   let buildProcesses = processes.filter(p => p.build_id === proc.build_id);
-  let testProcesses = buildProcesses.filter(proc => {
-    return proc.env.findIndex(e => e === 'DEPLOY') === -1;
+  let testProcesses = buildProcesses.filter(p => {
+    return p.env.findIndex(e => e === 'DEPLOY') === -1;
   });
   let queuedOrRunning = testProcesses.filter(p => {
     return p.status === 'queued' || p.status === 'running';
@@ -179,14 +179,14 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
         let data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
         return dbJobRuns.updateJobRun(data)
           .then(() => {
-            let data = {
+            let runData = {
               type: 'process',
               build_id: proc.build_id,
               job_id: proc.job_id,
               data: 'job started',
               additionalData: time.getTime()
             };
-            jobEvents.next(data);
+            jobEvents.next(runData);
           });
       })
       .catch(err => {
@@ -396,7 +396,7 @@ export function debugJob(jobId: number, debug: boolean): Promise<void> {
 }
 
 export function startBuild(data: any, buildConfig?: any): Promise<any> {
-  let config: JobsAndEnv[];
+  let jobConfig: JobsAndEnv[];
   let repoId = data.repositories_id;
   let pr = null;
   let sha = null;
@@ -458,8 +458,8 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
         return getRemoteParsedConfig(repo);
       }
     })
-    .then(parsedConfig => config = parsedConfig)
-    .then(() => data.parsed_config = JSON.stringify(config))
+    .then(parsedConfig => jobConfig = parsedConfig)
+    .then(() => data.parsed_config = JSON.stringify(jobConfig))
     .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
     .then(() => insertBuild(data))
     .then(build => {
@@ -473,7 +473,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(bdata => buildData = bdata)
     .then(() => sendPendingStatus(buildData, buildData.id))
     .then(() => {
-      return Promise.all(config.map(cfg => {
+      return Promise.all(jobConfig.map(cfg => {
         let dataJob = null;
         return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
           .then(job => dataJob = job)
@@ -728,10 +728,10 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
           });
         })
         .catch(err => {
-          let msg: LogMessageType = {
+          let jobMsg: LogMessageType = {
             message: `[error]: ${err}`, type: 'error', notify: false
           };
-          logger.next(msg);
+          logger.next(jobMsg);
         });
     });
 }

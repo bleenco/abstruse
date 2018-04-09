@@ -383,17 +383,12 @@ export function repositoryRoutes(): express.Router {
             let accessToken = null;
 
             if (repository.access_token) {
-              // if (repository.access_token.is_integration && repository.access_token.token) {
-              //   accessToken = `x-access-token:${repository.access_token.token}`;
-              // } else {
                 accessToken = repository.access_token.token || null;
-              // }
             }
-            var header = { };
-            if (accessToken) {
-              header['Authorization'] = `token ${accessToken}`;
-            }
-            return getHttpJsonResponse(url, { headers: header });
+            const header = {
+              Authorization: `token ${accessToken}`,
+             };
+            return getHttpJsonResponse(url, accessToken ? { headers: header } : null);
           } else if (repository.repository_provider === 'gitlab') {
             let url = repository.api_url + '/projects/' +
               repository.gitlab_id + '/repository/branches/master';
@@ -510,9 +505,7 @@ export function repositoryRoutes(): express.Router {
           };
 
           if (repository.repository_provider === 'github') {
-            let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
-              repository.default_branch;
-            let accessToken = null;
+            let url = `${repository.api_url}/repos/${repository.full_name}/commits/${repository.default_branch}`;
 
             if (accessToken) {
               url = url.replace('//', `//${accessToken}@`);
@@ -523,14 +516,14 @@ export function repositoryRoutes(): express.Router {
         })
         .then(load => payload = load)
         .then(() => parseConfigFromRaw(repo, req.body.config))
-        .then(config => {
+        .then(cfg => {
           let buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: req.body.id
           };
 
-          return startBuild(buildData, config);
+          return startBuild(buildData, cfg);
         })
         .then(() => res.status(200).json({ data: true }))
         .catch(err => res.status(200).json({ data: false }));
@@ -667,8 +660,8 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/docker-image', (req: express.Request, res: express.Response) => {
-    imageExists('abstruse').subscribe(exists => {
-      return res.status(200).json({ data: exists });
+    imageExists('abstruse').subscribe(baseImageExists => {
+      return res.status(200).json({ data: baseImageExists });
     });
   });
 
@@ -776,9 +769,9 @@ export function keysRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/public`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
-    if (config.publicKey) {
-      let keyPath = config.publicKey;
+    let cfg: any = getConfig();
+    if (cfg.publicKey) {
+      let keyPath = cfg.publicKey;
 
       return res.status(200).json({ key: readFileSync(getFilePath(keyPath)).toString() });
     }
@@ -793,9 +786,9 @@ export function configRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/demo`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
+    let cfg: any = getConfig();
 
-    return res.status(200).json({ data: config.demo });
+    return res.status(200).json({ data: cfg.demo });
   });
 
   return router;

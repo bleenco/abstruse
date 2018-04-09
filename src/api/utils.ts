@@ -52,7 +52,7 @@ export function generateRandomId(): string {
 }
 
 export function getHttpJsonResponse(url: string, options?: object): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolveResponse, reject) => {
     let _options = options || {};
     _options['url'] = url;
     _options['headers'] = options['headers'] || {
@@ -63,7 +63,7 @@ export function getHttpJsonResponse(url: string, options?: object): Promise<any>
       if (err) {
         reject(err);
       } else {
-        resolve(JSON.parse(body));
+        resolveResponse(JSON.parse(body));
       }
     });
   });
@@ -111,7 +111,7 @@ export function generateBadgeHtml(status: string): string {
 }
 
 export function getBitBucketAccessToken(clientCredentials: string): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolveResponse, reject) => {
     let options = {
       url: `https://${clientCredentials}@bitbucket.org/site/oauth2/access_token`,
       method: 'POST',
@@ -123,7 +123,7 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
         reject(err);
       } else {
         if (response.statusCode < 300 && response.statusCode >= 200) {
-          resolve(JSON.parse(body));
+          resolveResponse(JSON.parse(body));
         } else {
           reject({
             statusCode: response.statusCode,
