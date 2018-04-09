@@ -15,18 +15,22 @@ export function getRepository(id: number, userId?: string): Promise<any> {
         }
 
         repo = repo.toJSON();
-        let userid = Number(userId);
-        if (repo.permissions && repo.permissions.length) {
-          let index = repo.permissions.findIndex(p => p.users_id === userid);
-          if (index !== -1 && repo.permissions[index].permission) {
-            repo.hasPermission = true;
+        if (userId !== null && typeof userId !== 'undefined') {
+          let userid = Number(userId);
+          if (repo.permissions && repo.permissions.length) {
+            let index = repo.permissions.findIndex(p => p.users_id === userid);
+            if (index !== -1 && repo.permissions[index].permission) {
+              repo.hasPermission = true;
+            } else {
+              repo.hasPermission = false;
+            }
           } else {
             repo.hasPermission = false;
           }
         } else {
           repo.hasPermission = false;
         }
-        // if (typeof userId === 'undefined') {
+        if (typeof userId === 'undefined') {
           verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
             if (!repo.access_token) {
               repo.access_token = {};
@@ -38,9 +42,9 @@ export function getRepository(id: number, userId?: string): Promise<any> {
             console.error(err);
             reject(err);
           });
-        // } else {
-          // resolve(repo);
-        // }
+        } else {
+          resolve(repo);
+        }
       })
       .catch(err => reject(err));
   });

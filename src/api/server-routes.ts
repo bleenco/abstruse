@@ -286,7 +286,7 @@ export function repositoryRoutes(): express.Router {
         return res.status(200).json({ data: repo });
       }).catch(err => res.status(200).json({ status: false }));
     } else {
-      getRepository(req.params.id).then(repo => {
+      getRepository(req.params.id, null).then(repo => {
         delete repo.access_token;
         return res.status(200).json({ data: repo });
       }).catch(err => res.status(200).json({ status: false }));

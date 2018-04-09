@@ -14,7 +14,8 @@ export interface AccessTokenType {
 }
 
 export function verifyAccessToken(api: string, token: AccessTokenType): Promise<InstallationAuthorizationType> {
-  if (typeof token !== 'undefined' &&
+  if (token !== null &&
+    typeof token !== 'undefined' &&
     typeof token.integration_key !== 'undefined' &&
     typeof token.integration_id !== 'undefined' &&
     token.is_integration) {
