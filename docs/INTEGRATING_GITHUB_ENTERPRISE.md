@@ -39,13 +39,31 @@ Your app can now be created.
 
 #### 3. Installing the GitHub App
 
-
+Locate the app you just created and install it to your organization.
 
 
 #### 4. Initiating Abstruse repositories
 
 Your new code repositories will automatically appear in Abstruse
-after the first commit or pull request.
+after the first commit or pull request. 
+
+You must configure Abstruse to use the public key assigned to your GitHub app. To do this, you will need to download the public key:
+
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/12008400/38450169-64a603aa-39e7-11e8-8084-0f7bb08509f4.png" width="700">
+</p>
+
+Take note of the `ID` specified, you will need this later. Note that the `ID` shown here is not the same as the `Installation ID` - though they are frequently the same.
+
+Switch the `GitHub App` button on, and fill in the `App ID` field using the `ID` shown when you downloaded the private key. The `Installation ID` is the index of the app in the list of installed apps. That is, if Abstruse is the first app listed in your organization, the `Installation ID` is 1. If it is the second app, it is 2, and so on.
+
+Finally, paste the contents from the private key file into the `App Key` input and save the token.
+<p align="left">
+  <img src="https://user-images.githubusercontent.com/12008400/38450144-f7a8d2a0-39e6-11e8-8e0e-3684f3e6d243.png" width="700">
+</p>
+
+Now that you have saved the token, you can go ahead and configure your repository to use it.
+
 
 **Note: Please make sure your local repository includes .abstruse.yml file.**
 
