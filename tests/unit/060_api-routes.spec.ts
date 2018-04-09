@@ -73,10 +73,22 @@ describe('Api Server Routes Unit Tests', () => {
       });
     });
 
+    it(`get repository should not include access token`, () => {
+      return sendGetRequest({}, 'api/repositories/id/2').then((repo: any) => {
+        expect(repo.data).to.not.have.property('access_token');
+      });
+    });
+
     it(`get repository should return repository data`, () => {
       return sendGetRequest({}, 'api/repositories/id/2/1').then(repo => {
         expect(repo['data']['hasPermission']).to.equal(true);
         expect(repo['data']['full_name']).to.deep.equal('jkuri/d3-bundle');
+      });
+    });
+
+    it(`get repository should not include access token`, () => {
+      return sendGetRequest({}, 'api/repositories/id/2/1').then((repo: any) => {
+        expect(repo.data).to.not.have.property('access_token');
       });
     });
 
