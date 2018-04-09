@@ -123,7 +123,7 @@ export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEn
       .then(files => repository.file_tree = files)
       .then(() => {
         if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          let err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
+          let err = new Error(`Repository doesn't contain '.abstruse.yml' configuration file.`);
           return Promise.reject(err);
         } else {
           return Promise.resolve();
@@ -568,19 +568,28 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 
 function spawnGit(args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
+    let stderr = [];
     let git = spawn('git', args, { detached: true });
 
     git.stdout.on('data', data => {
       data = data.toString();
-      console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.gray('git')}${chalk.yellow(']')}: ${data}`);
+      console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.blueBright('git')}${chalk.yellow(']')}: ${data}`);
       if (/Username/.test(data)) {
         reject('Not authorized');
       }
     });
     git.stderr.on('data', data => {
       data = data.toString().trim();
-      const isCloning = /Cloning/.test(data);
-      console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${ isCloning ? chalk.gray('git') : chalk.red('git')}${chalk.yellow(']')}: ${data}`);
+      const recognized = /^(cloning|from|note|head)/i.test(data);
+      const isNote = /^note:/i.test(data);
+      if (recognized) {
+        if (isNote) {
+          data = data.substr(0, data.indexOf('\n'));
+        }
+        console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.blueBright('git')}${chalk.yellow(']')}: ${data}`);
+      } else {
+        stderr.push(data);
+      }
     });
 
 
@@ -588,6 +597,8 @@ function spawnGit(args: string[]): Promise<void> {
       if (code === 0) {
         resolve();
       } else {
+        let errorOut = stderr.join('');
+        console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.red('git')}${chalk.yellow(']')}: ${errorOut.replace('\n', '\n\t')}`);
         reject(code);
       }
     });
