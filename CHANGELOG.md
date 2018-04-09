@@ -1,3 +1,13 @@
+<a name="1.5.4"></a>
+## [1.5.4](https://github.com/bleenco/abstruse/compare/v1.5.3...v1.5.4) (2018-04-09)
+
+
+### Bug Fixes
+
+* **security:** prevent displaying access token in API responses ([b30e56d](https://github.com/bleenco/abstruse/commit/b30e56d))
+
+
+
 <a name="1.5.3"></a>
 ## [1.5.3](https://github.com/bleenco/abstruse/compare/v1.5.2...v1.5.3) (2018-04-05)
 
