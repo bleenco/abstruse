@@ -31,15 +31,6 @@ describe('Images Component', () => {
       .createComponent(AppImagesComponent);
   });
 
-  it('should expect loading to be false', () => {
-    expect(fixture.componentInstance.loading).toBe(true);
-  });
-
-  it('should expect loading to be true', () => {
-    fixture.detectChanges();
-    expect(fixture.componentInstance.loading).toBe(true);
-  });
-
   it('should see h1 contains text Docker Build Images', () => {
     fixture.detectChanges();
     const de = fixture.debugElement.query(By.css('h1'));
