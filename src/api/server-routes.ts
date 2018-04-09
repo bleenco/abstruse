@@ -282,10 +282,12 @@ export function repositoryRoutes(): express.Router {
   router.get('/id/:id/:userid?', (req: express.Request, res: express.Response) => {
     if (req.params.userid) {
       getRepository(req.params.id, req.params.userid).then(repo => {
+        delete repo.access_token;
         return res.status(200).json({ data: repo });
       }).catch(err => res.status(200).json({ status: false }));
     } else {
       getRepository(req.params.id).then(repo => {
+        delete repo.access_token;
         return res.status(200).json({ data: repo });
       }).catch(err => res.status(200).json({ status: false }));
     }
