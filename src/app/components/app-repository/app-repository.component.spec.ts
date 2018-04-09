@@ -147,6 +147,27 @@ describe('Repository Component', () => {
       const de = fixture.debugElement.query(By.css('h2'));
       expect(de.nativeElement.textContent).toBe('Repository Settings');
     });
+    it('should not be able to save settings after setting a bad api url', () => {
+      fixture.detectChanges();
+      fixture.componentInstance.form.api_url = 'api.github.com';
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
+      expect(saveElement.attributes['disabled']).toBe('disabled');
+    });
+    it('should be able to save settings after setting a valid github url', () => {
+      fixture.detectChanges();
+      fixture.componentInstance.form.api_url = 'http://api.github.com';
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
+      expect(saveElement.attributes['disabled']).toBe('');
+    });
+    it('should be able to save settings after setting a valid github enterprise url', () => {
+      fixture.detectChanges();
+      fixture.componentInstance.form.api_url = 'https://github.enterprise.com/api/v3';
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
+      expect(saveElement.attributes['disabled']).toBe('');
+    });
   });
 
 });
