@@ -138,28 +138,12 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           if (build.repository.access_token) {
             const accessToken: AccessTokenType = build.repository.access_token;
             if (build.repository.access_token.is_integration) {
-              // let msg: LogMessageType = {
-              //   message: `[build]: verifying integration token ...`,
-              //   type: 'info',
-              //   notify: false
-              // };
-              // logger.next(msg);
               verifyAccessToken(build.repository.api_url, accessToken).then((auth: InstallationAuthorizationType) => {
-                updateAccessToken(build.repository.access_token.id, auth.token, auth.expires_at).then(() => {
-                  build.repository.access_token = auth.token;
-                  // setting the expiration so if needed, we can quickly check if the token needs to be re-issued
-                  // later during the build process
-                  build.repository.expires_at = auth.expires_at;
-                  resolveBuild(build);
-                }).catch((err: Error) => {
-                  let integrationMessage: LogMessageType = {
-                    message: `[build]: could not update integration token: ${err.message} ...`,
-                    type: 'error',
-                    notify: false
-                  };
-                  logger.next(integrationMessage);
-                  resolveBuild(build);
-                });
+                build.repository.access_token = auth.token;
+                // setting the expiration so if needed, we can quickly check if the token needs to be re-issued
+                // later during the build process
+                build.repository.expires_at = auth.expires_at;
+                resolveBuild(build);
               }).catch((err: Error) => {
                 let verifyMessage: LogMessageType = {
                   message: `[build]: could not verify integration token: ${err.message} ...`,

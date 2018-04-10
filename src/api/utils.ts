@@ -63,7 +63,11 @@ export function getHttpJsonResponse(url: string, options?: object): Promise<any>
       if (err) {
         reject(err);
       } else {
-        resolveResponse(JSON.parse(body));
+        try {
+          resolveResponse(JSON.parse(body));
+        } catch (e) {
+          reject({ error: e, body: body, status: resp.statusCode, message: e.message });
+        }
       }
     });
   });

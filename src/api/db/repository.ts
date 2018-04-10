@@ -112,7 +112,11 @@ export function getRepositoryOnly(id: number): Promise<any> {
 
         verifyAccessToken(repo.api_url, repo.access_token).then((auth) => {
           repo.expires_at = auth.expires_at;
-          repo.access_token = repo.access_token.is_integration ? `x-access-token:${auth.token}` : auth.token;
+          if (repo.access_token) {
+            repo.access_token = repo.access_token.is_integration ? `x-access-token:${auth.token}` : auth.token;
+          } else {
+            repo.access_token = null;
+          }
           resolve(repo);
         }).catch((err) => {
           reject(err);
@@ -608,7 +612,7 @@ export function synchronizeGitLabPullRequest(data: any): Promise<any> {
 
 function generateGitHubRepositoryData(data: any): any {
   const enterpriseCheck = /(\/api\/v\d+)\/repos/i;
-  let url = new URL(data.repository.url);
+  let url = new URL(data.repository.hooks_url);
   let apiUrl = url.origin;
   if (enterpriseCheck.test(url.pathname)) {
     const matches = enterpriseCheck.exec(url.pathname);

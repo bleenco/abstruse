@@ -117,8 +117,8 @@ export function generateKeys(): Observable<string> {
               observer.next('[encrypt]: RSA public and private key successfully generated');
               observer.complete();
             })
-            .catch(err => {
-              observer.error(err);
+            .catch(writeErr => {
+              observer.error(writeErr);
               observer.complete();
             });
         }
