@@ -26,7 +26,14 @@ export function verifyAccessToken(api: string, token: AccessTokenType): Promise<
       installation: token.installation_id,
       expires_at: token.expires_at,
     };
-    return authorization(api, config);
+    return authorization(api, config).then((auth: InstallationAuthorizationType) => {
+      return updateAccessToken(token.id, auth.token, auth.expires_at).then(() => {
+        return auth;
+      }).catch((e) => {
+        console.error('could not update token', e);
+        return auth;
+      });
+    });
   }
   const authorizationType: InstallationAuthorizationType = {
     token: token ? token.token : null,

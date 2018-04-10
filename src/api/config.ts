@@ -570,6 +570,7 @@ function spawnGit(args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
     let stderr = [];
     let git = spawn('git', args, { detached: true });
+    console.log(`[${getDateTime()}]: ${chalk.yellow('[')}${chalk.blueBright('git')}${chalk.yellow(']')}: git ${args.join(' ')}`);
 
     git.stdout.on('data', data => {
       data = data.toString();

@@ -28,7 +28,7 @@
     "ng": "ng",
     "build": "webpack --config webpack.api.js",
     "dev": "tsc-watch -p src/tsconfig.api.json --onSuccess \"node ./dist/api/index.js\"",
-    "start": "ng serve",
+    "start": "ng serve --host 0.0.0.0 --disableHostCheck",
     "build:app": "ng build --prod --output-path dist/app",
     "test": "node ./tests/run_unit.js",
     "test:karma": "ng test",

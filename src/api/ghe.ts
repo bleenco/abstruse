@@ -53,7 +53,10 @@ export function authorization(api: string, appConfig: TokenConfig): Promise<Inst
       }).then((auth: RawInstallationAuthorizationType) => ({
         token: auth.token,
         expires_at: parse(auth.expires_at),
-      }))
+      })).catch((e) => {
+        console.log(e);
+        throw e;
+      })
     ));
   }
   return Promise.resolve({

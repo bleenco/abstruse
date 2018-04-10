@@ -148,25 +148,43 @@ describe('Repository Component', () => {
       expect(de.nativeElement.textContent).toBe('Repository Settings');
     });
     it('should not be able to save settings after setting a bad api url', () => {
+      const api = 'api.github.com';
       fixture.detectChanges();
-      fixture.componentInstance.form.api_url = 'api.github.com';
+      fixture.componentInstance.tab = 'settings';
       fixture.detectChanges();
-      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
-      expect(saveElement.attributes['disabled']).toBe('disabled');
+      let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
+      urlInput.value = api;
+      fixture.componentInstance.form.api_url = api;
+      urlInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
+      expect(saveElement.disabled).toBe(true);
     });
     it('should be able to save settings after setting a valid github url', () => {
+      const api = 'http://api.github.com';
       fixture.detectChanges();
-      fixture.componentInstance.form.api_url = 'http://api.github.com';
+      fixture.componentInstance.tab = 'settings';
       fixture.detectChanges();
-      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
-      expect(saveElement.attributes['disabled']).toBe('');
+      let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
+      urlInput.value = api;
+      fixture.componentInstance.form.api_url = api;
+      urlInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
+      expect(saveElement.disabled).toBe(false);
     });
     it('should be able to save settings after setting a valid github enterprise url', () => {
+      const api = 'https://github.enterprise.com/api/v3';
       fixture.detectChanges();
-      fixture.componentInstance.form.api_url = 'https://github.enterprise.com/api/v3';
+      fixture.componentInstance.tab = 'settings';
       fixture.detectChanges();
-      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]'));
-      expect(saveElement.attributes['disabled']).toBe('');
+      let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
+      urlInput.value = api;
+      fixture.componentInstance.form.api_url = api;
+      urlInput.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
+      expect(saveElement.disabled).toBe(false);
     });
   });
 

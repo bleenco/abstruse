@@ -135,6 +135,21 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
         let jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
         let idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 
+        // GHE app tokens expire, so if the repository uses an app
+        // we need to make sure we update the token, or the job will fail
+        // because git can't clone the repo
+        if (repository.access_token
+          && repository.access_token.is_integration
+          && proc.commands) {
+            const re = /x-access-token:(.*)@/gi;
+            proc.commands = proc.commands.map((command) => {
+              if (command && command.command && command.type === 'git') {
+                command.command = command.command.replace(re, `x-access-token:${repository.access_token.token}@`);
+              }
+              return command;
+            });
+        }
+
         buildSub[proc.job_id] =
           startBuildProcess(proc, envs, jobTimeout, idleTimeout)
             .subscribe(event => {

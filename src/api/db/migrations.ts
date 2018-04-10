@@ -1,9 +1,7 @@
 import * as knex from 'knex';
+import chalk from 'chalk';
 import { Bookshelf } from './config';
-
-function checkExists(exists) {
-  return Array.isArray(exists) ? exists[exists.length - 1] : exists;
-}
+import { logger, LogMessageType } from '../logger';
 
 export function create(): Promise<null> {
   let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
@@ -25,78 +23,12 @@ export function create(): Promise<null> {
       t.boolean('is_integration').notNullable().defaultTo(false);
       t.string('integration_id').nullable();
       t.string('installation_id').nullable();
-      t.string('integration_key').nullable();
+      t.text('integration_key').nullable();
       t.date('expires_at').nullable();
       t.integer('users_id').notNullable();
       t.foreign('users_id').references('users.id');
       t.timestamps();
     }))
-    .then(() => {
-      schema = Bookshelf.knex.schema;
-      schema.hasColumn('access_tokens', 'is_integration').then((exists) => {
-        if (!checkExists(exists)) {
-          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
-            t.boolean('is_integration').notNullable().defaultTo(false);
-          });
-        }
-      })
-    })
-    .then(() => {
-      schema = Bookshelf.knex.schema;
-      schema.hasColumn('access_tokens', 'integration_id').then((exists) => {
-        if (!checkExists(exists)) {
-          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
-            try {
-              t.string('integration_id').nullable();
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
-      })
-    })
-    .then(() => {
-      schema = Bookshelf.knex.schema;
-      schema.hasColumn('access_tokens', 'installation_id').then((exists) => {
-        if (!checkExists(exists)) {
-          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
-            try {
-              t.string('installation_id').nullable();
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
-      })
-    })
-    .then(() => {
-      schema = Bookshelf.knex.schema;
-      schema.hasColumn('access_tokens', 'integration_key').then((exists) => {
-        if (!checkExists(exists)) {
-          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
-            try {
-              t.string('integration_key').nullable();
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
-      })
-    })
-    .then(() => {
-      schema = Bookshelf.knex.schema;
-      schema.hasColumn('access_tokens', 'expires_at').then((exists) => {
-        if (!checkExists(exists)) {
-          schema.table('access_tokens', (t: knex.AlterTableBuilder) => {
-            try {
-              t.date('expires_at').nullable();
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
-      })
-    })
     .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
@@ -198,6 +130,82 @@ export function create(): Promise<null> {
       reject(err);
     });
   });
+}
+
+interface ColumnMigration {
+  column: string;
+  migrate: (t: knex.AlterTableBuilder) => void;
+  exists: boolean;
+}
+
+function enterpriseMigration(): Promise<null> {
+  let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
+  const tableName = 'access_tokens';
+  return new Promise((resolve, reject) => {
+    const columns: ColumnMigration[] = [
+      {
+        column: 'is_integration',
+        migrate: (t: knex.AlterTableBuilder) => { t.boolean('is_integration').notNullable().defaultTo(false); },
+        exists: true,
+      },
+      {
+        column: 'integration_id',
+        migrate: (t: knex.AlterTableBuilder) => { t.string('integration_id').nullable(); },
+        exists: true,
+      },
+      {
+        column: 'installation_id',
+        migrate: (t: knex.AlterTableBuilder) => { t.string('installation_id').nullable(); },
+        exists: true,
+      },
+      {
+        column: 'integration_key',
+        migrate: (t: knex.AlterTableBuilder) => { t.text('integration_key').nullable(); },
+        exists: true,
+      },
+      {
+        column: 'expires_at',
+        migrate: (t: knex.AlterTableBuilder) => { t.date('expires_at').nullable(); },
+        exists: true,
+      },
+    ];
+    // hasColumn is ridiculously buggy
+    // for whatever reason it seems to return the result of all previous calls to hasColumn
+    // in each then statement, so you get an array
+    // Definitely does not work as expected
+    // but this "fixes" it...
+    const checks = columns.map((migration) => (
+      schema.hasColumn(tableName, migration.column)
+    ));
+    schema.then((hasColumns: boolean[]) => {
+
+      const todo: ColumnMigration[] = hasColumns.map((exists, index) => {
+        const columnMigration: ColumnMigration = columns[index];
+        columnMigration.exists = exists;
+        return columnMigration;
+      }).filter((columnMigration: ColumnMigration) => (!columnMigration.exists));
+      const alterSchema: knex.SchemaBuilder = Bookshelf.knex.schema;
+      alterSchema.table(tableName, (t: knex.AlterTableBuilder) => {
+        todo.map((migration: ColumnMigration) => {
+          let msg: LogMessageType = {
+            message: `[migration]: making migration for ${chalk.yellow(migration.column)} ...`,
+            type: 'info',
+            notify: false
+          };
+          logger.next(msg);
+          migration.migrate(t);
+        });
+      }).then(() => {
+        resolve();
+      });
+    }).catch((e) => {
+      reject(e);
+    });
+  });
+}
+
+export function migrate(): Promise<null> {
+  return enterpriseMigration();
 }
 
 export function dropTables(): Promise<null> {

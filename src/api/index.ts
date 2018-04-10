@@ -23,6 +23,7 @@ let server = new ExpressServer({ port: 6500 });
 
 initSetup()
   .then(() => db.create())
+  .then(() => db.migrate())
   .then(() => {
     let version = getAbstruseVersion();
     let msg: LogMessageType = {
