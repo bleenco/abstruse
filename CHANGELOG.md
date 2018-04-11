@@ -1,3 +1,13 @@
+<a name="1.5.5"></a>
+## [1.5.5](https://github.com/bleenco/abstruse/compare/v1.5.4...v1.5.5) (2018-04-11)
+
+
+### Bug Fixes
+
+* **repository-url:** fix repository urls when sending commit statuses to providers ([aa3b6d3](https://github.com/bleenco/abstruse/commit/aa3b6d3))
+
+
+
 <a name="1.5.4"></a>
 ## [1.5.4](https://github.com/bleenco/abstruse/compare/v1.5.3...v1.5.4) (2018-04-09)
 
