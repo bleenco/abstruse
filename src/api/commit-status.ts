@@ -10,7 +10,12 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
       let sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
         build.data.sha;
       let name = build.repository.full_name;
-      let gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      let gitUrl = null;
+      if (build.repository.api_url && build.repository.api_url !== '') {
+        gitUrl = build.repository.api_url + `/repos/${name}/statuses/${sha}`;
+      } else {
+        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      }
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusSuccess(gitUrl, abstruseUrl,
@@ -57,7 +62,12 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
       let sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
       let name = buildData.repository.full_name;
-      let gitUrl = `${buildData.repository.api_url || 'https://api.github.com/repos/${name}/statuses/${sha}'}`;
+      let gitUrl = null;
+      if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+        gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+      } else {
+        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      }
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
@@ -101,7 +111,12 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
       let sha = buildData.data.after || buildData.data.pull_request &&
         buildData.data.pull_request.head.sha || buildData.data.sha;
       let name = buildData.repository.full_name;
-      let gitUrl = `${buildData.repository.api_url || 'https://api.github.com/repos/${name}/statuses/${sha}'}`;
+      let gitUrl = null;
+      if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+        gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+      } else {
+        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+      }
       let abstruseUrl = `${config.url}/build/${buildId}`;
 
       return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
