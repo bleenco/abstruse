@@ -155,7 +155,7 @@ describe('Repository Component', () => {
       let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
       urlInput.value = api;
       fixture.componentInstance.form.api_url = api;
-      urlInput.dispatchEvent(new Event('input'));
+      urlInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
       const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
       expect(saveElement.disabled).toBe(true);
@@ -168,7 +168,7 @@ describe('Repository Component', () => {
       let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
       urlInput.value = api;
       fixture.componentInstance.form.api_url = api;
-      urlInput.dispatchEvent(new Event('input'));
+      urlInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
       const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
       expect(saveElement.disabled).toBe(false);
@@ -181,7 +181,7 @@ describe('Repository Component', () => {
       let urlInput = fixture.debugElement.query(By.css('[name="api_url"]')).nativeElement;
       urlInput.value = api;
       fixture.componentInstance.form.api_url = api;
-      urlInput.dispatchEvent(new Event('input'));
+      urlInput.dispatchEvent(new Event('change'));
       fixture.detectChanges();
       const saveElement = fixture.debugElement.query(By.css('button[name="save-settings"]')).nativeElement;
       expect(saveElement.disabled).toBe(false);
