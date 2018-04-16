@@ -43,7 +43,7 @@ export class AppTerminalComponent implements OnInit, OnChanges {
   ngOnInit() {
     const el = this.elementRef.nativeElement.querySelector('.window-terminal-container');
     this.term.open(el);
-    this.term.setOption('fontFamily', 'Monaco');
+    this.term.setOption('fontFamily', 'Monaco, Menlo, "Ubuntu Mono", monospace');
     this.term.setOption('fontSize', 12);
     this.term.setOption('theme', this.theme);
     this.term.fit();
