@@ -7,10 +7,11 @@ import * as temp from 'temp';
 import * as glob from 'glob';
 import { homedir } from 'os';
 import { getHumanSize } from './utils';
+import { randomBytes } from 'crypto';
 
 let defaultConfig = {
   url: null,
-  secret: randomString(),
+  secret: 'defaultPassword',
   jwtSecret: randomString(),
   port: 6500,
   concurrency: 10,
@@ -130,5 +131,5 @@ export function deleteCacheFilesFromPattern(pattern): Promise<void> {
 }
 
 export function randomString(): string {
-  return Math.random().toString(36).substr(2, 7);
+  return randomBytes(7).toString('hex');
 }

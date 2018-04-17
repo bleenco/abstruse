@@ -11,7 +11,7 @@ describe('Images', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should go to images and see one base image', () => {
+  xit('should go to images and see one base image', () => {
     return  browser.get('/images')
       .then(() => element.all(by.css('.image-item')).count())
       .then(cnt => expect(cnt).to.equals(0))
@@ -38,7 +38,7 @@ describe('Images', () => {
       });
   });
 
-  it('should start building a new base image with name test-protractor-base-image', () => {
+  xit('should start building a new base image with name test-protractor-base-image', () => {
     return  browser.get('/images')
       .then((): any => browser.wait(() => element(by.css(`[name="tab-build-image"]`)).isPresent()))
       .then((): any => browser.wait(() => {
@@ -57,7 +57,7 @@ describe('Images', () => {
       .then(() => element.all(by.css(`[name="build-image-btn"]`)).first().click());
   });
 
-  it('should go to images and see two base images', () => {
+  xit('should go to images and see two base images', () => {
     return  browser.get('/images')
       .then(() => element.all(by.css('.image-item')).count())
       .then(cnt => expect(cnt).to.equals(0))
@@ -67,7 +67,7 @@ describe('Images', () => {
       });
   });
 
-  it('should see drop down with two base images when try to build new custom image', () => {
+  xit('should see drop down with two base images when try to build new custom image', () => {
     return  browser.get('/images')
       .then((): any => browser.wait(() => element(by.css(`[name="tab-build-image"]`)).isPresent()))
       .then((): any => browser.wait(() => {
@@ -91,7 +91,7 @@ describe('Images', () => {
       .then(txt => expect(txt).to.equals('FROM test-protractor-base-image'));
   });
 
-  it('should try to delete last base image and cancel it at last warning', () => {
+  xit('should try to delete last base image and cancel it at last warning', () => {
     return  browser.get('/images')
       .then((): any => {
         return browser.wait(() => element.all(by.css('.base-image-item')).count()

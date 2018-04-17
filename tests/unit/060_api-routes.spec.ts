@@ -23,11 +23,11 @@ describe('Api Server Routes Unit Tests', () => {
         console.log(`Using "${tempRoot}" as temporary directory for API routes unit tests.`);
       })
       .then(() => abstruse(tempRoot, false))
-      .then(() => fs.removeSync(join(tempRoot, '/.abstruse/abstruse.sqlite')))
+      .then(() => fs.removeSync(join(tempRoot, 'abstruse/abstruse.sqlite')))
       .then(() => {
         return fs.copySync(
-          join(__dirname, '/db/abstruse.sqlite'),
-          join(tempRoot, '/.abstruse/abstruse.sqlite'));
+          join(__dirname, 'db/abstruse.sqlite'),
+          join(tempRoot, 'abstruse/abstruse.sqlite'));
       })
       .then(() => killAllProcesses())
       .then(() => abstruse(tempRoot, false));
