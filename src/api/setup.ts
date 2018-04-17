@@ -5,12 +5,13 @@ import { ensureDirSync, statSync, remove } from 'fs-extra';
 import * as uuid from 'uuid';
 import * as temp from 'temp';
 import * as glob from 'glob';
+import { homedir } from 'os';
 import { getHumanSize } from './utils';
 
 let defaultConfig = {
   url: null,
-  secret: 'thisIsSecret',
-  jwtSecret: 'abstruseSecret4321!!',
+  secret: randomString(),
+  jwtSecret: randomString(),
   port: 6500,
   concurrency: 10,
   idleTimeout: 600,
@@ -31,7 +32,7 @@ let defaultConfig = {
   }
 };
 
-export let abstruseHome = null;
+export let abstruseHome = homedir();
 export let config: any = defaultConfig;
 
 export function setHome(dirPath: string): void {
@@ -61,7 +62,7 @@ export function appReady(): boolean {
 }
 
 export function getRootDir(): string {
-  return join(abstruseHome, '.abstruse');
+  return join(abstruseHome, 'abstruse');
 }
 
 export function getFilePath(relativePath: string): string {
@@ -121,4 +122,8 @@ export function deleteCacheFilesFromPattern(pattern): Promise<void> {
       .then(() => resolve())
       .catch(err => reject(err));
   });
+}
+
+export function randomString(): string {
+  return Math.random().toString(36).substr(2, 7);
 }
