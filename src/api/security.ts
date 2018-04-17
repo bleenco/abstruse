@@ -20,6 +20,8 @@ export function comparePassword(plain: string, hash: string): Promise<boolean> {
 
 export function generateJwt(data: any): Promise<string> {
   return new Promise((resolve, reject) => {
+    delete data.password;
+
     jwt.sign(data, config.jwtSecret, {}, (err: jwt.JsonWebTokenError, token: string) => {
       if (err) {
         reject(err);
