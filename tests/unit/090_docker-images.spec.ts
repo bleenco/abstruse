@@ -25,11 +25,11 @@ describe('Docker Images', () => {
         console.log(`Using "${tempRoot}" as temporary directory for Docker images unit tests.`);
       })
       .then(() => abstruse(tempRoot, true))
-      .then(() => fs.removeSync(join(tempRoot, '/.abstruse/abstruse.sqlite')))
+      .then(() => fs.removeSync(join(tempRoot, 'abstruse/abstruse.sqlite')))
       .then(() => {
         return fs.copySync(
-          join(__dirname, '/db/abstruse.sqlite'),
-          join(tempRoot, '/.abstruse/abstruse.sqlite'));
+          join(__dirname, 'db/abstruse.sqlite'),
+          join(tempRoot, 'abstruse/abstruse.sqlite'));
       })
       .then(() => killAllProcesses())
       .then(() => abstruse(tempRoot, false));
@@ -108,9 +108,9 @@ describe('Docker Images', () => {
             expect(imgs.length).to.equals(0);
           }
         })
-        .then(() => fs.readdir(join(tempRoot, '/.abstruse/images')))
+        .then(() => fs.readdir(join(tempRoot, 'abstruse/images')))
         .then(dirs => expect(dirs).to.deep.equals([]))
-        .then(() => fs.readdir(join(tempRoot, '/.abstruse/base-images')))
+        .then(() => fs.readdir(join(tempRoot, 'abstruse/base-images')))
         .then(dirs => expect(dirs).to.deep.equals(['abstruse_builder']));
     });
   });

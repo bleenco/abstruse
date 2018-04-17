@@ -79,6 +79,8 @@ describe('User Registration', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
+      .then(() => element(by.css('.form-input[name="api_secret"]')).clear())
+      .then(() => element(by.css('.form-input[name="api_secret"]')).sendKeys('thisIsSecret'))
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('john@gmail.com'))

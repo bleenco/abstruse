@@ -1,7 +1,9 @@
 import * as glob from 'glob';
 import * as path from 'path';
 import * as minimist from 'minimist';
-import { abstruse, killAllProcesses } from './e2e/utils/process';
+import { abstruse, killAllProcesses, execSilent } from './e2e/utils/process';
+import { writeFileSync, readFileSync } from 'fs';
+import * as temp from 'temp';
 import chalk from 'chalk';
 
 Error.stackTraceLimit = Infinity;
@@ -18,93 +20,105 @@ let currentFileName = null;
 let index = 0;
 
 const e2eRoot = path.join(__dirname, 'e2e');
-let allSetups = glob.sync(path.join(e2eRoot, 'setup/**/*.ts'), { nodir: true })
-  .map(name => path.relative(e2eRoot, name))
-  .sort();
 
 let allTests = glob.sync(path.join(e2eRoot, testGlob), { nodir: true, ignore: argv.ignore })
   .map(name => path.relative(e2eRoot, name))
   .sort();
 
-if (argv['nolink']) {
-  allSetups = allSetups.filter(name => !name.includes('link.ts'));
-}
+const testsToRun = allTests
+  .filter(name => {
+    // Check for naming tests on command line.
+    if (argv._.length === 0) {
+      return true;
+    }
 
-if (argv['nobuild']) {
-  allSetups = allSetups.filter(name => !name.includes('build.ts'));
-}
+    return argv._.some(argName => {
+      return path.join(process.cwd(), argName) === path.join(__dirname, 'e2e', name)
+        || argName === name
+        || argName === name.replace(/\.ts$/, '');
+    });
+  });
 
-const testsToRun = allSetups
-  .concat(allTests
-    .filter(name => {
-      // Check for naming tests on command line.
-      if (argv._.length == 0) {
-        return true;
+console.log(`Running ${testsToRun.length} tests`);
+
+let tempTestsDir = null;
+
+Promise.resolve()
+  .then(() => process.chdir(path.join(__dirname, '..')))
+  .then((): any => {
+    if (!argv['nobuild']) {
+      console.log(`\nBuilding abstruse ...`);
+      return execSilent('npm',  ['run', 'build:prod']);
+    } else {
+      return Promise.resolve();
+    }
+  })
+  .then((): any => {
+    if (!argv['nolink']) {
+      console.log(`\nLinking abstruse ...`);
+      return execSilent('npm',  ['link']);
+    } else {
+      return Promise.resolve();
+    }
+  })
+  .then(() => tempTestsDir = temp.mkdirSync('abstruse-e2e-tests'))
+  .then(() => abstruse(tempTestsDir, argv['debug']))
+  .then(() => {
+    const configPath = path.join(tempTestsDir, 'abstruse', 'config.json');
+    const config = JSON.parse(readFileSync(configPath).toString());
+    const newConfig = Object.assign({}, config, { secret: 'thisIsSecret' });
+    writeFileSync(configPath, JSON.stringify(newConfig, null, 2));
+  })
+  .then(() => {
+    return testsToRun.reduce((previous, relativeName) => {
+      let absoluteName = path.join(e2eRoot, relativeName);
+      if (/^win/.test(process.platform)) {
+        absoluteName = absoluteName.replace(/\\/g, path.posix.sep);
       }
 
-      return argv._.some(argName => {
-        return path.join(process.cwd(), argName) == path.join(__dirname, 'e2e', name)
-          || argName == name
-          || argName == name.replace(/\.ts$/, '');
+      return previous.then(() => {
+        currentFileName = relativeName.replace(/\.ts$/, '');
+        const start = +new Date();
+
+        const module = require(absoluteName);
+        const fn: (...args: any[]) => Promise<any> | any =
+          (typeof module === 'function') ? module
+          : (typeof module.default === 'function') ? module.default
+          : () => { throw new Error('Invalid test module.'); };
+
+        let clean = true;
+        let previousDir = null;
+        return Promise.resolve()
+          .then(() => printHeader(currentFileName))
+          .then(() => previousDir = process.cwd())
+          .then(() => fn())
+          .then(() => console.log('----'))
+          .then(() => printFooter(currentFileName, start), err => {
+            printFooter(currentFileName, start);
+            console.error(err);
+            throw err;
+          })
+          .catch(err => killAllProcesses().then(() => {
+            process.exit(process.exitCode);
+          }));
       });
-    }));
-
-if (testsToRun.length == allTests.length) {
-  console.log(`Running ${testsToRun.length} tests`);
-} else {
-  console.log(`Running ${testsToRun.length} tests (${allTests.length + allSetups.length} total)`);
-}
-
-
-
-testsToRun.reduce((previous, relativeName) => {
-  let absoluteName = path.join(e2eRoot, relativeName);
-  if (/^win/.test(process.platform)) {
-    absoluteName = absoluteName.replace(/\\/g, path.posix.sep);
-  }
-
-  return previous.then(() => {
-    currentFileName = relativeName.replace(/\.ts$/, '');
-    const start = +new Date();
-
-    const module = require(absoluteName);
-    const fn: (...args: any[]) => Promise<any> | any =
-      (typeof module === 'function') ? module
-      : (typeof module.default === 'function') ? module.default
-      : () => { throw new Error('Invalid test module.'); };
-
-    let clean = true;
-    let previousDir = null;
-    return Promise.resolve()
-      .then(() => printHeader(currentFileName))
-      .then(() => {
-        if (allSetups.indexOf(relativeName) === -1) {
-          return abstruse('abstruse', argv['debug']);
-        } else {
-          return Promise.resolve(null);
-        }
-      })
-      .then(() => previousDir = process.cwd())
-      .then(() => fn())
-      .then(() => console.log('----'))
+    }, Promise.resolve())
       .then(() => killAllProcesses())
-      .then(() => printFooter(currentFileName, start), err => {
-        printFooter(currentFileName, start);
-        console.error(err);
-        throw err;
-      })
-      .catch(err => killAllProcesses().then(() => {
-        process.exit(process.exitCode);
-      }));
-  });
-}, Promise.resolve())
-  .then(() => {
-    console.log(chalk.green('Done.'));
-    process.exit(0);
-  }, err => {
-    console.log('\n');
-    console.error(chalk.red(`Test "${currentFileName}" failed...`));
-    process.exit(1);
+      .then(() => {
+        console.log(chalk.green('Done.'));
+        process.exit(0);
+      }, err => {
+        killAllProcesses()
+          .then(() => {
+            console.log('\n');
+            console.error(chalk.red(`Test "${currentFileName}" failed...`));
+            process.exit(1);
+          });
+      });
+  })
+  .catch(err => {
+    console.log(chalk.red(`Error: ${err}`));
+    process.exit(process.exitCode);
   });
 
 function encode(str) {

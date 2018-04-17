@@ -29,11 +29,11 @@ describe('Deploying with AWS Services', () => {
         console.log(`Using "${tempRoot}" as temporary directory for e2e protractor tests.`);
       })
       .then(() => abstruse(tempRoot, true))
-      .then(() => fs.removeSync(join(tempRoot, '/.abstruse/abstruse.sqlite')))
+      .then(() => fs.removeSync(join(tempRoot, 'abstruse/abstruse.sqlite')))
       .then(() => {
         return fs.copySync(
-          join(__dirname, '/db/abstruse.sqlite'),
-          join(tempRoot, '/.abstruse/abstruse.sqlite'));
+          join(__dirname, 'db/abstruse.sqlite'),
+          join(tempRoot, 'abstruse/abstruse.sqlite'));
       })
       .then(() => killAllProcesses())
       .then(() => abstruse(tempRoot, true))
