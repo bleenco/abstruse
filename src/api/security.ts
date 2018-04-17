@@ -1,5 +1,4 @@
 import * as jwt from 'jsonwebtoken';
-import * as crypto from 'crypto';
 import * as express from 'express';
 import { getUser } from './db/user';
 import * as nodeRsa from 'node-rsa';
@@ -9,16 +8,14 @@ import { existsSync, exists, writeFile } from './fs';
 import { readFileSync } from 'fs';
 import { logger, LogMessageType } from './logger';
 import { Observable } from 'rxjs';
+import * as bcrypt from 'bcrypt';
 
 export function generatePassword(plain: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    resolve(calculateMd5(plain));
-  });
+  return bcrypt.hash(plain, 12);
 }
 
 export function comparePassword(plain: string, hash: string): Promise<boolean> {
-  return generatePassword(plain)
-    .then(calculated => hash === calculated);
+  return bcrypt.compare(plain, hash);
 }
 
 export function generateJwt(data: any): Promise<string> {
@@ -40,10 +37,6 @@ export function decodeJwt(token: string): any {
   } catch (err) {
     return false;
   }
-}
-
-export function calculateMd5(str: string): string {
-  return crypto.createHash('md5').update(str).digest('hex');
 }
 
 export function checkApiRequestAuth(req: express.Request): Promise<void> {
