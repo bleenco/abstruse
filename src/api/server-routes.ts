@@ -55,7 +55,8 @@ import {
   deleteCacheFilesFromPattern,
   getFilePath,
   getConfig,
-  getRootDir
+  getRootDir,
+  saveConfig
 } from './setup';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
@@ -652,13 +653,41 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/docker-image', (req: express.Request, res: express.Response) => {
-    imageExists('abstruse').subscribe(exists => {
-      return res.status(200).json({ data: exists });
+    imageExists('abstruse').subscribe(e => {
+      return res.status(200).json({ data: e });
     });
   });
 
   router.get('/login-required', (req: express.Request, res: express.Response) => {
     return res.status(200).json({ data: config.requireLogin });
+  });
+
+  router.get(`/config`, (req: express.Request, res: express.Response) => {
+    return usersExists()
+      .then(users => {
+        if (!users) {
+          return res.status(200).json({ status: true, data: getConfig() });
+        } else {
+          return res.status(200).json({ status: false });
+        }
+      });
+  });
+
+  router.post(`/config`, (req: express.Reqest, res: express.Response) => {
+    return usersExists()
+      .then(users => {
+        if (!users) {
+          const cfg = Object.assign({}, getConfig(), {
+            secret: req.body.api_secret,
+            jwtSecret: req.body.jwt_secret
+          });
+
+          saveConfig(cfg);
+          return res.status(200).json({ status: true });
+        } else {
+          return res.status(200).json({ status: false });
+        }
+      });
   });
 
   return router;
@@ -761,9 +790,9 @@ export function keysRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/public`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
-    if (config.publicKey) {
-      let keyPath = config.publicKey;
+    let cfg: any = getConfig();
+    if (cfg.publicKey) {
+      let keyPath = cfg.publicKey;
 
       return res.status(200).json({ key: readFileSync(getFilePath(keyPath)).toString() });
     }
@@ -778,9 +807,8 @@ export function configRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/demo`, (req: express.Request, res: express.Response) => {
-    let config: any = getConfig();
-
-    return res.status(200).json({ data: config.demo });
+    let cfg: any = getConfig();
+    return res.status(200).json({ data: cfg.demo });
   });
 
   return router;

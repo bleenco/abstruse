@@ -20,6 +20,11 @@ export interface User {
   admin: boolean;
 }
 
+export interface Secrets {
+  api_secret: string;
+  jwt_secret: string;
+}
+
 @Component({
   selector: 'app-setup',
   templateUrl: 'app-setup.component.html'
@@ -27,11 +32,12 @@ export interface User {
 export class AppSetupComponent implements OnInit {
   serverStatus: ServerStatus;
   readyToSetup: boolean;
-  step: 'config' | 'db' | 'done';
+  step: 'config' | 'secrets' | 'db' | 'done';
   terminalInput: string;
   loading: boolean;
   user: User;
   terminalOptions:  { size: 'small' | 'large' };
+  secrets: Secrets = { api_secret: '', jwt_secret: '' };
 
   constructor(
     private apiService: ApiService,
@@ -74,11 +80,27 @@ export class AppSetupComponent implements OnInit {
       .pipe(delay(250))
       .subscribe((resp: ServerStatus) => {
         this.serverStatus = resp;
-        const i =
-          Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
+        const i = Object.keys(this.serverStatus).map(key => this.serverStatus[key]).findIndex(x => !x);
         this.readyToSetup = i === -1 ? true : false;
         this.loading = false;
       });
+  }
+
+  continueToSecrets(): void {
+    this.loading = true;
+    this.apiService.getSetupConfig().subscribe(resp => {
+      this.secrets.api_secret = resp.secret;
+      this.secrets.jwt_secret = resp.jwtSecret;
+      this.loading = false;
+      this.step = 'secrets';
+    });
+  }
+
+  saveSecrets(): void {
+    this.loading = true;
+    this.apiService.saveSetupConfig(this.secrets).subscribe(resp => {
+      this.continueToDb();
+    });
   }
 
   continueToDb(): void {

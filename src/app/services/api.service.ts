@@ -100,6 +100,14 @@ export class ApiService {
     return this.get(`${this.url}/setup/docker-image`);
   }
 
+  getSetupConfig(): Observable<any> {
+    return this.get(`${this.url}/setup/config`);
+  }
+
+  saveSetupConfig(data: any): Observable<any> {
+    return this.post(`${this.url}/setup/config`, data, false);
+  }
+
   initializeDatabase(): Observable<any> {
     return this.post(`${this.url}/setup/db/init`, {});
   }
