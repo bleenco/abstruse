@@ -12,6 +12,8 @@ describe('User Registration', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
+      .then(() => element(by.css('[name="btn-continue"]')).click())
+      .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('john@gmail.com'))
       .then(() => element(by.css('.form-input[name="name"]')).sendKeys('John Wayne'))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
@@ -23,6 +25,8 @@ describe('User Registration', () => {
 
   it(`continue button should be disabled when email is not email address`, () => {
     return browser.get('/setup')
+      .then(() => isLoaded())
+      .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
@@ -41,6 +45,8 @@ describe('User Registration', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
+      .then(() => element(by.css('[name="btn-continue"]')).click())
+      .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('john@gmail.com'))
       .then(() => element(by.css('.form-input[name="name"]')).sendKeys(''))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
@@ -56,6 +62,8 @@ describe('User Registration', () => {
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
+      .then(() => element(by.css('[name="btn-continue"]')).click())
+      .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('john@gmail.com'))
       .then(() => element(by.css('.form-input[name="name"]')).sendKeys('John Wayne'))
       .then(() => element(by.css('.form-input[name="password"]')).sendKeys('test123'))
@@ -68,6 +76,8 @@ describe('User Registration', () => {
 
   it('should successfully register user', () => {
     return browser.get('/setup')
+      .then(() => isLoaded())
+      .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
       .then(() => isLoaded())
