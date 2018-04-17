@@ -473,21 +473,26 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(bdata => buildData = bdata)
     .then(() => sendPendingStatus(buildData, buildData.id))
     .then(() => {
-      return Promise.all(config.map(cfg => {
-        let dataJob = null;
-        return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
-          .then(job => dataJob = job)
-          .then(() => getLastRunId(data.build_id))
-          .then(lastRunId => {
-            let jobRun = {
-              start_time: new Date,
-              status: 'queued',
-              build_run_id: lastRunId,
-              job_id: dataJob.id
-            };
-            return dbJobRuns.insertJobRun(jobRun);
-          }).then(() => queueJob(dataJob.id));
-      }));
+      return config.reduce((prev, cfg, i) => {
+        return prev.then(() => {
+          let dataJob = null;
+
+          return dbJob.insertJob({ data: JSON.stringify(cfg), builds_id: data.build_id })
+            .then(job => dataJob = job)
+            .then(() => getLastRunId(data.build_id))
+            .then(lastRunId => {
+              const jobRun = {
+                start_time: new Date,
+                status: 'queued',
+                build_run_id: lastRunId,
+                job_id: dataJob.id
+              };
+
+              return dbJobRuns.insertJobRun(jobRun);
+            })
+            .then(() => queueJob(dataJob.id));
+        });
+      }, Promise.resolve());
     })
     .then(lastBuild => {
       jobEvents.next({
@@ -539,7 +544,11 @@ export function restartBuild(buildId: number): Promise<any> {
           }));
         })
         .then(() => {
-          return Promise.all(jobs.map(job => stopJob(job.id).then(() => queueJob(job.id))));
+          return jobs.reduce((prev, curr) => {
+            return prev.then(() => {
+              return stopJob(curr.id).then(() => queueJob(curr.id));
+            });
+          }, Promise.resolve());
         })
         .then(() => getBuild(buildId))
         .then(build => sendPendingStatus(build, build.id))
@@ -563,7 +572,11 @@ export function restartBuild(buildId: number): Promise<any> {
 
 export function stopBuild(buildId: number): Promise<any> {
   return getBuild(buildId)
-    .then(build => Promise.all(build.jobs.map(job => stopJob(job.id))))
+    .then(build => {
+      return build.jobs.reduce((prev, current) => {
+        return prev.then(() => stopJob(current.id));
+      }, Promise.resolve());
+    })
     .catch(err => {
       let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
       logger.next(msg);

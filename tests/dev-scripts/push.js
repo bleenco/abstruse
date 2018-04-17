@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const data = require('./data/push-request.json');
 const headers = require('./data/push-request-headers.json');
 
-const secret = 'thisIsSecret';
+const secret = 'defaultPassword';
 const sig = crypto.createHmac('sha1', secret).update(JSON.stringify(data)).digest('hex');
 headers['X-Hub-Signature'] = `sha1=${sig}`;
 
