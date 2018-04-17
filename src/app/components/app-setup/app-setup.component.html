@@ -10,8 +10,7 @@
         <div class="column is-10 is-offset-1">
           <div class="setup-content">
             <h1>
-              <img src="/assets/images/icons/server.svg">
-              AbstruseCI Setup
+              <img src="/assets/images/icons/server.svg"> AbstruseCI Setup
               <span>Configure Abstruse Continous Integration Server</span>
             </h1>
             <hr/>
@@ -23,33 +22,60 @@
             <div *ngIf="!loading">
               <div *ngIf="step === 'config'">
                 <h2>
-                  <img src="/assets/images/icons/server-status.svg">
-                  Server Status
+                  <img src="/assets/images/icons/server-status.svg"> Server Status
                 </h2>
                 <div class="setup-list">
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.docker ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="docker-installed-icon"> Docker Installed
+                    <img class="icon" [src]="serverStatus.docker ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'"
+                      name="docker-installed-icon"> Docker Installed
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.dockerRunning ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="docker-running-icon"> Docker Running
+                    <img class="icon" [src]="serverStatus.dockerRunning ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'"
+                      name="docker-running-icon"> Docker Running
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.sqlite ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="sqlite3-installed-icon"> SQLite3 Installed
+                    <img class="icon" [src]="serverStatus.sqlite ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'"
+                      name="sqlite3-installed-icon"> SQLite3 Installed
                   </div>
                   <div class="setup-list-item">
-                    <img class="icon" [src]="serverStatus.git ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'" name="git-installed-icon"> Git Installed
+                    <img class="icon" [src]="serverStatus.git ? '/assets/images/icons/check-true.svg' : '/assets/images/icons/check-false.svg'"
+                      name="git-installed-icon"> Git Installed
                   </div>
                 </div>
                 <hr/>
                 <p *ngIf="!readyToSetup">Please make sure that all of the above checkmarks are green as it is mandatory to run Abstruse on this server.</p>
                 <button type="button" class="button" name="btn-recheck" (click)="checkConfiguration()" *ngIf="!readyToSetup">Re-check Configuration</button>
-                <button type="button" class="button" name="btn-continue" (click)="continueToDb()" *ngIf="readyToSetup">Continue</button>
+                <button type="button" class="button" name="btn-continue" (click)="continueToSecrets()" *ngIf="readyToSetup">Continue</button>
+              </div>
+
+              <div *ngIf="step === 'secrets'">
+                <h2>
+                  Abstruse Server Secrets
+                </h2>
+                <form class="secrets-form" #secretsForm="ngForm" (ngSubmit)="saveSecrets()">
+                  <div class="columns is-multiline">
+                    <div class="column is-6 is-offset-3">
+                      <div class="form-field">
+                        <label class="form-label">API Secret</label>
+                        <input class="form-input" type="text" name="api_secret" placeholder="API Secret" [(ngModel)]="secrets.api_secret" required minlength="7">
+                        <p class="helper">API secret is used to encode and decode remote requests to git providers.</p>
+                      </div>
+                      <div class="form-field">
+                        <label class="form-label">JWT Secret</label>
+                        <input class="form-input" type="text" name="jwt_secret" placeholder="JWT Secret" [(ngModel)]="secrets.jwt_secret" required minlength="7">
+                        <p class="helper">JWT secret is used to encode and decode user passwords.</p>
+                      </div>
+                      <div class="form-field">
+                        <button type="submit" class="button green" name="btn-register" [disabled]="!secretsForm.valid">Continue</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
               </div>
 
               <div *ngIf="step === 'db'">
                 <h2>
-                  <img src="/assets/images/icons/password.svg">
-                  Administrator Account
+                  <img src="/assets/images/icons/password.svg"> Administrator Account
                 </h2>
                 <form class="password-form" #userForm="ngForm" (ngSubmit)="createUser()">
                   <div class="columns is-multiline">
@@ -71,7 +97,8 @@
                       </div>
                       <div class="form-field">
                         <label class="form-label">Repeat Password</label>
-                        <input class="form-input" type="password" name="password2" placeholder="Repeat Password" [(ngModel)]="user.confirmPassword" required validateEqual="password">
+                        <input class="form-input" type="password" name="password2" placeholder="Repeat Password" [(ngModel)]="user.confirmPassword"
+                          required validateEqual="password">
                         <p class="helper">Repeat picked password from the previous field.</p>
                       </div>
                       <div class="form-field">

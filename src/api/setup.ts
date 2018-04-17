@@ -101,6 +101,11 @@ export function getConfig(): string {
   return config;
 }
 
+export function saveConfig(cfg: any): void {
+  const configPath = getFilePath('config.json');
+  writeFileSync(configPath, JSON.stringify(cfg, null, 2));
+}
+
 export function getCacheFilesFromPattern(pattern: string): any[] {
   let cacheFolder = getFilePath('cache');
   let search = glob.sync(join(cacheFolder, pattern));
