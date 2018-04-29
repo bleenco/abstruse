@@ -1,7 +1,7 @@
 import { join, resolve } from 'path';
 import { existsSync, copyFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
-import { ensureDirSync, statSync, remove } from 'fs-extra';
+import { ensureDirSync, statSync, remove, readJSON, writeJSON } from 'fs-extra';
 import * as uuid from 'uuid';
 import * as temp from 'temp';
 import * as glob from 'glob';
@@ -55,7 +55,7 @@ export function initSetup(): Promise<string> {
       let destDir = getFilePath('avatars');
       return copyFile(avatarDir, destDir);
     })
-    .then(() => getConfig());
+    .then(() => getConfigAsync());
 }
 
 export function appReady(): boolean {
@@ -102,9 +102,19 @@ export function getConfig(): string {
   return config;
 }
 
+export function getConfigAsync(): Promise<any> {
+  const configPath = getFilePath('config.json');
+  return readJSON(configPath);
+}
+
 export function saveConfig(cfg: any): void {
   const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(cfg, null, 2));
+}
+
+export function saveConfigAsync(cfg: any): Promise<void> {
+  const configPath = getFilePath('config.json');
+  return writeJSON(configPath, cfg);
 }
 
 export function getCacheFilesFromPattern(pattern: string): any[] {
