@@ -90,7 +90,7 @@ export function sendGitLabRequest(data: any, headers: any): Promise<any> {
 export function sendGogsRequest(data: any, headers: any): Promise<any> {
   return new Promise((resolve, reject) => {
     let secret = 'thisIsSecret';  // todo, read that from config
-    let sig = crypto.createHmac('sha256', secret).update(JSON.stringify(data)).digest('hex');
+    let sig = crypto.createHmac('sha256', secret).update(JSON.stringify(data, null, 2)).digest('hex');
     headers['x-gogs-signature'] = sig;
 
     let options = {
@@ -128,7 +128,7 @@ export function stopBuild(buildId: string): Promise<any[]> {
           const container = docker.getContainer(containerInfo.Id);
 
           return container.stop()
-            .then(container => container.remove());
+            .then(c => c.remove());
         } else {
           return Promise.resolve();
         }
