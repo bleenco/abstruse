@@ -182,7 +182,8 @@ function getImagesInDirectory(path: string): Promise<any> {
                 createdAgo: distanceInWordsToNow(new Date(images[index].Created * 1000)),
                 size: getHumanSize(images[index].Size),
                 dockerfile: null,
-                initsh: null
+                initsh: null,
+                base: null
               };
             } else {
               return null;

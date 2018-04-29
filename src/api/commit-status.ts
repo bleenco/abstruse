@@ -1,156 +1,156 @@
 import { getBitBucketAccessToken } from './utils';
-import { getConfig } from './setup';
+import { getConfigAsync } from './setup';
 import { logger, LogMessageType } from './logger';
 import * as request from 'request';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
-  if (build.repository && build.repository.access_token) {
-    if (build.repository.github_id) {
-      let sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
-        build.data.sha;
-      let name = build.repository.full_name;
-      let gitUrl = null;
-      if (build.repository.api_url && build.repository.api_url !== '') {
-        gitUrl = build.repository.api_url + `/repos/${name}/statuses/${sha}`;
+  return getConfigAsync()
+    .then(config => {
+      if (build.repository && build.repository.access_token) {
+        if (build.repository.github_id) {
+          let sha = build.data.after || build.data.pull_request && build.data.pull_request.head.sha ||
+            build.data.sha;
+          let name = build.repository.full_name;
+          let gitUrl = null;
+          if (build.repository.api_url && build.repository.api_url !== '') {
+            gitUrl = build.repository.api_url + `/repos/${name}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+          }
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitHubStatusSuccess(gitUrl, abstruseUrl,
+            build.repository.access_token);
+        } else if (build.repository.bitbucket_id) {
+          let sha = build.data.sha;
+          let name = build.data.repository.full_name;
+          let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+            + `/${name}/commit/${sha}/statuses/build`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
+            build.repository.access_token);
+        } else if (build.repository.gitlab_id) {
+          let id = build.data.project_id ?
+            build.data.project_id : build.data.object_attributes.target_project_id;
+          let sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
+          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitLabStatusSuccess(gitUrl, abstruseUrl,
+            build.repository.access_token);
+        } else {
+          return Promise.resolve();
+        }
       } else {
-        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        let name = build.repository && build.repository.full_name ||
+          build.data.repository.full_name;
+        let msg: LogMessageType = {
+          message: `[error]: repository: ${name} => access token is not set`,
+          type: 'error',
+          notify: true
+        };
+        logger.next(msg);
       }
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitHubStatusSuccess(gitUrl, abstruseUrl,
-        build.repository.access_token);
-    } else if (build.repository.bitbucket_id) {
-      let sha = build.data.sha;
-      let name = build.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
-        + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
-        build.repository.access_token);
-    } else if (build.repository.gitlab_id) {
-      let id = build.data.project_id ?
-        build.data.project_id : build.data.object_attributes.target_project_id;
-      let sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitLabStatusSuccess(gitUrl, abstruseUrl,
-        build.repository.access_token);
-    } else {
-      return Promise.resolve();
-    }
-  } else {
-    let name = build.repository && build.repository.full_name ||
-      build.data.repository.full_name;
-    let msg: LogMessageType = {
-      message: `[error]: repository: ${name} => access token is not set`,
-      type: 'error',
-      notify: true
-    };
-    logger.next(msg);
-
-    return Promise.resolve();
-  }
+    });
 }
 
 export function sendPendingStatus(buildData: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
-  if (buildData.repository && buildData.repository.access_token) {
-    if (buildData.repository.github_id) {
-      let sha = buildData.data.after || buildData.data.pull_request &&
-        buildData.data.pull_request.head.sha || buildData.data.sha;
-      let name = buildData.repository.full_name;
-      let gitUrl = null;
-      if (buildData.repository.api_url && buildData.repository.api_url !== '') {
-        gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+  return getConfigAsync()
+    .then(config => {
+      if (buildData.repository && buildData.repository.access_token) {
+        if (buildData.repository.github_id) {
+          let sha = buildData.data.after || buildData.data.pull_request &&
+            buildData.data.pull_request.head.sha || buildData.data.sha;
+          let name = buildData.repository.full_name;
+          let gitUrl = null;
+          if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+            gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+          }
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else if (buildData.repository.bitbucket_id) {
+          let sha = buildData.data.sha;
+          let name = buildData.data.repository.full_name;
+          let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+            + `/${name}/commit/${sha}/statuses/build`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setBitbucketStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else if (buildData.repository.gitlab_id) {
+          let id = buildData.data.project_id ?
+            buildData.data.project_id : buildData.data.object_attributes.target_project_id;
+          let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else {
+          return Promise.resolve();
+        }
       } else {
-        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        let name = buildData.repository && (buildData.repository.full_name ||
+          buildData.data.repository.full_name);
+        let msg: LogMessageType = {
+          message: `[error]: repository: ${name} => access token is not set`,
+          type: 'error',
+          notify: true
+        };
+        logger.next(msg);
       }
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else if (buildData.repository.bitbucket_id) {
-      let sha = buildData.data.sha;
-      let name = buildData.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
-        + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setBitbucketStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else if (buildData.repository.gitlab_id) {
-      let id = buildData.data.project_id ?
-        buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else {
-      return Promise.resolve();
-    }
-  } else {
-    let name = buildData.repository && (buildData.repository.full_name ||
-      buildData.data.repository.full_name);
-    let msg: LogMessageType = {
-      message: `[error]: repository: ${name} => access token is not set`,
-      type: 'error',
-      notify: true
-    };
-    logger.next(msg);
-
-    return Promise.resolve();
-  }
+    });
 }
 
 export function sendFailureStatus(buildData: any, buildId: number): Promise<void> {
-  let config: any = getConfig();
-  if (buildData.repository && buildData.repository.access_token) {
-    if (buildData.repository.github_id) {
-      let sha = buildData.data.after || buildData.data.pull_request &&
-        buildData.data.pull_request.head.sha || buildData.data.sha;
-      let name = buildData.repository.full_name;
-      let gitUrl = null;
-      if (buildData.repository.api_url && buildData.repository.api_url !== '') {
-        gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+  return getConfigAsync()
+    .then(config => {
+      if (buildData.repository && buildData.repository.access_token) {
+        if (buildData.repository.github_id) {
+          let sha = buildData.data.after || buildData.data.pull_request &&
+            buildData.data.pull_request.head.sha || buildData.data.sha;
+          let name = buildData.repository.full_name;
+          let gitUrl = null;
+          if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+            gitUrl = buildData.repository.api_url + `/repos/${name}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+          }
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else if (buildData.repository.bitbucket_id) {
+          let sha = buildData.data.sha;
+          let name = buildData.data.repository.full_name;
+          let gitUrl = `https://api.bitbucket.org/2.0/repositories`
+            + `/${name}/commit/${sha}/statuses/build`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else if (buildData.repository.gitlab_id) {
+          let id = buildData.data.project_id ?
+            buildData.data.project_id : buildData.data.object_attributes.target_project_id;
+          let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let abstruseUrl = `${config.url}/build/${buildId}`;
+
+          return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
+        } else {
+          return Promise.resolve();
+        }
       } else {
-        gitUrl = `https://api.github.com/repos/${name}/statuses/${sha}`;
+        let name = buildData.repository && buildData.repository.full_name ||
+          buildData.data.repository.full_name;
+        let msg: LogMessageType = {
+          message: `[error]: repository: ${name} => access token is not set`,
+          type: 'error',
+          notify: true
+        };
+        logger.next(msg);
       }
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else if (buildData.repository.bitbucket_id) {
-      let sha = buildData.data.sha;
-      let name = buildData.data.repository.full_name;
-      let gitUrl = `https://api.bitbucket.org/2.0/repositories`
-        + `/${name}/commit/${sha}/statuses/build`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else if (buildData.repository.gitlab_id) {
-      let id = buildData.data.project_id ?
-        buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-      let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-      let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
-      let abstruseUrl = `${config.url}/build/${buildId}`;
-
-      return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
-    } else {
-      return Promise.resolve();
-    }
-  } else {
-    let name = buildData.repository && buildData.repository.full_name ||
-      buildData.data.repository.full_name;
-    let msg: LogMessageType = {
-      message: `[error]: repository: ${name} => access token is not set`,
-      type: 'error',
-      notify: true
-    };
-    logger.next(msg);
-
-    return Promise.resolve();
-  }
+    });
 }
 
 function setGitHubStatusSuccess(

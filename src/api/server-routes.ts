@@ -5,7 +5,7 @@ import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
 import { Observable } from 'rxjs';
 import { exists } from './fs';
-import { readFileSync } from 'fs';
+import { readFile } from 'fs-extra';
 import { reinitializeDatabase } from './db/migrations';
 import {
   usersExists,
@@ -47,7 +47,7 @@ import {
   Repository,
   getRemoteParsedConfig,
   getConfigRawFile,
-  parseConfigFromRaw
+  parseConfigFromRaw,
 } from './config';
 import { getHttpJsonResponse, generateBadgeHtml } from './utils';
 import {
@@ -56,7 +56,9 @@ import {
   getFilePath,
   getConfig,
   getRootDir,
-  saveConfig
+  saveConfig,
+  getConfigAsync,
+  saveConfigAsync
 } from './setup';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
@@ -237,7 +239,7 @@ export function userRoutes(): express.Router {
   });
 
   router.post('/upload-avatar', upload.any(), (req: express.Request, res: express.Response) => {
-    let avatar = '/' + relative(getRootDir(), req.files[0].path);
+    let avatar = '/' + relative(getRootDir(), (<any>req).files[0].path);
     getUser(req.body.userId)
       .then(user => {
         user.avatar = avatar;
@@ -666,24 +668,28 @@ export function setupRoutes(): express.Router {
     return usersExists()
       .then(users => {
         if (!users) {
-          return res.status(200).json({ status: true, data: getConfig() });
+          getConfigAsync()
+            .then(cfg => res.status(200).json({ status: true, data: cfg }));
         } else {
           return res.status(200).json({ status: false });
         }
       });
   });
 
-  router.post(`/config`, (req: express.Reqest, res: express.Response) => {
+  router.post(`/config`, (req: express.Request, res: express.Response) => {
     return usersExists()
       .then(users => {
         if (!users) {
-          const cfg = Object.assign({}, getConfig(), {
-            secret: req.body.api_secret,
-            jwtSecret: req.body.jwt_secret
-          });
+          getConfigAsync()
+            .then(cfg => {
+              cfg = Object.assign({}, cfg, {
+                secret: req.body.api_secret,
+                jwtSecret: req.body.jwt_secret
+              });
 
-          saveConfig(cfg);
-          return res.status(200).json({ status: true });
+              return saveConfigAsync(cfg);
+            })
+            .then(() => res.status(200).json({ status: true }));
         } else {
           return res.status(200).json({ status: false });
         }
@@ -790,14 +796,17 @@ export function keysRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/public`, (req: express.Request, res: express.Response) => {
-    let cfg: any = getConfig();
-    if (cfg.publicKey) {
-      let keyPath = cfg.publicKey;
-
-      return res.status(200).json({ key: readFileSync(getFilePath(keyPath)).toString() });
-    }
-
-    return res.status(200).json({ status: false });
+    getConfigAsync()
+      .then(cfg => {
+        if (cfg.publicKey) {
+          let keyPath = cfg.publicKey;
+          return readFile(getFilePath(keyPath));
+        } else {
+          return Promise.reject('no public key in found in configuration!');
+        }
+      })
+      .then(publicKey => res.status(200).json({ key: publicKey.toString() }))
+      .catch(err => res.status(200).json({ status: false, data: err }));
   });
 
   return router;
@@ -807,8 +816,8 @@ export function configRoutes(): express.Router {
   let router = express.Router();
 
   router.get(`/demo`, (req: express.Request, res: express.Response) => {
-    let cfg: any = getConfig();
-    return res.status(200).json({ data: cfg.demo });
+    getConfigAsync()
+      .then(cfg => res.status(200).json({ data: cfg.demo }));
   });
 
   return router;
