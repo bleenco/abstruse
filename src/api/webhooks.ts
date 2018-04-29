@@ -401,6 +401,7 @@ webhooks.post('/gogs', (req: express.Request, res: express.Response) => {
           break;
         case 'release':
           res.status(200).json({ msg: 'ok' });
+          break;
         case 'pull_request':
           switch (payload.action) {
             case 'opened':
@@ -473,6 +474,6 @@ function verifyGithubWebhook(signature: string, payload: any, secret: string): b
 }
 
 function verifyGogsWebhook(signature: string, payload: any, secret: string): boolean {
-  let sig = `${crypto.createHmac('sha256', secret).update(JSON.stringify(payload)).digest('hex')}`;
+  let sig = `${crypto.createHmac('sha256', secret).update(JSON.stringify(payload, null, 2)).digest('hex')}`;
   return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(sig));
 }
