@@ -17,7 +17,11 @@ export function create(): Promise<null> {
     .then(() => schema.createTableIfNotExists('access_tokens', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('description').notNullable();
-      t.string('token').notNullable();
+      t.string('token');
+      t.string('bitbucket_client_id');
+      t.string('bitbucket_oauth_key');
+      t.string('bitbucket_oauth_secret');
+      t.enum('type', ['github', 'gitlab', 'bitbucket', 'gogs']);
       t.integer('users_id').notNullable();
       t.foreign('users_id').references('users.id');
       t.timestamps();

@@ -10,6 +10,7 @@ export function getAccessTokens(): Promise<any> {
 
         const result = tokens.toJSON().map(token => {
           delete token.token;
+          delete token.bitbucket_oauth_secret;
           delete token.user.password;
           return token;
         });

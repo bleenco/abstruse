@@ -22,7 +22,7 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
           return setGitHubStatusSuccess(gitUrl, abstruseUrl,
             build.repository.access_token);
         } else if (build.repository.bitbucket_id) {
-          let sha = build.data.sha;
+          let sha = build.data.push.changes[0].commits[0].hash;
           let name = build.data.repository.full_name;
           let gitUrl = `https://api.bitbucket.org/2.0/repositories`
             + `/${name}/commit/${sha}/statuses/build`;
@@ -73,7 +73,7 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
 
           return setGitHubStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
         } else if (buildData.repository.bitbucket_id) {
-          let sha = buildData.data.sha;
+          let sha = buildData.data.push.changes[0].commits[0].hash;
           let name = buildData.data.repository.full_name;
           let gitUrl = `https://api.bitbucket.org/2.0/repositories`
             + `/${name}/commit/${sha}/statuses/build`;
@@ -122,7 +122,7 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
 
           return setGitHubStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
         } else if (buildData.repository.bitbucket_id) {
-          let sha = buildData.data.sha;
+          let sha = buildData.data.push.changes[0].commits[0].hash;
           let name = buildData.data.repository.full_name;
           let gitUrl = `https://api.bitbucket.org/2.0/repositories`
             + `/${name}/commit/${sha}/statuses/build`;
@@ -154,7 +154,8 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
 }
 
 function setGitHubStatusSuccess(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'success',
     'target_url': abstruseUrl,
@@ -171,7 +172,8 @@ function setGitHubStatusSuccess(
 }
 
 function setGitHubStatusPending(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'pending',
     'target_url': abstruseUrl,
@@ -188,7 +190,8 @@ function setGitHubStatusPending(
 }
 
 function setGitHubStatusError(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'error',
     'target_url': abstruseUrl,
@@ -205,7 +208,8 @@ function setGitHubStatusError(
 }
 
 function setGitHubStatusFailure(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'failure',
     'target_url': abstruseUrl,
@@ -222,7 +226,8 @@ function setGitHubStatusFailure(
 }
 
 function setGitLabStatusSuccess(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'success',
     'target_url': abstruseUrl,
@@ -238,7 +243,8 @@ function setGitLabStatusSuccess(
 }
 
 function setGitLabStatusPending(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'pending',
     'target_url': abstruseUrl,
@@ -254,7 +260,8 @@ function setGitLabStatusPending(
 }
 
 function setGitLabStatusError(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'error',
     'target_url': abstruseUrl,
@@ -270,7 +277,8 @@ function setGitLabStatusError(
 }
 
 function setGitLabStatusFailure(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   let data = {
     'state': 'failure',
     'target_url': abstruseUrl,
@@ -286,7 +294,8 @@ function setGitLabStatusFailure(
 }
 
 function setBitbucketStatusSuccess(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
       let access_token = response.access_token;
@@ -309,7 +318,8 @@ function setBitbucketStatusSuccess(
 }
 
 function setBitbucketStatusPending(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
       let access_token = response.access_token;
@@ -332,7 +342,8 @@ function setBitbucketStatusPending(
 }
 
 function setBitbucketStatusFailure(
-  gitUrl: string, abstruseUrl: string, token: string): Promise<any> {
+  gitUrl: string, abstruseUrl: string, token: string
+): Promise<any> {
   return getBitBucketAccessToken(token)
     .then(response => {
       let access_token = response.access_token;

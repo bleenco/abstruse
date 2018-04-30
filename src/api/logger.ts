@@ -13,6 +13,7 @@ export let logger: Subject<LogMessageType> = new Subject();
 logger
   .filter((msg: LogMessageType) => !!msg.message && msg.message !== '')
   .mergeMap((msg: LogMessageType) => {
+    msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
     let message = { message: msg.message, type: msg.type, notify: msg.notify };
     return Observable.fromPromise(insertLog(colorizeMessage(message)));
   })

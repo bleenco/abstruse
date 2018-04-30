@@ -113,19 +113,6 @@ describe('User Component', () => {
       expect(de.nativeElement.textContent).toBe('User Profile');
     });
 
-    it('should show Access Tokens tab after click on second item in menu', () => {
-      fixture.detectChanges();
-      const deToken = fixture.debugElement.query(By.css('[name="tab-tokens"]'));
-      if (deToken instanceof HTMLElement) {
-        deToken.click();
-      } else {
-        deToken.triggerEventHandler('click', { button: 0 });
-      }
-      fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h1'));
-      expect(de.nativeElement.textContent).toBe('Access Tokens');
-    });
-
     it('should show Permissions tab after click on third item in menu', () => {
       fixture.detectChanges();
       fixture.debugElement.query(By.css('[name="tab-permissions"]')).nativeElement.click();

@@ -1,5 +1,6 @@
 import { Build, BuildRun, Job, JobRun } from './model';
 import { getLastRun } from './job';
+import { getBitBucketAccessToken } from '../utils';
 
 export function getBuilds(
   limit: number,
@@ -119,12 +120,6 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           return run;
         });
 
-        if (build.repository.access_token && build.repository.access_token) {
-          build.repository.access_token = build.repository.access_token.token;
-        } else {
-          build.repository.access_token = null;
-        }
-
         userId = parseInt(<any>userId, 10);
         if (build.repository.permissions && build.repository.permissions.length) {
           let index = build.repository.permissions.findIndex(p => p.users_id === userId);
@@ -137,7 +132,21 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           build.hasPermission = false;
         }
 
-        return build;
+        if (typeof build.repository.access_token !== 'undefined') {
+          const token_data = build.repository.access_token;
+          if (token_data.type === 'bitbucket') {
+            build.repository.access_token = `${token_data.bitbucket_oauth_key}:${token_data.bitbucket_oauth_secret}`;
+            return Promise.resolve(build);
+          } else {
+            build.repository.access_token = build.repository.access_token && build.repository.access_token.token ?
+              build.repository.access_token.token : null;
+
+            return Promise.resolve(build);
+          }
+        } else {
+          build.repository.access_token = null;
+          return Promise.resolve(build);
+        }
       })
       .then(build => {
         new BuildRun()

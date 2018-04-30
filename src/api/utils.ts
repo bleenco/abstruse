@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import * as path from 'path';
 import { readFileSync } from 'fs';
 import * as request from 'request';
 import { CommandType, CommandTypePriority } from './config';
@@ -23,7 +23,7 @@ export interface JobProcess {
 
 export function getAbstruseVersion(): string {
   try {
-    let pkgJson = JSON.parse(readFileSync(resolve(__dirname, '../../package.json')).toString());
+    let pkgJson = JSON.parse(readFileSync(path.resolve(__dirname, '../../package.json')).toString());
     return pkgJson.version;
   } catch (e) {
     console.log(e);

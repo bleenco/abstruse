@@ -9,6 +9,10 @@ import { switchMap, delay } from 'rxjs/operators';
 export interface IAccessToken {
   token: string;
   description: string;
+  bitbucket_client_id: string;
+  bitbucket_oauth_key: string;
+  bitbucket_oauth_secret: string;
+  type: 'github' | 'gitlab' | 'bitbucket' | 'gogs';
   users_id: number;
 }
 
@@ -31,6 +35,7 @@ export class AppUserComponent implements OnInit {
   savingPassword: boolean;
   passwordSaved: boolean;
   token: IAccessToken;
+  tokenTypeOptions: { key: any, value: string }[];
   uploading: boolean;
   uploadProgress: number;
   uploadInput: EventEmitter<UploadInput>;
@@ -53,7 +58,22 @@ export class AppUserComponent implements OnInit {
   ngOnInit() {
     this.tab = 'profile';
     this.loggedUser = this.auth.getData();
-    this.token = { token: '', description: '', users_id: this.route.snapshot.params.id };
+    this.token = {
+      token: '',
+      description: '',
+      bitbucket_client_id: '',
+      bitbucket_oauth_key: '',
+      bitbucket_oauth_secret: '',
+      type: 'github',
+      users_id: this.route.snapshot.params.id
+    };
+
+    this.tokenTypeOptions = [
+      { key: 'github', value: 'GitHub' },
+      { key: 'gitlab', value: 'GitLab' },
+      { key: 'bitbucket', value: 'BitBucket' },
+      { key: 'gogs', value: 'Gogs' }
+    ];
 
     this.fetchUser();
   }
@@ -151,6 +171,12 @@ export class AppUserComponent implements OnInit {
     this.token.users_id = this.route.snapshot.params.id;
     this.api.addToken(this.token).subscribe(event => {
       if (event) {
+        this.token.description = '';
+        this.token.token = '';
+        this.token.bitbucket_client_id = '';
+        this.token.bitbucket_oauth_key = '';
+        this.token.bitbucket_oauth_secret = '';
+        this.token.type = 'github';
         this.fetchUser();
       }
     });
@@ -162,6 +188,14 @@ export class AppUserComponent implements OnInit {
         this.fetchUser();
       }
     });
+  }
+
+  changeTokenTypeSelect(key: string): void {
+    this.token.description = '';
+    this.token.token = '';
+    this.token.bitbucket_client_id = '';
+    this.token.bitbucket_oauth_key = '';
+    this.token.bitbucket_oauth_secret = '';
   }
 
   gotoRepository(e: MouseEvent, id: number): void {

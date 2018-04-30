@@ -142,7 +142,7 @@
                 </div>
               </div>
               <form class="form" #tokenForm="ngForm" (ngSubmit)="addToken($event)" *ngIf="(loggedUser.id === user.id || loggedUser.admin)">
-                <h4>New Access Token</h4>
+                <h4>New Authentication</h4>
                 <div class="message">
                   <div class="columns">
                     <div class="column is-1">
@@ -155,15 +155,31 @@
                   </div>
                 </div>
                 <div class="form-field">
-                  <label class="form-label">Token Description</label>
-                  <input class="form-input" type="text" placeholder="Access Token Description" name="token_description" required [(ngModel)]="token.description">
+                  <label class="form-label">Authentication Type</label>
+                  <app-selectbox [data]="tokenTypeOptions" (ngModelChange)="changeTokenTypeSelect($event)" [(ngModel)]="token.type"></app-selectbox>
                 </div>
                 <div class="form-field">
+                  <label class="form-label">Description</label>
+                  <input class="form-input" type="text" placeholder="Description" name="token_description" required [(ngModel)]="token.description">
+                </div>
+                <div class="form-field" *ngIf="token.type !== 'bitbucket'">
                   <label class="form-label">Token</label>
                   <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
                 </div>
+                <div class="form-field" *ngIf="token.type === 'bitbucket'">
+                  <label class="form-label">Bitbucket Client ID</label>
+                  <input class="form-input" type="text" placeholder="Bitbucket Client ID" name="token_bitbucket_client_id" required [(ngModel)]="token.bitbucket_client_id">
+                </div>
+                <div class="form-field" *ngIf="token.type === 'bitbucket'">
+                  <label class="form-label">Bitbucket OAuth Key</label>
+                  <input class="form-input" type="text" placeholder="Bitbucket OAuth Key" name="token_bitbucket_oauth_key" required [(ngModel)]="token.bitbucket_oauth_key">
+                </div>
+                <div class="form-field" *ngIf="token.type === 'bitbucket'">
+                  <label class="form-label">Bitbucket OAuth Secret</label>
+                  <input class="form-input" type="text" placeholder="Bitbucket OAuth Secret" name="token_bitbucket_oauth_secret" required [(ngModel)]="token.bitbucket_oauth_secret">
+                </div>
                 <div class="form-field">
-                  <button type="submit" name="add-token" class="button green float-right" [disabled]="!tokenForm.form.valid">Add Token</button>
+                  <button type="submit" name="add-token" class="button green float-right" [disabled]="!tokenForm.form.valid">Add</button>
                 </div>
               </form>
             </div>
