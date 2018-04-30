@@ -1,3 +1,25 @@
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/bleenco/abstruse/compare/v1.5.6...v1.6.0) (2018-04-30)
+
+
+### Bug Fixes
+
+* **fonts:** fix terminal fonts on Linux (closes [#362](https://github.com/bleenco/abstruse/issues/362)) ([0f5c558](https://github.com/bleenco/abstruse/commit/0f5c558))
+* **gogs:** fix formatting JSON payload before calculating signature (closes [#336](https://github.com/bleenco/abstruse/issues/336)) ([0552fb5](https://github.com/bleenco/abstruse/commit/0552fb5))
+
+
+### Features
+
+* **bitbucket:** BitBucket OAuth integration ([f432310](https://github.com/bleenco/abstruse/commit/f432310))
+
+
+### Performance Improvements
+
+* **config:** read configuration asynchroniously when possible ([dbd4590](https://github.com/bleenco/abstruse/commit/dbd4590))
+* **job-queue:** run jobs in sequence for non-blocking Docker performance ([5df2b17](https://github.com/bleenco/abstruse/commit/5df2b17))
+
+
+
 <a name="1.5.5"></a>
 ## [1.5.5](https://github.com/bleenco/abstruse/compare/v1.5.4...v1.5.5) (2018-04-11)
 
