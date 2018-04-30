@@ -164,7 +164,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
               }
             }, err => {
               let msg: LogMessageType = {
-                message: `[error]: ${err}`, type: 'error', notify: false
+                message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
               };
               jobFailed(proc, msg)
                 .then(() => observer.complete());
@@ -190,7 +190,9 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
           });
       })
       .catch(err => {
-        let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+        let msg: LogMessageType = {
+          message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+        };
         logger.next(msg);
       });
   });
@@ -243,7 +245,9 @@ export function restartJob(jobId: number): Promise<void> {
     .then(() => getBuild(job.builds_id))
     .then(build => sendPendingStatus(build, build.id))
     .catch(err => {
-      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = {
+        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+      };
       logger.next(msg);
     });
 }
@@ -293,7 +297,7 @@ export function stopJob(jobId: number): Promise<void> {
                   })
                   .catch(err => {
                     let msg: LogMessageType = {
-                      message: `[error]: ${err}`,
+                      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
                       type: 'error',
                       notify: false
                     };
@@ -301,7 +305,7 @@ export function stopJob(jobId: number): Promise<void> {
                   });
               }).catch(err => {
                 let msg: LogMessageType = {
-                  message: `[error]: ${err}`,
+                  message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
                   type: 'error',
                   notify: false
                 };
@@ -324,7 +328,7 @@ export function stopJob(jobId: number): Promise<void> {
                   })
                   .catch(err => {
                     let msg: LogMessageType = {
-                      message: `[error]: ${err}`,
+                      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
                       type: 'error',
                       notify: false
                     };
@@ -332,7 +336,7 @@ export function stopJob(jobId: number): Promise<void> {
                   });
               }).catch(err => {
                 let msg: LogMessageType = {
-                  message: `[error]: ${err}`,
+                  message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
                   type: 'error',
                   notify: false
                 };
@@ -340,7 +344,9 @@ export function stopJob(jobId: number): Promise<void> {
               });
           }
         }).catch(err => {
-          let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          let msg: LogMessageType = {
+            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+          };
           logger.next(msg);
         });
     })
@@ -367,7 +373,9 @@ export function stopJob(jobId: number): Promise<void> {
         delete buildSub[jobId];
       }
     }).catch(err => {
-      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = {
+        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+      };
       logger.next(msg);
     });
 }
@@ -405,10 +413,10 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
 
   return getRepositoryOnly(data.repositories_id)
     .then(repository => {
-      let isGithub = repository.github_id || false;
-      let isBitbucket = repository.bitbucket_id || false;
-      let isGitlab = repository.gitlab_id || false;
-      let isGogs = repository.gogs_id || false;
+      let isGithub = repository.github_id ? true : false;
+      let isBitbucket = repository.bitbucket_id ? true : false;
+      let isGitlab = repository.gitlab_id  ? true : false;
+      let isGogs = repository.gogs_id ? true : false;
 
       if (isGithub) {
         if (data.data.pull_request) {
@@ -507,7 +515,9 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
     .then(() => ({ buildId: buildData.id }))
     .catch(err => {
-      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = {
+        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+      };
       logger.next(msg);
     });
 }
@@ -561,11 +571,15 @@ export function restartBuild(buildId: number): Promise<any> {
           });
         })
         .catch(err => {
-          let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+          let msg: LogMessageType = {
+            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+          };
           logger.next(msg);
         });
     }).catch(err => {
-      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = {
+        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+      };
       logger.next(msg);
     });
 }
@@ -578,7 +592,9 @@ export function stopBuild(buildId: number): Promise<any> {
       }, Promise.resolve());
     })
     .catch(err => {
-      let msg: LogMessageType = { message: `[error]: ${err}`, type: 'error', notify: false };
+      let msg: LogMessageType = {
+        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+      };
       logger.next(msg);
     });
 }
@@ -681,7 +697,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
         })
         .catch(err => {
           let msg: LogMessageType = {
-            message: `[error]: ${err}`, type: 'error', notify: false
+            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
           };
           logger.next(msg);
 
@@ -742,7 +758,7 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
         })
         .catch(err => {
           let msg: LogMessageType = {
-            message: `[error]: ${err}`, type: 'error', notify: false
+            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
           };
           logger.next(msg);
         });

@@ -2,7 +2,6 @@ import * as docker from './docker';
 import * as child_process from 'child_process';
 import { generateRandomId, prepareCommands } from './utils';
 import { getFilePath } from './setup';
-import { getRepositoryByBuildId } from './db/repository';
 import { Observable } from 'rxjs';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';

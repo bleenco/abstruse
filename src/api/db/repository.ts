@@ -1,5 +1,5 @@
 import { Repository, Build } from './model';
-import { getHttpJsonResponse } from '../utils';
+import { getHttpJsonResponse, getBitBucketAccessToken } from '../utils';
 import { addRepositoryPermissionToEveryone } from './permission';
 import { URL } from 'url';
 
@@ -90,11 +90,24 @@ export function getRepositoryOnly(id: number): Promise<any> {
         reject(repo);
       } else {
         repo = repo.toJSON();
-
-        repo.access_token = repo.access_token && repo.access_token.token ?
-          repo.access_token.token : null;
-
-        resolve(repo);
+        if (typeof repo.access_token !== 'undefined') {
+          const token_data = repo.access_token;
+          if (token_data.type === 'bitbucket') {
+            const credentials = `${token_data.bitbucket_oauth_key}:${token_data.bitbucket_oauth_secret}`;
+            getBitBucketAccessToken(credentials)
+              .then(resp => {
+                repo.access_token = `${token_data.bitbucket_client_id}:${resp.access_token}`;
+                resolve(repo);
+              })
+              .catch(err => reject(err));
+          } else {
+            repo.access_token = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
+            resolve(repo);
+          }
+        } else {
+          repo.access_token = null;
+          resolve(repo);
+        }
       }
     }).catch(err => reject(err));
   });

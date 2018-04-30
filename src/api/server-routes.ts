@@ -49,7 +49,7 @@ import {
   getConfigRawFile,
   parseConfigFromRaw,
 } from './config';
-import { getHttpJsonResponse, generateBadgeHtml } from './utils';
+import { getHttpJsonResponse, generateBadgeHtml, getBitBucketAccessToken } from './utils';
 import {
   getCacheFilesFromPattern,
   deleteCacheFilesFromPattern,
@@ -331,19 +331,39 @@ export function repositoryRoutes(): express.Router {
 
   router.get('/check/:id', (req: express.Request, res: express.Response) => {
     let repository: Repository = null;
-    getRepository(req.params.id).then(repo => {
-      let accessToken = null;
-      if (repo.access_token && repo.access_token) {
-        accessToken = repo.access_token.token || null;
-      }
-      repository = {
-        clone_url: repo.clone_url,
-        branch: repo.default_branch,
-        access_token: accessToken
-      };
+    let r = null;
+    getRepository(req.params.id)
+      .then(repo => {
+        r = repo;
+        let accessToken = null;
 
-      return checkRepositoryAccess(repository);
-    })
+        if (typeof repo.access_token !== 'undefined') {
+          const token_data = repo.access_token;
+          if (token_data.type === 'bitbucket') {
+            const credentials = `${token_data.bitbucket_oauth_key}:${token_data.bitbucket_oauth_secret}`;
+            return getBitBucketAccessToken(credentials)
+              .then(resp => {
+                accessToken = `${token_data.bitbucket_client_id}:${resp.access_token}`;
+                return Promise.resolve(accessToken);
+              })
+              .catch(err => Promise.reject(err));
+          } else {
+            accessToken = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
+            return Promise.resolve(accessToken);
+          }
+        } else {
+          return Promise.resolve(null);
+        }
+      })
+      .then(accessToken => {
+        repository = {
+          clone_url: r.clone_url,
+          branch: r.default_branch,
+          access_token: accessToken
+        };
+
+        return checkRepositoryAccess(repository);
+      })
       .then(hasAccess => {
         if (!hasAccess) {
           res.status(200).json({ data: { read: false, config: false, parsedcfg: false } });
@@ -407,16 +427,23 @@ export function repositoryRoutes(): express.Router {
           } else if (repository.repository_provider === 'bitbucket') {
             let url = repository.api_url + '/' + repository.user_login + '/' + repository.name +
               '/commits/master';
-            let accessToken = null;
+
             if (repository.access_token) {
-              accessToken = repository.access_token.token || null;
-            }
+              const token_data = repository.access_token;
+              const credentials = `${token_data.bitbucket_oauth_key}:${token_data.bitbucket_oauth_secret}`;
+              return getBitBucketAccessToken(credentials)
+                .then(resp => {
+                  let accessToken = `${token_data.bitbucket_client_id}:${resp.access_token}`;
+                  if (accessToken) {
+                    url = url.replace('//', `//${accessToken}@`);
+                  }
 
-            if (accessToken) {
-              url = url.replace('//', `//${accessToken}@`);
+                  return getHttpJsonResponse(url).then(payload => payload.values[0]);
+                })
+                .catch(err => Promise.reject(err));
+            } else {
+              return getHttpJsonResponse(url).then(payload => payload.values[0]);
             }
-
-            return getHttpJsonResponse(url).then(payload => payload.values[0]);
           } else if (repository.repository_provider === 'gogs') {
             let url = repository.api_url + '/api/v1/' + repository.user_login +
               '/repos/' + repository.full_name + '/branches/master';
@@ -451,16 +478,40 @@ export function repositoryRoutes(): express.Router {
     getRepository(req.params.id)
       .then(repo => {
         let accessToken = null;
-        if (repo.access_token) {
-          accessToken = repo.access_token.token || null;
-        }
-        repository = {
-          clone_url: repo.clone_url,
-          branch: repo.default_branch,
-          access_token: accessToken
-        };
 
-        return getConfigRawFile(repository);
+        if (typeof repo.access_token !== 'undefined') {
+          const token_data = repo.access_token;
+          if (token_data.type === 'bitbucket') {
+            const credentials = `${token_data.bitbucket_oauth_key}:${token_data.bitbucket_oauth_secret}`;
+            return getBitBucketAccessToken(credentials)
+              .then(resp => {
+                accessToken = `${token_data.bitbucket_client_id}:${resp.access_token}`;
+                repository = {
+                  clone_url: repo.clone_url,
+                  branch: repo.default_branch,
+                  access_token: accessToken
+                };
+
+                return getConfigRawFile(repository);
+              })
+              .catch(err => Promise.reject(err));
+          } else {
+            accessToken = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
+            repository = {
+              clone_url: repo.clone_url,
+              branch: repo.default_branch,
+              access_token: accessToken
+            };
+            return getConfigRawFile(repository);
+          }
+        } else {
+          repository = {
+            clone_url: repo.clone_url,
+            branch: repo.default_branch,
+            access_token: accessToken
+          };
+          return getConfigRawFile(repository);
+        }
       })
       .then(rawFile => {
         if (!rawFile) {
@@ -487,6 +538,7 @@ export function repositoryRoutes(): express.Router {
           if (repository.access_token) {
             accessToken = repository.access_token.token || null;
           }
+
           repo = {
             clone_url: repository.clone_url,
             branch: repository.default_branch,
@@ -496,7 +548,6 @@ export function repositoryRoutes(): express.Router {
           if (repository.repository_provider === 'github') {
             let url = repository.api_url + '/repos/' + repository.full_name + '/commits/' +
               repository.default_branch;
-            let accessToken = null;
 
             if (repository.access_token) {
               accessToken = repository.access_token.token || null;
@@ -511,14 +562,14 @@ export function repositoryRoutes(): express.Router {
         })
         .then(load => payload = load)
         .then(() => parseConfigFromRaw(repo, req.body.config))
-        .then(config => {
+        .then(cfg => {
           let buildData = {
             data: payload,
             start_time: new Date(),
             repositories_id: req.body.id
           };
 
-          return startBuild(buildData, config);
+          return startBuild(buildData, cfg);
         })
         .then(() => res.status(200).json({ data: true }))
         .catch(err => res.status(200).json({ data: false }));
