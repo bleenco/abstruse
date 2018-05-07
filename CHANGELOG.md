@@ -1,3 +1,14 @@
+<a name="1.6.2"></a>
+## [1.6.2](https://github.com/bleenco/abstruse/compare/v1.6.1...v1.6.2) (2018-05-07)
+
+
+### Bug Fixes
+
+* **build-status:** use correct gitlab url instead of hardcoded one ([cc4a436](https://github.com/bleenco/abstruse/commit/cc4a436))
+* **gitlab-integration:** fix GitLab integration ([0a30888](https://github.com/bleenco/abstruse/commit/0a30888))
+
+
+
 <a name="1.6.1"></a>
 ## [1.6.1](https://github.com/bleenco/abstruse/compare/v1.6.0...v1.6.1) (2018-05-07)
 
