@@ -162,6 +162,10 @@
                   <label class="form-label">Description</label>
                   <input class="form-input" type="text" placeholder="Description" name="token_description" required [(ngModel)]="token.description">
                 </div>
+                <div class="form-field" *ngIf="token.type === 'gitlab'">
+                  <label class="form-label">GitLab Username</label>
+                  <input class="form-input" type="text" placeholder="GitLab Username" name="gitlab_username" required [(ngModel)]="token.gitlab_username">
+                </div>
                 <div class="form-field" *ngIf="token.type !== 'bitbucket'">
                   <label class="form-label">Token</label>
                   <input class="form-input" type="text" placeholder="Access Token" name="token" required [(ngModel)]="token.token">
