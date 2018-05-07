@@ -34,7 +34,12 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
           let id = build.data.project_id ?
             build.data.project_id : build.data.object_attributes.target_project_id;
           let sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
-          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let gitUrl = null;
+          if (build.repository.api_url && build.repository.api_url !== '') {
+            gitUrl = `${build.repository.api_url}/projects/${id}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          }
           let abstruseUrl = `${config.url}/build/${buildId}`;
 
           return setGitLabStatusSuccess(gitUrl, abstruseUrl,
@@ -84,7 +89,12 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
           let id = buildData.data.project_id ?
             buildData.data.project_id : buildData.data.object_attributes.target_project_id;
           let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let gitUrl = null;
+          if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+            gitUrl = `${buildData.repository.api_url}/projects/${id}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          }
           let abstruseUrl = `${config.url}/build/${buildId}`;
 
           return setGitLabStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
@@ -133,7 +143,12 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
           let id = buildData.data.project_id ?
             buildData.data.project_id : buildData.data.object_attributes.target_project_id;
           let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
-          let gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          let gitUrl = null;
+          if (buildData.repository.api_url && buildData.repository.api_url !== '') {
+            gitUrl = `${buildData.repository.api_url}/projects/${id}/statuses/${sha}`;
+          } else {
+            gitUrl = `https://gitlab.com/api/v4/projects/${id}/statuses/${sha}`;
+          }
           let abstruseUrl = `${config.url}/build/${buildId}`;
 
           return setGitLabStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
