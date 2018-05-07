@@ -1,3 +1,13 @@
+<a name="1.6.1"></a>
+## [1.6.1](https://github.com/bleenco/abstruse/compare/v1.6.0...v1.6.1) (2018-05-07)
+
+
+### Bug Fixes
+
+* **provider-auth:** fix UI for adding provider authentications ([d3930e9](https://github.com/bleenco/abstruse/commit/d3930e9))
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/bleenco/abstruse/compare/v1.5.6...v1.6.0) (2018-04-30)
 
