@@ -156,7 +156,7 @@
                 </div>
                 <div class="form-field">
                   <label class="form-label">Authentication Type</label>
-                  <app-selectbox [data]="tokenTypeOptions" (ngModelChange)="changeTokenTypeSelect($event)" [(ngModel)]="token.type"></app-selectbox>
+                  <app-selectbox [data]="tokenTypeOptions" (ngModelChange)="changeTokenTypeSelect($event)" [(ngModel)]="token.type" name="access_token_type"></app-selectbox>
                 </div>
                 <div class="form-field">
                   <label class="form-label">Description</label>
