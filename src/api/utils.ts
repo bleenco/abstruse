@@ -47,14 +47,10 @@ export function generateRandomId(): string {
   return Math.random().toString(36).substring(7);
 }
 
-export function getHttpJsonResponse(url: string): Promise<any> {
+export function getHttpJsonResponse(url: string, optHeaders: any = {}): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
-      url: url,
-      headers: {
-        'User-Agent': 'request'
-      }
-    };
+    let headers = Object.assign({}, { 'User-Agent': 'abstruse' }, optHeaders);
+    let options = { url, headers };
 
     request(options, (err, resp, body) => {
       if (err) {

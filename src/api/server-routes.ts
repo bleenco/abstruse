@@ -347,6 +347,9 @@ export function repositoryRoutes(): express.Router {
                 return Promise.resolve(accessToken);
               })
               .catch(err => Promise.reject(err));
+          } else if (token_data.type === 'gitlab') {
+            repo.access_token = repo.access_token && repo.access_token.token ?
+              `${repo.access_token.gitlab_username}:${repo.access_token.token}` : null;
           } else {
             accessToken = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
             return Promise.resolve(accessToken);
@@ -415,15 +418,12 @@ export function repositoryRoutes(): express.Router {
               repository.gitlab_id + '/repository/branches/master';
 
             let accessToken = null;
+            let headers = {};
             if (repository.access_token) {
-              accessToken = repository.access_token.token || null;
+              headers = { 'PRIVATE-TOKEN': repository.access_token.token };
             }
 
-            if (accessToken) {
-              url = url.replace('//', `//${accessToken}@`);
-            }
-
-            return getHttpJsonResponse(url);
+            return getHttpJsonResponse(url, headers);
           } else if (repository.repository_provider === 'bitbucket') {
             let url = repository.api_url + '/' + repository.user_login + '/' + repository.name +
               '/commits/master';
@@ -495,6 +495,15 @@ export function repositoryRoutes(): express.Router {
                 return getConfigRawFile(repository);
               })
               .catch(err => Promise.reject(err));
+          } else if (token_data.type === 'gitlab') {
+            accessToken = repo.access_token && repo.access_token.token ?
+              `${repo.access_token.gitlab_username}:${repo.access_token.token}` : null;
+            repository = {
+              clone_url: repo.clone_url,
+              branch: repo.default_branch,
+              access_token: accessToken
+            };
+            return getConfigRawFile(repository);
           } else {
             accessToken = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
             repository = {

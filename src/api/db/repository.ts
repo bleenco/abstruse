@@ -100,6 +100,10 @@ export function getRepositoryOnly(id: number): Promise<any> {
                 resolve(repo);
               })
               .catch(err => reject(err));
+          } else if (token_data.type === 'gitlab') {
+            repo.access_token = repo.access_token && repo.access_token.token ?
+              `${repo.access_token.gitlab_username}:${repo.access_token.token}` : null;
+            resolve(repo);
           } else {
             repo.access_token = repo.access_token && repo.access_token.token ? repo.access_token.token : null;
             resolve(repo);

@@ -31,9 +31,9 @@ export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
           return setBitbucketStatusSuccess(gitUrl, abstruseUrl,
             build.repository.access_token);
         } else if (build.repository.gitlab_id) {
-          let id = build.data.project_id ?
-            build.data.project_id : build.data.object_attributes.target_project_id;
-          let sha = build.data.checkout_sha || build.data.object_attributes.last_commit.id;
+          let id = build.repositories_id ?
+            build.repositories_id : build.data.object_attributes.target_repositories_id;
+          let sha = build.data.commit && build.data.commit.id || build.data.object_attributes.last_commit.id;
           let gitUrl = null;
           if (build.repository.api_url && build.repository.api_url !== '') {
             gitUrl = `${build.repository.api_url}/projects/${id}/statuses/${sha}`;
@@ -86,9 +86,9 @@ export function sendPendingStatus(buildData: any, buildId: number): Promise<void
 
           return setBitbucketStatusPending(gitUrl, abstruseUrl, buildData.repository.access_token);
         } else if (buildData.repository.gitlab_id) {
-          let id = buildData.data.project_id ?
-            buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-          let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+          let id = buildData.repositories_id ?
+            buildData.repositories_id : buildData.data.object_attributes.target_repositories_id;
+          let sha = buildData.data.commit && buildData.data.commit.id || buildData.data.object_attributes.last_commit.id;
           let gitUrl = null;
           if (buildData.repository.api_url && buildData.repository.api_url !== '') {
             gitUrl = `${buildData.repository.api_url}/projects/${id}/statuses/${sha}`;
@@ -140,9 +140,9 @@ export function sendFailureStatus(buildData: any, buildId: number): Promise<void
 
           return setBitbucketStatusFailure(gitUrl, abstruseUrl, buildData.repository.access_token);
         } else if (buildData.repository.gitlab_id) {
-          let id = buildData.data.project_id ?
-            buildData.data.project_id : buildData.data.object_attributes.target_project_id;
-          let sha = buildData.data.checkout_sha || buildData.data.object_attributes.last_commit.id;
+          let id = buildData.repositories_id ?
+            buildData.repositories_id : buildData.data.object_attributes.target_repositories_id;
+          let sha = buildData.data.commit && buildData.data.commit.id || buildData.data.object_attributes.last_commit.id;
           let gitUrl = null;
           if (buildData.repository.api_url && buildData.repository.api_url !== '') {
             gitUrl = `${buildData.repository.api_url}/projects/${id}/statuses/${sha}`;
@@ -398,7 +398,7 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
         };
         logger.next(msg);
 
-        reject(err);
+        resolve(err);
       } else {
         if (response.statusCode < 300 && response.statusCode >= 200) {
           let msg: LogMessageType = {
@@ -417,7 +417,7 @@ function sendRequest(url: string, data: any, headers: any): Promise<any> {
           };
           logger.next(msg);
 
-          reject({
+          resolve({
             statusCode: response.statusCode,
             response: body
           });
