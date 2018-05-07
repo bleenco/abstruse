@@ -18,6 +18,7 @@ export function create(): Promise<null> {
       t.increments('id').unsigned().primary();
       t.string('description').notNullable();
       t.string('token');
+      t.string('gitlab_username');
       t.string('bitbucket_client_id');
       t.string('bitbucket_oauth_key');
       t.string('bitbucket_oauth_secret');

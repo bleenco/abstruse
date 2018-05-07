@@ -9,6 +9,7 @@ import { switchMap, delay } from 'rxjs/operators';
 export interface IAccessToken {
   token: string;
   description: string;
+  gitlab_username: string;
   bitbucket_client_id: string;
   bitbucket_oauth_key: string;
   bitbucket_oauth_secret: string;
@@ -61,6 +62,7 @@ export class AppUserComponent implements OnInit {
     this.token = {
       token: '',
       description: '',
+      gitlab_username: '',
       bitbucket_client_id: '',
       bitbucket_oauth_key: '',
       bitbucket_oauth_secret: '',
@@ -173,6 +175,7 @@ export class AppUserComponent implements OnInit {
       if (event) {
         this.token.description = '';
         this.token.token = '';
+        this.token.gitlab_username = '';
         this.token.bitbucket_client_id = '';
         this.token.bitbucket_oauth_key = '';
         this.token.bitbucket_oauth_secret = '';
@@ -193,6 +196,7 @@ export class AppUserComponent implements OnInit {
   changeTokenTypeSelect(key: string): void {
     this.token.description = '';
     this.token.token = '';
+    this.token.gitlab_username = '';
     this.token.bitbucket_client_id = '';
     this.token.bitbucket_oauth_key = '';
     this.token.bitbucket_oauth_secret = '';
