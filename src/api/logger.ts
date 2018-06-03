@@ -1,5 +1,7 @@
 import { insertLog } from './db/log';
 import { Subject, Observable } from 'rxjs';
+import { filter, mergeMap, share, map } from 'rxjs/operators';
+import { fromPromise } from 'rxjs/observable/fromPromise';
 import chalk from 'chalk';
 
 export interface LogMessageType {
@@ -11,21 +13,23 @@ export interface LogMessageType {
 export let logger: Subject<LogMessageType> = new Subject();
 
 logger
-  .filter((msg: LogMessageType) => !!msg.message && msg.message !== '')
-  .mergeMap((msg: LogMessageType) => {
-    msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
-    let message = { message: msg.message, type: msg.type, notify: msg.notify };
-    return Observable.fromPromise(insertLog(colorizeMessage(message)));
-  })
-  .map((msg: any) => {
-    let time = getDateTime();
-    let message = [
-      chalk.white('['),
-      chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
-    ].join('');
-    console.log(message);
-  })
-  .share()
+  .pipe(
+    filter((msg: LogMessageType) => !!msg.message && msg.message !== ''),
+    mergeMap((msg: LogMessageType) => {
+      msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
+      let message = { message: msg.message, type: msg.type, notify: msg.notify };
+      return fromPromise(insertLog(colorizeMessage(message)));
+    }),
+    map((msg: any) => {
+      let time = getDateTime();
+      let message = [
+        chalk.white('['),
+        chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
+      ].join('');
+      console.log(message);
+    }),
+    share()
+  )
   .subscribe();
 
 function colorizeMessage(msg: LogMessageType): LogMessageType {

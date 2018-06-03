@@ -100,7 +100,7 @@ export function dockerExec(
     };
 
     container.exec(execOptions)
-      .then(exec => exec.start())
+      .then(exe => exe.start())
       .then(stream => {
         let ws = new Writable();
         ws.setDefaultEncoding('utf8');
@@ -299,14 +299,14 @@ export function calculateContainerStats(
         const jobId = container.Names[0].split('_')[2] || -1;
         const job = processes.find(p => p.job_id === Number(jobId));
         const debug = job && job.debug || false;
-        const stats = {
+        const statsData = {
           id: container.Id,
           name: container.Names[0].substr(1) || '',
           debug: debug,
           data: data
         };
 
-        return stats;
+        return statsData;
       } else {
         return null;
       }

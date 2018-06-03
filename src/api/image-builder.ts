@@ -5,6 +5,7 @@ import * as fs from 'fs-extra';
 import { logger, LogMessageType } from './logger';
 import { join } from 'path';
 import { Observable, Subject } from 'rxjs';
+import { share } from 'rxjs/operators';
 import * as glob from 'glob';
 import { format, distanceInWordsToNow } from 'date-fns';
 
@@ -21,7 +22,7 @@ export interface ImageBuildOutput {
 }
 
 export let imageBuilder: Subject<ImageBuildOutput> = new Subject();
-export let imageBuilderObs = imageBuilder.share();
+export let imageBuilderObs = imageBuilder.pipe(share());
 
 export function buildAbstruseBaseImage(): void {
   buildDockerImage(defaultBaseImage);
