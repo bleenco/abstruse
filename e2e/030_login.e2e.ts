@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 describe('User Login', () => {
 
-  it('should not be able to login with wrong credentials', () => {
+  it('should not be able to login with wrong credentials', (): any => {
     return browser.get('/login')
       .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('test@gmail.com'))
@@ -18,7 +18,7 @@ describe('User Login', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/login'));
   });
 
-  it('should login with correct username and password', () => {
+  it('should login with correct username and password', (): any => {
     return browser.get('/login')
       .then(() => browser.waitForAngularEnabled(false))
       .then(() => isLoaded())
@@ -31,7 +31,7 @@ describe('User Login', () => {
       .then(() => browser.waitForAngularEnabled(true));
   });
 
-  it('should be able to logout', () => {
+  it('should be able to logout', (): any => {
     return browser.waitForAngularEnabled(false)
       .then(() => browser.get('/'))
       .then(() => isLoaded())

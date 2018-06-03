@@ -17,7 +17,7 @@ describe('Build Details', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should restart existing build', () => {
+  it('should restart existing build', (): any => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(cnt => {
@@ -158,7 +158,7 @@ describe('Build Details', () => {
       }));
   });
 
-  it(`should restart first build and see approximately time remaining`, () => {
+  it(`should restart first build and see approximately time remaining`, (): any => {
     return browser.get('/build/1')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;

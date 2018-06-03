@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe('User Registration', () => {
-  it(`continue button should be disabled when password is empty`, () => {
+  it(`continue button should be disabled when password is empty`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -23,7 +23,7 @@ describe('User Registration', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/setup'));
   });
 
-  it(`continue button should be disabled when email is not email address`, () => {
+  it(`continue button should be disabled when email is not email address`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -40,7 +40,7 @@ describe('User Registration', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/setup'));
   });
 
-  it(`continue button should be disabled when name is empty`, () => {
+  it(`continue button should be disabled when name is empty`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -57,7 +57,7 @@ describe('User Registration', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/setup'));
   });
 
-  it(`continue button should be disabled when passwords don't match`, () => {
+  it(`continue button should be disabled when passwords don't match`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())
@@ -74,7 +74,7 @@ describe('User Registration', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/setup'));
   });
 
-  it('should successfully register user', () => {
+  it('should successfully register user', (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="btn-continue"]')).click())

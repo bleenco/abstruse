@@ -12,7 +12,7 @@ describe('Repositories', () => {
   before(() => login());
   after(() => logout());
 
-  it('should open repository page with zero repositories', () => {
+  it('should open repository page with zero repositories', (): any => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => {
@@ -21,7 +21,7 @@ describe('Repositories', () => {
       });
   });
 
-  it('should add repository bterm (send ping event)', () => {
+  it('should add repository bterm (send ping event)', (): any => {
     return sendGitHubRequest(request, header)
       .then(() => browser.get('/repositories'))
       .then((): any => isLoaded())
@@ -32,7 +32,7 @@ describe('Repositories', () => {
       });
   });
 
-  it('should redirect to bterm repository, add environment variable and then delete it', () => {
+  it('should redirect to bterm repository, add environment variable and then delete it', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 1);

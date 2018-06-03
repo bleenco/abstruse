@@ -8,7 +8,7 @@ const expect = chai.expect;
 
 describe('Server Status', () => {
 
-  it(`should have docker installed`, () => {
+  it(`should have docker installed`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="docker-installed-icon"]')))
@@ -16,7 +16,7 @@ describe('Server Status', () => {
       .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
   });
 
-  it(`should have docker running`, () => {
+  it(`should have docker running`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="docker-running-icon"]')))
@@ -24,7 +24,7 @@ describe('Server Status', () => {
       .then(attr => expect(attr).to.includes('/images/icons/check-true.svg'));
   });
 
-  it(`should have sqlite3 installed`, () => {
+  it(`should have sqlite3 installed`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="sqlite3-installed-icon"]')))
@@ -32,7 +32,7 @@ describe('Server Status', () => {
       .then(attr => expect(attr).to.includes('images/icons/check-true.svg'));
   });
 
-  it(`should have git installed`, () => {
+  it(`should have git installed`, (): any => {
     return browser.get('/setup')
       .then(() => isLoaded())
       .then(() => element(by.css('[name="git-installed-icon"]')))

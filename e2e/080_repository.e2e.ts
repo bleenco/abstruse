@@ -11,7 +11,7 @@ describe('Repository', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should redirect to d3 repository, and trigger test build', () => {
+  it('should redirect to d3 repository, and trigger test build', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
@@ -55,7 +55,7 @@ describe('Repository', () => {
       }));
   });
 
-  it('should redirect to d3 repository, check build configuration file and run build', () => {
+  it('should redirect to d3 repository, check build configuration file and run build', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
@@ -113,7 +113,7 @@ describe('Repository', () => {
       }));
   });
 
-  it('should redirect to d3 repository, check repository configurations', () => {
+  it('should redirect to d3 repository, check repository configurations', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
@@ -140,7 +140,7 @@ describe('Repository', () => {
       .then(cnt => expect(cnt).to.equals(3));
   });
 
-  it('should redirect to bterm repository, and update its repository provider', () => {
+  it('should redirect to bterm repository, and update its repository provider', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
@@ -172,7 +172,7 @@ describe('Repository', () => {
       .then(txt => expect(txt).to.equals('Gogs')));
   });
 
-  it('should redirect to bterm repository, and update its api url', () => {
+  it('should redirect to bterm repository, and update its api url', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);
@@ -199,7 +199,7 @@ describe('Repository', () => {
       .then(txt => expect(txt).to.equals('https://api.github.com2'));
   });
 
-  it('should redirect to bterm repository, and mark its as private', () => {
+  it('should redirect to bterm repository, and mark its as private', (): any => {
     return  browser.get('/repositories')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.list-item')).count().then(count => count === 2);

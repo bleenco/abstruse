@@ -11,14 +11,14 @@ describe('Teams', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should see one user on team page', () => {
+  it('should see one user on team page', (): any => {
     return browser.get('/team')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.team-user-item')).count().then(count => count === 1);
       }));
   });
 
-  it(`logged in user can see all repositories he has permission to`, () => {
+  it(`logged in user can see all repositories he has permission to`, (): any => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => delay(1000))
@@ -26,7 +26,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(5));
   });
 
-  it('should add new user', () => {
+  it('should add new user', (): any => {
     return browser.get('/team')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.team-user-item')).count().then(count => count === 1);
@@ -45,7 +45,7 @@ describe('Teams', () => {
       }));
   });
 
-  it('should redirect to team, user and then grant, revoke repository permission', () => {
+  it('should redirect to team, user and then grant, revoke repository permission', (): any => {
     return browser.get('/team')
       .then((): any => {
         return browser.wait(() => element.all(by.css('.edit-user-button')).last().isPresent());
@@ -113,7 +113,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(0));
   });
 
-  it(`as annonymous can click on build but can't restart it`, () => {
+  it(`as annonymous can click on build but can't restart it`, (): any => {
     return browser.get('/')
       .then(() => isLoaded())
       .then(() => browser.wait(() => element(by.css('.list-item')).isPresent()))
@@ -125,7 +125,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(0));
   });
 
-  it(`as annonymous can click on build, job but can't restart it`, () => {
+  it(`as annonymous can click on build, job but can't restart it`, (): any => {
     return browser.get('/')
       .then(() => isLoaded())
       .then(() => browser.wait(() => element(by.css('.list-item')).isPresent()))
@@ -140,7 +140,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(0));
   });
 
-  it(`as annonymous user dashboard shouldn't be visible`, () => {
+  it(`as annonymous user dashboard shouldn't be visible`, (): any => {
     return browser.get('/')
       .then(() => isLoaded())
       .then(() => delay(1000))
@@ -148,7 +148,7 @@ describe('Teams', () => {
       .then(present => expect(present).to.equals(false));
   });
 
-  it(`as annonymous user can see public repositories`, () => {
+  it(`as annonymous user can see public repositories`, (): any => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => delay(1000))
@@ -156,7 +156,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(4));
   });
 
-  it(`logout admin user and login with non admin user`, () => {
+  it(`logout admin user and login with non admin user`, (): any => {
     return browser.get('/login')
       .then(() => isLoaded())
       .then(() => element(by.css('.form-input[name="email"]')).sendKeys('frank@gmail.com'))
@@ -165,7 +165,7 @@ describe('Teams', () => {
       .then(() => isLoaded());
   });
 
-  it(`logged in user can see all repositories he has permission to`, () => {
+  it(`logged in user can see all repositories he has permission to`, (): any => {
     return browser.get('/repositories')
       .then(() => isLoaded())
       .then(() => delay(1000))
@@ -173,7 +173,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(4));
   });
 
-  it(`non admin user should see dashboard`, () => {
+  it(`non admin user should see dashboard`, (): any => {
     return browser.get('/')
       .then(() => isLoaded())
       .then(() => delay(1000))
@@ -181,7 +181,7 @@ describe('Teams', () => {
       .then(displayed => expect(displayed).to.equals(true));
   });
 
-  it(`non admin user can update his name`, () => {
+  it(`non admin user can update his name`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -194,7 +194,7 @@ describe('Teams', () => {
       .then(txt => expect(txt).to.equals('Frank Milner2'));
   });
 
-  it(`non admin user can update his email`, () => {
+  it(`non admin user can update his email`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -207,7 +207,7 @@ describe('Teams', () => {
       .then(txt => expect(txt).to.equals('frank@gmail.com2'));
   });
 
-  it(`non admin user can change his password`, () => {
+  it(`non admin user can change his password`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -227,7 +227,7 @@ describe('Teams', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 
-  it(`non admin user cannot update password from some other user`, () => {
+  it(`non admin user cannot update password from some other user`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).first().click())
@@ -237,7 +237,7 @@ describe('Teams', () => {
       .then(enabled => expect(enabled).to.equal(false));
   });
 
-  it(`non admin cannot set himeself as admin`, () => {
+  it(`non admin cannot set himeself as admin`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -246,7 +246,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equals(0));
   });
 
-  it(`non admin user can add his access token`, () => {
+  it(`non admin user can add his access token`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -265,7 +265,7 @@ describe('Teams', () => {
       .then(cnt => expect(cnt).to.equal(1));
   });
 
-  it(`non admin user can remove his access token`, () => {
+  it(`non admin user can remove his access token`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -287,7 +287,7 @@ describe('Teams', () => {
       .then(url => expect(url).to.equal('http://localhost:6500/'));
   });
 
-  it(`admin can set other user as admin`, () => {
+  it(`admin can set other user as admin`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())
@@ -301,7 +301,7 @@ describe('Teams', () => {
       .then(html => expect(html).to.include('admin'));
   });
 
-  it(`admin can update other user's password`, () => {
+  it(`admin can update other user's password`, (): any => {
     return browser.get('/team')
       .then(() => browser.wait(() => element(by.css('.edit-user-button')).isPresent()))
       .then((): any => element.all(by.css('.edit-user-button')).last().click())

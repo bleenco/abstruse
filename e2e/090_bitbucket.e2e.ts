@@ -1,8 +1,10 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 import { isLoaded, login, logout, delay } from './utils';
 import { request, header } from '../tests/e2e/webhooks/bitbucket/PushEvent';
-import { request as prReq, headerPullRequestCreated }
-  from '../tests/e2e/webhooks/bitbucket/PullRequestEvent';
+import {
+  request as prReq,
+  headerPullRequestCreated
+} from '../tests/e2e/webhooks/bitbucket/PullRequestEvent';
 import { sendBitBucketRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
@@ -21,10 +23,10 @@ describe('Bitbucket repositories', () => {
     logout().then(() => browser.waitForAngularEnabled(true));
   });
 
-  it('should add bitbucket repository and start new build (send push event)', () => {
+  it('should add bitbucket repository and start new build (send push event)', (): any => {
     return browser.wait(() => {
-        return element.all(by.css('.is-running')).count().then(count => count === 0);
-      })
+      return element.all(by.css('.is-running')).count().then(count => count === 0);
+    })
       .then(() => sendBitBucketRequest(request, header))
       .then(() => browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 1);

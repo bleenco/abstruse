@@ -14,7 +14,7 @@ describe('Gitlab repositories', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should add gitlab repository and start new build (send push event)', () => {
+  it('should add gitlab repository and start new build (send push event)', (): any => {
     return browser.wait(() => {
         return element.all(by.css('.is-running')).count().then(count => count === 0);
       })
