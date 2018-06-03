@@ -198,7 +198,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
       this.form = {
         name: 'abstruse_builder',
         dockerfile: [
-          'FROM ubuntu:17.10',
+          'FROM ubuntu:bionic',
           '',
           'ENV DEBIAN_FRONTEND=noninteractive',
           'ENV DISPLAY=:99',
