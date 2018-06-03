@@ -10,7 +10,7 @@ describe('Job Details', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 
-  it('should restart job watch console log until it matches expected output', () => {
+  it('should restart job watch console log until it matches expected output', (): any => {
     return browser.get('/job/5')
       .then((): any => browser.wait(() => {
         return element.all(by.css('.restart-job')).count().then(cnt => {
@@ -39,7 +39,7 @@ describe('Job Details', () => {
       .then((): any => element.all(by.css(`[name="btn-stop"]`)).first().click()));
   });
 
-  it('should restart build and watch job output', () => {
+  it('should restart build and watch job output', (): any => {
     return browser.get('/build/5')
       .then((): any => browser.wait(() => element.all(by.css('.list-item')).count().then(cnt => {
         return cnt > 0;
