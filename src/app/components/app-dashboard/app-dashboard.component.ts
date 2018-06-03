@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { StatsService } from '../../services/stats.service';
 import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs/Subscription';
-import { schemeCategory20b } from 'd3';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +10,6 @@ import { schemeCategory20b } from 'd3';
 export class AppDashboardComponent implements OnInit, OnDestroy {
   loading: boolean;
   sub: Subscription;
-  colors: string[];
   memory: { total: number, free: number, used: number };
   memoryHuman: { total: string, free: string, used: string };
   memoryPercentage: string;
@@ -21,8 +19,6 @@ export class AppDashboardComponent implements OnInit, OnDestroy {
 
   constructor(private statsService: StatsService, private socketService: SocketService) {
     this.loading = true;
-
-    this.colors = schemeCategory20b;
     this.memory = { total: null, free: null, used: null };
     this.memoryHuman = { total: null, free: null, used: null };
     this.memoryPercentage = '0';

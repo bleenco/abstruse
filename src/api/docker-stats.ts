@@ -1,18 +1,20 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, interval } from 'rxjs';
+import { share, timeInterval, mergeMap, map } from 'rxjs/operators';
 import * as utils from './utils';
 import { listContainers, calculateContainerStats } from './docker';
 import { processes } from './process-manager';
 
 export function getContainersStats(): Observable<any> {
   return new Observable(observer => {
-    let sub = Observable
-      .interval(2000)
-      .timeInterval()
-      .mergeMap(() => {
-        return listContainers()
-          .then(containers => Promise.all(containers.map(c => getContainerStats(c))));
-      })
-      .map(stats => observer.next({ type: 'containersStats', data: stats.filter(Boolean) }))
+    let sub = interval(2000)
+      .pipe(
+        timeInterval(),
+        mergeMap(() => {
+          return listContainers()
+            .then(containers => Promise.all(containers.map(c => getContainerStats(c))));
+        }),
+        map(stats => observer.next({ type: 'containersStats', data: stats.filter(Boolean) }))
+      )
       .subscribe();
 
     return () => {
@@ -20,7 +22,7 @@ export function getContainersStats(): Observable<any> {
         sub.unsubscribe();
       }
     };
-  }).share();
+  }).pipe(share());
 }
 
 function getContainerStats(container: any): Promise<any> {

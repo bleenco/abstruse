@@ -1,4 +1,4 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, concat } from 'rxjs';
 import { dockerExec } from '../docker';
 import { CommandType } from '../config';
 import { findFromEnvVariables } from '../deploy';
@@ -75,8 +75,7 @@ export function s3Deploy(
           );
         }
 
-        return Observable
-          .concat(...commands.map(command => dockerExec(container, command, variables)))
+        return concat(...commands.map(command => dockerExec(container, command, variables)))
           .toPromise();
       })
         .then(result => {
@@ -140,8 +139,7 @@ export function s3Deploy(
             application.push({ type: CommandType.deploy, command: cmd });
           }
 
-          return Observable
-            .concat(...application.map(command => dockerExec(container, command, variables)))
+          return concat(...application.map(command => dockerExec(container, command, variables)))
             .toPromise();
         })
         .then(result => {

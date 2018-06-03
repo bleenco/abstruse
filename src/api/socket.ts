@@ -3,7 +3,9 @@ import * as http from 'http';
 import * as https from 'https';
 import * as uuid from 'uuid';
 import * as querystring from 'querystring';
-import { Observable, Observer, Subject, Subscription } from 'rxjs';
+import { Observable, Observer, Subject, Subscription, merge } from 'rxjs';
+import { Subscribable } from 'rxjs/Observable';
+import { filter } from 'rxjs/operators';
 import { logger, LogMessageType } from './logger';
 import { getContainersStats } from './docker-stats';
 import {
@@ -26,7 +28,6 @@ import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';
 import { decodeJwt } from './security';
 import { getLastBuild } from './db/build';
-import { Subscribable } from 'rxjs/Observable';
 
 export interface ISocketServerOptions {
   app: express.Application;
@@ -212,8 +213,8 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          imageBuilderObs.subscribe(event => {
-            client.send({ type: 'imageBuildProgress', data: event });
+          imageBuilderObs.subscribe(e => {
+            client.send({ type: 'imageBuildProgress', data: e });
           });
         }
       }
@@ -290,7 +291,7 @@ export class SocketServer {
         }
 
         client.subscriptions.jobOutput = terminalEvents
-          .filter(e => Number(e.job_id) === Number(event.data.jobId))
+          .pipe(filter(e => Number(e.job_id) === Number(event.data.jobId)))
           .subscribe(output => client.send(output));
         break;
 
@@ -308,7 +309,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          logger.filter(msg => !!msg.notify).subscribe(msg => {
+          logger.pipe(filter((msg: any) => !!msg.notify)).subscribe(msg => {
             let notify = { notification: msg, type: 'notification' };
             client.send(notify);
           });
@@ -316,10 +317,8 @@ export class SocketServer {
         break;
 
       case 'subscribeToStats':
-        client.subscriptions.stats =
-          Observable.merge(...[
-            memory(), cpu(), getContainersStats()
-          ]).subscribe(event => client.send(event));
+      client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
+        .subscribe(e => client.send(e));
         break;
 
       case 'unsubscribeFromStats':

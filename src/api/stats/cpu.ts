@@ -1,5 +1,7 @@
 import { cpus } from 'os';
 import { Observable } from 'rxjs';
+import { timer } from 'rxjs/observable/timer';
+import { timeInterval, mergeMap, map, share } from 'rxjs/operators';
 import { IOutput } from '../socket';
 
 export interface ICpuData {
@@ -9,13 +11,15 @@ export interface ICpuData {
 }
 
 export function cpu(): Observable<IOutput> {
-  return Observable.timer(0, 2000)
-    .timeInterval()
-    .mergeMap(() => cpuLoad())
-    .map((res: ICpuData) => {
-      return { type: 'cpu', data: res };
-    })
-    .share();
+  return timer(0, 2000)
+    .pipe(
+      timeInterval(),
+      mergeMap(() => cpuLoad()),
+      map((res: ICpuData) => {
+        return { type: 'cpu', data: res };
+      }),
+      share()
+    );
 }
 
 function cpuLoad(): Promise<ICpuData> {

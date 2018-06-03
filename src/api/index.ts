@@ -11,7 +11,7 @@ setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
 
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
-import { Observable } from 'rxjs';
+import { merge } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import { getAbstruseVersion } from './utils';
 import { initSetup } from './setup';
@@ -35,8 +35,7 @@ initSetup()
   .then(() =>
     server.start().subscribe(app => {
       let socket = new SocketServer({ app: app });
-      Observable
-        .merge(...[socket.start(), generateKeys()])
+      merge(...[socket.start(), generateKeys()])
         .subscribe(data => {
           let msg: LogMessageType = { message: data, type: 'info', notify: false };
           logger.next(msg);

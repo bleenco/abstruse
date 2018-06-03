@@ -2,7 +2,10 @@ import * as docker from './docker';
 import * as child_process from 'child_process';
 import { generateRandomId, prepareCommands } from './utils';
 import { getFilePath } from './setup';
-import { Observable } from 'rxjs';
+import { Observable, concat as staticConcat, throwError } from 'rxjs';
+import { concat, timeoutWith, takeUntil, mergeMap, timeInterval } from 'rxjs/operators';
+import { empty } from 'rxjs/observable/empty';
+import { timer } from 'rxjs/observable/timer';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
 import * as envVars from './env-variables';
@@ -72,8 +75,8 @@ export function startBuildProcess(
       deployCommands = [];
     }
 
-    let restoreCache: Observable<any> = Observable.empty();
-    let saveCache: Observable<any> = Observable.empty();
+    let restoreCache: Observable<any> = empty();
+    let saveCache: Observable<any> = empty();
     if (proc.repo_name && proc.branch && proc.cache) {
       let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
       let cacheHostPath = getFilePath(`cache/${cacheFile}`);
@@ -87,7 +90,7 @@ export function startBuildProcess(
         `then tar xf ${cacheContainerPath} -C /; fi`
       ].join('');
 
-      restoreCache = Observable.concat(...[
+      restoreCache = staticConcat(...[
         executeOutsideContainer(copyRestoreCmd),
         docker.dockerExec(
           name, { command: restoreCmd, type: CommandType.restore_cache, env: envs })
@@ -110,28 +113,33 @@ export function startBuildProcess(
         `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
       ].join('');
 
-      saveCache = Observable.concat(...[
+      saveCache = staticConcat(...[
         docker.dockerExec(
           name, { command: tarCmd, type: CommandType.store_cache, env: envs }),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
 
-    let sub = docker.createContainer(name, image, envs)
-      .concat(docker.dockerPwd(name, envs))
-      .concat(...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(restoreCache)
-      .concat(...installCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(saveCache)
-      .concat(...scriptCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(...beforeDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(...deployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .concat(deploy(deployPreferences, name, envs))
-      .concat(...afterDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs)))
-      .timeoutWith(idleTimeout, Observable.throw(new Error('command timeout')))
-      .takeUntil(Observable.timer(jobTimeout).timeInterval().mergeMap(() => {
-        return Observable.throw('job timeout');
-      }))
+    let sub = staticConcat(
+      docker.createContainer(name, image, envs),
+      docker.dockerPwd(name, envs),
+      ...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)),
+      restoreCache,
+      ...installCommands.map(cmd => docker.dockerExec(name, cmd, envs)),
+      saveCache,
+      ...scriptCommands.map(cmd => docker.dockerExec(name, cmd, envs)),
+      ...beforeDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs)),
+      ...deployCommands.map(cmd => docker.dockerExec(name, cmd, envs)),
+      deploy(deployPreferences, name, envs),
+      ...afterDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs))
+    )
+      .pipe(
+        timeoutWith(idleTimeout, throwError(new Error('command timeout'))),
+        takeUntil(timer(jobTimeout).pipe(
+          timeInterval(),
+          mergeMap(() => throwError('job timeout')))
+        )
+      )
       .subscribe((event: ProcessOutput) => {
         if (event.type === 'env') {
           if (Object.keys(event.data).length) {
@@ -174,7 +182,7 @@ export function startBuildProcess(
             sub.unsubscribe();
             observer.complete();
           })
-          .catch(err => console.error(err));
+          .catch(e => console.error(e));
       }, () => {
         let msg = style.green.open + style.bold.open +
           '\r\n[success]: build returned exit code 0' +

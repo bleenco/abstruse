@@ -3,7 +3,9 @@ import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
-import { Observable } from 'rxjs';
+import { Observable, merge } from 'rxjs';
+import { fromPromise } from 'rxjs/observable/fromPromise';
+import { concat, toArray } from 'rxjs/operators';
 import { exists } from './fs';
 import { readFile } from 'fs-extra';
 import { reinitializeDatabase } from './db/migrations';
@@ -643,16 +645,16 @@ export function setupRoutes(): express.Router {
   let router = express.Router();
 
   router.get('/ready', (req: express.Request, res: express.Response) => {
-    Observable.merge(...[
+    merge(...[
       system.isGitInstalled(),
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
-      Observable.fromPromise(exists(getFilePath('config.json'))),
-      Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
-      Observable.fromPromise(usersExists())
+      fromPromise(exists(getFilePath('config.json'))),
+      fromPromise(exists(getFilePath('abstruse.sqlite'))),
+      fromPromise(usersExists())
     ])
-      .toArray()
+      .pipe(toArray())
       .subscribe(data => {
         let isFalse = data.findIndex(x => !x);
         if (isFalse === -1) {
@@ -664,23 +666,24 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/db', (req: express.Request, res: express.Response) => {
-    Observable.merge(...[
-      Observable.fromPromise(exists(getFilePath('abstruse.sqlite'))),
-      Observable.fromPromise(usersExists())
+    merge(...[
+      fromPromise(exists(getFilePath('abstruse.sqlite'))),
+      fromPromise(usersExists())
     ])
-      .toArray()
+      .pipe(toArray())
       .subscribe(data => {
         return res.status(200).json({ data: data.findIndex(x => !x) === -1 });
       });
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
-    Observable.concat(...[
+    const obs: any = concat(...[
       system.isGitInstalled(),
       system.isSQLiteInstalled(),
       docker.isDockerInstalled()
-    ])
-      .toArray()
+    ]);
+    obs
+      .pipe(toArray())
       .subscribe(data => {
         if (data[2]) {
           docker.isDockerRunning().subscribe(dockerRunning => {
