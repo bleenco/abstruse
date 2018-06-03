@@ -3,9 +3,9 @@ import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
-import { Observable, merge } from 'rxjs';
+import { Observable, merge, concat } from 'rxjs';
 import { fromPromise } from 'rxjs/observable/fromPromise';
-import { concat, toArray } from 'rxjs/operators';
+import { toArray } from 'rxjs/operators';
 import { exists } from './fs';
 import { readFile } from 'fs-extra';
 import { reinitializeDatabase } from './db/migrations';
@@ -677,12 +677,11 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
-    const obs: any = concat(...[
+    concat(...[
       system.isGitInstalled(),
       system.isSQLiteInstalled(),
       docker.isDockerInstalled()
-    ]);
-    obs
+    ])
       .pipe(toArray())
       .subscribe(data => {
         if (data[2]) {
