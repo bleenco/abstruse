@@ -1,6 +1,5 @@
 import { totalmem, freemem } from 'os';
-import { Observable } from 'rxjs';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, timer } from 'rxjs';
 import { timeInterval, mergeMap, map, share } from 'rxjs/operators';
 import { IOutput } from '../socket';
 

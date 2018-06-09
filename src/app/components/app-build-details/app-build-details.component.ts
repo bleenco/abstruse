@@ -7,7 +7,7 @@ import { TimeService } from '../../services/time.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -100,7 +100,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
                 this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time = event.additionalData;
               } else if (event.data === 'job failed') {
                 this.build.jobs[index].status = 'failed';
-                if (!this.build.jobs[index].end_time)  {
+                if (!this.build.jobs[index].end_time) {
                   this.build.jobs[index].end_time = event.additionalData;
                 }
                 if (!this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time) {
@@ -110,7 +110,7 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
                 if (this.build.jobs[index].status !== 'success') {
                   this.build.jobs[index].status = 'failed';
                 }
-                if (!this.build.jobs[index].end_time)  {
+                if (!this.build.jobs[index].end_time) {
                   this.build.jobs[index].end_time = event.additionalData;
                 }
                 if (!this.build.jobs[index].runs[this.build.jobs[index].runs.length - 1].end_time) {

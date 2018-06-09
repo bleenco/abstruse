@@ -1,7 +1,7 @@
 import { Injectable, Provider } from '@angular/core';
 import { Http, Response, URLSearchParams, RequestOptions, Headers } from '@angular/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { IAccessToken } from '../components/app-user';
 import { map } from 'rxjs/operators';
 

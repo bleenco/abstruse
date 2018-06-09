@@ -2,9 +2,7 @@ import { Injectable, Provider } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { Observable, of, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()

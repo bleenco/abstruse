@@ -1,7 +1,6 @@
 import { insertLog } from './db/log';
-import { Subject, Observable } from 'rxjs';
+import { Subject, from } from 'rxjs';
 import { filter, mergeMap, share, map } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 import chalk from 'chalk';
 
 export interface LogMessageType {
@@ -18,7 +17,7 @@ logger
     mergeMap((msg: LogMessageType) => {
       msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
       let message = { message: msg.message, type: msg.type, notify: msg.notify };
-      return fromPromise(insertLog(colorizeMessage(message)));
+      return from(insertLog(colorizeMessage(message)));
     }),
     map((msg: any) => {
       let time = getDateTime();

@@ -3,8 +3,7 @@ import * as docker from './docker';
 import * as system from './system';
 import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
-import { Observable, merge, concat } from 'rxjs';
-import { fromPromise } from 'rxjs/observable/fromPromise';
+import { merge, concat, from } from 'rxjs';
 import { toArray } from 'rxjs/operators';
 import { exists } from './fs';
 import { readFile } from 'fs-extra';
@@ -650,9 +649,9 @@ export function setupRoutes(): express.Router {
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
-      fromPromise(exists(getFilePath('config.json'))),
-      fromPromise(exists(getFilePath('abstruse.sqlite'))),
-      fromPromise(usersExists())
+      from(exists(getFilePath('config.json'))),
+      from(exists(getFilePath('abstruse.sqlite'))),
+      from(usersExists())
     ])
       .pipe(toArray())
       .subscribe(data => {
@@ -667,8 +666,8 @@ export function setupRoutes(): express.Router {
 
   router.get('/db', (req: express.Request, res: express.Response) => {
     merge(...[
-      fromPromise(exists(getFilePath('abstruse.sqlite'))),
-      fromPromise(usersExists())
+      from(exists(getFilePath('abstruse.sqlite'))),
+      from(usersExists())
     ])
       .pipe(toArray())
       .subscribe(data => {

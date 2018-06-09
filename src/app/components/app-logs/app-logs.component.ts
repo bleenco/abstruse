@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
+import { filter } from 'rxjs/operators';
 import * as AnsiUp from 'ansi_up';
 
 export interface LogType {
@@ -41,7 +42,9 @@ export class AppLogsComponent implements OnInit {
     this.fetch();
 
     this.socketService.outputEvents
-      .filter(msg => !!msg.message && !!msg.type)
+      .pipe(
+        filter(msg => !!msg.message && !!msg.type)
+      )
       .subscribe(msg => {
         msg.created_at = new Date().getTime();
         msg.message = this.au.ansi_to_html(msg.message);

@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
-import { Subscription } from 'rxjs/Subscription';
-import { format, distanceInWordsToNow } from 'date-fns';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -103,8 +102,9 @@ export class AppBuildsComponent implements OnInit, OnDestroy {
       });
 
     this.subUpdate = this.socketService.outputEvents
-      .filter(event => event.data === 'build restarted' || event.data === 'build succeeded'
-        || event.data === 'build failed')
+      .pipe(
+        filter(event => event.data === 'build restarted' || event.data === 'build succeeded' || event.data === 'build failed')
+      )
       .subscribe(event => {
         let index = this.builds.findIndex(i => i.id === event.build_id);
         if (index !== -1) {

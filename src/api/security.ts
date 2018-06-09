@@ -2,7 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import * as express from 'express';
 import { getUser } from './db/user';
 import * as nodeRsa from 'node-rsa';
-import { RSA } from 'rsa-compat';
+import { RSA } from 'rsa-compat-ssl';
 import { getFilePath, config } from './setup';
 import { existsSync, exists, writeFile } from './fs';
 import { readFileSync } from 'fs';

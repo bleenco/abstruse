@@ -1,10 +1,5 @@
 import { ConfigService } from '../services/config.service';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
-import { Subscriber } from 'rxjs/Subscriber';
-import { Subscription } from 'rxjs/Subscription';
-import { Observer } from 'rxjs/Observer';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable, Subscriber, Observer } from 'rxjs';
 
 export enum ConnectionStates {
   CONNECTING,

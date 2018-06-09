@@ -4,8 +4,7 @@ import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
-import { Subscription } from 'rxjs/Subscription';
-import { format, distanceInWordsToNow } from 'date-fns';
+import { Subscription } from 'rxjs';
 import { delay, filter } from 'rxjs/operators';
 
 export interface IRepoForm {
