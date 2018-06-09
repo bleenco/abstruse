@@ -1,3 +1,14 @@
+<a name="1.6.3"></a>
+## [1.6.3](https://github.com/bleenco/abstruse/compare/v1.6.2...v1.6.3) (2018-06-09)
+
+
+### Bug Fixes
+
+* **rxjs:** RxJS version 6 API updates ([daaccad](https://github.com/bleenco/abstruse/commit/daaccad))
+* **ui:** fix SVG gradients in Firefox and Safari ([cdccaa1](https://github.com/bleenco/abstruse/commit/cdccaa1))
+
+
+
 <a name="1.6.2"></a>
 ## [1.6.2](https://github.com/bleenco/abstruse/compare/v1.6.1...v1.6.2) (2018-05-07)
 
