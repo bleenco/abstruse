@@ -6,14 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { AppJobComponent } from './app-job.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
-import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 import * as jobData from '../../../testing/xhr-data/job.json';
 import * as jobTagData from '../../../testing/xhr-data/job-tag.json';

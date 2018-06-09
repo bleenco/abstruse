@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { AppRepositoryComponent } from './app-repository.component';
 import { AppHeaderComponent } from '../app-header/app-header.component';
@@ -16,8 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgUploaderModule } from 'ngx-uploader';
-import { Observable } from 'rxjs/Observable';
+import { NgxUploaderModule } from 'ngx-uploader';
 import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import * as buildsData from '../../../testing/xhr-data/builds.json';
 import * as repositoryData from '../../../testing/xhr-data/repository.json';
@@ -53,7 +52,7 @@ describe('Repository Component', () => {
 
   beforeEach(async(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [NgUploaderModule, FormsModule, RouterTestingModule, HttpModule],
+      imports: [NgxUploaderModule, FormsModule, RouterTestingModule, HttpModule],
       declarations: [AppRepositoryComponent, AppHeaderComponent, AppToggleComponent, SafeHtmlPipe],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [

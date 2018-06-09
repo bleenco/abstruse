@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { AppUserComponent } from './app-user.component';
 import { AppHeaderComponent } from '../app-header/app-header.component';
@@ -16,8 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgUploaderModule } from 'ngx-uploader';
-import { Observable } from 'rxjs/Observable';
+import { NgxUploaderModule } from 'ngx-uploader';
 import * as userData from '../../../testing/xhr-data/user.json';
 import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
 
@@ -27,7 +26,7 @@ describe('User Component', () => {
 
   beforeEach(async(() => {
     fixture = TestBed.configureTestingModule({
-      imports: [NgUploaderModule, FormsModule, RouterTestingModule, HttpModule],
+      imports: [NgxUploaderModule, FormsModule, RouterTestingModule, HttpModule],
       declarations: [AppUserComponent, AppHeaderComponent, AppToggleComponent],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [

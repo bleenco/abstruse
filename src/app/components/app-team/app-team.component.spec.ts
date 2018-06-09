@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { AppTeamComponent } from './app-team.component';
 import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
@@ -14,7 +14,6 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
-import { Observable } from 'rxjs/Observable';
 import * as usersData from '../../../testing/xhr-data/users.json';
 
 describe('Team Component', () => {

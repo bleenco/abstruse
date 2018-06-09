@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 
 import { AppBuildDetailsComponent } from './app-build-details.component';
 import { ApiService } from '../../services/api.service';
@@ -14,7 +14,6 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
-import { Observable } from 'rxjs/Observable';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 import * as buildData from '../../../testing/xhr-data/build.json';
 import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
