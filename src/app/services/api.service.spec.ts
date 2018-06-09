@@ -4,9 +4,6 @@ import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angula
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ApiService } from './api.service';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/catch';
 import * as buildsData from '../../testing/xhr-data/builds.json';
 
 describe('API Service (mockBackend)', () => {
@@ -53,10 +50,9 @@ describe('API Service (mockBackend)', () => {
     it('should have expected fake builds (then)', async(inject([], () => {
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(response));
 
-      service.getBuilds(5, 0, 'all').toPromise()
-        .then(builds => {
-          expect(builds.length).toBe(fakeBuilds.length, 'should have expected no. of builds');
-        });
+      service.getBuilds(5, 0, 'all').subscribe(builds => {
+        expect(builds.length).toBe(fakeBuilds.length, 'should have expected no. of builds');
+      });
     })));
 
   });
