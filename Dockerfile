@@ -1,7 +1,7 @@
 # Stage 1 image
-FROM mhart/alpine-node:9 as base
+FROM mhart/alpine-node:10 as base
 
-ENV DOCKER_VERSION=17.12.1-ce
+ENV DOCKER_VERSION=18.03.1-ce
 
 RUN apk --no-cache add openssl \
     && wget https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
@@ -15,7 +15,7 @@ FROM base as build
 
 WORKDIR /app
 
-COPY package.json package-lock.json tsconfig.json webpack.*.js .angular-cli.json /app/
+COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json /app/
 COPY ./src /app/src
 
 RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sqlite git \
@@ -27,7 +27,7 @@ RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sq
 
 
 # Stage 3 image
-FROM alpine:3.6
+FROM alpine:3.7
 
 ARG VCS_REF=n/a
 ARG VERSION=dev
