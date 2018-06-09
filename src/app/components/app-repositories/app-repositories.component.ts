@@ -57,7 +57,7 @@ export class AppRepositoriesComponent implements OnInit {
       this.repositories.forEach((repo: any, i) => {
         this.apiService.getBadge(repo.id).subscribe(badge => {
           if (badge.ok) {
-            this.repositories[i].status_badge = badge._body;
+            this.repositories[i].status_badge = badge._body.replace(/url\(/g, 'url(' + document.location.href);
           }
         });
       });
