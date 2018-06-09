@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 export interface IImage {
@@ -41,7 +41,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   sub: Subscription;
   approve: boolean;
   buildingError: string;
-  terminalOptions:  { size: 'small' | 'large', newline: boolean };
+  terminalOptions: { size: 'small' | 'large', newline: boolean };
   terminalInput: any;
   baseImageOptions: { key: any, value: string }[];
   imageTypeOptions: { key: any, value: string }[];
@@ -282,7 +282,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
 
       this.baseImageOptions = [];
       if (this.baseImages.length) {
-        this.baseImages.forEach(i => this.baseImageOptions.push({ key: i.name, value: i.name}));
+        this.baseImages.forEach(i => this.baseImageOptions.push({ key: i.name, value: i.name }));
         this.baseImage = this.baseImages[0].name;
       }
 
@@ -353,7 +353,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
         if (command) {
           if (allowedCommands.indexOf(command[0]) === -1
             && this.dangerousCommands.indexOf(command[0]) === -1) {
-              this.dangerousCommands.push(command[0]);
+            this.dangerousCommands.push(command[0]);
           }
         }
       });

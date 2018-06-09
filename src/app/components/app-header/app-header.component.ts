@@ -1,6 +1,7 @@
 import { Component, HostListener, ElementRef, OnInit, Inject, Renderer2 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
+import { distinctUntilChanged } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
@@ -63,7 +64,7 @@ export class AppHeaderComponent implements OnInit {
 
     if (this.user) {
       this.notificationService.notifications
-        .distinctUntilChanged()
+        .pipe(distinctUntilChanged())
         .subscribe((notify: NotificationType) => {
           this.notifications.push(notify);
         });

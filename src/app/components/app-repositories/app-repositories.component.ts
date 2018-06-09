@@ -4,10 +4,8 @@ import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/filter';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 export interface Repository {
   url: string;
@@ -44,8 +42,10 @@ export class AppRepositoriesComponent implements OnInit {
     this.fetch();
 
     this.modelChanged
-      .debounceTime(400)
-      .distinctUntilChanged()
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
       .subscribe(event => this.fetch(event));
   }
 

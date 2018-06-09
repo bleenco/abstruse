@@ -1,8 +1,6 @@
 import { startBuildProcess } from './process';
-import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, Subscription, from, timer } from 'rxjs';
 import { filter, mergeMap, share, map } from 'rxjs/operators';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { timer } from 'rxjs/observable/timer';
 import {
   insertBuild,
   updateBuild,
@@ -118,7 +116,7 @@ function execJob(proc: JobProcess): Observable<any> {
     // give some time (5s) to check again other processes
     return timer(5000).pipe(map(() => jobProcesses.next(proc)));
   } else {
-    return fromPromise(stopJob(proc.job_id));
+    return from(stopJob(proc.job_id));
   }
 }
 

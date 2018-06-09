@@ -1,7 +1,7 @@
 import { Injectable, Provider, EventEmitter } from '@angular/core';
 import { SocketService } from './socket.service';
 import { ApiService } from './api.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Injectable()

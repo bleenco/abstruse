@@ -3,7 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
-import { UploadOutput, UploadInput, UploadFile } from 'ngx-uploader';
+import { UploadOutput, UploadInput } from 'ngx-uploader';
 import { switchMap, delay } from 'rxjs/operators';
 
 export interface IAccessToken {
@@ -98,7 +98,7 @@ export class AppUserComponent implements OnInit {
       .pipe(
         switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
       )
-      .subscribe(repositories => {
+      .subscribe(((repositories: any) => {
         this.repositories = repositories;
         this.repositories.forEach((repo: any, i) => {
           this.api.getBadge(repo.id).subscribe(badge => {
@@ -123,7 +123,7 @@ export class AppUserComponent implements OnInit {
             return this.restrictedRepositories.findIndex(rr => rr.id === r.id) === -1;
           });
         });
-      });
+      }));
   }
 
   updateUser(e: Event): void {

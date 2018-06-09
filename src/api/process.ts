@@ -2,10 +2,8 @@ import * as docker from './docker';
 import * as child_process from 'child_process';
 import { generateRandomId, prepareCommands } from './utils';
 import { getFilePath } from './setup';
-import { Observable, concat as staticConcat, throwError } from 'rxjs';
-import { concat, timeoutWith, takeUntil, mergeMap, timeInterval } from 'rxjs/operators';
-import { empty } from 'rxjs/observable/empty';
-import { timer } from 'rxjs/observable/timer';
+import { Observable, concat, throwError, empty, timer } from 'rxjs';
+import { timeoutWith, takeUntil, mergeMap, timeInterval } from 'rxjs/operators';
 import { CommandType, Command, CommandTypePriority } from './config';
 import { JobProcess } from './process-manager';
 import * as envVars from './env-variables';
@@ -90,7 +88,7 @@ export function startBuildProcess(
         `then tar xf ${cacheContainerPath} -C /; fi`
       ].join('');
 
-      restoreCache = staticConcat(...[
+      restoreCache = concat(...[
         executeOutsideContainer(copyRestoreCmd),
         docker.dockerExec(
           name, { command: restoreCmd, type: CommandType.restore_cache, env: envs })
@@ -113,14 +111,14 @@ export function startBuildProcess(
         `then docker cp ${name}:${cacheContainerPath} ${cacheHostPath}; fi`,
       ].join('');
 
-      saveCache = staticConcat(...[
+      saveCache = concat(...[
         docker.dockerExec(
           name, { command: tarCmd, type: CommandType.store_cache, env: envs }),
         executeOutsideContainer(saveTarCmd)
       ]);
     }
 
-    let sub = staticConcat(
+    let sub = concat(
       docker.createContainer(name, image, envs),
       docker.dockerPwd(name, envs),
       ...gitCommands.map(cmd => docker.dockerExec(name, cmd, envs)),

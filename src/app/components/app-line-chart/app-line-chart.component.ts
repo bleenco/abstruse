@@ -16,8 +16,9 @@ import {
   axisLeft,
   area
 } from 'd3';
-import { isSameDay, compareAsc, format, subDays } from 'date-fns';
-import { Subscription } from 'rxjs/Subscription';
+import { isSameDay, format, subDays } from 'date-fns';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-line-chart',
@@ -43,7 +44,7 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     this.runs = { success: {}, failed: {} };
 
     this.sub = this.windowService.resize
-      .filter(x => !!this.el)
+      .pipe(filter(x => !!this.el))
       .subscribe(e => this.render());
 
     this.calendarDateFrom = subDays(new Date(), 7);
