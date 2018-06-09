@@ -72,7 +72,7 @@ export class AppProgressChartComponent implements OnChanges, OnDestroy {
     this.pathChart = g.append('path')
       .datum({ endAngle: 0 })
       .attr('d', this.arcLine)
-      .style('fill', 'url(#progressGradient)');
+      .style('fill', `url(${document.location.href}#progressGradient)`);
 
     this.middleCount = g.append('text')
       .text((d: any) => d)

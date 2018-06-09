@@ -197,9 +197,11 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
 
     const totalLengthSuccess = (<any>successPath.node()).getTotalLength();
 
+    console.log(document.location.href);
+
     g.append('path')
       .attr('d', a(successData as any))
-      .attr('fill', 'url(#successGradient)');
+      .attr('fill', `url(${document.location.href}#successGradient)`);
 
     g.selectAll('dot')
       .data(successData)
@@ -226,7 +228,7 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
 
     g.append('path')
       .attr('d', a(failedData as any))
-      .attr('fill', 'url(#failedGradient)');
+      .attr('fill', `url(${document.location.href}#failedGradient)`);
 
     g.selectAll('dot')
       .data(failedData)
