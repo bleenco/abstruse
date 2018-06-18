@@ -1,5 +1,5 @@
 <p align="center" style="margin: 20px 0 40px 0;">
-  <img src="https://user-images.githubusercontent.com/1796022/36752913-da367a10-1c04-11e8-88e4-4ce18372843d.png">
+  <img src="https://user-images.githubusercontent.com/1796022/41514005-9e827b86-72a3-11e8-9ca5-67736d9cab3e.png">
 </p>
 
 ## Abstruse
@@ -39,19 +39,28 @@ Intel i7-4700HQ @ 2.40GHz CPU, 12GB DDR3 1600 MHz, 256 SSD.*
 
 ### **Abstruse vs Jenkins**
 When testing Java-Design-Patterns 1.17.0 (*Figure 1*), Abstruse 1.0.0 outperforms Jenkins 2.60.3 by 25.84% in time, 52.36% in CPU consumption and 45.96% in memory use.
-When testing Angular 5.0.0-beta.7 (*Figure 2*), Abstruse outperforms Jenkins by 25.84% in time, 6.27% in CPU consumption and 35.49% in memory use.
+
+When testing Angular 5.0.0-beta.7, Abstruse outperforms Jenkins by 25.84% in time, 6.27% in CPU consumption and 35.49% in memory use.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/3041169/31200826-a2b4292c-a95c-11e7-8d73-c395f7b37355.jpg">
+  CPU Usage (%)
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/41513907-bb8822e0-72a2-11e8-9280-53568814a5f3.png" width="400px">
+  <img src="https://user-images.githubusercontent.com/1796022/41513911-bebc166a-72a2-11e8-9b1c-5d67bd4dae02.png" width="400px">
+</p>
+
+<p align="center">
+  Memory Usage (GB)
+</p>
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/1796022/41513962-3b315bce-72a3-11e8-9fd1-f3f5707e8825.png" width="400px">
+  <img src="https://user-images.githubusercontent.com/1796022/41513963-3ee2a5c0-72a3-11e8-84c7-b617dbb3ab0a.png" width="400px">
 </p>
 
 *Figure 1*: Testing Java-Design-Patterns 1.17.0 with Abstruse (left) and Jenkins (right).
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/3041169/31200825-a2b3ab3c-a95c-11e7-9d0e-7c48af6730f9.jpg">
-</p>
-
-*Figure 2*: Testing Angular 5.0.0-beta.7 with Abstruse (left) and Jenkins (right).
 
 For more details on benchmarking visit our [benchmarking section](docs/BENCHMARKING.md).
 
