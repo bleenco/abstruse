@@ -27,7 +27,7 @@
     color: $color
     font-size: 20px
     padding: 20px 20px 0 20px
-    font-family: $font-family-medium
+    font-family: $font-family-regular
 
   h3
     color: $color-secondary
@@ -102,13 +102,16 @@
 .list-item
   height: 100px
   color: $color
-  font-size: 13px
+  font-size: 12px
   cursor: pointer
   background: $white
-  border: 1px solid $divider
   display: flex
   align-items: center
-  font-family: $font-family-medium
+  font-family: $font-family-regular
+  box-shadow: $box-shadow
+  border: 1px solid $divider
+  border-radius: $radius
+  transition: background 200ms ease-out
 
   +mobile
     display: block
@@ -204,7 +207,7 @@
 
       span
         font-size: 16px
-        font-family: $font-family-medium
+        font-family: $font-family-regular
 
         +mobile
           text-align: center
@@ -238,8 +241,7 @@
         height: 36px
 
   &.is-success
-    border-left: 10px solid $green
-    border-top: 1px solid $border
+    border-left: 6px solid $green
 
     +mobile
       border-left: 0
@@ -249,23 +251,20 @@
     border-left: 10px solid transparent
     -webkit-animation: pulsate 2s infinite ease-in-out
     animation: pulsate 2s infinite ease-in-out
-    border-top: 1px solid $border
 
     +mobile
       border-left: 0
       border-top: 4px solid $yellow
 
   &.is-errored
-    border-left: 10px solid $red
-    border-top: 1px solid $border
+    border-left: 6px solid $red
 
     +mobile
       border-left: 0
       border-top: 4px solid $red
 
   &.is-queued
-    border-left: 10px solid $grey-light
-    border-top: 1px solid $border
+    border-left: 6px solid $grey-light
 
     +mobile
       border-left: 0
@@ -431,7 +430,7 @@ progress
   display: block
   max-width: 50px
   height: 50px
-  border-radius: 5px
+  border-radius: 4px
 
 
 .data-label
