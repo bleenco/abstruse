@@ -21,6 +21,9 @@ export class AppComponent implements OnInit {
 
         if (state === ConnectionStates.CONNECTED) {
           this.connected = true;
+          if (this.routing) {
+            this.routing = false;
+          }
         } else {
           this.connected = false;
         }
@@ -29,7 +32,7 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.routing = true;
-      } else if (event instanceof NavigationEnd) {
+      } else {
         this.routing = false;
       }
     });

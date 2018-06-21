@@ -1,4 +1,4 @@
-import { spawn, exec } from 'child_process';
+import { spawn } from 'child_process';
 import { Observable, Observer } from 'rxjs';
 import * as fs from './fs';
 import * as dockerode from 'dockerode';
@@ -6,9 +6,9 @@ import { Writable } from 'stream';
 import { CommandType } from './config';
 import { ProcessOutput } from './process';
 import * as envVars from './env-variables';
-import chalk from 'chalk';
 import * as style from 'ansi-styles';
 import { platform } from 'os';
+import * as commandExists from 'command-exists';
 
 export const docker = new dockerode();
 const binds = platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'];
@@ -280,11 +280,15 @@ export function isDockerRunning(): Observable<boolean> {
 
 export function isDockerInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    let which = spawn('which', ['docker']);
-    which.on('close', code => {
-      observer.next(code === 0 ? true : false);
-      observer.complete();
-    });
+    commandExists('docker')
+      .then(() => {
+        observer.next(true);
+        observer.complete();
+      })
+      .catch(() => {
+        observer.next(false);
+        observer.complete();
+      });
   });
 }
 
