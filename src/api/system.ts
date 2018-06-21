@@ -1,32 +1,30 @@
-import { spawn } from 'child_process';
+import * as commandExists from 'command-exists';
 import { Observable, Observer } from 'rxjs';
 
 export function isSQLiteInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    let sqlite = spawn('which', ['sqlite3']);
-    sqlite.on('close', code => {
-      if (code === 0) {
+    commandExists('sqlite3')
+      .then(() => {
         observer.next(true);
-      } else {
+        observer.complete();
+      })
+      .catch(() => {
         observer.next(false);
-      }
-
-      observer.complete();
-    });
+        observer.complete();
+      });
   });
 }
 
 export function isGitInstalled(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    let git = spawn('which', ['git']);
-    git.on('close', code => {
-      if (code === 0) {
+    commandExists('git')
+      .then(() => {
         observer.next(true);
-      } else {
+        observer.complete();
+      })
+      .catch(() => {
         observer.next(false);
-      }
-
-      observer.complete();
-    });
+        observer.complete();
+      });
   });
 }
