@@ -9,6 +9,7 @@ import * as envVars from './env-variables';
 import * as style from 'ansi-styles';
 import { platform } from 'os';
 import * as commandExists from 'command-exists';
+import { demuxStream } from './utils';
 
 export const docker = new dockerode();
 const binds = platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'];
@@ -142,7 +143,7 @@ export function dockerExec(
           next();
         };
 
-        container.modem.demuxStream(stream.output, ws, ws);
+        demuxStream(stream.output, ws);
         stream.output.on('end', () => ws.end());
       })
       .catch(err => observer.error(err));

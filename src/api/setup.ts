@@ -3,7 +3,6 @@ import { existsSync, copyFile, ensureDirectory } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { ensureDirSync, statSync, remove, readJson, writeJson } from 'fs-extra';
 import * as uuid from 'uuid';
-import * as temp from 'temp';
 import * as glob from 'glob';
 import { homedir } from 'os';
 import { getHumanSize } from './utils';
@@ -130,12 +129,12 @@ export function getCacheFilesFromPattern(pattern: string): any[] {
 }
 
 export function deleteCacheFilesFromPattern(pattern): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((res, reject) => {
     let cacheFolder = getFilePath('cache');
     let search = glob.sync(join(cacheFolder, pattern));
 
     Promise.all(search.map(result => remove(result)))
-      .then(() => resolve())
+      .then(() => res())
       .catch(err => reject(err));
   });
 }
