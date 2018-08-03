@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import * as request from 'request';
 import { CommandType, CommandTypePriority } from './config';
 import { Observable } from 'rxjs';
+import { Readable, Writable } from 'stream';
 
 
 export interface JobProcess {
@@ -138,4 +139,28 @@ export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {
     }
     return proc.commands.indexOf(a) - proc.commands.indexOf(b);
   });
+}
+
+export function demuxStream(source: Readable, destination: Writable): void {
+  let header = null;
+
+  source
+    .on('readable', () => {
+      header = header || source.read(8);
+      while (header) {
+        const payload = source.read(header.readUInt32BE(4));
+        if (!payload) {
+          break;
+        }
+
+        try {
+          destination.write(payload);
+        } catch (e) {
+          console.log(e);
+          break;
+        }
+        header = source.read(8);
+      }
+    })
+    .on('end', () => destination.end());
 }
