@@ -271,9 +271,27 @@ export function imageExists(name: string): Observable<boolean> {
 
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    fs.exists('/var/run/docker.sock')
-      .then(isRunning => {
-        observer.next(isRunning);
+    docker.info()
+      .then(() => {
+        observer.next(true);
+        observer.complete();
+      })
+      .catch(() => {
+        observer.next(false);
+        observer.complete();
+      });
+  });
+}
+
+export function getDockerVersion(): Observable<any> {
+  return new Observable((observer: Observer<any>) => {
+    docker.info()
+      .then(resp => {
+        observer.next(resp.ServerVersion);
+        observer.complete();
+      })
+      .catch(() => {
+        observer.next(false);
         observer.complete();
       });
   });

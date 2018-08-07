@@ -1,10 +1,9 @@
 import * as express from 'express';
 import * as docker from './docker';
 import * as system from './system';
-import * as utils from './utils';
 import { resolve, extname, relative } from 'path';
-import { merge, concat, from } from 'rxjs';
-import { toArray } from 'rxjs/operators';
+import { merge, concat, from, of, empty } from 'rxjs';
+import { toArray, concatAll, concatMap, map } from 'rxjs/operators';
 import { exists } from './fs';
 import { readFile } from 'fs-extra';
 import { reinitializeDatabase } from './db/migrations';
@@ -57,13 +56,13 @@ import {
   getFilePath,
   getConfig,
   getRootDir,
-  saveConfig,
   getConfigAsync,
   saveConfigAsync
 } from './setup';
 import { startBuild } from './process-manager';
 import * as multer from 'multer';
 import * as stripAnsi from 'strip-ansi';
+import { logger, LogMessageType } from './logger';
 
 let config: any = getConfig();
 
@@ -641,7 +640,7 @@ export function badgeRoutes(): express.Router {
 }
 
 export function setupRoutes(): express.Router {
-  let router = express.Router();
+  const router = express.Router();
 
   router.get('/ready', (req: express.Request, res: express.Response) => {
     merge(...[
@@ -676,26 +675,43 @@ export function setupRoutes(): express.Router {
   });
 
   router.get('/status', (req: express.Request, res: express.Response) => {
-    concat(...[
-      system.isGitInstalled(),
-      system.isSQLiteInstalled(),
-      docker.isDockerInstalled()
-    ])
-      .pipe(toArray())
-      .subscribe(data => {
-        if (data[2]) {
-          docker.isDockerRunning().subscribe(dockerRunning => {
-            let status = {
-              sqlite: data[1], docker: data[2], dockerRunning: dockerRunning, git: data[0]
-            };
-            res.status(200).json({ data: status });
-          });
-        } else {
-          let status = {
-            sqlite: data[1], docker: false, dockerRunning: false, git: data[0]
+    const sub =
+      concat(...[
+        system.isGitInstalled(),
+        system.isSQLiteInstalled(),
+        docker.isDockerInstalled(),
+        docker.isDockerRunning()
+      ])
+      .pipe(
+        toArray(),
+        concatMap(status => {
+          const version = concat(...[
+            status[0] ? of(system.getGitVersion()) : empty(),
+            status[1] ? of(system.getSQLiteVersion()) : empty(),
+            status[2] && status[3] ? of(docker.getDockerVersion()) : empty()
+          ]).pipe(concatAll(), toArray());
+          return concat(...[of(status), version]);
+        }),
+        toArray(),
+        map(resp => {
+          return {
+            git: { status: resp[0][0], version: resp[1][0] },
+            sqlite: { status: resp[0][1], version: resp[1][1] },
+            docker: { status: resp[0][2], version: resp[1][2] },
+            dockerRunning: { status: resp[0][3] }
           };
-          res.status(200).json({ data: status });
-        }
+        })
+      )
+      .subscribe(data => {
+        res.status(200).json({ data });
+      }, err => {
+        const logMessage: LogMessageType = {
+          type: 'error', message: err, notify: false
+        };
+        logger.next(logMessage);
+        res.status(500).json({ data: err });
+      }, () => {
+        sub.unsubscribe();
       });
   });
 

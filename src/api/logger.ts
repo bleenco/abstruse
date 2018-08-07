@@ -14,6 +14,12 @@ export let logger: Subject<LogMessageType> = new Subject();
 logger
   .pipe(
     filter((msg: LogMessageType) => !!msg.message && msg.message !== ''),
+    map((msg: LogMessageType) => {
+      if (msg.message === Object(msg.message)) {
+        msg.message = JSON.stringify(msg.message);
+      }
+      return msg;
+    }),
     mergeMap((msg: LogMessageType) => {
       msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
       let message = { message: msg.message, type: msg.type, notify: msg.notify };

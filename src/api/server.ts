@@ -20,7 +20,7 @@ export interface IExpressServer {
   start(): Observable<express.Application>;
 }
 
-export let sessionParser = session({
+export const sessionParser = session({
   store: new SQLiteStore({ dir: getRootDir() }),
   saveUninitialized: false,
   secret: 'sessionSecret',
@@ -36,7 +36,7 @@ export class ExpressServer implements IExpressServer {
 
   start(): Observable<express.Application> {
     return new Observable(observer => {
-      let app: express.Application = express();
+      const app: express.Application = express();
       app.use(cors());
       app.use(bodyParser.json());
       app.use('/webhooks', webhooks);
