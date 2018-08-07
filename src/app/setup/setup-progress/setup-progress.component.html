@@ -1,0 +1,33 @@
+<div class="setup-progress">
+  <span class="progress-bar"></span>
+  <div class="progress-circle first">
+    <span class="inner-circle" [class.is-active]="true">
+      <span [class.is-hidden]="true">1</span>
+      <span [class.is-hidden]="false">
+        <i class="fas fa-check"></i>
+      </span>
+    </span>
+    <span class="sub-text">Check installation</span>
+  </div>
+  <div class="progress-circle second">
+    <span class="inner-circle" [class.is-active]="false">
+      <span [class.is-hidden]="false">2</span>
+      <span [class.is-hidden]="true">
+        <i class="fas fa-check"></i>
+      </span>
+    </span>
+    <span class="sub-text">Configuration</span>
+  </div>
+  <div class="progress-circle third">
+    <span class="inner-circle">
+      <span>3</span>
+    </span>
+    <span class="sub-text">Add team</span>
+  </div>
+  <div class="progress-circle fourth">
+    <span class="inner-circle">
+      <span>4</span>
+    </span>
+    <span class="sub-text">Confirmation</span>
+  </div>
+</div>

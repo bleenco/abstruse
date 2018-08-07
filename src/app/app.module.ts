@@ -1,32 +1,28 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
-import { ConfigServiceProvider } from './services/config.service';
-import { ApiServiceProvider } from './services/api.service';
-import { TimeServiceProvider } from './services/time.service';
-import { SocketServiceProvider } from './services/socket.service';
-import { AuthServiceProvider } from './services/auth.service';
-import { NotificationService } from './services/notification.service';
-import { StatsService } from './services/stats.service';
-import { WindowService } from './services/window.service';
+import { CoreModule } from './core/core.module';
+import { SharedModule } from './shared/modules/shared.module';
+
 import { AppComponent } from './app.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
-  declarations: [ AppComponent ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    FormsModule,
+    HttpClientModule,
+    CoreModule,
+    AppRoutingModule,
+    SharedModule.forRoot()
   ],
-  providers: [
-    ConfigServiceProvider,
-    ApiServiceProvider,
-    TimeServiceProvider,
-    SocketServiceProvider,
-    AuthServiceProvider,
-    NotificationService,
-    StatsService,
-    WindowService
+  declarations: [
+    AppComponent,
+    LoginComponent
   ],
-  bootstrap: [ AppComponent ]
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

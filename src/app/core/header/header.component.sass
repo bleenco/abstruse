@@ -1,0 +1,39 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+
+.header
+  width: 100%
+  height: 60px
+  background: $background
+
+  .header-container
+    width: 100%
+    height: 60px
+    display: flex
+    justify-content: space-between
+
+    .header-left, .header-right
+      height: 60px
+      display: flex
+      align-items: center
+
+    .header-item
+      display: inline-block
+      color: $text-secondary
+      font-family: $font-family-regular
+      cursor: pointer
+      position: relative
+      text-transform: uppercase
+      font-size: 13px
+      padding: 0 13px
+
+      &:hover, &.is-active
+        color: $blue
+
+      &.logo
+        height: 25px
+        margin-top: -5px
+
+        img
+          height: 25px

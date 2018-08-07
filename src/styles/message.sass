@@ -1,61 +1,52 @@
 .message
   display: block
-  font-size: 14px
-  padding: 10px
-  border-radius: 0
-  margin: 20px 0
-  border: 1px solid $border
+  width: 100%
+  padding: 10px 20px 10px 15px
+  position: relative
   background: $white
+  border: 1px solid $border-box
+  color: $text-dark
+
+  & > .delete
+    position: absolute
+    right: 10px
+    top: 10px
+    cursor: pointer
 
   p
-    color: $color
+    margin: 2.5px 0
+    padding-left: 25px
+    position: relative
 
-  i
-    font-size: 20px
-    display: block
-    width: 20px
-    height: 20px
-    margin: 0 10px
-    float: left
+    i
+      position: absolute
+      top: 6px
+      left: 0
 
-  ul
-    margin: 13px 0 13px 10px
+      img
+        width: 18px
+        height: 18px
 
-    li
-      padding: 0
-      margin: 0
+  &.is-green
+    background: rgba($green, .1)
+    border-color: $green
+    color: $green
 
-  &.red
-    background: rgba($red-secondary, 0.4)
-    border: 1px solid $red-secondary
-    color: $red-secondary
+    i
+      color: $green
 
-    p
-      color: $red-secondary
+  &.is-red
+    background: rgba($red, .1)
+    border-color: $red
+    color: $red
 
-  &.green
-    background-color: rgba($green-secondary, 0.4)
-    border: 1px solid $green-secondary
-    color: $green-secondary
+    i
+      color: $red
 
-    p
-      color: darken($green-secondary, 10) !important
+  &.is-blue
+    background: rgba($blue, .1)
+    border-color: $blue
+    color: $blue
 
-  &.orange
-    background-color: rgba($orange-secondary, 0.4)
-    border: 1px solid $orange-secondary
-    color: $orange-secondary
-
-    p
-      color: $orange-secondary
-
-  &.blue
-    background-color: rgba($blue-background, 0.4)
-    border: 1px solid $blue-background
-    color: $blue-background
-
-    p
-      color: $blue-background !important
-
-  img
-    margin-right: 10px
+    i
+      color: $blue

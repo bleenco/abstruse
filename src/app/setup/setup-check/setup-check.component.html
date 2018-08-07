@@ -1,0 +1,131 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <h1>Check installation</h1>
+    <hr/>
+  </div>
+  <div class="column is-12">
+    <div class="space-between">
+      <p>Check installed software on your server.</p>
+      <button type="button" class="button" (click)="setup?.checkRequirements()">
+        <span>Refresh</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="installed-software-list box">
+  <app-loader *ngIf="setup?.fetchingRequirements"></app-loader>
+  <div class="columns is-multiline" *ngIf="!setup?.fetchingRequirements">
+    <div class="column is-12 mb15">
+      <div class="message" *ngIf="setup?.status?.requirements?.docker?.status && setup?.status?.requirements?.dockerRunning?.status && setup?.status?.requirements?.sqlite?.status && setup?.status?.requirements?.git?.status">
+        <p>
+          <i class="fas fa-check"></i>
+          All required software is installed and running.
+        </p>
+      </div>
+      <div class="message is-red" *ngIf="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status || !setup?.status?.requirements?.sqlite?.status || !setup?.status?.requirements?.git?.status">
+        <p>
+          <i class="fas fa-times"></i>
+          <span *ngIf="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.sqlite?.status || !setup?.status?.requirements?.git?.status">
+            Not installed requirement/s:{{ !setup?.status?.requirements?.docker?.status ? ' Docker' : '' }}{{ !setup?.status?.requirements?.sqlite?.status
+            ? ' SQLite3' : '' }}{{ !setup?.status?.requirements?.git?.status ? ' Git' : '' }}
+          </span>
+          <span *ngIf="setup?.status?.requirements?.docker?.status && !setup?.status?.requirements?.dockerRunning?.status">
+            Docker is not running. Please start Docker daemon and hit refresh button.
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="columns is-marginless" *ngIf="!setup?.fetchingRequirements">
+    <div class="column is-7 is-paddingless">
+      <h4>Software</h4>
+    </div>
+    <div class="column is-4 is-paddingless justify-center">
+      <h4>Version</h4>
+    </div>
+    <div class="column is-1 is-paddingless justify-center">
+      <h4>Status</h4>
+    </div>
+  </div>
+  <div class="columns is-multiline is-marginless" *ngIf="!setup?.fetchingRequirements">
+    <div class="column is-12 software-item-column">
+      <div class="columns">
+        <div class="column is-7 is-paddingless align-center">
+          <i class="fab fa-docker brand-icon"></i>
+          <span class="brand-name">Docker</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center justify-center">
+          <span>{{ setup?.status?.requirements?.docker?.version }}</span>
+        </div>
+        <div class="column is-1 is-paddingless align-center justify-center">
+          <span class="status-circle">
+            <span class="inner-circle is-error" [ngClass]="{ 'is-active': setup?.status?.requirements?.docker?.status  && setup?.status?.requirements?.dockerRunning?.status, 'is-error': !setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status }">
+              <i class="fas fa-times" *ngIf="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status"></i>
+              <i class="fas fa-check" *ngIf="setup?.status?.requirements?.docker?.status && setup?.status?.requirements?.dockerRunning?.status"></i>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12 software-item-column">
+      <div class="columns">
+        <div class="column is-7 is-paddingless align-center">
+          <i class="fas fa-database brand-icon"></i>
+          <span class="brand-name">SQLite3</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center justify-center">
+          <span>{{ setup?.status?.requirements?.sqlite?.version }}</span>
+        </div>
+        <div class="column is-1 is-paddingless align-center justify-center">
+          <span class="status-circle">
+            <span class="inner-circle is-error" [ngClass]="{ 'is-active': setup?.status?.requirements?.sqlite?.status, 'is-error': !setup?.status?.requirements?.sqlite?.status }">
+              <i class="fas fa-times" *ngIf="!setup?.status?.requirements?.sqlite?.status"></i>
+              <i class="fas fa-check" *ngIf="setup?.status?.requirements?.sqlite?.status"></i>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12 software-item-column">
+      <div class="columns">
+        <div class="column is-7 is-paddingless align-center">
+          <i class="fab fa-git-square brand-icon"></i>
+          <span class="brand-name">git</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center justify-center">
+          <span>{{ setup?.status?.requirements?.git?.version }}</span>
+        </div>
+        <div class="column is-1 is-paddingless align-center justify-center">
+          <span class="status-circle">
+            <span class="inner-circle is-error" [ngClass]="{ 'is-active': setup?.status?.requirements?.git?.status, 'is-error': !setup?.status?.requirements?.git?.status }">
+              <i class="fas fa-times" *ngIf="!setup?.status?.requirements?.git?.status"></i>
+              <i class="fas fa-check" *ngIf="setup?.status?.requirements?.git?.status"></i>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- <div class="columns is-multiline is-marginless">
+  <div class="column is-12 is-paddingless">
+    <p>
+      <i class="fas fa-info-circle info-icon"></i>
+      <span>All listed software is required to proceed.</span>
+    </p>
+  </div>
+</div> -->
+<div class="setup-content-bottom">
+  <div class="columns is-multiline is-marginless">
+    <div class="column is-12 is-paddingless">
+      <hr/>
+    </div>
+    <div class="column is-12 is-paddingless">
+      <div class="justify-end">
+        <button type="button" class="button is-large">Skip</button>
+        <button type="button" class="button is-large is-green" [disabled]="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status || !setup?.status?.requirements?.sqlite?.status || !setup?.status?.requirements?.git?.status">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

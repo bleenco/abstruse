@@ -1,0 +1,39 @@
+.button
+  color: $text-primary
+  border-radius: 3px
+  border: 1px solid $border-secondary
+  padding: 9px 16px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  font-size: 13px
+  font-family: $font-family-medium
+  outline: none
+  cursor: pointer
+  transition: all 0.15s ease-out
+
+  &:hover, &.is-active
+    border-color: $blue
+    color: $blue
+
+  &.is-large
+    padding: 10px 30px
+
+  &.is-blue
+    color: $blue
+    border-color: $blue
+
+    &:hover, &.is-active
+      background: $blue
+      color: $white
+
+  &.is-green
+    color: $green
+    border-color: $green
+
+    &:hover, &.is-active
+      background: $green
+      color: $white
+
+  i
+    margin-right: 5px

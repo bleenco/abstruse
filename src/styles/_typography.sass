@@ -1,0 +1,20 @@
+=font-face($family, $path, $weight: normal, $style: normal)
+  @font-face
+    font-family: $family
+    src: url('#{$path}.ttf') format('opentype')
+    font-weight: $weight
+    font-style: $style
+
++font-face('Roboto-Thin', '/assets/fonts/Roboto/Roboto-Thin', 100, 'normal')
++font-face('Roboto-Light', '/assets/fonts/Roboto/Roboto-Light', 300, 'normal')
++font-face('Roboto-Regular', '/assets/fonts/Roboto/Roboto-Regular', 400, 'normal')
++font-face('Roboto-Medium', '/assets/fonts/Roboto/Roboto-Medium', 500, 'normal')
++font-face('Roboto-Bold', '/assets/fonts/Roboto/Roboto-Bold', 700, 'normal')
++font-face('Roboto-Black', '/assets/fonts/Roboto/Roboto-Black', 900, 'normal')
+
+$font-family-thin: 'Roboto-Thin', sans-serif
+$font-family-light: 'Roboto-Light', sans-serif
+$font-family-regular: 'Roboto-Regular', sans-serif
+$font-family-medium: 'Roboto-Medium', sans-serif
+$font-family-bold: 'Roboto-Bold', sans-serif
+$font-family-black: 'Roboto-Black', sans-serif

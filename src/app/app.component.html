@@ -1,11 +1,11 @@
-<router-outlet></router-outlet>
+<app-header></app-header>
 
-<div class="disconnected" *ngIf="!connected || routing">
-  <div *ngIf="!routing">
-    <p *ngIf="state === 2">Connection closed. Please check your internet connection.</p>
-    <p *ngIf="state === 3 || state === 0">Reconnecting ...</p>
+<main class="main">
+  <div class="container">
+    <div class="columns is-marginless is-paddingless">
+      <div class="column is-10 is-offset-1 is-paddingless">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
   </div>
-  <div *ngIf="routing">
-    <p>Loading, please wait ...</p>
-  </div>
-</div>
+</main>

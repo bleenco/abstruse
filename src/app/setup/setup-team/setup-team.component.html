@@ -1,0 +1,91 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <h1>Add your team</h1>
+    <hr/>
+  </div>
+  <div class="column is-12">
+    <div class="space-between">
+      <p>Add your team members by creating their profiles.</p>
+      <button type="button" class="button">
+        <span>Add a new profile</span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="team-members-list">
+  <div class="columns is-marginless">
+    <div class="column is-8 is-paddingless">
+      <h4>Name</h4>
+    </div>
+    <div class="column is-4 is-paddingless">
+      <h4>Profile type</h4>
+    </div>
+  </div>
+  <div class="columns is-multiline is-marginless">
+    <div class="column is-12 team-member-column">
+      <div class="columns">
+        <div class="column is-8 is-paddingless align-center">
+          <img src="/assets/images/avatars/avatar_29.svg" class="member-avatar">
+          <span class="member-name">Jan Kuri</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center">
+          <app-selectbox [values]="memberType"></app-selectbox>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12 team-member-column">
+      <div class="columns">
+        <div class="column is-8 is-paddingless align-center">
+          <img src="/assets/images/avatars/avatar_28.svg" class="member-avatar">
+          <span class="member-name">Irman Abdić</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center">
+          <app-selectbox [values]="memberType"></app-selectbox>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12 team-member-column">
+      <div class="columns">
+        <div class="column is-8 is-paddingless align-center">
+          <img src="/assets/images/avatars/avatar_14.svg" class="member-avatar">
+          <span class="member-name">Martin Oprešnik</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center">
+          <app-selectbox [values]="memberType"></app-selectbox>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12 team-member-column">
+      <div class="columns">
+        <div class="column is-8 is-paddingless align-center">
+          <img src="/assets/images/avatars/avatar_6.svg" class="member-avatar">
+          <span class="member-name">Nicolas Zick</span>
+        </div>
+        <div class="column is-4 is-paddingless align-center">
+          <app-selectbox [values]="memberType"></app-selectbox>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="columns is-multiline is-marginless">
+  <div class="column is-12 is-paddingless">
+    <p>
+      <i class="fas fa-info-circle info-icon"></i>
+      <span>You can add and edit profiles at any time after finishing the wizard.</span>
+    </p>
+  </div>
+</div>
+<div class="setup-content-bottom">
+  <div class="columns is-multiline is-marginless">
+    <div class="column is-12 is-paddingless">
+      <hr/>
+    </div>
+    <div class="column is-12 is-paddingless">
+      <div class="justify-end">
+        <button type="button" class="button is-large">Skip</button>
+        <button type="button" class="button is-large is-green">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

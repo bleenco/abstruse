@@ -1,42 +1,41 @@
 @charset 'utf8'
-@import '../../node_modules/bulma/bulma'
-@import 'ionicons/ionicons'
-@import 'colors'
-@import 'overrides'
-@import 'fonts'
+
+@import 'variables'
+@import '../../node_modules/font-awesome5/scss/fontawesome'
+@import '../../node_modules/font-awesome5/scss/fa-solid'
+@import '../../node_modules/font-awesome5/scss/fa-brands'
+@import '../../node_modules/bulma/sass/base/minireset'
+@import '../../node_modules/bulma/sass/utilities/all'
+@import '../../node_modules/bulma/sass/elements/container'
+@import '../../node_modules/bulma/sass/grid/columns'
+@import 'typography'
+@import 'colours'
+@import 'animations'
+@import 'hero'
 @import 'common'
-@import 'loader'
-@import 'buttons'
-@import 'labels'
-@import 'nav'
-@import 'login'
-@import 'forms'
-@import 'content'
-@import 'setup'
-@import 'terminal'
+@import 'main'
+@import 'button'
 @import 'message'
-@import 'popup'
-@import 'repositories'
-@import 'repository'
-@import 'build-details'
-@import 'job'
-@import 'settings'
-@import 'logs'
-@import 'disconnected'
-@import 'dashboard'
-@import 'editor'
-@import 'images'
-@import 'widgets'
-@import 'notification'
-@import 'team'
-@import 'user'
-@import 'mobile'
+@import 'form'
+@import 'box'
 
-html, body, .hero
-  width: 100%
-  height: 100%
+html, body
   background: $background
+  color: $text-primary
   font-family: $font-family-regular
+  font-size: 14px
+  line-height: 24px
+  -webkit-font-smoothing: antialiased
+  -webkit-tap-highlight-color: transparent
 
-  +mobile
-    overflow-x: hidden
+  a
+    text-decoration: none
+    cursor: pointer
+    color: $text-secondary
+
+    &:hover, &.is-active
+      color: $blue
+
+  p
+    display: block
+    margin: 0 0 10px
