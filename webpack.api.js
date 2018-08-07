@@ -1,7 +1,7 @@
 const path = require('path');
 const root = path.resolve(__dirname);
 const webpack = require('webpack');
-const uglify = require('uglifyjs-webpack-plugin');
+const { LicenseWebpackPlugin } = require('license-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -16,7 +16,12 @@ module.exports = {
   },
   plugins: [
     new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
-    new uglify()
+    new LicenseWebpackPlugin({
+      pattern: /.*/,
+      suppressErrors: true,
+      perChunkOutput: false,
+      outputFilename: `3rdpartylicenses.txt`
+    })
   ],
   module: {
     rules: [
