@@ -12,9 +12,17 @@
   cursor: pointer
   transition: all 0.15s ease-out
 
+  &[disabled]
+    opacity: .5
+    pointer-events: none
+    touch-action: none
+
+  &:not(:last-child)
+    margin-right: 5px
+
   &:hover, &.is-active
-    border-color: $blue
-    color: $blue
+    border-color: $text-secondary
+    color: $text-secondary
 
   &.is-large
     padding: 10px 30px

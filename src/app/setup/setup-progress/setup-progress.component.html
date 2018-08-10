@@ -1,10 +1,10 @@
 <div class="setup-progress">
-  <span class="progress-bar"></span>
+  <span class="progress-bar" [style.width]="progressBar + '%'"></span>
   <div class="progress-circle first">
-    <span class="inner-circle" [class.is-active]="true">
-      <span [class.is-hidden]="true">1</span>
-      <span [class.is-hidden]="false">
-        <i class="fas fa-check"></i>
+    <span class="inner-circle" [class.is-active]="route !== '/setup/check'">
+      <span [class.is-hidden]="route !== '/setup/check'">1</span>
+      <span [class.is-hidden]="route === '/setup/check'">
+        <i class="fas fa-check" *ngIf="route !== '/setup/check'"></i>
       </span>
     </span>
     <span class="sub-text">Check installation</span>

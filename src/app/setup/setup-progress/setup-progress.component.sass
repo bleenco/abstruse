@@ -14,9 +14,9 @@
     display: block
     position: absolute
     margin: 0 5px
-    width: calc(0%)
     background: $green
     top: 3px
+    transition: width .2s ease-out
 
   .progress-circle
     display: flex
@@ -34,10 +34,10 @@
       left: -5px
 
     &.second
-      left: calc(100% / 4 + 45px)
+      left: calc(100% / 3 * 1)
 
     &.third
-      right: calc(100% / 4 + 45px)
+      left: calc(100% / 3 * 2)
 
     &.fourth
       right: -5px

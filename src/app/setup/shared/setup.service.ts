@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { SetupStatus } from './setup.model';
@@ -12,7 +13,19 @@ export class SetupService {
   status: SetupStatus;
   fetchingRequirements: boolean;
 
-  constructor(public http: HttpClient) { }
+  constructor(
+    public http: HttpClient,
+    public router: Router
+  ) { }
+
+  next(): void {
+    const route = this.router.url;
+
+    switch (route) {
+      case '/setup/check': this.router.navigate(['/setup/config']); break;
+      case '/setup/config': this.router.navigate(['/setup/team']); break;
+    }
+  }
 
   checkRequirements(): void {
     this.resetStatus();

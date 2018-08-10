@@ -10,6 +10,7 @@ import { SetupComponent } from './setup.component';
 import { SetupCheckComponent } from './setup-check/setup-check.component';
 import { SetupProgressComponent } from './setup-progress/setup-progress.component';
 import { SetupTeamComponent } from './setup-team/setup-team.component';
+import { SetupConfigComponent } from './setup-config/setup-config.component';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { SetupTeamComponent } from './setup-team/setup-team.component';
     SetupComponent,
     SetupCheckComponent,
     SetupProgressComponent,
-    SetupTeamComponent
+    SetupTeamComponent,
+    SetupConfigComponent
   ],
   providers: [ SetupService ]
 })

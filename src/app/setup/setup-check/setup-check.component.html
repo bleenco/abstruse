@@ -3,7 +3,7 @@
     <h1>Check installation</h1>
     <hr/>
   </div>
-  <div class="column is-12">
+  <div class="column is-12 ptb0">
     <div class="space-between">
       <p>Check installed software on your server.</p>
       <button type="button" class="button" (click)="setup?.checkRequirements()">
@@ -124,7 +124,7 @@
     <div class="column is-12 is-paddingless">
       <div class="justify-end">
         <button type="button" class="button is-large">Skip</button>
-        <button type="button" class="button is-large is-green" [disabled]="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status || !setup?.status?.requirements?.sqlite?.status || !setup?.status?.requirements?.git?.status">Next</button>
+        <button type="button" class="button is-large is-green" (click)="setup.next()" [disabled]="!setup?.status?.requirements?.docker?.status || !setup?.status?.requirements?.dockerRunning?.status || !setup?.status?.requirements?.sqlite?.status || !setup?.status?.requirements?.git?.status">Next</button>
       </div>
     </div>
   </div>

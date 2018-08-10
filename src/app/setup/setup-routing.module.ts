@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { SetupComponent } from './setup.component';
 import { SetupCheckComponent } from './setup-check/setup-check.component';
+import { SetupConfigComponent } from './setup-config/setup-config.component';
 import { SetupTeamComponent } from './setup-team/setup-team.component';
 
 const setupRoutes: Routes = [
@@ -12,6 +13,7 @@ const setupRoutes: Routes = [
     children: [
       { path: '', redirectTo: 'check', pathMatch: 'full' },
       { path: 'check', component: SetupCheckComponent },
+      { path: 'config', component: SetupConfigComponent },
       { path: 'team', component: SetupTeamComponent }
     ]
   }
