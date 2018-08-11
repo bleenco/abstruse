@@ -3,8 +3,8 @@
     <app-setup-progress></app-setup-progress>
   </div>
   <div class="column is-10 is-offset-1 is-paddingless">
-    <div class="setup-content">
-      <router-outlet></router-outlet>
+    <div class="setup-content" [@fadeAnimation]="o.isActivated ? o.activatedRoute : ''">
+      <router-outlet #o="outlet" class="animated-outlet"></router-outlet>
     </div>
   </div>
 </div>
