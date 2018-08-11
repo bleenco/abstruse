@@ -1,0 +1,40 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+
+\:host
+  width: 200px
+  background: $white
+  position: absolute
+  top: 40px
+  right: -20px
+  z-index: 20
+  box-shadow: $box-shadow
+  border-radius: 5px
+
+  .header-dropdown-container
+    width: 100%
+    padding: 5px 0
+    text-transform: none
+
+    .hd-item
+      width: 100%
+      height: 40px
+      display: flex
+      align-items: center
+      padding: 0 10px
+      color: $text-primary
+
+      &.bordered-bottom
+        border-bottom: 1px solid $border-box
+
+      &:hover
+        background: $background-gray
+
+      .hd-avatar
+        width: 25px
+        height: 25px
+        border-radius: 50%
+        border: 1px solid $border-primary
+        margin-right: 15px
+        background: $white
