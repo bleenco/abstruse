@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed, getTestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController, TestRequest } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { By } from '@angular/platform-browser';
 import { getAPIURL } from '../../core/shared/shared-functions';
 
@@ -18,7 +19,7 @@ describe('SetupCheckComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       declarations: [SetupCheckComponent, LoaderComponent],
       providers: [SetupService]
     })

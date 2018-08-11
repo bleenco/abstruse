@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NotFoundComponent } from './core/not-found/not-found.component';
-import { LoginComponent } from './login/login.component';
 
-const routes: Routes = [
-  { path: '', component: LoginComponent },
+import { AuthGuardService } from './shared/providers/auth-guard.service';
+
+export const routes: Routes = [
+  { path: '', pathMatch: 'full', redirectTo: 'builds' },
+  { path: 'login', redirectTo: '' },
+  { path: 'builds', loadChildren: './builds/builds.module#BuildsModule', canLoad: [AuthGuardService], canActivate: [AuthGuardService] },
   { path: 'setup', loadChildren: './setup/setup.module#SetupModule' },
   { path: '404', component: NotFoundComponent }
 ];

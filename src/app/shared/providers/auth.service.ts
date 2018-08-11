@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { catchError } from 'rxjs/operators';
@@ -14,18 +15,25 @@ export class AuthService {
   tokenName: string;
   userInfo: any = false;
 
-  constructor(public http: HttpClient) {
+  constructor(
+    public http: HttpClient,
+    public router: Router
+  ) {
     this.tokenName = 'abstruse-auth-token';
   }
 
   login(token: string): void {
     localStorage.setItem(this.tokenName, token);
     this.checkAuthenticated();
+    if (this.hasToken()) {
+      this.router.navigate(['/builds']);
+    }
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenName);
     this.checkAuthenticated();
+    this.router.navigate(['/login']);
   }
 
   authenticate(credentials: Login): Observable<JSONResponse> {

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { SetupTeamComponent } from './setup-team.component';
 import { SelectboxComponent } from '../../shared/widgets/selectbox/selectbox.component';
@@ -9,6 +10,7 @@ describe('SetupTeamComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [SetupTeamComponent, SelectboxComponent]
     })
       .compileComponents();

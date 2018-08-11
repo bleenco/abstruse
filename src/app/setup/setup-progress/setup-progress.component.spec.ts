@@ -1,4 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { SetupProgressComponent } from './setup-progress.component';
 
@@ -8,9 +10,10 @@ describe('SetupProgressComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SetupProgressComponent ]
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [SetupProgressComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

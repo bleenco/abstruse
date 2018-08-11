@@ -7,17 +7,26 @@
             <div class="login-logo-container justify-center align-center">
               <img src="/assets/images/abstruse-text-black.svg">
             </div>
+            <div class="message is-red" *ngIf="credentialsError && !loading">
+              <p>
+                <i class="fas fa-times"></i>
+                Invalid username and password combination.
+              </p>
+            </div>
             <form class="login-form" #loginForm="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
-                <input type="text" name="username" class="input" [(ngModel)]="login.email" required>
+                <input #usernameField type="text" name="username" class="input" [(ngModel)]="login.email" required [disabled]="loading">
               </span>
               <span class="field">
                 <label class="label">Password</label>
-                <input type="password" name="password" class="input" [(ngModel)]="login.password" required>
+                <input type="password" name="password" class="input" [(ngModel)]="login.password" required [disabled]="loading">
               </span>
               <div class="align-center justify-center">
-                <button type="submit" class="button" [disabled]="!loginForm.valid">Login</button>
+                <button type="submit" class="button" [disabled]="!loginForm.valid">
+                  <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+                  <span *ngIf="!loading">Login</span>
+                </button>
               </div>
             </form>
           </div>

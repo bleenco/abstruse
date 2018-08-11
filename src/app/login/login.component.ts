@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AuthService } from '../shared/providers/auth.service';
 import { Login } from './login.model';
 
@@ -8,6 +8,8 @@ import { Login } from './login.model';
   styleUrls: ['./login.component.sass']
 })
 export class LoginComponent implements OnInit {
+  @ViewChild('usernameField') usernameField: ElementRef;
+
   login: Login;
   loading: boolean;
   credentialsError: boolean;
@@ -25,6 +27,7 @@ export class LoginComponent implements OnInit {
       if (!resp.data) {
         this.credentialsError = true;
         this.resetLogin();
+        setTimeout(() => this.usernameField.nativeElement.focus());
       } else {
         this.authService.login(resp.data);
       }
