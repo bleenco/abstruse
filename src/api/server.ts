@@ -5,11 +5,12 @@ import { Observable } from 'rxjs';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
 import * as session from 'express-session';
-import { logger, LogMessageType } from './logger';
 import { getRootDir } from './setup';
 import * as connectsqlite3 from 'connect-sqlite3';
 
-let SQLiteStore = connectsqlite3(session);
+import { setupRouter } from './routes/setup';
+
+const SQLiteStore = connectsqlite3(session);
 
 export interface ServerConfig {
   port: number;
@@ -40,7 +41,7 @@ export class ExpressServer implements IExpressServer {
       app.use(cors());
       app.use(bodyParser.json());
       app.use('/webhooks', webhooks);
-      app.use('/api/setup', routes.setupRoutes());
+      app.use('/api/setup', setupRouter);
       app.use('/api/user', routes.userRoutes());
       app.use('/api/tokens', routes.tokenRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());

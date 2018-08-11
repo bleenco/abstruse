@@ -8,3 +8,4 @@ coverage/
 src/server/logs/
 scripts/abstruse*
 scripts/nodec
+yarn-error.log
