@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { JSONResponse } from '../../core/shared/shared.model';
+import { getAPIURL, handleError } from '../../core/shared/shared-functions';
+import { catchError } from 'rxjs/operators';
 import * as jwt from 'jwt-decode';
+import { Login } from '../../login/login.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +14,7 @@ export class AuthService {
   tokenName: string;
   userInfo: any = false;
 
-  constructor() {
+  constructor(public http: HttpClient) {
     this.tokenName = 'abstruse-auth-token';
   }
 
@@ -22,7 +28,15 @@ export class AuthService {
     this.checkAuthenticated();
   }
 
-  private checkAuthenticated(): void {
+  authenticate(credentials: Login): Observable<JSONResponse> {
+    const url = getAPIURL() + `/auth/login`;
+    return this.http.post<JSONResponse>(url, credentials)
+      .pipe(
+        catchError(handleError<JSONResponse>('/auth/login'))
+      );
+  }
+
+  checkAuthenticated(): void {
     if (this.hasToken()) {
       this.userInfo = this.decodeToken();
     } else {

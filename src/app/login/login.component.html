@@ -7,17 +7,17 @@
             <div class="login-logo-container justify-center align-center">
               <img src="/assets/images/abstruse-text-black.svg">
             </div>
-            <form class="login-form">
+            <form class="login-form" #loginForm="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
-                <input type="text" name="username" class="input">
+                <input type="text" name="username" class="input" [(ngModel)]="login.email" required>
               </span>
               <span class="field">
                 <label class="label">Password</label>
-                <input type="password" name="username" class="input">
+                <input type="password" name="password" class="input" [(ngModel)]="login.password" required>
               </span>
               <div class="align-center justify-center">
-                <button type="button" class="button">Login</button>
+                <button type="submit" class="button" [disabled]="!loginForm.valid">Login</button>
               </div>
             </form>
           </div>
