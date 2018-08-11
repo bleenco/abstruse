@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { SetupRoutingModule } from './setup-routing.module';
 import { SharedModule } from '../shared/modules/shared.module';
@@ -15,6 +16,7 @@ import { SetupConfigComponent } from './setup-config/setup-config.component';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     SetupRoutingModule,
     SharedModule
   ],

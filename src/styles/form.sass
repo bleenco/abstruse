@@ -5,6 +5,7 @@
   display: inline-block
   width: 100%
   max-width: 100%
+  position: relative
 
   &:not(:last-child)
     margin-bottom: 15px
@@ -25,6 +26,16 @@
         flex-grow: 1
         flex-shrink: 1
 
+  .input-right-icon
+    position: absolute
+    right: 10px
+    top: 42px
+    cursor: pointer
+    color: $text-primary
+
+    &:hover
+      color: $text-secondary
+
 .label
   display: block
   color: $text-primary
@@ -44,7 +55,7 @@
   justify-content: center
   line-height: 100%
   margin: 0
-  padding: 0
+  padding: 0 30px 0 0
   width: 100%
 
   &[disabled]
@@ -60,7 +71,25 @@
   &:focus
     border-color: $border-primary
 
+  &[type="number"]
+    -moz-appearance:textfield
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      -webkit-appearance: none
+
 textarea
 
   &.input
     height: 150px
+
+.input-info
+  color: $text-primary
+  display: flex
+  align-items: center
+  margin: 0 3px
+
+  i
+    margin-right: 5px
+
+  span
+    font-size: 12px

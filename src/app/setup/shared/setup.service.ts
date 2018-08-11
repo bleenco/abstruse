@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
-import { SetupStatus } from './setup.model';
+import { SetupStatus, SetupConfig } from './setup.model';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -11,6 +11,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class SetupService {
   status: SetupStatus;
+  config: SetupConfig;
   fetchingRequirements: boolean;
 
   constructor(
@@ -42,6 +43,11 @@ export class SetupService {
         }
         this.fetchingRequirements = false;
       });
+  }
+
+  generateRandomString(len: number): string {
+    const s = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return Array(len).join().split(',').map(() => s.charAt(Math.floor(Math.random() * s.length))).join('');
   }
 
   private resetStatus(): void {
