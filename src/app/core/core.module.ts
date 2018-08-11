@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { throwIfAlreadyLoaded } from './shared/shared-functions';
 
 import { HeaderComponent } from './header/header.component';
+import { HeaderSetupComponent } from './header-setup/header-setup.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
@@ -16,10 +17,12 @@ import { NotFoundComponent } from './not-found/not-found.component';
   ],
   declarations: [
     HeaderComponent,
+    HeaderSetupComponent,
     NotFoundComponent
   ],
   exports: [
-    HeaderComponent
+    HeaderComponent,
+    HeaderSetupComponent
   ],
   providers: []
 })

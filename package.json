@@ -74,6 +74,7 @@
     "@auth0/angular-jwt": "^2.0.0",
     "@types/bcrypt": "^3.0.0",
     "@types/bookshelf": "^0.9.9",
+    "@types/d3": "^5.0.0",
     "@types/express": "^4.16.0",
     "@types/glob": "^7.1.1",
     "@types/jasmine": "~2.8.9",

@@ -654,12 +654,8 @@ export function setupRoutes(): express.Router {
     ])
       .pipe(toArray())
       .subscribe(data => {
-        let isFalse = data.findIndex(x => !x);
-        if (isFalse === -1) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(200).json({ data: false });
-        }
+        const isFalse = data.findIndex(x => !x);
+        res.status(200).json({ data: isFalse === -1 ? 'ready' : 'setup' });
       });
   });
 
@@ -682,37 +678,37 @@ export function setupRoutes(): express.Router {
         docker.isDockerInstalled(),
         docker.isDockerRunning()
       ])
-      .pipe(
-        toArray(),
-        concatMap(status => {
-          const version = concat(...[
-            status[0] ? of(system.getGitVersion()) : empty(),
-            status[1] ? of(system.getSQLiteVersion()) : empty(),
-            status[2] && status[3] ? of(docker.getDockerVersion()) : empty()
-          ]).pipe(concatAll(), toArray());
-          return concat(...[of(status), version]);
-        }),
-        toArray(),
-        map(resp => {
-          return {
-            git: { status: resp[0][0], version: resp[1][0] },
-            sqlite: { status: resp[0][1], version: resp[1][1] },
-            docker: { status: resp[0][2], version: resp[1][2] },
-            dockerRunning: { status: resp[0][3] }
+        .pipe(
+          toArray(),
+          concatMap(status => {
+            const version = concat(...[
+              status[0] ? of(system.getGitVersion()) : empty(),
+              status[1] ? of(system.getSQLiteVersion()) : empty(),
+              status[2] && status[3] ? of(docker.getDockerVersion()) : empty()
+            ]).pipe(concatAll(), toArray());
+            return concat(...[of(status), version]);
+          }),
+          toArray(),
+          map(resp => {
+            return {
+              git: { status: resp[0][0], version: resp[1][0] },
+              sqlite: { status: resp[0][1], version: resp[1][1] },
+              docker: { status: resp[0][2], version: resp[1][2] },
+              dockerRunning: { status: resp[0][3] }
+            };
+          })
+        )
+        .subscribe(data => {
+          res.status(200).json({ data });
+        }, err => {
+          const logMessage: LogMessageType = {
+            type: 'error', message: err, notify: false
           };
-        })
-      )
-      .subscribe(data => {
-        res.status(200).json({ data });
-      }, err => {
-        const logMessage: LogMessageType = {
-          type: 'error', message: err, notify: false
-        };
-        logger.next(logMessage);
-        res.status(500).json({ data: err });
-      }, () => {
-        sub.unsubscribe();
-      });
+          logger.next(logMessage);
+          res.status(500).json({ data: err });
+        }, () => {
+          sub.unsubscribe();
+        });
   });
 
   router.post('/db/init', (req: express.Request, res: express.Response) => {

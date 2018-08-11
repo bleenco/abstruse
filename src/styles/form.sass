@@ -1,4 +1,36 @@
-.form
+@import 'colours'
+@import 'typography'
+
+.field
+  display: inline-block
+  width: 100%
+  max-width: 100%
+
+  &:not(:last-child)
+    margin-bottom: 15px
+
+  &.is-grouped
+    display: flex
+    justify-content: flex-start
+
+    & > .control
+      flex-grow: 1
+      flex-shrink: 1
+
+      &:not(:last-child)
+        margin-bottom: 0
+        margin-right: 15px
+
+      &.is-expanded
+        flex-grow: 1
+        flex-shrink: 1
+
+.label
+  display: block
+  color: $text-primary
+  font-size: 13px
+  font-family: $font-family-medium
+  margin: 5px 0 0
 
 .input
   color: $text-input
@@ -15,3 +47,18 @@
   margin: 0
   padding: 0
   width: 100%
+
+  &::placeholder
+    color: $text-primary
+    opacity: 1
+
+  &::-ms-input-placeholder
+    color: $text-primary
+
+  &:focus
+    border-color: $border-primary
+
+textarea
+
+  &.input
+    height: 150px

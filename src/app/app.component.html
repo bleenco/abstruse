@@ -1,11 +1,27 @@
-<app-header></app-header>
-
-<main class="main">
-  <div class="container">
-    <div class="columns is-marginless is-paddingless">
-      <div class="column is-10 is-offset-1 is-paddingless">
-        <router-outlet></router-outlet>
+<section *ngIf="statusService?.status === 'setup' && !authService?.userInfo">
+  <app-header-setup></app-header-setup>
+  <main class="main">
+    <div class="container">
+      <div class="columns is-marginless is-paddingless">
+        <div class="column is-10 is-offset-1 is-paddingless">
+          <router-outlet></router-outlet>
+        </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
+</section>
+
+<section *ngIf="statusService?.status === 'ready' && !!authService?.userInfo">
+  <app-header></app-header>
+  <main class="main">
+    <div class="container">
+      <div class="columns is-marginless is-paddingless">
+        <div class="column is-10 is-offset-1 is-paddingless">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </main>
+</section>
+
+<app-login *ngIf="statusService?.status === 'ready' && !authService?.userInfo"></app-login>
