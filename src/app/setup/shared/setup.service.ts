@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { SetupStatus, SetupConfig } from './setup.model';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -13,11 +14,14 @@ export class SetupService {
   status: SetupStatus;
   config: SetupConfig;
   fetchingRequirements: boolean;
+  fetchingConfig: boolean;
 
   constructor(
     public http: HttpClient,
     public router: Router
-  ) { }
+  ) {
+    this.config = new SetupConfig();
+  }
 
   next(): void {
     const route = this.router.url;
@@ -26,6 +30,37 @@ export class SetupService {
       case '/setup/check': this.router.navigate(['/setup/config']); break;
       case '/setup/config': this.router.navigate(['/setup/team']); break;
     }
+  }
+
+  fetchConfig(): void {
+    this.fetchingConfig = true;
+    const url = getAPIURL() + `/setup/config`;
+
+    this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('setup/config'))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data) {
+          this.config = new SetupConfig(
+            resp.data.secret,
+            resp.data.jwtSecret,
+            resp.data.concurrency,
+            resp.data.idleTimeout,
+            resp.data.jobTimeout
+          );
+        }
+        this.fetchingConfig = false;
+      });
+  }
+
+  saveConfig(): Observable<JSONResponse> {
+    const url = getAPIURL() + `/setup/config`;
+
+    return this.http.post<JSONResponse>(url, this.config)
+      .pipe(
+        catchError(handleError<JSONResponse>('setup/config'))
+      );
   }
 
   checkRequirements(): void {

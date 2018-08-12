@@ -15,7 +15,6 @@ export class SetupConfig {
     public jwtSecret: string = '',
     public concurrency: number = 4,
     public idleTimeout: number = 600,
-    public jobTimeout: number = 3600,
-    public requireLogin: boolean = true
+    public jobTimeout: number = 3600
   ) { }
 }

@@ -7,11 +7,11 @@
     <div class="space-between">
       <p>Set your Abstruse CI configuration.</p>
       <div class="buttons">
-        <button type="button" class="button">
+        <button type="button" class="button" (click)="resetForm()" [disabled]="!configForm.dirty">
           <i class="fas fa-window-restore"></i>
           <span>Reset</span>
         </button>
-        <button type="button" class="button">
+        <button type="button" class="button" (click)="save()" [disabled]="!configForm.dirty">
           <i class="fas fa-check"></i>
           <span>Save</span>
         </button>
@@ -21,72 +21,75 @@
 </div>
 
 <div class="setup-configuration-box box">
-  <div class="columns is-multiline">
-    <div class="column is-12">
-      <h2>Security</h2>
-      <hr/>
-    </div>
-    <div class="column is-6">
-      <span class="field">
-        <label class="label">Secret</label>
-        <input type="text" name="secret" placeholder="Secret" class="input" [(ngModel)]="setup.config.secret" required>
-        <i class="fas fa-sync input-right-icon" (click)="generateRandomSecret()"></i>
-        <span class="input-info">
-          <i class="fas fa-info-circle"></i>
-          <span>Used to connect third party services with Abstruse.</span>
+  <app-loader *ngIf="setup?.fetchingConfig"></app-loader>
+  <form class="config-form" #configForm="ngForm">
+    <div class="columns is-multiline" *ngIf="!setup?.fetchingConfig">
+      <div class="column is-12">
+        <h2>Security</h2>
+        <hr/>
+      </div>
+      <div class="column is-6">
+        <span class="field">
+          <label class="label">Secret</label>
+          <input type="text" name="secret" placeholder="Secret" class="input" [(ngModel)]="setup.config.secret" required>
+          <i class="fas fa-sync input-right-icon" (click)="generateRandomSecret()"></i>
+          <span class="input-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Used to connect third party services with Abstruse.</span>
+          </span>
         </span>
-      </span>
-    </div>
-    <div class="column is-6">
-      <span class="field">
-        <label class="label">JWT Authentication Secret Key</label>
-        <input type="text" name="jwtSecret" placeholder="JWT Secret Key" class="input" [(ngModel)]="setup.config.jwtSecret" required>
-        <i class="fas fa-sync input-right-icon" (click)="generateRandomJWTKey()"></i>
-        <span class="input-info">
-          <i class="fas fa-info-circle"></i>
-          <span>Used to generate JSON web tokens for web and API authentication.</span>
+      </div>
+      <div class="column is-6">
+        <span class="field">
+          <label class="label">JWT Authentication Secret Key</label>
+          <input type="text" name="jwtSecret" placeholder="JWT Secret Key" class="input" [(ngModel)]="setup.config.jwtSecret" required>
+          <i class="fas fa-sync input-right-icon" (click)="generateRandomJWTKey()"></i>
+          <span class="input-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Used to generate JSON web tokens for web and API authentication.</span>
+          </span>
         </span>
-      </span>
-    </div>
-    <div class="column is-12 mt10">
-      <h2>Build Settings</h2>
-      <hr/>
-    </div>
-    <div class="column is-6">
-      <span class="field">
-        <label class="label">Concurrency</label>
-        <input type="number" name="concurrency" placeholder="Concurrency" class="input" [(ngModel)]="setup.config.concurrency" required
-          min="1" max="20">
-        <span class="input-info">
-          <i class="fas fa-info-circle"></i>
-          <span>Concurrency is maximum allowed number of jobs running in parallel.</span>
+      </div>
+      <div class="column is-12 mt10">
+        <h2>Build Settings</h2>
+        <hr/>
+      </div>
+      <div class="column is-6">
+        <span class="field">
+          <label class="label">Concurrency</label>
+          <input type="number" name="concurrency" placeholder="Concurrency" class="input" [(ngModel)]="setup.config.concurrency" required
+            min="1" max="20">
+          <span class="input-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Concurrency is maximum allowed number of jobs running in parallel.</span>
+          </span>
         </span>
-      </span>
-    </div>
-    <div class="column is-6"></div>
-    <div class="column is-6">
-      <span class="field">
-        <label class="label">Idle Timeout</label>
-        <input type="number" name="idleTimeout" placeholder="Idle Timeout" class="input" [(ngModel)]="setup.config.idleTimeout" required
-          min="60" max="3600">
-        <span class="input-info">
-          <i class="fas fa-info-circle"></i>
-          <span>Duration in seconds for maximum allowed idle before force stopping job.</span>
+      </div>
+      <div class="column is-6"></div>
+      <div class="column is-6">
+        <span class="field">
+          <label class="label">Idle Timeout</label>
+          <input type="number" name="idleTimeout" placeholder="Idle Timeout" class="input" [(ngModel)]="setup.config.idleTimeout" required
+            min="60" max="3600">
+          <span class="input-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Duration in seconds for maximum allowed idle before force stopping job.</span>
+          </span>
         </span>
-      </span>
-    </div>
-    <div class="column is-6">
-      <span class="field">
-        <label class="label">Job Timeout</label>
-        <input type="number" name="jobTimeout" placeholder="Job Timeout" class="input" [(ngModel)]="setup.config.jobTimeout" required
-          min="120" max="7200">
-        <span class="input-info">
-          <i class="fas fa-info-circle"></i>
-          <span>Duration in seconds for job process timeout.</span>
+      </div>
+      <div class="column is-6">
+        <span class="field">
+          <label class="label">Job Timeout</label>
+          <input type="number" name="jobTimeout" placeholder="Job Timeout" class="input" [(ngModel)]="setup.config.jobTimeout" required
+            min="120" max="7200">
+          <span class="input-info">
+            <i class="fas fa-info-circle"></i>
+            <span>Duration in seconds for job process timeout.</span>
+          </span>
         </span>
-      </span>
+      </div>
     </div>
-  </div>
+  </form>
 </div>
 
 <div class="columns is-multiline is-marginless">
@@ -106,7 +109,7 @@
     <div class="column is-12 is-paddingless">
       <div class="justify-end">
         <button type="button" class="button is-large" disabled>Skip</button>
-        <button type="button" class="button is-large is-green" (click)="setup.next()">Next</button>
+        <button type="button" class="button is-large is-green" (click)="setup.next()" [disabled]="configForm.dirty">Next</button>
       </div>
     </div>
   </div>
