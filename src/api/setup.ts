@@ -45,13 +45,18 @@ export function initSetup(): Promise<string> {
     .then(() => ensureDirectory(getFilePath('images')))
     .then(() => ensureDirectory(getFilePath('base-images')))
     .then(() => {
-      let srcDir = resolve(__dirname, '../../src/files/docker-essential');
-      let destDir = getFilePath('docker-essential');
+      const srcDir = resolve(__dirname, '../../src/files/docker-essential');
+      const destDir = getFilePath('docker-essential');
       return copyFile(srcDir, destDir);
     })
     .then(() => {
-      let avatarDir = resolve(__dirname, '../../src/files/avatars');
-      let destDir = getFilePath('avatars');
+      const avatarDir = resolve(__dirname, '../../src/files/avatars');
+      const destDir = getFilePath('avatars');
+      return copyFile(avatarDir, destDir);
+    })
+    .then(() => {
+      const avatarDir = resolve(__dirname, '../../src/files/avatars/predefined');
+      const destDir = getFilePath('avatars/predefined');
       return copyFile(avatarDir, destDir);
     })
     .then(() => getConfigAsync());

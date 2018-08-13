@@ -6,9 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./setup-team.component.sass']
 })
 export class SetupTeamComponent implements OnInit {
-  memberType: { value: number, placeholder: string }[] = [
-    { value: 0, placeholder: 'User' },
-    { value: 1, placeholder: 'Administrator' }
+  memberType: { value: boolean, placeholder: string }[] = [
+    { value: false, placeholder: 'User' },
+    { value: true, placeholder: 'Administrator' }
   ];
 
   constructor() { }
