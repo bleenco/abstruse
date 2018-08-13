@@ -48,9 +48,13 @@ export class SetupProgressComponent implements OnInit, OnDestroy {
         this.progressBar = 33.3;
         this.step = 2;
         break;
-      case '/setup/team':
+      case '/setup/user':
         this.progressBar = 66.6;
         this.step = 3;
+        break;
+      case '/setup/team':
+        this.progressBar = 100;
+        this.step = 4;
         break;
     }
   }

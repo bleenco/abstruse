@@ -28,7 +28,8 @@ export class SetupService {
 
     switch (route) {
       case '/setup/check': this.router.navigate(['/setup/config']); break;
-      case '/setup/config': this.router.navigate(['/setup/team']); break;
+      case '/setup/config': this.router.navigate(['/setup/user']); break;
+      case '/setup/user': this.router.navigate(['/setup/team']); break;
     }
   }
 
