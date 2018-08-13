@@ -1,6 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { FormsModule } from '@angular/forms';
 
 import { SetupUserComponent } from './setup-user.component';
+import { AvatarPickerComponent } from '../../shared/widgets/avatar-picker/avatar-picker.component';
 
 describe('SetupUserComponent', () => {
   let component: SetupUserComponent;
@@ -8,9 +12,10 @@ describe('SetupUserComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SetupUserComponent ]
+      imports: [FormsModule, HttpClientTestingModule, RouterTestingModule],
+      declarations: [SetupUserComponent, AvatarPickerComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { HeaderSetupComponent } from './core/header-setup/header-setup.component';
 import { HeaderComponent } from './core/header/header.component';
+import { HeaderDropdownComponent } from './core/header-dropdown/header-dropdown.component';
 import { LoginComponent } from './login/login.component';
 
 describe('AppComponent', () => {
@@ -20,6 +21,7 @@ describe('AppComponent', () => {
         AppComponent,
         HeaderComponent,
         HeaderSetupComponent,
+        HeaderDropdownComponent,
         LoginComponent
       ],
     }).compileComponents();

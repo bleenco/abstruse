@@ -1,4 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderDropdownComponent } from './header-dropdown.component';
 
@@ -8,9 +10,10 @@ describe('HeaderDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderDropdownComponent ]
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [HeaderDropdownComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

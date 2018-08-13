@@ -1,8 +1,10 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { FormsModule } from '@angular/forms';
 
 import { SetupConfigComponent } from './setup-config.component';
+import { LoaderComponent } from '../../core/loader/loader.component';
 
 describe('SetupConfigComponent', () => {
   let component: SetupConfigComponent;
@@ -10,8 +12,8 @@ describe('SetupConfigComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [SetupConfigComponent]
+      imports: [HttpClientTestingModule, RouterTestingModule, FormsModule],
+      declarations: [SetupConfigComponent, LoaderComponent]
     })
       .compileComponents();
   }));

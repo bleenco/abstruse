@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderComponent } from './header.component';
+import { HeaderDropdownComponent } from '../header-dropdown/header-dropdown.component';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -11,7 +12,7 @@ describe('HeaderComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [HeaderComponent]
+      declarations: [HeaderComponent, HeaderDropdownComponent]
     })
       .compileComponents();
   }));
