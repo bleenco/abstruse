@@ -8,6 +8,9 @@ import { AuthService } from '../providers/auth.service';
 
 import { LoaderComponent } from '../../core/loader/loader.component';
 import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
+import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.component';
+
+import { EqualValidatorDirective } from '../validators/equal-password.directive';
 
 @NgModule({
   imports: [
@@ -16,11 +19,15 @@ import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
   ],
   declarations: [
     LoaderComponent,
-    SelectboxComponent
+    SelectboxComponent,
+    AvatarPickerComponent,
+    EqualValidatorDirective
   ],
   exports: [
     LoaderComponent,
-    SelectboxComponent
+    SelectboxComponent,
+    AvatarPickerComponent,
+    EqualValidatorDirective
   ]
 })
 export class SharedModule {

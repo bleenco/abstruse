@@ -38,3 +38,7 @@ export function getWebSocketURL(): string {
     return token ? `ws://${location.hostname}:${port}/ws?token=${token}` : `ws://${location.hostname}:${port}/ws`;
   }
 }
+
+export function getAvatars(): string[] {
+  return Array.from(new Array(31), (x, i) => `/assets/images/avatars/avatar_${i + 1}.svg`);
+}
