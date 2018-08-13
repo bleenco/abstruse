@@ -12,10 +12,12 @@ export class SetupProgressComponent implements OnInit, OnDestroy {
   sub: Subscription;
   progressBar: number;
   route: string;
+  step: number;
 
   constructor(public setup: SetupService) {
     this.progressBar = 0;
     this.route = '/setup';
+    this.step = 1;
   }
 
   ngOnInit() {
@@ -38,9 +40,18 @@ export class SetupProgressComponent implements OnInit, OnDestroy {
 
   private setProgress(): void {
     switch (this.route) {
-      case '/setup/check': this.progressBar = 0; break;
-      case '/setup/config': this.progressBar = 33.3; break;
-      case '/setup/team': this.progressBar = 66.6; break;
+      case '/setup/check':
+        this.progressBar = 0;
+        this.step = 1;
+        break;
+      case '/setup/config':
+        this.progressBar = 33.3;
+        this.step = 2;
+        break;
+      case '/setup/team':
+        this.progressBar = 66.6;
+        this.step = 3;
+        break;
     }
   }
 

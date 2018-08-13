@@ -1,32 +1,38 @@
 <div class="setup-progress">
   <span class="progress-bar" [style.width]="progressBar + '%'"></span>
   <div class="progress-circle first">
-    <span class="inner-circle" [class.is-active]="route !== '/setup/check'">
-      <span [class.is-hidden]="route !== '/setup/check'">1</span>
-      <span [class.is-hidden]="route === '/setup/check'">
-        <i class="fas fa-check" *ngIf="route !== '/setup/check'"></i>
+    <span class="inner-circle" [class.is-active]="true">
+      <span [class.is-hidden]="step !== 1">1</span>
+      <span [class.is-hidden]="step === 1">
+        <i class="fas fa-check"></i>
       </span>
     </span>
     <span class="sub-text">Check installation</span>
   </div>
   <div class="progress-circle second">
-    <span class="inner-circle" [class.is-active]="false">
-      <span [class.is-hidden]="false">2</span>
-      <span [class.is-hidden]="true">
+    <span class="inner-circle" [class.is-active]="step > 1">
+      <span [class.is-hidden]="step > 2">2</span>
+      <span [class.is-hidden]="step <= 2">
         <i class="fas fa-check"></i>
       </span>
     </span>
     <span class="sub-text">Configuration</span>
   </div>
   <div class="progress-circle third">
-    <span class="inner-circle">
-      <span>3</span>
+    <span class="inner-circle" [class.is-active]="step > 2">
+      <span [class.is-hidden]="step > 3">3</span>
+      <span [class.is-hidden]="step <= 3">
+        <i class="fas fa-check"></i>
+      </span>
     </span>
     <span class="sub-text">Add team</span>
   </div>
   <div class="progress-circle fourth">
-    <span class="inner-circle">
-      <span>4</span>
+    <span class="inner-circle" [class.is-active]="step > 3">
+      <span [class.is-hidden]="step > 4">4</span>
+      <span [class.is-hidden]="step <= 4">
+        <i class="fas fa-check"></i>
+      </span>
     </span>
     <span class="sub-text">Confirmation</span>
   </div>
