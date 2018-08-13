@@ -11,7 +11,7 @@
           <i class="fas fa-window-restore"></i>
           <span>Reset</span>
         </button>
-        <button type="button" class="button" (click)="save()" [disabled]="!configForm.dirty">
+        <button type="button" class="button" (click)="save()" [disabled]="!configForm.dirty || configForm.invalid">
           <i class="fas fa-check"></i>
           <span>Save</span>
         </button>
