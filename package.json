@@ -32,6 +32,7 @@
     "build:app": "ng build --prod --output-path dist/app",
     "test": "node ./tests/run_unit.js",
     "test:karma": "ng test",
+    "test:karma:ci": "ng test --watch false",
     "test:e2e": "node ./tests/run_e2e.js",
     "lint": "ng lint",
     "test:protractor": "node ./tests/run_protractor.js",
