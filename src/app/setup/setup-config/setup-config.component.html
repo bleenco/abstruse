@@ -34,7 +34,6 @@
           <input type="text" name="secret" placeholder="Secret" class="input" [(ngModel)]="setup.config.secret" required>
           <i class="fas fa-sync input-right-icon" (click)="generateRandomSecret()"></i>
           <span class="input-info">
-            <i class="fas fa-info-circle"></i>
             <span>Used to connect third party services with Abstruse.</span>
           </span>
         </span>
@@ -45,7 +44,6 @@
           <input type="text" name="jwtSecret" placeholder="JWT Secret Key" class="input" [(ngModel)]="setup.config.jwtSecret" required>
           <i class="fas fa-sync input-right-icon" (click)="generateRandomJWTKey()"></i>
           <span class="input-info">
-            <i class="fas fa-info-circle"></i>
             <span>Used to generate JSON web tokens for web and API authentication.</span>
           </span>
         </span>
@@ -60,7 +58,6 @@
           <input type="number" name="concurrency" placeholder="Concurrency" class="input" [(ngModel)]="setup.config.concurrency" required
             min="1" max="20">
           <span class="input-info">
-            <i class="fas fa-info-circle"></i>
             <span>Concurrency is maximum allowed number of jobs running in parallel.</span>
           </span>
         </span>
@@ -72,7 +69,6 @@
           <input type="number" name="idleTimeout" placeholder="Idle Timeout" class="input" [(ngModel)]="setup.config.idleTimeout" required
             min="60" max="3600">
           <span class="input-info">
-            <i class="fas fa-info-circle"></i>
             <span>Duration in seconds for maximum allowed idle before force stopping job.</span>
           </span>
         </span>
@@ -83,7 +79,6 @@
           <input type="number" name="jobTimeout" placeholder="Job Timeout" class="input" [(ngModel)]="setup.config.jobTimeout" required
             min="120" max="7200">
           <span class="input-info">
-            <i class="fas fa-info-circle"></i>
             <span>Duration in seconds for job process timeout.</span>
           </span>
         </span>

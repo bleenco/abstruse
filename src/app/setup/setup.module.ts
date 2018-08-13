@@ -13,6 +13,7 @@ import { SetupProgressComponent } from './setup-progress/setup-progress.componen
 import { SetupTeamComponent } from './setup-team/setup-team.component';
 import { SetupConfigComponent } from './setup-config/setup-config.component';
 import { SetupUserComponent } from './setup-user/setup-user.component';
+import { SetupUserDialogComponent } from './setup-user-dialog/setup-user-dialog.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { SetupUserComponent } from './setup-user/setup-user.component';
     SetupProgressComponent,
     SetupTeamComponent,
     SetupConfigComponent,
-    SetupUserComponent
+    SetupUserComponent,
+    SetupUserDialogComponent
   ],
   providers: [ SetupService ]
 })

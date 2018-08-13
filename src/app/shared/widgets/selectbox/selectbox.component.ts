@@ -53,9 +53,16 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
   }
 
   writeValue(val: number | string | boolean) {
-    if (!val) {
+    if (!val && typeof val !== 'boolean') {
       return;
     }
+
+    const index = this.values.findIndex(v => v.value === val);
+    if (index === -1) {
+      throw Error('value does not exists');
+    }
+
+    this.placeholder = this.values[index].placeholder;
     this.innerValue = val;
   }
 

@@ -40,5 +40,5 @@ export function getWebSocketURL(): string {
 }
 
 export function getAvatars(): string[] {
-  return Array.from(new Array(31), (x, i) => `/avatars/predefined/avatar_${i + 1}.svg`);
+  return Array.from(new Array(30), (x, i) => `/avatars/predefined/avatar_${i + 1}.svg`);
 }

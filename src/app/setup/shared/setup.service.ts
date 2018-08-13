@@ -7,6 +7,7 @@ import { SetupStatus, SetupConfig } from './setup.model';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { User } from '../../core/shared/user.model';
+import { getAvatars } from '../../core/shared/shared-functions';
 
 @Injectable({
   providedIn: 'root'
@@ -16,12 +17,20 @@ export class SetupService {
   config: SetupConfig;
   fetchingRequirements: boolean;
   fetchingConfig: boolean;
+  avatars: string[];
+  userTypes: { value: boolean, placeholder: string }[] = [
+    { value: false, placeholder: 'User' },
+    { value: true, placeholder: 'Administrator' }
+  ];
+  dialogUser: User;
+  userDialogOpened: boolean;
 
   constructor(
     public http: HttpClient,
     public router: Router
   ) {
     this.config = new SetupConfig();
+    this.avatars = getAvatars();
   }
 
   next(): void {
@@ -89,6 +98,14 @@ export class SetupService {
         }
         this.fetchingRequirements = false;
       });
+  }
+
+  openUserDialog(): void {
+    this.userDialogOpened = true;
+  }
+
+  closeUserDialog(): void {
+    this.userDialogOpened = false;
   }
 
   generateRandomString(len: number): string {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SetupService } from '../shared/setup.service';
 
 @Component({
   selector: 'app-setup-team',
@@ -6,12 +7,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./setup-team.component.sass']
 })
 export class SetupTeamComponent implements OnInit {
-  memberType: { value: boolean, placeholder: string }[] = [
-    { value: false, placeholder: 'User' },
-    { value: true, placeholder: 'Administrator' }
-  ];
 
-  constructor() { }
+  constructor(public setup: SetupService) { }
 
   ngOnInit() {
   }

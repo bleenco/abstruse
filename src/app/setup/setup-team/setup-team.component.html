@@ -6,7 +6,7 @@
   <div class="column is-12">
     <div class="space-between">
       <p>Add your team members by creating their profiles.</p>
-      <button type="button" class="button">
+      <button type="button" class="button" (click)="setup.openUserDialog()">
         <span>Add a new profile</span>
       </button>
     </div>
@@ -30,7 +30,7 @@
           <span class="member-name">Jan Kuri</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="memberType"></app-selectbox>
+          <app-selectbox [values]="setup.userTypes"></app-selectbox>
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
           <span class="member-name">Irman Abdić</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="memberType"></app-selectbox>
+          <app-selectbox [values]="setup.userTypes"></app-selectbox>
         </div>
       </div>
     </div>
@@ -52,7 +52,7 @@
           <span class="member-name">Martin Oprešnik</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="memberType"></app-selectbox>
+          <app-selectbox [values]="setup.userTypes"></app-selectbox>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
           <span class="member-name">Nicolas Zick</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="memberType"></app-selectbox>
+          <app-selectbox [values]="setup.userTypes"></app-selectbox>
         </div>
       </div>
     </div>
@@ -92,3 +92,5 @@
     </div>
   </div>
 </div>
+
+<app-setup-user-dialog *ngIf="setup.userDialogOpened"></app-setup-user-dialog>
