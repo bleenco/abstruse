@@ -8,7 +8,7 @@ import {
   JobStage
 } from '../../src/api/config';
 
-let repo: Repository = {
+const repo: Repository = {
   clone_url: 'https://github.com/jruby/jruby.git',
   branch: 'master',
   file_tree: []

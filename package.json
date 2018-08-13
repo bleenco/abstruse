@@ -33,7 +33,7 @@
     "test": "node ./tests/run_unit.js",
     "test:karma": "ng test",
     "test:e2e": "node ./tests/run_e2e.js",
-    "lint": "tslint ./src/api/**/*.ts",
+    "lint": "ng lint",
     "test:protractor": "node ./tests/run_protractor.js",
     "preprotractor:ci": "npm run webdriver",
     "protractor:ci": "protractor ./protractor.conf.js",

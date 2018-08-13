@@ -2,7 +2,6 @@ import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs';
 import * as yaml from 'js-yaml';
 import * as temp from 'temp';
-import { getHttpJsonResponse } from './utils';
 
 export enum CommandType {
   git = 'git',
