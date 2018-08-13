@@ -6,7 +6,7 @@
   <div class="column is-12">
     <div class="space-between">
       <p>Add administrator user for Abstruse CI.</p>
-      <button type="button" class="button">
+      <button type="button" class="button" (click)="resetForm()" [disabled]="!adminForm.dirty">
         <span>Reset</span>
       </button>
     </div>
@@ -61,7 +61,10 @@
     <div class="column is-12 is-paddingless">
       <div class="justify-end">
         <button type="button" class="button is-large" disabled>Skip</button>
-        <button type="button" class="button is-large is-green" (click)="setup.next()" [disabled]="!adminForm.valid">Next</button>
+        <button type="button" class="button is-large is-green" (click)="createUser()" [disabled]="!adminForm.valid || creatingUser">
+          <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="creatingUser">
+          <span *ngIf="!creatingUser">Next</span>
+        </button>
       </div>
     </div>
   </div>

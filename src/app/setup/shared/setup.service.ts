@@ -6,6 +6,7 @@ import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { SetupStatus, SetupConfig } from './setup.model';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { User } from '../../core/shared/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +62,15 @@ export class SetupService {
     return this.http.post<JSONResponse>(url, this.config)
       .pipe(
         catchError(handleError<JSONResponse>('setup/config'))
+      );
+  }
+
+  createUser(user: User): Observable<JSONResponse> {
+    const url = getAPIURL() + `/users/new`;
+
+    return this.http.post<JSONResponse>(url, user)
+      .pipe(
+        catchError(handleError<JSONResponse>('users/new'))
       );
   }
 
