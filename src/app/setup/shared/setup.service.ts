@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { StatusService } from '../../shared/providers/status.service';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { SetupStatus, SetupConfig } from './setup.model';
@@ -22,12 +23,14 @@ export class SetupService {
     { value: false, placeholder: 'User' },
     { value: true, placeholder: 'Administrator' }
   ];
-  dialogUser: User;
   userDialogOpened: boolean;
+  users: User[] = [];
+  fetchingUsers: boolean;
 
   constructor(
     public http: HttpClient,
-    public router: Router
+    public router: Router,
+    public statusService: StatusService
   ) {
     this.config = new SetupConfig();
     this.avatars = getAvatars();
@@ -83,6 +86,22 @@ export class SetupService {
       );
   }
 
+  fetchUsers(): void {
+    this.fetchingUsers = true;
+    const url = getAPIURL() + `/users`;
+
+    this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('/users'))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data && resp.data.length) {
+          this.users = resp.data.map(user => new User(user.email, user.fullname, '', '', user.avatar, Boolean(user.admin)));
+        }
+        this.fetchingUsers = false;
+      });
+  }
+
   checkRequirements(): void {
     this.resetStatus();
     this.fetchingRequirements = true;
@@ -98,6 +117,18 @@ export class SetupService {
         }
         this.fetchingRequirements = false;
       });
+  }
+
+  setSetupDone(): Observable<JSONResponse> {
+    const url = getAPIURL() + `/setup/done`;
+    return this.http.post<JSONResponse>(url, null)
+      .pipe(
+        catchError(handleError<JSONResponse>('setup/done'))
+      );
+  }
+
+  goToLogin(): void {
+    this.statusService.checkStatus();
   }
 
   openUserDialog(): void {

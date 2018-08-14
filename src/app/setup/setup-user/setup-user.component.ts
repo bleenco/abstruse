@@ -20,12 +20,12 @@ export class SetupUserComponent implements OnInit {
 
   ngOnInit() {
     this.avatars = getAvatars();
-    this.user = new User('', '', '', '', this.avatars[0], true);
+    this.user = new User('', '', '', '', this.avatars[1], true);
   }
 
   resetForm(): void {
     this.adminForm.resetForm();
-    this.user = new User('', '', '', '', this.avatars[0], true);
+    this.user = new User('', '', '', '', this.avatars[1], true);
   }
 
   createUser(): void {

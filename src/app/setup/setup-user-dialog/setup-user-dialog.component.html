@@ -8,42 +8,40 @@
       <div class="dialog-body">
         <div class="columns">
           <div class="column is-5">
-            <app-avatar-picker [values]="setup.avatars" [(ngModel)]="setup.dialogUser.avatar" name="avatar" required></app-avatar-picker>
+            <app-avatar-picker [values]="setup.avatars" [(ngModel)]="user.avatar" name="avatar" required></app-avatar-picker>
           </div>
           <div class="column is-7">
             <span class="field">
               <label class="label">Email</label>
-              <input type="text" name="email" placeholder="Email" class="input" [(ngModel)]="setup.dialogUser.email" required>
+              <input type="text" name="email" placeholder="Email" class="input" [(ngModel)]="user.email" required>
               <span class="input-info">
                 <span>Email represents the username for login.</span>
               </span>
             </span>
             <span class="field">
               <label class="label">Name and Lastname</label>
-              <input type="text" name="fullname" placeholder="Name and Lastname" class="input" [(ngModel)]="setup.dialogUser.fullname"
-                required>
+              <input type="text" name="fullname" placeholder="Name and Lastname" class="input" [(ngModel)]="user.fullname" required>
               <span class="input-info">
                 <span>Your full name.</span>
               </span>
             </span>
             <span class="field">
               <label class="label">Status</label>
-              <app-selectbox [values]="setup.userTypes" [(ngModel)]="setup.dialogUser.admin" name="admin" required></app-selectbox>
+              <app-selectbox [values]="setup.userTypes" [(ngModel)]="user.admin" name="admin" required></app-selectbox>
               <span class="input-info">
                 <span>User privileges.</span>
               </span>
             </span>
             <span class="field">
               <label class="label">Password</label>
-              <input type="password" name="password" placeholder="Password" class="input" [(ngModel)]="setup.dialogUser.password" required
-                minlength="3">
+              <input type="password" name="password" placeholder="Password" class="input" [(ngModel)]="user.password" required minlength="3">
               <span class="input-info">
                 <span>Pick your password.</span>
               </span>
             </span>
             <span class="field">
               <label class="label">Confirm Password</label>
-              <input type="password" name="passwordConfirm" placeholder="Confirm Password" class="input" [(ngModel)]="setup.dialogUser.confirmPassword"
+              <input type="password" name="passwordConfirm" placeholder="Confirm Password" class="input" [(ngModel)]="user.confirmPassword"
                 required minlength="3" appValidateEqual="password">
               <span class="input-info">
                 <span>Repeat picked password, just to make sure.</span>
@@ -54,7 +52,10 @@
       </div>
       <div class="dialog-footer justify-end">
         <button class="button" (click)="setup.closeUserDialog()">Cancel</button>
-        <button class="button is-green" [disabled]="!userForm.valid">Save</button>
+        <button class="button is-green" [disabled]="!userForm.valid || saving" (click)="createUser()">
+          <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="saving">
+          <span *ngIf="!saving">Save</span>
+        </button>
       </div>
     </form>
   </div>

@@ -13,7 +13,7 @@
               Logout
             </a> -->
             <div class="header-item">
-              <img src="/assets/images/avatars/avatar_10.svg" class="avatar" (click)="toggleDropdown()">
+              <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
               <app-header-dropdown *ngIf="dropdownOpened"></app-header-dropdown>
             </div>
           </div>

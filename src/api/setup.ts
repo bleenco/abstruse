@@ -1,5 +1,5 @@
 import { join, resolve } from 'path';
-import { existsSync, copyFile, ensureDirectory } from './fs';
+import { existsSync, copyFile, ensureDirectory, exists, writeFile } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { ensureDirSync, statSync, remove, readJson, writeJson } from 'fs-extra';
 import * as uuid from 'uuid';
@@ -8,7 +8,7 @@ import { homedir } from 'os';
 import { getHumanSize } from './utils';
 import { randomBytes } from 'crypto';
 
-let defaultConfig = {
+const defaultConfig = {
   url: null,
   secret: 'defaultPassword',
   jwtSecret: randomString(),
@@ -75,24 +75,24 @@ export function getFilePath(relativePath: string): string {
 }
 
 export function makeAbstruseDir(): Promise<null> {
-  let abstruseDir = getRootDir();
+  const abstruseDir = getRootDir();
   return ensureDirectory(abstruseDir);
 }
 
 export function makeCacheDir(): Promise<null> {
-  let cachePath = getFilePath('cache');
+  const cachePath = getFilePath('cache');
   return ensureDirectory(cachePath);
 }
 
 export function createTempDir(): Promise<string> {
-  let tempDir = getFilePath(`cache/${uuid()}`);
+  const tempDir = getFilePath(`cache/${uuid()}`);
   return ensureDirectory(tempDir)
     .then(() => tempDir);
 }
 
 export function writeDefaultConfig(): void {
   ensureDirSync(getRootDir());
-  let configPath = getFilePath('config.json');
+  const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   getConfig();
 }
@@ -122,8 +122,8 @@ export function saveConfigAsync(cfg: any): Promise<void> {
 }
 
 export function getCacheFilesFromPattern(pattern: string): any[] {
-  let cacheFolder = getFilePath('cache');
-  let search = glob.sync(join(cacheFolder, pattern));
+  const cacheFolder = getFilePath('cache');
+  const search = glob.sync(join(cacheFolder, pattern));
 
   return [].concat(search.map(result => {
     return {
@@ -135,13 +135,21 @@ export function getCacheFilesFromPattern(pattern: string): any[] {
 
 export function deleteCacheFilesFromPattern(pattern): Promise<void> {
   return new Promise((res, reject) => {
-    let cacheFolder = getFilePath('cache');
-    let search = glob.sync(join(cacheFolder, pattern));
+    const cacheFolder = getFilePath('cache');
+    const search = glob.sync(join(cacheFolder, pattern));
 
     Promise.all(search.map(result => remove(result)))
       .then(() => res())
       .catch(err => reject(err));
   });
+}
+
+export function checkSetupDone(): Promise<boolean> {
+  return exists(getFilePath('.setupdone'));
+}
+
+export function finishSetup(): Promise<void> {
+  return writeFile(getFilePath('.setupdone'), new Date().toString());
 }
 
 export function randomString(): string {

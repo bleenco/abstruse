@@ -13,57 +13,30 @@
   </div>
 </div>
 
-<div class="team-members-list">
+<div class="team-members-list box" *ngIf="!setup.fetchingUsers">
   <div class="columns is-marginless">
-    <div class="column is-8 is-paddingless">
+    <div class="column is-6 is-paddingless">
       <h4>Name</h4>
+    </div>
+    <div class="column is-4 is-paddingless">
+      <h4>Email</h4>
     </div>
     <div class="column is-4 is-paddingless">
       <h4>Profile type</h4>
     </div>
   </div>
   <div class="columns is-multiline is-marginless">
-    <div class="column is-12 team-member-column">
+    <div class="column is-12 team-member-column" *ngFor="let user of setup.users; let i = index;">
       <div class="columns">
-        <div class="column is-8 is-paddingless align-center">
-          <img src="/assets/images/avatars/avatar_29.svg" class="member-avatar">
-          <span class="member-name">Jan Kuri</span>
+        <div class="column is-6 is-paddingless align-center">
+          <img [src]="user.avatar" class="member-avatar">
+          <span class="member-name">{{ user.fullname }}</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="setup.userTypes"></app-selectbox>
-        </div>
-      </div>
-    </div>
-    <div class="column is-12 team-member-column">
-      <div class="columns">
-        <div class="column is-8 is-paddingless align-center">
-          <img src="/assets/images/avatars/avatar_28.svg" class="member-avatar">
-          <span class="member-name">Irman Abdić</span>
+          <span>{{ user.email }}</span>
         </div>
         <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="setup.userTypes"></app-selectbox>
-        </div>
-      </div>
-    </div>
-    <div class="column is-12 team-member-column">
-      <div class="columns">
-        <div class="column is-8 is-paddingless align-center">
-          <img src="/assets/images/avatars/avatar_14.svg" class="member-avatar">
-          <span class="member-name">Martin Oprešnik</span>
-        </div>
-        <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="setup.userTypes"></app-selectbox>
-        </div>
-      </div>
-    </div>
-    <div class="column is-12 team-member-column">
-      <div class="columns">
-        <div class="column is-8 is-paddingless align-center">
-          <img src="/assets/images/avatars/avatar_6.svg" class="member-avatar">
-          <span class="member-name">Nicolas Zick</span>
-        </div>
-        <div class="column is-4 is-paddingless align-center">
-          <app-selectbox [values]="setup.userTypes"></app-selectbox>
+          <span>{{ user.admin ? 'Administrator' : 'User' }}</span>
         </div>
       </div>
     </div>
@@ -86,8 +59,9 @@
     </div>
     <div class="column is-12 is-paddingless">
       <div class="justify-end">
-        <button type="button" class="button is-large">Skip</button>
-        <button type="button" class="button is-large is-green">Next</button>
+        <button type="button" class="button is-large is-green" (click)="finishSetup()">
+          <span *ngIf="!finishing">Finish</span>
+        </button>
       </div>
     </div>
   </div>

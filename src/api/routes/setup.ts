@@ -5,7 +5,7 @@ import { exists, readJsonFile } from '../fs';
 import { getFilePath } from '../setup';
 import { logger, LogMessageType } from '../logger';
 import { usersExists } from '../db/user';
-import { getConfigAsync, saveConfigAsync } from '../setup';
+import { getConfigAsync, saveConfigAsync, checkSetupDone, finishSetup } from '../setup';
 import { merge, from, empty, of, concat } from 'rxjs';
 import { map, toArray, concatMap, concatAll } from 'rxjs/operators';
 
@@ -132,6 +132,25 @@ setupRouter.post('/config', (req: express.Request, res: express.Response) => {
     });
 });
 
+setupRouter.post('/done', (req: express.Request, res: express.Response) => {
+  return isSetupDone()
+    .then(done => {
+      if (!done) {
+        return finishSetup();
+      } else {
+        return Promise.reject('setup already done');
+      }
+    })
+    .then(() => res.status(200).json({ data: 'ok' }))
+    .catch(err => {
+      const logMessage: LogMessageType = {
+        type: 'error', message: err, notify: false
+      };
+      logger.next(logMessage);
+      res.status(500).json({ data: err });
+    });
+});
+
 function isSetupDone(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let done: boolean;
@@ -142,7 +161,8 @@ function isSetupDone(): Promise<boolean> {
       docker.isDockerRunning(),
       from(exists(getFilePath('config.json'))),
       from(exists(getFilePath('abstruse.sqlite'))),
-      from(usersExists())
+      from(usersExists()),
+      from(checkSetupDone())
     ])
       .pipe(toArray())
       .subscribe(data => {

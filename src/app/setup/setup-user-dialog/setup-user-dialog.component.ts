@@ -8,11 +8,25 @@ import { User } from '../../core/shared/user.model';
   styleUrls: ['./setup-user-dialog.component.sass']
 })
 export class SetupUserDialogComponent implements OnInit {
+  saving: boolean;
+  user: User;
 
   constructor(public setup: SetupService) { }
 
   ngOnInit() {
-    this.setup.dialogUser = new User('', '', '', '', this.setup.avatars[0], false);
+    this.saving = false;
+    this.user = new User('', '', '', '', this.setup.avatars[1], false);
+  }
+
+  createUser(): void {
+    this.saving = true;
+    this.setup.createUser(this.user).subscribe(resp => {
+      if (resp && resp.data === 'ok') {
+        this.setup.fetchUsers();
+      }
+      this.saving = false;
+      this.setup.userDialogOpened = false;
+    });
   }
 
 }

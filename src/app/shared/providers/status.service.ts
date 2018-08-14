@@ -33,6 +33,11 @@ export class StatusService {
               this.router.navigate(['/setup']);
             }
             break;
+          case 'ready':
+            if (currentUrl.startsWith('/setup')) {
+              this.router.navigate(['/login']);
+            }
+            break;
         }
       });
   }

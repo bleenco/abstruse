@@ -7,10 +7,22 @@ import { SetupService } from '../shared/setup.service';
   styleUrls: ['./setup-team.component.sass']
 })
 export class SetupTeamComponent implements OnInit {
+  finishing: boolean;
 
   constructor(public setup: SetupService) { }
 
   ngOnInit() {
+    this.finishing = false;
+    this.setup.fetchUsers();
+  }
+
+  finishSetup(): void {
+    this.finishing = true;
+    this.setup.setSetupDone().subscribe(resp => {
+      if (resp && resp.data && resp.data === 'ok') {
+        this.setup.goToLogin();
+      }
+    });
   }
 
 }
