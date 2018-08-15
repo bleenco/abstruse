@@ -18,6 +18,7 @@ export interface ProviderData {
 })
 export class BuildService {
   builds: Build[] = [];
+  loading: boolean;
   fetchingBuilds: boolean;
   hideMoreButton: boolean;
   show: 'all' | 'pr' | 'commits';
@@ -44,6 +45,7 @@ export class BuildService {
             .then((builds: Build[]) => {
               this.builds = this.builds.concat(builds.sort((a, b) => b.id - a.id));
               this.fetchingBuilds = false;
+              this.loading = false;
               if (builds.length === this.limit) {
                 this.offset += 5;
                 this.hideMoreButton = false;
@@ -56,6 +58,7 @@ export class BuildService {
   }
 
   resetFields(): void {
+    this.loading = true;
     this.fetchingBuilds = false;
     this.show = 'all';
     this.limit = 5;
