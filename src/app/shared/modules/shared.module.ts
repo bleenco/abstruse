@@ -12,6 +12,8 @@ import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.co
 
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
 
+import { ToTimePipe } from '../pipes/to-time.pipe';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -21,13 +23,15 @@ import { EqualValidatorDirective } from '../validators/equal-password.directive'
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,
-    EqualValidatorDirective
+    EqualValidatorDirective,
+    ToTimePipe
   ],
   exports: [
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,
-    EqualValidatorDirective
+    EqualValidatorDirective,
+    ToTimePipe
   ]
 })
 export class SharedModule {

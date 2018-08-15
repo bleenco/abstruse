@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BuildService } from '../shared/build.service';
 
 @Component({
   selector: 'app-builds-latest',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BuildsLatestComponent implements OnInit {
 
-  constructor() { }
+  constructor(public buildService: BuildService) { }
 
   ngOnInit() {
+    this.buildService.resetFields();
+    this.buildService.fetchBuilds();
   }
 
 }
