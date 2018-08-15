@@ -1,7 +1,7 @@
 <header class="header">
   <div class="container">
-    <div class="columns is-marginless is-paddingless">
-      <div class="column is-10 is-offset-1 is-paddingless">
+    <div class="columns">
+      <div class="column is-10 is-offset-1">
         <nav class="header-container">
           <div class="header-left">
             <a class="header-item logo" routerLink="/">
@@ -9,9 +9,15 @@
             </a>
           </div>
           <div class="header-right">
-            <!-- <a class="header-item" (click)="authService.logout()">
-              Logout
-            </a> -->
+            <a class="header-item">
+              Dashboard
+            </a>
+            <a class="header-item">
+              Repositories
+            </a>
+            <a class="header-item">
+              Team
+            </a>
             <div class="header-item">
               <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
               <app-header-dropdown *ngIf="dropdownOpened"></app-header-dropdown>
