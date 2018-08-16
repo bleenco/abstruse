@@ -18,6 +18,9 @@
             <a class="header-item">
               Team
             </a>
+            <a class="header-item">
+              Images
+            </a>
             <div class="header-item">
               <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
               <app-header-dropdown *ngIf="dropdownOpened"></app-header-dropdown>

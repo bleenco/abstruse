@@ -30,20 +30,29 @@
     &.info-avatar
       width: auto
       height: 25px
-      margin-right: 15px
+      margin-right: 20px
       border-radius: 2px
+      border: 1px solid $border-box
 
     &.icon-clock
       width: 25px
 
   .data-column
     line-height: 16px
+    position: relative
+    height: 50px
 
     i, img
       margin-left: 20px
 
       &:first-child
         margin-left: 0
+
+    .committer-avatar
+      position: absolute
+      margin: 0
+      top: 15px
+      left: 26px
 
     .commit-message
       +ellipsis

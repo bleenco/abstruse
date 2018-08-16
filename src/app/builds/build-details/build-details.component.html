@@ -20,9 +20,10 @@
         </button>
       </div>
       <div class="column is-11 align-center data-column">
-        <img [src]="buildService?.build?.committer_avatar" class="info-avatar" [alt]="buildService?.build?.author_name">
-        <!-- <i class="fas fa-user"></i> -->
-        <span>{{ buildService?.build?.author_name }} authored and commited</span>
+        <img [src]="buildService?.build?.author_avatar" class="info-avatar" [alt]="buildService?.build?.author_name">
+        <img [src]="buildService?.build?.committer_avatar" class="info-avatar committer-avatar" [alt]="buildService?.build?.committer_name" *ngIf="buildService?.build?.committer_avatar && buildService?.build?.author_avatar !== buildService?.build?.committer_avatar">
+        <span *ngIf="buildService?.build?.author_name && buildService?.build?.committer_name === buildService?.build?.author_name">{{ buildService?.build?.author_name }} authored and committed</span>
+        <span *ngIf="buildService?.build?.committer_name !== buildService?.build?.author_name">{{ buildService?.build?.author_name }} committed with {{ buildService?.build?.committer_name }}</span>
         <img src="/assets/images/icons/code-commit.svg" alt="Commit">
         <span>{{ buildService?.build?.getSHA() }}</span>
         <i class="fas fa-comment"></i>

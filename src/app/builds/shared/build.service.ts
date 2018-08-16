@@ -8,7 +8,8 @@ import { JSONResponse } from '../../core/shared/shared.model';
 import { catchError } from 'rxjs/operators';
 
 export interface ProviderData {
-  name?: string;
+  nameAuthor?: string;
+  nameCommitter?: string;
   commitMessage?: string;
   committerAvatar?: string;
   authorAvatar?: string;
@@ -223,8 +224,9 @@ export class BuildService {
           branch,
           sha,
           tag,
-          pdata.name,
+          pdata.nameAuthor,
           pdata.authorAvatar,
+          pdata.nameCommitter,
           pdata.committerAvatar,
           pdata.commitMessage,
           pdata.dateTime || dateTime,
@@ -257,30 +259,35 @@ export class BuildService {
 
           if (data.sha) {
             providerData.committerAvatar = data.committer.avatar_url;
-            providerData.name = data.commit.committer.name;
+            providerData.nameCommitter = data.commit.committer.name;
             providerData.authorAvatar = data.author.avatar_url;
+            providerData.nameAuthor = data.commit.author.name;
           } else if (data.head_commit) {
             const commit = data.head_commit;
             providerData.committerAvatar = data.sender.avatar_url;
-            providerData.name = commit.author.name;
-            resolve();
+            providerData.nameAuthor = data.head_commit.author.name;
+            providerData.nameCommitter = data.head_commit.committer.name;
 
-            if (commit.author.username !== commit.comitter.username) {
+            if (commit.author.username !== commit.committer.username) {
+              providerData.nameCommitter = commit.committer.name;
+
               const url = `https://api.github.com/users/${commit.author.username}`;
               return this.customGet(url)
                 .then(resp => providerData.authorAvatar = resp.avatar_url)
                 .catch(err => resolve());
             } else {
               providerData.authorAvatar = providerData.committerAvatar;
+              providerData.nameCommitter = providerData.nameAuthor;
               resolve();
             }
           } else if (data.pull_request) {
             providerData.authorAvatar = data.sender.avatar_url;
             providerData.committerAvatar = providerData.authorAvatar;
 
-            const url = `https://api.github.com/users/${data.sender.login}`;
-            return this.customGet(url)
-              .then(resp => providerData.name = resp.name)
+            return this.customGet(`https://api.github.com/users/${data.sender.login}`)
+              .then(resp => providerData.nameAuthor = resp.name)
+              .then(() => this.customGet(`https://api.github.com/users/${data.pull_request.user.login}`))
+              .then(resp => providerData.nameCommitter = resp.name)
               .then(() => resolve())
               .catch(err => resolve());
           }
@@ -295,16 +302,20 @@ export class BuildService {
       .then(() => {
         if (data.actor) {
           providerData.authorAvatar = data.actor.links.avatar.href;
+          providerData.nameAuthor = data.actor.display_name;
         }
 
         if (data.push) {
           providerData.commitMessage = data.push.changes[0].commits[0].message;
           providerData.dateTime = data.push.changes[0].commits[0].date;
           providerData.committerAvatar = data.push.changes[0].commits[0].author.user.links.avatar.href;
+          providerData.nameCommitter = data.push.changes[0].commits[0].author.user.display_name;
         } else if (data.pullrequest) {
           providerData.commitMessage = data.pullrequest.description;
           providerData.dateTime = data.pullrequest.updated_on;
           providerData.committerAvatar = data.pullrequest.author.links.avatar.href;
+          providerData.nameAuthor = data.pullrequest.author.display_name;
+          providerData.nameCommitter = providerData.nameAuthor;
         }
       })
       .then(() => providerData);
@@ -318,6 +329,8 @@ export class BuildService {
           if (data.commit) {
             providerData.dateTime = data.commit.created_at;
             providerData.commitMessage = data.commit.message;
+            providerData.nameCommitter = data.commit.committer_name;
+            providerData.nameAuthor = data.commit.author_name;
 
             const url = repositoryData.api_url + `/users`;
             const params = new HttpParams();
@@ -331,12 +344,16 @@ export class BuildService {
             providerData.commitMessage = data.commits[0].message;
             providerData.dateTime = data.commits[0].timestamp;
             providerData.committerAvatar = providerData.authorAvatar;
+            providerData.nameAuthor = data.user_name;
+            providerData.nameCommitter = data.commits[0].author.name;
             resolve();
           } else if (data.object_attributes) {
             providerData.authorAvatar = data.user.avatar_url;
             providerData.commitMessage = data.object_attributes.last_commit.message;
             providerData.dateTime = data.object_attributes.last_commit.timestamp;
             providerData.committerAvatar = providerData.authorAvatar;
+            providerData.nameAuthor = data.user.name;
+            providerData.nameCommitter = data.object_attributes.last_commit.author.name;
             resolve();
           } else {
             resolve();
@@ -352,16 +369,19 @@ export class BuildService {
       .then(() => {
         if (data.pusher) {
           providerData.authorAvatar = data.pusher.avatar_url;
+          providerData.nameAuthor = data.pusher.username;
         }
 
         if (data.sender && data.commits) {
           providerData.commitMessage = data.commits[0].message;
           providerData.dateTime = data.commits[0].timestamp;
           providerData.committerAvatar = data.sender.avatar_url;
+          providerData.nameCommitter = data.sender.username;
         }
 
         if (data.pull_request) {
           providerData.authorAvatar = data.pull_request.user.avatar_url;
+          providerData.nameAuthor = data.pull_request.user.username;
           providerData.commitMessage = data.pull_request.title;
           providerData.dateTime = data.pull_request.head_repo.updated_at;
         }

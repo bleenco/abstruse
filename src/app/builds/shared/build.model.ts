@@ -44,6 +44,7 @@ export class Build {
     public tag: string,
     public author_name: string,
     public author_avatar: string,
+    public committer_name: string,
     public committer_avatar: string,
     public commit_message: string,
     public dateTime: string,
