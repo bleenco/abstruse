@@ -1,26 +1,49 @@
-<div class="columns" *ngIf="buildService.fetchingBuild">
-  <app-loader></app-loader>
-</div>
-
-<div class="columns is-multiline" *ngIf="!buildService.fetchingBuild">
-  <div class="column is-12 ptb0 mb15">
-    <div class="space-between">
-      <h2>Build #{{ buildService?.build?.id }} - {{ buildService?.build?.repository_name }}</h2>
-      <div class="buttons">
-        <button type="button" class="button is-small">
+<div class="columns is-multiline">
+  <div class="column is-12" *ngIf="buildService.fetchingBuild">
+    <app-loader></app-loader>
+  </div>
+  <div class="column is-12" *ngIf="!buildService.fetchingBuild">
+    <div class="columns is-multiline build-info">
+      <div class="column is-6 align-center">
+        <h1>{{ buildService?.build?.repository_name }}</h1>
+        <i class="fas fa-code-branch"></i>
+        <span>{{ buildService?.build?.branch }}</span>
+      </div>
+      <div class="column is-6 justify-end">
+        <button type="button" class="button" [disabled]="buildService.fetchingBuild">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button is-small">
+        <button type="button" class="button" [disabled]="buildService.fetchingBuild">
           <i class="fa fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>
       </div>
+      <div class="column is-11 align-center data-column">
+        <img [src]="buildService?.build?.committer_avatar" class="info-avatar" [alt]="buildService?.build?.author_name">
+        <!-- <i class="fas fa-user"></i> -->
+        <span>{{ buildService?.build?.author_name }} authored and commited</span>
+        <img src="/assets/images/icons/code-commit.svg" alt="Commit">
+        <span>{{ buildService?.build?.getSHA() }}</span>
+        <i class="fas fa-comment"></i>
+        <span class="commit-message">{{ buildService?.build?.commit_message }}</span>
+      </div>
+      <div class="column is-1 align-center time-column justify-end">
+        <img src="/assets/images/icons/clock.svg" class="icon-clock">
+        <span class="build-time">05:31</span>
+      </div>
+      <div class="column is-12">
+        <div class="message is-green">
+          <i class="fas fa-check"></i>
+          <span>Build passed.</span>
+        </div>
+      </div>
     </div>
-    <hr/>
   </div>
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="!buildService.fetchingBuild">
     <div class="build-jobs">
+      <h2>Build Jobs</h2>
+      <hr/>
       <app-build-job-item [job]="job" *ngFor="let job of buildService?.build?.jobs; let i = index;"></app-build-job-item>
     </div>
   </div>

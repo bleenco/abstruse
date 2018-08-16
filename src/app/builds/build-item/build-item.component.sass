@@ -1,6 +1,7 @@
 @import 'colours'
 @import 'typography'
 @import 'variables'
+@import 'mixins'
 
 $build-item-height: 70px
 
@@ -43,6 +44,7 @@ $build-item-height: 70px
     .repo-branch-column
 
       .repo-name, .branch-name
+        +ellipsis
         display: block
         line-height: 20px
 
@@ -57,6 +59,7 @@ $build-item-height: 70px
     .type-column
 
       .number, .type
+        +ellipsis
         display: block
         line-height: 20px
 
@@ -71,6 +74,7 @@ $build-item-height: 70px
     .commit-column
 
       .commit-hash, .commit-message
+        +ellipsis
         display: block
         line-height: 20px
 
@@ -80,15 +84,13 @@ $build-item-height: 70px
         color: $text-secondary
 
       .commit-message
+        +ellipsis
         font-size: 12px
-        width: calc(100%)
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
 
     .author-column
 
       .author, .time
+        +ellipsis
         display: block
         line-height: 20px
         text-align: center
@@ -106,6 +108,7 @@ $build-item-height: 70px
     .time-column
 
       .time
+        +ellipsis
         display: block
         text-align: center
         font-size: 13px
