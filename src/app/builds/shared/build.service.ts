@@ -58,6 +58,7 @@ export class BuildService {
   }
 
   resetFields(): void {
+    this.builds = [];
     this.loading = true;
     this.fetchingBuilds = false;
     this.show = 'all';

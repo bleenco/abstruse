@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
 import { AuthService } from '../providers/auth.service';
+import { TokenInterceptorProvider } from '../interceptors/token.interceptor';
 
 import { LoaderComponent } from '../../core/loader/loader.component';
 import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
@@ -39,6 +40,7 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
+        TokenInterceptorProvider,
         AuthGuardService,
         StatusService,
         AuthService
