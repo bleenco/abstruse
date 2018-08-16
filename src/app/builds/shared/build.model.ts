@@ -36,10 +36,11 @@ export class BuildJob {
 }
 
 export class Build {
-  jobs: BuildJob[] = [];
   start_time: number;
   end_time: number;
   processing: boolean;
+  maxCompletedJobTime: number;
+  minRunningJobStartTime: number;
 
   constructor(
     public id: number,
@@ -55,7 +56,8 @@ export class Build {
     public commit_message: string,
     public dateTime: string,
     public build_time: number,
-    public status: BuildStatus
+    public status: BuildStatus,
+    public jobs: BuildJob[] = []
   ) { }
 
   setJobs(jobs: BuildJob[]): void {

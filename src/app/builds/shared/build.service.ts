@@ -43,6 +43,9 @@ export class BuildService {
   buildSub: Subscription;
   sub: Subscription;
   timerSubscription: Subscription;
+  buildsSubAdded: Subscription;
+  buildsSub: Subscription;
+  buildsSubUpdate: Subscription;
 
   constructor(
     public http: HttpClient,
@@ -85,9 +88,12 @@ export class BuildService {
               } else {
                 this.hideMoreButton = true;
               }
+              this.updateBuilds();
             });
         }
       });
+
+    this.subscribeToBuilds();
   }
 
   fetchBuild(buildId: number): void {
@@ -153,6 +159,109 @@ export class BuildService {
 
     this.build.processing = true;
     this.dataService.socketInput.emit({ type: 'stopBuild', data: { buildId: id } });
+  }
+
+  subscribeToBuilds(): void {
+    this.unsubscribeFromBuilds();
+
+    this.buildsSubAdded = this.dataService.socketOutput
+      .pipe(filter(x => x.type !== 'data'))
+      .subscribe(event => {
+        if (!this.builds || !event.data) {
+          return;
+        }
+
+        if (event.data === 'build added' && event.additionalData) {
+          if (!this.builds) {
+            this.builds = [];
+          }
+
+          Promise.resolve()
+            .then(() => this.generateBuild(event.additionalData))
+            .then((build: Build) => this.builds.unshift(build))
+            .then(() => this.updateBuilds());
+        }
+      });
+
+    this.buildsSub = this.dataService.socketOutput
+      .pipe(
+        filter(x => {
+          x = x.data ? x.data.toString() : '';
+          return x.startsWith('job');
+        })
+      )
+      .subscribe(e => {
+        const build = this.builds.findIndex(b => b.id === e.build_id);
+        if (build === -1) {
+          return;
+        }
+
+        const index = this.builds[build].jobs.findIndex(job => job.id === e.job_id);
+        if (index !== -1) {
+          switch (e.data) {
+            case 'job succeded':
+              this.builds[build].jobs[index].status = BuildStatus.passed;
+              this.builds[build].jobs[index].end_time = e.additionalData;
+              break;
+            case 'job queued':
+              this.builds[build].jobs[index].status = BuildStatus.queued;
+              break;
+            case 'job started':
+              this.builds[build].jobs[index].status = BuildStatus.running;
+              this.builds[build].jobs[index].start_time = e.additionalData;
+              this.builds[build].jobs[index].end_time = null;
+              break;
+            case 'job failed':
+              this.builds[build].jobs[index].status = BuildStatus.failed;
+              this.builds[build].jobs[index].end_time = e.additionalData;
+              break;
+            case 'job stopped':
+              this.builds[build].jobs[index].status = BuildStatus.failed;
+              this.builds[build].jobs[index].end_time = e.additionalData;
+              break;
+          }
+
+          this.updateBuilds();
+        }
+      });
+
+    this.buildsSubUpdate = this.dataService.socketOutput
+      .pipe(
+        filter(event => event.data === 'build restarted' || event.data === 'build succeeded' || event.data === 'build failed')
+      )
+      .subscribe(event => {
+        const index = this.builds.findIndex(i => i.id === event.build_id);
+        if (index !== -1) {
+          if (event.data === 'build restarted') {
+            this.builds[index].start_time = event.additionalData;
+          } else {
+            this.builds[index].end_time = event.additionalData;
+            this.updateBuilds();
+          }
+        }
+      });
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+    });
+  }
+
+  unsubscribeFromBuilds(): void {
+    if (this.buildsSub) {
+      this.buildsSub.unsubscribe();
+    }
+
+    if (this.buildsSubAdded) {
+      this.buildsSubAdded.unsubscribe();
+    }
+
+    if (this.buildsSubUpdate) {
+      this.buildsSubUpdate.unsubscribe();
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 
   subscribeToBuildDetails(): void {
@@ -360,6 +469,7 @@ export class BuildService {
         }
       })
       .then(pdata => {
+        const jobs = build.jobs.map(job => this.generateJob(job, build.id));
         return new Build(
           id,
           pr,
@@ -374,7 +484,8 @@ export class BuildService {
           pdata.commitMessage,
           pdata.dateTime || dateTime,
           buildTime,
-          status
+          status,
+          jobs
         );
       });
   }
@@ -565,19 +676,19 @@ export class BuildService {
     let favicon = '/assets/images/favicon-queued.png';
 
     if (this.build && this.build.jobs) {
-      if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+      if (this.build.jobs.findIndex(job => job.status === BuildStatus.failed) !== -1) {
         status = BuildStatus.failed;
-        favicon = '/assets/images/favicon-error.png';
+        favicon = '/assets/images/favicons/favicon-error.png';
       }
 
-      if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
+      if (this.build.jobs.findIndex(job => job.status === BuildStatus.running) !== -1) {
         status = BuildStatus.running;
-        favicon = '/assets/images/favicon-running.png';
+        favicon = '/assets/images/favicons/favicon-running.png';
       }
 
       if (this.build.jobs.length === this.build.jobs.filter(j => j.status === BuildStatus.passed).length) {
         status = BuildStatus.passed;
-        favicon = '/assets/images/favicon-success.png';
+        favicon = '/assets/images/favicons/favicon-success.png';
       }
     }
 
@@ -588,5 +699,30 @@ export class BuildService {
     this.titleService.setTitle(`${name} - ${status}`);
 
     return status;
+  }
+
+  private updateBuilds(): void {
+    this.builds = this.builds.map(build => {
+      let status = BuildStatus.queued;
+      if (build.jobs.findIndex(job => job.status === BuildStatus.failed) !== -1) {
+        status = BuildStatus.failed;
+      }
+
+      if (build.jobs.findIndex(job => job.status === BuildStatus.running) !== -1) {
+        status = BuildStatus.running;
+      }
+
+      if (build.jobs.length === build.jobs.filter(job => job.status === BuildStatus.passed).length) {
+        status = BuildStatus.passed;
+      }
+
+      build.maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+      build.minRunningJobStartTime = Math.min(...build.jobs
+        .filter(job => job.status === 'running')
+        .map(job => job.start_time)
+      );
+      build.status = status;
+      return build;
+    });
   }
 }

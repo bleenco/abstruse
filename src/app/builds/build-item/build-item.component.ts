@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Build } from '../shared/build.model';
+import { BuildService } from '../shared/build.service';
 
 @Component({
   selector: 'app-build-item',
@@ -9,7 +10,7 @@ import { Build } from '../shared/build.model';
 export class BuildItemComponent implements OnInit {
   @Input() build: Build;
 
-  constructor() { }
+  constructor(public buildService: BuildService) { }
 
   ngOnInit() { }
 }

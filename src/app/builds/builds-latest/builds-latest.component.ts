@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BuildService } from '../shared/build.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { BuildService } from '../shared/build.service';
   templateUrl: './builds-latest.component.html',
   styleUrls: ['./builds-latest.component.sass']
 })
-export class BuildsLatestComponent implements OnInit {
+export class BuildsLatestComponent implements OnInit, OnDestroy {
 
   constructor(public buildService: BuildService) { }
 
@@ -15,4 +15,8 @@ export class BuildsLatestComponent implements OnInit {
     this.buildService.fetchBuilds();
   }
 
+  ngOnDestroy() {
+    this.buildService.resetFields();
+    this.buildService.unsubscribeFromBuilds();
+  }
 }

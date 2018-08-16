@@ -29,7 +29,15 @@
       </span>
     </div>
     <div class="column is-1 is-marginless is-paddingless time-column">
-      <span class="time">{{ build?.build_time | toTime }}</span>
+      <span class="time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime > (buildService?.currentTime - build?.minRunningJobStartTime)">
+        {{ build?.maxCompletedJobTime | toTime }}
+      </span>
+      <span class="time" *ngIf="build?.status === 'running' && build?.maxCompletedJobTime && build?.minRunningJobStartTime && build?.maxCompletedJobTime <= (buildService?.currentTime - build?.minRunningJobStartTime)">
+        {{ buildService?.currentTime - build?.minRunningJobStartTime | toTime }}
+      </span>
+      <span class="time" *ngIf="build?.status !== 'running' && build?.maxCompletedJobTime">
+        {{ build?.maxCompletedJobTime | toTime }}
+      </span>
     </div>
     <div class="column is-1 is-marginless is-paddingless actions-column">
       <i class="fas fa-ellipsis-h menu-icon"></i>
