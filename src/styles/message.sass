@@ -1,11 +1,12 @@
 .message
   display: block
   width: 100%
-  padding: 10px 20px 10px 15px
+  padding: 7.5px 20px 7.5px 15px
   position: relative
   background: $white
   border: 1px solid $border-box
   color: $text-dark
+  font-family: $font-family-medium
 
   & > .delete
     position: absolute
@@ -23,9 +24,13 @@
       top: 6px
       left: 0
 
-      img
-        width: 18px
-        height: 18px
+    img
+      position: absolute
+      top: 2px
+      left: 0
+      width: 18px
+      height: 18px
+      display: block
 
   &.is-green
     background: rgba($green, .1)
@@ -50,3 +55,11 @@
 
     i
       color: $blue
+
+  &.is-yellow
+    background: rgba($yellow, .1)
+    border-color: $yellow
+    color: $yellow
+
+    i
+      color: $yellow

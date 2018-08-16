@@ -23,5 +23,6 @@ export class BuildDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.buildService.build = null;
+    this.buildService.unsubscribeFromBuildDetails();
   }
 }

@@ -8,6 +8,9 @@ export enum BuildStatus {
 }
 
 export class BuildJob {
+  processing: boolean;
+  lastRunTime: number;
+
   constructor(
     public id: number,
     public build_id: number,
@@ -34,6 +37,9 @@ export class BuildJob {
 
 export class Build {
   jobs: BuildJob[] = [];
+  start_time: number;
+  end_time: number;
+  processing: boolean;
 
   constructor(
     public id: number,

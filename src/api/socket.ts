@@ -35,10 +35,16 @@ export interface IOutput {
 }
 
 export interface Client {
+  sessionID: string;
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
   socket: WebSocket;
   send: Function;
-  subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
+  subscriptions: {
+    stats: Subscription,
+    jobOutput: Subscription,
+    logs: Subscription,
+    jobEvents: Subscription
+  };
 }
 
 export class SocketServer {
@@ -69,7 +75,7 @@ export class SocketServer {
     }
 
     const wss: WebSocket.Server = new WebSocket.Server({
-      verifyClient: (info: any, next) => {
+      verifyClient: (info: any, done) => {
         const ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
         const token = info.req.headers['sec-websocket-protocol'] || '';
         const user = { id: null, email: 'anonymous', isAdmin: false };
@@ -94,7 +100,7 @@ export class SocketServer {
           info.req.session.ip = ip;
           info.req.session.userId = user.id;
           info.req.session.email = user.email;
-          next(true);
+          done(info.req.session.userId);
         });
       },
       server: server
@@ -102,20 +108,21 @@ export class SocketServer {
 
     wss.on('connection', (socket: WebSocket, req: any) => {
       const client: Client = {
+        sessionID: req.session.id,
         session: req.session,
         socket: socket,
         send: (message: any) => {
-          if (typeof message === 'object' && !Object.keys(message).length) {
-            return;
-          }
+          // if (typeof message === 'object' && !Object.keys(message).length || client.socket.CLOSED) {
+          //   return;
+          // }
           client.socket.send(JSON.stringify(message));
         },
-        subscriptions: { stats: null, jobOutput: null, logs: null }
+        subscriptions: { stats: null, jobOutput: null, logs: null, jobEvents: null }
       };
       this.addClient(client);
 
       client.send({ type: 'time', data: new Date().getTime() });
-      jobEvents.subscribe(event => {
+      client.subscriptions.jobEvents = jobEvents.subscribe(event => {
         if (event.data === 'build added') {
           getLastBuild(client.session.userId)
             .then(lastBuild => {
@@ -233,7 +240,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          restartJob(parseInt(event.data.jobId, 10))
+          restartJob(Number(event.data.jobId))
             .then(() => {
               client.send({ type: 'job restarted', data: event.data.jobId });
             });

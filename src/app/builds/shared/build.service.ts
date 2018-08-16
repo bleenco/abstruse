@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { DOCUMENT } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 import { DataService } from '../../shared/providers/data.service';
 import { TimeService } from '../../shared/providers/time.service';
 import { BuildStatus, Build, BuildJob } from './build.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
-import { catchError } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
+import { distanceInWordsToNow } from 'date-fns';
 
 export interface ProviderData {
   nameAuthor?: string;
@@ -31,19 +35,27 @@ export class BuildService {
   limit: number;
   offset: number;
   userId: number;
+  maxCompletedJobTime: number;
+  minRunningJobStartTime: number;
+  previousRuntime: number;
+  dateTimeToNow: string;
+  statusSub: Subscription;
+  buildSub: Subscription;
+  sub: Subscription;
+  timerSubscription: Subscription;
 
   constructor(
     public http: HttpClient,
     public dataService: DataService,
-    public timeService: TimeService
+    public timeService: TimeService,
+    private titleService: Title,
+    @Inject(DOCUMENT) private document: any,
   ) {
     this.resetFields();
 
     this.dataService.socketOutput.subscribe(event => {
       console.log(event);
     });
-
-    this.timeService.getCurrentTime().subscribe(time => this.currentTime = time);
   }
 
   fetchBuilds(): void {
@@ -98,9 +110,139 @@ export class BuildService {
             .then((build: Build) => {
               this.build = build;
               this.fetchingBuild = false;
+              this.build.status = this.getBuildStatus();
+              this.updateJobTimes();
+              this.subscribeToBuildDetails();
             });
         }
       });
+  }
+
+  restartJob(e: MouseEvent, jobId: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const index = this.build.jobs.findIndex(job => job.id === jobId);
+    this.build.jobs[index].processing = true;
+    this.dataService.socketInput.emit({ type: 'restartJob', data: { jobId: jobId } });
+  }
+
+  stopJob(e: MouseEvent, jobId: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const index = this.build.jobs.findIndex(job => job.id === jobId);
+    this.build.jobs[index].processing = true;
+    this.dataService.socketInput.emit({ type: 'stopJob', data: { jobId: jobId } });
+  }
+
+  restartBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.previousRuntime = 0;
+    const maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    this.previousRuntime = maxJobTime ? maxJobTime : 0;
+    this.build.processing = true;
+    this.dataService.socketInput.emit({ type: 'restartBuild', data: { buildId: id } });
+  }
+
+  stopBuild(e: MouseEvent, id: number): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.build.processing = true;
+    this.dataService.socketInput.emit({ type: 'stopBuild', data: { buildId: id } });
+  }
+
+  subscribeToBuildDetails(): void {
+    this.unsubscribeFromBuildDetails();
+
+    this.statusSub = this.dataService.socketOutput
+      .pipe(filter(event => event.type === 'process' && this.build.jobs.findIndex(job => job.id === event.job_id) !== -1))
+      .subscribe(event => {
+        const job = this.build.jobs.find(j => j.id === event.job_id);
+        switch (event.data) {
+          case 'job started':
+            job.status = BuildStatus.running;
+            job.end_time = null;
+            job.start_time = event.additionalData;
+            job.runs.push({ start_time: event.additionalData, end_time: null });
+            break;
+          case 'job succeded':
+            job.status = BuildStatus.passed;
+            job.end_time = event.additionalData;
+            job.runs[job.runs.length - 1].end_time = event.additionalData;
+            break;
+          case 'job failed':
+            job.status = BuildStatus.failed;
+            if (job.end_time) {
+              job.end_time = event.additionalData;
+            }
+            if (job.runs[job.runs.length - 1].end_time) {
+              job.runs[job.runs.length - 1].end_time = event.additionalData;
+            }
+            break;
+          case 'job stopped':
+            if (job.status !== BuildStatus.passed) {
+              job.status = BuildStatus.failed;
+            }
+            if (job.end_time) {
+              job.end_time = event.additionalData;
+            }
+            if (job.runs[job.runs.length - 1].end_time) {
+              job.runs[job.runs.length - 1].end_time = event.additionalData;
+            }
+            break;
+          case 'job queued':
+            job.status = BuildStatus.queued;
+            break;
+        }
+
+        job.processing = false;
+        this.build.status = this.getBuildStatus();
+        this.updateJobTimes();
+      });
+
+    this.sub = this.dataService.socketOutput
+      .pipe(filter(e => e.type === 'build stopped' || e.type === 'build restarted'))
+      .subscribe(() => this.build.processing = false);
+
+    this.buildSub = this.dataService.socketOutput
+      .pipe(filter(e => e.data === 'build restarted' || e.data === 'build succeded' || e.data === 'build failed'))
+      .subscribe(e => {
+        if (e.build_id === Number(this.build.id)) {
+          if (e.data === 'build restarted') {
+            this.build.start_time = e.additionalData;
+            this.build.processing = false;
+          } else {
+            this.build.end_time = e.additionalData;
+          }
+        }
+      });
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.dateTimeToNow = distanceInWordsToNow(this.build.dateTime);
+    });
+  }
+
+  unsubscribeFromBuildDetails(): void {
+    if (this.statusSub) {
+      this.statusSub.unsubscribe();
+    }
+
+    if (this.buildSub) {
+      this.buildSub.unsubscribe();
+    }
+
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 
   resetFields(): void {
@@ -111,6 +253,7 @@ export class BuildService {
     this.limit = 5;
     this.offset = 0;
     this.userId = 1;
+    this.currentTime = new Date().getTime();
   }
 
   private generateBuild(build: any): Promise<Build> {
@@ -262,6 +405,7 @@ export class BuildService {
             providerData.nameCommitter = data.commit.committer.name;
             providerData.authorAvatar = data.author.avatar_url;
             providerData.nameAuthor = data.commit.author.name;
+            resolve();
           } else if (data.head_commit) {
             const commit = data.head_commit;
             providerData.committerAvatar = data.sender.avatar_url;
@@ -274,6 +418,7 @@ export class BuildService {
               const url = `https://api.github.com/users/${commit.author.username}`;
               return this.customGet(url)
                 .then(resp => providerData.authorAvatar = resp.avatar_url)
+                .then(() => resolve())
                 .catch(err => resolve());
             } else {
               providerData.authorAvatar = providerData.committerAvatar;
@@ -395,5 +540,53 @@ export class BuildService {
         catchError(handleError(url))
       )
       .toPromise();
+  }
+
+  private updateJobTimes(): void {
+    this.maxCompletedJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+    if (this.build.status === BuildStatus.running) {
+      this.minRunningJobStartTime = Math.min(...this.build.jobs
+        .filter(job => job.status === BuildStatus.running).map(job => job.start_time));
+    }
+
+    this.build.jobs = this.build.jobs.map(job => {
+      const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+      if (lastRun) {
+        job.lastRunTime = lastRun.end_time - lastRun.start_time;
+      }
+
+      return job;
+    });
+  }
+
+  private getBuildStatus(): BuildStatus {
+    let status: BuildStatus = BuildStatus.queued;
+    let favicon = '/assets/images/favicon-queued.png';
+
+    if (this.build && this.build.jobs) {
+      if (this.build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+        status = BuildStatus.failed;
+        favicon = '/assets/images/favicon-error.png';
+      }
+
+      if (this.build.jobs.findIndex(job => job.status === 'running') !== -1) {
+        status = BuildStatus.running;
+        favicon = '/assets/images/favicon-running.png';
+      }
+
+      if (this.build.jobs.length === this.build.jobs.filter(j => j.status === BuildStatus.passed).length) {
+        status = BuildStatus.passed;
+        favicon = '/assets/images/favicon-success.png';
+      }
+    }
+
+    const name = this.build.repository_name;
+    if (this.document.getElementById('favicon')) {
+      this.document.getElementById('favicon').setAttribute('href', favicon);
+    }
+    this.titleService.setTitle(`${name} - ${status}`);
+
+    return status;
   }
 }
