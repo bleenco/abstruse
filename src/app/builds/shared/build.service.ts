@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { BuildStatus, Build } from './build.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { catchError } from 'rxjs/operators';
-import { distanceInWordsToNow } from 'date-fns';
 
 export interface ProviderData {
   name?: string;
   commitMessage?: string;
   committerAvatar?: string;
   authorAvatar?: string;
+  dateTime?: string;
 }
 
 @Injectable({
@@ -74,9 +74,6 @@ export class BuildService {
     const currentTime = 0;
     let tag: string = null;
     let dateTime: string = null;
-    let commitMessage: string = null;
-    let committerAvatar: string = null;
-    let authorAvatar: string = null;
     let id: number = build.id || null;
     let pr: number = null;
     let repo_name: string = null;
@@ -164,24 +161,12 @@ export class BuildService {
 
         if (build.repository.repository_provider === 'github') {
           return this.extractGitHubData(data);
-        } else if (build.repository.repository_provider === 'bitbucket') {
-          if (data.actor) {
-            authorAvatar = data.actor.links.avatar.href;
-          }
-
-          if (data.push) {
-            commitMessage = data.push.changes[0].commits[0].message;
-            dateTime = data.push.changes[0].commits[0].date;
-            committerAvatar = data.push.changes[0].commits[0].author.user.links.avatar.href;
-          } else if (data.pullrequest) {
-            commitMessage = data.pullrequest.description;
-            dateTime = data.pullrequest.updated_on;
-            committerAvatar = data.pullrequest.author.links.avatar.href;
-          }
-        } else if (build.repository.repository_provider === 'gitlab') {
-          // TODO
-        } else if (build.repository.repository_provider === 'gogs') {
-          // TODO
+        } else if (build.repository.repository_provider === 'bitbucket') { // bitbucket
+          return this.extractBitbucketData(data);
+        } else if (build.repository.repository_provider === 'gitlab') { // gitlab
+          return this.extractGitlabData(data, build.repository);
+        } else if (build.repository.repository_provider === 'gogs') { // gogs
+          return this.extractGogsData(data);
         }
       })
       .then(pdata => {
@@ -196,6 +181,7 @@ export class BuildService {
           pdata.authorAvatar,
           pdata.committerAvatar,
           pdata.commitMessage,
+          pdata.dateTime || dateTime,
           buildTime,
           status
         );
@@ -252,8 +238,88 @@ export class BuildService {
       .then(() => providerData);
   }
 
-  private customGet(url: string): Promise<any> {
-    return this.http.get(url)
+  private extractBitbucketData(data: any): Promise<ProviderData> {
+    const providerData: ProviderData = {};
+    return Promise.resolve()
+      .then(() => {
+        if (data.actor) {
+          providerData.authorAvatar = data.actor.links.avatar.href;
+        }
+
+        if (data.push) {
+          providerData.commitMessage = data.push.changes[0].commits[0].message;
+          providerData.dateTime = data.push.changes[0].commits[0].date;
+          providerData.committerAvatar = data.push.changes[0].commits[0].author.user.links.avatar.href;
+        } else if (data.pullrequest) {
+          providerData.commitMessage = data.pullrequest.description;
+          providerData.dateTime = data.pullrequest.updated_on;
+          providerData.committerAvatar = data.pullrequest.author.links.avatar.href;
+        }
+      })
+      .then(() => providerData);
+  }
+
+  private extractGitlabData(data: any, repositoryData: any): Promise<ProviderData> {
+    const providerData: ProviderData = {};
+    return Promise.resolve()
+      .then(() => {
+        return new Promise((resolve, reject) => {
+          if (data.commit) {
+            providerData.dateTime = data.commit.created_at;
+            providerData.commitMessage = data.commit.message;
+
+            const url = repositoryData.api_url + `/users`;
+            const params = new HttpParams();
+            params.append('username', repositoryData.user_login);
+            this.customGet(url, params)
+              .then(userData => providerData.authorAvatar = userData[0].avatar_url)
+              .then(() => resolve())
+              .catch(err => resolve());
+          } else if (data.user_avatar) {
+            providerData.authorAvatar = data.user_avatar;
+            providerData.commitMessage = data.commits[0].message;
+            providerData.dateTime = data.commits[0].timestamp;
+            providerData.committerAvatar = providerData.authorAvatar;
+            resolve();
+          } else if (data.object_attributes) {
+            providerData.authorAvatar = data.user.avatar_url;
+            providerData.commitMessage = data.object_attributes.last_commit.message;
+            providerData.dateTime = data.object_attributes.last_commit.timestamp;
+            providerData.committerAvatar = providerData.authorAvatar;
+            resolve();
+          } else {
+            resolve();
+          }
+        });
+      })
+      .then(() => providerData);
+  }
+
+  private extractGogsData(data: any): Promise<ProviderData> {
+    const providerData: ProviderData = {};
+    return Promise.resolve()
+      .then(() => {
+        if (data.pusher) {
+          providerData.authorAvatar = data.pusher.avatar_url;
+        }
+
+        if (data.sender && data.commits) {
+          providerData.commitMessage = data.commits[0].message;
+          providerData.dateTime = data.commits[0].timestamp;
+          providerData.committerAvatar = data.sender.avatar_url;
+        }
+
+        if (data.pull_request) {
+          providerData.authorAvatar = data.pull_request.user.avatar_url;
+          providerData.commitMessage = data.pull_request.title;
+          providerData.dateTime = data.pull_request.head_repo.updated_at;
+        }
+      })
+      .then(() => providerData);
+  }
+
+  private customGet(url: string, params: HttpParams = new HttpParams()): Promise<any> {
+    return this.http.get(url, { params })
       .pipe(
         catchError(handleError(url))
       )

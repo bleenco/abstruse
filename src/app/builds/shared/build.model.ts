@@ -1,3 +1,5 @@
+import { distanceInWordsToNow } from 'date-fns';
+
 export enum BuildStatus {
   'queued' = 'queued',
   'running' = 'running',
@@ -17,6 +19,7 @@ export class Build {
     public author_avatar: string,
     public committer_avatar: string,
     public commit_message: string,
+    public dateTime: string,
     public build_time: number,
     public status: BuildStatus
   ) { }
@@ -27,5 +30,9 @@ export class Build {
 
   getSHA(): string {
     return this.commit_sha.substr(0, 7);
+  }
+
+  getDateTime(): string {
+    return distanceInWordsToNow(this.dateTime);
   }
 }
