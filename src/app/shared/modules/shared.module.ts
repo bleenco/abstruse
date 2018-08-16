@@ -7,6 +7,7 @@ import { StatusService } from '../providers/status.service';
 import { AuthService } from '../providers/auth.service';
 import { SocketService } from '../providers/socket.service';
 import { DataService } from '../providers/data.service';
+import { TimeService } from '../providers/time.service';
 import { TokenInterceptorProvider } from '../interceptors/token.interceptor';
 
 import { LoaderComponent } from '../../core/loader/loader.component';
@@ -47,7 +48,8 @@ export class SharedModule {
         StatusService,
         AuthService,
         SocketService,
-        DataService
+        DataService,
+        TimeService
       ]
     };
   }

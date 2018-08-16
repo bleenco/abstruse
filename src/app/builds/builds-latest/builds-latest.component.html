@@ -22,7 +22,7 @@
 </div>
 
 <div class="builds" *ngIf="!buildService.loading">
-  <app-build-item *ngFor="let build of buildService.builds; let i = index;" [build]="build"></app-build-item>
+  <app-build-item *ngFor="let build of buildService.builds; let i = index;" [build]="build" [routerLink]="['/builds', build.id]"></app-build-item>
 </div>
 
 <div class="mtb20 justify-center align-center">

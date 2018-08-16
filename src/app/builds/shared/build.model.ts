@@ -7,7 +7,34 @@ export enum BuildStatus {
   'failed' = 'failed'
 }
 
+export class BuildJob {
+  constructor(
+    public id: number,
+    public build_id: number,
+    public image: string,
+    public env: string[],
+    public start_time: number,
+    public end_time: number,
+    public status: BuildStatus,
+    public runs: any[] = []
+  ) { }
+
+  setStatus(status: BuildStatus): void {
+    this.status = status;
+  }
+
+  getStatusTitle(): string {
+    return this.status.replace(/^\w/, c => c.toUpperCase());
+  }
+
+  getEnv(): string {
+    return this.env.join(' ');
+  }
+}
+
 export class Build {
+  jobs: BuildJob[] = [];
+
   constructor(
     public id: number,
     public pr: number,
@@ -23,6 +50,10 @@ export class Build {
     public build_time: number,
     public status: BuildStatus
   ) { }
+
+  setJobs(jobs: BuildJob[]): void {
+    this.jobs = jobs;
+  }
 
   getStatusTitle(): string {
     return this.status.replace(/^\w/, c => c.toUpperCase());

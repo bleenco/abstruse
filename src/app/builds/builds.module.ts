@@ -9,6 +9,8 @@ import { BuildService } from './shared/build.service';
 import { BuildsComponent } from './builds.component';
 import { BuildsLatestComponent } from './builds-latest/builds-latest.component';
 import { BuildItemComponent } from './build-item/build-item.component';
+import { BuildDetailsComponent } from './build-details/build-details.component';
+import { BuildJobItemComponent } from './build-job-item/build-job-item.component';
 
 @NgModule({
   imports: [
@@ -19,7 +21,9 @@ import { BuildItemComponent } from './build-item/build-item.component';
   declarations: [
     BuildsComponent,
     BuildsLatestComponent,
-    BuildItemComponent
+    BuildItemComponent,
+    BuildDetailsComponent,
+    BuildJobItemComponent
   ],
   providers: [BuildService]
 })

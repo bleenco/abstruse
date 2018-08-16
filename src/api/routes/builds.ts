@@ -28,3 +28,27 @@ buildsRouter.get('/', (req: express.Request, res: express.Response) => {
       return res.status(500).json({ data: err });
     });
 });
+
+buildsRouter.get('/:id', (req: express.Request, res: express.Response) => {
+  const token = req.headers.authorization || '';
+  const id = req.params.id;
+
+  return decodeToken(token)
+    .then(userData => {
+      if (!userData) {
+        return dbBuild.getBuild(id);
+      } else {
+        return dbBuild.getBuild(id, userData.id);
+      }
+    })
+    .then(build => {
+      return res.status(200).json({ data: build });
+    })
+    .catch(err => {
+      const logMessage: LogMessageType = {
+        type: 'error', message: err, notify: false
+      };
+      logger.next(logMessage);
+      return res.status(500).json({ data: err });
+    });
+});

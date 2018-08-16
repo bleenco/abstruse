@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { DataService } from '../../shared/providers/data.service';
-import { BuildStatus, Build } from './build.model';
+import { TimeService } from '../../shared/providers/time.service';
+import { BuildStatus, Build, BuildJob } from './build.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { catchError } from 'rxjs/operators';
@@ -18,8 +19,11 @@ export interface ProviderData {
   providedIn: 'root'
 })
 export class BuildService {
+  currentTime: number;
+  build: Build;
   builds: Build[] = [];
   loading: boolean;
+  fetchingBuild: boolean;
   fetchingBuilds: boolean;
   hideMoreButton: boolean;
   show: 'all' | 'pr' | 'commits';
@@ -27,12 +31,18 @@ export class BuildService {
   offset: number;
   userId: number;
 
-  constructor(public http: HttpClient, public dataService: DataService) {
+  constructor(
+    public http: HttpClient,
+    public dataService: DataService,
+    public timeService: TimeService
+  ) {
     this.resetFields();
 
     this.dataService.socketOutput.subscribe(event => {
       console.log(event);
     });
+
+    this.timeService.getCurrentTime().subscribe(time => this.currentTime = time);
   }
 
   fetchBuilds(): void {
@@ -62,6 +72,31 @@ export class BuildService {
               } else {
                 this.hideMoreButton = true;
               }
+            });
+        }
+      });
+  }
+
+  fetchBuild(buildId: number): void {
+    this.fetchingBuild = true;
+
+    const url = getAPIURL() + `/builds/${buildId}`;
+    this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>(`builds/${buildId}`))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data) {
+          Promise.resolve()
+            .then(() => this.generateBuild(resp.data))
+            .then((build: Build) => {
+              const jobs = resp.data.jobs.map(job => this.generateJob(job, resp.data.id));
+              build.setJobs(jobs);
+              return build;
+            })
+            .then((build: Build) => {
+              this.build = build;
+              this.fetchingBuild = false;
             });
         }
       });
@@ -197,6 +232,11 @@ export class BuildService {
           status
         );
       });
+  }
+
+  private generateJob(data: any, buildId: number): BuildJob {
+    const status = data.status === 'success' ? BuildStatus.passed : data.status;
+    return new BuildJob(data.id, buildId, data.data.image, data.data.env, data.start_time, data.end_time, status, data.runs);
   }
 
   private extractGitHubData(data: any): Promise<ProviderData> {

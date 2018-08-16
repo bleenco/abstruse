@@ -1,0 +1,27 @@
+<div class="columns" *ngIf="buildService.fetchingBuild">
+  <app-loader></app-loader>
+</div>
+
+<div class="columns is-multiline" *ngIf="!buildService.fetchingBuild">
+  <div class="column is-12 ptb0 mb15">
+    <div class="space-between">
+      <h2>Build #{{ buildService?.build?.id }} - {{ buildService?.build?.repository_name }}</h2>
+      <div class="buttons">
+        <button type="button" class="button is-small">
+          <i class="fa fa-sync-alt"></i>
+          <span>Restart Build</span>
+        </button>
+        <button type="button" class="button is-small">
+          <i class="fa fa-hand-paper"></i>
+          <span>Stop Build</span>
+        </button>
+      </div>
+    </div>
+    <hr/>
+  </div>
+  <div class="column is-12">
+    <div class="build-jobs">
+      <app-build-job-item [job]="job" *ngFor="let job of buildService?.build?.jobs; let i = index;"></app-build-job-item>
+    </div>
+  </div>
+</div>

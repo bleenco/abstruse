@@ -4,6 +4,9 @@
 
 $build-item-height: 70px
 
+\:host
+  outline: none
+
 .build-item
   width: 100%
   height: $build-item-height
@@ -99,46 +102,6 @@ $build-item-height: 70px
         font-size: 12px
 
     .build-status-column
-
-      .status-item
-        display: flex
-        align-items: center
-
-        .status-circle
-          width: 10px
-          height: 10px
-          border-radius: 50%
-          background: $green
-          margin-right: 5px
-
-        .status-title
-          font-size: 13px
-          color: $green
-          font-family: $font-family-bold
-
-        &.is-passed
-
-          .status-circle
-            background: $green
-
-          .status-title
-            color: $green
-
-        &.is-failed
-
-          .status-circle
-            background: $red
-
-          .status-title
-            color: $red
-
-        &.is-running
-
-          .status-circle
-            background: $yellow
-
-          .status-title
-            color: $yellow
 
     .time-column
 
