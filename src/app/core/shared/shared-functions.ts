@@ -29,13 +29,12 @@ export function getAPIURL(): string {
 
 export function getWebSocketURL(): string {
   const secure = location.protocol === 'https:' ? true : false;
-  const token = localStorage.getItem('bh-token') || null;
-  const port = location.port === '4200' || location.port === '6500' ? '6500' : '';
+  const port = location.port === '4200' || location.port === '6500' ? ':6500' : '';
 
   if (secure) {
-    return token ? `wss://${location.hostname}:${port}/ws?token=${token}` : `wss://${location.hostname}:${port}/ws`;
+    return `wss://${location.hostname}${port}`;
   } else {
-    return token ? `ws://${location.hostname}:${port}/ws?token=${token}` : `ws://${location.hostname}:${port}/ws`;
+    return `ws://${location.hostname}${port}`;
   }
 }
 

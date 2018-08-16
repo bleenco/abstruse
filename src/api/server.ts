@@ -11,6 +11,7 @@ import * as connectsqlite3 from 'connect-sqlite3';
 import { setupRouter } from './routes/setup';
 import { authRouter } from './routes/auth';
 import { usersRouter } from './routes/users';
+import { buildsRouter } from './routes/builds';
 
 const SQLiteStore = connectsqlite3(session);
 
@@ -46,11 +47,12 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/setup', setupRouter);
       app.use('/api/auth', authRouter);
       app.use('/api/users', usersRouter);
+      app.use('/api/builds', buildsRouter);
 
       app.use('/api/user', routes.userRoutes());
       app.use('/api/tokens', routes.tokenRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());
-      app.use('/api/builds', routes.buildRoutes());
+      // app.use('/api/builds', routes.buildRoutes());
       app.use('/api/jobs', routes.jobRoutes());
       app.use('/api/permissions', routes.permissionRoutes());
       app.use('/api/variables', routes.environmentVariableRoutes());

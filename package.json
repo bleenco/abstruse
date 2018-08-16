@@ -65,7 +65,6 @@
     "rsa-compat-ssl": "^1.0.0",
     "rxjs": "^6.3.3",
     "sqlite3": "^4.0.3",
-    "uws": "10.148.0",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
@@ -87,6 +86,7 @@
     "@types/request": "^2.48.0",
     "@types/temp": "^0.8.32",
     "@types/uuid": "^3.4.4",
+    "@types/ws": "^6.0.0",
     "ansi_up": "3.0.0",
     "bookshelf": "^0.13.3",
     "bookshelf-json-columns": "^2.1.1",

@@ -53,7 +53,6 @@ module.exports = {
     sqlite3: 'commonjs sqlite3',
     dockerode: 'commonjs dockerode',
     'rsa-compat-ssl': 'commonjs rsa-compat-ssl',
-    'uws': 'commonjs uws',
     bcrypt: 'commonjs bcrypt'
   }
 };

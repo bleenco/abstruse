@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
 import { AuthService } from '../providers/auth.service';
+import { SocketService } from '../providers/socket.service';
+import { DataService } from '../providers/data.service';
 import { TokenInterceptorProvider } from '../interceptors/token.interceptor';
 
 import { LoaderComponent } from '../../core/loader/loader.component';
@@ -43,7 +45,9 @@ export class SharedModule {
         TokenInterceptorProvider,
         AuthGuardService,
         StatusService,
-        AuthService
+        AuthService,
+        SocketService,
+        DataService
       ]
     };
   }

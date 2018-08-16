@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { DataService } from '../../shared/providers/data.service';
 import { BuildStatus, Build } from './build.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
@@ -26,15 +27,24 @@ export class BuildService {
   offset: number;
   userId: number;
 
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient, public dataService: DataService) {
     this.resetFields();
+
+    this.dataService.socketOutput.subscribe(event => {
+      console.log(event);
+    });
   }
 
   fetchBuilds(): void {
     this.fetchingBuilds = true;
-    const url = getAPIURL() + `/builds/limit/${this.limit}/offset/${this.offset}/${this.show}/${this.userId}`;
 
-    this.http.get<JSONResponse>(url)
+    const url = getAPIURL() + `/builds`;
+    let params = new HttpParams();
+    params = params.append('limit', String(this.limit));
+    params = params.append('offset', String(this.offset));
+    params = params.append('filter', this.show);
+
+    this.http.get<JSONResponse>(url, { params })
       .pipe(
         catchError(handleError<JSONResponse>('builds'))
       )
@@ -271,7 +281,7 @@ export class BuildService {
 
             const url = repositoryData.api_url + `/users`;
             const params = new HttpParams();
-            params.append('username', repositoryData.user_login);
+            params.set('username', repositoryData.user_login);
             this.customGet(url, params)
               .then(userData => providerData.authorAvatar = userData[0].avatar_url)
               .then(() => resolve())

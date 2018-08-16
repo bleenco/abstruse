@@ -1,15 +1,12 @@
-import * as uws from 'uws';
+import * as WebSocket from 'ws';
 import * as http from 'http';
 import * as https from 'https';
-import * as uuid from 'uuid';
-import * as querystring from 'querystring';
 import { Observable, Subscription, merge } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { logger, LogMessageType } from './logger';
 import { getContainersStats } from './docker-stats';
 import {
   processes,
-  startBuild,
   jobEvents,
   restartJob,
   stopJob,
@@ -38,9 +35,8 @@ export interface IOutput {
 }
 
 export interface Client {
-  sessionID: string;
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
-  socket: uws.Socket;
+  socket: WebSocket;
   send: Function;
   subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
 }
@@ -56,11 +52,11 @@ export class SocketServer {
   }
 
   start(): Observable<string> {
-    return new Observable(observer => this.setupServer(this.options.app));
+    return new Observable(() => this.setupServer(this.options.app));
   }
 
   private setupServer(application: any): void {
-    let config: any = getConfig();
+    const config: any = getConfig();
     let server = null;
 
     if (config.ssl) {
@@ -72,14 +68,14 @@ export class SocketServer {
       server = http.createServer(application);
     }
 
-    let wss: uws.Server = new uws.Server({
-      verifyClient: (info: any, done) => {
-        let ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
-        let query = querystring.parse(info.req.url.substring(2));
-        let user = { id: null, email: 'anonymous', isAdmin: false };
+    const wss: WebSocket.Server = new WebSocket.Server({
+      verifyClient: (info: any, next) => {
+        const ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
+        const token = info.req.headers['sec-websocket-protocol'] || '';
+        const user = { id: null, email: 'anonymous', isAdmin: false };
 
-        if (query.token) {
-          let userData = decodeJwt(query.token as string);
+        if (token && token !== '') {
+          const userData = decodeJwt(token as string);
           if (userData) {
             user.id = userData.id;
             user.email = userData.email;
@@ -87,7 +83,7 @@ export class SocketServer {
           }
         }
 
-        let msg: LogMessageType = {
+        const msg: LogMessageType = {
           message: `[socket]: user ${user.email} connected from ${ip}`,
           type: 'info',
           notify: false
@@ -98,18 +94,22 @@ export class SocketServer {
           info.req.session.ip = ip;
           info.req.session.userId = user.id;
           info.req.session.email = user.email;
-          done(info.req.session);
+          next(true);
         });
       },
       server: server
     });
 
-    wss.on('connection', socket => {
-      let client: Client = {
-        sessionID: socket.upgradeReq.sessionID,
-        session: socket.upgradeReq.session,
+    wss.on('connection', (socket: WebSocket, req: any) => {
+      const client: Client = {
+        session: req.session,
         socket: socket,
-        send: (message: any) => client.socket.send(JSON.stringify(message)),
+        send: (message: any) => {
+          if (typeof message === 'object' && !Object.keys(message).length) {
+            return;
+          }
+          client.socket.send(JSON.stringify(message));
+        },
         subscriptions: { stats: null, jobOutput: null, logs: null }
       };
       this.addClient(client);
@@ -127,13 +127,15 @@ export class SocketServer {
         }
       });
 
-      socket.on('message', event => this.handleEvent(JSON.parse(event), client));
-      socket.on('close', (code, message) => this.removeClient(socket));
+      socket.on('message', (event: WebSocket.Data) => {
+        this.handleEvent(JSON.parse(event.toString()), client);
+      });
+      socket.on('close', () => this.removeClient(socket));
     });
 
     server.listen(config.port, () => {
-      let msg: LogMessageType = {
-        message: `[server]: API and Socket Server running at port ${config.port}`,
+      const msg: LogMessageType = {
+        message: `[server]: server listening on port ${config.port}`,
         type: 'info',
         notify: false
       };
@@ -145,9 +147,9 @@ export class SocketServer {
     this.clients.push(client);
   }
 
-  private removeClient(socket: uws.Socket): void {
-    let index = this.clients.findIndex(c => c.socket === socket);
-    let client = this.clients[index];
+  private removeClient(socket: WebSocket): void {
+    const index = this.clients.findIndex(c => c.socket === socket);
+    const client = this.clients[index];
 
     Object.keys(client.subscriptions).forEach(sub => {
       if (client.subscriptions[sub]) {
@@ -155,7 +157,7 @@ export class SocketServer {
       }
     });
 
-    let msg: LogMessageType = {
+    const msg: LogMessageType = {
       message: `[socket]: user ${client.session.email} from ${client.session.ip} disconnected`,
       type: 'info',
       notify: false
@@ -167,30 +169,13 @@ export class SocketServer {
 
   private handleEvent(event: any, client: Client): void {
     switch (event.type) {
-      case 'login': {
-        let token = event.data;
-        let decoded = !!token ? decodeJwt(token) : false;
-        client.session.userId = decoded ? decoded.id : null;
-        client.session.email = decoded ? decoded.email : 'anonymous';
-        client.session.isAdmin = decoded ? decoded.admin : false;
-      }
-        break;
-
-      case 'logout': {
-        let email = client.session.email;
-        let userId = client.session.userId;
-        client.session.userId = null;
-        client.session.email = 'anonymous';
-        client.session.isAdmin = false;
-      }
-        break;
 
       case 'buildImage': {
         if (client.session.email === 'anonymous') {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          let imageData = event.data;
+          const imageData = event.data;
           buildDockerImage(imageData);
         }
       }
@@ -201,7 +186,7 @@ export class SocketServer {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
           client.send({ type: 'request_received' });
-          let imageData = event.data;
+          const imageData = event.data;
           deleteImage(imageData);
         }
       }
@@ -280,10 +265,10 @@ export class SocketServer {
         break;
 
       case 'subscribeToJobOutput':
-        let jobId = Number(event.data.jobId);
-        let idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
+        const jobId = Number(event.data.jobId);
+        const idx = processes.findIndex(proc => Number(proc.job_id) === jobId);
         if (idx !== -1) {
-          let proc = processes[idx];
+          const proc = processes[idx];
           client.send({ type: 'jobLog', data: proc.log });
           client.send({ type: 'exposed ports', data: proc.exposed_ports || null });
           client.send({ type: 'debug', data: proc.debug || null });
@@ -309,15 +294,15 @@ export class SocketServer {
         } else {
           client.send({ type: 'request_received' });
           logger.pipe(filter((msg: any) => !!msg.notify)).subscribe(msg => {
-            let notify = { notification: msg, type: 'notification' };
+            const notify = { notification: msg, type: 'notification' };
             client.send(notify);
           });
         }
         break;
 
       case 'subscribeToStats':
-      client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
-        .subscribe(e => client.send(e));
+        client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
+          .subscribe(e => client.send(e));
         break;
 
       case 'unsubscribeFromStats':
