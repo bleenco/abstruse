@@ -46,6 +46,9 @@ export class BuildService {
   buildsSubAdded: Subscription;
   buildsSub: Subscription;
   buildsSubUpdate: Subscription;
+  fetchingJob: boolean;
+  job: any;
+  jobRun: any;
 
   constructor(
     public http: HttpClient,
@@ -55,10 +58,6 @@ export class BuildService {
     @Inject(DOCUMENT) private document: any,
   ) {
     this.resetFields();
-
-    this.dataService.socketOutput.subscribe(event => {
-      console.log(event);
-    });
   }
 
   fetchBuilds(): void {
@@ -124,6 +123,30 @@ export class BuildService {
       });
   }
 
+  fetchJob(buildId: number, jobId: number): void {
+    this.fetchingJob = true;
+
+    const url = getAPIURL() + `/builds/${buildId}/${jobId}`;
+    this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>(`builds/${buildId}/${jobId}`))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data) {
+          Promise.resolve()
+            .then(() => this.generateBuild(resp.data.build))
+            .then((build: Build) => this.build = build)
+            .then(() => this.generateJob(resp.data, resp.data.build.id))
+            .then(job => {
+              this.job = job;
+              this.jobRun = resp.data.runs[resp.data.runs.length - 1];
+              console.log(this.job);
+              console.log(this.build);
+            });
+        }
+      });
+  }
+
   restartJob(e: MouseEvent, jobId: number): void {
     e.preventDefault();
     e.stopPropagation();
@@ -146,10 +169,19 @@ export class BuildService {
     e.preventDefault();
     e.stopPropagation();
 
-    this.previousRuntime = 0;
-    const maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
-    this.previousRuntime = maxJobTime ? maxJobTime : 0;
-    this.build.processing = true;
+    if (this.build) {
+      this.previousRuntime = 0;
+      const maxJobTime = Math.max(...this.build.jobs.map(job => job.end_time - job.start_time));
+      this.previousRuntime = maxJobTime ? maxJobTime : 0;
+      this.build.processing = true;
+    } else {
+      this.previousRuntime = 0;
+      const build = this.builds.find(b => b.id === id);
+      const maxJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+      this.previousRuntime = maxJobTime ? maxJobTime : 0;
+      build.processing = true;
+    }
+
     this.dataService.socketInput.emit({ type: 'restartBuild', data: { buildId: id } });
   }
 
@@ -157,7 +189,13 @@ export class BuildService {
     e.preventDefault();
     e.stopPropagation();
 
-    this.build.processing = true;
+    if (this.build) {
+      this.build.processing = true;
+    } else {
+      const build = this.builds.find(b => b.id === id);
+      build.processing = true;
+    }
+
     this.dataService.socketInput.emit({ type: 'stopBuild', data: { buildId: id } });
   }
 
@@ -383,27 +421,29 @@ export class BuildService {
       .then(() => {
         const data = build.data;
 
-        if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
-          status = BuildStatus.failed;
-        }
-        if (build.jobs.findIndex(job => job.status === 'running') !== -1) {
-          status = BuildStatus.running;
-        }
-        if (build.jobs.length === build.jobs.filter(job => job.status === 'success').length) {
-          status = BuildStatus.passed;
-        }
-
-        maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
-        minRunningJobStartTime = Math.min(...build.jobs.filter(job => job.status === 'running').map(job => job.start_time));
-
-        if (status === BuildStatus.running && maxCompletedJobTime && minRunningJobStartTime) {
-          if (maxCompletedJobTime > (currentTime - minRunningJobStartTime)) {
-            buildTime = maxCompletedJobTime;
-          } else if (maxCompletedJobTime <= (currentTime - minRunningJobStartTime)) {
-            buildTime = currentTime - minRunningJobStartTime;
+        if (build.jobs) {
+          if (build.jobs.findIndex(job => job.status === 'failed') !== -1) {
+            status = BuildStatus.failed;
           }
-        } else if (status !== BuildStatus.running) {
-          buildTime = maxCompletedJobTime;
+          if (build.jobs.findIndex(job => job.status === 'running') !== -1) {
+            status = BuildStatus.running;
+          }
+          if (build.jobs.length === build.jobs.filter(job => job.status === 'success').length) {
+            status = BuildStatus.passed;
+          }
+
+          maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+          minRunningJobStartTime = Math.min(...build.jobs.filter(job => job.status === 'running').map(job => job.start_time));
+
+          if (status === BuildStatus.running && maxCompletedJobTime && minRunningJobStartTime) {
+            if (maxCompletedJobTime > (currentTime - minRunningJobStartTime)) {
+              buildTime = maxCompletedJobTime;
+            } else if (maxCompletedJobTime <= (currentTime - minRunningJobStartTime)) {
+              buildTime = currentTime - minRunningJobStartTime;
+            }
+          } else if (status !== BuildStatus.running) {
+            buildTime = maxCompletedJobTime;
+          }
         }
 
         if (data.ref && data.ref.startsWith('refs/tags')) {
@@ -469,7 +509,7 @@ export class BuildService {
         }
       })
       .then(pdata => {
-        const jobs = build.jobs.map(job => this.generateJob(job, build.id));
+        const jobs = build.jobs ? build.jobs.map(job => this.generateJob(job, build.id)) : [];
         return new Build(
           id,
           pr,

@@ -39,8 +39,23 @@
         {{ build?.maxCompletedJobTime | toTime }}
       </span>
     </div>
-    <div class="column is-1 is-marginless is-paddingless actions-column">
-      <i class="fas fa-ellipsis-h menu-icon"></i>
+    <div class="column is-1 is-marginless is-paddingless actions-column" appStopPropagation>
+      <i class="fas fa-ellipsis-h menu-icon" (click)="toggleMenu($event)"></i>
+      <div class="actions-menu" *ngIf="isMenuOpened" appStopPropagation>
+        <i class="fas fa-ellipsis-h menu-icon" (click)="toggleMenu($event)"></i>
+        <button type="button" class="menu-item" appStopPropagation [routerLink]="['/builds', build?.id]">
+          <i class="fas fa-info-circle"></i>
+          <span>Build Details</span>
+        </button>
+        <button type="button" class="menu-item" appStopPropagation (click)="restartBuild($event, build.id)">
+          <i class="fas fa-sync-alt"></i>
+          <span>Restart Build</span>
+        </button>
+        <button type="button" class="menu-item" appStopPropagation [disabled]="build?.status !== 'running'" (click)="stopBuild($event, build.id)">
+          <i class="fas fa-hand-paper"></i>
+          <span>Stop Build</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

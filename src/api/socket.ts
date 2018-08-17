@@ -112,9 +112,9 @@ export class SocketServer {
         session: req.session,
         socket: socket,
         send: (message: any) => {
-          // if (typeof message === 'object' && !Object.keys(message).length || client.socket.CLOSED) {
-          //   return;
-          // }
+          if (typeof message === 'object' && !Object.keys(message).length) {
+            return;
+          }
           client.socket.send(JSON.stringify(message));
         },
         subscriptions: { stats: null, jobOutput: null, logs: null, jobEvents: null }

@@ -11,6 +11,7 @@ import { BuildsLatestComponent } from './builds-latest/builds-latest.component';
 import { BuildItemComponent } from './build-item/build-item.component';
 import { BuildDetailsComponent } from './build-details/build-details.component';
 import { BuildJobItemComponent } from './build-job-item/build-job-item.component';
+import { BuildJobDetailsComponent } from './build-job-details/build-job-details.component';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { BuildJobItemComponent } from './build-job-item/build-job-item.component
     BuildsLatestComponent,
     BuildItemComponent,
     BuildDetailsComponent,
-    BuildJobItemComponent
+    BuildJobItemComponent,
+    BuildJobDetailsComponent
   ],
   providers: [BuildService]
 })

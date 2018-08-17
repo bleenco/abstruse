@@ -14,6 +14,7 @@ import { LoaderComponent } from '../../core/loader/loader.component';
 import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
 import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.component';
 
+import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
@@ -28,14 +29,16 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     SelectboxComponent,
     AvatarPickerComponent,
     EqualValidatorDirective,
-    ToTimePipe
+    ToTimePipe,
+    StopPropagationDirective
   ],
   exports: [
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,
     EqualValidatorDirective,
-    ToTimePipe
+    ToTimePipe,
+    StopPropagationDirective
   ]
 })
 export class SharedModule {

@@ -1,34 +1,43 @@
-import { Job, JobRun } from './model';
-import { getBuild } from './build';
+import { Job } from './model';
 
-export function getJob(jobId: number, userId?: number): Promise<any> {
+export function getJob(jobId: number, buildId?: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Job()
-      .query(q => q.where('id', jobId))
-      .fetch({ withRelated: [{'build.repository.permissions': (query) => {
-        if (userId) {
-          query.where('permissions.users_id', userId)
-          .andWhere('permissions.permission', true)
-          .orWhere('public', true);
+      .query(q => {
+        if (buildId) {
+          return q.where('id', jobId).andWhere('builds_id', buildId);
+        } else {
+          return q.where('id', jobId);
         }
-      }}, 'runs']})
+      })
+      .fetch({
+        withRelated: [{
+          'build.repository.permissions': (query) => {
+            if (userId) {
+              query.where('permissions.users_id', userId)
+                .andWhere('permissions.permission', true)
+                .orWhere('public', true);
+            }
+          }
+        }, 'runs']
+      })
       .then(job => {
         if (!job) {
           reject();
         }
         job = job.toJSON();
 
-        userId = parseInt(<any>userId, 10);
+        userId = Number(userId);
         if (job.build
           && job.build.repository
           && job.build.repository.permissions
           && job.build.repository.permissions.length) {
-            let index = job.build.repository.permissions.findIndex(p => p.users_id === userId);
-            if (index !== -1 && job.build.repository.permissions[index].permission) {
-              job.hasPermission = true;
-            } else {
-              job.hasPermission = false;
-            }
+          const index = job.build.repository.permissions.findIndex(p => p.users_id === userId);
+          if (index !== -1 && job.build.repository.permissions[index].permission) {
+            job.hasPermission = true;
+          } else {
+            job.hasPermission = false;
+          }
         } else {
           job.hasPermission = false;
         }
@@ -61,7 +70,7 @@ export function getLastRun(jobId: number): Promise<any> {
         }
         const runs = job.related('runs').toJSON();
 
-        resolve (runs[runs.length - 1]);
+        resolve(runs[runs.length - 1]);
       });
   });
 }

@@ -128,3 +128,46 @@ $build-item-height: 70px
 
         &:hover
           color: $text-secondary
+
+      .actions-menu
+        +unselectable
+        position: absolute
+        top: 0
+        right: 0
+        width: 150px
+        background: $white
+        z-index: 20
+        box-shadow: $box-shadow
+        border-radius: 5px
+        padding: 20px 0 5px 0
+
+        .menu-icon
+          position: absolute
+          right: 10px
+          top: 4px
+
+        .menu-item
+          display: flex
+          padding: 7px 10px
+          align-items: center
+          outline: none
+          background: $white
+          border: none
+          width: 100%
+
+          i
+            margin-right: 10px
+
+          span
+            font-size: 12px
+
+          &[disabled]
+            opacity: .5
+            pointer-events: none
+            touch-action: none
+
+          &:hover
+            cursor: pointer
+            background: $background-light
+            color: $text-secondary
+
