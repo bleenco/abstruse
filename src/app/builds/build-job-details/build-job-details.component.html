@@ -37,17 +37,39 @@
       </div>
       <div class="column is-1 align-center time-column justify-end">
         <img src="/assets/images/icons/clock.svg" class="icon-clock">
-        <span class="build-time" *ngIf="buildService?.jobRun?.status !== 'running' && buildService?.maxCompletedJobTime">
-          {{ buildService?.maxCompletedJobTime | toTime }}
+        <span class="build-time" *ngIf="buildService?.jobRun?.status === 'running'">
+          {{ buildService.currentTime - buildService.jobRun.start_time | toTime }}
         </span>
-        <span class="build-time" *ngIf="buildService?.jobRun?.status !== 'running' && !buildService?.maxCompletedJobTime">00:00</span>
-        <span class="build-time" *ngIf="buildService?.jobRun?.status === 'running' && buildService?.maxCompletedJobTime > (buildService?.currentTime - buildService?.minRunningJobStartTime)">
-          {{ buildService?.maxCompletedJobTime | toTime }}
-        </span>
-        <span class="build-time" *ngIf="buildService?.jobRun?.status === 'running' && (!maxCompletedJobTime || buildService?.maxCompletedJobTime <= (buildService?.currentTime - buildService?.minRunningJobStartTime))">
-          {{ buildService?.currentTime - buildService?.minRunningJobStartTime | toTime }}
+        <span class="build-time" *ngIf="buildService?.jobRun?.status !== 'running' && buildService?.jobRun?.end_time">
+          {{ buildService.jobRun.end_time - buildService.jobRun.start_time | toTime }}
         </span>
       </div>
+    </div>
+  </div>
+  <div class="column is-12" *ngIf="!buildService.fetchingJob">
+    <div class="message is-green" *ngIf="buildService?.jobRun?.status === 'success'">
+      <p>
+        <i class="fas fa-check"></i>
+        <span>Job passed.</span>
+      </p>
+    </div>
+    <div class="message is-red" *ngIf="buildService?.jobRun?.status === 'failed'">
+      <p>
+        <i class="fas fa-times"></i>
+        <span>Job failed.</span>
+      </p>
+    </div>
+    <div class="message is-yellow" *ngIf="buildService?.jobRun?.status === 'running'">
+      <p>
+        <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
+        <span>Job is running.</span>
+      </p>
+    </div>
+    <div class="message" *ngIf="buildService?.jobRun?.status === 'queued'">
+      <p>
+        <i class="fas fa-clock"></i>
+        <span>Job is queued.</span>
+      </p>
     </div>
   </div>
   <div class="column is-12" *ngIf="!buildService.fetchingJob">
@@ -62,7 +84,8 @@
         <app-terminal [data]="buildService?.terminalInput"></app-terminal>
       </div>
       <div [class.is-hidden]="tab !== 'history'">
-        <app-build-job-run-item *ngFor="let jobRun of buildService?.job?.runs; let i = index;" [run]="jobRun" [num]="i + 1" (click)="viewLog(i)"></app-build-job-run-item>
+        <app-build-job-run-item *ngFor="let jobRun of buildService?.job?.runs.reverse(); let i = index;" [run]="jobRun" [num]="buildService?.job?.runs.length - i"
+          (click)="viewLog(i)"></app-build-job-run-item>
       </div>
     </div>
   </div>
