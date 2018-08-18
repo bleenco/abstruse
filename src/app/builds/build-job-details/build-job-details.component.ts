@@ -23,7 +23,7 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.tab = 'history';
+    this.tab = 'log';
     this.buildId = this.route.snapshot.params['id'];
     this.jobId = this.route.snapshot.params['jobid'];
     this.buildService.fetchJob(this.buildId, this.jobId);
