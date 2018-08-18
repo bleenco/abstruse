@@ -38,7 +38,9 @@ export class BuildService {
   maxCompletedJobTime: number;
   minRunningJobStartTime: number;
   previousRuntime: number;
+  dateTime: string;
   dateTimeToNow: string;
+  timeWords: string;
   statusSub: Subscription;
   buildSub: Subscription;
   sub: Subscription;
@@ -49,6 +51,12 @@ export class BuildService {
   fetchingJob: boolean;
   job: any;
   jobRun: any;
+  termSub: Subscription;
+  jobSub: Subscription;
+  terminalInput: any;
+  debug: boolean;
+  sshd: string;
+  vnc: string;
 
   constructor(
     public http: HttpClient,
@@ -123,8 +131,11 @@ export class BuildService {
       });
   }
 
-  fetchJob(buildId: number, jobId: number): void {
-    this.fetchingJob = true;
+  fetchJob(buildId: number, jobId: number, showLoader: boolean = true): void {
+    if (showLoader) {
+      this.unsubscribeFromJobDetails();
+      this.fetchingJob = true;
+    }
 
     const url = getAPIURL() + `/builds/${buildId}/${jobId}`;
     this.http.get<JSONResponse>(url)
@@ -140,8 +151,20 @@ export class BuildService {
             .then(job => {
               this.job = job;
               this.jobRun = resp.data.runs[resp.data.runs.length - 1];
-              console.log(this.job);
-              console.log(this.build);
+
+              this.terminalInput = this.jobRun.log;
+              this.timeWords = distanceInWordsToNow(resp.data.build.created_at);
+              this.loading = false;
+              const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+                job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+              if (lastRun) {
+                this.previousRuntime = lastRun.end_time - lastRun.start_time;
+              }
+
+              if (showLoader) {
+                this.fetchingJob = false;
+                this.subscribeToJobDetails(jobId);
+              }
             });
         }
       });
@@ -151,8 +174,14 @@ export class BuildService {
     e.preventDefault();
     e.stopPropagation();
 
+    this.terminalInput = { clear: true };
+
     const index = this.build.jobs.findIndex(job => job.id === jobId);
-    this.build.jobs[index].processing = true;
+    if (index !== -1) {
+      this.build.jobs[index].processing = true;
+    } else {
+      this.job.processing = true;
+    }
     this.dataService.socketInput.emit({ type: 'restartJob', data: { jobId: jobId } });
   }
 
@@ -161,7 +190,11 @@ export class BuildService {
     e.stopPropagation();
 
     const index = this.build.jobs.findIndex(job => job.id === jobId);
-    this.build.jobs[index].processing = true;
+    if (index !== -1) {
+      this.build.jobs[index].processing = true;
+    } else {
+      this.job.processing = true;
+    }
     this.dataService.socketInput.emit({ type: 'stopJob', data: { jobId: jobId } });
   }
 
@@ -385,6 +418,84 @@ export class BuildService {
 
     if (this.sub) {
       this.sub.unsubscribe();
+    }
+
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
+  }
+
+  subscribeToJobDetails(jobId: number): void {
+    this.termSub = this.dataService.socketOutput
+      .subscribe(event => {
+        if (event.type === 'data' || event.type === 'exit' || event.type === 'container' || event.type === 'jobLog') {
+          if (Number(event.job_id) === Number(jobId) || event.type === 'jobLog') {
+            this.terminalInput = event.data;
+          }
+        } else if (event.type === 'job stopped' && event.data === jobId) {
+          this.job.processing = false;
+        } else if (event.type === 'job restarted' && event.data === jobId) {
+          this.job.processing = false;
+        } else if (event.type === 'exposed ports') {
+          const portData = event.data && event.data.info || null;
+
+          if (portData && portData['22/tcp']) {
+            const port = portData['22/tcp'][0].HostPort;
+            this.sshd = `${document.location.hostname}:${port}`;
+          }
+
+          if (portData && portData['5900/tcp']) {
+            const port = portData['5900/tcp'][0].HostPort;
+            this.vnc = `${document.location.hostname}:${port}`;
+          }
+        } else if (event.type === 'debug') {
+          const debug = event.data || 'false';
+          this.debug = debug === 'true';
+        }
+      });
+
+    this.dataService.socketInput.emit({ type: 'subscribeToJobOutput', data: { jobId } });
+
+    this.jobSub = this.dataService.socketOutput
+      .pipe(
+        filter(event => event.type === 'process'),
+        filter((event: any) => Number(event.job_id) === Number(jobId))
+      )
+      .subscribe(event => {
+        if (!this.jobRun) {
+          return;
+        }
+
+        if (event.data === 'job started') {
+          this.jobRun.status = 'running';
+          this.jobRun.end_time = null;
+          this.jobRun.start_time = event.additionalData;
+        } else if (event.data === 'job succeded') {
+          this.jobRun.status = 'success';
+          this.jobRun.end_time = event.additionalData;
+          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
+        } else if (event.data === 'job failed') {
+          this.jobRun.status = 'failed';
+          this.jobRun.end_time = event.additionalData;
+          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
+        }
+
+        // this.setFavicon();
+      });
+
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+      this.dateTimeToNow = distanceInWordsToNow(this.dateTime);
+    });
+  }
+
+  unsubscribeFromJobDetails(): void {
+    if (this.jobSub) {
+      this.jobSub.unsubscribe();
+    }
+
+    if (this.termSub) {
+      this.termSub.unsubscribe();
     }
 
     if (this.timerSubscription) {

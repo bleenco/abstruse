@@ -1,0 +1,69 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+@import 'mixins'
+
+.buttons
+  padding-right: 10px
+
+.build-info
+  font-size: 12px
+
+  h1
+    font-family: $font-family-medium
+    display: inline-block
+    margin-right: 20px
+
+  i
+    width: 15px
+    margin-right: 5px
+    display: inline-flex
+    justify-content: center
+
+  img
+    width: 15px
+    display: inline-flex
+    margin-right: 10px
+    justify-content: center
+    align-items: center
+
+    &.info-avatar
+      width: auto
+      height: 25px
+      margin-right: 20px
+      border-radius: 2px
+      border: 1px solid $border-box
+
+    &.icon-clock
+      width: 25px
+
+  .data-column
+    line-height: 16px
+    position: relative
+    height: 50px
+
+    i, img
+      margin-left: 20px
+
+      &:first-child
+        margin-left: 0
+
+    .committer-avatar
+      position: absolute
+      margin: 0
+      top: 15px
+      left: 26px
+
+    .commit-message
+      +ellipsis
+      max-width: 480px
+
+  .time-column
+
+    .build-time
+      font-size: 16px
+      color: $text-secondary
+
+  .author-column
+    display: flex
+    align-items: center
