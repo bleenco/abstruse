@@ -23,7 +23,7 @@
             </a>
             <div class="header-item">
               <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
-              <app-header-dropdown *ngIf="dropdownOpened"></app-header-dropdown>
+              <app-header-dropdown [class.is-hidden]="!dropdownOpened"></app-header-dropdown>
             </div>
           </div>
         </nav>

@@ -69,6 +69,10 @@ export class BuildService {
   }
 
   fetchBuilds(): void {
+    if (this.loading) {
+      this.subscribeToBuilds();
+    }
+
     this.fetchingBuilds = true;
 
     const url = getAPIURL() + `/builds`;
@@ -99,8 +103,6 @@ export class BuildService {
             });
         }
       });
-
-    this.subscribeToBuilds();
   }
 
   fetchBuild(buildId: number): void {
