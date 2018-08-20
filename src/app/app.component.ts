@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { SocketService } from './services/socket.service';
 import { ConnectionStates } from './classes/rx-web-socket.class';
 

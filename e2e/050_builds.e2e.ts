@@ -1,10 +1,6 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, waitForUrlToChangeTo, delay, isLoaded } from './utils';
-import {
-  request as pushEventRequest,
-  requestD3,
-  header as pushEventHeader
-} from '../tests/e2e/webhooks/github/PushEvent';
+import { delay, isLoaded, login, logout, waitForUrlToChangeTo } from './utils';
+import { header as pushEventHeader, requestD3 } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

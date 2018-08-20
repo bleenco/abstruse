@@ -10,7 +10,7 @@ import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 import * as buildData from '../../../testing/xhr-data/build.json';
-import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
+import * as buildTagData from '../../testing/xhr-data/build-tag.json';
 
 describe('Build Item Component', () => {
   let fixture: ComponentFixture<AppBuildItemComponent>;

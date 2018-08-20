@@ -1,6 +1,6 @@
 import { async, inject, TestBed } from '@angular/core/testing';
 import { MockBackend, MockConnection } from '@angular/http/testing';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ApiService } from './api.service';

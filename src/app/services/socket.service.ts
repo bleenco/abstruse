@@ -1,7 +1,7 @@
-import { Injectable, Provider, EventEmitter } from '@angular/core';
-import { RxWebSocket, ConnectionStates } from '../classes/rx-web-socket.class';
-import { Observable, Subscriber, BehaviorSubject, timer, fromEvent } from 'rxjs';
-import { share, retryWhen, switchMap, take } from 'rxjs/operators';
+import { EventEmitter, Injectable, Provider } from '@angular/core';
+import { ConnectionStates, RxWebSocket } from '../classes/rx-web-socket.class';
+import { BehaviorSubject, fromEvent, Observable, Subscriber, timer } from 'rxjs';
+import { retryWhen, share, switchMap, take } from 'rxjs/operators';
 
 @Injectable()
 export class SocketService {

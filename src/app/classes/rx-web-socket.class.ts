@@ -1,5 +1,5 @@
 import { ConfigService } from '../services/config.service';
-import { Observable, Subscriber, Observer } from 'rxjs';
+import { Observable, Observer, Subscriber } from 'rxjs';
 
 export enum ConnectionStates {
   CONNECTING,

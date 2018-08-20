@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
+
 import * as jobData from '../../../testing/xhr-data/job.json';
 import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
 

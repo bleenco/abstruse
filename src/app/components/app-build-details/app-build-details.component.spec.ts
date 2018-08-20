@@ -1,4 +1,4 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
@@ -16,7 +16,7 @@ import { NotificationService } from '../../services/notification.service';
 import { TimeService } from '../../services/time.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
 import * as buildData from '../../../testing/xhr-data/build.json';
-import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
+import * as buildTagData from '../../testing/xhr-data/build-tag.json';
 
 describe('Build Details Component', () => {
   let fixture: ComponentFixture<AppBuildDetailsComponent>;
@@ -92,10 +92,11 @@ describe('Build Details Component', () => {
       socketService = new SocketService();
       authService = new AuthService(apiService, socketService, router);
       fakeBuild = (<any>buildTagData).data;
-      let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
+      /*let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
       responseBuild = new Response(optionsBuild);
 
       backend.connections.subscribe((c: MockConnection) => c.mockRespond(responseBuild));
+      */
     }));
 
     it('should see build name', () => {

@@ -1,10 +1,7 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout, delay } from './utils';
-import { request, header } from '../tests/e2e/webhooks/bitbucket/PushEvent';
-import {
-  request as prReq,
-  headerPullRequestCreated
-} from '../tests/e2e/webhooks/bitbucket/PullRequestEvent';
+import { delay, isLoaded, login, logout } from './utils';
+import { header, request } from '../tests/e2e/webhooks/bitbucket/PushEvent';
+import { headerPullRequestCreated, request as prReq } from '../tests/e2e/webhooks/bitbucket/PullRequestEvent';
 import { sendBitBucketRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

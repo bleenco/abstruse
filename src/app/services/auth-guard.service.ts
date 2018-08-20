@@ -1,8 +1,8 @@
 import { Injectable, Provider } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
-import { Observable, of, combineLatest } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable()

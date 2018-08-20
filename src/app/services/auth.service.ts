@@ -1,4 +1,4 @@
-import { Injectable, Provider, EventEmitter } from '@angular/core';
+import { EventEmitter, Injectable, Provider } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ApiService } from './api.service';

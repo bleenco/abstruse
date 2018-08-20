@@ -1,8 +1,8 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { isLoaded, login, logout, delay } from './utils';
-import { request, header } from '../tests/e2e/webhooks/github/PingEvent';
+import { isLoaded, login, logout } from './utils';
+import { header, request } from '../tests/e2e/webhooks/github/PingEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 
 chai.use(chaiAsPromised);

@@ -1,7 +1,7 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout, delay } from './utils';
-import { request, header } from '../tests/e2e/webhooks/gogs/PushEvents';
-import { pullRequestOpened, header as prHead } from '../tests/e2e/webhooks/gogs/PullRequestEvents';
+import { delay, isLoaded, login, logout } from './utils';
+import { header, request } from '../tests/e2e/webhooks/gogs/PushEvents';
+import { header as prHead, pullRequestOpened } from '../tests/e2e/webhooks/gogs/PullRequestEvents';
 import { sendGogsRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

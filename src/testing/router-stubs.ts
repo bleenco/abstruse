@@ -1,7 +1,9 @@
 export { ActivatedRoute, Router, RouterLink, RouterOutlet} from '@angular/router';
 
 import { Component, Directive, Injectable, Input } from '@angular/core';
-import { NavigationExtras } from '@angular/router';
+import { convertToParamMap, NavigationExtras, ParamMap } from '@angular/router';
+// Only implements params and part of snapshot.paramMap
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Directive({
   selector: '[routerLink]',
@@ -26,10 +28,6 @@ export class RouterStub {
   navigate(commands: any[], extras?: NavigationExtras) { }
 }
 
-
-// Only implements params and part of snapshot.paramMap
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { convertToParamMap, ParamMap } from '@angular/router';
 
 @Injectable()
 export class ActivatedRouteStub {

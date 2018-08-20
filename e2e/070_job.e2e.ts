@@ -1,5 +1,5 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, delay } from './utils';
+import { delay, login, logout } from './utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 

@@ -1,5 +1,5 @@
-import { DebugElement }           from '@angular/core';
-import { tick, ComponentFixture } from '@angular/core/testing';
+import { DebugElement } from '@angular/core';
+import { ComponentFixture, tick } from '@angular/core/testing';
 
 export * from './router-stubs';
 

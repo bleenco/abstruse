@@ -7,7 +7,7 @@ import { ApiService } from '../../services/api.service';
 import { ConfigService } from '../../services/config.service';
 import { SocketService } from '../../services/socket.service';
 import { NotificationService, NotificationType } from '../../services/notification.service';
-import * as pkgJson from '../../../../package.json';
+const pkgJson = {version: 0};  // import * as pkgJson from '../../../../package.json';
 
 @Component({
   selector: 'app-header',

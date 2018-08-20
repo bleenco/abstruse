@@ -1,7 +1,7 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { isLoaded, login, logout, delay } from './utils';
-import { request, header } from '../tests/e2e/webhooks/gitlab/PushEvents';
-import { request as prReq, header as prHead } from '../tests/e2e/webhooks/gitlab/MergeEvents';
+import { delay, isLoaded, login, logout } from './utils';
+import { header, request } from '../tests/e2e/webhooks/gitlab/PushEvents';
+import { header as prHead, request as prReq } from '../tests/e2e/webhooks/gitlab/MergeEvents';
 import { sendGitLabRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

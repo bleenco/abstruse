@@ -1,6 +1,6 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, delay, isLoaded } from './utils';
-import { requestD3, header } from '../tests/e2e/webhooks/github/PushEvent';
+import { delay, isLoaded, login, logout } from './utils';
+import { header, requestD3 } from '../tests/e2e/webhooks/github/PushEvent';
 import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

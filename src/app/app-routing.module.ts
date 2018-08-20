@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { NgxUploaderModule } from 'ngx-uploader';
 import { NgDatepickerModule } from 'ng2-datepicker';
 
-import { AuthGuardProvider, AuthGuard } from './services/auth-guard.service';
-import { AccessGuardProvider, AccessGuard } from './services/access-guard.service';
+import { AuthGuard, AuthGuardProvider } from './services/auth-guard.service';
+import { AccessGuard, AccessGuardProvider } from './services/access-guard.service';
 
 
 import { AppSetupComponent } from './components/app-setup';
