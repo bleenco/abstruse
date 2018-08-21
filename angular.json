@@ -23,7 +23,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles/app.sass"
+              "src/styles/app.sass",
+              "node_modules/monaco-editor/min/vs/editor/editor.main.css"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
@@ -78,7 +79,8 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles/app.sass"
+              "src/styles/app.sass",
+              "node_modules/monaco-editor/min/vs/editor/editor.main.css"
             ],
             "scripts": [],
             "assets": [

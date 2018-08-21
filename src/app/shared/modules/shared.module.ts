@@ -14,6 +14,7 @@ import { LoaderComponent } from '../../core/loader/loader.component';
 import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
 import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.component';
 import { TerminalComponent } from '../widgets/terminal/terminal.component';
+import { EditorComponent } from '../widgets/editor/editor.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
@@ -30,6 +31,7 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     SelectboxComponent,
     AvatarPickerComponent,
     TerminalComponent,
+    EditorComponent,
     EqualValidatorDirective,
     ToTimePipe,
     StopPropagationDirective
@@ -41,6 +43,7 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     SelectboxComponent,
     AvatarPickerComponent,
     TerminalComponent,
+    EditorComponent,
     EqualValidatorDirective,
     ToTimePipe,
     StopPropagationDirective
