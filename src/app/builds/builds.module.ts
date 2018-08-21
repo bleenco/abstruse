@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { BuildsRoutingModule } from './builds-routing.module';
 import { SharedModule } from '../shared/modules/shared.module';
@@ -16,9 +15,8 @@ import { BuildJobRunItemComponent } from './build-job-run-item/build-job-run-ite
 
 @NgModule({
   imports: [
-    CommonModule,
     BuildsRoutingModule,
-    SharedModule
+    SharedModule.forRoot()
   ],
   declarations: [
     BuildsComponent,

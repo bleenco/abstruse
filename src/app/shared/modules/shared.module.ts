@@ -35,6 +35,8 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     StopPropagationDirective
   ],
   exports: [
+    CommonModule,
+    FormsModule,
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,

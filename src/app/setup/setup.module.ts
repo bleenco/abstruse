@@ -1,6 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { SetupRoutingModule } from './setup-routing.module';
 import { SharedModule } from '../shared/modules/shared.module';
@@ -17,10 +15,8 @@ import { SetupUserDialogComponent } from './setup-user-dialog/setup-user-dialog.
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
     SetupRoutingModule,
-    SharedModule
+    SharedModule.forRoot()
   ],
   declarations: [
     SetupComponent,
