@@ -7,7 +7,6 @@ import { BuildService } from '../shared/build.service';
   styleUrls: ['./builds-latest.component.sass']
 })
 export class BuildsLatestComponent implements OnInit, OnDestroy {
-
   constructor(public buildService: BuildService) { }
 
   ngOnInit() {

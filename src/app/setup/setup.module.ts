@@ -27,6 +27,6 @@ import { SetupUserDialogComponent } from './setup-user-dialog/setup-user-dialog.
     SetupUserComponent,
     SetupUserDialogComponent
   ],
-  providers: [ SetupService ]
+  providers: [SetupService]
 })
 export class SetupModule { }
