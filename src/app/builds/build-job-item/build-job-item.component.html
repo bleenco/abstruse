@@ -1,6 +1,6 @@
-<div class="build-job-item" [routerLink]="['/builds', buildService.build.id, job.id]">
+<div class="build-job-item" [routerLink]="['/builds', buildService?.build?.id, job?.id]">
   <div class="columns is-marginless is-paddingless">
-    <div class="column is-2 is-marginless is-paddingless id-column" [ngClass]="{ 'is-queued': job.status === 'queued', 'is-passed': job.status === 'passed', 'is-failed': job.status === 'failed', 'is-running': job.status === 'running' }">
+    <div class="column is-2 is-marginless is-paddingless id-column" [ngClass]="{ 'is-queued': job?.status === 'queued', 'is-passed': job?.status === 'passed', 'is-failed': job?.status === 'failed', 'is-running': job?.status === 'running' }">
       <span class="id-title">#{{ job?.build_id }}.{{ job?.id }}</span>
     </div>
     <div class="column is-4 is-marginless is-paddingless env-column">
@@ -26,11 +26,11 @@
       <span class="time" *ngIf="job?.status === 'running'">{{ buildService.currentTime - job.start_time | toTime }}</span>
     </div>
     <div class="column is-2 is-marginless is-paddingless buttons-column justify-end">
-      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.restartJob($event, job.id)">
+      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.restartJob($event, job?.id)">
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
-      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.stopJob($event, job.id)">
+      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.stopJob($event, job?.id)">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

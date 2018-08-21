@@ -22,7 +22,7 @@ export class BuildJobRunItemComponent implements OnInit, OnChanges {
   }
 
   private calculateTime(): void {
-    if (!this.run.end_time) {
+    if (!this.run || !this.run.end_time) {
       this.runningTime = null;
     } else {
       this.runningTime = Math.abs(this.run.end_time - this.run.start_time);

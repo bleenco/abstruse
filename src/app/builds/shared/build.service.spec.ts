@@ -1,11 +1,14 @@
 import { TestBed, inject } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { BuildService } from './build.service';
+import { SocketService } from '../../shared/providers/socket.service';
 
 describe('BuildService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BuildService]
+      imports: [HttpClientTestingModule],
+      providers: [BuildService, SocketService]
     });
   });
 

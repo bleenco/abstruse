@@ -1,6 +1,6 @@
 <div class="build-item">
   <div class="columns is-marginless is-paddingless">
-    <div class="column is-1 is-marginless is-paddingless avatar-column" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-passed': build.status === 'passed', 'is-failed': build.status === 'failed', 'is-running': build.status === 'running' }">
+    <div class="column is-1 is-marginless is-paddingless avatar-column" [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passed': build?.status === 'passed', 'is-failed': build?.status === 'failed', 'is-running': build?.status === 'running' }">
       <img *ngIf="build?.author_avatar" [src]="build?.author_avatar" class="build-avatar">
       <img *ngIf="!build?.author_avatar && build?.committer_avatar" [src]="build?.committer_avatar" class="build-avatar">
     </div>
@@ -23,7 +23,7 @@
       <span class="time">{{ build?.getDateTime() }} ago</span>
     </div>
     <div class="column is-1 is-marginless is-paddingless build-status-column">
-      <span class="status-item" [ngClass]="{ 'is-queued': build.status === 'queued', 'is-passed': build.status === 'passed', 'is-failed': build.status === 'failed', 'is-running': build.status === 'running' }">
+      <span class="status-item" [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passed': build?.status === 'passed', 'is-failed': build?.status === 'failed', 'is-running': build?.status === 'running' }">
         <span class="status-circle"></span>
         <span class="status-title">{{ build?.getStatusTitle() }}</span>
       </span>
