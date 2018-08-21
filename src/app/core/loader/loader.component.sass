@@ -13,31 +13,10 @@
   align-items: center
 
   .loading-svg
-    width: 50px
-    height: 50px
+    width: 40px
     display: block
-    margin: 10px auto
-
-    .loading-circle
-      animation: 3s loader ease infinite alternate, 1.5s loader2 linear infinite
-      stroke: $text-primary
-      stroke-linecap: round
-      stroke-width: 5
-      stroke-dasharray: 94.0955352783 94.0955352783
-      stroke-dashoffset: 0
+    margin: 20px auto
 
   .loading-text
     font-size: 13px
     color: $text-primary
-
-@keyframes loader
-  0%
-    stroke-dasharray: 84.0955352783 104.0955352783
-  100%
-    stroke-dasharray: 178.19107055664062 10
-
-@keyframes loader2
-  0%
-    stroke-dashoffset: 0
-  100%
-    stroke-dashoffset: -188.19107055664062
