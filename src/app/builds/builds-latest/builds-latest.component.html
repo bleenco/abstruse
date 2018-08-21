@@ -1,9 +1,9 @@
 <div class="columns is-multiline">
   <div class="column is-12 ptb0 mb15">
     <div class="tabs justify-end">
-      <span class="tab" [class.is-active]="buildService?.show === 'all'" (click)="buildService.show = 'all'">All Builds</span>
-      <span class="tab" [class.is-active]="buildService?.show === 'commits'" (click)="buildService.show = 'commits'">Commits</span>
-      <span class="tab" [class.is-active]="buildService?.show === 'pr'" (click)="buildService.show = 'pr'">Pull Requests</span>
+      <span class="tab" [class.is-active]="buildService?.show === 'all'" (click)="buildService.switchTab('all')">All Builds</span>
+      <span class="tab" [class.is-active]="buildService?.show === 'commits'" (click)="buildService.switchTab('commits')">Commits</span>
+      <span class="tab" [class.is-active]="buildService?.show === 'pr'" (click)="buildService.switchTab('pr')">Pull Requests</span>
     </div>
   </div>
 </div>

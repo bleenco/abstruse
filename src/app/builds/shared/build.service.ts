@@ -172,6 +172,17 @@ export class BuildService {
       });
   }
 
+  switchTab(tab: 'all' | 'commits' | 'pr'): void {
+    if (this.show === tab) {
+      return;
+    }
+
+    this.resetFields();
+    this.unsubscribeFromBuilds();
+    this.show = tab;
+    this.fetchBuilds();
+  }
+
   restartJob(e: MouseEvent, jobId: number): void {
     e.preventDefault();
     e.stopPropagation();
