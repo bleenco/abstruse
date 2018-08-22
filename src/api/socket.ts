@@ -24,6 +24,7 @@ import { IMemoryData, memory } from './stats/memory';
 import { ICpuData, cpu } from './stats/cpu';
 import { decodeJwt } from './security';
 import { getLastBuild } from './db/build';
+import { buildingImages, imageProgress } from './images';
 
 export interface ISocketServerOptions {
   app: express.Application;
@@ -43,7 +44,9 @@ export interface Client {
     stats: Subscription,
     jobOutput: Subscription,
     logs: Subscription,
-    jobEvents: Subscription
+    jobEvents: Subscription,
+    buildingImagesSub: Subscription,
+    imageProgressSub: Subscription
   };
 }
 
@@ -117,7 +120,14 @@ export class SocketServer {
           }
           client.socket.send(JSON.stringify(message));
         },
-        subscriptions: { stats: null, jobOutput: null, logs: null, jobEvents: null }
+        subscriptions: {
+          stats: null,
+          jobOutput: null,
+          logs: null,
+          jobEvents: null,
+          buildingImagesSub: null,
+          imageProgressSub: null
+        }
       };
       this.addClient(client);
 
@@ -304,6 +314,19 @@ export class SocketServer {
             const notify = { notification: msg, type: 'notification' };
             client.send(notify);
           });
+        }
+        break;
+
+      case 'subscribeToImages':
+        if (client.session.email === 'anonymous') {
+          client.send({ type: 'error', data: 'not authorized' });
+        } else {
+          client.send({ type: 'request_received' });
+
+          client.subscriptions.buildingImagesSub =  buildingImages.subscribe(ev => {
+            client.send({ type: 'building images list', data: ev });
+          });
+          client.subscriptions.imageProgressSub = imageProgress.subscribe(ev => client.send(ev));
         }
         break;
 

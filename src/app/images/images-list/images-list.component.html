@@ -9,7 +9,7 @@
 
 <div class="tabs-content">
   <div *ngIf="imageService.tab === 'build images'">
-    <div class="builds mtb20" *ngIf="imageService.loading">
+    <div class="mtb20" *ngIf="imageService.loading">
       <app-loader></app-loader>
     </div>
 
@@ -29,14 +29,16 @@
   </div>
 
   <div *ngIf="imageService.tab === 'base images'">
-    <div class="builds mtb20" *ngIf="imageService.loadingBaseImages">
+    <div class="mtb20" *ngIf="imageService.loadingBaseImages">
       <app-loader></app-loader>
     </div>
-    <div class="columns is-multiline" *ngIf="!imageService.loadingBaseImages">
-      <div class="column is-12">
+    <div class="columns is-marginless is-paddingless" *ngIf="!imageService.loadingBaseImages">
+      <div class="column is-12 is-marginless is-paddingless">
         <app-image-base-item [image]="image" *ngFor="let image of imageService.baseImages; let i = index;"></app-image-base-item>
       </div>
     </div>
   </div>
 </div>
+
+<app-image-log-dialog *ngIf="imageService.detailsDialogOpened"></app-image-log-dialog>
 <!-- <app-editor [(ngModel)]="editorValue" name="model"></app-editor> -->

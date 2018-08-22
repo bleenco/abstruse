@@ -263,7 +263,9 @@ export function listImages(): Promise<dockerode.Image[]> {
 }
 
 export function buildImage(imageName: string, context: string, files: string): Promise<any> {
-  return docker.buildImage({ context: context, src: files }, { t: imageName });
+  return docker.buildImage({ context: context, src: files }, {
+    t: imageName, forcerm: true, nocache: true
+  });
 }
 
 export function imageExists(name: string): Observable<boolean> {

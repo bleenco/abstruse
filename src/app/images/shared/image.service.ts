@@ -12,7 +12,11 @@ export class ImageService {
   tab: 'build images' | 'base images' = 'build images';
   loading: boolean;
   loadingBaseImages: boolean;
+  buildingImages: Image[] = [];
   baseImages: Image[] = [];
+  detailsDialogOpened: boolean;
+  detailsImage: Image;
+  logData: any;
 
   constructor(public http: HttpClient) { }
 
@@ -45,13 +49,69 @@ export class ImageService {
               image.ready,
               image.id || null,
               image.created || null,
-              image.tag || null,
-              image.size || null
+              image.tag || '',
+              image.size || null,
+              image.buildLog || ''
             );
           });
+
+          this.buildingImages.forEach(image => {
+            this.baseImages = this.baseImages.map(baseImage => {
+              if (baseImage.repository === image.repository) {
+                baseImage.building = true;
+              }
+              return baseImage;
+            });
+          });
+
+          if (this.detailsImage) {
+            const image = this.baseImages.find(img => img.repository === this.detailsImage.repository);
+            if (image) {
+              this.detailsImage = image;
+            }
+          }
         }
 
         this.loadingBaseImages = false;
       });
+  }
+
+  buildImage(imageName: string, base = false): void {
+    imageName = imageName.includes(':') ? imageName : imageName + ':latest';
+    const params = { imageName };
+    const url = base ? getAPIURL() + `/images/base` : getAPIURL() + `/images/build`;
+
+    this.http.post<JSONResponse>(url, params)
+      .subscribe(resp => {
+        const splitted = imageName.split(':');
+        if (base) {
+          const index = this.baseImages.findIndex(img => img.repository === splitted[0]);
+          if (index >= 0) {
+            this.baseImages[index].buildLog = '';
+          }
+        }
+      });
+  }
+
+  openDetailsDialog(repository: string, tag: string, base = false): void {
+    this.logData = { clear: true };
+
+    if (base) {
+      const index = this.baseImages.findIndex(baseImage => baseImage.repository === repository);
+      this.detailsImage = this.baseImages[index];
+      this.logData = this.detailsImage.buildLog.split('\n').join('\r\n');
+    }
+
+    this.detailsDialogOpened = true;
+  }
+
+  closeDetailsDialog(): void {
+    this.detailsImage = null;
+    this.logData = { clear: true };
+    this.detailsDialogOpened = false;
+  }
+
+  getBaseImageIndex(image: Image): number {
+    return this.baseImages.findIndex(img => img.repository === image.repository);
   }
 }

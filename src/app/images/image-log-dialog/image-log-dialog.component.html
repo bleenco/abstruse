@@ -1,0 +1,29 @@
+<div class="dialog-overlay">
+  <div class="dialog-container is-wide">
+    <div class="dialog-header">
+      <h1>Build Log</h1>
+      <i class="fas fa-times close-icon" (click)="imageService.closeDetailsDialog()"></i>
+    </div>
+    <div class="dialog-body">
+      <div class="message mb20" *ngIf="!imageService?.detailsImage.ready && imageService?.detailsImage.building">
+        <p>
+          <img src="/assets/images/icons/spinner.svg">
+          <span>Build is running...</span>
+        </p>
+      </div>
+      <div class="message is-green mb20" *ngIf="imageService?.detailsImage.ready && !imageService?.detailsImage.building">
+        <p>
+          <i class="fas fa-check"></i>
+          <span>Image built and tagged successfully.</span>
+        </p>
+      </div>
+      <div class="message is-red mb20" *ngIf="!imageService?.detailsImage.ready && !imageService?.detailsImage.building">
+        <p>
+          <i class="fas fa-check"></i>
+          <span>There was an error building an image.</span>
+        </p>
+      </div>
+      <app-terminal [data]="imageService?.logData"></app-terminal>
+    </div>
+  </div>
+</div>

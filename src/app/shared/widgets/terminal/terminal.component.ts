@@ -37,7 +37,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(public elementRef: ElementRef) {
     Terminal.applyAddon(fit);
-    this.terminal = new Terminal();
+    this.terminal = new Terminal({ scrollback: 10000 });
   }
 
   ngOnInit() {
@@ -54,7 +54,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     if (typeof this.data.clear !== 'undefined') {
-      this.terminal.reset();
+      this.terminal.clear();
       return;
     }
 
@@ -63,5 +63,6 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy() {
     this.data = null;
+    this.terminal.destroy();
   }
 }
