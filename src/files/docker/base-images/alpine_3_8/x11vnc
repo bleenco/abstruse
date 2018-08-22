@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+
+name=x11vnc
+command="/usr/bin/x11vnc"
+command_args="-xkb -noxrecord -noxfixes -noxdamage -display :99 -forever -bg -rfbauth /home/abstruse/.vnc/passwd -rfbport 5900"
+command_user="abstruse"
+pidfile="/var/run/x11vnc.pid"
+command_background="yes"
+
+start() {
+  start-stop-daemon --start --quiet --pidfile $pidfile --make-pidfile --background --exec $command -- $command_args
+}

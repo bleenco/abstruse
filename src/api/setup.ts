@@ -42,11 +42,11 @@ export function setHome(dirPath: string): void {
 export function initSetup(): Promise<string> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
-    .then(() => ensureDirectory(getFilePath('images')))
-    .then(() => ensureDirectory(getFilePath('base-images')))
+    .then(() => ensureDirectory(getFilePath('docker/images')))
+    .then(() => ensureDirectory(getFilePath('docker/base-images')))
     .then(() => {
-      const srcDir = resolve(__dirname, '../../src/files/docker-essential');
-      const destDir = getFilePath('docker-essential');
+      const srcDir = resolve(__dirname, '../../src/files/docker/base-images');
+      const destDir = getFilePath('docker/base-images');
       return copyFile(srcDir, destDir);
     })
     .then(() => {

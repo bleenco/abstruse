@@ -22,12 +22,12 @@ logger
     }),
     mergeMap((msg: LogMessageType) => {
       msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
-      let message = { message: msg.message, type: msg.type, notify: msg.notify };
+      const message = { message: msg.message, type: msg.type, notify: msg.notify };
       return from(insertLog(colorizeMessage(message)));
     }),
     map((msg: any) => {
-      let time = getDateTime();
-      let message = [
+      const time = getDateTime();
+      const message = [
         chalk.white('['),
         chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
       ].join('');

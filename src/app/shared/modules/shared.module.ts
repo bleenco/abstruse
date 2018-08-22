@@ -20,6 +20,7 @@ import { StopPropagationDirective } from '../directives/stop-propagation.directi
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
+import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     EditorComponent,
     EqualValidatorDirective,
     ToTimePipe,
+    HumanizeBytesPipe,
     StopPropagationDirective
   ],
   exports: [
@@ -46,6 +48,7 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
     EditorComponent,
     EqualValidatorDirective,
     ToTimePipe,
+    HumanizeBytesPipe,
     StopPropagationDirective
   ]
 })

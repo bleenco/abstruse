@@ -1,6 +1,5 @@
 import { spawn } from 'child_process';
 import { Observable, Observer } from 'rxjs';
-import * as fs from './fs';
 import * as dockerode from 'dockerode';
 import { Writable } from 'stream';
 import { CommandType } from './config';
@@ -39,7 +38,7 @@ export function createContainer(
       }
     } as any)
       .then(container => {
-        let msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
+        const msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
           `starting container ` + style.yellow.open + name + ' ' + style.yellow.close +
           `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
           `... ` + style.bold.close;
@@ -78,21 +77,21 @@ export function dockerExec(
     }
 
     if (cmd.type === CommandType.store_cache) {
-      let msg = style.yellow.open + style.bold.open + '==> storing cache ...' +
+      const msg = style.yellow.open + style.bold.open + '==> storing cache ...' +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     } else if (cmd.type === CommandType.restore_cache) {
-      let msg = style.yellow.open + style.bold.open + '==> restoring cache ...' +
+      const msg = style.yellow.open + style.bold.open + '==> restoring cache ...' +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     } else {
-      let msg = style.yellow.open + style.bold.open + '==> ' + command +
+      const msg = style.yellow.open + style.bold.open + '==> ' + command +
         style.bold.close + style.yellow.close + '\r\n';
       observer.next({ type: 'data', data: msg });
     }
 
-    let container = docker.getContainer(id);
-    let execOptions = {
+    const container = docker.getContainer(id);
+    const execOptions = {
       Cmd: ['/usr/bin/abstruse-pty', cmd.command],
       Env: envVars.serialize(env),
       AttachStdout: true,
@@ -103,7 +102,7 @@ export function dockerExec(
     container.exec(execOptions)
       .then(exe => exe.start())
       .then(stream => {
-        let ws = new Writable();
+        const ws = new Writable();
         ws.setDefaultEncoding('utf8');
 
         ws.on('finish', () => {
@@ -120,7 +119,7 @@ export function dockerExec(
           let str = chunk.toString('utf8');
 
           if (str.includes('[error]')) {
-            let splitted = str.split(' ');
+            const splitted = str.split(' ');
             exitCode = Number(splitted[splitted.length - 1]) || 1;
             ws.end();
           } else if (str.includes('[success]')) {
@@ -131,7 +130,7 @@ export function dockerExec(
               str = str.replace(/\/\/(.*)@/, '//');
             }
 
-            let variable =
+            const variable =
               Object.keys(env).find(k => env[k].secure && str.indexOf(env[k].value) >= 0);
             if (typeof variable !== 'undefined') {
               str = str.replace(env[variable].value, '******');
@@ -158,11 +157,11 @@ export function dockerPwd(id: string, env: envVars.EnvVariables): Observable<Pro
           envVars.set(env, 'ABSTRUSE_BUILD_DIR', event.data.replace('\r\n', ''));
         }
       },
-      err => observer.error(err),
-      () => {
-        observer.next({ type: 'env', data: env });
-        observer.complete();
-      });
+        err => observer.error(err),
+        () => {
+          observer.next({ type: 'env', data: env });
+          observer.complete();
+        });
   });
 }
 
@@ -247,7 +246,7 @@ export function killContainer(id: string): Promise<void> {
 export function removeContainer(id: string): Promise<void> {
   return new Promise(resolve => {
     try {
-      let container = docker.getContainer(id);
+      const container = docker.getContainer(id);
 
       return container.inspect()
         .then(containerInfo => container.remove())
@@ -259,9 +258,17 @@ export function removeContainer(id: string): Promise<void> {
   });
 }
 
+export function listImages(): Promise<dockerode.Image[]> {
+  return docker.listImages();
+}
+
+export function buildImage(imageName: string, context: string, files: string): Promise<any> {
+  return docker.buildImage({ context: context, src: files }, { t: imageName });
+}
+
 export function imageExists(name: string): Observable<boolean> {
   return new Observable(observer => {
-    let image = spawn('docker', ['inspect', '--type=image', name]);
+    const image = spawn('docker', ['inspect', '--type=image', name]);
     image.on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();
