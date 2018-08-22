@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+
+name=xvfb
+command="/usr/bin/Xvfb"
+command_args=":99 -screen 0 1920x1080x24 -ac +extension GLX +render -noreset"
+command_user="abstruse"
+pidfile="/var/run/xvfb.pid"
+command_background="yes"
+
+start() {
+  start-stop-daemon --start --quiet --pidfile $pidfile --make-pidfile --background --exec $command -- $command_args
+}
