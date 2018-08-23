@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ImageService } from '../shared/image.service';
 import { DataService } from '../../shared/providers/data.service';
 import { filter } from 'rxjs/operators';
@@ -63,4 +63,9 @@ export class ImagesListComponent implements OnInit {
     this.dataService.socketInput.emit({ type: 'subscribeToImages' });
   }
 
+  @HostListener('document:keydown', ['$event']) onKeyDownHandler(event: KeyboardEvent) {
+    if (event.keyCode === 27 && this.imageService.detailsDialogOpened) {
+      this.imageService.closeDetailsDialog();
+    }
+  }
 }
