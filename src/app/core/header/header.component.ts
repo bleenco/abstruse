@@ -1,18 +1,35 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, OnDestroy } from '@angular/core';
 import { AuthService } from '../../shared/providers/auth.service';
+import { DataService } from '../../shared/providers/data.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.sass']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   dropdownOpened: boolean;
+  sub: Subscription;
 
-  constructor(public authService: AuthService, public elementRef: ElementRef) { }
+  constructor(
+    public authService: AuthService,
+    public elementRef: ElementRef,
+    public dataService: DataService
+  ) { }
 
   ngOnInit() {
     this.dropdownOpened = false;
+    this.sub = this.dataService.socketOutput
+      .pipe(filter(event => event.type === 'time'))
+      .subscribe(() => { });
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   toggleDropdown(): void {

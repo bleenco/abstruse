@@ -3,6 +3,7 @@ import { SocketService } from './socket.service';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,7 @@ export class DataService {
 
   constructor(public socketService: SocketService) {
     this.socketInput = new EventEmitter<any>();
-    this.socketOutput = this.socketService.onMessage().pipe(share());
+    this.socketOutput = this.socketService.onMessage();
     this.socketInput.subscribe(event => this.socketService.emit(event));
   }
 }

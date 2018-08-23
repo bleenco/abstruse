@@ -323,10 +323,26 @@ export class SocketServer {
         } else {
           client.send({ type: 'request_received' });
 
-          client.subscriptions.buildingImagesSub =  buildingImages.subscribe(ev => {
+          client.subscriptions.buildingImagesSub = buildingImages.subscribe(ev => {
             client.send({ type: 'building images list', data: ev });
           });
           client.subscriptions.imageProgressSub = imageProgress.subscribe(ev => client.send(ev));
+        }
+        break;
+
+      case 'unsubscribeFromImages':
+        if (client.session.email === 'anonymous') {
+          client.send({ type: 'error', data: 'not authorized' });
+        } else {
+          client.send({ type: 'request_received' });
+
+          if (client.subscriptions.buildingImagesSub) {
+            client.subscriptions.buildingImagesSub.unsubscribe();
+          }
+
+          if (client.subscriptions.imageProgressSub) {
+            client.subscriptions.imageProgressSub.unsubscribe();
+          }
         }
         break;
 

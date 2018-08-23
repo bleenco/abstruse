@@ -10,6 +10,9 @@ import { HeaderSetupComponent } from './header-setup/header-setup.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { HeaderDropdownComponent } from './header-dropdown/header-dropdown.component';
 
+import { SocketService } from '../shared/providers/socket.service';
+import { DataService } from '../shared/providers/data.service';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -26,7 +29,7 @@ import { HeaderDropdownComponent } from './header-dropdown/header-dropdown.compo
     HeaderComponent,
     HeaderSetupComponent
   ],
-  providers: []
+  providers: [SocketService, DataService]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

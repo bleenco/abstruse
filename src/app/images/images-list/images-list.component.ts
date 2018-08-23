@@ -1,15 +1,18 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { ImageService } from '../shared/image.service';
 import { DataService } from '../../shared/providers/data.service';
 import { filter } from 'rxjs/operators';
 import { Image } from '../shared/image.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-images-list',
   templateUrl: './images-list.component.html',
   styleUrls: ['./images-list.component.sass']
 })
-export class ImagesListComponent implements OnInit {
+export class ImagesListComponent implements OnInit, OnDestroy {
+  imageSub: Subscription;
+  buildSub: Subscription;
 
   constructor(public imageService: ImageService, public dataService: DataService) { }
 
@@ -17,7 +20,7 @@ export class ImagesListComponent implements OnInit {
     this.imageService.tab = 'build images';
     this.imageService.fetchBuildImages();
 
-    this.dataService.socketOutput
+    this.imageSub = this.dataService.socketOutput
       .pipe(filter(ev => ev.type === 'image building' || ev.type === 'image error' || ev.type === 'image done'))
       .subscribe(event => {
         if (event.type === 'image building' || event.type === 'image error') {
@@ -49,7 +52,7 @@ export class ImagesListComponent implements OnInit {
         }
       });
 
-    this.dataService.socketOutput
+    this.buildSub = this.dataService.socketOutput
       .pipe(filter(ev => ev.type === 'building images list'))
       .subscribe(event => {
         const list: Image[] = event.data;
@@ -101,6 +104,18 @@ export class ImagesListComponent implements OnInit {
       });
 
     this.dataService.socketInput.emit({ type: 'subscribeToImages' });
+  }
+
+  ngOnDestroy() {
+    if (this.imageSub) {
+      this.imageSub.unsubscribe();
+    }
+
+    if (this.buildSub) {
+      this.imageSub.unsubscribe();
+    }
+
+    this.dataService.socketInput.emit({ type: 'unsubscribeFromImages' });
   }
 
   @HostListener('document:keydown', ['$event']) onKeyDownHandler(event: KeyboardEvent) {
