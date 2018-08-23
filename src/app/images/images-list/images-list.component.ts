@@ -10,15 +10,17 @@ import { Image } from '../shared/image.model';
   styleUrls: ['./images-list.component.sass']
 })
 export class ImagesListComponent implements OnInit {
-  editorValue: string;
 
   constructor(public imageService: ImageService, public dataService: DataService) { }
 
   ngOnInit() {
+    this.imageService.tab = 'build images';
+    this.imageService.fetchBuildImages();
+
     this.dataService.socketOutput
       .pipe(filter(ev => ev.type === 'image building' || ev.type === 'image error' || ev.type === 'image done'))
       .subscribe(event => {
-        if (event.type === 'image building') {
+        if (event.type === 'image building' || event.type === 'image error') {
           const baseIndex = this.imageService.getBaseImageIndex(event.data.image);
           if (baseIndex !== -1) {
             this.imageService.baseImages[baseIndex].appendLog(event.data.output);
@@ -27,12 +29,23 @@ export class ImagesListComponent implements OnInit {
               this.imageService.logData = event.data.output;
             }
           }
-        } else {
 
+          const buildIndex = this.imageService.getBuildImageIndex(event.data.image);
+          if (buildIndex !== -1) {
+            this.imageService.buildImages[buildIndex].appendLog(event.data.output);
+
+            if (this.imageService.detailsImage && this.imageService.detailsImage.repository === event.data.image.repository) {
+              this.imageService.logData = event.data.output;
+            }
+          }
         }
 
         if (event.type === 'image done') {
-          this.imageService.fetchBaseImages();
+          if (this.imageService.tab === 'build images') {
+            this.imageService.fetchBuildImages();
+          } else if (this.imageService.tab === 'base images') {
+            this.imageService.fetchBaseImages();
+          }
         }
       });
 
@@ -55,6 +68,33 @@ export class ImagesListComponent implements OnInit {
 
             if (index !== -1) {
               this.imageService.baseImages[index].building = true;
+            }
+          });
+        }
+
+        if (this.imageService.buildImages && this.imageService.buildImages.length) {
+          this.imageService.buildImages = this.imageService.buildImages.map(image => {
+            image.building = false;
+            return image;
+          });
+
+          list.forEach(image => {
+            const index = this.imageService.buildImages.findIndex(buildImage => {
+              return buildImage.repository === image.repository && buildImage.tag === image.tag;
+            });
+
+            if (index !== -1) {
+              this.imageService.buildImages[index].building = true;
+            }
+          });
+        }
+
+        if (this.imageService.detailsImage) {
+          this.imageService.detailsImage.building = false;
+
+          list.forEach(image => {
+            if ( this.imageService.detailsImage.repository === image.repository &&  this.imageService.detailsImage.tag === image.tag) {
+              this.imageService.detailsImage.building = true;
             }
           });
         }

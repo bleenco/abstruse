@@ -7,6 +7,7 @@ import { ImagesListComponent } from './images-list/images-list.component';
 import { ImageItemComponent } from './image-item/image-item.component';
 import { ImageBaseItemComponent } from './image-base-item/image-base-item.component';
 import { ImageLogDialogComponent } from './image-log-dialog/image-log-dialog.component';
+import { ImageCreateDialogComponent } from './image-create-dialog/image-create-dialog.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { ImageLogDialogComponent } from './image-log-dialog/image-log-dialog.com
     ImagesListComponent,
     ImageItemComponent,
     ImageBaseItemComponent,
-    ImageLogDialogComponent
+    ImageLogDialogComponent,
+    ImageCreateDialogComponent
   ],
   providers: []
 })

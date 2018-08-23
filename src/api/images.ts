@@ -1,5 +1,5 @@
 import * as docker from './docker';
-import { readDir, exists, existsSync } from './fs';
+import { readDir, exists, existsSync, ensureDirectory, writeFile } from './fs';
 import { getFilePath } from './setup';
 import { Observable, Observer, Subject, BehaviorSubject } from 'rxjs';
 import { join } from 'path';
@@ -26,8 +26,6 @@ let buildImages: DockerImage[] = [];
 
 export const buildingImages = new BehaviorSubject<DockerImage[]>(buildImages);
 export const imageProgress = new Subject<ImageBuildProgress>();
-
-// startImageBuild('ubuntu_18_04', '/Users/jan/abstruse/docker/base-images/ubuntu_18_04');
 
 export function startImageBuild(imageName: string, filesPath: string): void {
   const repository = imageName.split(':')[0];
@@ -97,44 +95,72 @@ export function startImageBuild(imageName: string, filesPath: string): void {
     });
 }
 
+export function createImage(
+  data: { repository: string, tag: string, dockerfile: string, initsh: string }
+): Promise<boolean> {
+  const filePath = getFilePath(`docker/images/${data.repository}/${data.tag}`);
+  const splitted = data.dockerfile.split(':');
+  if (!splitted.find(line => line === 'COPY init.sh /home/abstruse/init.sh')) {
+    splitted.push('\n\nCOPY init.sh /home/abstruse/init.sh\n\n');
+    data.dockerfile = splitted.join('\n');
+  }
+
+  return ensureDirectory(filePath)
+    .then(() => writeFile(join(filePath, 'init.sh'), data.initsh))
+    .then(() => writeFile(join(filePath, 'Dockerfile'), data.dockerfile))
+    .then(() => {
+      const imageName = data.repository + ':' + data.tag;
+      startImageBuild(imageName, filePath);
+      return true;
+    });
+}
+
 export function getBuildImages(): Promise<any> {
   let listedImages: any[] = [];
+  const foundImages: DockerImage[] = [];
 
   return docker.listImages()
     .then(images => listedImages = images)
     .then(() => readDir(getFilePath('docker/images')))
     .then(images => {
-      return images.reduce((prev, curr) => {
-        const logFile = getFilePath('docker/base-images/' + curr + '/log.txt');
-        let log = '';
-        if (existsSync(logFile)) {
-          log = readFileSync(logFile, { encoding: 'utf8' }).toString();
-        }
+      return Promise.all(
+        images.map(curr => {
+          return readDir(getFilePath('/docker/images/' + curr))
+            .then(tags => {
+              tags.forEach(tag => {
+                let log = '';
+                const logPath = getFilePath('/docker/images/' + curr + '/' + tag + '/log.txt');
+                if (existsSync(logPath)) {
+                  log = readFileSync(logPath, { encoding: 'utf8' }).toString();
+                }
 
-        let foundImages: DockerImage[] = [];
-        listedImages.forEach(li => {
-          const findIndex = li.RepoTags[0].split(':')[0] === curr;
-          if (findIndex) {
-            foundImages = li.RepoTags.map(tag => {
-              const splitted = tag.split(':');
-              const image = {
-                repository: curr,
-                id: li.Id.split(':')[1],
-                tag: tag.split(':')[1],
-                size: li.Size,
-                created: li.Created,
-                ready: true,
-                buildLog: log
-              };
+                listedImages.forEach(li => {
+                  li.RepoTags.forEach(repoTag => {
+                    const splitted = repoTag.split(':');
+                    if (splitted[0] === curr && splitted[1] === tag) {
+                      const image = {
+                        repository: curr,
+                        id: li.Id.split(':')[1],
+                        tag: tag,
+                        size: li.Size,
+                        created: li.Created,
+                        ready: true,
+                        buildLog: log
+                      };
+                      foundImages.push(image);
+                    }
+                  });
+                });
+
+                if (!foundImages.find(img => img.repository === curr && img.tag === tag)) {
+                  foundImages.push({ repository: curr, tag: tag, ready: false, buildLog: log });
+                }
+              });
             });
-          } else {
-            foundImages.push({ repository: curr, ready: false, buildLog: log });
-          }
-        });
-
-        return prev.concat(foundImages);
-      }, []);
-    });
+        })
+      );
+    })
+    .then(() => foundImages);
 }
 
 export function getBaseImages(): Promise<any> {

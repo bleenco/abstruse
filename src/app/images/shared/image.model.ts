@@ -2,6 +2,8 @@ import { distanceInWordsToNow } from 'date-fns';
 
 export class Image {
   building: boolean;
+  dockerfile: string;
+  initsh: string;
 
   constructor(
     public repository: string,

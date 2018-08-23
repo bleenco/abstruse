@@ -12,17 +12,21 @@
       <span class="heading-text">Image ID</span>
       <span class="data-text">{{ image?.getSHA() }}</span>
     </div>
-    <div class="column is-2 is-marginless is-paddingless data-column">
+    <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="!image?.building">
       <span class="heading-text">Created</span>
       <span class="data-text">{{ image?.getCreatedTime() }}</span>
     </div>
-    <div class="column is-1 is-marginless is-paddingless data-column">
+    <div class="column is-1 is-marginless is-paddingless data-column" *ngIf="!image?.building">
       <span class="heading-text">Size</span>
-      <span class="data-text">{{ image?.size }}</span>
+      <span class="data-text">{{ image?.size | humanizeBytes }}</span>
+    </div>
+    <div class="column is-3 is-marginless is-paddingles data-column align-center justify-center" *ngIf="image?.building">
+      <img class="building" src="/assets/images/icons/spinner.svg">
+      <span>Building image...</span>
     </div>
     <div class="column is-3 is-marginless is-paddingless buttons-column justify-end">
-      <button type="button" class="button is-small">Delete</button>
-      <button type="button" class="button is-small">Log</button>
+      <button type="button" class="button is-small w70">Edit</button>
+      <button type="button" class="button is-small w70" *ngIf="image.buildLog !== ''" (click)="imageService.openDetailsDialog(image.repository, image.tag, false)">Log</button>
     </div>
   </div>
 </div>

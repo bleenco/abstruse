@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Image } from './image.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { JSONResponse } from '../../core/shared/shared.model';
 
@@ -19,6 +20,7 @@ export class ImageService {
   logData: any;
   buildImages: Image[] = [];
   loadingBuildImages: boolean;
+  createDialogOpened: boolean;
 
   constructor(public http: HttpClient) { }
 
@@ -31,6 +33,8 @@ export class ImageService {
 
     if (this.tab === 'base images') {
       this.fetchBaseImages();
+    } else if (this.tab === 'build images') {
+      this.fetchBuildImages();
     }
   }
 
@@ -39,10 +43,7 @@ export class ImageService {
     this.loadingBaseImages = true;
     const url = getAPIURL() + `/images/base`;
 
-    this.http.get<JSONResponse>(url)
-      .pipe(
-        catchError(handleError<JSONResponse>('/images/base'))
-      )
+    this.getBaseImages()
       .subscribe(resp => {
         if (resp && resp.data) {
           this.baseImages = resp.data.map(image => {
@@ -85,7 +86,7 @@ export class ImageService {
 
     this.http.get<JSONResponse>(url)
       .pipe(
-        catchError(handleError<JSONResponse>('/images/base'))
+        catchError(handleError<JSONResponse>('/images/build'))
       )
       .subscribe(resp => {
         if (resp && resp.data) {
@@ -102,7 +103,7 @@ export class ImageService {
           });
 
           this.buildingImages.forEach(image => {
-            this.buildImages = this.baseImages.map(buildImage => {
+            this.buildImages = this.buildImages.map(buildImage => {
               if (buildImage.repository === image.repository && buildImage.tag === image.tag) {
                 buildImage.building = true;
               }
@@ -122,6 +123,21 @@ export class ImageService {
 
         this.loadingBuildImages = false;
       });
+  }
+
+  createImage(form: Image): Observable<JSONResponse> {
+    const url = getAPIURL() + `/images/build`;
+    const data = {
+      repository: form.repository,
+      tag: form.tag,
+      dockerfile: form.dockerfile,
+      initsh: form.initsh
+    };
+
+    return this.http.post<JSONResponse>(url, data)
+      .pipe(
+        catchError(handleError<JSONResponse>('/images/build'))
+      );
   }
 
   buildImage(imageName: string, base = false): void {
@@ -147,9 +163,12 @@ export class ImageService {
     if (base) {
       const index = this.baseImages.findIndex(baseImage => baseImage.repository === repository);
       this.detailsImage = this.baseImages[index];
-      this.logData = this.detailsImage.buildLog.split('\n').join('\r\n');
+    } else {
+      const index = this.buildImages.findIndex(buildImage => buildImage.repository === repository && buildImage.tag === tag);
+      this.detailsImage = this.buildImages[index];
     }
 
+    this.logData = this.detailsImage.buildLog.split('\n').join('\r\n');
     this.detailsDialogOpened = true;
   }
 
@@ -161,5 +180,26 @@ export class ImageService {
 
   getBaseImageIndex(image: Image): number {
     return this.baseImages.findIndex(img => img.repository === image.repository);
+  }
+
+  getBuildImageIndex(image: Image): number {
+    return this.buildImages.findIndex(img => img.repository === image.repository && img.tag === image.tag);
+  }
+
+  openCreateDialog(): void {
+    this.createDialogOpened = true;
+  }
+
+  closeCreateDialog(): void {
+    this.createDialogOpened = false;
+  }
+
+  getBaseImages(): Observable<JSONResponse> {
+    const url = getAPIURL() + `/images/base`;
+
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('/images/base'))
+      );
   }
 }

@@ -17,7 +17,7 @@
       <div class="column is-12">
         <div class="space-between align-center">
           <p>Build images are used or are mandatory to run build jobs.</p>
-          <button type="button" class="button is-small is-green">Create Image</button>
+          <button type="button" class="button is-small is-green" (click)="imageService?.openCreateDialog()">Create Image</button>
         </div>
       </div>
       <div class="column is-12" *ngIf="!imageService?.buildImages.length">
@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="column is-12" *ngIf="imageService?.buildImages.length">
-        <app-image-item  *ngFor="let image of imageService.buildImages"></app-image-item>
+        <app-image-item [image]="image" *ngFor="let image of imageService.buildImages; let i = index;"></app-image-item>
       </div>
     </div>
   </div>
@@ -47,4 +47,4 @@
 </div>
 
 <app-image-log-dialog *ngIf="imageService.detailsDialogOpened"></app-image-log-dialog>
-<!-- <app-editor [(ngModel)]="editorValue" name="model"></app-editor> -->
+<app-image-create-dialog *ngIf="imageService.createDialogOpened"></app-image-create-dialog>
