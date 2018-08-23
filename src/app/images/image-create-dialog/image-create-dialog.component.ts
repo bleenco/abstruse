@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ImageService } from '../shared/image.service';
 import { Image } from '../shared/image.model';
 
@@ -8,8 +8,10 @@ import { Image } from '../shared/image.model';
   styleUrls: ['./image-create-dialog.component.sass']
 })
 export class ImageCreateDialogComponent implements OnInit {
+  @Input() image: Image;
+
   form: Image;
-  baseImages: string[];
+  baseImages: { value: string, placeholder: string }[];
   fetchingBaseImages: boolean;
   baseImage: string;
   saving: boolean;
@@ -17,9 +19,8 @@ export class ImageCreateDialogComponent implements OnInit {
   constructor(public imageService: ImageService) { }
 
   ngOnInit() {
-    this.form = new Image('', false);
-    this.form.dockerfile = 'FROM ubuntu_latest\n\n';
-    this.form.initsh = '';
+    this.form = this.image || new Image('', false);
+    this.form.initsh = this.image && this.image.initsh || '';
     this.fetchBaseImages();
   }
 
@@ -44,6 +45,20 @@ export class ImageCreateDialogComponent implements OnInit {
             .map(image => ({ value: image.repository, placeholder: image.repository }));
         }
         this.fetchingBaseImages = false;
+
+        if (this.image && this.image.dockerfile) {
+          this.form.dockerfile = this.image.dockerfile.replace('COPY init.sh /home/abstruse/init.sh\n\n', '');
+          const splitted = this.form.dockerfile.split('\n');
+          const find = splitted.find(line => line.startsWith('FROM '));
+          if (find) {
+            this.baseImage = find.replace('FROM ', '').replace(/\n/g, '').trim();
+          }
+        } else if (this.baseImages.length) {
+          this.baseImage = this.baseImages[0].value.trim();
+          this.form.dockerfile = `FROM ${this.baseImage}`;
+        } else {
+          this.form.dockerfile = '';
+        }
       });
   }
 

@@ -47,4 +47,4 @@
 </div>
 
 <app-image-log-dialog *ngIf="imageService.detailsDialogOpened"></app-image-log-dialog>
-<app-image-create-dialog *ngIf="imageService.createDialogOpened"></app-image-create-dialog>
+<app-image-create-dialog [image]="imageService.editImage" *ngIf="imageService.createDialogOpened"></app-image-create-dialog>

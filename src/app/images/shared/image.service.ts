@@ -21,6 +21,7 @@ export class ImageService {
   buildImages: Image[] = [];
   loadingBuildImages: boolean;
   createDialogOpened: boolean;
+  editImage: Image;
 
   constructor(public http: HttpClient) { }
 
@@ -91,7 +92,7 @@ export class ImageService {
       .subscribe(resp => {
         if (resp && resp.data) {
           this.buildImages = resp.data.map(image => {
-            return new Image(
+            const img = new Image(
               image.repository,
               image.ready,
               image.id || null,
@@ -100,6 +101,10 @@ export class ImageService {
               image.size || null,
               image.buildLog || ''
             );
+            img.dockerfile = image.dockerfile || '';
+            img.initsh = image.initsh || '';
+
+            return img;
           });
 
           this.buildingImages.forEach(image => {
@@ -172,6 +177,16 @@ export class ImageService {
     this.detailsDialogOpened = true;
   }
 
+  openEditDialog(repository: string, tag: string): void {
+    this.editImage = null;
+    const index = this.buildImages.findIndex(buildImage => buildImage.repository === repository && buildImage.tag === tag);
+    if (index >= 0) {
+      this.editImage = this.buildImages[index];
+    }
+
+    this.createDialogOpened = true;
+  }
+
   closeDetailsDialog(): void {
     this.detailsImage = null;
     this.logData = { clear: true };
@@ -187,6 +202,7 @@ export class ImageService {
   }
 
   openCreateDialog(): void {
+    this.editImage = null;
     this.createDialogOpened = true;
   }
 

@@ -129,10 +129,25 @@ export function getBuildImages(): Promise<any> {
             .then(tags => {
               tags.forEach(tag => {
                 let log = '';
-                const logPath = getFilePath('/docker/images/' + curr + '/' + tag + '/log.txt');
+                let initsh = '';
+                let dockerfile = '';
+                const path = getFilePath('/docker/images/' + curr + '/' + tag);
+                const logPath = join(path, 'log.txt');
+                const dockerfilePath = join(path, 'Dockerfile');
+                const initshPath = join(path, 'init.sh');
+
                 if (existsSync(logPath)) {
                   log = readFileSync(logPath, { encoding: 'utf8' }).toString();
                 }
+
+                if (existsSync(initshPath)) {
+                  initsh = readFileSync(initshPath, { encoding: 'utf8' }).toString();
+                }
+
+                if (existsSync(dockerfilePath)) {
+                  dockerfile = readFileSync(dockerfilePath, { encoding: 'utf8' }).toString();
+                }
+
 
                 listedImages.forEach(li => {
                   li.RepoTags.forEach(repoTag => {
@@ -145,7 +160,9 @@ export function getBuildImages(): Promise<any> {
                         size: li.Size,
                         created: li.Created,
                         ready: true,
-                        buildLog: log
+                        buildLog: log,
+                        initsh: initsh,
+                        dockerfile: dockerfile
                       };
                       foundImages.push(image);
                     }
