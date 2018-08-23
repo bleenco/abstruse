@@ -58,7 +58,6 @@ export function startImageBuild(imageName: string, filesPath: string): void {
               output = output.split('\n').join('\r\n');
             }
 
-
             const progress: ImageBuildProgress = {
               type: 'image building',
               data: { image, output: output }
@@ -75,6 +74,7 @@ export function startImageBuild(imageName: string, filesPath: string): void {
 
           buildImages = buildImages.filter(img => img !== image);
           buildingImages.next(buildImages);
+
           if (typeof err === 'string') {
             logStream.write(err);
           } else {
@@ -99,7 +99,7 @@ export function createImage(
   data: { repository: string, tag: string, dockerfile: string, initsh: string }
 ): Promise<boolean> {
   const filePath = getFilePath(`docker/images/${data.repository}/${data.tag}`);
-  const splitted = data.dockerfile.split(':');
+  const splitted = data.dockerfile.split('\n');
   if (!splitted.find(line => line === 'COPY init.sh /home/abstruse/init.sh')) {
     splitted.push('\n\nCOPY init.sh /home/abstruse/init.sh\n\n');
     data.dockerfile = splitted.join('\n');

@@ -1,5 +1,9 @@
 <div class="dialog-overlay">
   <div class="dialog-container is-wide">
+    <div class="dialog-header">
+      <h1>Build Log</h1>
+      <i class="fas fa-times close-icon" (click)="imageService?.closeDetailsDialog()"></i>
+    </div>
     <div class="dialog-body">
       <div class="message mb20" *ngIf="!imageService?.detailsImage.ready && imageService?.detailsImage.building">
         <p>
@@ -22,7 +26,7 @@
       <app-terminal [data]="imageService?.logData"></app-terminal>
     </div>
     <div class="dialog-footer justify-center">
-      <button type="button" class="button" (click)="imageService?.closeDetailsDialog()">Close (ESC)</button>
+      <button type="button" class="button is-small" (click)="imageService?.closeDetailsDialog()">Close (ESC)</button>
     </div>
   </div>
 </div>

@@ -35,10 +35,22 @@
             </span>
           </div>
           <div class="column is-12">
-            <span class="field">
-              <label class="label">Dockerfile</label>
-              <app-editor [(ngModel)]="form.dockerfile" name="dockerfile"></app-editor>
-            </span>
+            <div class="tabs justify-end">
+              <div class="tab" [class.is-active]="tab === 'dockerfile'" (click)="tab = 'dockerfile'">Dockerfile</div>
+              <div class="tab" [class.is-active]="tab === 'initsh'" (click)="tab = 'initsh'">init.sh</div>
+            </div>
+            <div [class.is-hidden]="tab !== 'dockerfile'">
+              <span class="field" [class.is-hidden]="tab === 'initsh'">
+                <label class="label">Dockerfile</label>
+                <app-editor [(ngModel)]="form.dockerfile" name="dockerfile"></app-editor>
+              </span>
+            </div>
+            <div [class.is-hidden]="tab !== 'initsh'">
+              <span class="field">
+                <label class="label">init.sh</label>
+                <app-editor [(ngModel)]="form.initsh" name="initsh"></app-editor>
+              </span>
+            </div>
           </div>
         </div>
       </div>

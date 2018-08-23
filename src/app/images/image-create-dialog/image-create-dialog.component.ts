@@ -15,12 +15,15 @@ export class ImageCreateDialogComponent implements OnInit {
   fetchingBaseImages: boolean;
   baseImage: string;
   saving: boolean;
+  tab: 'dockerfile' | 'initsh';
 
   constructor(public imageService: ImageService) { }
 
   ngOnInit() {
+    this.tab = 'dockerfile';
     this.form = this.image || new Image('', false);
     this.form.initsh = this.image && this.image.initsh || '';
+    this.form.tag = this.image && this.image.tag || 'latest';
     this.fetchBaseImages();
   }
 

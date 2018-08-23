@@ -4,26 +4,30 @@
       <span class="heading-text">Repository / Name</span>
       <span class="data-text">{{ image.repository }}</span>
     </div>
-    <div class="column is-2 is-marginless is-paddingless data-column">
+    <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="image?.ready">
       <span class="heading-text">Tag</span>
-      <span class="data-text">{{ image.tag || '&nbsp;' }}</span>
+      <span class="data-text">{{ image.tag }}</span>
     </div>
-    <div class="column is-2 is-marginless is-paddingless data-column">
+    <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="image?.ready">
       <span class="heading-text">Image ID</span>
-      <span class="data-text">{{ image.getSHA() || '&nbsp;' }}</span>
+      <span class="data-text">{{ image.getSHA() }}</span>
     </div>
-    <div class="column is-2 is-marginless is-paddingless data-column">
+    <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="image?.ready">
       <span class="heading-text">Created</span>
-      <span class="data-text">{{ image.getCreatedTime() || '&nbsp;' }}</span>
+      <span class="data-text">{{ image.getCreatedTime() }}</span>
     </div>
-    <div class="column is-1 is-marginless is-paddingless data-column">
+    <div class="column is-1 is-marginless is-paddingless data-column" *ngIf="image?.ready">
       <span class="heading-text">Size</span>
-      <span class="data-text">{{ !!image.size ? (image.size | humanizeBytes) : '&nbsp;' }}</span>
+      <span class="data-text">{{ image.size | humanizeBytes }}</span>
     </div>
-    <div class="column is-1 is-marginless is-paddingless data-column justify-center align-center">
-      <i class="fas fa-check ready" *ngIf="image.ready && !image.building"></i>
-      <i class="fas fa-times not-ready" *ngIf="!image.ready && !image.building"></i>
-      <img class="building" *ngIf="image.building" src="/assets/images/icons/spinner.svg">
+    <div class="column is-7 is-marginless is-paddingless data-column" *ngIf="!image?.ready"></div>
+    <div class="column is-1 is-marginless is-paddingless data-column">
+      <span class="heading-text">Ready</span>
+      <span class="data-text">
+        <i class="fas fa-check ready" *ngIf="image.ready && !image.building"></i>
+        <i class="fas fa-times not-ready" *ngIf="!image.ready && !image.building"></i>
+        <img class="building" *ngIf="image.building" src="/assets/images/icons/spinner.svg">
+      </span>
     </div>
     <div class="column is-2 is-marginless is-paddingless buttons-column justify-end">
       <button type="button" class="button is-small w70" *ngIf="image.ready && !image.building">Delete</button>
