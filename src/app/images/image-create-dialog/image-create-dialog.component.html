@@ -35,7 +35,10 @@
             </span>
           </div>
           <div class="column is-12">
-            <app-editor [(ngModel)]="form.dockerfile" name="dockerfile"></app-editor>
+            <span class="field">
+              <label class="label">Dockerfile</label>
+              <app-editor [(ngModel)]="form.dockerfile" name="dockerfile"></app-editor>
+            </span>
           </div>
         </div>
       </div>
