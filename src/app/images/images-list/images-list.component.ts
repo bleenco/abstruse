@@ -18,19 +18,17 @@ export class ImagesListComponent implements OnInit {
     this.dataService.socketOutput
       .pipe(filter(ev => ev.type === 'image building' || ev.type === 'image error' || ev.type === 'image done'))
       .subscribe(event => {
-        console.log(event);
-
         if (event.type === 'image building') {
           const baseIndex = this.imageService.getBaseImageIndex(event.data.image);
           if (baseIndex !== -1) {
             this.imageService.baseImages[baseIndex].appendLog(event.data.output);
-          } else {
 
+            if (this.imageService.detailsImage && this.imageService.detailsImage.repository === event.data.image.repository) {
+              this.imageService.logData = event.data.output;
+            }
           }
+        } else {
 
-          if (this.imageService.detailsImage) {
-            this.imageService.logData = event.data.output;
-          }
         }
 
         if (event.type === 'image done') {

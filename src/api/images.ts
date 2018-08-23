@@ -97,6 +97,46 @@ export function startImageBuild(imageName: string, filesPath: string): void {
     });
 }
 
+export function getBuildImages(): Promise<any> {
+  let listedImages: any[] = [];
+
+  return docker.listImages()
+    .then(images => listedImages = images)
+    .then(() => readDir(getFilePath('docker/images')))
+    .then(images => {
+      return images.reduce((prev, curr) => {
+        const logFile = getFilePath('docker/base-images/' + curr + '/log.txt');
+        let log = '';
+        if (existsSync(logFile)) {
+          log = readFileSync(logFile, { encoding: 'utf8' }).toString();
+        }
+
+        let foundImages: DockerImage[] = [];
+        listedImages.forEach(li => {
+          const findIndex = li.RepoTags[0].split(':')[0] === curr;
+          if (findIndex) {
+            foundImages = li.RepoTags.map(tag => {
+              const splitted = tag.split(':');
+              const image = {
+                repository: curr,
+                id: li.Id.split(':')[1],
+                tag: tag.split(':')[1],
+                size: li.Size,
+                created: li.Created,
+                ready: true,
+                buildLog: log
+              };
+            });
+          } else {
+            foundImages.push({ repository: curr, ready: false, buildLog: log });
+          }
+        });
+
+        return prev.concat(foundImages);
+      }, []);
+    });
+}
+
 export function getBaseImages(): Promise<any> {
   let listedImages: any[] = [];
 

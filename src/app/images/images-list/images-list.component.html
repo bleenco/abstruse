@@ -7,23 +7,29 @@
   </div>
 </div>
 
-<div class="tabs-content">
+<div class="images-content">
   <div *ngIf="imageService.tab === 'build images'">
-    <div class="mtb20" *ngIf="imageService.loading">
+    <div class="mtb20" *ngIf="imageService.loadingBuildImages">
       <app-loader></app-loader>
     </div>
 
-    <div class="columns is-multiline">
-      <!-- <div class="column is-12">
+    <div class="columns is-multiline" *ngIf="!imageService.loadingBuildImages">
+      <div class="column is-12">
+        <div class="space-between align-center">
+          <p>Build images are used or are mandatory to run build jobs.</p>
+          <button type="button" class="button is-small is-green">Create Image</button>
+        </div>
+      </div>
+      <div class="column is-12" *ngIf="!imageService?.buildImages.length">
         <div class="message">
           <p>
             <i class="fas fa-info-circle"></i>
             <span>No build images found.</span>
           </p>
         </div>
-      </div> -->
-      <div class="column is-12">
-        <app-image-item *ngFor="let image of [0, 1, 2, 3, 4, 5, 6, 7, 8]"></app-image-item>
+      </div>
+      <div class="column is-12" *ngIf="imageService?.buildImages.length">
+        <app-image-item  *ngFor="let image of imageService.buildImages"></app-image-item>
       </div>
     </div>
   </div>

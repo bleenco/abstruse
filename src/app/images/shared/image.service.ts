@@ -17,6 +17,8 @@ export class ImageService {
   detailsDialogOpened: boolean;
   detailsImage: Image;
   logData: any;
+  buildImages: Image[] = [];
+  loadingBuildImages: boolean;
 
   constructor(public http: HttpClient) { }
 
@@ -73,6 +75,52 @@ export class ImageService {
         }
 
         this.loadingBaseImages = false;
+      });
+  }
+
+  fetchBuildImages(): void {
+    this.buildImages = [];
+    this.loadingBuildImages = true;
+    const url = getAPIURL() + `/images/build`;
+
+    this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('/images/base'))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data) {
+          this.buildImages = resp.data.map(image => {
+            return new Image(
+              image.repository,
+              image.ready,
+              image.id || null,
+              image.created || null,
+              image.tag || '',
+              image.size || null,
+              image.buildLog || ''
+            );
+          });
+
+          this.buildingImages.forEach(image => {
+            this.buildImages = this.baseImages.map(buildImage => {
+              if (buildImage.repository === image.repository && buildImage.tag === image.tag) {
+                buildImage.building = true;
+              }
+              return buildImage;
+            });
+          });
+
+          if (this.detailsImage) {
+            const image = this.buildImages.find(img => {
+              return img.repository === this.detailsImage.repository && img.tag === this.detailsImage.tag;
+            });
+            if (image) {
+              this.detailsImage = image;
+            }
+          }
+        }
+
+        this.loadingBuildImages = false;
       });
   }
 
