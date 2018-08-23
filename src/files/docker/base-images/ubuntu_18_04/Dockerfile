@@ -19,6 +19,8 @@ RUN chmod +x /etc/init.d/* /entry.sh /usr/bin/abstruse-pty
 USER abstruse
 WORKDIR /home/abstruse/build
 
+RUN sudo chown -Rv abstruse:users /home/abstruse > /dev/null 2>&1
+
 EXPOSE 22 5900
 
 ENTRYPOINT [ "/entry.sh" ]

@@ -30,6 +30,8 @@ RUN chmod +x /etc/init.d/* /usr/bin/abstruse-pty /entry.sh
 USER abstruse
 WORKDIR /home/abstruse/build
 
+RUN sudo chown -Rv abstruse:users /home/abstruse > /dev/null 2>&1
+
 RUN mkdir -p /home/abstruse/.vnc \
     && x11vnc -storepasswd abstrusePass /home/abstruse/.vnc/passwd
 
