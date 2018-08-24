@@ -1,6 +1,7 @@
 import { User } from './model';
 import { addRepositoryPermissions } from './permission';
 import { generatePassword, comparePassword, generateJwt } from '../security';
+import { reject } from 'bluebird';
 
 export function getUser(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -23,7 +24,7 @@ export function getUser(id: number): Promise<any> {
 }
 
 export function getUsers(): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new User()
       .fetchAll()
       .then(users => {
@@ -43,19 +44,31 @@ export function getUsers(): Promise<any> {
 }
 
 export function updateUser(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    delete data.access_tokens;
-    delete data.permissions;
+  return Promise.resolve()
+    .then((): Promise<string | boolean> => {
+      delete data.access_tokens;
+      delete data.permissions;
 
-    new User({ id: data.id }).save(data, { method: 'update', require: false })
-      .then(user => {
-        if (!user) {
-          reject(user);
-        } else {
-          resolve(user.toJSON());
-        }
-      });
-  });
+      if (data.password && data.confirmPassword) {
+        return generatePassword(data.password);
+      } else {
+        return Promise.resolve(false);
+      }
+    })
+    .then(encrypted => {
+      if (encrypted) {
+        data.password = encrypted;
+        delete data.confirmPassword;
+      }
+    })
+    .then(() => new User({ id: data.id }).save(data, { method: 'update', require: false }))
+    .then(user => {
+      if (!user) {
+        return Promise.reject(user);
+      } else {
+        return Promise.resolve(user.toJSON());
+      }
+    });
 }
 
 export function updateUserPassword(data: any): Promise<any> {
@@ -126,9 +139,9 @@ export function createUser(data: any): Promise<boolean> {
           .catch(err => reject(err));
       });
     })
-    .catch(err => {
-      console.error(err);
-      reject();
-    });
+      .catch(err => {
+        console.error(err);
+        reject();
+      });
   });
 }

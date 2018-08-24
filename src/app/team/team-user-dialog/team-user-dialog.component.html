@@ -6,6 +6,7 @@
     </div>
     <form #userForm="ngForm">
       <div class="dialog-body">
+        <p> {{ teamService.user | json }}</p>
         <div class="columns">
           <div class="column is-5">
             <app-avatar-picker [values]="teamService.avatars" [(ngModel)]="teamService.user.avatar" name="avatar" required></app-avatar-picker>
@@ -34,7 +35,7 @@
             </span>
             <span class="field">
               <label class="label">Password</label>
-              <input type="password" name="password" placeholder="Password" class="input" [(ngModel)]="teamService.user.password" required minlength="3">
+              <input type="password" name="password" placeholder="Password" class="input" [(ngModel)]="teamService.user.password" [required]="!teamService.user.id" minlength="3">
               <span class="input-info">
                 <span>Enter password.</span>
               </span>
@@ -42,7 +43,7 @@
             <span class="field">
               <label class="label">Confirm Password</label>
               <input type="password" name="passwordConfirm" placeholder="Confirm Password" class="input" [(ngModel)]="teamService.user.confirmPassword"
-                required minlength="3" appValidateEqual="password">
+                [required]="!teamService.user.id" minlength="3" appValidateEqual="password">
               <span class="input-info">
                 <span>Repeat password, just to make sure.</span>
               </span>
@@ -52,7 +53,7 @@
       </div>
       <div class="dialog-footer justify-end">
         <button class="button" (click)="teamService.closeUserDialog()">Cancel</button>
-        <button class="button is-green" [disabled]="!userForm.valid || teamService.userDialogSaving">
+        <button class="button is-green" [disabled]="!userForm.valid || teamService.userDialogSaving" (click)="teamService.saveUser()">
           <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="teamService.userDialogSaving">
           <span *ngIf="!teamService.userDialogSaving">Save</span>
         </button>

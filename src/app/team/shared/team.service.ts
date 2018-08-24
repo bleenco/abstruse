@@ -15,7 +15,6 @@ export class TeamService {
   team: User[] = [];
   user: User;
   avatars: string[];
-  userDialogType: 'add' | 'edit';
   userDialogOpened: boolean;
   userDialogSaving: boolean;
 
@@ -49,21 +48,39 @@ export class TeamService {
       )
       .subscribe(resp => {
         if (resp && resp.data) {
-          this.team = resp.data.map(user => new User(user.email, user.fullname, user.avatar, Boolean(user.admin)));
+          this.team = resp.data.map(user => new User(user.id, user.email, user.fullname, user.avatar, Boolean(user.admin)));
         }
 
         this.fetchingTeam = false;
       });
   }
 
-  openUserDialog(type: 'add' | 'edit', user: User = new User('', '', '', false)): void {
-    this.userDialogType = type;
+  saveUser(): void {
+    this.userDialogSaving = true;
+    const url = getAPIURL() + `/team/user`;
+
+    this.http.post<JSONResponse>(url, this.user)
+      .pipe(
+        catchError(handleError<JSONResponse>('team/user'))
+      )
+      .subscribe(resp => {
+        if (resp && resp.data) {
+          if (resp.data === 'ok')  {
+            this.fetchTeam();
+            this.closeUserDialog();
+          }
+        }
+
+        this.userDialogSaving = false;
+      });
+  }
+
+  openUserDialog(user: User = new User(null, '', '', '/avatars/predefined/avatar_7.svg', false)): void {
     this.user = user;
     this.userDialogOpened = true;
   }
 
   closeUserDialog(): void {
-    this.userDialogType = null;
     this.user = null;
     this.userDialogOpened = false;
   }
