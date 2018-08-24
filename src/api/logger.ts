@@ -9,27 +9,20 @@ export interface LogMessageType {
   notify: boolean;
 }
 
-export let logger: Subject<LogMessageType> = new Subject();
+export const logger: Subject<LogMessageType> = new Subject();
 
 logger
   .pipe(
     filter((msg: LogMessageType) => !!msg.message && msg.message !== ''),
+    mergeMap((msg: LogMessageType) => from(insertLog(colorizeMessage(msg)))),
     map((msg: LogMessageType) => {
-      if (msg.message === Object(msg.message)) {
-        msg.message = JSON.stringify(msg.message);
-      }
-      return msg;
-    }),
-    mergeMap((msg: LogMessageType) => {
-      msg.message = typeof msg.message === 'object' ? JSON.stringify(msg.message) : msg.message;
-      const message = { message: msg.message, type: msg.type, notify: msg.notify };
-      return from(insertLog(colorizeMessage(message)));
-    }),
-    map((msg: any) => {
       const time = getDateTime();
       const message = [
         chalk.white('['),
-        chalk.bgBlack(chalk.white(time)), chalk.white(']'), ': ', colorizeMessage(msg.message)
+        chalk.bgBlack(chalk.white(time)),
+        chalk.white(']'),
+        ': ',
+        msg.message
       ].join('');
       console.log(message);
     }),
@@ -38,6 +31,10 @@ logger
   .subscribe();
 
 function colorizeMessage(msg: LogMessageType): LogMessageType {
+  if (typeof msg.message !== 'string') {
+    msg.message = `[${msg.type}]: ${(<LogMessageType>msg).message.toString()}`;
+  }
+
   if (msg.type === 'info') {
     msg.message = msg.message.replace(/\[(.*)\]/, chalk.yellow('[') +
       chalk.green('$1') + chalk.yellow(']'));
