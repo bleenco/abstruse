@@ -1,14 +1,10 @@
 import { Log } from './model';
+import { LogMessageType } from '../logger';
 
-export interface LogType {
-  type: 'info' | 'warning' | 'error';
-  message: string;
-}
-
-export function insertLog(data: LogType): Promise<any> {
+export function insertLog(data: LogMessageType): Promise<LogMessageType> {
   return new Promise((resolve, reject) => {
     new Log(data).save(null, { method: 'insert' })
-      .then(log => !log ? reject(log) : resolve(log.toJSON()));
+      .then(log => !log ? reject(log) : resolve(data));
   });
 }
 

@@ -1,7 +1,6 @@
-import { User } from './model';
+import { User, Permission, AccessToken } from './model';
 import { addRepositoryPermissions } from './permission';
 import { generatePassword, comparePassword, generateJwt } from '../security';
-import { reject } from 'bluebird';
 
 export function getUser(id: number): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -24,7 +23,7 @@ export function getUser(id: number): Promise<any> {
 }
 
 export function getUsers(): Promise<any> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     new User()
       .fetchAll()
       .then(users => {
@@ -69,6 +68,15 @@ export function updateUser(data: any): Promise<any> {
         return Promise.resolve(user.toJSON());
       }
     });
+}
+
+export function deleteUser(id: number): Promise<boolean> {
+  return Promise.resolve()
+    .then(() => new AccessToken().where({ users_id: id }).destroy({ require: false }))
+    .then(() => new Permission().where({ users_id: id }).destroy({ require: false }))
+    .then(() => new User({ id: id }).destroy({ require: false }))
+    .then(() => Promise.resolve(true))
+    .catch(err => Promise.reject(err));
 }
 
 export function updateUserPassword(data: any): Promise<any> {
