@@ -1,0 +1,15 @@
+<div class="dialog-overlay">
+  <div class="dialog-container">
+    <div class="dialog-header" *ngIf="title">
+      <h1>{{ title }}</h1>
+      <i class="fas fa-times close-icon" (click)="cancel()"></i>
+    </div>
+    <div class="dialog-body">
+      <p>{{ text }}</p>
+    </div>
+    <div class="dialog-footer justify-end">
+      <button type="button" class="button is-small" (click)="cancel()">Cancel</button>
+      <button type="button" class="button is-small" [ngClass]="confirmClass" (click)="confirm()">Yes</button>
+    </div>
+  </div>
+</div>
