@@ -1,0 +1,38 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+@import 'mixins'
+
+$user-item-height: 70px
+
+\:host
+  outline: none
+
+.user-item
+  width: 100%
+  height: $user-item-height
+  border-bottom: 1px solid $border-primary
+
+  .columns
+    display: flex
+    align-items: center
+    height: $user-item-height
+
+    .data-column
+
+      .user-avatar
+        width: 40px
+        height: 40px
+        border-radius: 50%
+        display: block
+        border: 1px solid $border-primary
+        margin-left: 10px
+
+      .data-text
+        text-align: center
+        display: block
+        color: $text-secondary
+        font-size: 14px
+
+    .buttons-column
+      padding-right: 10px !important

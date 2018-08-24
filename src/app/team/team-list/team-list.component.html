@@ -1,0 +1,34 @@
+<div class="columns is-multiline">
+  <div class="column is-12 ptb0 mb15">
+    <div class="tabs justify-end">
+      <span class="tab" [class.is-active]="teamService?.tab === 'team'" (click)="teamService.switchTab('team')">
+        Team
+      </span>
+      <span class="tab" [class.is-active]="teamService?.tab === 'permissions'" (click)="teamService.switchTab('permissions')">
+        Permissions
+      </span>
+    </div>
+  </div>
+
+  <div class="column is-12" *ngIf="teamService?.tab === 'team'">
+    <div class="mtb20" *ngIf="teamService?.fetchingTeam">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="columns is-multiline" *ngIf="!teamService?.fetchingTeam">
+      <div class="column is-12">
+        <div class="space-between align-center">
+          <p>Add, remove or edit your team members.</p>
+          <button type="button" class="button is-small is-green">Add user</button>
+        </div>
+      </div>
+      <div class="column is-12">
+        <app-team-user-item></app-team-user-item>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12" *ngIf="teamService?.tab === 'permissions'">
+
+  </div>
+</div>
