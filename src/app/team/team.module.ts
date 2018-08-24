@@ -7,6 +7,7 @@ import { TeamComponent } from './team.component';
 import { TeamListComponent } from './team-list/team-list.component';
 import { SharedModule } from '../shared/modules/shared.module';
 import { TeamUserItemComponent } from './team-user-item/team-user-item.component';
+import { TeamUserDialogComponent } from './team-user-dialog/team-user-dialog.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { TeamUserItemComponent } from './team-user-item/team-user-item.component
   declarations: [
     TeamComponent,
     TeamListComponent,
-    TeamUserItemComponent
+    TeamUserItemComponent,
+    TeamUserDialogComponent
   ],
   providers: [TeamService]
 })
