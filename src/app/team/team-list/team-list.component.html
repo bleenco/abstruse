@@ -19,7 +19,7 @@
       <div class="column is-12">
         <div class="space-between align-center">
           <p>Add, remove or edit your team members.</p>
-          <button type="button" class="button is-small is-green">Add user</button>
+          <button type="button" class="button is-green" (click)="teamService.openUserDialog('add')">Add user</button>
         </div>
       </div>
       <div class="column is-12">
@@ -32,3 +32,5 @@
 
   </div>
 </div>
+
+<app-team-user-dialog *ngIf="teamService?.userDialogOpened"></app-team-user-dialog>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { getAPIURL, handleError } from '../../core/shared/shared-functions';
+import { getAPIURL, handleError, getAvatars } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { catchError } from 'rxjs/operators';
 import { User } from './team.model';
@@ -13,12 +13,18 @@ export class TeamService {
   fetchingTeam: boolean;
   userTypes: { value: boolean, placeholder: string }[];
   team: User[] = [];
+  user: User;
+  avatars: string[];
+  userDialogType: 'add' | 'edit';
+  userDialogOpened: boolean;
+  userDialogSaving: boolean;
 
   constructor(public http: HttpClient) {
     this.userTypes = [
       { value: false, placeholder: 'User' },
       { value: true, placeholder: 'Administrator' }
     ];
+    this.avatars = getAvatars();
   }
 
   switchTab(tab: 'team' | 'permissions'): void {
@@ -48,5 +54,17 @@ export class TeamService {
 
         this.fetchingTeam = false;
       });
+  }
+
+  openUserDialog(type: 'add' | 'edit', user: User = new User('', '', '', false)): void {
+    this.userDialogType = type;
+    this.user = user;
+    this.userDialogOpened = true;
+  }
+
+  closeUserDialog(): void {
+    this.userDialogType = null;
+    this.user = null;
+    this.userDialogOpened = false;
   }
 }

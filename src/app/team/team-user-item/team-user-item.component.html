@@ -14,7 +14,7 @@
     </div>
     <div class="column is-3 is-marginless is-paddingless buttons-column justify-end">
       <button type="button" class="button is-small w70">Delete</button>
-      <button type="button" class="button is-small w70">Edit</button>
+      <button type="button" class="button is-small w70" (click)="teamService.openUserDialog('edit', user)">Edit</button>
     </div>
   </div>
 </div>

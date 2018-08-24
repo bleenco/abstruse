@@ -1,3 +1,62 @@
 <div class="dialog-overlay">
-
+  <div class="dialog-container is-wide">
+    <div class="dialog-header">
+      <h1>User Dialog</h1>
+      <i class="fas fa-times close-icon" (click)="teamService.closeUserDialog()"></i>
+    </div>
+    <form #userForm="ngForm">
+      <div class="dialog-body">
+        <div class="columns">
+          <div class="column is-5">
+            <app-avatar-picker [values]="teamService.avatars" [(ngModel)]="teamService.user.avatar" name="avatar" required></app-avatar-picker>
+          </div>
+          <div class="column is-7">
+            <span class="field">
+              <label class="label">Email</label>
+              <input type="text" name="email" placeholder="Email" class="input" [(ngModel)]="teamService.user.email" required>
+              <span class="input-info">
+                <span>Email represents the username for login.</span>
+              </span>
+            </span>
+            <span class="field">
+              <label class="label">Name and Lastname</label>
+              <input type="text" name="fullname" placeholder="Name and Lastname" class="input" [(ngModel)]="teamService.user.fullname" required>
+              <span class="input-info">
+                <span>Full name.</span>
+              </span>
+            </span>
+            <span class="field">
+              <label class="label">Status</label>
+              <app-selectbox [values]="teamService.userTypes" [(ngModel)]="teamService.user.admin" name="admin" required></app-selectbox>
+              <span class="input-info">
+                <span>User privileges.</span>
+              </span>
+            </span>
+            <span class="field">
+              <label class="label">Password</label>
+              <input type="password" name="password" placeholder="Password" class="input" [(ngModel)]="teamService.user.password" required minlength="3">
+              <span class="input-info">
+                <span>Enter password.</span>
+              </span>
+            </span>
+            <span class="field">
+              <label class="label">Confirm Password</label>
+              <input type="password" name="passwordConfirm" placeholder="Confirm Password" class="input" [(ngModel)]="teamService.user.confirmPassword"
+                required minlength="3" appValidateEqual="password">
+              <span class="input-info">
+                <span>Repeat password, just to make sure.</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-footer justify-end">
+        <button class="button" (click)="teamService.closeUserDialog()">Cancel</button>
+        <button class="button is-green" [disabled]="!userForm.valid || teamService.userDialogSaving">
+          <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="teamService.userDialogSaving">
+          <span *ngIf="!teamService.userDialogSaving">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

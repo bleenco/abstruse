@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TeamService } from '../shared/team.service';
 
 @Component({
   selector: 'app-team-user-dialog',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TeamUserDialogComponent implements OnInit {
 
-  constructor() { }
+  constructor(public teamService: TeamService) { }
 
   ngOnInit() {
   }
