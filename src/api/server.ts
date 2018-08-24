@@ -13,6 +13,7 @@ import { authRouter } from './routes/auth';
 import { usersRouter } from './routes/users';
 import { buildsRouter } from './routes/builds';
 import { imagesRouter } from './routes/images';
+import { teamRouter } from './routes/team';
 
 const SQLiteStore = connectsqlite3(session);
 
@@ -50,6 +51,7 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/users', usersRouter);
       app.use('/api/builds', buildsRouter);
       app.use('/api/images', imagesRouter);
+      app.use('/api/team', teamRouter);
 
       app.use('/api/user', routes.userRoutes());
       app.use('/api/tokens', routes.tokenRoutes());

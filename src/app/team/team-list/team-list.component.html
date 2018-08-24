@@ -23,7 +23,7 @@
         </div>
       </div>
       <div class="column is-12">
-        <app-team-user-item></app-team-user-item>
+        <app-team-user-item [user]="user" *ngFor="let user of teamService?.team; let i = index;"></app-team-user-item>
       </div>
     </div>
   </div>

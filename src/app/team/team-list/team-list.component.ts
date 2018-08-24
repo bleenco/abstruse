@@ -12,6 +12,7 @@ export class TeamListComponent implements OnInit {
 
   ngOnInit() {
     this.teamService.tab = 'team';
+    this.teamService.fetchTeam();
   }
 
 }
