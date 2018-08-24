@@ -34,3 +34,4 @@
 </div>
 
 <app-team-user-dialog *ngIf="teamService?.userDialogOpened"></app-team-user-dialog>
+<app-confirm-dialog *ngIf="teamService?.deleteUserDialogOpened" [title]="'Confirmation'" [text]="'Are you sure that you want to delete user permanently?'" [confirmClass]="'is-red'" (confirmed)="teamService.onConfirmDelete()" (cancelled)="teamService.closeDeleteUserDialog()"></app-confirm-dialog>

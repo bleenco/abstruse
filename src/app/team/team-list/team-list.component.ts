@@ -14,5 +14,4 @@ export class TeamListComponent implements OnInit {
     this.teamService.tab = 'team';
     this.teamService.fetchTeam();
   }
-
 }

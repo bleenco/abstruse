@@ -11,5 +11,4 @@ export class ImageLogDialogComponent implements OnInit {
   constructor(public imageService: ImageService) { }
 
   ngOnInit() { }
-
 }

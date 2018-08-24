@@ -13,6 +13,7 @@ import { SelectboxComponent } from '../widgets/selectbox/selectbox.component';
 import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.component';
 import { TerminalComponent } from '../widgets/terminal/terminal.component';
 import { EditorComponent } from '../widgets/editor/editor.component';
+import { ConfirmDialogComponent } from '../widgets/confirm-dialog/confirm-dialog.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
@@ -31,6 +32,7 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     AvatarPickerComponent,
     TerminalComponent,
     EditorComponent,
+    ConfirmDialogComponent,
     EqualValidatorDirective,
     ToTimePipe,
     HumanizeBytesPipe,
@@ -44,6 +46,7 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     AvatarPickerComponent,
     TerminalComponent,
     EditorComponent,
+    ConfirmDialogComponent,
     EqualValidatorDirective,
     ToTimePipe,
     HumanizeBytesPipe,

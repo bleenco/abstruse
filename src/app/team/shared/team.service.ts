@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { getAPIURL, handleError, getAvatars } from '../../core/shared/shared-functions';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { catchError } from 'rxjs/operators';
@@ -17,6 +17,7 @@ export class TeamService {
   avatars: string[];
   userDialogOpened: boolean;
   userDialogSaving: boolean;
+  deleteUserDialogOpened: boolean;
 
   constructor(public http: HttpClient) {
     this.userTypes = [
@@ -83,5 +84,29 @@ export class TeamService {
   closeUserDialog(): void {
     this.user = null;
     this.userDialogOpened = false;
+  }
+
+  openDeleteUserDialog(user: User): void {
+    this.user = user;
+    this.deleteUserDialogOpened = true;
+  }
+
+  closeDeleteUserDialog(): void {
+    this.user = null;
+    this.deleteUserDialogOpened = false;
+  }
+
+  onConfirmDelete(): void {
+    if (!this.user) {
+      return;
+    }
+
+    const url = getAPIURL() + `/team/user/${String(this.user.id)}`;
+    this.http.delete<JSONResponse>(url).subscribe(resp => {
+      if (resp && resp.data && resp.data === 'ok') {
+        this.fetchTeam();
+        this.closeDeleteUserDialog();
+      }
+    });
   }
 }

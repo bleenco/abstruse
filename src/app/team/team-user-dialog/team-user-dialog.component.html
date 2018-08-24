@@ -6,7 +6,6 @@
     </div>
     <form #userForm="ngForm">
       <div class="dialog-body">
-        <p> {{ teamService.user | json }}</p>
         <div class="columns">
           <div class="column is-5">
             <app-avatar-picker [values]="teamService.avatars" [(ngModel)]="teamService.user.avatar" name="avatar" required></app-avatar-picker>

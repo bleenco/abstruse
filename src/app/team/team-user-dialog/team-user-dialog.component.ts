@@ -10,7 +10,5 @@ export class TeamUserDialogComponent implements OnInit {
 
   constructor(public teamService: TeamService) { }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() { }
 }
