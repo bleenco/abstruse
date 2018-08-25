@@ -6,6 +6,7 @@
 
 [![AbstruseCI](https://ci.bleenco.io/badge/1)](https://ci.bleenco.io/repo/1)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/bleenco/abstruse)
+[![Slack](https://slackin-xxrlxvwnmd.now.sh/badge.svg)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
 
 *The majority of widely used browsers (except IE) are tested on BrowserStack.*
 
@@ -47,8 +48,7 @@ When testing Angular 5.0.0-beta.7, Abstruse outperforms Jenkins by 25.84% in tim
 </p>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/41513907-bb8822e0-72a2-11e8-9280-53568814a5f3.png" width="400px">
-  <img src="https://user-images.githubusercontent.com/1796022/41513911-bebc166a-72a2-11e8-9b1c-5d67bd4dae02.png" width="400px">
+  <img src="https://user-images.githubusercontent.com/3041169/31200826-a2b4292c-a95c-11e7-8d73-c395f7b37355.jpg">
 </p>
 
 <p align="center">
@@ -56,8 +56,7 @@ When testing Angular 5.0.0-beta.7, Abstruse outperforms Jenkins by 25.84% in tim
 </p>
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/1796022/41513962-3b315bce-72a3-11e8-9fd1-f3f5707e8825.png" width="400px">
-  <img src="https://user-images.githubusercontent.com/1796022/41513963-3ee2a5c0-72a3-11e8-84c7-b617dbb3ab0a.png" width="400px">
+  <img src="https://user-images.githubusercontent.com/3041169/31200825-a2b3ab3c-a95c-11e7-9d0e-7c48af6730f9.jpg">
 </p>
 
 *Figure 1*: Testing Java-Design-Patterns 1.17.0 with Abstruse (left) and Jenkins (right).
