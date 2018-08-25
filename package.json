@@ -102,6 +102,7 @@
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "font-awesome5": "^1.0.5",
+    "frappe-charts": "^1.1.0",
     "fs-extra": "^7.0.0",
     "jasmine-core": "~3.2.1",
     "jasmine-spec-reporter": "~4.2.1",

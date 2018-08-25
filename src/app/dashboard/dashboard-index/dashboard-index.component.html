@@ -1,0 +1,11 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="box has-less-padding">
+      <div class="justify-end">
+        <ng-datepicker [(ngModel)]="dateFrom" (ngModelChange)="updateJobRunsChart()" name="dateFrom"></ng-datepicker>
+        <ng-datepicker [(ngModel)]="dateTo" (ngModelChange)="updateJobRunsChart()" name="dateTo"></ng-datepicker>
+      </div>
+      <app-frappe-chart></app-frappe-chart>
+    </div>
+  </div>
+</div>

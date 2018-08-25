@@ -1,6 +1,7 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgDatepickerModule } from 'ng2-datepicker';
 
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
@@ -24,7 +25,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    NgDatepickerModule
   ],
   declarations: [
     LoaderComponent,
@@ -41,6 +43,7 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
   exports: [
     CommonModule,
     FormsModule,
+    NgDatepickerModule,
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,
