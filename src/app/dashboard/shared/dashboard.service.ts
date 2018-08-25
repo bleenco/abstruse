@@ -10,9 +10,15 @@ import { catchError } from 'rxjs/operators';
 })
 export class DashboardService {
   updateJobRunsChart: EventEmitter<any>;
+  updateCpuPercentage: EventEmitter<any>;
+  updateCpuCores: EventEmitter<any>;
+  updateContainerStats: EventEmitter<any>;
 
   constructor(public http: HttpClient) {
     this.updateJobRunsChart = new EventEmitter<any>();
+    this.updateCpuPercentage = new EventEmitter<any>();
+    this.updateCpuCores = new EventEmitter<any>();
+    this.updateContainerStats = new EventEmitter<any>();
   }
 
   fetchJobRunsData(dateFrom: Date, dateTo: Date): Observable<JSONResponse> {

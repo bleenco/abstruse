@@ -5,7 +5,17 @@
         <ng-datepicker [(ngModel)]="dateFrom" (ngModelChange)="updateJobRunsChart()" name="dateFrom"></ng-datepicker>
         <ng-datepicker [(ngModel)]="dateTo" (ngModelChange)="updateJobRunsChart()" name="dateTo"></ng-datepicker>
       </div>
-      <app-frappe-chart></app-frappe-chart>
+      <app-frappe-chart [events]="dashboard.updateJobRunsChart"></app-frappe-chart>
+    </div>
+  </div>
+  <div class="column is-8">
+    <div class="box has-less-padding">
+      <app-frappe-chart [events]="dashboard.updateCpuCores"></app-frappe-chart>
+    </div>
+  </div>
+  <div class="column is-4">
+    <div class="box has-less-padding">
+      <app-progress-chart [percent]="cpuPercent"></app-progress-chart>
     </div>
   </div>
 </div>

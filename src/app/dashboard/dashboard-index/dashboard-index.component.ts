@@ -1,18 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DashboardService } from '../shared/dashboard.service';
 import { subDays, format } from 'date-fns';
+import { DataService } from '../../shared/providers/data.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-index',
   templateUrl: './dashboard-index.component.html',
   styleUrls: ['./dashboard-index.component.sass']
 })
-export class DashboardIndexComponent implements OnInit {
+export class DashboardIndexComponent implements OnInit, OnDestroy {
   dateFrom: Date;
   dateTo: Date;
   chartData: any;
+  sub: Subscription;
+  memory: { total: number, free: number, used: number };
+  cpuPercent = 0;
+  cpuCores: number[] = [];
+  containers: any[] = [];
+  cpuChartData: any;
+  cpuCoresData: any;
 
-  constructor(public dashboard: DashboardService) {
+  constructor(public dashboard: DashboardService, public dataService: DataService) {
     // $blue: #2AA7FF
     // $green: #30D068
     // $red: #F44336
@@ -140,6 +150,82 @@ export class DashboardIndexComponent implements OnInit {
     this.dateFrom = subDays(new Date, 30);
     this.dateTo = new Date();
     this.updateJobRunsChart();
+
+    this.dashboard.updateCpuCores.emit(this.cpuCoresData);
+
+    this.sub = this.dataService.socketOutput
+      .pipe(
+        filter(event => event.type === 'memory' || event.type === 'cpu' || event.type === 'containerStats')
+      )
+      .subscribe(event => {
+        switch (event.type) {
+          case 'memory':
+            this.memory = {
+              total: event.data.total,
+              free: event.data.free,
+              used: event.data.total - event.data.free
+            };
+            break;
+          case 'cpu':
+            this.cpuPercent = event.data.load;
+            this.cpuCores = event.data.cores.map(core => core.total);
+
+            this.cpuChartData = {
+              title: 'CPU Usage',
+              type: 'pie',
+              data: {
+                labels: ['Used', 'Free'],
+                datasets: [
+                  { values: [this.cpuPercent, 100 - this.cpuPercent] }
+                ],
+              },
+              colors: ['#F4A7A1', '#97D0AB'],
+              barOptions: {
+                height: 10,
+                depth: 5
+              }
+            };
+            this.dashboard.updateCpuPercentage.emit(this.cpuChartData);
+
+            this.cpuCoresData = {
+              title: 'CPU Cores',
+              type: 'bar',
+              data: {
+                labels: this.cpuCores.map((_, i) => i),
+                datasets: [
+                  { name: '', values: this.cpuCores }
+                ],
+                yMarkers: [
+                  {
+                    label: 'CPU Usage',
+                    value: this.cpuCores.reduce((p, c) => p + c, 0) / this.cpuCores.length,
+                    options: { labelPos: 'right' }
+                  }
+                ]
+              },
+              colors: ['#97D0AB', '#F4A7A1'],
+              barOptions: {
+                spaceRatio: 0.2
+              },
+              tooltipOptions: {
+                formatTooltipX: d => 'CPU #' + d,
+                formatTooltipY: d => d + '%'
+              }
+            };
+
+            this.dashboard.updateCpuCores.emit(this.cpuCoresData);
+            break;
+          case 'containerStats':
+            this.containers = event.data.filter(container => container && container.name && container.name.startsWith('abstruse'));
+            break;
+        }
+      });
+
+    this.dataService.socketInput.emit({ type: 'subscribeToStats' });
+  }
+
+  ngOnDestroy() {
+    this.dataService.socketInput.emit({ type: 'unsubscribeFromStats' });
   }
 
   updateJobRunsChart() {

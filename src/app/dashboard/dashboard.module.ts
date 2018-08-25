@@ -5,6 +5,7 @@ import { DashboardComponent } from './dashboard.component';
 import { DashboardIndexComponent } from './dashboard-index/dashboard-index.component';
 import { FrappeChartComponent } from './charts/frappe-chart/frappe-chart.component';
 import { SharedModule } from '../shared/modules/shared.module';
+import { ProgressChartComponent } from './charts/progress-chart/progress-chart.component';
 
 @NgModule({
   imports: [
@@ -14,7 +15,8 @@ import { SharedModule } from '../shared/modules/shared.module';
   declarations: [
     DashboardComponent,
     DashboardIndexComponent,
-    FrappeChartComponent
+    FrappeChartComponent,
+    ProgressChartComponent
   ],
   providers: []
 })
