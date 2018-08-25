@@ -1,5 +1,9 @@
 import { Component, ElementRef, OnChanges, OnDestroy, SimpleChanges, Input } from '@angular/core';
-import { select, pie, arc, interpolate, easeLinear } from 'd3';
+import { select } from 'd3-selection';
+import { pie, arc } from 'd3-shape';
+import { interpolate } from 'd3-interpolate';
+import { easeLinear } from 'd3-ease';
+import 'd3-transition';
 
 @Component({
   selector: 'app-progress-chart',
