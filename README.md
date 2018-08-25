@@ -5,7 +5,6 @@
 ## Abstruse
 
 [![AbstruseCI](https://ci.bleenco.io/badge/1)](https://ci.bleenco.io/repo/1)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/bleenco/abstruse)
 [![Slack](https://slackin-xxrlxvwnmd.now.sh/badge.svg)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
 
 *The majority of widely used browsers (except IE) are tested on BrowserStack.*
