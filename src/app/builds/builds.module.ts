@@ -7,21 +7,21 @@ import { BuildService } from './shared/build.service';
 
 import { BuildsComponent } from './builds.component';
 import { BuildsLatestComponent } from './builds-latest/builds-latest.component';
-import { BuildItemComponent } from './build-item/build-item.component';
 import { BuildDetailsComponent } from './build-details/build-details.component';
 import { BuildJobItemComponent } from './build-job-item/build-job-item.component';
 import { BuildJobDetailsComponent } from './build-job-details/build-job-details.component';
 import { BuildJobRunItemComponent } from './build-job-run-item/build-job-run-item.component';
+import { BuildItemModule } from './build-item/build-item.module';
 
 @NgModule({
   imports: [
     BuildsRoutingModule,
-    SharedModule.forRoot()
+    SharedModule.forRoot(),
+    BuildItemModule
   ],
   declarations: [
     BuildsComponent,
     BuildsLatestComponent,
-    BuildItemComponent,
     BuildDetailsComponent,
     BuildJobItemComponent,
     BuildJobDetailsComponent,

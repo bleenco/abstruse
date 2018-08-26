@@ -1,0 +1,19 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="mtb20" *ngIf="fetching">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="columns is-multiline" *ngIf="!fetching">
+      <!-- <div class="column is-12">
+        <div class="space-between align-center">
+          <p>Manage your repositories.</p>
+          <button type="button" class="button is-green">Add repository</button>
+        </div>
+      </div> -->
+      <div class="column is-12">
+        <app-repositories-repo-item [repo]="repo" *ngFor="let repo of repos; let i = index;" [routerLink]="['/repositories', repo.id]"></app-repositories-repo-item>
+      </div>
+    </div>
+  </div>
+</div>

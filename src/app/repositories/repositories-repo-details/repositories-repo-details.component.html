@@ -1,0 +1,56 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="box has-less-padding has-dark-border">
+      <div class="columns">
+        <div class="column is-10">
+          <span class="data-item">
+            <i class="fab fa-github" *ngIf="repo?.repository_provider === 'github'"></i>
+            <i class="fab fa-gitlab" *ngIf="repo?.repository_provider === 'gitlab'"></i>
+            <i class="fab fa-bitbucket" *ngIf="repo?.repository_provider === 'bitbucket'"></i>
+            <img src="/assets/images/icons/gogs.svg" *ngIf="repo?.repository_provider === 'gogs'">
+            <i class="fas fa-question-circle" *ngIf="!repo?.repository_provider"></i>
+            <span class="full-name"><a href="repo?.html_url" target="_blank">{{ repo?.full_name }}</a></span>
+            <span class="repo-description">{{ repo?.description }}</span>
+          </span>
+        </div>
+        <div class="column is-1">
+
+        </div>
+        <div class="column is-1 justify-end">
+          <span class="tag" *ngIf="!repo?.is_public">Private</span>
+          <span class="tag is-public" *ngIf="repo?.is_public">Public</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12 ptb0 mb15">
+    <div class="tabs justify-end">
+      <span class="tab" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">Builds</span>
+      <span class="tab" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')">Settings</span>
+    </div>
+  </div>
+</div>
+
+<div class="repository-content">
+  <div *ngIf="tab === 'builds'">
+    <div class="mtb20" *ngIf="fetchingRepository || buildService?.loading">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="builds" *ngIf="!buildService?.loading">
+      <app-build-item *ngFor="let build of buildService.builds; let i = index;" [build]="build" [routerLink]="['/builds', build.id]"></app-build-item>
+    </div>
+
+    <div class="mtb20 justify-center align-center">
+      <button class="button w100" (click)="buildService.fetchBuilds(id)" [disabled]="buildService.fetchingBuilds" *ngIf="!buildService.loading">
+        <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="buildService.fetchingBuilds">
+        <span *ngIf="!buildService.fetchingBuilds">Load more</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="tab === 'settings'">
+
+  </div>
+</div>

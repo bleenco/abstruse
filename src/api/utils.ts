@@ -4,6 +4,7 @@ import * as request from 'request';
 import { CommandType, CommandTypePriority } from './config';
 import { Observable } from 'rxjs';
 import { Readable, Writable } from 'stream';
+import * as badgen from 'badgen';
 
 
 export interface JobProcess {
@@ -24,7 +25,7 @@ export interface JobProcess {
 
 export function getAbstruseVersion(): string {
   try {
-    let pkgJson = JSON.parse(readFileSync(path.resolve(__dirname, '../../package.json')).toString());
+    const pkgJson = JSON.parse(readFileSync(path.resolve(__dirname, '../../package.json')).toString());
     return pkgJson.version;
   } catch (e) {
     console.log(e);
@@ -37,9 +38,9 @@ export function getHumanSize(bytes: number, decimals = 2): string {
     return '0 Bytes';
   }
 
-  let sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  let k = 1000;
-  let i = Math.floor(Math.log(bytes) / Math.log(k));
+  const sizes: string[] = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const k = 1000;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${sizes[i]}`;
 }
@@ -50,8 +51,8 @@ export function generateRandomId(): string {
 
 export function getHttpJsonResponse(url: string, optHeaders: any = {}): Promise<any> {
   return new Promise((resolve, reject) => {
-    let headers = Object.assign({}, { 'User-Agent': 'abstruse' }, optHeaders);
-    let options = { url, headers };
+    const headers = Object.assign({}, { 'User-Agent': 'abstruse' }, optHeaders);
+    const options = { url, headers };
 
     request(options, (err, resp, body) => {
       if (err) {
@@ -64,44 +65,25 @@ export function getHttpJsonResponse(url: string, optHeaders: any = {}): Promise<
 }
 
 export function generateBadgeHtml(status: string): string {
-  let background = null;
+  let color = null;
   if (status === 'failing') {
-    background = '#f03e3e';
+    color = 'red';
   } else if (status === 'running') {
-    background = '#ffd43b';
+    color = 'yellow';
   } else if (status === 'queued') {
-    background = '#ffd43b';
+    color = 'grey';
   } else if (status === 'unknown') {
     status = 'none';
-    background = '#3A7EE1';
+    color = 'black';
   } else {
-    background = '#39B54A';
+    color = 'green';
   }
 
-  return `
-    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" style="shape-rendering:
-      geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd;
-      clip-rule:evenodd">
-      <linearGradient id="b" x2="0" y2="100%">
-        <stop offset="0" stop-color="#bbb" stop-opacity=".1"></stop>
-        <stop offset="1" stop-opacity=".1"></stop>
-      </linearGradient>
-      <mask id="a">
-        <rect width="100" height="20" rx="3" fill="#fff"></rect>
-      </mask>
-      <g mask="url(#a)">
-        <path fill="#333" d="M0 0h50v20H0z"></path>
-        <path fill="${background}" d="M50 0h50v20H50z"></path>
-        <path fill="url(#b)" d="M0 0h100v20H0z"></path>
-      </g>
-      <g fill="#fff" font-family="Verdana,Geneva,sans-serif" font-size="10">
-        <text x="4" y="15" fill="#010101" fill-opacity=".3">abstruse</text>
-        <text x="4" y="14">abstruse</text>
-        <text x="53" y="15" fill="#010101" fill-opacity=".3">${status}</text>
-        <text x="53" y="14">${status}</text>
-      </g>
-    </svg>
-  `;
+  return badgen({
+    subject: 'abstruse',
+    status,
+    color
+  });
 }
 
 export function getBitBucketAccessToken(clientCredentials: string): Promise<any> {

@@ -1093,6 +1093,10 @@ backo2@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
 
+badgen@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/badgen/-/badgen-2.4.2.tgz#2d1ea72838170ee933b455ac7f3d4e14300e1c52"
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"

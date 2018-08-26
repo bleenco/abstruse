@@ -68,14 +68,14 @@ export class BuildService {
     this.resetFields();
   }
 
-  fetchBuilds(): void {
+  fetchBuilds(repoId?: number): void {
     if (this.loading) {
       this.subscribeToBuilds();
     }
 
     this.fetchingBuilds = true;
 
-    const url = getAPIURL() + `/builds`;
+    const url = repoId ? getAPIURL() + '/repositories/' + repoId + '/builds' : getAPIURL() + `/builds`;
     let params = new HttpParams();
     params = params.append('limit', String(this.limit));
     params = params.append('offset', String(this.offset));
@@ -527,7 +527,7 @@ export class BuildService {
     this.currentTime = new Date().getTime();
   }
 
-  private generateBuild(build: any): Promise<Build> {
+  generateBuild(build: any): Promise<Build> {
     let status: BuildStatus = BuildStatus.queued;
     let maxCompletedJobTime: number;
     let minRunningJobStartTime: number;
