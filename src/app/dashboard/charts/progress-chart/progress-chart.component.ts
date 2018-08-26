@@ -26,7 +26,7 @@ export class ProgressChartComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if ('percent' in changes) {
-      if (!this.el) {
+      if (!this.el && this.percent !== 0) {
         this.render();
       }
 
@@ -46,7 +46,7 @@ export class ProgressChartComponent implements OnChanges, OnDestroy {
     const outerRadius = (w / 2) - 50;
     const innerRadius = 100;
 
-    const color = ['#97D0AB', '#30D068', '#e9e9e9'];
+    const color = ['#97D0AB', '#30D068', '#F5F5F5'];
 
     const svg = select(this.el)
       .append('svg')
@@ -92,10 +92,10 @@ export class ProgressChartComponent implements OnChanges, OnDestroy {
       .text('%')
       .attr('class', 'percent')
       .attr('text-anchor', 'middle')
-      .attr('dx', 35)
-      .attr('dy', 0)
+      .attr('dx', 45)
+      .attr('dy', -10)
       .style('fill', color[1])
-      .style('font-size', '40px');
+      .style('font-size', '30px');
   }
 
   arcTween = (transition: any, newAngle: number) => {
@@ -115,6 +115,10 @@ export class ProgressChartComponent implements OnChanges, OnDestroy {
   }
 
   animate = () => {
+    if (!this.pathChart) {
+      return;
+    }
+
     this.ratio = this.percent / 100;
     this.pathChart.transition()
       .duration(500)

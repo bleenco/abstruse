@@ -14,10 +14,13 @@ export class FrappeChartComponent implements OnInit, OnDestroy {
   el: HTMLElement;
   chart: Chart;
   sub: Subscription;
+  initializing: boolean;
+  cpuHistory: any[] = [];
 
   constructor(public elementRef: ElementRef, public dashboard: DashboardService) { }
 
   ngOnInit() {
+    this.initializing = true;
     this.el = this.elementRef.nativeElement.querySelector('.frappe-chart');
 
     this.sub = this.events.subscribe(data => {
@@ -29,18 +32,6 @@ export class FrappeChartComponent implements OnInit, OnDestroy {
         this.renderBarChart(data);
       }
     });
-
-    // switch (this.type) {
-    //   case 'builds history':
-    //     this.sub = this.dashboard.updateJobRunsChart.subscribe(data => {
-    //       this.renderLineChart(data);
-    //     });
-    //   case 'cpu percent':
-    //     this.sub = this.dashboard.updateCpuPercentage.subscribe(data => {
-    //       this.renderPieChart(data);
-    //     });
-    //     break;
-    // }
   }
 
   ngOnDestroy() {
@@ -50,6 +41,8 @@ export class FrappeChartComponent implements OnInit, OnDestroy {
   }
 
   private renderLineChart(data: any): void {
+    this.initializing = false;
+
     data = Object.assign({}, data, { height: 250 });
     if (data.data.labels.length < 2) {
       return;
@@ -63,6 +56,8 @@ export class FrappeChartComponent implements OnInit, OnDestroy {
   }
 
   private renderBarChart(data: any): void {
+    this.initializing = false;
+
     data = Object.assign({}, data, { height: 250 });
     if (this.chart) {
       this.chart.update(data.data);
@@ -72,6 +67,8 @@ export class FrappeChartComponent implements OnInit, OnDestroy {
   }
 
   private renderPercentageChart(data: any): void {
+    this.initializing = false;
+
     data = Object.assign({}, data, { height: 200 });
     if (this.chart) {
       this.chart.update(data.data);

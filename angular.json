@@ -24,7 +24,8 @@
             ],
             "styles": [
               "src/styles/app.sass",
-              "node_modules/monaco-editor/min/vs/editor/editor.main.css"
+              "node_modules/monaco-editor/min/vs/editor/editor.main.css",
+              "node_modules/frappe-charts/dist/frappe-charts.min.css"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
@@ -80,7 +81,8 @@
             "karmaConfig": "src/karma.conf.js",
             "styles": [
               "src/styles/app.sass",
-              "node_modules/monaco-editor/min/vs/editor/editor.main.css"
+              "node_modules/monaco-editor/min/vs/editor/editor.main.css",
+              "node_modules/frappe-charts/dist/frappe-charts.min.css"
             ],
             "scripts": [],
             "assets": [

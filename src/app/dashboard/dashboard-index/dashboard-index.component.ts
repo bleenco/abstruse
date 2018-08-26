@@ -22,129 +22,7 @@ export class DashboardIndexComponent implements OnInit, OnDestroy {
   cpuChartData: any;
   cpuCoresData: any;
 
-  constructor(public dashboard: DashboardService, public dataService: DataService) {
-    // $blue: #2AA7FF
-    // $green: #30D068
-    // $red: #F44336
-    // $yellow: #fdd835
-    // this.chartData = [
-    //   {
-    //     title: 'Builds',
-    //     type: 'line',
-    //     data: {
-    //       labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9am'],
-    //       datasets: [
-    //         {
-    //           name: 'Passed Builds',
-    //           values: [25, 40, 30, 35, 8, 52, 17, -4]
-    //         },
-    //         {
-    //           name: 'Failed Builds',
-    //           values: [25, 50, -10, 15, 18, 32, 27, 14]
-    //         }
-    //       ]
-    //     },
-    //     colors: ['#97D0AB', '#F4A7A1'],
-    //     lineOptions: {
-    //       dotSize: 5,
-    //       hideLine: 0,
-    //       hideDots: 0,
-    //       heatline: 1,
-    //       regionFill: 1
-    //     }
-    //   },
-    //   {
-    //     title: 'Line chart',
-    //     type: 'line',
-    //     data: {
-    //       labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9am'],
-    //       datasets: [
-    //         {
-    //           name: 'Some Data', color: 'light-blue',
-    //           values: [25, 40, 30, 35, 8, 52, 17, -4]
-    //         },
-    //         {
-    //           name: 'Another Set', color: 'violet',
-    //           values: [25, 50, -10, 15, 18, 32, 27, 14]
-    //         },
-    //         {
-    //           name: 'Yet Another', color: 'blue',
-    //           values: [15, 20, -3, -15, 58, 12, -17, 37]
-    //         }
-    //       ]
-    //     },
-    //     colors: ['#97D0AB', '#FDEEA9', '#F4A7A1'],
-    //     lineOptions: {
-    //       dotSize: 5,
-    //       hideLine: 0,
-    //       hideDots: 0,
-    //       heatline: 1,
-    //       regionFill: 1
-    //     }
-    //   },
-    // {
-    //   title: 'Pie chart',
-    //   type: 'pie',
-    //   data: {
-    //     labels: ['12am', '3am', '6am', '9am', '12pm'],
-    //     datasets: [
-    //       {
-    //         title: 'Some Data', color: 'light-blue',
-    //         values: [25, 40, 30, 35, 8]
-    //       },
-    //       {
-    //         title: 'Another Set', color: 'violet',
-    //         values: [25, 50, -10, 15, 18]
-    //       },
-    //       {
-    //         title: 'Yet Another', color: 'blue',
-    //         values: [15, 20, -3, -15, 58]
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   title: 'Scatter chart',
-    //   type: 'scatter',
-    //   data: {
-    //     labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9am'],
-    //     datasets: [
-    //       {
-    //         title: 'Some Data', color: 'light-blue',
-    //         values: [25, 40, 30, 35, 8, 52, 17, -4]
-    //       },
-    //       {
-    //         title: 'Another Set', color: 'violet',
-    //         values: [25, 50, -10, 15, 18, 32, 27, 14]
-    //       },
-    //       {
-    //         title: 'Yet Another', color: 'blue',
-    //         values: [15, 20, -3, -15, 58, 12, -17, 37]
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   title: 'Percentage chart',
-    //   type: 'percentage',
-    //   data: {
-    //     labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9am'],
-    //     datasets: [
-    //       {
-    //         title: 'Some Data',
-    //         color: 'light-blue',
-    //         values: [25, 40, 30, 35, 8, 52, 17, -4]
-    //       },
-    //       {
-    //         title: 'Another Set',
-    //         color: 'violet',
-    //         values: [25, 50, -10, 15, 18, 32, 27, 14]
-    //       }
-    //     ]
-    //   }
-    // }
-    // ];
-  }
+  constructor(public dashboard: DashboardService, public dataService: DataService) { }
 
   ngOnInit() {
     this.dateFrom = subDays(new Date, 30);
@@ -170,25 +48,33 @@ export class DashboardIndexComponent implements OnInit, OnDestroy {
             this.cpuPercent = event.data.load;
             this.cpuCores = event.data.cores.map(core => core.total);
 
+            const date = format(new Date(), 'HH:mm:ss');
             this.cpuChartData = {
-              title: 'CPU Usage',
-              type: 'pie',
+              title: '',
+              type: 'line',
               data: {
-                labels: ['Used', 'Free'],
+                labels: [date, date],
                 datasets: [
                   { values: [this.cpuPercent, 100 - this.cpuPercent] }
                 ],
               },
-              colors: ['#F4A7A1', '#97D0AB'],
-              barOptions: {
-                height: 10,
-                depth: 5
+              colors: ['#30D068'],
+              axisOptions: {
+                xAxisMode: 'tick',
+                xIsSeries: true
+              },
+              lineOptions: {
+                dotSize: 8,
+                regionFill: 1
+              },
+              tooltipOptions: {
+                formatTooltipY: d => d + '%'
               }
             };
             this.dashboard.updateCpuPercentage.emit(this.cpuChartData);
 
             this.cpuCoresData = {
-              title: 'CPU Cores',
+              title: '',
               type: 'bar',
               data: {
                 labels: this.cpuCores.map((_, i) => i),
@@ -203,7 +89,7 @@ export class DashboardIndexComponent implements OnInit, OnDestroy {
                   }
                 ]
               },
-              colors: ['#97D0AB', '#F4A7A1'],
+              colors: ['#30D068'],
               barOptions: {
                 spaceRatio: 0.2
               },
@@ -239,7 +125,7 @@ export class DashboardIndexComponent implements OnInit, OnDestroy {
         .map(d => format(d, 'DD.MM'));
 
       this.chartData = {
-        title: 'Builds',
+        title: '',
         type: 'line',
         data: {
           labels: dates,
@@ -248,7 +134,7 @@ export class DashboardIndexComponent implements OnInit, OnDestroy {
             { name: 'Failed Builds', values: keys.map(key => resp.data.failed[key] || 0) }
           ],
         },
-        colors: ['#97D0AB', '#F4A7A1'],
+        colors: ['#30D068', '#F44336'],
         lineOptions: {
           dotSize: 5,
           hideLine: 0,
