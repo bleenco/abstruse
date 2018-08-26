@@ -84,6 +84,7 @@
     "@types/temp": "^0.8.32",
     "@types/uuid": "^3.4.3",
     "@types/ws": "^6.0.0",
+    "angular-svg-icon": "^6.0.0",
     "ansi_up": "3.0.0",
     "badgen": "^2.4.2",
     "bookshelf": "^0.13.3",

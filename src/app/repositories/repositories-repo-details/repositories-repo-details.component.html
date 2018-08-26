@@ -2,8 +2,8 @@
   <div class="column is-12">
     <div class="box has-less-padding has-dark-border">
       <div class="columns">
-        <div class="column is-10">
-          <span class="data-item">
+        <div class="column is-9">
+          <div class="data-item">
             <i class="fab fa-github" *ngIf="repo?.repository_provider === 'github'"></i>
             <i class="fab fa-gitlab" *ngIf="repo?.repository_provider === 'gitlab'"></i>
             <i class="fab fa-bitbucket" *ngIf="repo?.repository_provider === 'bitbucket'"></i>
@@ -11,10 +11,10 @@
             <i class="fas fa-question-circle" *ngIf="!repo?.repository_provider"></i>
             <span class="full-name"><a href="repo?.html_url" target="_blank">{{ repo?.full_name }}</a></span>
             <span class="repo-description">{{ repo?.description }}</span>
-          </span>
+          </div>
         </div>
-        <div class="column is-1">
-
+        <div class="column is-2">
+          <svg-icon [src]="'/badge/' + repo?.full_name" [svgStyle]="{ 'height.px': 20 }"></svg-icon>
         </div>
         <div class="column is-1 justify-end">
           <span class="tag" *ngIf="!repo?.is_public">Private</span>

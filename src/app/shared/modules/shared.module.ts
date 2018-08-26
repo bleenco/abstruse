@@ -2,6 +2,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgDatepickerModule } from 'ng2-datepicker';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
@@ -26,7 +27,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
   imports: [
     CommonModule,
     FormsModule,
-    NgDatepickerModule
+    NgDatepickerModule,
+    AngularSvgIconModule
   ],
   declarations: [
     LoaderComponent,
@@ -44,6 +46,7 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     CommonModule,
     FormsModule,
     NgDatepickerModule,
+    AngularSvgIconModule,
     LoaderComponent,
     SelectboxComponent,
     AvatarPickerComponent,

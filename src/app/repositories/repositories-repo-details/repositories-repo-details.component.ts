@@ -28,7 +28,7 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
     this.id = this.route.snapshot.params.id;
     this.fetchRepository();
     this.buildService.resetFields();
-    // this.buildService.fetchBuilds(this.id);
+    this.buildService.fetchBuilds(this.id);
   }
 
   ngOnDestroy() {

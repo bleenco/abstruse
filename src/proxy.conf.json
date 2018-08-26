@@ -2,5 +2,9 @@
   "/avatars": {
     "target": "http://localhost:6500",
     "secure": false
+  },
+  "/badge": {
+    "target": "http://localhost:6500",
+    "secure": false
   }
 }
