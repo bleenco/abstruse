@@ -48,8 +48,6 @@ export class RepositoriesListComponent implements OnInit {
         });
       }
 
-      console.log(this.repos);
-
       this.fetching = false;
     });
   }

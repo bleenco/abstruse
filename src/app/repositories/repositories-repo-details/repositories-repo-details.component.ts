@@ -4,6 +4,7 @@ import { Repository, AccessToken } from '../shared/repository.model';
 import { ActivatedRoute } from '@angular/router';
 import { BuildService } from '../../builds/shared/build.service';
 import { User } from '../../team/shared/team.model';
+import { AuthService } from '../../shared/providers/auth.service';
 
 @Component({
   selector: 'app-repositories-repo-details',
@@ -24,16 +25,16 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
   constructor(
     public service: RepositoriesService,
     public route: ActivatedRoute,
-    public buildService: BuildService
+    public buildService: BuildService,
+    public authService: AuthService
   ) { }
 
   ngOnInit() {
-    this.tab = 'settings';
+    this.tab = 'builds';
     this.id = this.route.snapshot.params.id;
     this.fetchRepository();
-    this.fetchAccessTokens();
     this.buildService.resetFields();
-    // this.buildService.fetchBuilds(this.id);
+    this.buildService.fetchBuilds(this.id);
   }
 
   ngOnDestroy() {
@@ -46,8 +47,11 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
     if (this.tab === tab) {
       return;
     }
-
     this.tab = tab;
+
+    if (this.tab === 'settings') {
+      this.fetchAccessTokens();
+    }
   }
 
   fetchRepository(): void {

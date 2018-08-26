@@ -649,6 +649,7 @@ export class BuildService {
           pdata.dateTime || dateTime,
           buildTime,
           status,
+          Boolean(build.hasPermission),
           jobs
         );
       });

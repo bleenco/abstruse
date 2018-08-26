@@ -15,13 +15,13 @@
             <a class="header-item" [routerLink]="['/repositories']" routerLinkActive="is-active">
               Repositories
             </a>
-            <a class="header-item" [routerLink]="['/team']" routerLinkActive="is-active">
+            <a class="header-item" [routerLink]="['/team']" routerLinkActive="is-active" *ngIf="authService?.userInfo">
               Team
             </a>
-            <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active">
+            <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active" *ngIf="authService?.userInfo">
               Images
             </a>
-            <div class="header-item">
+            <div class="header-item" *ngIf="authService?.userInfo">
               <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
               <app-header-dropdown [class.is-hidden]="!dropdownOpened"></app-header-dropdown>
             </div>

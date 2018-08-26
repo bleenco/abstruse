@@ -47,11 +47,11 @@
           <i class="fas fa-info-circle"></i>
           <span>Build Details</span>
         </button>
-        <button type="button" class="menu-item" appStopPropagation (click)="restartBuild($event, build.id)">
+        <button type="button" class="menu-item" appStopPropagation (click)="restartBuild($event, build.id)" [disabled]="!build?.hasPermission">
           <i class="fas fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="menu-item" appStopPropagation [disabled]="build?.status !== 'running'" (click)="stopBuild($event, build.id)">
+        <button type="button" class="menu-item" appStopPropagation [disabled]="build?.status !== 'running' || !build?.hasPermission" (click)="stopBuild($event, build.id)">
           <i class="fas fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>

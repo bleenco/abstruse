@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 export class AuthService {
   tokenName: string;
   userInfo: any = false;
+  demo: boolean;
 
   constructor(
     public http: HttpClient,

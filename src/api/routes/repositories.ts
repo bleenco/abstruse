@@ -59,7 +59,7 @@ repositoriesRouter.get('/:id/builds', (req: express.Request, res: express.Respon
   return decodeToken(token)
     .then((data): any => {
       if (!data) {
-        return Promise.resolve(false);
+        return dbRepository.getRepositoryBuilds(Number(req.params.id), Number(limit), Number(offset), null);
       } else {
         return dbRepository.getRepositoryBuilds(Number(req.params.id), Number(limit), Number(offset), data.id);
       }

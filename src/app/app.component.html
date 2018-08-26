@@ -11,7 +11,7 @@
   </main>
 </section>
 
-<section *ngIf="statusService?.status === 'ready' && !!authService?.userInfo">
+<section *ngIf="statusService?.status === 'ready' && (!!authService?.userInfo || authService?.demo)">
   <app-header></app-header>
   <main class="main">
     <div class="container">
@@ -24,4 +24,4 @@
   </main>
 </section>
 
-<app-login *ngIf="statusService?.status === 'ready' && !authService?.userInfo"></app-login>
+<app-login *ngIf="statusService?.status === 'ready' && !authService?.userInfo && !authService?.demo"></app-login>

@@ -26,11 +26,11 @@
       <span class="time" *ngIf="job?.status === 'running'">{{ buildService.currentTime - job.start_time | toTime }}</span>
     </div>
     <div class="column is-2 is-marginless is-paddingless buttons-column justify-end">
-      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.restartJob($event, job?.id)">
+      <button class="button is-small" [disabled]="job?.processing || !buildService?.build?.hasPermission" (click)="buildService.restartJob($event, job?.id)">
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
-      <button class="button is-small" [disabled]="job?.processing" (click)="buildService.stopJob($event, job?.id)">
+      <button class="button is-small" [disabled]="job?.processing || !buildService?.build?.hasPermission" (click)="buildService.stopJob($event, job?.id)">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

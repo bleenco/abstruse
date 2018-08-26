@@ -10,11 +10,11 @@
         <span>{{ buildService?.build?.branch }}</span>
       </div>
       <div class="column is-6 justify-end">
-        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing" (click)="buildService.restartBuild($event, buildService.build.id)">
+        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing || !buildService?.build?.hasPermission" (click)="buildService.restartBuild($event, buildService.build.id)">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing || buildService?.build?.status !== 'running'"
+        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing || buildService?.build?.status !== 'running' || !buildService?.build?.hasPermission"
           (click)="buildService.stopBuild($event, buildService.build.id)">
           <i class="fa fa-hand-paper"></i>
           <span>Stop Build</span>

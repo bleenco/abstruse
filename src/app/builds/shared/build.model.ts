@@ -57,6 +57,7 @@ export class Build {
     public dateTime: string,
     public build_time: number,
     public status: BuildStatus,
+    public hasPermission: boolean,
     public jobs: BuildJob[] = []
   ) { }
 

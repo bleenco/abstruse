@@ -151,6 +151,18 @@ setupRouter.post('/done', (req: express.Request, res: express.Response) => {
     });
 });
 
+setupRouter.get('/login-required', (req: express.Request, res: express.Response) => {
+  return getConfigAsync()
+    .then(config => res.status(200).json({ data: config.requireLogin }))
+    .catch(err => {
+      const logMessage: LogMessageType = {
+        type: 'error', message: err, notify: false
+      };
+      logger.next(logMessage);
+      res.status(500).json({ data: err });
+    });
+});
+
 function isSetupDone(): Promise<boolean> {
   return new Promise((resolve, reject) => {
     let done: boolean;
