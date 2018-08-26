@@ -17,6 +17,7 @@ import { teamRouter } from './routes/team';
 import { statsRouter } from './routes/stats';
 import { repositoriesRouter } from './routes/repositories';
 import { badgeRouter } from './routes/badge';
+import { accessTokenRouter } from './routes/access-token';
 
 const SQLiteStore = connectsqlite3(session);
 
@@ -57,10 +58,11 @@ export class ExpressServer implements IExpressServer {
       app.use('/api/team', teamRouter);
       app.use('/api/stats', statsRouter);
       app.use('/api/repositories', repositoriesRouter);
+      app.use('/api/access-token', accessTokenRouter);
       app.use('/badge', badgeRouter);
 
       app.use('/api/user', routes.userRoutes());
-      app.use('/api/tokens', routes.tokenRoutes());
+      // app.use('/api/tokens', routes.tokenRoutes());
       app.use('/api/repositories', routes.repositoryRoutes());
       // app.use('/api/builds', routes.buildRoutes());
       app.use('/api/jobs', routes.jobRoutes());

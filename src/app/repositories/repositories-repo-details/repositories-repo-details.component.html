@@ -51,6 +51,32 @@
   </div>
 
   <div *ngIf="tab === 'settings'">
-
+    <div class="columns is-multiline" *ngIf="!fetchingRepository && !fetchingAccessTokens">
+      <div class="column is-6">
+        <h2 class="mb10">Authentication</h2>
+        <div class="message">
+          <p>
+            <i class="fas fa-info-circle"></i>
+            <span>
+              It is important to set access token or authentication so <code>abstruse</code> can:
+              <ul>
+                <li>access and clone repository</li>
+                <li>send build status to repository provider</li>
+              </ul>
+            </span>
+          </p>
+        </div>
+        <div class="field mtb20">
+          <!-- <label class="label">Access Token</label> -->
+          <app-selectbox [values]="tokenOptions" [(ngModel)]="repo.access_tokens_id" name="access_token"></app-selectbox>
+          <div class="input-info">
+            <span>If you cannot find access token that is suitable for this repository then create new one.</span>
+          </div>
+        </div>
+        <div class="justify-end">
+          <button type="button" class="button">Save Access Token</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

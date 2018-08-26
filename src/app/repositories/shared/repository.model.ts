@@ -1,3 +1,5 @@
+import { User } from '../../team/shared/team.model';
+
 export class Repository {
   constructor(
     public id: number,
@@ -12,5 +14,13 @@ export class Repository {
     public is_fork: boolean,
     public is_public: boolean,
     public access_tokens_id: number,
+  ) { }
+}
+
+export class AccessToken {
+  constructor(
+    public id: number,
+    public description: string,
+    public user: User
   ) { }
 }

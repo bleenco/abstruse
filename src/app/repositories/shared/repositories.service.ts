@@ -42,4 +42,12 @@ export class RepositoriesService {
         catchError(handleError<JSONResponse>('repositories/' + String(id) + '/builds'))
       );
   }
+
+  fetchAccessTokens(): Observable<JSONResponse> {
+    const url = getAPIURL() + '/access-token';
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('access-token'))
+      );
+  }
 }

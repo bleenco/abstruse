@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RepositoriesService } from '../shared/repositories.service';
-import { Repository } from '../shared/repository.model';
+import { Repository, AccessToken } from '../shared/repository.model';
 import { ActivatedRoute } from '@angular/router';
 import { BuildService } from '../../builds/shared/build.service';
+import { User } from '../../team/shared/team.model';
 
 @Component({
   selector: 'app-repositories-repo-details',
@@ -16,6 +17,9 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
   fetchingRepository: boolean;
   limit: number;
   offset: number;
+  accessTokens: AccessToken[] = [];
+  tokenOptions: { value: string | number, placeholder: string }[] = [];
+  fetchingAccessTokens: boolean;
 
   constructor(
     public service: RepositoriesService,
@@ -24,11 +28,12 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.tab = 'builds';
+    this.tab = 'settings';
     this.id = this.route.snapshot.params.id;
     this.fetchRepository();
+    this.fetchAccessTokens();
     this.buildService.resetFields();
-    this.buildService.fetchBuilds(this.id);
+    // this.buildService.fetchBuilds(this.id);
   }
 
   ngOnDestroy() {
@@ -76,6 +81,24 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
       }
 
       this.fetchingRepository = false;
+    });
+  }
+
+  fetchAccessTokens(): void {
+    this.fetchingAccessTokens = true;
+    this.service.fetchAccessTokens().subscribe(resp => {
+      if (resp && resp.data) {
+        this.accessTokens = resp.data.map(token => {
+          const user = new User(token.user.id, token.user.email, token.user.fullname, token.user.avatar, Boolean(token.user.admin));
+          return new AccessToken(token.id, token.description, user);
+        });
+
+        this.tokenOptions = this.accessTokens.map(token => {
+          return { value: token.id, placeholder: token.user.fullname + '`s ' + token.description };
+        });
+
+        this.fetchingAccessTokens = false;
+      }
     });
   }
 }
