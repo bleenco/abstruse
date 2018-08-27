@@ -1,4 +1,6 @@
-<section *ngIf="statusService?.status === 'setup' && !authService?.userInfo">
+<router-outlet *ngIf="!(authService?.isLoggedIn | async) && statusService?.status === 'ready' && !authService?.demo"></router-outlet>
+
+<section *ngIf="statusService?.status === 'setup' && !(authService?.isLoggedIn | async)">
   <app-header-setup></app-header-setup>
   <main class="main">
     <div class="container">
@@ -11,7 +13,7 @@
   </main>
 </section>
 
-<section *ngIf="statusService?.status === 'ready' && (!!authService?.userInfo || authService?.demo)">
+<section *ngIf="authService.isLoggedIn | async">
   <app-header></app-header>
   <main class="main">
     <div class="container">
@@ -23,5 +25,3 @@
     </div>
   </main>
 </section>
-
-<app-login *ngIf="statusService?.status === 'ready' && !authService?.userInfo && !authService?.demo"></app-login>

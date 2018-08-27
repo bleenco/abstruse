@@ -6,7 +6,7 @@ import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { catchError } from 'rxjs/operators';
 import * as jwt from 'jwt-decode';
 import { Login } from '../../login/login.model';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,18 +15,24 @@ export class AuthService {
   tokenName: string;
   userInfo: any = false;
   demo: boolean;
+  authenticated$: BehaviorSubject<boolean>;
 
   constructor(
     public http: HttpClient,
     public router: Router
   ) {
     this.tokenName = 'abstruse-auth-token';
+    this.authenticated$ = new BehaviorSubject<boolean>(false);
+  }
+
+  get isLoggedIn() {
+    return this.authenticated$.asObservable();
   }
 
   login(token: string): void {
     localStorage.setItem(this.tokenName, token);
-    this.checkAuthenticated();
     if (this.hasToken()) {
+      this.checkAuthenticated();
       this.router.navigate(['/builds']);
     }
   }
@@ -48,8 +54,10 @@ export class AuthService {
   checkAuthenticated(): void {
     if (this.hasToken()) {
       this.userInfo = this.decodeToken();
+      this.authenticated$.next(true);
     } else {
       this.userInfo = false;
+      this.authenticated$.next(false);
     }
   }
 

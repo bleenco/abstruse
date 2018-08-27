@@ -1,4 +1,4 @@
-<div class="hero is-fullheight">
+<div class="hero is-fullheight" *ngIf="!(authService?.isLoggedIn | async)">
   <div class="hero-body">
     <div class="container">
       <div class="columns">

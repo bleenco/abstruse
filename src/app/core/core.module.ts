@@ -12,6 +12,7 @@ import { HeaderDropdownComponent } from './header-dropdown/header-dropdown.compo
 
 import { SocketService } from '../shared/providers/socket.service';
 import { DataService } from '../shared/providers/data.service';
+import { AuthService } from '../shared/providers/auth.service';
 
 @NgModule({
   imports: [
@@ -29,7 +30,7 @@ import { DataService } from '../shared/providers/data.service';
     HeaderComponent,
     HeaderSetupComponent
   ],
-  providers: [SocketService, DataService]
+  providers: [SocketService, DataService, AuthService]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

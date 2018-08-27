@@ -27,7 +27,7 @@
   <div class="column is-12 ptb0 mb15">
     <div class="tabs justify-end">
       <span class="tab" [class.is-active]="tab === 'builds'" (click)="switchTab('builds')">Builds</span>
-      <span class="tab" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')" *ngIf="authService?.userInfo">Settings</span>
+      <span class="tab" [class.is-active]="tab === 'settings'" (click)="switchTab('settings')" *ngIf="authService?.isLoggedIn | async">Settings</span>
     </div>
   </div>
 </div>

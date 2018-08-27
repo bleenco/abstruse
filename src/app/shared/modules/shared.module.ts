@@ -6,7 +6,6 @@ import { AngularSvgIconModule } from 'angular-svg-icon';
 
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
-import { AuthService } from '../providers/auth.service';
 import { TimeService } from '../providers/time.service';
 import { TokenInterceptorProvider } from '../interceptors/token.interceptor';
 
@@ -67,7 +66,6 @@ export class SharedModule {
         TokenInterceptorProvider,
         AuthGuardService,
         StatusService,
-        AuthService,
         TimeService
       ]
     };
