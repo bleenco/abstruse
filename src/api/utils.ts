@@ -88,7 +88,7 @@ export function generateBadgeHtml(status: string): string {
 
 export function getBitBucketAccessToken(clientCredentials: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    let options = {
+    const options = {
       url: `https://${clientCredentials}@bitbucket.org/site/oauth2/access_token`,
       method: 'POST',
       formData: { grant_type: 'client_credentials' }
@@ -112,7 +112,7 @@ export function getBitBucketAccessToken(clientCredentials: string): Promise<any>
 }
 
 export function prepareCommands(proc: JobProcess, allowed: CommandType[]): any {
-  let commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
+  const commands = proc.commands.filter(command => allowed.findIndex(c => c === command.type) !== -1);
   return commands.sort((a, b) => {
     if (CommandTypePriority[a.type] > CommandTypePriority[b.type]) {
       return 1;

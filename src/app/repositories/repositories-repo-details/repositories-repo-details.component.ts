@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RepositoriesService } from '../shared/repositories.service';
-import { Repository, AccessToken } from '../shared/repository.model';
+import { Repository, AccessToken, EnvForm } from '../shared/repository.model';
 import { ActivatedRoute } from '@angular/router';
 import { BuildService } from '../../builds/shared/build.service';
 import { User } from '../../team/shared/team.model';
@@ -21,6 +21,8 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
   accessTokens: AccessToken[] = [];
   tokenOptions: { value: string | number, placeholder: string }[] = [];
   fetchingAccessTokens: boolean;
+  envVariablesForm: EnvForm = new EnvForm('', '', false);
+  encryptedOptions = [{ value: true, placeholder: 'Encrypted' }, { value: false, placeholder: 'Plain' }];
 
   constructor(
     public service: RepositoriesService,
@@ -30,11 +32,11 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.tab = 'builds';
+    this.tab = 'settings';
     this.id = this.route.snapshot.params.id;
     this.fetchRepository();
     this.buildService.resetFields();
-    this.buildService.fetchBuilds(this.id);
+    // this.buildService.fetchBuilds(this.id);
   }
 
   ngOnDestroy() {
@@ -50,6 +52,7 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
     this.tab = tab;
 
     if (this.tab === 'settings') {
+      this.envVariablesForm = new EnvForm('', '', false);
       this.fetchAccessTokens();
     }
   }
@@ -103,6 +106,12 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
 
         this.fetchingAccessTokens = false;
       }
+    });
+  }
+
+  checkRepositoryConfiguration(): void {
+    this.service.checkRepositoryConfiguration(this.id).subscribe(resp => {
+      console.log(resp);
     });
   }
 }

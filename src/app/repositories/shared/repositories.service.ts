@@ -50,4 +50,12 @@ export class RepositoriesService {
         catchError(handleError<JSONResponse>('access-token'))
       );
   }
+
+  checkRepositoryConfiguration(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + '/repositories/' + String(id) + '/config/check/';
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        catchError(handleError<JSONResponse>('repositories/' + String(id) + '/builds'))
+      );
+  }
 }

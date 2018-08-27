@@ -24,3 +24,11 @@ export class AccessToken {
     public user: User
   ) { }
 }
+
+export class EnvForm {
+  constructor(
+    public name: string,
+    public value: string,
+    public encrypted: boolean
+  ) { }
+}

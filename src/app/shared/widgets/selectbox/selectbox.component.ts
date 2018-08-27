@@ -26,16 +26,16 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
   }
 
   set value(val: number | string | boolean) {
-    this.innerValue = val;
     if (!this.values) {
       throw Error('no values initialized');
     }
 
     const index = this.values.findIndex(v => v.value === val);
     if (index === -1) {
-      throw Error('value does not exists');
+      return;
     }
 
+    this.innerValue = val;
     this.placeholder = this.values[index].placeholder;
     this.onChangeCallback(this.innerValue);
   }
@@ -59,7 +59,7 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
 
     const index = this.values.findIndex(v => v.value === val);
     if (index === -1) {
-      throw Error('value does not exists');
+      return;
     }
 
     this.placeholder = this.values[index].placeholder;

@@ -18,7 +18,7 @@
         </div>
         <div class="column is-1 justify-end">
           <span class="tag" *ngIf="!repo?.is_public">Private</span>
-          <span class="tag is-public" *ngIf="repo?.is_public">Public</span>
+          <span class="tag" *ngIf="repo?.is_public">Public</span>
         </div>
       </div>
     </div>
@@ -53,28 +53,83 @@
   <div *ngIf="tab === 'settings'">
     <div class="columns is-multiline" *ngIf="!fetchingRepository && !fetchingAccessTokens">
       <div class="column is-6">
-        <h2 class="mb10">Authentication</h2>
-        <div class="message">
-          <p>
-            <i class="fas fa-info-circle"></i>
-            <span>
-              It is important to set access token or authentication so <code>abstruse</code> can:
-              <ul>
-                <li>access and clone repository</li>
-                <li>send build status to repository provider</li>
-              </ul>
-            </span>
-          </p>
-        </div>
-        <div class="field mtb20">
-          <!-- <label class="label">Access Token</label> -->
-          <app-selectbox [values]="tokenOptions" [(ngModel)]="repo.access_tokens_id" name="access_token"></app-selectbox>
-          <div class="input-info">
-            <span>If you cannot find access token that is suitable for this repository then create new one.</span>
+        <div class="box has-less-padding">
+          <h4 class="mb10">Authentication</h4>
+          <div class="message" [class.is-red]="!repo?.access_tokens_id">
+            <p>
+              <i class="fas fa-info-circle"></i>
+              <span>
+                It is important to set access token or authentication so <code>abstruse</code> can:
+                <ul>
+                  <li>access and clone repository</li>
+                  <li>send build status to repository provider</li>
+                </ul>
+              </span>
+            </p>
+          </div>
+          <div class="field mtb20">
+            <label class="label">Access Token</label>
+            <app-selectbox [values]="tokenOptions" [(ngModel)]="repo.access_tokens_id" name="access_token"></app-selectbox>
+            <div class="input-info">
+              <span>If you cannot find access token that is suitable for this repository then create new one.</span>
+            </div>
+          </div>
+          <div class="justify-end">
+            <button type="button" class="button">Save Access Token</button>
           </div>
         </div>
-        <div class="justify-end">
-          <button type="button" class="button">Save Access Token</button>
+      </div>
+
+      <div class="column is-6">
+        <div class="box has-less-padding">
+          <h4 class="mb10">Environment Variables</h4>
+          <div class="message">
+            <p>
+              <i class="fas fa-info-circle"></i>
+              <span>Environment variables are the way to customize the build process. They can be accessed from any stage
+                of the build.</span>
+            </p>
+          </div>
+          <form #envForm="ngForm">
+            <div class="field">
+              <label class="label">Name</label>
+              <input type="text" name="name" class="input" [(ngModel)]="envVariablesForm.name" placeholder="VARIABLE_NAME" required>
+              <div class="input-info">
+                <span>Name of the variable, please use uppercase letters. Example: <code>DEPLOY_KEY</code></span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Value</label>
+              <input type="text" class="input" name="value" [(ngModel)]="envVariablesForm.value" required>
+              <div class="input-info">
+                <span>Variable value.</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Encrypted Variable</label>
+              <app-selectbox [values]="encryptedOptions" [(ngModel)]="envVariablesForm.encrypted" required name="encrypted"></app-selectbox>
+              <div class="input-info">
+                <span>Make sure you encrypt variables if includes sensitive data.</span>
+              </div>
+            </div>
+            <div class="justify-end">
+              <button type="button" class="button">Add</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="column is-6">
+        <div class="box has-less-padding">
+          <h4 class="mb10">Check Configuration</h4>
+          <div class="message">
+            <p>
+              <i class="fas fa-info-circle"></i>
+              <span>Here you can make test if settings provided works in the wild. Tests includes access to repository and
+                checking presence of <code>.abstruse.yml</code> config file inside repository.</span>
+            </p>
+          </div>
+          <button type="button" class="button is-fullwidth mtb10" (click)="checkRepositoryConfiguration()">Check Configuration</button>
         </div>
       </div>
     </div>
