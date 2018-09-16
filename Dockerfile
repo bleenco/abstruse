@@ -1,10 +1,15 @@
 # Stage 1 image
+
+# FROM arm64v8/node:alpine as base # aarch64
 FROM mhart/alpine-node:10 as base
 
 ENV DOCKER_VERSION=18.03.1-ce
 
+#ENV ARCH=aarch64 # aarch64
+ENV ARCH=x86_64
+
 RUN apk --no-cache add openssl \
-    && wget https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
+    && wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
     && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \
     && ln -s /tmp/docker/docker /usr/bin/docker && chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz \
     && apk del openssl
