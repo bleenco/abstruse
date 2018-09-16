@@ -3,6 +3,7 @@
 ### Table of Contents
 
 * [Docker Image](#docker-image)
+* [Notice on non amd64](#non-amd64)
 * [Install From Npm](#install-from-npm)
 * [Run From Source](#run-from-source)
 * [Run Test Builds](#run-test-builds)
@@ -38,6 +39,12 @@ this while using `abstruse` docker image.
 
 Run your favorite `Chrome` browser and navigate to `http://localhost:6500`. You should see `abstruse` setup page which will guide you
 throught the initial setup.
+
+### Non amd64
+
+Abstruse is intended to work on amd64 architectures, however, if you're willing to install abstruse on a rasp, odroid or any other kind of computer you have to tweak Dockerfile to target other architectures such as arm64 (aarch64) and so forth.
+
+You can check this notes as a comments on https://github.com/bleenco/abstruse/blob/master/Dockerfile
 
 ### Install From npm
 
