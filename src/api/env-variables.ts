@@ -48,8 +48,8 @@ export function generate(data: any): EnvVariables {
     request.data.pullrequest.source.branch.name ||
     request.data.object_attributes && request.data.object_attributes.source_branch ||
     request.data.pull_request && request.data.pull_request.head_branch : '';
-  let tag = request.ref && request.ref.startsWith('refs/tags/') ?
-    request.ref.replace('refs/tags/', '') : null;
+  let tag = request.data.ref && request.data.ref.startsWith('refs/tags/') ?
+    request.data.ref.replace('refs/tags/', '') : null;
 
   set(envs, 'ABSTRUSE_BRANCH', request.branch);
   set(envs, 'ABSTRUSE_BUILD_ID', data.build_id);
