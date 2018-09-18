@@ -1,3 +1,15 @@
+<a name="1.6.5"></a>
+## [1.6.5](https://github.com/bleenco/abstruse/compare/v1.6.4...v1.6.5) (2018-09-18)
+
+
+### Bug Fixes
+
+* **api:** get git tag information from correct json location ([81e80ac](https://github.com/bleenco/abstruse/commit/81e80ac))
+* **api:** write JSON files async with indentation ([872d82f](https://github.com/bleenco/abstruse/commit/872d82f))
+* **streams:** custom demux stream func ([12c0956](https://github.com/bleenco/abstruse/commit/12c0956))
+
+
+
 <a name="1.6.3"></a>
 ## [1.6.3](https://github.com/bleenco/abstruse/compare/v1.6.2...v1.6.3) (2018-06-09)
 
