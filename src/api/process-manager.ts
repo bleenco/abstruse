@@ -137,6 +137,10 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
 
         envVars.set(envs, 'ABSTRUSE_SECURE_ENV_VARS', secureVarirables);
 
+        if (process.env.DOCKER_HOST) {
+          envVars.set(envs, 'DOCKER_HOST', process.env.DOCKER_HOST);
+        }
+        
         let jobTimeout = config.jobTimeout ? config.jobTimeout * 1000 : 3600000;
         let idleTimeout = config.idleTimeout ? config.idleTimeout * 1000 : 3600000;
 

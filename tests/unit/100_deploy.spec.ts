@@ -40,7 +40,7 @@ describe('Deploying with AWS Services', () => {
       .then(() => sendRequest({}, `api/images/build-base`))
       .then(status => expect(status['data']).to.equal(true))
       .then(() => {
-        return createContainer('unit_test_abstruse_container', 'abstruse_builder', []).toPromise();
+        return createContainer('unit_test_abstruse_container', 'abstruse_builder', { DOCKER_HOST: { value: process.env.DOCKER_HOST, secure: false } }).toPromise();
       });
   });
 

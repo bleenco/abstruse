@@ -11,8 +11,32 @@ import { platform } from 'os';
 import * as commandExists from 'command-exists';
 import { demuxStream } from './utils';
 
-export const docker = new dockerode();
-const binds = platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'];
+const DOCKER_SOCKET = '/var/run/docker.sock';
+
+export function getDockerOptions(): dockerode.DockerOptions {
+  const dockerOptions: dockerode.DockerOptions = {};
+
+  if (process.env.DOCKER_HOST) {
+    const { hostname, port } = new URL(process.env.DOCKER_HOST);
+
+    if (hostname) {
+      dockerOptions.host = hostname;
+    }
+    if (port) {
+      dockerOptions.port = port;
+    }
+  }
+
+  if (fs.existsSync(DOCKER_SOCKET)) {
+    dockerOptions.socketPath = DOCKER_SOCKET;
+  }
+
+  return dockerOptions;
+}
+
+export const docker = new dockerode(getDockerOptions());
+
+const binds = fs.existsSync(DOCKER_SOCKET) ? [`${DOCKER_SOCKET}:${DOCKER_SOCKET}`] : [];
 
 export function createContainer(
   name: string,
@@ -271,9 +295,13 @@ export function imageExists(name: string): Observable<boolean> {
 
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    fs.exists('/var/run/docker.sock')
-      .then(isRunning => {
-        observer.next(isRunning);
+    docker.ping()
+      .then(() => {
+        observer.next(true);
+        observer.complete();
+      })
+      .catch(() => {
+        observer.next(false);
         observer.complete();
       });
   });
