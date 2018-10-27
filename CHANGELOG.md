@@ -1,3 +1,13 @@
+<a name="1.6.6"></a>
+## [1.6.6](https://github.com/bleenco/abstruse/compare/v1.6.5...v1.6.6) (2018-10-27)
+
+
+### Bug Fixes
+
+* **builds:** correctly parse branch names with / included (closes [#429](https://github.com/bleenco/abstruse/issues/429)) ([e853c96](https://github.com/bleenco/abstruse/commit/e853c96))
+
+
+
 <a name="1.6.5"></a>
 ## [1.6.5](https://github.com/bleenco/abstruse/compare/v1.6.4...v1.6.5) (2018-09-18)
 
