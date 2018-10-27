@@ -14,7 +14,6 @@ import {
   synchronizeGogsPullRequest
 } from './db/repository';
 import { startBuild } from './process-manager';
-import { writeJsonFile } from './fs';
 
 export let webhooks = express.Router();
 

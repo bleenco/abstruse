@@ -577,6 +577,7 @@ function checkBranches(branch: string, branches: { test: string[], ignore: strin
 function spawnGit(args: string[]): Promise<void> {
   return new Promise((resolve, reject) => {
     let git = spawn('git', args, { detached: true });
+    let err = '';
 
     git.stdout.on('data', data => {
       data = data.toString();
@@ -585,11 +586,13 @@ function spawnGit(args: string[]): Promise<void> {
       }
     });
 
+    git.stderr.on('data', data => err += data.toString());
+
     git.on('close', code => {
       if (code === 0) {
         resolve();
       } else {
-        reject(code);
+        reject(code + ': ' + err);
       }
     });
   });

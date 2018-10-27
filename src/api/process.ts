@@ -76,7 +76,7 @@ export function startBuildProcess(
     let restoreCache: Observable<any> = empty();
     let saveCache: Observable<any> = empty();
     if (proc.repo_name && proc.branch && proc.cache) {
-      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch}.tgz`;
+      let cacheFile = `cache_${proc.repo_name.replace('/', '-')}_${proc.branch.replace('/', '-')}.tgz`;
       let cacheHostPath = getFilePath(`cache/${cacheFile}`);
       let cacheContainerPath = `/home/abstruse/${cacheFile}`;
       let copyRestoreCmd = [
