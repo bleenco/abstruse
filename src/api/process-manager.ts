@@ -431,7 +431,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
         } else {
           sha = data.data.after || data.data.sha;
           if (data.data && data.data.ref) {
-            branch = data.data.ref.split('/').pop();
+            branch = data.data.ref.replace('refs/heads/', '');
           }
         }
       } else if (isBitbucket) {
