@@ -40,7 +40,7 @@ export interface IOutput {
 export interface Client {
   sessionID: string;
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
-  socket: uws.Socket;
+  socket: uws.WebSocket;
   send: Function;
   subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
 }
@@ -72,7 +72,7 @@ export class SocketServer {
       server = http.createServer(application);
     }
 
-    let wss: uws.Server = new uws.Server({
+    let wss: uws.WebSocketServer = new uws.WebSocketServer({
       verifyClient: (info: any, done) => {
         let ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
         let query = querystring.parse(info.req.url.substring(2));
@@ -145,7 +145,7 @@ export class SocketServer {
     this.clients.push(client);
   }
 
-  private removeClient(socket: uws.Socket): void {
+  private removeClient(socket: uws.WebSocket): void {
     let index = this.clients.findIndex(c => c.socket === socket);
     let client = this.clients[index];
 
