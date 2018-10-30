@@ -18,15 +18,15 @@ int main(int argc, char *argv[]) {
     perror("fork");
   } else if (pid == 0) { // child
     char *args[] = { NULL };
-    dup2(fd[0], STDOUT_FILENO);
+    dup2(fd[0], STDIN_FILENO);
     close(fd[0]);
 
-    dup2(fd[1], STDIN_FILENO);
+    dup2(fd[1], STDOUT_FILENO);
     close(fd[1]);
 
     execvp("/bin/bash", args);
   } else {
-    dup2(fd[0], STDOUT_FILENO);
+    dup2(fd[0], STDIN_FILENO);
     close(fd[0]);
 
     const char *initsh = "/home/abstruse/init.sh";
