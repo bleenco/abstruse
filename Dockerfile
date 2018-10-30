@@ -1,7 +1,7 @@
 # Stage 1 image
 
 # FROM arm64v8/node:alpine as base # aarch64
-FROM mhart/alpine-node:10 as base
+FROM mhart/alpine-node:11 as base
 
 ENV DOCKER_VERSION=18.03.1-ce
 
