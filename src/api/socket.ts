@@ -1,4 +1,4 @@
-import * as uws from 'uws';
+import * as uws from '@clusterws/uws';
 import * as http from 'http';
 import * as https from 'https';
 import * as uuid from 'uuid';

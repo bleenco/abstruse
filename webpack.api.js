@@ -48,7 +48,7 @@ module.exports = {
     sqlite3: 'commonjs sqlite3',
     dockerode: 'commonjs dockerode',
     'rsa-compat-ssl': 'commonjs rsa-compat-ssl',
-    'uws': 'commonjs uws',
+    '@clusterws/uws': 'commonjs @clusterws/uws',
     bcrypt: 'commonjs bcrypt'
   }
 };
