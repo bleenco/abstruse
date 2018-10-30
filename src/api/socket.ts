@@ -316,8 +316,8 @@ export class SocketServer {
         break;
 
       case 'subscribeToStats':
-        client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
-          .subscribe(e => client.send(e));
+      client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
+        .subscribe(e => client.send(e));
         break;
 
       case 'unsubscribeFromStats':
