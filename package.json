@@ -63,7 +63,7 @@
     "rsa-compat-ssl": "^1.0.0",
     "rxjs": "^6.3.3",
     "sqlite3": "^4.0.3",
-    "uws": "10.148.0",
+    "clusterws-uws": "0.4.6",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

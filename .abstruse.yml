@@ -1,11 +1,11 @@
 image: abstruse
 
 matrix:
-  - env: SCRIPT=lint NODE_VERSION=11
-  - env: SCRIPT=test NODE_VERSION=11
-  - env: SCRIPT=test:e2e NODE_VERSION=11
-  - env: SCRIPT=test:protractor NODE_VERSION=11
-  - env: SCRIPT=test:karma NODE_VERSION=11
+  - env: SCRIPT=lint NODE_VERSION=10
+  - env: SCRIPT=test NODE_VERSION=10
+  - env: SCRIPT=test:e2e NODE_VERSION=10
+  - env: SCRIPT=test:protractor NODE_VERSION=10
+  - env: SCRIPT=test:karma NODE_VERSION=10
 
 before_install:
   - nvm install $NODE_VERSION
