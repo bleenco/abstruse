@@ -2,7 +2,6 @@ import { spawn } from 'child_process';
 import { readdir, readFile } from 'fs';
 import * as yaml from 'js-yaml';
 import * as temp from 'temp';
-import { getHttpJsonResponse } from './utils';
 
 export enum CommandType {
   git = 'git',
@@ -425,7 +424,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   let cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
-  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
+  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} --single-branch --depth 1 .`;
 
   // 2. fetch & checkout
   let fetch = null;
