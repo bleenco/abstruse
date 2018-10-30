@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
 
     execvp("/bin/bash", args);
   } else {
+    dup2(fd[0], STDOUT_FILENO);
     close(fd[0]);
 
     const char *initsh = "/home/abstruse/init.sh";
