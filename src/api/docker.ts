@@ -1,14 +1,15 @@
-import { spawn } from 'child_process';
-import { Observable, Observer } from 'rxjs';
-import * as fs from './fs';
-import * as dockerode from 'dockerode';
-import { Writable } from 'stream';
-import { CommandType } from './config';
-import { ProcessOutput } from './process';
-import * as envVars from './env-variables';
 import * as style from 'ansi-styles';
-import { platform } from 'os';
+import { spawn } from 'child_process';
 import * as commandExists from 'command-exists';
+import * as dockerode from 'dockerode';
+import { platform } from 'os';
+import { Observable, Observer } from 'rxjs';
+import { Writable } from 'stream';
+
+import { CommandType } from './config';
+import * as envVars from './env-variables';
+import * as fs from './fs';
+import { ProcessOutput } from './process';
 import { demuxStream } from './utils';
 
 export const docker = new dockerode();
@@ -93,7 +94,7 @@ export function dockerExec(
 
     let container = docker.getContainer(id);
     let execOptions = {
-      Cmd: ['/usr/bin/abstruse-pty', cmd.command],
+      Cmd: ['zsh', ['-c', ...cmd.command]],
       Env: envVars.serialize(env),
       AttachStdout: true,
       AttachStderr: true,
