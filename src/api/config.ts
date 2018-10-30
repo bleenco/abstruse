@@ -425,7 +425,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   }
 
   let cloneBranch = repo.type === 'bitbucket' ? 'master' : repo.branch;
-  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} .`;
+  let clone = `git clone -q ${repo.clone_url} -b ${cloneBranch} --single-branch --depth 1 .`;
 
   // 2. fetch & checkout
   let fetch = null;

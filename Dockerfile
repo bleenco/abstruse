@@ -21,7 +21,7 @@ FROM base as build
 WORKDIR /app
 
 COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json /app/
-COPY ./src /app/src
+COPY src /app/src
 
 RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sqlite git \
     && npm set progress=false && npm config set depth 0 \
@@ -53,14 +53,14 @@ WORKDIR /app
 
 RUN apk --no-cache add tini sqlite git wget
 
-COPY --from=base /usr/bin/node /usr/bin/
+COPY --from=base /usr/bin/node /usr/bin
 COPY --from=base /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
 COPY --from=base /tmp/docker/docker /usr/bin/docker
 
 COPY --from=build /app/package.json /app/
-COPY --from=build /app/prod_node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/src/files ./src/files
+COPY --from=build /app/prod_node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/src/files /app/src/files
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
     CMD wget -q -O- http://localhost:6500/status || exit 1
