@@ -53,6 +53,7 @@ WORKDIR /app
 
 RUN apk --no-cache add tini sqlite git wget
 
+COPY --from=base /usr/bin/node /usr/bin
 COPY --from=base /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
 COPY --from=base /tmp/docker/docker /usr/bin/docker
 

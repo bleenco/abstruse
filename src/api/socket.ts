@@ -1,4 +1,4 @@
-import * as uws from '@clusterws/uws';
+import * as uws from 'uws';
 import * as http from 'http';
 import * as https from 'https';
 import * as uuid from 'uuid';
@@ -40,7 +40,7 @@ export interface IOutput {
 export interface Client {
   sessionID: string;
   session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
-  socket: uws.WebSocket;
+  socket: uws.Socket;
   send: Function;
   subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
 }
@@ -72,7 +72,7 @@ export class SocketServer {
       server = http.createServer(application);
     }
 
-    let wss: uws.WebSocketServer = new uws.WebSocketServer({
+    let wss: uws.Server = new uws.Server({
       verifyClient: (info: any, done) => {
         let ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
         let query = querystring.parse(info.req.url.substring(2));
@@ -145,7 +145,7 @@ export class SocketServer {
     this.clients.push(client);
   }
 
-  private removeClient(socket: uws.WebSocket): void {
+  private removeClient(socket: uws.Socket): void {
     let index = this.clients.findIndex(c => c.socket === socket);
     let client = this.clients[index];
 
@@ -316,8 +316,8 @@ export class SocketServer {
         break;
 
       case 'subscribeToStats':
-      client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
-        .subscribe(e => client.send(e));
+        client.subscriptions.stats = merge(...[memory(), cpu(), getContainersStats()])
+          .subscribe(e => client.send(e));
         break;
 
       case 'unsubscribeFromStats':
