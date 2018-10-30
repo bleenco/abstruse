@@ -32,7 +32,7 @@ RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sq
 
 
 # Stage 3 image
-FROM mhart/alpine-node:10
+FROM alpine:3.7
 
 ARG VCS_REF=n/a
 ARG VERSION=dev
