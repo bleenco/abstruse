@@ -18,9 +18,12 @@ int main(int argc, char *argv[]) {
     perror("fork");
   } else if (pid == 0) { // child
     char *args[] = { NULL };
+    dup2(fd[0], STDOUT_FILENO);
+    close(fd[0]);
+
+    dup2(fd[1], STDIN_FILENO);
     close(fd[1]);
-    close(STDIN_FILENO);
-    dup(fd[0]);
+
     execvp("/bin/bash", args);
   } else {
     close(fd[0]);
@@ -64,4 +67,3 @@ int main(int argc, char *argv[]) {
     }
   }
 }
-
