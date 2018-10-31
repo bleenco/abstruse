@@ -1,4 +1,4 @@
-image: abstruse
+image: stemn/abstruse
 
 matrix:
   - env: SCRIPT=lint NODE_VERSION=10

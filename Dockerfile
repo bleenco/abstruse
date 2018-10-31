@@ -73,6 +73,14 @@ COPY src/index.html \
 # Build frontend
 RUN npm run build:app
 
+# Copy backend dependencies
+COPY src/files/docker-essential/fluxbox /etc/init.d/
+COPY src/files/docker-essential/x11vnc /etc/init.d/
+COPY src/files/docker-essential/xvfb /etc/init.d/
+COPY src/files/docker-essential/entry.sh /
+COPY src/files/docker-essential/abstruse-pty-amd64 /usr/bin/abstruse-pty
+RUN chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*
+
 # Copy backend
 COPY webpack.api.js /app
 COPY src/api /app/src/api
