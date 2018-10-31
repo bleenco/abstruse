@@ -18,16 +18,7 @@ int main(int argc, char *argv[]) {
     perror("fork");
   } else if (pid == 0) { // child
     char *args[] = { NULL };
-
-    int saved_stdin;
-    saved_stdin = dup(STDIN_FILENO);
-
-    dup2(fd[0], STDIN_FILENO);
-    dup2(fd[1], STDOUT_FILENO);
-
     execvp("/bin/bash", args);
-
-    close(saved_stdin);
   } else {
     dup2(fd[0], STDIN_FILENO);
 
