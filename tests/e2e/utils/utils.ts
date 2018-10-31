@@ -116,23 +116,23 @@ export function sendGogsRequest(data: any, headers: any): Promise<any> {
   });
 }
 
-export function stopBuild(buildId: string): Promise<any[]> {
-  return docker.listContainers({ all: true })
-    .then(containers => {
-      containers = containers.filter(c => c.Names[0].startsWith(`/abstruse_${buildId}_`));
-      return Promise.all(containers.map(containerInfo => {
-        if (containerInfo.State === 'exited') {
-          return docker.getContainer(containerInfo.Id).remove();
-        } else if (containerInfo.State === 'running') {
-          const container = docker.getContainer(containerInfo.Id);
+export async function stopBuild(buildId: string): Promise<any[]> {
+  const containers = await docker.listContainers({ all: true });
+  const abstruseContainers = containers.filter(c => c.Names[0].startsWith(`/abstruse_${buildId}_`));
 
-          return container.stop()
-            .then(c => c.remove());
-        } else {
-          return Promise.resolve();
-        }
-      }));
-    });
+  return Promise.all(abstruseContainers.map(async ({ State, Id }) => {
+
+    if (State === 'exited') {
+
+      return docker.getContainer(Id).remove();
+
+    } else if (State === 'running') {
+      const container = docker.getContainer(Id);
+
+      const stoppedContainer = await container.stop();
+      stoppedContainer.remove();
+    }
+  }));
 }
 
 export function delay(ms: number) {

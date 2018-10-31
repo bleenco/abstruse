@@ -193,10 +193,10 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
   });
 }
 
-export function restartJob(jobId: number): Promise<void> {
+export async function restartJob(jobId: number): Promise<void> {
   let time = new Date();
-  let job = null;
   let process = processes.find(p => p.job_id === Number(jobId));
+
   if (process && process.debug) {
     process.debug = false;
     jobEvents.next({
@@ -215,36 +215,40 @@ export function restartJob(jobId: number): Promise<void> {
     });
   }
 
-  return stopJob(jobId)
-    .then(() => dbJob.getLastRun(jobId))
-    .then(lastRun => dbJobRuns.insertJobRun({
+  try {
+    await stopJob(jobId);
+    const lastRun = await dbJob.getLastRun(jobId);
+
+    await dbJobRuns.insertJobRun({
       start_time: time,
       end_time: null,
       status: 'queued',
       log: '',
       build_run_id: lastRun.build_run_id,
       job_id: jobId
-    }))
-    .then(() => queueJob(jobId))
-    .then(() => dbJob.getJob(jobId))
-    .then(j => job = j)
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job restarted',
-        additionalData: time.getTime()
-      });
-    })
-    .then(() => getBuild(job.builds_id))
-    .then(build => sendPendingStatus(build, build.id))
-    .catch(err => {
-      let msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
     });
+
+    await queueJob(jobId);
+
+    const job = await dbJob.getJob(jobId);
+
+    jobEvents.next({
+      type: 'process',
+      build_id: job.builds_id,
+      job_id: job.id,
+      data: 'job restarted',
+      additionalData: time.getTime()
+    });
+
+    const build = await getBuild(job.builds_id);
+    return sendPendingStatus(build, build.id);
+
+  } catch (err) {
+    let msg: LogMessageType = {
+      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+    };
+    logger.next(msg);
+  }
 }
 
 
@@ -573,55 +577,52 @@ export function restartBuild(buildId: number): Promise<any> {
     });
 }
 
-export function stopBuild(buildId: number): Promise<any> {
-  return getBuild(buildId)
-    .then(build => {
-      return build.jobs.reduce((prev, current) => {
-        return prev.then(() => stopJob(current.id));
-      }, Promise.resolve());
-    })
-    .catch(err => {
-      let msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
-    });
+export async function stopBuild(buildId: number): Promise<any> {
+  try {
+    const build = await getBuild(buildId);
+
+    return build.jobs.reduce((prev, current) => {
+      return prev.then(() => stopJob(current.id));
+    }, Promise.resolve());
+  } catch (err) {
+    let msg: LogMessageType = {
+      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+    };
+    logger.next(msg);
+  }
 }
 
-function queueJob(jobId: number): Promise<void> {
-  let job = null;
-  let requestData = null;
+async function queueJob(jobId: number): Promise<void> {
+  const job = await dbJob.getJob(jobId);
+  const build = await getBuild(job.builds_id);
 
-  return dbJob.getJob(jobId)
-    .then(jobData => job = jobData)
-    .then(() => getBuild(job.builds_id))
-    .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
-    .then(() => {
-      let data = JSON.parse(job.data);
-      let jobProcess: JobProcess = {
-        build_id: job.builds_id,
-        job_id: jobId,
-        status: 'queued',
-        requestData: requestData,
-        commands: data.commands,
-        cache: data.cache || null,
-        repo_name: job.build.repository.full_name || null,
-        branch: job.build.branch || null,
-        env: data.env,
-        image_name: data.image,
-        exposed_ports: null,
-        log: '',
-        debug: false
-      };
-
-      jobProcesses.next(jobProcess);
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job queued'
-      });
-    });
+  const data = JSON.parse(job.data);
+  const jobProcess: JobProcess = {
+    build_id: job.builds_id,
+    job_id: jobId,
+    status: 'queued',
+    requestData: {
+      branch: build.branch,
+      pr: build.pr,
+      data: build.data,
+    },
+    commands: data.commands,
+    cache: data.cache || null,
+    repo_name: job.build.repository.full_name || null,
+    branch: job.build.branch || null,
+    env: data.env,
+    image_name: data.image,
+    exposed_ports: null,
+    log: '',
+    debug: false
+  };
+  jobProcesses.next(jobProcess);
+  jobEvents.next({
+    type: 'process',
+    build_id: job.builds_id,
+    job_id: job.id,
+    data: 'job queued'
+  });
 }
 
 function jobSucceded(proc: JobProcess): Promise<any> {
@@ -704,52 +705,49 @@ function jobSucceded(proc: JobProcess): Promise<any> {
     });
 }
 
-function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
-  return Promise.resolve()
-    .then(() => {
-      proc.status = 'errored';
-      let time = new Date();
-      if (msg) {
-        logger.next(msg);
-      }
+async function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
+  let time = new Date();
 
-      return dbJob.getLastRunId(proc.job_id)
-        .then(runId => {
-          let data = {
-            id: runId,
-            end_time: time,
-            status: 'failed',
-            log: proc.log
-          };
+  if (msg) {
+    logger.next(msg);
+  }
 
-          return dbJobRuns.updateJobRun(data);
-        })
-        .then(() => updateBuild({ id: proc.build_id, end_time: time }))
-        .then(id => updateBuildRun({ id: id, end_time: time }))
-        .then(() => getBuild(proc.build_id))
-        .then(build => sendFailureStatus(build, build.id))
-        .then(() => {
-          jobEvents.next({
-            type: 'process',
-            build_id: proc.build_id,
-            data: 'build failed',
-            additionalData: time.getTime()
-          });
-        })
-        .then(() => {
-          jobEvents.next({
-            type: 'process',
-            build_id: proc.build_id,
-            job_id: proc.job_id,
-            data: 'job failed',
-            additionalData: time.getTime()
-          });
-        })
-        .catch(err => {
-          let logMessage: LogMessageType = {
-            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-          };
-          logger.next(logMessage);
-        });
+  proc.status = 'errored';
+
+  try {
+    const runId = await dbJob.getLastRunId(proc.job_id);
+    await dbJobRuns.updateJobRun({
+      id: runId,
+      end_time: time,
+      status: 'failed',
+      log: proc.log
     });
+
+    const id = await updateBuild({ id: proc.build_id, end_time: time });
+    await updateBuildRun({ id: id, end_time: time });
+
+    const build = await getBuild(proc.build_id);
+    await sendFailureStatus(build, build.id);
+
+    jobEvents.next({
+      type: 'process',
+      build_id: proc.build_id,
+      data: 'build failed',
+      additionalData: time.getTime()
+    });
+
+    jobEvents.next({
+      type: 'process',
+      build_id: proc.build_id,
+      job_id: proc.job_id,
+      data: 'job failed',
+      additionalData: time.getTime()
+    });
+
+  } catch (err) {
+    let logMessage: LogMessageType = {
+      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+    };
+    logger.next(logMessage);
+  }
 }
