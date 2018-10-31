@@ -1,19 +1,14 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, delay, isLoaded } from './utils';
-import { requestD3, header } from '../tests/e2e/webhooks/github/PushEvent';
-import { sendGitHubRequest } from '../tests/e2e/utils/utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import { browser, by, element, ExpectedConditions } from 'protractor';
+
+import { sendGitHubRequest } from '../tests/e2e/utils/utils';
+import { header, requestD3 } from '../tests/e2e/webhooks/github/PushEvent';
+import { delay, isLoaded, login, logout } from './utils';
 
 chai.use(chaiAsPromised);
-const expect = chai.expect;
-
-function randomNumber(minimum: number, maximum: number): number {
-  return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-}
 
 describe('Build Details', () => {
-  let originalTimeout: number;
   before(() => login().then(() => browser.waitForAngularEnabled(false)));
   after(() => logout().then(() => browser.waitForAngularEnabled(true)));
 

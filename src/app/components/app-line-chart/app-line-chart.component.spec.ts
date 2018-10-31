@@ -1,21 +1,21 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, inject, async } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppLineChartComponent } from './app-line-chart.component';
+import * as jobsData from '../../../testing/xhr-data/jobs.json';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { WindowService } from '../../services/window.service';
+import { SocketService } from '../../services/socket.service';
 import { StatsService } from '../../services/stats.service';
-import * as jobsData from '../../../testing/xhr-data/jobs.json';
+import { WindowService } from '../../services/window.service';
+import { AppLineChartComponent } from './app-line-chart.component';
 
 describe('Line Chart Component', () => {
   let fixture: ComponentFixture<AppLineChartComponent>;
@@ -44,19 +44,11 @@ describe('Line Chart Component', () => {
 
   describe('Line Chart Component', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
-    let statsService: StatsService;
     let responseJobs: Response;
     let fakeJobs: any[];
 
     beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
-      statsService = new StatsService(socketService, apiService);
       fakeJobs = (<any>jobsData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeJobs } });
       responseJobs = new Response(optionsBuild);

@@ -1,23 +1,22 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { AppTeamComponent } from './app-team.component';
-import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
+import * as usersData from '../../../testing/xhr-data/users.json';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
-import * as usersData from '../../../testing/xhr-data/users.json';
+import { SocketService } from '../../services/socket.service';
+import { AppSelectboxComponent } from '../app-selectbox/app-selectbox.component';
+import { AppTeamComponent } from './app-team.component';
 
 describe('Team Component', () => {
-  let comp: AppTeamComponent;
   let fixture: ComponentFixture<AppTeamComponent>;
 
   beforeEach(async(() => {
@@ -41,8 +40,7 @@ describe('Team Component', () => {
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-      .createComponent(AppTeamComponent);
-    comp = fixture.componentInstance;
+    .createComponent(AppTeamComponent);
   }));
 
   it('should expect loging to be true', () => {
@@ -52,16 +50,12 @@ describe('Team Component', () => {
   describe('Team Component', () => {
     let backend: MockBackend;
     let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseUsers: Response;
     let fakeUsers: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeUsers = (<any>usersData).data;
       let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });
       responseUsers = new Response(optionsUsers);
@@ -108,7 +102,6 @@ describe('Team Component', () => {
         deToken.triggerEventHandler('click', { button: 0 });
       }
       fixture.detectChanges();
-      const de = fixture.debugElement.query(By.css('h4'));
       expect('Add New User').toBe('Add New User');
     });
   });

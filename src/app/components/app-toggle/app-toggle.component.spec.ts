@@ -1,20 +1,19 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, inject, async } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { HttpModule, XHRBackend } from '@angular/http';
+import { MockBackend } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
-import { MockBackend, MockConnection } from '@angular/http/testing';
 
-import { AppToggleComponent } from './app-toggle.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { WindowService } from '../../services/window.service';
+import { SocketService } from '../../services/socket.service';
 import { StatsService } from '../../services/stats.service';
+import { WindowService } from '../../services/window.service';
+import { AppToggleComponent } from './app-toggle.component';
 
 describe('Toggle Component', () => {
   let fixture: ComponentFixture<AppToggleComponent>;

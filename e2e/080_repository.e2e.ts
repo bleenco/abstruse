@@ -1,7 +1,8 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, waitForUrlToChangeTo, isLoaded, delay } from './utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import { browser, by, element, ExpectedConditions } from 'protractor';
+
+import { delay, isLoaded, login, logout } from './utils';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

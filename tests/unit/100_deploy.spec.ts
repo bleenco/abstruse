@@ -7,14 +7,9 @@ import { elasticDeploy } from '../../src/api/deploy/aws-elastic';
 import { join } from 'path';
 import * as temp from 'temp';
 import { abstruse, killAllProcesses } from '../e2e/utils/process';
-import { ImageData } from '../../src/api/image-builder';
 import { createContainer, killContainer } from '../../src/api/docker';
-import * as utils from '../../src/api/utils';
-import { sendGetRequest, sendRequest } from '../helpers/utils';
-import * as dockerode from 'dockerode';
-import { delay } from '../helpers/utils';
+import { sendRequest } from '../helpers/utils';
 import * as fs from 'fs-extra';
-import { CommandType } from '../../src/api/config';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -40,7 +35,7 @@ describe('Deploying with AWS Services', () => {
       .then(() => sendRequest({}, `api/images/build-base`))
       .then(status => expect(status['data']).to.equal(true))
       .then(() => {
-        return createContainer('unit_test_abstruse_container', 'abstruse_builder', []).toPromise();
+        return createContainer('unit_test_abstruse_container', 'abstruse_builder', [] as any).toPromise();
       });
   });
 

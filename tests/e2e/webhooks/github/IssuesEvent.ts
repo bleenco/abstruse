@@ -45,7 +45,7 @@ export let request = {
     'created_at': '2015-05-05T23:40:28Z',
     'updated_at': '2015-05-05T23:40:28Z',
     'closed_at': null,
-    'body': 'It looks like you accidently spelled 'commit' with two 't's.'
+    'body': 'It looks like you accidently spelled commit with two ts.'
   },
   'repository': {
     'id': 35129377,

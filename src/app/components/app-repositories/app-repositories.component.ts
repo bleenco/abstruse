@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -29,7 +28,6 @@ export class AppRepositoriesComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private socketService: SocketService,
     private router: Router,
     private config: ConfigService
   ) {

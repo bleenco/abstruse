@@ -1,27 +1,26 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgxUploaderModule } from 'ngx-uploader';
 import { of } from 'rxjs';
 
-import { AppUserComponent } from './app-user.component';
-import { AppHeaderComponent } from '../app-header/app-header.component';
-import { AppToggleComponent } from '../app-toggle/app-toggle.component';
+import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
+import * as userData from '../../../testing/xhr-data/user.json';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { NgxUploaderModule } from 'ngx-uploader';
-import * as userData from '../../../testing/xhr-data/user.json';
-import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
+import { SocketService } from '../../services/socket.service';
+import { AppHeaderComponent } from '../app-header/app-header.component';
+import { AppToggleComponent } from '../app-toggle/app-toggle.component';
+import { AppUserComponent } from './app-user.component';
 
 describe('User Component', () => {
-  let comp: AppUserComponent;
   let fixture: ComponentFixture<AppUserComponent>;
 
   beforeEach(async(() => {
@@ -38,8 +37,7 @@ describe('User Component', () => {
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-      .createComponent(AppUserComponent);
-    comp = fixture.componentInstance;
+    .createComponent(AppUserComponent);
   }));
 
   it('should expect loging to be true', () => {
@@ -49,8 +47,6 @@ describe('User Component', () => {
   describe('User Component', () => {
     let backend: MockBackend;
     let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseUsers: Response;
     let responseRepos: Response;
     let fakeUsers: any[];
@@ -59,8 +55,6 @@ describe('User Component', () => {
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
       apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeUsers = (<any>userData).data;
       fakeRepositories = (<any>repositoriesData).data;
       let optionsUsers = new ResponseOptions({ status: 200, body: { data: fakeUsers } });

@@ -1,12 +1,7 @@
 import { expect } from 'chai';
+
+import { Config, generateJobsAndEnv, JobStage, parseConfig, Repository } from '../../src/api/config';
 import { readConfig } from '../helpers/utils';
-import {
-  Config,
-  generateJobsAndEnv,
-  parseConfig,
-  Repository,
-  JobStage
-} from '../../src/api/config';
 
 let repo: Repository = {
   clone_url: 'https://github.com/bleenco/abstruse.git',

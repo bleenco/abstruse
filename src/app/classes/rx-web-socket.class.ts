@@ -80,7 +80,6 @@ export class RxWebSocket {
     if (!this._in) {
       this._in = {
         next: (message: any) => {
-          let data = typeof message === 'string' ? message : JSON.stringify(message);
           if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.send(message);
           } else {

@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, Inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { TimeService } from '../../services/time.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
-import { distanceInWordsToNow, distanceInWordsStrict, format } from 'date-fns';
+import { distanceInWordsToNow } from 'date-fns';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
@@ -47,7 +47,6 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
     private timeService: TimeService,
     private authService: AuthService,
     private route: ActivatedRoute,
-    private ngZone: NgZone,
     private router: Router,
     @Inject(DOCUMENT) private document: any,
     private titleService: Title

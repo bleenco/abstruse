@@ -1,10 +1,10 @@
-import { browser, by, element, ExpectedConditions } from 'protractor';
-import { login, logout, delay } from './utils';
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import { browser, by, element, ExpectedConditions } from 'protractor';
+
+import { delay, login, logout } from './utils';
 
 chai.use(chaiAsPromised);
-const expect = chai.expect;
 
 describe('Job Details', () => {
   before(() => login().then(() => browser.waitForAngularEnabled(false)));

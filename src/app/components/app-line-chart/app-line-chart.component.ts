@@ -5,13 +5,10 @@ import {
   select,
   scaleTime,
   scaleLinear,
-  scaleOrdinal,
   timeParse,
   line,
   curveLinear,
   extent,
-  min,
-  max,
   axisBottom,
   axisLeft,
   area

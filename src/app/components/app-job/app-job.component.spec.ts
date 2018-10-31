@@ -1,24 +1,23 @@
-import { DebugElement, NO_ERRORS_SCHEMA, EventEmitter } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { AppJobComponent } from './app-job.component';
+import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
+import * as jobData from '../../../testing/xhr-data/job.json';
+import { ToTimePipe } from '../../pipes/to-time.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
-import { ToTimePipe } from '../../pipes/to-time.pipe';
-import * as jobData from '../../../testing/xhr-data/job.json';
-import * as jobTagData from '../../../testing/xhr-data/job-tag.json';
+import { AppJobComponent } from './app-job.component';
 
 describe('Job Component', () => {
-  let comp: AppJobComponent;
   let fixture: ComponentFixture<AppJobComponent>;
 
   beforeEach(() => {
@@ -42,8 +41,7 @@ describe('Job Component', () => {
         { provide: XHRBackend, useClass: MockBackend },
         { provide: ActivatedRoute, useValue: { params: of({ id: 1 }), snapshot: { params: { id: 1 } } } }]
     })
-      .createComponent(AppJobComponent);
-    comp = fixture.componentInstance;
+    .createComponent(AppJobComponent);
   });
 
   it('should expect loading to be true', () => {
@@ -52,17 +50,11 @@ describe('Job Component', () => {
 
   describe('Job Component', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseJob: Response;
     let fakeJob: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeJob = (<any>jobData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);
@@ -80,17 +72,11 @@ describe('Job Component', () => {
 
   describe('Job Component when pushing new tag', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseJob: Response;
     let fakeJob: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeJob = (<any>jobTagData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
       responseJob = new Response(optionsJob);

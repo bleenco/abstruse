@@ -1,11 +1,11 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+import { subDays } from 'date-fns';
 import { join } from 'path';
 import * as temp from 'temp';
-import { Headers } from '@angular/http';
-import { execSilent, exec, abstruse, killAllProcesses } from '../e2e/utils/process';
+
+import { abstruse, killAllProcesses } from '../e2e/utils/process';
 import { sendGetRequest, sendRequest } from '../helpers/utils';
-import { subDays } from 'date-fns';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

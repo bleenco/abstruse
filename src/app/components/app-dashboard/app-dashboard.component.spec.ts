@@ -1,16 +1,15 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
 
-import { AppDashboardComponent } from './app-dashboard.component';
-import { StatsService } from '../../services/stats.service';
-import { SocketService } from '../../services/socket.service';
-import { ApiService } from '../../services/api.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
+import { ApiService } from '../../services/api.service';
+import { SocketService } from '../../services/socket.service';
+import { StatsService } from '../../services/stats.service';
+import { AppDashboardComponent } from './app-dashboard.component';
 
 describe('Dashboard Component', () => {
   let fixture: ComponentFixture<AppDashboardComponent>;
@@ -33,15 +32,6 @@ describe('Dashboard Component', () => {
   });
 
   describe('Dashboard Component', () => {
-    let service: StatsService;
-    let apiService: ApiService;
-    let socketService: SocketService;
-
-    beforeEach(inject([Http, Router], (http: Http, router: Router) => {
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      service = new StatsService(socketService, apiService);
-    }));
 
     it('should see dashboard', () => {
       fixture.detectChanges();

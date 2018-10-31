@@ -1,23 +1,23 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppRepositoriesComponent } from './app-repositories.component';
-import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
+import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
+import { ToTimePipe } from '../../pipes/to-time.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
+import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
-import { ToTimePipe } from '../../pipes/to-time.pipe';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
-import * as repositoriesData from '../../../testing/xhr-data/repositories.json';
+import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
+import { AppRepositoriesComponent } from './app-repositories.component';
 
 describe('Repositories Component', () => {
   let fixture: ComponentFixture<AppRepositoriesComponent>;
@@ -53,17 +53,11 @@ describe('Repositories Component', () => {
 
   describe('Repositories Component', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseRepositories: Response;
     let fakeRepositories: any[];
 
     beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeRepositories = (<any>repositoriesData).data;
       let optionsRepositories = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });
       responseRepositories = new Response(optionsRepositories);

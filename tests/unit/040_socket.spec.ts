@@ -2,8 +2,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import { join } from 'path';
 import * as temp from 'temp';
-import { execSilent, exec, abstruse, killAllProcesses } from '../e2e/utils/process';
 import * as ws from 'ws';
+
+import { abstruse, killAllProcesses } from '../e2e/utils/process';
 import { sendRequest } from '../helpers/utils';
 
 chai.use(chaiAsPromised);
@@ -275,9 +276,8 @@ describe('Socket Security', () => {
       .then((jwt: any) => {
         socket = new ws('ws://localhost:6500/?token=' + jwt.data);
 
-        socket.on('message', (data: any) => {
-          data = JSON.parse(data);
-          if (data.type === 'request_received') {
+        socket.on('message', (message: any) => {
+          if (JSON.parse(message).type === 'request_received') {
             done();
           }
         });

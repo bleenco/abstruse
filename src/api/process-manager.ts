@@ -520,12 +520,10 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
 export function restartBuild(buildId: number): Promise<any> {
   let time = new Date();
   let buildData;
-  let accessToken;
 
   return stopBuild(buildId)
     .then(() => getBuild(buildId))
     .then(build => buildData = build)
-    .then(() => accessToken = buildData.repository.access_token || null)
     .then(() => {
       let jobs = buildData.jobs;
       buildData.start_time = time;

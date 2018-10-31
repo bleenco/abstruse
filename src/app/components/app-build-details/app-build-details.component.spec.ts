@@ -1,22 +1,22 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { AppBuildDetailsComponent } from './app-build-details.component';
+import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
+import * as buildData from '../../../testing/xhr-data/build.json';
+import { ToTimePipe } from '../../pipes/to-time.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { NotificationService } from '../../services/notification.service';
+import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
-import { ToTimePipe } from '../../pipes/to-time.pipe';
-import * as buildData from '../../../testing/xhr-data/build.json';
-import * as buildTagData from '../../../testing/xhr-data/build-tag.json';
+import { AppBuildDetailsComponent } from './app-build-details.component';
 
 describe('Build Details Component', () => {
   let fixture: ComponentFixture<AppBuildDetailsComponent>;
@@ -52,17 +52,11 @@ describe('Build Details Component', () => {
 
   describe('Build Details Component', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseBuild: Response;
     let fakeBuild: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeBuild = (<any>buildData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
       responseBuild = new Response(optionsBuild);
@@ -80,17 +74,11 @@ describe('Build Details Component', () => {
 
   describe('Build Details Component when pushing new Tag', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseBuild: Response;
     let fakeBuild: any[];
 
     beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeBuild = (<any>buildTagData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
       responseBuild = new Response(optionsBuild);

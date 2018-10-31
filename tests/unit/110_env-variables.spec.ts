@@ -1,12 +1,9 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { delay } from '../helpers/utils';
-import * as fs from 'fs-extra';
 import * as env from '../../src/api/env-variables';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-let tempRoot = null;
 
 describe('Environment Variables', () => {
   it(`init env variables`, () => {

@@ -1,5 +1,6 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
+
 import { getRemoteParsedConfig } from '../../src/api/config';
 
 chai.use(chaiAsPromised);

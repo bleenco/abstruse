@@ -1,9 +1,9 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppEditorComponent } from './app-editor.component';
-import { WindowService } from '../../services/window.service';
 import { ToTimePipe } from '../../pipes/to-time.pipe';
+import { WindowService } from '../../services/window.service';
+import { AppEditorComponent } from './app-editor.component';
 
 describe('Editor Component', () => {
   let fixture: ComponentFixture<AppEditorComponent>;

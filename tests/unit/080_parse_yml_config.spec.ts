@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { generateJobsAndEnv, Repository,
-  Config, parseConfig, JobStage, CommandType } from '../../src/api/config';
+
+import { CommandType, Config, generateJobsAndEnv, JobStage, parseConfig, Repository } from '../../src/api/config';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

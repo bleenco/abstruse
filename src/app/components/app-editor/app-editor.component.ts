@@ -58,10 +58,6 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
     this.propagateChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
   @Input('options')
   set options(options: string) {
     this.opts = options;
@@ -149,4 +145,6 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
       this.editor = null;
     }
   }
+
+  registerOnTouched() {}
 }

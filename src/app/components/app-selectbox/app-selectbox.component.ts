@@ -1,5 +1,5 @@
-import { Component, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-selectbox',
@@ -15,7 +15,6 @@ export class AppSelectboxComponent implements OnChanges {
   opened: boolean;
   tmp: string;
 
-  private onTouchedCallback: () => void = () => { };
   private onChangeCallback: (_: any) => void = () => { };
 
   get value(): string {
@@ -52,7 +51,6 @@ export class AppSelectboxComponent implements OnChanges {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
-    this.onTouchedCallback = fn;
-  }
+  registerOnTouched() { }
+
 }

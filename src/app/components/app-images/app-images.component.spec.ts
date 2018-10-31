@@ -1,17 +1,17 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppImagesComponent } from './app-images.component';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { ConfigService } from '../../services/config.service';
 import { NotificationService } from '../../services/notification.service';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
+import { SocketService } from '../../services/socket.service';
+import { AppImagesComponent } from './app-images.component';
 
 describe('Images Component', () => {
   let fixture: ComponentFixture<AppImagesComponent>;

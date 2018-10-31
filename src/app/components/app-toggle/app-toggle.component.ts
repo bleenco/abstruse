@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-toggle',
@@ -11,7 +11,6 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 export class AppToggleComponent {
   isEnabled: boolean;
 
-  private onTouchedCallback: () => void = () => { };
   private onChangeCallback: (_: any) => void = () => { };
 
   get value(): boolean {
@@ -36,7 +35,6 @@ export class AppToggleComponent {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
-    this.onTouchedCallback = fn;
-  }
+  registerOnTouched() { }
+
 }

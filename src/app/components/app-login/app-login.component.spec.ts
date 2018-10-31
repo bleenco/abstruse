@@ -1,16 +1,16 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend } from '@angular/http';
-import { MockBackend, MockConnection } from '@angular/http/testing';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Http, HttpModule, XHRBackend } from '@angular/http';
+import { MockBackend } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppLoginComponent } from './app-login.component';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
+import { AppLoginComponent } from './app-login.component';
 
 describe('Login Component (mockBackend)', () => {
   let fixture: ComponentFixture<AppLoginComponent>;

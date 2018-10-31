@@ -8,8 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { format, distanceInWordsToNow, distanceInWordsStrict } from 'date-fns';
-import * as Clipboard from 'clipboard';
+import { distanceInWordsToNow } from 'date-fns';
 
 @Component({
   selector: 'app-job',
@@ -144,7 +143,6 @@ export class AppJobComponent implements OnInit, OnDestroy {
       }
     });
 
-    const clipboard = new Clipboard('.code-copy');
   }
 
   ngOnDestroy() {

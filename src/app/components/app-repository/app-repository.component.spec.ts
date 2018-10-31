@@ -1,25 +1,25 @@
-import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgxUploaderModule } from 'ngx-uploader';
 import { of } from 'rxjs';
 
-import { AppRepositoryComponent } from './app-repository.component';
-import { AppHeaderComponent } from '../app-header/app-header.component';
-import { AppToggleComponent } from '../app-toggle/app-toggle.component';
-import { ApiService } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
-import { ConfigService } from '../../services/config.service';
-import { NotificationService } from '../../services/notification.service';
-import { NgxUploaderModule } from 'ngx-uploader';
-import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 import * as buildsData from '../../../testing/xhr-data/builds.json';
 import * as repositoryData from '../../../testing/xhr-data/repository.json';
+import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
+import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import { ConfigService } from '../../services/config.service';
+import { NotificationService } from '../../services/notification.service';
+import { SocketService } from '../../services/socket.service';
+import { AppHeaderComponent } from '../app-header/app-header.component';
+import { AppToggleComponent } from '../app-toggle/app-toggle.component';
+import { AppRepositoryComponent } from './app-repository.component';
 
 const badge = `
 <svg xmlns="http://www.w3.org/2000/svg" width="100" height="20" style="shape-rendering:
@@ -47,7 +47,6 @@ const badge = `
 `;
 
 describe('Repository Component', () => {
-  let comp: AppRepositoryComponent;
   let fixture: ComponentFixture<AppRepositoryComponent>;
 
   beforeEach(async(() => {
@@ -69,7 +68,6 @@ describe('Repository Component', () => {
         }]
     })
       .createComponent(AppRepositoryComponent);
-    comp = fixture.componentInstance;
   }));
 
   it('should expect loading to be true', () => {
@@ -79,8 +77,6 @@ describe('Repository Component', () => {
   describe('Repository Component', () => {
     let backend: MockBackend;
     let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseBuilds: Response;
     let responseRepo: Response;
     let responseBadge: Response;
@@ -91,8 +87,6 @@ describe('Repository Component', () => {
       fixture.componentInstance.tab = 'builds';
       backend = be;
       apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeBuilds = (<any>buildsData).data;
       fakeRepository = (<any>repositoryData).data;
       let optionsBuilds = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });

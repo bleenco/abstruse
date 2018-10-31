@@ -1,20 +1,20 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
+import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Router } from '@angular/router';
+import { Http, HttpModule, Response, ResponseOptions, XHRBackend } from '@angular/http';
 import { MockBackend, MockConnection } from '@angular/http/testing';
+import { By } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
-import { AppBuildsComponent } from './app-builds.component';
-import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
+import * as buildsData from '../../../testing/xhr-data/builds.json';
+import { ToTimePipe } from '../../pipes/to-time.pipe';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { TimeService } from '../../services/time.service';
-import { ToTimePipe } from '../../pipes/to-time.pipe';
-import * as buildsData from '../../../testing/xhr-data/builds.json';
+import { AppBuildItemComponent } from '../app-build-item/app-build-item.component';
+import { AppBuildsComponent } from './app-builds.component';
 
 describe('Builds Component', () => {
   let fixture: ComponentFixture<AppBuildsComponent>;
@@ -48,17 +48,11 @@ describe('Builds Component', () => {
 
   describe('Builds Component', () => {
     let backend: MockBackend;
-    let apiService: ApiService;
-    let authService: AuthService;
-    let socketService: SocketService;
     let responseBuilds: Response;
     let fakeBuilds: any[];
 
     beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
       backend = be;
-      apiService = new ApiService(http, router);
-      socketService = new SocketService();
-      authService = new AuthService(apiService, socketService, router);
       fakeBuilds = (<any>buildsData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuilds } });
       responseBuilds = new Response(optionsBuild);

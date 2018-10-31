@@ -1,7 +1,6 @@
 import * as crypto from 'crypto';
-import * as request from 'request';
-import { exec } from 'child_process';
 import * as dockerode from 'dockerode';
+import * as request from 'request';
 
 const docker = new dockerode();
 

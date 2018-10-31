@@ -1,7 +1,6 @@
 import { expect } from 'chai';
-import { Config, parseConfig, CommandType } from '../../src/api/config';
 
-let config: Config;
+import { CommandType, parseConfig } from '../../src/api/config';
 
 let data = {
   language: null,

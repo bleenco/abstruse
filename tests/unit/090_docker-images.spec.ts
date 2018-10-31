@@ -1,16 +1,13 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { join } from 'path';
-import { generateJobsAndEnv, Repository,
-  Config, parseConfig, JobStage, CommandType } from '../../src/api/config';
-import * as temp from 'temp';
-import { Headers } from '@angular/http';
-import { abstruse, killAllProcesses } from '../e2e/utils/process';
-import { getImages, ImageData, deleteImage } from '../../src/api/image-builder';
-import { sendGetRequest, sendRequest } from '../helpers/utils';
 import * as dockerode from 'dockerode';
-import { delay } from '../helpers/utils';
 import * as fs from 'fs-extra';
+import { join } from 'path';
+import * as temp from 'temp';
+
+import { ImageData } from '../../src/api/image-builder';
+import { abstruse, killAllProcesses } from '../e2e/utils/process';
+import { delay, sendGetRequest, sendRequest } from '../helpers/utils';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

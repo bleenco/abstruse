@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnChanges, OnDestroy, SimpleChanges, Input } from '@angular/core';
-import { select, pie, arc, interpolate, easeCubic } from 'd3';
+import { select, arc, interpolate, easeCubic } from 'd3';
 
 @Component({
   selector: 'app-progress-chart',
@@ -34,7 +34,6 @@ export class AppProgressChartComponent implements OnChanges, OnDestroy {
   render(): void {
     this.el = this.elementRef.nativeElement.querySelector('.progress-chart');
     this.ratio = this.percent / 100;
-    const p = pie().value((d: any) => d).sort(null);
     const w = this.el.clientWidth;
     const h = this.el.clientHeight;
 
@@ -54,20 +53,10 @@ export class AppProgressChartComponent implements OnChanges, OnDestroy {
 
     this.createGradient(svg, color[0], color[1], 'progressGradient');
 
-    const a = arc()
-      .innerRadius(innerRadius)
-      .outerRadius(outerRadius)
-      .startAngle(0)
-      .endAngle(2 * Math.PI);
-
     this.arcLine = arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius)
       .startAngle(0);
-
-    const pathBackground = g.append('path')
-      .attr('d', a)
-      .style('fill', color[2]);
 
     this.pathChart = g.append('path')
       .datum({ endAngle: 0 })

@@ -1,12 +1,7 @@
 import { expect } from 'chai';
+
+import { Config, generateJobsAndEnv, JobStage, parseConfig, Repository } from '../../src/api/config';
 import { readConfig } from '../helpers/utils';
-import {
-  Config,
-  generateJobsAndEnv,
-  parseConfig,
-  Repository,
-  JobStage
-} from '../../src/api/config';
 
 let repo: Repository = {
   clone_url: 'https://github.com/jruby/jruby.git',
@@ -91,7 +86,7 @@ describe('Generate (Java)', () => {
 
     it(`should detect it is about 'java' language`, () => {
       const cmds = generateJobsAndEnv(repo, config);
-      cmds.forEach(cmd => expect(cmd.language).to.equal('java'));
+      cmds.forEach(cmd => expect((cmd as any).language).to.equal('java'));
     });
 
     it(`should parse example with result of none deploy jobs`, () => {
