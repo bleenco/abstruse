@@ -1,4 +1,4 @@
-import { Injectable, Provider, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { SocketService } from './socket.service';
 import { ApiService } from './api.service';
 import { Subscription } from 'rxjs';

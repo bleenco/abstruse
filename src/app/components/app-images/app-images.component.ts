@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy, NgZone, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { SocketService } from '../../services/socket.service';
 import { ApiService } from '../../services/api.service';
 import { Subscription } from 'rxjs';
@@ -50,9 +49,7 @@ export class AppImagesComponent implements OnInit, OnDestroy {
   constructor(
     private socketService: SocketService,
     private zone: NgZone,
-    private api: ApiService,
-    @Inject(DOCUMENT) private document: any
-  ) {
+    private api: ApiService  ) {
     this.baseImages = [];
     this.baseImage = '';
     this.buildingError = '';

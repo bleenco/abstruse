@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import * as routes from './server-routes';
 import { webhooks } from './webhooks';
 import * as session from 'express-session';
-import { logger, LogMessageType } from './logger';
 import { getRootDir } from './setup';
 import * as connectsqlite3 from 'connect-sqlite3';
 

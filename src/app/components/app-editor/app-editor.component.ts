@@ -18,7 +18,6 @@ import { WindowService } from '../../services/window.service';
 let loadedMonaco = false;
 let loadPromise: Promise<void>;
 declare const monaco: any;
-declare const require: any;
 
 @Component({
   selector: 'app-editor',

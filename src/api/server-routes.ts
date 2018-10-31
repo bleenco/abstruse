@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as docker from './docker';
 import * as system from './system';
-import { ensureFile } from 'fs-extra';
+import { pathExists } from 'fs-extra';
 import { resolve, extname, relative } from 'path';
 import { merge, concat, from } from 'rxjs';
 import { toArray } from 'rxjs/operators';
@@ -56,7 +56,6 @@ import {
   getFilePath,
   getConfig,
   getRootDir,
-  saveConfig,
   getConfigAsync,
   saveConfigAsync
 } from './setup';
@@ -164,7 +163,7 @@ export function userRoutes(): express.Router {
         }).catch(err => {
           return res.status(200).json({ err: err });
         });
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/login', (req: express.Request, res: express.Response) => {
@@ -179,14 +178,14 @@ export function userRoutes(): express.Router {
         checkApiRequestAuth(req).then(() => {
           createUser(req.body)
             .then(() => res.status(200).json({ status: true }))
-            .catch(err => res.status(200).json({ status: false }));
-        }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+            .catch(() => res.status(200).json({ status: false }));
+        }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
       } else {
         createUser(req.body)
           .then(() => res.status(200).json({ status: true }))
-          .catch(err => res.status(200).json({ status: false }));
+          .catch(() => res.status(200).json({ status: false }));
       }
-    }).catch(err => res.status(200).json({ data: false }));
+    }).catch(() => res.status(200).json({ data: false }));
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {
@@ -194,10 +193,10 @@ export function userRoutes(): express.Router {
       .then(() => {
         updateUser(req.body).then(() => {
           return res.status(200).json({ data: true });
-        }).catch(err => {
-          return res.status(200).json({ data: false });
-        });
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        }).catch(() => {
+            return res.status(200).json({ data: false });
+          });
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/update-password', (req: express.Request, res: express.Response) => {
@@ -205,10 +204,10 @@ export function userRoutes(): express.Router {
       .then(() => {
         updateUserPassword(req.body).then(() => {
           return res.status(200).json({ data: true });
-        }).catch(err => {
-          return res.status(200).json({ data: false });
-        });
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        }).catch(() => {
+            return res.status(200).json({ data: false });
+          });
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/:id', (req: express.Request, res: express.Response) => {
@@ -217,7 +216,7 @@ export function userRoutes(): express.Router {
         getUser(req.params.id)
           .then(user => res.status(200).json({ data: user }))
           .catch(err => res.status(400).json({ err: err }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/add-token', (req: express.Request, res: express.Response) => {
@@ -226,7 +225,7 @@ export function userRoutes(): express.Router {
         insertAccessToken(req.body)
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/remove-token/:id', (req: express.Request, res: express.Response) => {
@@ -235,7 +234,7 @@ export function userRoutes(): express.Router {
         removeAccessToken(req.params.id)
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/upload-avatar', upload.any(), (req: express.Request, res: express.Response) => {
@@ -261,7 +260,7 @@ export function tokenRoutes(): express.Router {
         getAccessTokens()
           .then(tokens => res.status(200).json({ data: tokens }))
           .catch(() => res.status(200).json({ data: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -274,11 +273,11 @@ export function repositoryRoutes(): express.Router {
     if (req.params.userid) {
       getRepositories(req.query.keyword, req.params.userid).then(repos => {
         return res.status(200).json({ data: repos });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     } else {
       getRepositories(req.query.keyword).then(repos => {
         return res.status(200).json({ data: repos });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     }
   });
 
@@ -287,12 +286,12 @@ export function repositoryRoutes(): express.Router {
       getRepository(req.params.id, req.params.userid).then(repo => {
         delete repo.access_token;
         return res.status(200).json({ data: repo });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     } else {
       getRepository(req.params.id).then(repo => {
         delete repo.access_token;
         return res.status(200).json({ data: repo });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     }
   });
 
@@ -300,16 +299,16 @@ export function repositoryRoutes(): express.Router {
     (req: express.Request, res: express.Response) => {
       getRepositoryBuilds(req.params.id, req.params.limit, req.params.offset, req.params.userid)
         .then(builds => res.status(200).json({ data: builds }))
-        .catch(err => res.status(200).json({ status: false }));
+        .catch(() => res.status(200).json({ status: false }));
     });
 
   router.post('/add', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req)
       .then(() => {
-        addRepository(req.body).then(result => {
+        addRepository(req.body).then(() => {
           return res.status(200).json({ status: true });
-        }).catch(err => res.status(200).json({ status: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        }).catch(() => res.status(200).json({ status: false }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/save', (req: express.Request, res: express.Response) => {
@@ -318,7 +317,7 @@ export function repositoryRoutes(): express.Router {
         saveRepositorySettings(req.body)
           .then(() => res.status(200).json({ data: true }))
           .catch(() => res.status(200).json({ data: false }));
-      }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+      }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/permission', (req: express.Request, res: express.Response) => {
@@ -326,7 +325,7 @@ export function repositoryRoutes(): express.Router {
       updatePermission(req.body)
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/check/:id', (req: express.Request, res: express.Response) => {
@@ -417,7 +416,6 @@ export function repositoryRoutes(): express.Router {
             let url = repository.api_url + '/projects/' +
               repository.gitlab_id + '/repository/branches/master';
 
-            let accessToken = null;
             let headers = {};
             if (repository.access_token) {
               headers = { 'PRIVATE-TOKEN': repository.access_token.token };
@@ -469,8 +467,8 @@ export function repositoryRoutes(): express.Router {
           return startBuild(buildData);
         })
         .then(() => res.status(200).json({ data: true }))
-        .catch(err => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        .catch(() => res.status(200).json({ data: false }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/get-config-file/:id', (req: express.Request, res: express.Response) => {
@@ -529,7 +527,7 @@ export function repositoryRoutes(): express.Router {
           res.status(200).json({ data: rawFile });
         }
       })
-      .catch(err => res.status(200).json({ data: false }));
+      .catch(() => res.status(200).json({ data: false }));
   });
 
   router.post('/run-build-config', (req: express.Request, res: express.Response) => {
@@ -581,8 +579,8 @@ export function repositoryRoutes(): express.Router {
           return startBuild(buildData, cfg);
         })
         .then(() => res.status(200).json({ data: true }))
-        .catch(err => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        .catch(() => res.status(200).json({ data: false }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/get-cache/:id', (req: express.Request, res: express.Response) => {
@@ -602,8 +600,8 @@ export function repositoryRoutes(): express.Router {
           return deleteCacheFilesFromPattern(searchPattern);
         })
         .then(() => res.status(200).json({ data: true }))
-        .catch(err => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        .catch(() => res.status(200).json({ data: false }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -620,7 +618,7 @@ export function badgeRoutes(): express.Router {
       });
       res.write(generateBadgeHtml(status));
       res.end();
-    }).catch(err => res.status(200).json({ status: false }));
+    }).catch(() => res.status(200).json({ status: false }));
   });
 
   router.get('/:owner/:repository', (req: express.Request, res: express.Response) => {
@@ -633,7 +631,7 @@ export function badgeRoutes(): express.Router {
         });
         res.write(generateBadgeHtml(status));
         res.end();
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
   });
 
   return router;
@@ -648,24 +646,25 @@ export function setupRoutes(): express.Router {
       system.isSQLiteInstalled(),
       docker.isDockerInstalled(),
       docker.isDockerRunning(),
-      from(ensureFile(getFilePath('config.json'))),
-      from(ensureFile(getFilePath('abstruse.sqlite'))),
+      from(pathExists(getFilePath('config.json'))),
+      from(pathExists(getFilePath('abstruse.sqlite'))),
       from(usersExists())
     ])
-      .pipe(toArray())
-      .subscribe(data => {
-        let isFalse = data.findIndex(x => !x);
-        if (isFalse === -1) {
-          res.status(200).json({ data: true });
-        } else {
-          res.status(200).json({ data: false });
-        }
-      });
+    .pipe(toArray())
+    .subscribe(data => {
+      let isFalse = data.findIndex(x => !x);
+      if (isFalse === -1) {
+        res.status(200).json({ data: true });
+      } else {
+        console.log({ data });
+        res.status(200).json({ data: false });
+      }
+    });
   });
 
   router.get('/db', (req: express.Request, res: express.Response) => {
     merge(...[
-      from(ensureFile(getFilePath('abstruse.sqlite'))),
+      from(pathExists(getFilePath('abstruse.sqlite'))),
       from(usersExists())
     ])
       .pipe(toArray())
@@ -705,7 +704,7 @@ export function setupRoutes(): express.Router {
           reinitializeDatabase().then(() => {
             return res.status(200).json({ data: true });
           });
-        }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+        }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
       } else {
         reinitializeDatabase().then(() => {
           return res.status(200).json({ data: true });
@@ -741,7 +740,7 @@ export function setupRoutes(): express.Router {
       .then(users => {
         if (!users) {
           getConfigAsync()
-            .then(cfg => {
+          .then(cfg => {
               cfg = Object.assign({}, cfg, {
                 secret: req.body.api_secret,
                 jwtSecret: req.body.jwt_secret
@@ -766,11 +765,11 @@ export function permissionRoutes(): express.Router {
     if (req.params.userId) {
       getUserRepositoryPermissions(req.params.repoId, req.params.userId).then(perm => {
         return res.status(200).json({ data: perm });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     } else {
       getUserRepositoryPermissions(req.params.repoId).then(perm => {
         return res.status(200).json({ data: perm });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     }
   });
 
@@ -778,10 +777,10 @@ export function permissionRoutes(): express.Router {
     if (req.params.userId) {
       getUserBuildPermissions(req.params.buildId, req.params.userId).then(perm => {
         return res.status(200).json({ data: perm });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     } else {
       getUserBuildPermissions(req.params.buildId).then(perm => res.status(200).json({ data: perm }))
-        .catch(err => res.status(200).json({ status: false }));
+        .catch(() => res.status(200).json({ status: false }));
     }
   });
 
@@ -789,11 +788,11 @@ export function permissionRoutes(): express.Router {
     if (req.params.userId) {
       getUserJobPermissions(req.params.jobId, req.params.userId).then(perm => {
         return res.status(200).json({ data: perm });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     } else {
       getUserJobPermissions(req.params.jobId).then(perm => {
         return res.status(200).json({ data: perm });
-      }).catch(err => res.status(200).json({ status: false }));
+      }).catch(() => res.status(200).json({ status: false }));
     }
   });
 
@@ -808,7 +807,7 @@ export function environmentVariableRoutes(): express.Router {
       insertEnvironmentVariable(req.body)
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/remove/:id', (req: express.Request, res: express.Response) => {
@@ -816,7 +815,7 @@ export function environmentVariableRoutes(): express.Router {
       removeEnvironmentVariable(req.params.id)
         .then(() => res.status(200).json({ data: true }))
         .catch(() => res.status(200).json({ data: false }));
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
@@ -828,13 +827,13 @@ export function statsRoutes(): express.Router {
   router.get('/job-runs', (req: express.Request, res: express.Response) => {
     getJobRuns()
       .then(runs => res.status(200).json({ data: runs }))
-      .catch(err => res.status(200).json({ status: false }));
+      .catch(() => res.status(200).json({ status: false }));
   });
 
   router.get('/job-runs/:dateFrom/:dateTo', (req: express.Request, res: express.Response) => {
     getJobRunsBetween(req.params.dateFrom, req.params.dateTo)
       .then(runs => res.status(200).json({ data: runs }))
-      .catch(err => res.status(200).json({ status: false }));
+      .catch(() => res.status(200).json({ status: false }));
   });
 
   return router;
@@ -846,7 +845,7 @@ export function logsRoutes(): express.Router {
   router.get(`/:limit/:offset/:type`, (req: express.Request, res: express.Response) => {
     getLogs(req.params.limit, req.params.offset, req.params.type)
       .then(logs => res.status(200).json({ data: logs }))
-      .catch(err => res.status(200).json({ status: false }));
+      .catch(() => res.status(200).json({ status: false }));
   });
 
   return router;
@@ -889,7 +888,7 @@ export function imagesRoutes(): express.Router {
   router.get('/', (req: express.Request, res: express.Response) => {
     getImages()
       .then(images => res.status(200).json({ data: images }))
-      .catch(err => res.status(200).json({ status: false }));
+      .catch(() => res.status(200).json({ status: false }));
   });
 
   router.post('/build-base', (req: express.Request, res: express.Response) => {
@@ -901,19 +900,19 @@ export function imagesRoutes(): express.Router {
     checkApiRequestAuth(req).then(() => {
       buildDockerImage(req.body);
       res.status(200).json({ data: true });
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.post('/delete', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req).then(() => {
       deleteImage(req.body);
       res.status(200).json({ data: true });
-    }).catch(err => res.status(401).json({ data: 'Not Authorized' }));
+    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;
 }
 
-function index(req: express.Request, res: express.Response): void {
+function index(req, res: express.Response): void {
   return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }

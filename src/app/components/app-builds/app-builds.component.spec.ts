@@ -1,6 +1,6 @@
-import { DebugElement, NO_ERRORS_SCHEMA }          from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { inject, async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
+import { By } from '@angular/platform-browser';
 import { HttpModule, Http, XHRBackend, Response, ResponseOptions } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';

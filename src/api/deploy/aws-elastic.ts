@@ -172,11 +172,6 @@ export function elasticDeploy(
           if (exists) {
             // 4. create-environment
             if (environmentTemplate) {
-              let c = {
-                type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
-                  + ` --application-name "${application}" --environment-name "${environmentName}"`
-                  + ` --template-name "${environmentTemplate}"`
-              };
 
               return dockerExec(container, command, variables)
                 .toPromise()
@@ -190,11 +185,6 @@ export function elasticDeploy(
                   return Promise.resolve();
                 });
             } else if (solutionStackName) {
-              let c = {
-                type: CommandType.deploy, command: `aws elasticbeanstalk create-environment`
-                  + ` --application-name "${application}" --environment-name "${environmentName}"`
-                  + ` --solution-stack-name "${solutionStackName}"`
-              };
 
               return dockerExec(container, command, variables)
                 .toPromise()

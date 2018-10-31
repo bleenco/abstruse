@@ -378,8 +378,7 @@ export function stopJob(jobId: number): Promise<void> {
 }
 
 export function debugJob(jobId: number, debug: boolean): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let time = new Date();
+  return new Promise(() => {
     let process = processes.find(p => p.job_id === Number(jobId));
     process.debug = debug;
 
@@ -413,7 +412,6 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
       let isGithub = repository.github_id ? true : false;
       let isBitbucket = repository.bitbucket_id ? true : false;
       let isGitlab = repository.gitlab_id  ? true : false;
-      let isGogs = repository.gogs_id ? true : false;
 
       if (isGithub) {
         if (data.data.pull_request) {
@@ -478,7 +476,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(bdata => buildData = bdata)
     .then(() => sendPendingStatus(buildData, buildData.id))
     .then(() => {
-      return cfg.reduce((prev, c, i) => {
+      return cfg.reduce((prev, c) => {
         return prev.then(() => {
           let dataJob = null;
 
@@ -499,15 +497,15 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
         });
       }, Promise.resolve());
     })
-    .then(lastBuild => {
-      jobEvents.next({
-        type: 'process',
-        build_id: data.build_id,
-        repository_id: repoId,
-        data: 'build added',
-        additionalData: null
-      });
-    })
+    .then(() => {
+            jobEvents.next({
+                type: 'process',
+                build_id: data.build_id,
+                repository_id: repoId,
+                data: 'build added',
+                additionalData: null
+            });
+        })
     .then(() => getDepracatedBuilds(buildData))
     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
     .then(() => ({ buildId: buildData.id }))
@@ -666,7 +664,7 @@ function jobSucceded(proc: JobProcess): Promise<any> {
               });
           } else if (status === 'failed') {
             return getBuild(proc.build_id)
-              .then(build => updateBuild({ id: proc.build_id, end_time: time }))
+              .then(() => updateBuild({ id: proc.build_id, end_time: time }))
               .then(() => getLastRunId(proc.build_id))
               .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
@@ -732,7 +730,7 @@ function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
 
           return dbJobRuns.updateJobRun(data);
         })
-        .then(build => updateBuild({ id: proc.build_id, end_time: time }))
+        .then(() => updateBuild({ id: proc.build_id, end_time: time }))
         .then(id => updateBuildRun({ id: id, end_time: time }))
         .then(() => getBuild(proc.build_id))
         .then(build => sendFailureStatus(build, build.id))

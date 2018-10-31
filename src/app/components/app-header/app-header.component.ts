@@ -116,7 +116,6 @@ export class AppHeaderComponent implements OnInit {
       this.menuDropped = false;
     }
 
-    let toggleNotify = this.elementRef.nativeElement.querySelector('.notification-item');
     if (e.target === toggleBtn || toggleBtn.contains(<any>e.target)) {
       return;
     }

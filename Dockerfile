@@ -42,7 +42,8 @@ RUN apk --no-cache add \
   tini \
   wget
 
-COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json src /app/
+COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json /app/
+COPY src /app/src
 
 RUN npm install --only=production \
   && cp -R node_modules prod_node_modules

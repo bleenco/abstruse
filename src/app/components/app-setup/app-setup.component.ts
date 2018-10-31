@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { SocketService } from '../../services/socket.service';
 import { AuthService } from '../../services/auth.service';
 import { delay } from 'rxjs/operators';
 
@@ -41,7 +40,6 @@ export class AppSetupComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private socketService: SocketService,
     private router: Router,
     private authService: AuthService
   ) {

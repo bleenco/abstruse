@@ -87,33 +87,28 @@ Promise.resolve()
           : (typeof module.default === 'function') ? module.default
           : () => { throw new Error('Invalid test module.'); };
 
-        let clean = true;
-        let previousDir = null;
         return Promise.resolve()
           .then(() => printHeader(currentFileName))
-          .then(() => previousDir = process.cwd())
           .then(() => fn())
           .then(() => console.log('----'))
-          .then(() => printFooter(currentFileName, start), err => {
-            printFooter(currentFileName, start);
+          .then(() => printFooter(start), err => {
+            printFooter(start);
             console.error(err);
             throw err;
           })
-          .catch(err => killAllProcesses().then(() => {
-            process.exit(process.exitCode);
-          }));
+          .catch(() => killAllProcesses().then(() => process.exit(process.exitCode)));
       });
     }, Promise.resolve())
       .then(() => killAllProcesses())
       .then(() => {
         console.log(chalk.green('Done.'));
         process.exit(0);
-      }, err => {
-        killAllProcesses()
+      }, () => {
+          killAllProcesses()
           .then(() => {
-            console.log('\n');
-            console.error(chalk.red(`Test "${currentFileName}" failed...`));
-            process.exit(1);
+              console.log('\n');
+              console.error(chalk.red(`Test "${currentFileName}" failed...`));
+              process.exit(1);
           });
       });
   })
@@ -122,9 +117,6 @@ Promise.resolve()
     process.exit(process.exitCode);
   });
 
-function encode(str) {
-  return str.replace(/[^A-Za-z\d\/]+/g, '-').replace(/\//g, '.').replace(/[\/-]$/, '');
-}
 
 function printHeader(testName) {
   const text = `${++index} of ${testsToRun.length}`;
@@ -135,7 +127,7 @@ function printHeader(testName) {
   console.log(msg);
 }
 
-function printFooter(testName, startTime) {
+function printFooter(startTime) {
   const t = Math.round((Date.now() - startTime) / 10) / 100;
   console.log(chalk.green('Last step took ') +
     chalk.bold(chalk.blue(`${t}`)) + chalk.green('s...'));

@@ -65,7 +65,7 @@ export class SocketServer {
   }
 
   start(): Observable<string> {
-    return new Observable(observer => this.setupServer(this.options.app));
+    return new Observable(() => this.setupServer(this.options.app));
   }
 
   private setupServer(application: any): void {
@@ -137,7 +137,7 @@ export class SocketServer {
       });
 
       socket.on('message', event => this.handleEvent(JSON.parse(event), client));
-      socket.on('close', (code, message) => this.removeClient(socket));
+      socket.on('close', () => this.removeClient(socket));
     });
 
     server.listen(config.port, () => {
@@ -186,8 +186,6 @@ export class SocketServer {
         break;
 
       case 'logout': {
-        let email = client.session.email;
-        let userId = client.session.userId;
         client.session.userId = null;
         client.session.email = 'anonymous';
         client.session.isAdmin = false;

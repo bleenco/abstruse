@@ -166,7 +166,7 @@ export function parseConfigFromRaw(repository: Repository, raw: string): Promise
 }
 
 export function checkRepositoryAccess(repository: Repository): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch || 'master';
     let cloneDir = null;
@@ -179,12 +179,12 @@ export function checkRepositoryAccess(repository: Repository): Promise<boolean> 
       .then(dir => cloneDir = dir)
       .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
       .then(() => resolve(true))
-      .catch(err => resolve(false));
+      .catch(() => resolve(false));
   });
 }
 
 export function checkConfigPresence(repository: Repository): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch || 'master';
     let cloneDir = null;
@@ -205,12 +205,12 @@ export function checkConfigPresence(repository: Repository): Promise<boolean> {
           resolve(true);
         }
       })
-      .catch(err => resolve(false));
+      .catch(() => resolve(false));
   });
 }
 
 export function getConfigRawFile(repository: Repository): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let cloneUrl = repository.clone_url;
     let branch = repository.branch || 'master';
     let cloneDir = null;
@@ -233,7 +233,7 @@ export function getConfigRawFile(repository: Repository): Promise<any> {
       })
       .then(() => readAbstruseConfigFile(cloneDir))
       .then(rawFile => resolve(rawFile))
-      .catch(err => resolve(false));
+      .catch(() => resolve(false));
   });
 }
 
@@ -261,7 +261,7 @@ function parseJob(data: any): Config {
   };
 
   config.image = data.image || null;
-  config.os = parseOS(data.os || null);
+  config.os = parseOS();
   config.cache = parseCache(data.cache || null);
   config.branches = parseBranches(data.branches || null);
   config.env = parseEnv(data.env || null);
@@ -281,7 +281,7 @@ function parseJob(data: any): Config {
   return config;
 }
 
-function parseOS(os: string | null): string {
+function parseOS(): string {
   return 'linux'; // since we are compatible with travis configs, hardcode this to Linux
 }
 
@@ -415,9 +415,6 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
   let globalEnv = config.env && config.env.global || [];
   let matrixEnv = config.env && config.env.matrix || [];
 
-  // 1. clone repository
-  let splitted = repo.clone_url.split('/');
-  let name = splitted[splitted.length - 1].replace(/\.git/, '');
   // TODO: update to ${ABSTRUSE_BUILD_DIR}
   if (repo.access_token) {
     repo.clone_url = repo.clone_url.replace('//', `//${repo.access_token}@`);
@@ -478,7 +475,7 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
       stage: JobStage.test,
       image: i.image || config.image
     };
-  })).concat(config.jobs.include.map((job, i) => {
+  })).concat(config.jobs.include.map((job) => {
     let env = globalEnv.concat(job.env && job.env.global || []);
 
     let jobInstallCommands = []

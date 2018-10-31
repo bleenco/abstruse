@@ -51,8 +51,6 @@ function cpuLoad(): Promise<ICpuData> {
 }
 
 function cpuAverage(): { idle: number, total: number, cores: { idle: number, total: number }[] } {
-  let totalIdle = 0;
-  let totalTick = 0;
   let cpuData = cpus();
 
   let data = cpuData.map(core => {

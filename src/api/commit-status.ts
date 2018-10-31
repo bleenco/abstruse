@@ -205,23 +205,6 @@ function setGitHubStatusPending(
   return sendRequest(gitUrl, data, header);
 }
 
-function setGitHubStatusError(
-  gitUrl: string, abstruseUrl: string, token: string
-): Promise<any> {
-  let data = {
-    'state': 'error',
-    'target_url': abstruseUrl,
-    'description': 'The Abstruse CI build errored',
-    'context': 'continuous-integration/abstruse'
-  };
-
-  let header = {
-    'Authorization': `token ${token}`,
-    'User-Agent': 'Abstruse'
-  };
-
-  return sendRequest(gitUrl, data, header);
-}
 
 function setGitHubStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string
@@ -275,22 +258,6 @@ function setGitLabStatusPending(
   return sendRequest(gitUrl, data, header);
 }
 
-function setGitLabStatusError(
-  gitUrl: string, abstruseUrl: string, token: string
-): Promise<any> {
-  let data = {
-    'state': 'error',
-    'target_url': abstruseUrl,
-    'description': 'The Abstruse CI build errored',
-    'context': 'continuous-integration/abstruse'
-  };
-
-  let header = {
-    'PRIVATE-TOKEN': token
-  };
-
-  return sendRequest(gitUrl, data, header);
-}
 
 function setGitLabStatusFailure(
   gitUrl: string, abstruseUrl: string, token: string
@@ -382,7 +349,7 @@ function setBitbucketStatusFailure(
 }
 
 function sendRequest(url: string, data: any, headers: any): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let options = {
       url: url,
       method: 'POST',
