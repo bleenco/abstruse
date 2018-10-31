@@ -42,8 +42,7 @@ export class SocketService {
             this.connectionState.next(ConnectionStates.RETRYING);
             if (navigator.onLine) {
                 return timer(3000);
-            }
-            else {
+            } else {
                 return fromEvent(window, 'online').pipe(take(1));
             }
         }));

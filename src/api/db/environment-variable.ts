@@ -1,23 +1,23 @@
 import { encrypt } from '../security';
 import { EnvironmentVariable } from './model';
 
-export function insertEnvironmentVariable(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    if (data.encrypted) {
-      try {
-        data.value = encrypt(data.value);
-      } catch (e) { }
-    }
+export async function insertEnvironmentVariable(data: any): Promise<any> {
+  if (data.encrypted) {
+    try {
+      data.value = encrypt(data.value);
+    } catch (e) { }
+  }
 
-    new EnvironmentVariable().save(data, { method: 'insert' })
-      .then(buildRun => !buildRun ? reject() : resolve(buildRun.toJSON()));
-  });
+  const buildRun = await new EnvironmentVariable().save(data, { method: 'insert' });
+
+  if (!buildRun) {
+    throw buildRun;
+  }
+
+  return buildRun.toJSON();
 }
 
-export function removeEnvironmentVariable(id: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new EnvironmentVariable({ id: id }).destroy()
-      .then(() => resolve(true))
-      .catch(() => reject());
-  });
+export async function removeEnvironmentVariable(id: number): Promise<any> {
+  await new EnvironmentVariable({ id: id }).destroy();
+  return true;
 }

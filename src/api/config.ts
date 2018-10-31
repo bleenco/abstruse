@@ -101,45 +101,34 @@ export interface Config {
   matrix?: Matrix;
 }
 
-export function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEnv[]> {
-  return new Promise((resolve, reject) => {
-    let cloneUrl = repository.clone_url;
-    let branch = repository.branch || 'master';
-    let sha = repository.sha || null;
-    let pr = repository.pr || null;
-    let cloneDir = null;
+export async function getRemoteParsedConfig(repository: Repository): Promise<JobsAndEnv[]> {
+  let cloneUrl = repository.clone_url;
+  let branch = repository.branch || 'master';
+  let sha = repository.sha || null;
+  let pr = repository.pr || null;
 
-    if (repository.access_token) {
-      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
-    }
+  if (repository.access_token) {
+    cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+  }
 
-    createGitTmpDir()
-      .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => {
-        if (sha || pr) {
-          return checkoutShaOrPr(sha, pr, cloneDir, repository.type, repository.branch);
-        } else {
-          return Promise.resolve();
-        }
-      })
-      .then(() => readGitDir(cloneDir))
-      .then(files => repository.file_tree = files)
-      .then(() => {
-        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          let err = new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
-          return Promise.reject(err);
-        } else {
-          return Promise.resolve();
-        }
-      })
-      .then(() => readAbstruseConfigFile(cloneDir))
-      .then(config => yaml.load(config))
-      .then(json => parseConfig(json))
-      .then(parsed => generateJobsAndEnv(repository, parsed))
-      .then(result => resolve(result))
-      .catch(err => reject(err));
-  });
+  const cloneDir = await createGitTmpDir();
+  await spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]);
+
+  if (sha || pr) {
+    await checkoutShaOrPr(sha, pr, cloneDir, repository.type, repository.branch);
+  }
+
+  repository.file_tree = await readGitDir(cloneDir);
+
+  if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
+    throw new Error(`Repository doesn't contains '.abstruse.yml' configuration file.`);
+  }
+
+  const config = await readAbstruseConfigFile(cloneDir);
+  const json = await yaml.load(config);
+  const parsed = await parseConfig(json);
+
+  return generateJobsAndEnv(repository, parsed);
 }
 
 export function parseConfig(data: any): Config {
@@ -154,87 +143,68 @@ export function parseConfig(data: any): Config {
   return main;
 }
 
-export function parseConfigFromRaw(repository: Repository, raw: string): Promise<JobsAndEnv[]> {
-  return new Promise((resolve, reject) => {
-    return Promise.resolve()
-      .then(() => yaml.load(raw))
-      .then(json => parseConfig(json))
-      .then(parsed => generateJobsAndEnv(repository, parsed))
-      .then(result => resolve(result))
-      .catch(err => reject(err));
-  });
+export async function parseConfigFromRaw(repository: Repository, raw: string): Promise<JobsAndEnv[]> {
+  const json = await yaml.load(raw);
+  const parsed = await parseConfig(json);
+  return generateJobsAndEnv(repository, parsed);
 }
 
-export function checkRepositoryAccess(repository: Repository): Promise<boolean> {
-  return new Promise((resolve) => {
-    let cloneUrl = repository.clone_url;
-    let branch = repository.branch || 'master';
-    let cloneDir = null;
+export async function checkRepositoryAccess(repository: Repository): Promise<boolean> {
+  let cloneUrl = repository.clone_url;
+  let branch = repository.branch || 'master';
 
-    if (repository.access_token) {
-      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
-    }
+  if (repository.access_token) {
+    cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+  }
 
-    createGitTmpDir()
-      .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => resolve(true))
-      .catch(() => resolve(false));
-  });
+  try {
+    const cloneDir = await createGitTmpDir();
+    await spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-export function checkConfigPresence(repository: Repository): Promise<boolean> {
-  return new Promise((resolve) => {
-    let cloneUrl = repository.clone_url;
-    let branch = repository.branch || 'master';
-    let cloneDir = null;
+export async function checkConfigPresence(repository: Repository): Promise<boolean> {
+  let cloneUrl = repository.clone_url;
+  let branch = repository.branch || 'master';
 
-    if (repository.access_token) {
-      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
-    }
+  if (repository.access_token) {
+    cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+  }
 
-    createGitTmpDir()
-      .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => readGitDir(cloneDir))
-      .then(files => repository.file_tree = files)
-      .then(() => {
-        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          resolve(false);
-        } else {
-          resolve(true);
-        }
-      })
-      .catch(() => resolve(false));
-  });
+  try {
+    const cloneDir = await createGitTmpDir();
+    await spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]);
+    repository.file_tree = await readGitDir(cloneDir);
+    return !repository.file_tree.includes('.abstruse.yml');
+  } catch {
+    return false;
+  }
 }
 
-export function getConfigRawFile(repository: Repository): Promise<any> {
-  return new Promise((resolve) => {
-    let cloneUrl = repository.clone_url;
-    let branch = repository.branch || 'master';
-    let cloneDir = null;
+export async function getConfigRawFile(repository: Repository): Promise<any> {
+  let cloneUrl = repository.clone_url;
+  let branch = repository.branch || 'master';
 
-    if (repository.access_token) {
-      cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+  if (repository.access_token) {
+    cloneUrl = cloneUrl.replace('//', `//${repository.access_token}@`);
+  }
+
+  try {
+    const cloneDir = await createGitTmpDir();
+    await spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]);
+    repository.file_tree = await readGitDir(cloneDir);
+
+    if (!repository.file_tree.includes('.abstruse.yml')) {
+      return false;
     }
 
-    createGitTmpDir()
-      .then(dir => cloneDir = dir)
-      .then(() => spawnGit(['clone', cloneUrl, '-b', branch, '--depth', '1', cloneDir]))
-      .then(() => readGitDir(cloneDir))
-      .then(files => repository.file_tree = files)
-      .then(() => {
-        if (repository.file_tree.indexOf('.abstruse.yml') === -1) {
-          resolve(false);
-        } else {
-          return Promise.resolve();
-        }
-      })
-      .then(() => readAbstruseConfigFile(cloneDir))
-      .then(rawFile => resolve(rawFile))
-      .catch(() => resolve(false));
-  });
+    return readAbstruseConfigFile(cloneDir);
+  } catch {
+    return false;
+  }
 }
 
 function parseJob(data: any): Config {
@@ -300,55 +270,55 @@ function parseCache(cache: any | null): string[] | null {
 function parseBranches(branches: any | null): { test: string[], ignore: string[] } | null {
   if (!branches) {
     return null;
-  } else {
-    if (Array.isArray(branches)) {
-      return { test: branches, ignore: [] };
-    } else if (typeof branches === 'object') {
-      let only = [], except = [];
-      if (branches && branches.only) {
-        only = branches.only;
-      }
+  }
 
-      if (branches && branches.except) {
-        except = branches.except;
-      }
-
-      return { test: only, ignore: except };
-    } else {
-      throw new Error(`Unknown format for property branches.`);
+  if (Array.isArray(branches)) {
+    return { test: branches, ignore: [] };
+  } else if (typeof branches === 'object') {
+    let only = [], except = [];
+    if (branches && branches.only) {
+      only = branches.only;
     }
+
+    if (branches && branches.except) {
+      except = branches.except;
+    }
+
+    return { test: only, ignore: except };
+  } else {
+    throw new Error(`Unknown format for property branches.`);
   }
 }
 
 function parseEnv(env: any | null): { global: string[], matrix: string[] } {
   if (!env) {
     return null;
-  } else {
-    if (typeof env === 'object') {
-      let global = [];
-      let matrix = [];
-      if (env.global) {
-        if (Array.isArray(env.global)) {
-          global = env.global;
-        } else {
-          throw new Error(`Unknown format for property env.global.`);
-        }
-      }
+  }
 
-      if (env.matrix) {
-        if (Array.isArray(env.matrix)) {
-          matrix = env.matrix;
-        } else {
-          throw new Error(`Unknown format for property env.matrix.`);
-        }
+  if (typeof env === 'object') {
+    let global = [];
+    let matrix = [];
+    if (env.global) {
+      if (Array.isArray(env.global)) {
+        global = env.global;
+      } else {
+        throw new Error(`Unknown format for property env.global.`);
       }
-
-      return { global, matrix };
-    } else if (typeof env === 'string') {
-      return { global: [env], matrix: [] };
-    } else {
-      throw new Error(`Unknown format for property env.`);
     }
+
+    if (env.matrix) {
+      if (Array.isArray(env.matrix)) {
+        matrix = env.matrix;
+      } else {
+        throw new Error(`Unknown format for property env.matrix.`);
+      }
+    }
+
+    return { global, matrix };
+  } else if (typeof env === 'string') {
+    return { global: [env], matrix: [] };
+  } else {
+    throw new Error(`Unknown format for property env.`);
   }
 }
 
@@ -375,31 +345,31 @@ function parseCommands(
 function parseMatrix(matrix: any | null): Matrix {
   if (!matrix) {
     return { include: [], exclude: [], allow_failures: [] };
-  } else {
-    if (Array.isArray(matrix)) {
-      let include = matrix.map((m: Build) => m);
-      return { include: include, exclude: [], allow_failures: [] };
-    } else if (typeof matrix === 'object') {
-      let include = [];
-      let exclude = [];
-      let allowFailures = [];
+  }
 
-      if (matrix.include && Array.isArray(matrix.include)) {
-        include = matrix.include;
-      }
+  if (Array.isArray(matrix)) {
+    let include = matrix.map((m: Build) => m);
+    return { include: include, exclude: [], allow_failures: [] };
+  } else if (typeof matrix === 'object') {
+    let include = [];
+    let exclude = [];
+    let allowFailures = [];
 
-      if (matrix.exclude && Array.isArray(matrix.exclude)) {
-        exclude = matrix.exclude;
-      }
-
-      if (matrix.allow_failures && Array.isArray(matrix.allow_failures)) {
-        allowFailures = matrix.allow_failures;
-      }
-
-      return { include: include, exclude: exclude, allow_failures: allowFailures };
-    } else {
-      throw new Error(`Unknown or invalid matrix format.`);
+    if (matrix.include && Array.isArray(matrix.include)) {
+      include = matrix.include;
     }
+
+    if (matrix.exclude && Array.isArray(matrix.exclude)) {
+      exclude = matrix.exclude;
+    }
+
+    if (matrix.allow_failures && Array.isArray(matrix.allow_failures)) {
+      allowFailures = matrix.allow_failures;
+    }
+
+    return { include: include, exclude: exclude, allow_failures: allowFailures };
+  } else {
+    throw new Error(`Unknown or invalid matrix format.`);
   }
 }
 
@@ -540,34 +510,34 @@ export function generateJobsAndEnv(repo: Repository, config: Config): JobsAndEnv
 function checkBranches(branch: string, branches: { test: string[], ignore: string[] }): boolean {
   if (!branches) {
     return true;
-  } else {
-    let ignore = false;
-    let test = false;
-
-    branches.ignore.forEach(ignored => {
-      let regex: RegExp = new RegExp(ignored);
-      if (regex.test(branch)) {
-        if (!ignore) {
-          ignore = true;
-        }
-      }
-    });
-
-    if (ignore) {
-      return false;
-    }
-
-    branches.test.forEach(tested => {
-      let regex: RegExp = new RegExp(tested);
-      if (regex.test(branch)) {
-        if (!test) {
-          test = true;
-        }
-      }
-    });
-
-    return test;
   }
+
+  let ignore = false;
+  let test = false;
+
+  branches.ignore.forEach(ignored => {
+    let regex: RegExp = new RegExp(ignored);
+    if (regex.test(branch)) {
+      if (!ignore) {
+        ignore = true;
+      }
+    }
+  });
+
+  if (ignore) {
+    return false;
+  }
+
+  branches.test.forEach(tested => {
+    let regex: RegExp = new RegExp(tested);
+    if (regex.test(branch)) {
+      if (!test) {
+        test = true;
+      }
+    }
+  });
+
+  return test;
 }
 
 function spawnGit(args: string[]): Promise<void> {
@@ -622,8 +592,8 @@ function checkoutShaOrPr(
     if (fetch && checkout) {
       spawnGit(fetch.split(' '))
         .then(() => spawnGit(checkout.split(' '))
-          .then(() => resolve())
-          .catch(err => reject(err)));
+        .then(() => resolve())
+        .catch(err => reject(err)));
     } else {
       resolve();
     }
@@ -631,27 +601,11 @@ function checkoutShaOrPr(
 }
 
 function readAbstruseConfigFile(dirPath: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    readFile(dirPath + '/.abstruse.yml', (err, contents) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(contents.toString());
-      }
-    });
-  });
+  return readFile(dirPath + '/.abstruse.yml', 'utf8');
 }
 
 function readGitDir(dirPath: string): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    readdir(dirPath, (err, files) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(files);
-      }
-    });
-  });
+  return readdir(dirPath);
 }
 
 function createGitTmpDir(): Promise<string> {

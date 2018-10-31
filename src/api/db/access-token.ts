@@ -20,17 +20,17 @@ export function getAccessTokens(): Promise<any> {
   });
 }
 
-export function insertAccessToken(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new AccessToken().save(data, { method: 'insert' })
-      .then(token => !token ? reject(token) : resolve(token.toJSON()));
-  });
+export async function insertAccessToken(data: any): Promise<any> {
+  const token = await new AccessToken().save(data, { method: 'insert' });
+
+  if (!token) {
+    throw token;
+  } else {
+    return token.toJSON();
+  }
 }
 
-export function removeAccessToken(id: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new AccessToken({ id: id }).destroy()
-      .then(() => resolve(true))
-      .catch(() => reject());
-  });
+export async function removeAccessToken(id: number): Promise<any> {
+  await new AccessToken({ id: id }).destroy();
+  return true;
 }

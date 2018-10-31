@@ -152,69 +152,54 @@ function prepareDirectory(data: ImageData): Promise<void> {
       });
 }
 
-export function getImages(): Promise<any> {
-  return new Promise((resolve) => {
-    Promise.all([getImagesInDirectory('images'), getImagesInDirectory('base-images')])
-      .then(imgs => resolve(imgs.reduce((a, b) => a.concat(b))));
-  });
+export async function getImages(): Promise<any> {
+  const imgs = await Promise.all([getImagesInDirectory('images'), getImagesInDirectory('base-images')]);
+  return imgs.reduce((a, b) => a.concat(b));
 }
 
+async function getImagesInDirectory(path: string): Promise<any> {
+  let imagesDir = getFilePath(path);
 
-function getImagesInDirectory(path: string): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let imagesDir = getFilePath(path);
-
-    fs.readdir(imagesDir).then(dirs => {
-      docker.listImages()
-        .then(images => {
-          let imgs = dirs.map(d => {
-            let index = images.findIndex(i => {
-              if (i.RepoTags) {
-                return i.RepoTags.findIndex(t => t.startsWith(d)) !== -1;
-              }
-
-              return false;
-            });
-            if (index !== -1) {
-              return {
-                name: d,
-                version: images[index].RepoTags.find(t => t.startsWith(d)).split(':')[1],
-                created: format(new Date(images[index].Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
-                createdAgo: distanceInWordsToNow(new Date(images[index].Created * 1000)),
-                size: getHumanSize(images[index].Size),
-                dockerfile: null,
-                initsh: null,
-                base: null
-              };
-            } else {
-              return null;
-            }
-          }).filter(Boolean);
-
-          Promise.all(imgs.map(img => {
-            let dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
-            let initsh = getFilePath(`${path}/${img.name}/init.sh`);
-
-            if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
-              return fs.readFile(dockerfile)
-                .then(dockerfileContents => {
-                  return fs.readFile(initsh).then(initshContents => {
-                    img.dockerfile = dockerfileContents.toString();
-                    img.initsh = initshContents.toString();
-                    img.base = path === 'base-images';
-
-                    return img;
-                  });
-                });
-            } else {
-              return Promise.resolve(img);
-            }
-          }))
-          .then(resolve)
-          .catch(reject);
-        });
+  const dirs = await fs.readdir(imagesDir);
+  const images = await docker.listImages();
+  let imgs = dirs.map(d => {
+    let index = images.findIndex(i => {
+      if (i.RepoTags) {
+        return i.RepoTags.findIndex(t => t.startsWith(d)) !== -1;
+      }
+      return false;
     });
-  });
+    if (index !== -1) {
+      return {
+        name: d,
+        version: images[index].RepoTags.find(t => t.startsWith(d)).split(':')[1],
+        created: format(new Date(images[index].Created * 1000), 'DD.MM.YYYY HH:mm:ss'),
+        createdAgo: distanceInWordsToNow(new Date(images[index].Created * 1000)),
+        size: getHumanSize(images[index].Size),
+        dockerfile: null,
+        initsh: null,
+        base: null
+      };
+    } else {
+      return null;
+    }
+  }).filter(Boolean);
+
+  Promise.all(imgs.map(async img => {
+    let dockerfile = getFilePath(`${path}/${img.name}/Dockerfile`);
+    let initsh = getFilePath(`${path}/${img.name}/init.sh`);
+    if (fs.existsSync(dockerfile) && fs.existsSync(initsh)) {
+      const dockerfileContents = await fs.readFile(dockerfile);
+      return fs.readFile(initsh).then(initshContents => {
+        img.dockerfile = dockerfileContents.toString();
+        img.initsh = initshContents.toString();
+        img.base = path === 'base-images';
+        return img;
+      });
+    } else {
+      return img;
+    }
+  }));
 }
 
 let defaultBaseImage: ImageData = {

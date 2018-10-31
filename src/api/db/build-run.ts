@@ -13,30 +13,26 @@ export function getRun(runId: number): Promise<any> {
   });
 }
 
-export function insertBuildRun(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    delete data.id;
-    delete data.repositories_id;
-    delete data.jobs;
-    delete data.pr;
-    delete data.branch;
-    delete data.parsed_config;
-    data.head_id = data.data.repository && data.data.repository.id || null;
-    delete data.data;
+export async function insertBuildRun(data: any): Promise<any> {
+  delete data.id;
+  delete data.repositories_id;
+  delete data.jobs;
+  delete data.pr;
+  delete data.branch;
+  delete data.parsed_config;
+  data.head_id = data.data.repository && data.data.repository.id || null;
+  delete data.data;
 
-    new BuildRun().save(data, { method: 'insert' }).then(buildRun => {
-      if (!buildRun) {
-        reject();
-      }
+  const buildRun = await new BuildRun().save(data, { method: 'insert' });
 
-      resolve(buildRun.toJSON());
-    });
-  });
+  if (!buildRun) {
+    throw buildRun;
+  }
+
+  return buildRun.toJSON();
 }
 
-export function updateBuildRun(data: any): Promise<any> {
-  return new Promise((resolve) => {
-    new BuildRun({ id: data.id }).save(data, { method: 'update', require: false })
-      .then(job => resolve(job.toJSON()));
-  });
+export async function updateBuildRun(data: any): Promise<any> {
+  const job = await new BuildRun({ id: data.id }).save(data, { method: 'update', require: false });
+  return job.toJSON();
 }

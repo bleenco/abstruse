@@ -10,9 +10,9 @@ export function getContainersStats(): Observable<any> {
     let sub = interval(2000)
       .pipe(
         timeInterval(),
-        mergeMap(() => {
-          return listContainers()
-            .then(containers => Promise.all(containers.map(c => getContainerStats(c))));
+        mergeMap(async () => {
+          const containers = await listContainers();
+          return Promise.all(containers.map(c => getContainerStats(c)));
         }),
         map(stats => observer.next({ type: 'containersStats', data: stats.filter(Boolean) }))
       )
@@ -26,21 +26,20 @@ export function getContainersStats(): Observable<any> {
   }).pipe(share());
 }
 
-function getContainerStats(container: any): Promise<any> {
-  return calculateContainerStats(container, processes).then(stats => {
-    if (stats) {
-      return {
-        id: stats.id,
-        name: stats.name,
-        cpu: getCpuData(stats.data),
-        network: getNetworkData(stats.data),
-        memory: getMemory(stats.data),
-        debug: stats.debug
-      };
-    } else {
-      return null;
-    }
-  });
+async function getContainerStats(container: any): Promise<any> {
+  const stats = await calculateContainerStats(container, processes);
+  if (!stats) {
+    return null;
+  }
+
+  return {
+    id: stats.id,
+    name: stats.name,
+    cpu: getCpuData(stats.data),
+    network: getNetworkData(stats.data),
+    memory: getMemory(stats.data),
+    debug: stats.debug
+  };
 }
 
 function getCpuData(json: any): { usage: string, cores: number } {

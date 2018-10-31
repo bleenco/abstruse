@@ -377,26 +377,24 @@ export function stopJob(jobId: number): Promise<void> {
     });
 }
 
-export function debugJob(jobId: number, debug: boolean): Promise<void> {
-  return new Promise(() => {
-    let process = processes.find(p => p.job_id === Number(jobId));
-    process.debug = debug;
+export async function debugJob(jobId: number, debug: boolean): Promise<void> {
+  let process = processes.find(p => p.job_id === Number(jobId));
+  process.debug = debug;
 
-    if (debug) {
-      buildSub[jobId].unsubscribe();
-      delete buildSub[jobId];
+  if (debug) {
+    buildSub[jobId].unsubscribe();
+    delete buildSub[jobId];
 
-      let msg: JobProcessEvent = {
-        build_id: process.build_id,
-        job_id: Number(jobId),
-        type: 'data',
-        data: `[exectime]: stopped`
-      };
+    let msg: JobProcessEvent = {
+      build_id: process.build_id,
+      job_id: Number(jobId),
+      type: 'data',
+      data: `[exectime]: stopped`
+    };
 
-      terminalEvents.next(msg);
-      process.log += `[exectime]: stopped`;
-    }
-  });
+    terminalEvents.next(msg);
+    process.log += `[exectime]: stopped`;
+  }
 }
 
 export function startBuild(data: any, buildConfig?: any): Promise<any> {
@@ -411,7 +409,7 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(repository => {
       let isGithub = repository.github_id ? true : false;
       let isBitbucket = repository.bitbucket_id ? true : false;
-      let isGitlab = repository.gitlab_id  ? true : false;
+      let isGitlab = repository.gitlab_id ? true : false;
 
       if (isGithub) {
         if (data.data.pull_request) {
@@ -498,14 +496,14 @@ export function startBuild(data: any, buildConfig?: any): Promise<any> {
       }, Promise.resolve());
     })
     .then(() => {
-            jobEvents.next({
-                type: 'process',
-                build_id: data.build_id,
-                repository_id: repoId,
-                data: 'build added',
-                additionalData: null
-            });
-        })
+      jobEvents.next({
+        type: 'process',
+        build_id: data.build_id,
+        repository_id: repoId,
+        data: 'build added',
+        additionalData: null
+      });
+    })
     .then(() => getDepracatedBuilds(buildData))
     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
     .then(() => ({ buildId: buildData.id }))

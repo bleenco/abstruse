@@ -723,36 +723,29 @@ export function setupRoutes(): express.Router {
     return res.status(200).json({ data: config.requireLogin });
   });
 
-  router.get(`/config`, (_req: express.Request, res: express.Response) => {
-    return usersExists()
-      .then(users => {
-        if (!users) {
-          getConfigAsync()
-            .then(cfg => res.status(200).json({ status: true, data: cfg }));
-        } else {
-          return res.status(200).json({ status: false });
-        }
-      });
+  router.get(`/config`, async (_req: express.Request, res: express.Response) => {
+    const users = await usersExists();
+    if (!users) {
+      getConfigAsync()
+        .then(cfg => res.status(200).json({ status: true, data: cfg }));
+    } else {
+      return res.status(200).json({ status: false });
+    }
   });
 
-  router.post(`/config`, (req: express.Request, res: express.Response) => {
-    return usersExists()
-      .then(users => {
-        if (!users) {
-          getConfigAsync()
-          .then(cfg => {
-              cfg = Object.assign({}, cfg, {
-                secret: req.body.api_secret,
-                jwtSecret: req.body.jwt_secret
-              });
-
-              return saveConfigAsync(cfg);
-            })
-            .then(() => res.status(200).json({ status: true }));
-        } else {
-          return res.status(200).json({ status: false });
-        }
-      });
+  router.post(`/config`, async (req: express.Request, res: express.Response) => {
+    const users = await usersExists();
+    if (!users) {
+      let cfg = await getConfigAsync();
+        cfg = Object.assign({}, cfg, {
+          secret: req.body.api_secret,
+          jwtSecret: req.body.jwt_secret
+        });
+        await saveConfigAsync(cfg);
+        return res.status(200).json({ status: true });
+    } else {
+      return res.status(200).json({ status: false });
+    }
   });
 
   return router;
@@ -805,17 +798,19 @@ export function environmentVariableRoutes(): express.Router {
   router.post('/add', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req).then(() => {
       insertEnvironmentVariable(req.body)
-        .then(() => res.status(200).json({ data: true }))
-        .catch(() => res.status(200).json({ data: false }));
-    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
+    })
+    .catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   router.get('/remove/:id', (req: express.Request, res: express.Response) => {
     checkApiRequestAuth(req).then(() => {
       removeEnvironmentVariable(req.params.id)
-        .then(() => res.status(200).json({ data: true }))
-        .catch(() => res.status(200).json({ data: false }));
-    }).catch(() => res.status(401).json({ data: 'Not Authorized' }));
+      .then(() => res.status(200).json({ data: true }))
+      .catch(() => res.status(200).json({ data: false }));
+    })
+    .catch(() => res.status(401).json({ data: 'Not Authorized' }));
   });
 
   return router;

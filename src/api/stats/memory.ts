@@ -21,11 +21,9 @@ export function memory(): Observable<IOutput> {
     );
 }
 
-function getMemory(): Promise<IMemoryData> {
-  return new Promise(resolve => {
-    resolve({
-      total: totalmem(),
-      free: freemem()
-    });
-  });
+async function getMemory(): Promise<IMemoryData> {
+  return {
+    total: totalmem(),
+    free: freemem()
+  };
 }
