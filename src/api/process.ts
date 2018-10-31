@@ -132,68 +132,68 @@ export function startBuildProcess(
       deploy(deployPreferences, name, envs),
       ...afterDeployCommands.map(cmd => docker.dockerExec(name, cmd, envs))
     )
-      .pipe(
-        timeoutWith(idleTimeout, throwError(new Error('command timeout'))),
-        takeUntil(timer(jobTimeout).pipe(
-          timeInterval(),
-          mergeMap(() => throwError('job timeout')))
-        )
+    .pipe(
+      timeoutWith(idleTimeout, throwError(new Error('command timeout'))),
+      takeUntil(timer(jobTimeout).pipe(
+        timeInterval(),
+        mergeMap(() => throwError('job timeout')))
       )
-      .subscribe((event: ProcessOutput) => {
-        if (event.type === 'env') {
-          if (Object.keys(event.data).length) {
-            envs = event.data;
-          }
-        } else if (event.type === 'containerError') {
-          let msg = chalk.red((event.data.json && event.data.json.message) || event.data);
-          observer.next({ type: 'exit', data: msg });
-          observer.error(msg);
-        } else if (event.type === 'containerInfo') {
-          observer.next({
-            type: 'exposed ports',
-            data: { type: 'ports', info: event.data.NetworkSettings.Ports }
-          });
-        } else if (event.type === 'exit') {
-          if (Number(event.data) !== 0) {
-            let msg = [
-              `build: ${proc.build_id} job: ${proc.job_id} =>`,
-              `last executed command exited with code ${event.data}`
-            ].join(' ');
-            let tmsg = style.red.open + style.bold.open +
-              `\r\n[error]: executed command returned exit code ${event.data}` +
-              style.bold.close + style.red.close;
-            observer.next({ type: 'exit', data: chalk.red(tmsg) });
-            observer.error(msg);
-            docker.killContainer(name)
-              .then(() => {
-                sub.unsubscribe();
-                observer.complete();
-              })
-              .catch(err => console.error(err));
-          }
-        } else {
-          observer.next(event);
+    )
+    .subscribe((event: ProcessOutput) => {
+      if (event.type === 'env') {
+        if (Object.keys(event.data).length) {
+          envs = event.data;
         }
-      }, err => {
-        observer.error(err);
-        docker.killContainer(name)
-          .then(() => {
-            sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(e => console.error(e));
-      }, () => {
-        let msg = style.green.open + style.bold.open +
-          '\r\n[success]: build returned exit code 0' +
-          style.bold.close + style.green.close;
-        observer.next({ type: 'exit', data: chalk.green(msg) });
-        docker.killContainer(name)
-          .then(() => {
-            sub.unsubscribe();
-            observer.complete();
-          })
-          .catch(err => console.error(err));
-      });
+      } else if (event.type === 'containerError') {
+        let msg = chalk.red((event.data.json && event.data.json.message) || event.data);
+        observer.next({ type: 'exit', data: msg });
+        observer.error(msg);
+      } else if (event.type === 'containerInfo') {
+        observer.next({
+          type: 'exposed ports',
+          data: { type: 'ports', info: event.data.NetworkSettings.Ports }
+        });
+      } else if (event.type === 'exit') {
+        if (Number(event.data) !== 0) {
+          let msg = [
+            `build: ${proc.build_id} job: ${proc.job_id} =>`,
+            `last executed command exited with code ${event.data}`
+          ].join(' ');
+          let tmsg = style.red.open + style.bold.open +
+            `\r\n[error]: executed command returned exit code ${event.data}` +
+            style.bold.close + style.red.close;
+          observer.next({ type: 'exit', data: chalk.red(tmsg) });
+          observer.error(msg);
+          docker.killContainer(name)
+            .then(() => {
+              sub.unsubscribe();
+              observer.complete();
+            })
+            .catch(err => console.error(err));
+        }
+      } else {
+        observer.next(event);
+      }
+    }, err => {
+      observer.error(err);
+      docker.killContainer(name)
+        .then(() => {
+          sub.unsubscribe();
+          observer.complete();
+        })
+        .catch(e => console.error(e));
+    }, () => {
+      let msg = style.green.open + style.bold.open +
+        '\r\n[success]: build returned exit code 0' +
+        style.bold.close + style.green.close;
+      observer.next({ type: 'exit', data: chalk.green(msg) });
+      docker.killContainer(name)
+        .then(() => {
+          sub.unsubscribe();
+          observer.complete();
+        })
+        .catch(err => console.error(err));
+    });
 
     return () => {
       if (sub) {

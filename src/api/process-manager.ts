@@ -76,11 +76,9 @@ jobEvents
     logger.next(msg);
   });
 
-// main scheduler
-let concurrency = config.concurrency || 10;
 jobProcesses
   .pipe(
-    mergeMap(process => execJob(process), concurrency)
+    mergeMap(process => execJob(process), config.concurrency || 10)
   )
   .subscribe();
 

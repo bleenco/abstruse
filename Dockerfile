@@ -58,7 +58,6 @@ COPY angular.json /app
 COPY src/environments /app/src/environments
 COPY src/app /app/src/app
 COPY src/assets /app/src/assets
-COPY src/files /app/src/files
 COPY src/styles /app/src/styles
 COPY src/testing /app/src/testing
 
@@ -77,6 +76,7 @@ RUN npm run build:app
 # Copy backend
 COPY webpack.api.js /app
 COPY src/api /app/src/api
+COPY src/files /app/src/files
 COPY src/tsconfig.api.json /app/src
 
 # Build backend

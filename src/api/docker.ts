@@ -25,6 +25,7 @@ export function createContainer(
     // wrap in async function to avoid returning invalid type to Observable
     const create = async () => {
       try {
+
         const container = await docker.createContainer({
           Image: image,
           name: name,
@@ -192,8 +193,10 @@ export function stopContainer(id: string): Observable<any> {
     // wrap in async function to avoid returning invalid type to Observable
     const stop = async () => {
       try {
-        const container = await docker.getContainer(id).inspect();
-        if (container.State.Running) {
+        const container = docker.getContainer(id);
+        const { State } = await container.inspect();
+
+        if (State.Running) {
           await container.stop();
           await container.remove();
           observer.next(container);
@@ -215,9 +218,10 @@ export function stopContainer(id: string): Observable<any> {
 
 export async function killContainer(id: string): Promise<void> {
   try {
-    const container = await docker.getContainer(id).inspect();
-    if (container.State.Status === 'running') {
-      await container.stop();
+    const container = docker.getContainer(id);
+    const { State } = await container.inspect();
+    if (State.Status === 'running') {
+      await container.kill();
     }
     await removeContainer(id);
   } catch (err) {
@@ -229,8 +233,7 @@ export async function killContainer(id: string): Promise<void> {
 
 export async function removeContainer(id: string): Promise<void> {
   try {
-    const container = await docker.getContainer(id).inspect();
-    return container.remove();
+    return docker.getContainer(id).remove();
   } catch {
     return;
   }
