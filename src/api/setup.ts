@@ -3,7 +3,7 @@ import {
   copy,
   ensureDir,
   ensureDirSync,
-  ensureFileSync,
+  pathExistsSync,
   readFileSync,
   readJson,
   remove,
@@ -68,7 +68,7 @@ export function initSetup(): Promise<string> {
 }
 
 export function appReady(): boolean {
-  return ensureFileSync(getFilePath('config.json')) && ensureDirSync(getFilePath('docker-essential'));
+  return pathExistsSync(getFilePath('config.json')) && pathExistsSync(getFilePath('docker-essential'));
 }
 
 export function getRootDir(): string {
@@ -79,12 +79,12 @@ export function getFilePath(relativePath: string): string {
   return join(getRootDir(), relativePath);
 }
 
-export function makeAbstruseDir(): Promise<null> {
+export function makeAbstruseDir(): Promise<void> {
   let abstruseDir = getRootDir();
   return ensureDir(abstruseDir);
 }
 
-export function makeCacheDir(): Promise<null> {
+export function makeCacheDir(): Promise<void> {
   let cachePath = getFilePath('cache');
   return ensureDir(cachePath);
 }
@@ -103,7 +103,7 @@ export function writeDefaultConfig(): void {
 }
 
 export function configExists(): boolean {
-  return ensureFileSync(getFilePath('config.json'));
+  return pathExistsSync(getFilePath('config.json'));
 }
 
 export function getConfig(): string {

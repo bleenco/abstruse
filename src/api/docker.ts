@@ -2,7 +2,7 @@ import * as style from 'ansi-styles';
 import { spawn } from 'child_process';
 import * as commandExists from 'command-exists';
 import * as dockerode from 'dockerode';
-import { ensureFile } from 'fs-extra';
+import { pathExists } from 'fs-extra';
 import { platform } from 'os';
 import { Observable, Observer } from 'rxjs';
 import { Writable } from 'stream';
@@ -268,7 +268,7 @@ export function imageExists(name: string): Observable<boolean> {
 
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    ensureFile('/var/run/docker.sock')
+    pathExists('/var/run/docker.sock')
       .then(isRunning => {
         observer.next(isRunning);
         observer.complete();

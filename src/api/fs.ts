@@ -5,15 +5,15 @@ export function readFile(filePath: string): Promise<string> {
   return read(filePath, 'utf8');
 }
 
-export function writeFile(filePath: string, data: string): Promise<null> {
+export function writeFile(filePath: string, data: string): Promise<void> {
   return write(filePath, data, 'utf8');
 }
 
-export function writeBufferToFile(filePath: string, data: Buffer): Promise<null> {
+export function writeBufferToFile(filePath: string, data: Buffer): Promise<void> {
   return write(filePath, data);
 }
 
-export function writeJsonFile(filePath: string, data: any = {}): Promise<null> {
+export function writeJsonFile(filePath: string, data: any = {}): Promise<void> {
   return writeFile(filePath, JSON.stringify(data, null, 2));
 }
 

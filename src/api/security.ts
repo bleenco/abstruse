@@ -24,9 +24,17 @@ export function generateJwt(data: any): Promise<string> {
   return sign(data, config.jwtSecret);
 }
 
-export function decodeJwt(token: string): any {
+export interface IAbstruseJWT {
+  id: number;
+  email: string;
+  admin: boolean;
+}
+
+export async function decodeJwt(token: string): Promise<IAbstruseJWT | false> {
   try {
-    return verify(token, config.jwtSecret);
+    console.log(config);
+    const a = await verify(token, config.jwtSecret);
+    console.log(a);
   } catch (err) {
     return false;
   }
@@ -34,7 +42,7 @@ export function decodeJwt(token: string): any {
 
 export async function checkApiRequestAuth(req: express.Request): Promise<void> {
   let token = req.get('abstruse-ci-token');
-
+  console.log(token);
   if (!token) {
     throw new Error('Authentication failed.');
   }

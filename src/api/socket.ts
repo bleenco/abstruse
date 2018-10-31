@@ -38,10 +38,20 @@ export interface IOutput {
 
 export interface Client {
   sessionID: string;
-  session: { cookie: any, ip: string, userId: number, email: string, isAdmin: boolean };
+  session: {
+    cookie: any;
+    ip: string;
+    userId: number;
+    email: string;
+    isAdmin: boolean;
+  };
   socket: uws.Socket;
   send: Function;
-  subscriptions: { stats: Subscription, jobOutput: Subscription, logs: Subscription };
+  subscriptions: {
+    stats: Subscription;
+    jobOutput: Subscription;
+    logs: Subscription;
+  };
 }
 
 export class SocketServer {
@@ -72,17 +82,17 @@ export class SocketServer {
     }
 
     let wss: uws.Server = new uws.Server({
-      verifyClient: (info: any, done) => {
+      verifyClient: async (info: any, done) => {
         let ip = info.req.headers['x-forwarded-for'] || info.req.connection.remoteAddress;
         let query = querystring.parse(info.req.url.substring(2));
         let user = { id: null, email: 'anonymous', isAdmin: false };
 
         if (query.token) {
-          let userData = decodeJwt(query.token as string);
+          let userData = await decodeJwt(query.token as string);
           if (userData) {
             user.id = userData.id;
             user.email = userData.email;
-            user.isAdmin = userData.isAdmin;
+            user.isAdmin = userData.admin;
           }
         }
 
@@ -164,11 +174,11 @@ export class SocketServer {
     this.clients.splice(index, 1);
   }
 
-  private handleEvent(event: any, client: Client): void {
+  private async handleEvent(event: any, client: Client): Promise<void> {
     switch (event.type) {
       case 'login': {
         let token = event.data;
-        let decoded = !!token ? decodeJwt(token) : false;
+        let decoded = !!token ? await decodeJwt(token) : false;
         client.session.userId = decoded ? decoded.id : null;
         client.session.email = decoded ? decoded.email : 'anonymous';
         client.session.isAdmin = decoded ? decoded.admin : false;

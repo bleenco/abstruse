@@ -85,7 +85,7 @@ export function login(data: any): Promise<boolean | string> {
           if (!passwordOk) {
             resolve(false);
           } else {
-            generateJwt(user).then(jwt => resolve(jwt));
+            generateJwt(user).then(resolve);
           }
         });
       }
