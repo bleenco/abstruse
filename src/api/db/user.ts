@@ -89,7 +89,7 @@ export function login(data: any): Promise<boolean | string> {
           }
         });
       }
-    }).catch(err => resolve(false));
+    }).catch(() => resolve(false));
   });
 }
 
@@ -105,7 +105,7 @@ export function usersExists(): Promise<boolean> {
       } else {
         resolve(false);
       }
-    }).catch(err => resolve(false));
+    }).catch(() => resolve(false));
   });
 }
 

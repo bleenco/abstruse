@@ -1,19 +1,20 @@
-import * as express from 'express';
 import * as crypto from 'crypto';
-import { getConfigAsync, saveConfigAsync } from './setup';
+import * as express from 'express';
+
 import {
-  pingGitHubRepository,
-  pingBitbucketRepository,
-  synchronizeBitbucketPullRequest,
-  pingGitLabRepository,
-  synchronizeGitLabPullRequest,
-  pingGogsRepository,
   createGitHubPullRequest,
   createGogsPullRequest,
+  pingBitbucketRepository,
+  pingGitHubRepository,
+  pingGitLabRepository,
+  pingGogsRepository,
+  synchronizeBitbucketPullRequest,
   synchronizeGitHubPullRequest,
-  synchronizeGogsPullRequest
+  synchronizeGitLabPullRequest,
+  synchronizeGogsPullRequest,
 } from './db/repository';
 import { startBuild } from './process-manager';
+import { getConfigAsync, saveConfigAsync } from './setup';
 
 export let webhooks = express.Router();
 
@@ -53,7 +54,7 @@ webhooks.post('/github', (req: express.Request, res: express.Response) => {
         case 'ping':
           saveConfigAsync(config)
             .then(() => pingGitHubRepository(payload))
-            .then(repo => res.status(200).json({ msg: 'ok' }))
+            .then(() => res.status(200).json({ msg: 'ok' }))
             .catch(err => res.status(400).json(err));
           break;
         case 'push':

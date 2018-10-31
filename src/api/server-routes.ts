@@ -66,10 +66,10 @@ import * as stripAnsi from 'strip-ansi';
 let config: any = getConfig();
 
 let storage: multer.StorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, getFilePath('avatars'));
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     let ext = extname(file.originalname);
     cb(null, `${Math.random().toString(36).substring(7)}${ext}`);
   }
@@ -640,7 +640,7 @@ export function badgeRoutes(): express.Router {
 export function setupRoutes(): express.Router {
   let router = express.Router();
 
-  router.get('/ready', (req: express.Request, res: express.Response) => {
+  router.get('/ready', (_req: express.Request, res: express.Response) => {
     merge(...[
       system.isGitInstalled(),
       system.isSQLiteInstalled(),
@@ -662,7 +662,7 @@ export function setupRoutes(): express.Router {
     });
   });
 
-  router.get('/db', (req: express.Request, res: express.Response) => {
+  router.get('/db', (_req: express.Request, res: express.Response) => {
     merge(...[
       from(pathExists(getFilePath('abstruse.sqlite'))),
       from(usersExists())
@@ -673,7 +673,7 @@ export function setupRoutes(): express.Router {
       });
   });
 
-  router.get('/status', (req: express.Request, res: express.Response) => {
+  router.get('/status', (_req: express.Request, res: express.Response) => {
     concat(...[
       system.isGitInstalled(),
       system.isSQLiteInstalled(),
@@ -713,17 +713,17 @@ export function setupRoutes(): express.Router {
     });
   });
 
-  router.get('/docker-image', (req: express.Request, res: express.Response) => {
+  router.get('/docker-image', (_req: express.Request, res: express.Response) => {
     imageExists('abstruse').subscribe(e => {
       return res.status(200).json({ data: e });
     });
   });
 
-  router.get('/login-required', (req: express.Request, res: express.Response) => {
+  router.get('/login-required', (_req: express.Request, res: express.Response) => {
     return res.status(200).json({ data: config.requireLogin });
   });
 
-  router.get(`/config`, (req: express.Request, res: express.Response) => {
+  router.get(`/config`, (_req: express.Request, res: express.Response) => {
     return usersExists()
       .then(users => {
         if (!users) {
@@ -824,7 +824,7 @@ export function environmentVariableRoutes(): express.Router {
 export function statsRoutes(): express.Router {
   let router = express.Router();
 
-  router.get('/job-runs', (req: express.Request, res: express.Response) => {
+  router.get('/job-runs', (_req: express.Request, res: express.Response) => {
     getJobRuns()
       .then(runs => res.status(200).json({ data: runs }))
       .catch(() => res.status(200).json({ status: false }));
@@ -854,7 +854,7 @@ export function logsRoutes(): express.Router {
 export function keysRoutes(): express.Router {
   let router = express.Router();
 
-  router.get(`/public`, (req: express.Request, res: express.Response) => {
+  router.get(`/public`, (_req: express.Request, res: express.Response) => {
     getConfigAsync()
       .then(cfg => {
         if (cfg.publicKey) {
@@ -874,7 +874,7 @@ export function keysRoutes(): express.Router {
 export function configRoutes(): express.Router {
   let router = express.Router();
 
-  router.get(`/demo`, (req: express.Request, res: express.Response) => {
+  router.get(`/demo`, (_req: express.Request, res: express.Response) => {
     getConfigAsync()
       .then(cfg => res.status(200).json({ data: cfg.demo }));
   });
@@ -885,13 +885,13 @@ export function configRoutes(): express.Router {
 export function imagesRoutes(): express.Router {
   let router = express.Router();
 
-  router.get('/', (req: express.Request, res: express.Response) => {
+  router.get('/', (_req: express.Request, res: express.Response) => {
     getImages()
       .then(images => res.status(200).json({ data: images }))
       .catch(() => res.status(200).json({ status: false }));
   });
 
-  router.post('/build-base', (req: express.Request, res: express.Response) => {
+  router.post('/build-base', (_req: express.Request, res: express.Response) => {
     buildAbstruseBaseImage();
     res.status(200).json({ data: true });
   });
@@ -913,6 +913,6 @@ export function imagesRoutes(): express.Router {
   return router;
 }
 
-function index(req, res: express.Response): void {
+function index(_req, res: express.Response): void {
   return res.status(200).sendFile(resolve(__dirname, '../app/index.html'));
 }

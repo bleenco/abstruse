@@ -78,7 +78,7 @@ export function insertJob(data: any): Promise<any> {
 }
 
 export function updateJob(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new Job({ id: data.id }).save(data, { method: 'update', require: false })
       .then(job => resolve(job.toJSON()));
   });
@@ -99,7 +99,7 @@ export function resetJobs(buildId: number): Promise<any> {
 }
 
 export function resetJob(jobId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const data = {
       start_time: new Date(),
       end_time: null,

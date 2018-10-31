@@ -45,7 +45,7 @@ export function getUserRepositoryPermissions(repoId: number, userId?: number): P
 }
 
 export function getUserBuildPermissions(buildId: number, userId?: number): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     getBuildRepositoryId(buildId)
       .then(repoId => {
         if (userId) {
@@ -58,7 +58,7 @@ export function getUserBuildPermissions(buildId: number, userId?: number): Promi
 }
 
 export function getUserJobPermissions(jobId: number, userId?: number): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     getJobRepositoryId(jobId)
       .then(repoId => {
         if (userId) {

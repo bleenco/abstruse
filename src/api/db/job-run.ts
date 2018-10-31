@@ -89,7 +89,7 @@ export function insertJobRun(data: any): Promise<any> {
 }
 
 export function updateJobRun(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new JobRun({ id: data.id }).save(data, { method: 'update', require: false })
       .then(job => resolve(job.toJSON()));
   });

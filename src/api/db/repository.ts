@@ -119,7 +119,7 @@ export function getRepositoryOnly(id: number): Promise<any> {
 }
 
 export function getRepositoryBadge(id: number): Promise<string> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new Repository({ id: id })
       .fetch({
         withRelated: [

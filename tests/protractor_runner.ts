@@ -1,7 +1,8 @@
-import { execSilent, exec, abstruse, killAllProcesses } from './e2e/utils/process';
+import * as minimist from 'minimist';
 import { join } from 'path';
 import * as temp from 'temp';
-import * as minimist from 'minimist';
+
+import { abstruse, exec, execSilent, killAllProcesses } from './e2e/utils/process';
 
 Error.stackTraceLimit = Infinity;
 
@@ -39,6 +40,6 @@ Promise.resolve()
     return killAllProcesses();
   })
   .then(() => process.exit(process.exitCode))
-  .catch(err => {
-    killAllProcesses().then(() => process.exit(process.exitCode));
-  });
+  .catch(() => {
+          killAllProcesses().then(() => process.exit(process.exitCode));
+      });

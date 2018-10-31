@@ -142,18 +142,18 @@ function prepareDirectory(data: ImageData): Promise<void> {
     .then(() => fs.copy(essentialFolderPath, folderPath))
     .then(() => fs.writeFile(dockerFilePath, data.dockerfile, 'utf8'))
     .then(() => fs.writeFile(initShFilePath, data.initsh, 'utf8'))
-    .catch(err => {
-      let msg: LogMessageType = {
-        message: `error preparing ${folderPath} for docker image build`,
-        type: 'error',
-        notify: false
-      };
-      logger.next(msg);
-    });
+    .catch(() => {
+        let msg: LogMessageType = {
+          message: `error preparing ${folderPath} for docker image build`,
+          type: 'error',
+          notify: false
+        };
+        logger.next(msg);
+      });
 }
 
 export function getImages(): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     Promise.all([getImagesInDirectory('images'), getImagesInDirectory('base-images')])
       .then(imgs => resolve(imgs.reduce((a, b) => a.concat(b))));
   });

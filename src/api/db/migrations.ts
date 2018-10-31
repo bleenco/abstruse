@@ -134,7 +134,7 @@ export function create(): Promise<null> {
 export function dropTables(): Promise<null> {
   let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     schema.dropTableIfExists('user')
       .then(() => resolve());
   });

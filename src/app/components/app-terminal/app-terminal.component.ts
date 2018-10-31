@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { Terminal, ITheme } from 'xterm';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { ITheme, Terminal } from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
 @Component({
@@ -49,7 +49,7 @@ export class AppTerminalComponent implements OnInit, OnChanges {
     this.term.fit();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(_changes: SimpleChanges) {
      if (!this.data) {
       return;
     }

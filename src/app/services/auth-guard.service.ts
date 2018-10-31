@@ -1,9 +1,10 @@
 import { Injectable, Provider } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,7 +14,7 @@ export class AuthGuard implements CanActivate {
     private router: Router
   ) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(_route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Observable<boolean> {
     return combineLatest(...[
       this.apiService.isAppReady(),
       of(this.authService.isLoggedIn()),

@@ -54,7 +54,7 @@ export function getHttpJsonResponse(url: string, optHeaders: any = {}): Promise<
     let headers = Object.assign({}, { 'User-Agent': 'abstruse' }, optHeaders);
     let options = { url, headers };
 
-    request(options, (err, resp, body) => {
+    request(options, (err, _resp, body) => {
       if (err) {
         reject(err);
       } else {

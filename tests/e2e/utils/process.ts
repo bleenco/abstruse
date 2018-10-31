@@ -1,7 +1,7 @@
-import * as child_process from 'child_process';
-const treeKill = require('tree-kill');
 import chalk from 'chalk';
+import * as child_process from 'child_process';
 
+const treeKill = require('tree-kill');
 interface ExecOptions {
   silent?: boolean;
 }
@@ -83,7 +83,7 @@ function _run(options: ExecOptions, cmd: string, args: string[]): Promise<Proces
 }
 
 function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<ProcessOutput> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
     const cwd = process.cwd();
@@ -143,7 +143,7 @@ function _exec(options: ExecOptions, cmd: string, args: string[]): Promise<Proce
   });
 }
 
-export function killAllProcesses(signal = 'SIGTERM'): Promise<void> {
+export function killAllProcesses(): Promise<void> {
   return Promise.all(_processes.map(process => killProcess(process.pid)))
     .then(() => { _processes = []; });
 }
@@ -161,7 +161,7 @@ export function killProcess(pid: number): Promise<null> {
 }
 
 export function exitCode(cmd: string): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     console.log(chalk.blue(`Running \`${cmd}\`...`));
     child_process.exec(cmd).on('exit', code => {
       resolve(code);
@@ -171,7 +171,7 @@ export function exitCode(cmd: string): Promise<any> {
 
 export function execute(options: ExecOptions, cmd: string): Promise<any> {
   return new Promise((resolve, reject) => {
-    child_process.exec(cmd, (err, stdout, stderr) => {
+    child_process.exec(cmd, (err, stdout) => {
       if (err) {
         reject(err);
       }

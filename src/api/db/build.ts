@@ -273,7 +273,7 @@ export function getBuildRepositoryId(buildId: number): Promise<any> {
 }
 
 export function getBuildStatus(buildId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new Job()
       .query(q => q.where('builds_id', buildId))
       .fetchAll()

@@ -35,7 +35,7 @@ export function insertBuildRun(data: any): Promise<any> {
 }
 
 export function updateBuildRun(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     new BuildRun({ id: data.id }).save(data, { method: 'update', require: false })
       .then(job => resolve(job.toJSON()));
   });

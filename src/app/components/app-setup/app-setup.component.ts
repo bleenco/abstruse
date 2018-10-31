@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { delay } from 'rxjs/operators';
+
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
-import { delay } from 'rxjs/operators';
 
 export interface ServerStatus {
   sqlite: boolean;
@@ -96,8 +97,8 @@ export class AppSetupComponent implements OnInit {
 
   saveSecrets(): void {
     this.loading = true;
-    this.apiService.saveSetupConfig(this.secrets).subscribe(resp => {
-      this.continueToDb();
+    this.apiService.saveSetupConfig(this.secrets).subscribe(() => {
+        this.continueToDb();
     });
   }
 

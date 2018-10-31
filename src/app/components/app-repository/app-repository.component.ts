@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SocketService } from '../../services/socket.service';
+import { Subscription } from 'rxjs';
+import { delay, filter } from 'rxjs/operators';
+
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
-import { Subscription } from 'rxjs';
-import { delay, filter } from 'rxjs/operators';
+import { SocketService } from '../../services/socket.service';
 
 export interface IRepoForm {
   id: number;
@@ -300,7 +301,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
 
   deleteCache(): void {
     this.deletingCache = true;
-    this.api.deleteCacheForRepository(Number(this.id)).subscribe(status => {
+    this.api.deleteCacheForRepository(Number(this.id)).subscribe(() => {
       this.cacheDeleted = true;
       this.deletingCache = false;
       this.fetchCache();
@@ -353,7 +354,7 @@ export class AppRepositoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveRepoSettings(e: MouseEvent): void {
+  saveRepoSettings(): void {
     this.saving = true;
 
     this.api.saveRepositorySettings(this.form)

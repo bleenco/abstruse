@@ -1,10 +1,11 @@
-import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { UploadInput, UploadOutput } from 'ngx-uploader';
+import { delay, switchMap } from 'rxjs/operators';
+
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfigService } from '../../services/config.service';
-import { UploadOutput, UploadInput } from 'ngx-uploader';
-import { switchMap, delay } from 'rxjs/operators';
 
 export interface IAccessToken {
   token: string;
@@ -96,7 +97,7 @@ export class AppUserComponent implements OnInit {
 
     this.route.params
       .pipe(
-        switchMap((params: Params) => this.api.getRepositories('', this.loggedUser.id))
+        switchMap(() => this.api.getRepositories('', this.loggedUser.id))
       )
       .subscribe(((repositories: any) => {
         this.repositories = repositories;
@@ -146,7 +147,7 @@ export class AppUserComponent implements OnInit {
       });
   }
 
-  updatePassword(e: Event): void {
+  updatePassword(): void {
     const form = {
       id: this.route.snapshot.params.id,
       password: this.password,
@@ -193,7 +194,7 @@ export class AppUserComponent implements OnInit {
     });
   }
 
-  changeTokenTypeSelect(key: string): void {
+  changeTokenTypeSelect(): void {
     this.token.description = '';
     this.token.token = '';
     this.token.gitlab_username = '';

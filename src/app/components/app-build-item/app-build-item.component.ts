@@ -1,9 +1,10 @@
-import { Component, Input, HostBinding, OnInit, OnDestroy } from '@angular/core';
-import { SocketService } from '../../services/socket.service';
-import { ApiService } from '../../services/api.service';
-import { TimeService } from '../../services/time.service';
+import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { distanceInWordsToNow } from 'date-fns';
 import { filter } from 'rxjs/operators';
+
+import { ApiService } from '../../services/api.service';
+import { SocketService } from '../../services/socket.service';
+import { TimeService } from '../../services/time.service';
 
 @Component({
   selector: 'app-build-item',
@@ -41,7 +42,7 @@ export class AppBuildItemComponent implements OnInit, OnDestroy {
 
     this.socketService.outputEvents
       .pipe(filter(x => x.type === 'build restarted' || x.type === 'build stopped'))
-      .subscribe(e => this.processingRequest = false);
+      .subscribe(() => this.processingRequest = false);
   }
 
   restartBuild(e: MouseEvent, id: number): void {

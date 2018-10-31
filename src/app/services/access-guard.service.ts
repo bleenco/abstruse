@@ -1,9 +1,10 @@
 import { Injectable, Provider } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { ApiService } from './api.service';
-import { AuthService } from './auth.service';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
@@ -13,7 +14,7 @@ export class AccessGuard implements CanActivate {
     private router: Router
   ) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+  canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): Observable<boolean> {
     return new Observable(observer => {
       let userData: any = this.authService.getData();
       const userId = userData && userData.id || null;
