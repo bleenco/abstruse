@@ -21,42 +21,50 @@ export function createContainer(
   envs: envVars.EnvVariables
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
-    docker.createContainer({
-      Image: image,
-      name: name,
-      Tty: true,
-      OpenStdin: true,
-      StdinOnce: false,
-      Env: envVars.serialize(envs) || [],
-      Binds: binds,
-      Privileged: true,
-      ExposedPorts: {
-        '22/tcp': {},
-        '5900/tcp': {}
-      },
-      PortBindings: {
-        '22/tcp': [{ HostPort: '' }],
-        '5900/tcp': [{ HostPort: '' }]
-      }
-    } as any)
-      .then(container => {
+
+    // wrap in async function to avoid returning invalid type to Observable
+    const create = async () => {
+      try {
+        const container = await docker.createContainer({
+          Image: image,
+          name: name,
+          Tty: true,
+          OpenStdin: true,
+          StdinOnce: false,
+          Env: envVars.serialize(envs) || [],
+          Binds: binds,
+          Privileged: true,
+          ExposedPorts: {
+            '22/tcp': {},
+            '5900/tcp': {}
+          },
+          PortBindings: {
+            '22/tcp': [{ HostPort: '' }],
+            '5900/tcp': [{ HostPort: '' }]
+          }
+        });
+
         let msg = style.bold.open + style.yellow.open + '==> ' + style.yellow.close +
           `starting container ` + style.yellow.open + name + ' ' + style.yellow.close +
           `from image ` + style.yellow.open + image + ' ' + style.yellow.close +
           `... ` + style.bold.close;
+
         observer.next({ type: 'data', data: msg });
-        return container;
-      })
-      .then(container => container.start())
-      .then(container => container.inspect())
-      .then(info => observer.next({ type: 'containerInfo', data: info }))
-      .then(() => observer.next({ type: 'data', data: 'done.\r\n' }))
-      .then(() => observer.complete())
-      .catch(err => {
+
+        await container.start();
+
+        const info = await container.inspect();
+        observer.next({ type: 'containerInfo', data: info });
+        observer.next({ type: 'data', data: 'done.\r\n' });
+        observer.complete();
+      } catch (err) {
         observer.next({ type: 'data', data: 'error.\r\n' });
         observer.next({ type: 'containerError', data: err });
         observer.error(err);
-      });
+      }
+    };
+
+    create();
   });
 }
 

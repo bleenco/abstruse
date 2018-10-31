@@ -42,14 +42,44 @@ RUN apk --no-cache add \
   tini \
   wget
 
-COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json /app/
-COPY src /app/src
+# NPM dependencies
+COPY package.json package-lock.json /app/
 
 RUN npm install --only=production \
-  && cp -R node_modules prod_node_modules
+  && cp -R node_modules prod_node_modules \
+  && npm install
 
-RUN npm install \
-  && npm run build:prod
+# Copy shared files
+COPY tsconfig.json /app
+
+# Copy frontend
+COPY angular.json /app
+COPY src/environments /app/src/environments
+COPY src/app /app/src/app
+COPY src/assets /app/src/assets
+COPY src/files /app/src/files
+COPY src/styles /app/src/styles
+COPY src/testing /app/src/testing
+
+COPY src/index.html \
+  src/main.ts \
+  src/polyfills.ts \
+  src/test.ts \
+  src/tsconfig.app.json \
+  src/tsconfig.spec.json \
+  src/typings.d.ts \
+  /app/src/
+
+# Build frontend
+RUN npm run build:app
+
+# Copy backend
+COPY webpack.api.js /app
+COPY src/api /app/src/api
+COPY src/tsconfig.api.json /app/src
+
+# Build backend
+RUN npm run build
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1

@@ -6,16 +6,12 @@
     "module": "commonjs",
     "target": "es2015",
     "sourceMap": false,
-    "declaration": false,
-    "types": ["node", "bookshelf"]
+    "declaration": false
   },
   "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 1
   },
-  "files": [
-    "api/index.ts"
-  ],
   "include": [
     "api/**/*.ts"
   ],
