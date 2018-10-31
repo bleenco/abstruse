@@ -1,7 +1,8 @@
 import { Observable, Observer } from 'rxjs';
-import { s3Deploy } from './deploy/aws-s3';
+
 import { codeDeploy } from './deploy/aws-code-deploy';
 import { elasticDeploy } from './deploy/aws-elastic';
+import { s3Deploy } from './deploy/aws-s3';
 import * as envVars from './env-variables';
 
 export function deploy(

@@ -1,4 +1,14 @@
+import chalk from 'chalk';
 import * as minimist from 'minimist';
+import { merge } from 'rxjs';
+
+import * as db from './db/migrations';
+import { logger, LogMessageType } from './logger';
+import { generateKeys } from './security';
+import { ExpressServer } from './server';
+import { initSetup } from './setup';
+import { SocketServer } from './socket';
+import { getAbstruseVersion } from './utils';
 
 let setup = require('./setup');
 let os = require('os');
@@ -8,16 +18,6 @@ let argv = minimist(process.argv.slice(2), {
 });
 
 setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
-
-import { ExpressServer } from './server';
-import { SocketServer } from './socket';
-import { merge } from 'rxjs';
-import { logger, LogMessageType } from './logger';
-import { getAbstruseVersion } from './utils';
-import { initSetup } from './setup';
-import { generateKeys } from './security';
-import * as db from './db/migrations';
-import chalk from 'chalk';
 
 let server = new ExpressServer({ port: 6500 });
 

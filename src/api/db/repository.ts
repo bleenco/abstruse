@@ -1,7 +1,8 @@
-import { Repository, Build } from './model';
-import { getHttpJsonResponse, getBitBucketAccessToken } from '../utils';
-import { addRepositoryPermissionToEveryone } from './permission';
 import { URL } from 'url';
+
+import { getBitBucketAccessToken } from '../utils';
+import { Build, Repository } from './model';
+import { addRepositoryPermissionToEveryone } from './permission';
 
 export function getRepository(id: number, userId?: string): Promise<any> {
   return new Promise((resolve, reject) => {

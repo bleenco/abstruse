@@ -1,6 +1,5 @@
-import { Build, BuildRun, Job, JobRun } from './model';
 import { getLastRun } from './job';
-import { getBitBucketAccessToken } from '../utils';
+import { Build, BuildRun, Job } from './model';
 
 export function getBuilds(
   limit: number,

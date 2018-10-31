@@ -2,13 +2,13 @@ import * as style from 'ansi-styles';
 import { spawn } from 'child_process';
 import * as commandExists from 'command-exists';
 import * as dockerode from 'dockerode';
+import { ensureFile } from 'fs-extra';
 import { platform } from 'os';
 import { Observable, Observer } from 'rxjs';
 import { Writable } from 'stream';
 
 import { CommandType } from './config';
 import * as envVars from './env-variables';
-import * as fs from './fs';
 import { ProcessOutput } from './process';
 import { demuxStream } from './utils';
 
@@ -94,7 +94,7 @@ export function dockerExec(
 
     let container = docker.getContainer(id);
     let execOptions = {
-      Cmd: ['zsh', ['-c', ...cmd.command]],
+      Cmd: ['zsh', `-c ${command}`],
       Env: envVars.serialize(env),
       AttachStdout: true,
       AttachStderr: true,
@@ -246,18 +246,14 @@ export function killContainer(id: string): Promise<void> {
 }
 
 export function removeContainer(id: string): Promise<void> {
-  return new Promise(resolve => {
-    try {
-      let container = docker.getContainer(id);
+  try {
+    let container = docker.getContainer(id);
 
-      return container.inspect()
-        .then(containerInfo => container.remove())
-        .then(() => resolve())
-        .catch(() => resolve());
-    } catch {
-      resolve();
-    }
-  });
+    return container.inspect()
+      .then(() => container.remove());
+  } catch {
+    return;
+  }
 }
 
 export function imageExists(name: string): Observable<boolean> {
@@ -272,7 +268,7 @@ export function imageExists(name: string): Observable<boolean> {
 
 export function isDockerRunning(): Observable<boolean> {
   return new Observable((observer: Observer<boolean>) => {
-    fs.exists('/var/run/docker.sock')
+    ensureFile('/var/run/docker.sock')
       .then(isRunning => {
         observer.next(isRunning);
         observer.complete();

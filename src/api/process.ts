@@ -1,15 +1,16 @@
-import * as docker from './docker';
-import * as child_process from 'child_process';
-import { generateRandomId, prepareCommands } from './utils';
-import { getFilePath } from './setup';
-import { Observable, concat, throwError, empty, timer } from 'rxjs';
-import { timeoutWith, takeUntil, mergeMap, timeInterval } from 'rxjs/operators';
-import { CommandType, Command, CommandTypePriority } from './config';
-import { JobProcess } from './process-manager';
-import * as envVars from './env-variables';
-import chalk from 'chalk';
 import * as style from 'ansi-styles';
+import chalk from 'chalk';
+import * as child_process from 'child_process';
+import { concat, empty, Observable, throwError, timer } from 'rxjs';
+import { mergeMap, takeUntil, timeInterval, timeoutWith } from 'rxjs/operators';
+
+import { CommandType } from './config';
 import { deploy } from './deploy';
+import * as docker from './docker';
+import * as envVars from './env-variables';
+import { JobProcess } from './process-manager';
+import { getFilePath } from './setup';
+import { prepareCommands } from './utils';
 
 export interface Job {
   status: 'queued' | 'running' | 'success' | 'failed';

@@ -1,7 +1,8 @@
-import { getBitBucketAccessToken } from './utils';
-import { getConfigAsync } from './setup';
-import { logger, LogMessageType } from './logger';
 import * as request from 'request';
+
+import { logger, LogMessageType } from './logger';
+import { getConfigAsync } from './setup';
+import { getBitBucketAccessToken } from './utils';
 
 export function sendSuccessStatus(build: any, buildId: number): Promise<void> {
   return getConfigAsync()

@@ -1,4 +1,5 @@
 import * as knex from 'knex';
+
 import { Bookshelf } from './config';
 
 export function create(): Promise<null> {

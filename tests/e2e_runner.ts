@@ -1,10 +1,11 @@
-import * as glob from 'glob';
-import * as path from 'path';
-import * as minimist from 'minimist';
-import { abstruse, killAllProcesses, execSilent } from './e2e/utils/process';
-import { writeFileSync, readFileSync } from 'fs';
-import * as temp from 'temp';
 import chalk from 'chalk';
+import { readFileSync, writeFileSync } from 'fs-extra';
+import * as glob from 'glob';
+import * as minimist from 'minimist';
+import * as path from 'path';
+import * as temp from 'temp';
+
+import { abstruse, execSilent, killAllProcesses } from './e2e/utils/process';
 
 Error.stackTraceLimit = Infinity;
 

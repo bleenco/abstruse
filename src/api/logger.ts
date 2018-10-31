@@ -1,7 +1,8 @@
-import { insertLog } from './db/log';
-import { Subject, from } from 'rxjs';
-import { filter, mergeMap, share, map } from 'rxjs/operators';
 import chalk from 'chalk';
+import { from, Subject } from 'rxjs';
+import { filter, map, mergeMap, share } from 'rxjs/operators';
+
+import { insertLog } from './db/log';
 
 export interface LogMessageType {
   message: string;

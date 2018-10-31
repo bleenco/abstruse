@@ -1,6 +1,7 @@
-import { totalmem, freemem } from 'os';
+import { freemem, totalmem } from 'os';
 import { Observable, timer } from 'rxjs';
-import { timeInterval, mergeMap, map, share } from 'rxjs/operators';
+import { map, mergeMap, share, timeInterval } from 'rxjs/operators';
+
 import { IOutput } from '../socket';
 
 export interface IMemoryData {

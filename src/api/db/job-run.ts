@@ -1,5 +1,6 @@
-import { JobRun } from './model';
 import { format } from 'date-fns';
+
+import { JobRun } from './model';
 
 export function getJobRuns(): Promise<any> {
   return new Promise((resolve, reject) => {

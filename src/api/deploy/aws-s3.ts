@@ -1,9 +1,10 @@
-import { Observable, Observer, concat } from 'rxjs';
-import { dockerExec } from '../docker';
-import { CommandType } from '../config';
-import { findFromEnvVariables } from '../deploy';
 import * as style from 'ansi-styles';
 import chalk from 'chalk';
+import { concat, Observable, Observer } from 'rxjs';
+
+import { CommandType } from '../config';
+import { findFromEnvVariables } from '../deploy';
+import { dockerExec } from '../docker';
 import * as envVars from '../env-variables';
 
 export function s3Deploy(

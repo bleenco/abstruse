@@ -1,7 +1,8 @@
 import * as bookshelf from 'bookshelf';
-import * as knex from 'knex';
-import * as setup from '../setup';
 import * as jsonColumns from 'bookshelf-json-columns';
+import * as knex from 'knex';
+
+import * as setup from '../setup';
 
 if (!setup.configExists()) {
   setup.writeDefaultConfig();

@@ -1,27 +1,19 @@
-import { startBuildProcess } from './process';
-import { Observable, Subject, BehaviorSubject, Subscription, from, timer } from 'rxjs';
-import { filter, mergeMap, share, map } from 'rxjs/operators';
-import {
-  insertBuild,
-  updateBuild,
-  getBuild,
-  getBuildStatus,
-  getLastRunId,
-  getDepracatedBuilds,
-  getLastBuild
-} from './db/build';
+import { BehaviorSubject, from, Observable, Subject, Subscription, timer } from 'rxjs';
+import { filter, map, mergeMap, share } from 'rxjs/operators';
+
+import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
+import { CommandType, getRemoteParsedConfig, JobsAndEnv } from './config';
+import { getBuild, getBuildStatus, getDepracatedBuilds, getLastRunId, insertBuild, updateBuild } from './db/build';
 import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
 import * as dbJobRuns from './db/job-run';
-import { getRepositoryOnly, getRepositoryByBuildId } from './db/repository';
-import { getRemoteParsedConfig, JobsAndEnv, CommandType } from './config';
+import { getRepositoryByBuildId, getRepositoryOnly } from './db/repository';
 import { killContainer } from './docker';
-import { logger, LogMessageType } from './logger';
-import { getHttpJsonResponse, getBitBucketAccessToken } from './utils';
-import { getConfig } from './setup';
-import { sendFailureStatus, sendPendingStatus, sendSuccessStatus } from './commit-status';
-import { decrypt } from './security';
 import * as envVars from './env-variables';
+import { logger, LogMessageType } from './logger';
+import { startBuildProcess } from './process';
+import { decrypt } from './security';
+import { getConfig } from './setup';
 
 export interface BuildMessage {
   type: string;

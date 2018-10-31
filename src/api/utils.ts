@@ -1,9 +1,10 @@
+import { readFileSync } from 'fs-extra';
 import * as path from 'path';
-import { readFileSync } from 'fs';
 import * as request from 'request';
-import { CommandType, CommandTypePriority } from './config';
 import { Observable } from 'rxjs';
 import { Readable, Writable } from 'stream';
+
+import { CommandType, CommandTypePriority } from './config';
 
 
 export interface JobProcess {

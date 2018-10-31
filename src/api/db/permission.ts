@@ -1,8 +1,8 @@
-import { Permission, Repository } from './model';
-import { getUsers } from './user';
-import { getRepositories } from './repository';
 import { getBuildRepositoryId } from './build';
 import { getJobRepositoryId } from './job';
+import { Permission, Repository } from './model';
+import { getRepositories } from './repository';
+import { getUsers } from './user';
 
 export function getPermission(id: number): Promise<any> {
   return new Promise((resolve, reject) => {

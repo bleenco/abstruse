@@ -1,6 +1,6 @@
+import { comparePassword, generateJwt, generatePassword } from '../security';
 import { User } from './model';
 import { addRepositoryPermissions } from './permission';
-import { generatePassword, comparePassword, generateJwt } from '../security';
 
 export function getUser(id: number): Promise<any> {
   return new Promise((resolve, reject) => {

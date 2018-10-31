@@ -1,13 +1,14 @@
-import { docker } from './docker';
-import { getHumanSize } from './utils';
-import { getFilePath } from './setup';
+import { distanceInWordsToNow, format } from 'date-fns';
 import * as fs from 'fs-extra';
-import { logger, LogMessageType } from './logger';
-import { join } from 'path';
-import { Observable, Subject } from 'rxjs';
-import { share } from 'rxjs/operators';
 import * as glob from 'glob';
-import { format, distanceInWordsToNow } from 'date-fns';
+import { join } from 'path';
+import { Subject } from 'rxjs';
+import { share } from 'rxjs/operators';
+
+import { docker } from './docker';
+import { logger, LogMessageType } from './logger';
+import { getFilePath } from './setup';
+import { getHumanSize } from './utils';
 
 export interface ImageData {
   name: string;
@@ -44,11 +45,10 @@ export function buildDockerImage(data: ImageData): void {
     docker.buildImage({ context: folderPath, src: src }, { t: data.name })
       .then(output => {
         output.on('data', d => {
-          let output = d.toString();
           let parsed = null;
 
           try {
-            parsed = JSON.parse(output);
+            parsed = JSON.parse(d.toString());
           } catch (e) { }
 
           if (parsed && parsed.errorDetail) {
@@ -210,8 +210,8 @@ function getImagesInDirectory(path: string): Promise<any> {
               return Promise.resolve(img);
             }
           }))
-            .then(imgs => resolve(imgs))
-            .catch(err => reject(err));
+          .then(resolve)
+          .catch(reject);
         });
     });
   });

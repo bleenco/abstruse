@@ -1,12 +1,22 @@
-import { join, resolve } from 'path';
-import { existsSync, copyFile, ensureDirectory } from './fs';
-import { readFileSync, writeFileSync } from 'fs';
-import { ensureDirSync, statSync, remove, readJson, writeJson } from 'fs-extra';
-import * as uuid from 'uuid';
+import { randomBytes } from 'crypto';
+import {
+  copy,
+  ensureDir,
+  ensureDirSync,
+  ensureFileSync,
+  readFileSync,
+  readJson,
+  remove,
+  statSync,
+  writeFileSync,
+  writeJson,
+} from 'fs-extra';
 import * as glob from 'glob';
 import { homedir } from 'os';
+import { join, resolve } from 'path';
+import * as uuid from 'uuid';
+
 import { getHumanSize } from './utils';
-import { randomBytes } from 'crypto';
 
 let defaultConfig = {
   url: null,
@@ -42,23 +52,23 @@ export function setHome(dirPath: string): void {
 export function initSetup(): Promise<string> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
-    .then(() => ensureDirectory(getFilePath('images')))
-    .then(() => ensureDirectory(getFilePath('base-images')))
+    .then(() => ensureDir(getFilePath('images')))
+    .then(() => ensureDir(getFilePath('base-images')))
     .then(() => {
       let srcDir = resolve(__dirname, '../../src/files/docker-essential');
       let destDir = getFilePath('docker-essential');
-      return copyFile(srcDir, destDir);
+      return copy(srcDir, destDir);
     })
     .then(() => {
       let avatarDir = resolve(__dirname, '../../src/files/avatars');
       let destDir = getFilePath('avatars');
-      return copyFile(avatarDir, destDir);
+      return copy(avatarDir, destDir);
     })
     .then(() => getConfigAsync());
 }
 
 export function appReady(): boolean {
-  return existsSync(getFilePath('config.json')) && existsSync(getFilePath('docker-essential'));
+  return ensureFileSync(getFilePath('config.json')) && ensureDirSync(getFilePath('docker-essential'));
 }
 
 export function getRootDir(): string {
@@ -71,17 +81,17 @@ export function getFilePath(relativePath: string): string {
 
 export function makeAbstruseDir(): Promise<null> {
   let abstruseDir = getRootDir();
-  return ensureDirectory(abstruseDir);
+  return ensureDir(abstruseDir);
 }
 
 export function makeCacheDir(): Promise<null> {
   let cachePath = getFilePath('cache');
-  return ensureDirectory(cachePath);
+  return ensureDir(cachePath);
 }
 
 export function createTempDir(): Promise<string> {
   let tempDir = getFilePath(`cache/${uuid()}`);
-  return ensureDirectory(tempDir)
+  return ensureDir(tempDir)
     .then(() => tempDir);
 }
 
@@ -93,7 +103,7 @@ export function writeDefaultConfig(): void {
 }
 
 export function configExists(): boolean {
-  return existsSync(getFilePath('config.json'));
+  return ensureFileSync(getFilePath('config.json'));
 }
 
 export function getConfig(): string {

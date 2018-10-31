@@ -1,8 +1,9 @@
-import { Observable, Observer, interval } from 'rxjs';
-import { share, timeInterval, mergeMap, map } from 'rxjs/operators';
-import * as utils from './utils';
-import { listContainers, calculateContainerStats } from './docker';
+import { interval, Observable } from 'rxjs';
+import { map, mergeMap, share, timeInterval } from 'rxjs/operators';
+
+import { calculateContainerStats, listContainers } from './docker';
 import { processes } from './process-manager';
+import * as utils from './utils';
 
 export function getContainersStats(): Observable<any> {
   return new Observable(observer => {

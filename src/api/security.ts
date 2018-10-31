@@ -1,92 +1,77 @@
-import * as jwt from 'jsonwebtoken';
+import { compare, hash } from 'bcrypt';
 import * as express from 'express';
-import { getUser } from './db/user';
+import { existsSync, readFileSync } from 'fs-extra';
+import { sign, verify } from 'jwt-then';
 import * as nodeRsa from 'node-rsa';
 import { RSA } from 'rsa-compat-ssl';
-import { getFilePath, config } from './setup';
-import { existsSync, exists, writeFile } from './fs';
-import { readFileSync } from 'fs';
-import { logger, LogMessageType } from './logger';
 import { Observable } from 'rxjs';
-import * as bcrypt from 'bcrypt';
+
+import { getUser } from './db/user';
+import { writeFile } from './fs';
+import { config, getFilePath } from './setup';
 
 export function generatePassword(plain: string): Promise<string> {
-  return bcrypt.hash(plain, 12);
+  return hash(plain, 12);
 }
 
-export function comparePassword(plain: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(plain, hash);
+export function comparePassword(plain: string, hashed: string): Promise<boolean> {
+  return compare(plain, hashed);
 }
 
 export function generateJwt(data: any): Promise<string> {
-  return new Promise((resolve, reject) => {
-    delete data.password;
+  delete data.password;
 
-    jwt.sign(data, config.jwtSecret, {}, (err: jwt.JsonWebTokenError, token: string) => {
-      if (err) {
-        reject(err);
-      }
-
-      resolve(token);
-    });
-  });
+  return sign(data, config.jwtSecret);
 }
 
 export function decodeJwt(token: string): any {
   try {
-    let decoded = jwt.verify(token, config.jwtSecret);
-    return decoded;
+    return verify(token, config.jwtSecret);
   } catch (err) {
     return false;
   }
 }
 
-export function checkApiRequestAuth(req: express.Request): Promise<void> {
-  return new Promise((resolve, reject) => {
-    let token = req.get('abstruse-ci-token');
-    if (!token) {
-      reject('Authentication failed.');
-    } else {
-      jwt.verify(token, config.jwtSecret, (err, decoded: any) => {
-        if (err) {
-          reject('Authentication failed.');
-        } else {
-          getUser(decoded.id)
-            .then(user => {
-              if (!user) {
-                reject('Authentication failed');
-              } else {
-                resolve();
-              }
-            });
-        }
-      });
-    }
-  });
+export async function checkApiRequestAuth(req: express.Request): Promise<void> {
+  let token = req.get('abstruse-ci-token');
+
+  if (!token) {
+    throw new Error('Authentication failed.');
+  }
+
+  const decoded = <{ id: number }> await verify(token, config.jwtSecret);
+
+  const user = await getUser(decoded.id);
+
+  if (!user) {
+    throw new Error('Authentication failed.');
+  }
 }
 
 export function encrypt(str: string): string {
   let publicKeyPath = getFilePath(config.publicKey);
-  if (existsSync(publicKeyPath)) {
-    let key = readFileSync(publicKeyPath, 'utf8').toString();
-    let rsa = new nodeRsa(key);
 
-    return rsa.encrypt(str, 'base64');
-  } else {
+  if (!existsSync(publicKeyPath)) {
     return null;
   }
+
+  let key = readFileSync(publicKeyPath, 'utf8').toString();
+  let rsa = new nodeRsa(key);
+
+  return rsa.encrypt(str, 'base64');
 }
 
 export function decrypt(str: string): string {
   let privateKeyPath = getFilePath(config.privateKey);
-  if (existsSync(privateKeyPath)) {
-    let key = readFileSync(privateKeyPath, 'utf8').toString();
-    let rsa = new nodeRsa(key);
 
-    return rsa.decrypt(str, 'utf8');
-  } else {
+  if (!existsSync(privateKeyPath)) {
     return null;
   }
+
+  let key = readFileSync(privateKeyPath, 'utf8').toString();
+  let rsa = new nodeRsa(key);
+
+  return rsa.decrypt(str, 'utf8');
 }
 
 export function generateKeys(): Observable<string> {
@@ -112,8 +97,8 @@ export function generateKeys(): Observable<string> {
               observer.next('[encrypt]: RSA public and private key successfully generated');
               observer.complete();
             })
-            .catch(err => {
-              observer.error(err);
+            .catch(error => {
+              observer.error(error);
               observer.complete();
             });
         }

@@ -1,32 +1,31 @@
-import * as uws from 'uws';
+import * as express from 'express';
+import { readFileSync } from 'fs-extra';
 import * as http from 'http';
 import * as https from 'https';
-import * as uuid from 'uuid';
 import * as querystring from 'querystring';
-import { Observable, Subscription, merge } from 'rxjs';
+import { merge, Observable, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { logger, LogMessageType } from './logger';
-import { getContainersStats } from './docker-stats';
-import {
-  processes,
-  startBuild,
-  jobEvents,
-  restartJob,
-  stopJob,
-  debugJob,
-  restartBuild,
-  stopBuild,
-  terminalEvents
-} from './process-manager';
-import { imageBuilderObs, buildDockerImage, deleteImage } from './image-builder';
-import { getConfig } from './setup';
-import { readFileSync } from 'fs';
-import * as express from 'express';
-import { sessionParser } from './server';
-import { IMemoryData, memory } from './stats/memory';
-import { ICpuData, cpu } from './stats/cpu';
-import { decodeJwt } from './security';
+import * as uws from 'uws';
+
 import { getLastBuild } from './db/build';
+import { getContainersStats } from './docker-stats';
+import { buildDockerImage, deleteImage, imageBuilderObs } from './image-builder';
+import { logger, LogMessageType } from './logger';
+import {
+  debugJob,
+  jobEvents,
+  processes,
+  restartBuild,
+  restartJob,
+  stopBuild,
+  stopJob,
+  terminalEvents,
+} from './process-manager';
+import { decodeJwt } from './security';
+import { sessionParser } from './server';
+import { getConfig } from './setup';
+import { cpu, ICpuData } from './stats/cpu';
+import { IMemoryData, memory } from './stats/memory';
 
 export interface ISocketServerOptions {
   app: express.Application;

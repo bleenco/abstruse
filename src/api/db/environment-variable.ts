@@ -1,5 +1,5 @@
-import { EnvironmentVariable } from './model';
 import { encrypt } from '../security';
+import { EnvironmentVariable } from './model';
 
 export function insertEnvironmentVariable(data: any): Promise<any> {
   return new Promise((resolve, reject) => {

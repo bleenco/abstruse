@@ -1,5 +1,4 @@
-import { Job, JobRun } from './model';
-import { getBuild } from './build';
+import { Job } from './model';
 
 export function getJob(jobId: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
