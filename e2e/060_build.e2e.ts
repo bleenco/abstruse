@@ -47,9 +47,9 @@ describe('Build Details', () => {
       .then((): any => browser.wait(() => element(by.css(`[name="stop-job"]`)).isEnabled()))
       .then((): any => browser.wait(() => element(by.css(`[name="stop-job"]`)).isDisplayed()))
       .then(() => element.all(by.css(`[name="stop-job"]`)).first().click())
-      .then(num => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
-        return cnt === 0;
-      })));
+      .then(() => browser.wait(() => element.all(by.css('.is-running')).count().then(cnt => {
+          return cnt === 0;
+        })));
   });
 
   it('should restart job', () => {
@@ -79,10 +79,10 @@ describe('Build Details', () => {
       })
       .then(() => delay(2000))
       .then((): any => element.all(by.css(`[name="stop-job"]`)).first().click())
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 0));
-      });
+      .then((): any => {
+          return browser.wait(() => element.all(by.css('.is-running')).count()
+            .then(cnt => cnt === 0));
+        });
   });
 
   it('should start new build (D3) and see progress bar in second job run', () => {
@@ -147,10 +147,10 @@ describe('Build Details', () => {
         ExpectedConditions.presenceOf(element.all(by.css(`[name="btn-stop"]`)).first())))
       .then(() => delay(1000))
       .then((): any => element.all(by.css(`[name="btn-stop"]`)).first().click())
-      .then((num): any => {
-        return browser.wait(() => element.all(by.css('.is-running')).count()
-          .then(cnt => cnt === 0));
-      }));
+      .then((): any => {
+          return browser.wait(() => element.all(by.css('.is-running')).count()
+            .then(cnt => cnt === 0));
+        }));
   });
 
   it(`should restart first build and see approximately time remaining`, (): any => {

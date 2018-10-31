@@ -29,7 +29,7 @@ export class AppSelectboxComponent implements OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(_changes: SimpleChanges) {
     if (this.data && this.data.length) {
       this.index = this.data.findIndex(d => d.key === this.tmp);
       if (this.data[this.index]) {

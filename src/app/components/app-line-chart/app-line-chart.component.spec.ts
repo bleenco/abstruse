@@ -47,7 +47,7 @@ describe('Line Chart Component', () => {
     let responseJobs: Response;
     let fakeJobs: any[];
 
-    beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(async(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeJobs = (<any>jobsData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeJobs } });

@@ -94,7 +94,7 @@ export function dockerExec(
 
     let container = docker.getContainer(id);
     let execOptions = {
-      Cmd: ['zsh', `-c ${command}`],
+      Cmd: ['/usr/bin/abstruse-pty', cmd.command],
       Env: envVars.serialize(env),
       AttachStdout: true,
       AttachStderr: true,
@@ -117,7 +117,7 @@ export function dockerExec(
           observer.complete();
         });
 
-        ws._write = (chunk, enc, next) => {
+        ws._write = (chunk, _enc, next) => {
           let str = chunk.toString('utf8');
 
           if (str.includes('[error]')) {
@@ -198,14 +198,14 @@ export function stopContainer(id: string): Observable<any> {
                 .then(() => container.remove())
                 .then(() => observer.next(container))
                 .then(() => observer.complete())
-                .catch(err => observer.complete());
+                .catch(() => observer.complete());
             } else {
               container.remove()
                 .then(() => observer.next(container))
                 .then(() => observer.complete())
-                .catch(err => observer.complete());
+                .catch(() => observer.complete());
             }
-          }).catch(err => observer.complete());
+          }).catch(() => observer.complete());
       } catch (e) {
         observer.next();
         observer.complete();
@@ -218,7 +218,7 @@ export function stopContainer(id: string): Observable<any> {
 }
 
 export function killContainer(id: string): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     let container = null;
     try {
       container = docker.getContainer(id);

@@ -45,10 +45,10 @@ describe('Login Component (mockBackend)', () => {
     it('should have Sign In <h1> after app is ready completes', async(inject([], () => {
       fixture.componentInstance.ngOnInit();
 
-      return service.isAppReady().toPromise().then(isReady => {
-        fixture.detectChanges();
-        const de = fixture.debugElement.query(By.css('h1'));
-        expect(de.nativeElement.textContent).toBe('Sign In');
+      return service.isAppReady().toPromise().then(() => {
+          fixture.detectChanges();
+          const de = fixture.debugElement.query(By.css('h1'));
+          expect(de.nativeElement.textContent).toBe('Sign In');
       });
     })));
   });

@@ -55,7 +55,7 @@ describe('Build Details Component', () => {
     let responseBuild: Response;
     let fakeBuild: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeBuild = (<any>buildData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });
@@ -77,7 +77,7 @@ describe('Build Details Component', () => {
     let responseBuild: Response;
     let fakeBuild: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeBuild = (<any>buildTagData).data;
       let optionsBuild = new ResponseOptions({ status: 200, body: { data: fakeBuild } });

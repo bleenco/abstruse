@@ -1,14 +1,15 @@
-import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ApiService } from '../../services/api.service';
-import { TimeService } from '../../services/time.service';
-import { AuthService } from '../../services/auth.service';
-import { SocketService } from '../../services/socket.service';
 import { distanceInWordsToNow } from 'date-fns';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+
+import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
+import { SocketService } from '../../services/socket.service';
+import { TimeService } from '../../services/time.service';
 
 @Component({
   selector: 'app-build-details',
@@ -127,9 +128,9 @@ export class AppBuildDetailsComponent implements OnInit, OnDestroy {
 
         this.sub = this.socketService.outputEvents
           .pipe(filter(event => event.type === 'build stopped' || event.type === 'build restarted'))
-          .subscribe(event => {
-            this.processingBuild = false;
-          });
+          .subscribe(() => {
+                  this.processingBuild = false;
+              });
 
         this.subUpdate = this.socketService.outputEvents
           .pipe(filter(event => event.data === 'build restarted' || event.data === 'build succeeded' || event.data === 'build failed'))

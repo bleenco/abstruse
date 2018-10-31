@@ -45,7 +45,7 @@ describe('Setup Component', () => {
     it('should have Sign In <h1> after app is ready completes (naviagets to login)', async(inject([], () => {
       fixture.componentInstance.ngOnInit();
 
-      return service.isAppReady().toPromise().then(isReady => {
+      return service.isAppReady().toPromise().then(() => {
         fixture.detectChanges();
         const de = fixture.debugElement.query(By.css('h1'));
         expect(de.nativeElement.textContent).toBe('Sign In');

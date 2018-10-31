@@ -1,22 +1,23 @@
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import { findFromEnvVariables, deploy } from '../../src/api/deploy';
-import { s3Deploy } from '../../src/api/deploy/aws-s3';
-import { codeDeploy } from '../../src/api/deploy/aws-code-deploy';
-import { elasticDeploy } from '../../src/api/deploy/aws-elastic';
+import * as fs from 'fs-extra';
 import { join } from 'path';
 import * as temp from 'temp';
-import { abstruse, killAllProcesses } from '../e2e/utils/process';
+
+import { deploy, findFromEnvVariables } from '../../src/api/deploy';
+import { codeDeploy } from '../../src/api/deploy/aws-code-deploy';
+import { elasticDeploy } from '../../src/api/deploy/aws-elastic';
+import { s3Deploy } from '../../src/api/deploy/aws-s3';
 import { createContainer, killContainer } from '../../src/api/docker';
+import { abstruse, killAllProcesses } from '../e2e/utils/process';
 import { sendRequest } from '../helpers/utils';
-import * as fs from 'fs-extra';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 let tempRoot = null;
 
 describe('Deploying with AWS Services', () => {
-  before(function() {
+  before(function () {
     return Promise.resolve()
       .then(() => process.chdir(join(__dirname, '../')))
       .then(() => {
@@ -51,13 +52,13 @@ describe('Deploying with AWS Services', () => {
 
   it(`should return null when variables doesn't exists`, () => {
     let result =
-      findFromEnvVariables({'secretAccessKey': { value: '1feges2', secure: false }}, 'accessKey');
+      findFromEnvVariables({ 'secretAccessKey': { value: '1feges2', secure: false } }, 'accessKey');
     expect(result).to.equals(null);
   });
 
   it(`should return value when variable exists`, () => {
     let result =
-      findFromEnvVariables({'accessKey': { value: '1feges2', secure: false }}, 'accessKey');
+      findFromEnvVariables({ 'accessKey': { value: '1feges2', secure: false } }, 'accessKey');
     expect(result).to.equals('1feges2');
   });
 
@@ -65,14 +66,14 @@ describe('Deploying with AWS Services', () => {
     let preferences = { provider: 'azure' };
 
     return deploy(preferences, 'unit_test_abstruse_container', {})
-      .subscribe(status => {},
-      err => {
-        expect(err).to.deep.equals({
-          type: 'containerError',
-          data: 'Deployment provider azure is not supported.'
-        });
-      },
-      () => Promise.reject(1));
+      .subscribe(() => { },
+        err => {
+          expect(err).to.deep.equals({
+            type: 'containerError',
+            data: 'Deployment provider azure is not supported.'
+          });
+        },
+        () => Promise.reject(1));
   });
 
   it(`should return error on calling deploy with s3 provider but insufficent data`, () => {
@@ -83,13 +84,13 @@ describe('Deploying with AWS Services', () => {
       .subscribe(status => {
         outputs.push(status);
       },
-      err => {
-        expect(outputs.length).to.equals(3);
-        expect(outputs[0].data).to.includes('accessKeyId is not set in environment variables or');
-        expect(outputs[1].data).to.includes('secretAccessKey is not set in environment variables ');
-        expect(outputs[2].data).to.includes('region is not set in environment variables or');
-      },
-      () => false);
+        () => {
+          expect(outputs.length).to.equals(3);
+          expect(outputs[0].data).to.includes('accessKeyId is not set in environment variables or');
+          expect(outputs[1].data).to.includes('secretAccessKey is not set in environment variables ');
+          expect(outputs[2].data).to.includes('region is not set in environment variables or');
+        },
+        () => false);
   });
 
   it(`should return error on calling s3 deploy without region data`, () => {
@@ -104,11 +105,11 @@ describe('Deploying with AWS Services', () => {
       .subscribe(status => {
         outputs.push(status);
       },
-      err => {
-        expect(outputs.length).to.equals(1);
-        expect(outputs[0].data).to.includes('region is not set in environment variables or');
-      },
-      () => false);
+        () => {
+          expect(outputs.length).to.equals(1);
+          expect(outputs[0].data).to.includes('region is not set in environment variables or');
+        },
+        () => false);
   });
 
   it(`should return error on calling awsCodeDeploy without region and deploymentGroup data`, () => {
@@ -123,12 +124,12 @@ describe('Deploying with AWS Services', () => {
       .subscribe(status => {
         outputs.push(status);
       },
-      err => {
-        expect(outputs.length).to.equals(2);
-        expect(outputs[0].data).to.includes('deploymentGroup is not set in yml config file');
-        expect(outputs[1].data).to.includes('region is not set in environment variables or');
-      },
-      () => false);
+        () => {
+          expect(outputs.length).to.equals(2);
+          expect(outputs[0].data).to.includes('deploymentGroup is not set in yml config file');
+          expect(outputs[1].data).to.includes('region is not set in environment variables or');
+        },
+        () => false);
   });
 
   it(`should return error on calling awsElastic without application and environment data`, () => {
@@ -144,11 +145,11 @@ describe('Deploying with AWS Services', () => {
       .subscribe(status => {
         outputs.push(status);
       },
-      err => {
-        expect(outputs.length).to.equals(2);
-        expect(outputs[0].data).to.includes('application is not set in yml config file');
-        expect(outputs[1].data).to.includes('environmentName is not set in yml config file');
-      },
-      () => false);
+        () => {
+          expect(outputs.length).to.equals(2);
+          expect(outputs[0].data).to.includes('application is not set in yml config file');
+          expect(outputs[1].data).to.includes('environmentName is not set in yml config file');
+        },
+        () => false);
   });
 });

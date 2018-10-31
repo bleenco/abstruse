@@ -56,7 +56,7 @@ describe('Repositories Component', () => {
     let responseRepositories: Response;
     let fakeRepositories: any[];
 
-    beforeEach(async(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(async(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeRepositories = (<any>repositoriesData).data;
       let optionsRepositories = new ResponseOptions({ status: 200, body: { data: fakeRepositories } });

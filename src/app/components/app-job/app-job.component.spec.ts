@@ -53,7 +53,7 @@ describe('Job Component', () => {
     let responseJob: Response;
     let fakeJob: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeJob = (<any>jobData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });
@@ -75,7 +75,7 @@ describe('Job Component', () => {
     let responseJob: Response;
     let fakeJob: any[];
 
-    beforeEach(inject([Http, Router, XHRBackend], (http: Http, router: Router, be: MockBackend) => {
+    beforeEach(inject([Http, Router, XHRBackend], (_http: Http, _router: Router, be: MockBackend) => {
       backend = be;
       fakeJob = (<any>jobTagData).data;
       let optionsJob = new ResponseOptions({ status: 200, body: { data: fakeJob } });

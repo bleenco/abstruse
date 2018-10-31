@@ -1,21 +1,11 @@
-import { Component, OnDestroy, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
-import { WindowService } from '../../services/window.service';
-import { StatsService } from '../../services/stats.service';
-import {
-  select,
-  scaleTime,
-  scaleLinear,
-  timeParse,
-  line,
-  curveLinear,
-  extent,
-  axisBottom,
-  axisLeft,
-  area
-} from 'd3';
-import { isSameDay, format, subDays } from 'date-fns';
+import { Component, ElementRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { area, axisBottom, axisLeft, curveLinear, extent, line, scaleLinear, scaleTime, select, timeParse } from 'd3';
+import { format, isSameDay, subDays } from 'date-fns';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+
+import { StatsService } from '../../services/stats.service';
+import { WindowService } from '../../services/window.service';
 
 @Component({
   selector: 'app-line-chart',
@@ -41,8 +31,8 @@ export class AppLineChartComponent implements OnDestroy, OnChanges {
     this.runs = { success: {}, failed: {} };
 
     this.sub = this.windowService.resize
-      .pipe(filter(x => !!this.el))
-      .subscribe(e => this.render());
+      .pipe(filter(() => !!this.el))
+      .subscribe(() => this.render());
 
     this.calendarDateFrom = subDays(new Date(), 7);
     this.calendarDateTo = new Date();

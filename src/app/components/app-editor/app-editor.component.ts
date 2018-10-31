@@ -1,18 +1,19 @@
+import { DOCUMENT } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
   NgZone,
   Output,
-  ViewChild,
   Renderer2,
-  Inject
+  ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
+
 import { WindowService } from '../../services/window.service';
 
 let loadedMonaco = false;
@@ -121,10 +122,10 @@ export class AppEditorComponent implements AfterViewInit, ControlValueAccessor {
       this.editor.setValue(this.value);
     }
 
-    this.editor.onDidChangeModelContent((e: any) => {
-      let val = this.editor.getValue();
-      this.propagateChange(val);
-      this.zone.run(() => this.value = val);
+    this.editor.onDidChangeModelContent(() => {
+        let val = this.editor.getValue();
+        this.propagateChange(val);
+        this.zone.run(() => this.value = val);
     });
 
     if (this.windowResizeSubscription) {
