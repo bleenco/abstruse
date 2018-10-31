@@ -32,9 +32,7 @@ export interface IAbstruseJWT {
 
 export async function decodeJwt(token: string): Promise<IAbstruseJWT | false> {
   try {
-    console.log(config);
-    const a = await verify(token, config.jwtSecret);
-    console.log(a);
+    return <IAbstruseJWT> await verify(token, config.jwtSecret);
   } catch (err) {
     return false;
   }
@@ -42,7 +40,7 @@ export async function decodeJwt(token: string): Promise<IAbstruseJWT | false> {
 
 export async function checkApiRequestAuth(req: express.Request): Promise<void> {
   let token = req.get('abstruse-ci-token');
-  console.log(token);
+  console.log({ checkApiRequestAuth: token });
   if (!token) {
     throw new Error('Authentication failed.');
   }

@@ -179,86 +179,58 @@ export function listContainers(): Promise<dockerode.ContainerInfo[]> {
   return docker.listContainers();
 }
 
-export function stopAllContainers(): Promise<any[]> {
-  return listContainers()
-    .then(containers => {
-      return Promise.all(containers.map(containerInfo => {
-        return docker.getContainer(containerInfo.Id).stop();
-      }));
-    });
+export async function stopAllContainers(): Promise<any[]> {
+  const containers = await listContainers();
+  return Promise.all(containers.map(containerInfo => {
+    return docker.getContainer(containerInfo.Id).stop();
+  }));
 }
 
 export function stopContainer(id: string): Observable<any> {
   return new Observable(observer => {
-    let container = null;
-    try {
-      container = docker.getContainer(id);
-    } catch (e) {
-      observer.complete();
-    }
 
-    if (container) {
+    // wrap in async function to avoid returning invalid type to Observable
+    const stop = async () => {
       try {
-        container.inspect()
-          .then(containerInfo => {
-            if (containerInfo.State.Running) {
-              container.stop()
-                .then(() => container.remove())
-                .then(() => observer.next(container))
-                .then(() => observer.complete())
-                .catch(() => observer.complete());
-            } else {
-              container.remove()
-                .then(() => observer.next(container))
-                .then(() => observer.complete())
-                .catch(() => observer.complete());
-            }
-          }).catch(() => observer.complete());
+        const container = await docker.getContainer(id).inspect();
+        if (container.State.Running) {
+          await container.stop();
+          await container.remove();
+          observer.next(container);
+          observer.complete();
+        } else {
+          await container.remove();
+          observer.next(container);
+          observer.complete();
+        }
       } catch (e) {
         observer.next();
         observer.complete();
       }
-    } else {
-      observer.next();
-      observer.complete();
-    }
+    };
+
+    stop();
   });
 }
 
-export function killContainer(id: string): Promise<void> {
-  return new Promise((resolve) => {
-    let container = null;
-    try {
-      container = docker.getContainer(id);
-      container.inspect()
-        .then(containerInfo => {
-          if (containerInfo.State.Status === 'running') {
-            return container.kill();
-          } else {
-            return Promise.resolve();
-          }
-        })
-        .then(() => removeContainer(id))
-        .then(() => resolve())
-        .catch(err => {
-          if (err.statusCode === 404) {
-            resolve();
-          } else {
-            console.error(err);
-          }
-        });
-    } catch (e) {
-      resolve();
-    }
-  });
-}
-
-export function removeContainer(id: string): Promise<void> {
+export async function killContainer(id: string): Promise<void> {
   try {
-    let container = docker.getContainer(id);
+    const container = await docker.getContainer(id).inspect();
+    if (container.State.Status === 'running') {
+      await container.stop();
+    }
+    await removeContainer(id);
+  } catch (err) {
+    if (err.statusCode !== 404) {
+      console.error(err);
+    }
+  }
+}
 
-    return container.inspect()
-      .then(() => container.remove());
+export async function removeContainer(id: string): Promise<void> {
+  try {
+    const container = await docker.getContainer(id).inspect();
+    return container.remove();
   } catch {
     return;
   }

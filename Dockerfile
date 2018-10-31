@@ -37,6 +37,7 @@ RUN apk add --no-cache \
 
 # Production dependencies
 RUN apk --no-cache add \
+  bash \
   git \
   sqlite \
   tini \
