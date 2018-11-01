@@ -13,7 +13,10 @@ import { ProcessOutput } from './process';
 import { demuxStream } from './utils';
 
 export const docker = new dockerode();
-const binds = platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'];
+const binds = [
+  '/usr/local/share/.cache/yarn/v1:/usr/local/share/.cache/yarn/v1',
+  ...(platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'])
+];
 
 export function createContainer(
   name: string,
