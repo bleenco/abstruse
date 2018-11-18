@@ -19,6 +19,7 @@ export class BuildJob {
     public start_time: number,
     public end_time: number,
     public status: BuildStatus,
+    public hasPermission: boolean,
     public runs: any[] = []
   ) { }
 

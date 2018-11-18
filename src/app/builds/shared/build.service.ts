@@ -527,7 +527,7 @@ export class BuildService {
     this.currentTime = new Date().getTime();
   }
 
-  generateBuild(build: any): Promise<Build> {
+  async generateBuild(build: any): Promise<Build> {
     let status: BuildStatus = BuildStatus.queued;
     let maxCompletedJobTime: number;
     let minRunningJobStartTime: number;
@@ -657,10 +657,12 @@ export class BuildService {
 
   private generateJob(data: any, buildId: number): BuildJob {
     const status = data.status === 'success' ? BuildStatus.passed : data.status;
-    return new BuildJob(data.id, buildId, data.data.image, data.data.env, data.start_time, data.end_time, status, data.runs);
+    return new BuildJob(
+      data.id, buildId, data.data.image, data.data.env, data.start_time, data.end_time, status, Boolean(data.hasPermission), data.runs
+    );
   }
 
-  private extractGitHubData(data: any): Promise<ProviderData> {
+  private async extractGitHubData(data: any): Promise<ProviderData> {
     const providerData: ProviderData = {};
     return Promise.resolve()
       .then(() => {
@@ -717,7 +719,7 @@ export class BuildService {
       .then(() => providerData);
   }
 
-  private extractBitbucketData(data: any): Promise<ProviderData> {
+  private async extractBitbucketData(data: any): Promise<ProviderData> {
     const providerData: ProviderData = {};
     return Promise.resolve()
       .then(() => {
@@ -742,7 +744,7 @@ export class BuildService {
       .then(() => providerData);
   }
 
-  private extractGitlabData(data: any, repositoryData: any): Promise<ProviderData> {
+  private async extractGitlabData(data: any, repositoryData: any): Promise<ProviderData> {
     const providerData: ProviderData = {};
     return Promise.resolve()
       .then(() => {
@@ -784,7 +786,7 @@ export class BuildService {
       .then(() => providerData);
   }
 
-  private extractGogsData(data: any): Promise<ProviderData> {
+  private async extractGogsData(data: any): Promise<ProviderData> {
     const providerData: ProviderData = {};
     return Promise.resolve()
       .then(() => {
@@ -810,7 +812,7 @@ export class BuildService {
       .then(() => providerData);
   }
 
-  private customGet(url: string, params: HttpParams = new HttpParams()): Promise<any> {
+  private async customGet(url: string, params: HttpParams = new HttpParams()): Promise<any> {
     return this.http.get(url, { params })
       .pipe(
         catchError(handleError(url))

@@ -119,6 +119,10 @@ export class SocketServer {
           if (typeof message === 'object' && !Object.keys(message).length) {
             return;
           }
+          if (!client.socket.OPEN) {
+            return;
+          }
+
           client.socket.send(JSON.stringify(message));
         },
         subscriptions: {
@@ -188,7 +192,7 @@ export class SocketServer {
   private handleEvent(event: any, client: Client): void {
     switch (event.type) {
 
-      case 'buildImage': {
+      case 'buildImage':
         if (client.session.email === 'anonymous') {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
@@ -196,10 +200,9 @@ export class SocketServer {
           const imageData = event.data;
           buildDockerImage(imageData);
         }
-      }
         break;
 
-      case 'deleteImage': {
+      case 'deleteImage':
         if (client.session.email === 'anonymous') {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
@@ -207,10 +210,9 @@ export class SocketServer {
           const imageData = event.data;
           deleteImage(imageData);
         }
-      }
         break;
 
-      case 'subscribeToImageBuilder': {
+      case 'subscribeToImageBuilder':
         if (client.session.email === 'anonymous') {
           client.send({ type: 'error', data: 'not authorized' });
         } else {
@@ -219,7 +221,6 @@ export class SocketServer {
             client.send({ type: 'imageBuildProgress', data: e });
           });
         }
-      }
         break;
 
       case 'stopBuild':

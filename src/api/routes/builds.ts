@@ -6,7 +6,7 @@ import { LogMessageType, logger } from '../logger';
 
 export const buildsRouter = express.Router();
 
-buildsRouter.get('/', (req: express.Request, res: express.Response) => {
+buildsRouter.get('/', async (req: express.Request, res: express.Response) => {
   const token = req.headers.authorization || '';
   const { limit, offset, filter } = req.query;
 
@@ -30,7 +30,7 @@ buildsRouter.get('/', (req: express.Request, res: express.Response) => {
     });
 });
 
-buildsRouter.get('/:id', (req: express.Request, res: express.Response) => {
+buildsRouter.get('/:id', async (req: express.Request, res: express.Response) => {
   const token = req.headers.authorization || '';
   const id = req.params.id;
 
@@ -54,7 +54,7 @@ buildsRouter.get('/:id', (req: express.Request, res: express.Response) => {
     });
 });
 
-buildsRouter.get('/:id/:jobid', (req: express.Request, res: express.Response) => {
+buildsRouter.get('/:id/:jobid', async (req: express.Request, res: express.Response) => {
   const token = req.headers.authorization || '';
   const id = req.params.id;
   const jobid = req.params.jobid;
