@@ -119,7 +119,7 @@ export class ImagesListComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('document:keydown', ['$event']) onKeyDownHandler(event: KeyboardEvent) {
-    if (event.keyCode === 27 && this.imageService.detailsDialogOpened) {
+    if (event.code === 'Escape' && this.imageService.detailsDialogOpened) {
       this.imageService.closeDetailsDialog();
     }
   }
