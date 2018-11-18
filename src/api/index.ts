@@ -1,23 +1,18 @@
 import * as minimist from 'minimist';
-
-const setup = require('./setup');
-const os = require('os');
-const path = require('path');
-const argv = minimist(process.argv.slice(2), {
-  string: ['dir']
-});
-
-setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
-
+import * as setup from './setup';
+import * as os from 'os';
+import * as path from 'path';
 import { ExpressServer } from './server';
 import { SocketServer } from './socket';
-import { merge } from 'rxjs';
 import { logger, LogMessageType } from './logger';
 import { getAbstruseVersion } from './utils';
 import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
+
+const argv = minimist(process.argv.slice(2), { string: ['dir'] });
+setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
 
 const server = new ExpressServer({ port: 6500 });
 
@@ -32,15 +27,9 @@ initSetup()
     };
     logger.next(msg);
   })
-  .then(() =>
-    server.start().subscribe(app => {
-      const socket = new SocketServer({ app: app });
-      merge(...[socket.start(), generateKeys()])
-        .subscribe(data => {
-          const msg: LogMessageType = { message: data, type: 'info', notify: false };
-          logger.next(msg);
-        }, err => {
-          const msg: LogMessageType = { message: err, type: 'error', notify: false };
-          logger.next(msg);
-        });
-    }));
+  .then(() => server.start())
+  .then(app => {
+    const socketServer = new SocketServer({ app });
+    socketServer.start();
+  })
+  .then(() => generateKeys());

@@ -60,8 +60,9 @@ export class SocketServer {
     this.clients = [];
   }
 
-  start(): Observable<string> {
-    return new Observable(() => this.setupServer(this.options.app));
+  async start(): Promise<void> {
+    return Promise.resolve()
+      .then(() => this.setupServer(this.options.app));
   }
 
   private setupServer(application: any): void {

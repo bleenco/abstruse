@@ -105,35 +105,30 @@ export function decrypt(str: string): string {
   }
 }
 
-export function generateKeys(): Observable<string> {
-  return new Observable(observer => {
-    const publicKeyPath = getFilePath(config.publicKey);
-    const privateKeyPath = getFilePath(config.privateKey);
+export async function generateKeys(): Promise<void | string> {
+  return Promise.resolve()
+    .then(() => {
+      const publicKeyPath = getFilePath(config.publicKey);
+      const privateKeyPath = getFilePath(config.privateKey);
 
-    if (existsSync(publicKeyPath) && existsSync(privateKeyPath)) {
-      observer.complete();
-    } else {
-      const bitlen = 4096;
-      const exp = 65537;
-      const options = { public: true, pem: true, internal: true };
+      if (existsSync(publicKeyPath) && existsSync(privateKeyPath)) {
+        return Promise.resolve();
+      } else {
+        const bitlen = 4096;
+        const exp = 65537;
+        const options = { public: true, pem: true, internal: true };
+        const msg = '[encrypt]: RSA keys successfully generated';
 
-      RSA.generateKeypair(bitlen, exp, options, (err, keypair) => {
-        if (err) {
-          observer.error(err);
-          observer.complete();
-        } else {
-          writeFile(publicKeyPath, keypair.publicKeyPem)
-            .then(() => writeFile(privateKeyPath, keypair.privateKeyPem))
-            .then(() => {
-              observer.next('[encrypt]: RSA public and private key successfully generated');
-              observer.complete();
-            })
-            .catch(error => {
-              observer.error(error);
-              observer.complete();
-            });
-        }
-      });
-    }
-  });
+        RSA.generateKeypair(bitlen, exp, options, (err, keypair) => {
+          if (err) {
+            return Promise.reject(err);
+          } else {
+            return writeFile(publicKeyPath, keypair.publicKeyPem)
+              .then(() => writeFile(privateKeyPath, keypair.privateKeyPem))
+              .then(() => msg)
+              .catch(error => Promise.reject(error));
+          }
+        });
+      }
+    });
 }
