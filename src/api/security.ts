@@ -40,7 +40,7 @@ export async function decodeJwt(token: string): Promise<IAbstruseJWT | false> {
 
 export async function checkApiRequestAuth(req: express.Request): Promise<void> {
   let token = req.get('abstruse-ci-token');
-  console.log({ checkApiRequestAuth: token });
+
   if (!token) {
     throw new Error('Authentication failed.');
   }
