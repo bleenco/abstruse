@@ -19,14 +19,19 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
 ENV ARCH=x86_64
 ENV DOCKER_VERSION=18.03.1-ce
 
-RUN apk --no-cache add openssl && \
+RUN apk add \
+  --no-cache \
+  --virtual build-dependencies \
+  openssl && \
   wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz && \
   mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp && \
   mv /tmp/docker/docker /usr/bin/docker && \
   chmod 755 /usr/bin/docker
 
 # Development dependencies
-RUN apk add --no-cache \
+RUN apk add \
+  --no-cache \
+  --virtual development-dependencies \
   curl \
   g++ \
   gcc \
@@ -36,7 +41,9 @@ RUN apk add --no-cache \
   python
 
 # Production dependencies
-RUN apk --no-cache add \
+RUN apk add \
+  --no-cache \
+  --virtual build-dependencies \
   bash \
   git \
   sqlite \
@@ -89,6 +96,15 @@ COPY src/tsconfig.api.json /app/src
 
 # Build backend
 RUN npm run build
+
+# Restore production node_modules
+RUN rm -rf node_modules && \
+  mv prod_node_modules node_modules
+
+# Remove files not required for production
+RUN apk del development-dependencies \
+ && rm -rf src \
+ && rm -rf /tmp
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
