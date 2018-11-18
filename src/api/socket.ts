@@ -119,7 +119,7 @@ export class SocketServer {
           if (typeof message === 'object' && !Object.keys(message).length) {
             return;
           }
-          if (!client.socket.OPEN) {
+          if (client.socket.readyState !== 1) {
             return;
           }
 

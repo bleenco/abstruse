@@ -10,7 +10,12 @@
         <span>{{ buildService?.build?.branch }}</span>
       </div>
       <div class="column is-6 justify-end">
-        <button type="button" class="button" [disabled]="buildService.fetchingJob || buildService?.job?.processing || !buildService?.job?.hasPermission" (click)="restartJob($event)">
+        <button type="button" class="button" [routerLink]="['/builds', buildId]">
+          <i class="fa fa-arrow-alt-circle-left"></i>
+          <span>Build Details</span>
+        </button>
+        <button type="button" class="button" [disabled]="buildService.fetchingJob || buildService?.job?.processing || !buildService?.job?.hasPermission"
+          (click)="restartJob($event)">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Job</span>
         </button>
@@ -84,8 +89,8 @@
         <app-terminal [data]="buildService?.terminalInput"></app-terminal>
       </div>
       <div [class.is-hidden]="tab !== 'history'">
-        <app-build-job-run-item *ngFor="let jobRun of buildService?.job?.runs.reverse(); let i = index;" [run]="jobRun" [num]="buildService?.job?.runs.length - i"
-          (click)="viewLog(i)"></app-build-job-run-item>
+        <app-build-job-run-item *ngFor="let jobRun of buildService?.job?.runs.reverse(); let i = index;" [run]="jobRun"
+          [num]="buildService?.job?.runs.length - i" (click)="viewLog(i)"></app-build-job-run-item>
       </div>
     </div>
   </div>

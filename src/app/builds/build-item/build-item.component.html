@@ -43,10 +43,10 @@
       <i class="fas fa-ellipsis-h menu-icon" (click)="toggleMenu($event)"></i>
       <div class="actions-menu" *ngIf="isMenuOpened" appStopPropagation>
         <i class="fas fa-ellipsis-h menu-icon" (click)="toggleMenu($event)"></i>
-        <button type="button" class="menu-item" appStopPropagation [routerLink]="['/builds', build?.id]">
+        <!-- <button type="button" class="menu-item" appStopPropagation [routerLink]="['/builds', build?.id]">
           <i class="fas fa-info-circle"></i>
           <span>Build Details</span>
-        </button>
+        </button> -->
         <button type="button" class="menu-item" appStopPropagation (click)="restartBuild($event, build.id)" [disabled]="!build?.hasPermission">
           <i class="fas fa-sync-alt"></i>
           <span>Restart Build</span>

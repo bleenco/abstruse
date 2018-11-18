@@ -12,10 +12,10 @@ $build-item-height: 70px
   width: 100%
   height: $build-item-height
   border-bottom: 1px solid $border-primary
+  outline: none
 
   &:hover
     cursor: pointer
-    background: $background-light
 
   .columns
     display: flex
@@ -132,19 +132,20 @@ $build-item-height: 70px
       .actions-menu
         +unselectable
         position: absolute
-        top: 0
+        top: -5px
         right: 0
         width: 150px
         background: $white
         z-index: 20
         box-shadow: $box-shadow
         border-radius: 5px
-        padding: 20px 0 5px 0
+        padding: 25px 0 12px 0
 
         .menu-icon
           position: absolute
           right: 10px
-          top: 4px
+          top: 9px
+          color: $text-secondary
 
         .menu-item
           display: flex

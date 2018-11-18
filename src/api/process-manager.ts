@@ -67,6 +67,7 @@ export let jobEvents: BehaviorSubject<JobProcessEvent> = new BehaviorSubject({})
 export let terminalEvents: Subject<JobProcessEvent> = new Subject();
 export let buildSub: { [id: number]: Subscription } = {};
 export let processes: JobProcess[] = [];
+export let scheduler: Subscription;
 
 jobEvents
   .pipe(
@@ -83,13 +84,19 @@ jobEvents
     logger.next(msg);
   });
 
-// main scheduler
-const concurrency = config.concurrency || 10;
-jobProcesses
-  .pipe(
-    mergeMap(process => execJob(process), concurrency)
-  )
-  .subscribe();
+export function startScheduler(): void {
+  scheduler = jobProcesses
+    .pipe(
+      mergeMap(process => execJob(process), config.concurrency || 10)
+    )
+    .subscribe();
+}
+
+export function stopScheduler(): void {
+  if (scheduler) {
+    scheduler.unsubscribe();
+  }
+}
 
 function execJob(proc: JobProcess): Observable<any> {
   const index = processes.findIndex(process => process.job_id === proc.job_id);
@@ -178,7 +185,7 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
             });
       })
       .then(() => dbJob.getLastRunId(proc.job_id))
-      .then(runId => {
+      .then(async runId => {
         const time = new Date();
         const data = { id: runId, start_time: time, end_time: null, status: 'running', log: '' };
         return dbJobRuns.updateJobRun(data)
@@ -418,7 +425,7 @@ export async function startBuild(data: any, buildConfig?: any): Promise<any> {
     .then(repository => {
       const isGithub = repository.github_id ? true : false;
       const isBitbucket = repository.bitbucket_id ? true : false;
-      const isGitlab = repository.gitlab_id  ? true : false;
+      const isGitlab = repository.gitlab_id ? true : false;
       const isGogs = repository.gogs_id ? true : false;
 
       if (isGithub) {

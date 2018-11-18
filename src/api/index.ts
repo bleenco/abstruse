@@ -10,6 +10,7 @@ import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
+import { startScheduler } from './process-manager';
 
 const argv = minimist(process.argv.slice(2), { string: ['dir'] });
 setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
@@ -32,4 +33,5 @@ initSetup()
     const socketServer = new SocketServer({ app });
     socketServer.start();
   })
+  .then(() => startScheduler())
   .then(() => generateKeys());
