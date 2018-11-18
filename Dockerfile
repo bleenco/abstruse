@@ -19,11 +19,11 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
 ENV ARCH=x86_64
 ENV DOCKER_VERSION=18.03.1-ce
 
-RUN apk --no-cache add openssl \
-  && wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
-  && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \
-  && mv /tmp/docker/docker /usr/bin/docker \
-  && chmod 755 /usr/bin/docker
+RUN apk --no-cache add openssl && \
+  wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz && \
+  mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp && \
+  mv /tmp/docker/docker /usr/bin/docker && \
+  chmod 755 /usr/bin/docker
 
 # Development dependencies
 RUN apk add --no-cache \
@@ -46,9 +46,9 @@ RUN apk --no-cache add \
 # NPM dependencies
 COPY package.json package-lock.json /app/
 
-RUN npm install --only=production \
-  && cp -R node_modules prod_node_modules \
-  && npm install
+RUN npm install --only=production && \
+  cp -R node_modules prod_node_modules && \
+  npm install
 
 # Copy shared files
 COPY tsconfig.json /app
