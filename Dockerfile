@@ -31,7 +31,7 @@ RUN apk add \
 # Development dependencies
 RUN apk add \
   --no-cache \
-  --virtual development-dependencies \
+  --virtual build-dependencies \
   curl \
   g++ \
   gcc \
@@ -43,7 +43,6 @@ RUN apk add \
 # Production dependencies
 RUN apk add \
   --no-cache \
-  --virtual build-dependencies \
   bash \
   git \
   sqlite \
@@ -102,7 +101,7 @@ RUN rm -rf node_modules && \
   mv prod_node_modules node_modules
 
 # Remove files not required for production
-RUN apk del development-dependencies && \
+RUN apk del build-dependencies && \
   rm -rf src && \
   rm -rf /tmp
 
