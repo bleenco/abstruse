@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./frappe-chart.component.sass']
 })
 export class FrappeChartComponent implements OnInit, OnDestroy {
-  @Input() events: EventEmitter<any>;
+  @Input() events: EventEmitter<any> = new EventEmitter<any>();
 
   el: HTMLElement;
   chart: Chart;

@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { HeaderComponent } from './header.component';
 import { HeaderDropdownComponent } from '../header-dropdown/header-dropdown.component';
+import { SocketService } from 'src/app/shared/providers/socket.service';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -11,8 +12,17 @@ describe('HeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [HeaderComponent, HeaderDropdownComponent]
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule
+      ],
+      declarations: [
+        HeaderComponent,
+        HeaderDropdownComponent
+      ],
+      providers: [
+        SocketService
+      ]
     })
       .compileComponents();
   }));

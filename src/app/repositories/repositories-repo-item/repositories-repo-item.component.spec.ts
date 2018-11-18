@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RepositoriesRepoItemComponent } from './repositories-repo-item.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SocketService } from 'src/app/shared/providers/socket.service';
 
 describe('RepositoriesRepoItemComponent', () => {
   let component: RepositoriesRepoItemComponent;
@@ -8,9 +10,17 @@ describe('RepositoriesRepoItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RepositoriesRepoItemComponent ]
+      imports: [
+        HttpClientTestingModule
+      ],
+      declarations: [
+        RepositoriesRepoItemComponent
+      ],
+      providers: [
+        SocketService
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { FrappeChartComponent } from './frappe-chart.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('FrappeChartComponent', () => {
   let component: FrappeChartComponent;
@@ -8,9 +9,14 @@ describe('FrappeChartComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FrappeChartComponent ]
+      imports: [
+        HttpClientTestingModule
+      ],
+      declarations: [
+        FrappeChartComponent
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

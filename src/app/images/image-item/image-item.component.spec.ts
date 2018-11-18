@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ImageItemComponent } from './image-item.component';
+import { HumanizeBytesPipe } from 'src/app/shared/pipes/humanize-bytes.pipe';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('ImageItemComponent', () => {
   let component: ImageItemComponent;
@@ -8,9 +10,15 @@ describe('ImageItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ImageItemComponent ]
+      imports: [
+        HttpClientTestingModule
+      ],
+      declarations: [
+        ImageItemComponent,
+        HumanizeBytesPipe
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

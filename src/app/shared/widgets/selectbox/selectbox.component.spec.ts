@@ -63,20 +63,13 @@ describe('SelectboxComponent', () => {
   });
 
   it('should throw an error when setting value when values are not initialized', () => {
+    component.values = null;
+    fixture.detectChanges();
+
     const setValue = () => {
       component.value = 'raspberry';
     };
     expect(() => setValue()).toThrowError('no values initialized');
-  });
-
-  it('should throw an error when setting value that doesn\'t exists in initialized values', () => {
-    component.values = testData;
-    fixture.detectChanges();
-
-    const setValue = () => {
-      component.value = 'apple';
-    };
-    expect(() => setValue()).toThrowError('value does not exists');
   });
 
 });

@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TeamUserItemComponent } from './team-user-item.component';
+import { SelectboxComponent } from 'src/app/shared/widgets/selectbox/selectbox.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('TeamUserItemComponent', () => {
   let component: TeamUserItemComponent;
@@ -8,9 +11,16 @@ describe('TeamUserItemComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TeamUserItemComponent ]
+      imports: [
+        FormsModule,
+        HttpClientTestingModule
+      ],
+      declarations: [
+        TeamUserItemComponent,
+        SelectboxComponent
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
