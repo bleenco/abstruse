@@ -1,7 +1,6 @@
 const path = require('path');
 const root = path.resolve(__dirname);
 const webpack = require('webpack');
-const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -48,11 +47,5 @@ module.exports = {
     dockerode: 'commonjs dockerode',
     'rsa-compat-ssl': 'commonjs rsa-compat-ssl',
     bcrypt: 'commonjs bcrypt'
-  },
-  optimization: {
-    minimizer: [new UglifyWebpackPlugin({
-      parallel: true,
-      cache: true
-    })]
   }
 };
