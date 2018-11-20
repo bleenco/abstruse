@@ -13,9 +13,7 @@ export class BuildJobRunItemComponent implements OnInit, OnChanges {
 
   constructor() { }
 
-  ngOnInit() {
-    this.calculateTime();
-  }
+  ngOnInit() { }
 
   ngOnChanges() {
     this.calculateTime();
