@@ -28,6 +28,7 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
   termSub: Subscription;
   jobSub: Subscription;
   timerSubscription: Subscription;
+  restartSub: Subscription;
   sshd: string;
   vnc: string;
   debug: boolean;
@@ -58,13 +59,11 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
     this.dateTimeToNow = null;
 
     this.fetch();
-    // this.buildService.fetchJob(this.buildId, this.jobId);
-
-    // this.sub = this.dataService.socketOutput
-    //   .pipe(
-    //     filter(event => event.type === 'job restarted' && event.data === this.jobId)
-    //   )
-    //   .subscribe(() => this.buildService.fetchJob(this.buildId, this.jobId, false));
+    this.restartSub = this.dataService.socketOutput
+      .pipe(
+        filter(event => event.type === 'job restarted' && event.data === this.jobId)
+      )
+      .subscribe(() => this.fetch(false));
   }
 
   ngOnDestroy() {
@@ -88,14 +87,15 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
     this.dataService.socketInput.emit({ type: 'stopJob', data: { jobId: this.jobId } });
   }
 
-  private fetch(): void {
-    this.fetching = true;
+  private fetch(loading: boolean = true): void {
+    if (loading) {
+      this.fetching = true;
+    }
 
     this.buildService.fetchJob(this.buildId, this.jobId)
       .subscribe(job => {
         this.build = job.build;
         this.job = job;
-        this.fetching = false;
 
         this.jobRun = this.job.runs[this.job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
@@ -106,7 +106,10 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
           this.previousRuntime = lastRun.end_time - lastRun.start_time;
         }
 
-        this.subscribeToJobDetails();
+        if (loading) {
+          this.fetching = false;
+          this.subscribeToJobDetails();
+        }
       });
   }
 
@@ -196,6 +199,10 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
   }
 
   viewLog(index: number): void {
+    this.tab = 'log';
+    this.terminalInput = { clear: true };
+    setTimeout(() => this.terminalInput = this.job.runs[index].log);
+
     // this.buildService.terminalInput = { clear: true };
     // const log = this.buildService.job.runs[index].log;
     // setTimeout(() => {
