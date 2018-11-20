@@ -35,14 +35,14 @@ export class RepositoriesRepoDetailsComponent implements OnInit, OnDestroy {
     this.tab = 'settings';
     this.id = this.route.snapshot.params.id;
     this.fetchRepository();
-    this.buildService.resetFields();
+    // this.buildService.resetFields();
     // this.buildService.fetchBuilds(this.id);
   }
 
   ngOnDestroy() {
     this.repo = null;
-    this.buildService.resetFields();
-    this.buildService.unsubscribeFromBuilds();
+    // this.buildService.resetFields();
+    // this.buildService.unsubscribeFromBuilds();
   }
 
   switchTab(tab: 'builds' | 'settings' | 'check'): void {

@@ -1,96 +1,96 @@
 <div class="columns is-multiline">
-  <div class="column is-12" *ngIf="buildService.fetchingJob">
+  <div class="column is-12" *ngIf="fetching">
     <app-loader></app-loader>
   </div>
-  <div class="column is-12" *ngIf="!buildService.fetchingJob">
+  <div class="column is-12" *ngIf="!fetching">
     <div class="columns is-multiline build-info">
       <div class="column is-6 align-center">
-        <h1>{{ buildService?.build?.repository_name }}</h1>
+        <h1>{{ build?.repository_name }}</h1>
         <i class="fas fa-code-branch"></i>
-        <span>{{ buildService?.build?.branch }}</span>
+        <span>{{ build?.branch }}</span>
       </div>
       <div class="column is-6 justify-end">
         <button type="button" class="button" [routerLink]="['/builds', buildId]">
           <i class="fa fa-arrow-alt-circle-left"></i>
           <span>Build Details</span>
         </button>
-        <button type="button" class="button" [disabled]="buildService.fetchingJob || buildService?.job?.processing || !buildService?.job?.hasPermission"
+        <button type="button" class="button" [disabled]="fetching || job?.processing || !job?.hasPermission"
           (click)="restartJob($event)">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Job</span>
         </button>
-        <button type="button" class="button" [disabled]="buildService.fetchingJob || buildService?.job?.processing || buildService?.jobRun?.status !== 'running' || !buildService?.job?.hasPermission"
-          (click)="buildService.stopJob($event, jobId)">
+        <button type="button" class="button" [disabled]="fetching || job?.processing || jobRun?.status !== 'running' || !job?.hasPermission"
+          (click)="stopJob($event)">
           <i class="fa fa-hand-paper"></i>
           <span>Stop Job</span>
         </button>
       </div>
       <div class="column is-11 align-center data-column">
-        <img [src]="buildService?.build?.author_avatar" class="info-avatar" [alt]="buildService?.build?.author_name">
-        <img [src]="buildService?.build?.committer_avatar" class="info-avatar committer-avatar" [alt]="buildService?.build?.committer_name"
-          *ngIf="buildService?.build?.committer_avatar && buildService?.build?.author_avatar !== buildService?.build?.committer_avatar">
-        <span *ngIf="buildService?.build?.author_name && buildService?.build?.committer_name === buildService?.build?.author_name">
-          {{ buildService?.build?.author_name }} authored and committed
+        <img [src]="build?.author_avatar" class="info-avatar" [alt]="build?.author_name">
+        <img [src]="build?.committer_avatar" class="info-avatar committer-avatar" [alt]="build?.committer_name"
+          *ngIf="build?.committer_avatar && build?.author_avatar !== build?.committer_avatar">
+        <span *ngIf="build?.author_name && build?.committer_name === build?.author_name">
+          {{ build?.author_name }} authored and committed
         </span>
-        <span *ngIf="buildService?.build?.committer_name !== buildService?.build?.author_name">
-          {{ buildService?.build?.author_name }} committed with {{ buildService?.build?.committer_name }}
+        <span *ngIf="build?.committer_name !== build?.author_name">
+          {{ build?.author_name }} committed with {{ build?.committer_name }}
         </span>
         <img src="/assets/images/icons/code-commit.svg" alt="Commit">
-        <span>{{ buildService?.build?.getSHA() }}</span>
+        <span>{{ build?.getSHA() }}</span>
         <i class="fas fa-comment"></i>
-        <span class="commit-message">{{ buildService?.build?.commit_message }}</span>
+        <span class="commit-message">{{ build?.commit_message }}</span>
       </div>
       <div class="column is-1 align-center time-column justify-end">
         <img src="/assets/images/icons/clock.svg" class="icon-clock">
-        <span class="build-time" *ngIf="buildService?.jobRun?.status === 'running'">
-          {{ buildService.currentTime - buildService.jobRun.start_time | toTime }}
+        <span class="build-time" *ngIf="jobRun?.status === 'running'">
+          {{ currentTime - jobRun.start_time | toTime }}
         </span>
-        <span class="build-time" *ngIf="buildService?.jobRun?.status !== 'running' && buildService?.jobRun?.end_time">
-          {{ buildService.jobRun.end_time - buildService.jobRun.start_time | toTime }}
+        <span class="build-time" *ngIf="jobRun?.status !== 'running' && jobRun?.end_time">
+          {{ jobRun.end_time - jobRun.start_time | toTime }}
         </span>
       </div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!buildService.fetchingJob">
-    <div class="message is-green" *ngIf="buildService?.jobRun?.status === 'success'">
+  <div class="column is-12" *ngIf="!fetching">
+    <div class="message is-green" *ngIf="jobRun?.status === 'success'">
       <p>
         <i class="fas fa-check"></i>
         <span>Job passed.</span>
       </p>
     </div>
-    <div class="message is-red" *ngIf="buildService?.jobRun?.status === 'failed'">
+    <div class="message is-red" *ngIf="jobRun?.status === 'failed'">
       <p>
         <i class="fas fa-times"></i>
         <span>Job failed.</span>
       </p>
     </div>
-    <div class="message is-yellow" *ngIf="buildService?.jobRun?.status === 'running'">
+    <div class="message is-yellow" *ngIf="jobRun?.status === 'running'">
       <p>
         <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
         <span>Job is running.</span>
       </p>
     </div>
-    <div class="message" *ngIf="buildService?.jobRun?.status === 'queued'">
+    <div class="message" *ngIf="jobRun?.status === 'queued'">
       <p>
         <i class="fas fa-clock"></i>
         <span>Job is queued.</span>
       </p>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!buildService.fetchingJob">
+  <div class="column is-12" *ngIf="!fetching">
     <div class="tabs justify-end">
       <span class="tab" [class.is-active]="tab === 'log'" (click)="tab = 'log'">Log</span>
       <span class="tab" [class.is-active]="tab === 'history'" (click)="tab = 'history'">
-        Job History ({{ buildService?.job?.runs?.length }})
+        Job History ({{ job?.runs?.length }})
       </span>
     </div>
     <div class="tabs-content">
       <div [class.is-hidden]="tab !== 'log'">
-        <app-terminal [data]="buildService?.terminalInput"></app-terminal>
+        <app-terminal [data]="terminalInput"></app-terminal>
       </div>
       <div [class.is-hidden]="tab !== 'history'">
-        <app-build-job-run-item *ngFor="let jobRun of buildService?.job?.runs.reverse(); let i = index;" [run]="jobRun"
-          [num]="buildService?.job?.runs.length - i" (click)="viewLog(i)"></app-build-job-run-item>
+        <app-build-job-run-item *ngFor="let jobRun of job?.runs.reverse(); let i = index;" [run]="jobRun"
+          [num]="job?.runs.length - i" (click)="viewLog(i)"></app-build-job-run-item>
       </div>
     </div>
   </div>

@@ -1,73 +1,73 @@
 <div class="columns is-multiline">
-  <div class="column is-12" *ngIf="buildService.fetchingBuild">
+  <div class="column is-12" *ngIf="fetchingBuild">
     <app-loader></app-loader>
   </div>
-  <div class="column is-12" *ngIf="!buildService.fetchingBuild">
+  <div class="column is-12" *ngIf="!fetchingBuild">
     <div class="columns is-multiline build-info">
       <div class="column is-6 align-center">
-        <h1>{{ buildService?.build?.repository_name }}</h1>
+        <h1>{{ build?.repository_name }}</h1>
         <i class="fas fa-code-branch"></i>
-        <span>{{ buildService?.build?.branch }}</span>
+        <span>{{ build?.branch }}</span>
       </div>
       <div class="column is-6 justify-end">
-        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing || !buildService?.build?.hasPermission" (click)="buildService.restartBuild($event, buildService.build.id)">
+        <button type="button" class="button" [disabled]="fetchingBuild || build?.processing || !build?.hasPermission" (click)="restartBuild($event)">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button" [disabled]="buildService.fetchingBuild || buildService?.build?.processing || buildService?.build?.status !== 'running' || !buildService?.build?.hasPermission"
-          (click)="buildService.stopBuild($event, buildService.build.id)">
+        <button type="button" class="button" [disabled]="fetchingBuild || build?.processing || build?.status !== 'running' || !build?.hasPermission"
+          (click)="stopBuild($event)">
           <i class="fa fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>
       </div>
       <div class="column is-11 align-center data-column">
-        <img [src]="buildService?.build?.author_avatar" class="info-avatar" [alt]="buildService?.build?.author_name">
-        <img [src]="buildService?.build?.committer_avatar" class="info-avatar committer-avatar" [alt]="buildService?.build?.committer_name"
-          *ngIf="buildService?.build?.committer_avatar && buildService?.build?.author_avatar !== buildService?.build?.committer_avatar">
-        <span *ngIf="buildService?.build?.author_name && buildService?.build?.committer_name === buildService?.build?.author_name">
-          {{ buildService?.build?.author_name }} authored and committed
+        <img [src]="build?.author_avatar" class="info-avatar" [alt]="build?.author_name">
+        <img [src]="build?.committer_avatar" class="info-avatar committer-avatar" [alt]="build?.committer_name"
+          *ngIf="build?.committer_avatar && build?.author_avatar !== build?.committer_avatar">
+        <span *ngIf="build?.author_name && build?.committer_name === build?.author_name">
+          {{ build?.author_name }} authored and committed
         </span>
-        <span *ngIf="buildService?.build?.committer_name !== buildService?.build?.author_name">
-          {{ buildService?.build?.author_name }} committed with {{ buildService?.build?.committer_name }}
+        <span *ngIf="build?.committer_name !== build?.author_name">
+          {{ build?.author_name }} committed with {{ build?.committer_name }}
         </span>
         <img src="/assets/images/icons/code-commit.svg" alt="Commit">
-        <span>{{ buildService?.build?.getSHA() }}</span>
+        <span>{{ build?.getSHA() }}</span>
         <i class="fas fa-comment"></i>
-        <span class="commit-message">{{ buildService?.build?.commit_message }}</span>
+        <span class="commit-message">{{ build?.commit_message }}</span>
       </div>
       <div class="column is-1 align-center time-column justify-end">
         <img src="/assets/images/icons/clock.svg" class="icon-clock">
-        <span class="build-time" *ngIf="buildService?.build?.status !== 'running' && buildService?.maxCompletedJobTime">
-          {{ buildService?.maxCompletedJobTime | toTime }}
+        <span class="build-time" *ngIf="build?.status !== 'running' && maxCompletedJobTime">
+          {{ maxCompletedJobTime | toTime }}
         </span>
-        <span class="build-time" *ngIf="buildService?.build?.status !== 'running' && !buildService?.maxCompletedJobTime">00:00</span>
-        <span class="build-time" *ngIf="buildService?.build?.status === 'running' && buildService?.maxCompletedJobTime > (buildService?.currentTime - buildService?.minRunningJobStartTime)">
-          {{ buildService?.maxCompletedJobTime | toTime }}
+        <span class="build-time" *ngIf="build?.status !== 'running' && !maxCompletedJobTime">00:00</span>
+        <span class="build-time" *ngIf="build?.status === 'running' && maxCompletedJobTime > (currentTime - minRunningJobStartTime)">
+          {{ maxCompletedJobTime | toTime }}
         </span>
-        <span class="build-time" *ngIf="buildService?.build?.status === 'running' && (!maxCompletedJobTime || buildService?.maxCompletedJobTime <= (buildService?.currentTime - buildService?.minRunningJobStartTime))">
-          {{ buildService?.currentTime - buildService?.minRunningJobStartTime | toTime }}
+        <span class="build-time" *ngIf="build?.status === 'running' && (!maxCompletedJobTime || maxCompletedJobTime <= (currentTime - minRunningJobStartTime))">
+          {{ currentTime - minRunningJobStartTime | toTime }}
         </span>
       </div>
       <div class="column is-12">
-        <div class="message is-green" *ngIf="buildService?.build?.status === 'passed'">
+        <div class="message is-green" *ngIf="build?.status === 'passed'">
           <p>
             <i class="fas fa-check"></i>
             <span>Build passed.</span>
           </p>
         </div>
-        <div class="message is-red" *ngIf="buildService?.build?.status === 'failed'">
+        <div class="message is-red" *ngIf="build?.status === 'failed'">
           <p>
             <i class="fas fa-times"></i>
             <span>Build failed.</span>
           </p>
         </div>
-        <div class="message is-yellow" *ngIf="buildService?.build?.status === 'running'">
+        <div class="message is-yellow" *ngIf="build?.status === 'running'">
           <p>
             <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
             <span>Build is running.</span>
           </p>
         </div>
-        <div class="message" *ngIf="buildService?.build?.status === 'queued'">
+        <div class="message" *ngIf="build?.status === 'queued'">
           <p>
             <i class="fas fa-clock"></i>
             <span>Build is queued.</span>
@@ -76,11 +76,11 @@
       </div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!buildService.fetchingBuild">
+  <div class="column is-12" *ngIf="!fetchingBuild">
     <div class="build-jobs">
       <h2>Build Jobs</h2>
       <hr/>
-      <app-build-job-item [job]="job" *ngFor="let job of buildService?.build?.jobs; let i = index;"></app-build-job-item>
+      <app-build-job-item [job]="job" [build]="build" [currentTime]="currentTime" *ngFor="let job of build?.jobs; let i = index;"></app-build-job-item>
     </div>
   </div>
 </div>

@@ -298,6 +298,12 @@ export class SocketServer {
           .subscribe(output => client.send(output));
         break;
 
+      case 'unsubscribeFromJobOutput':
+        if (client.subscriptions.jobOutput) {
+          client.subscriptions.jobOutput.unsubscribe();
+        }
+        break;
+
       case 'subscribeToLogs':
         if (client.session.email === 'anonymous') {
           client.send({ type: 'error', data: 'not authorized' });

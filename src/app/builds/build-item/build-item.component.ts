@@ -1,33 +1,62 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Build } from '../shared/build.model';
-import { BuildService } from '../shared/build.service';
+import { TimeService } from 'src/app/shared/providers/time.service';
+import { Subscription } from 'rxjs';
+import { DataService } from 'src/app/shared/providers/data.service';
 
 @Component({
   selector: 'app-build-item',
   templateUrl: './build-item.component.html',
   styleUrls: ['./build-item.component.sass']
 })
-export class BuildItemComponent implements OnInit {
+export class BuildItemComponent implements OnInit, OnDestroy {
   @Input() build: Build;
 
   isMenuOpened: boolean;
+  currentTime: number;
+  timerSubscription: Subscription;
 
-  constructor(public buildService: BuildService) { }
+  constructor(
+    public timeService: TimeService,
+    public dataService: DataService
+  ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.subscribeToTimer();
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeFromTimer();
+  }
 
   toggleMenu(ev: MouseEvent): void {
     ev.stopPropagation();
     this.isMenuOpened = !this.isMenuOpened;
   }
 
-  restartBuild(ev: MouseEvent, buildId: number): void {
-    this.buildService.restartBuild(ev, buildId);
+  restartBuild(): void {
     this.isMenuOpened = false;
+
+    this.build.processing = true;
+    this.dataService.socketInput.emit({ type: 'restartBuild', data: { buildId: this.build.id } });
   }
 
-  stopBuild(ev: MouseEvent, buildId: number): void {
-    this.buildService.stopBuild(ev, buildId);
+  stopBuild(): void {
     this.isMenuOpened = false;
+
+    this.build.processing = true;
+    this.dataService.socketInput.emit({ type: 'stopBuild', data: { buildId: this.build.id } });
+  }
+
+  private subscribeToTimer(): void {
+    this.timerSubscription = this.timeService.getCurrentTime().subscribe(time => {
+      this.currentTime = time;
+    });
+  }
+
+  private unsubscribeFromTimer(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 }
