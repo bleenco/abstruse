@@ -38,7 +38,7 @@ describe('setup', () => {
 
     beforeEach(() => browser.get('/setup/config'));
 
-    it('should save configuration', () => {
+    it('should save configuration', async () => {
       let inputEl: ElementFinder;
       let saveButton: ElementFinder;
       return Promise.resolve()

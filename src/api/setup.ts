@@ -1,5 +1,5 @@
 import { join, resolve } from 'path';
-import { existsSync, copyFile, ensureDirectory, exists, writeFile } from './fs';
+import { existsSync, copyFile, ensureDirectory, exists, writeFile, writeJsonFile } from './fs';
 import { readFileSync, writeFileSync } from 'fs';
 import { ensureDirSync, statSync, remove, readJson, writeJson } from 'fs-extra';
 import * as uuid from 'uuid';
@@ -39,7 +39,7 @@ export function setHome(dirPath: string): void {
   abstruseHome = dirPath;
 }
 
-export function initSetup(): Promise<string> {
+export async function initSetup(): Promise<string> {
   return makeAbstruseDir()
     .then(() => makeCacheDir())
     .then(() => ensureDirectory(getFilePath('docker/images')))
@@ -84,7 +84,7 @@ export function makeCacheDir(): Promise<null> {
   return ensureDirectory(cachePath);
 }
 
-export function createTempDir(): Promise<string> {
+export async function createTempDir(): Promise<string> {
   const tempDir = getFilePath(`cache/${uuid()}`);
   return ensureDirectory(tempDir)
     .then(() => tempDir);
@@ -95,6 +95,13 @@ export function writeDefaultConfig(): void {
   const configPath = getFilePath('config.json');
   writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
   getConfig();
+}
+
+export async function writeDefaultConfigAsync(): Promise<void> {
+  const configPath = getFilePath('config.json');
+  return ensureDirectory(getRootDir())
+    .then(() => exists(configPath))
+    .then(e => !e ? writeJsonFile(configPath, defaultConfig) : Promise.resolve());
 }
 
 export function configExists(): boolean {

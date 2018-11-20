@@ -6,18 +6,18 @@ import { ExpressServer } from './server';
 import { SocketServer } from './socket';
 import { logger, LogMessageType } from './logger';
 import { getAbstruseVersion } from './utils';
-import { initSetup } from './setup';
 import { generateKeys } from './security';
 import * as db from './db/migrations';
 import chalk from 'chalk';
 import { startScheduler } from './process-manager';
 
 const argv = minimist(process.argv.slice(2), { string: ['dir'] });
-setup.setHome(argv.dir ? path.resolve(process.cwd(), argv.dir) : os.homedir());
+setup.setHome(argv.dir ? path.resolve(argv.dir) : os.homedir());
 
 const server = new ExpressServer({ port: 6500 });
 
-initSetup()
+setup.writeDefaultConfigAsync()
+  .then(() => setup.initSetup())
   .then(() => db.create())
   .then(() => {
     const version = getAbstruseVersion();
