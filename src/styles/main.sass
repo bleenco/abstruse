@@ -12,3 +12,37 @@
 
     li
       margin-left: 15px
+
+  .status-column
+    font-family: $font-family-medium
+
+    .status-item
+      font-size: 13px
+      padding: 4px 10px
+      display: flex
+      width: 100%
+      border-radius: 4px
+
+      &.running
+        color: $yellow
+        background: rgba($yellow, .1)
+        border: 1px solid $yellow
+
+        .img-icon
+          width: 18px
+          height: 18px
+
+      &.passed
+        color: $green
+        background: rgba($green, .1)
+        border: 1px solid $green
+
+      &.failed
+        color: $red
+        background: rgba($red, .1)
+        border: 1px solid $red
+
+      &.queued
+        background: $white
+        border: 1px solid $border-box
+        color: $text-dark

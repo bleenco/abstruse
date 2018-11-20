@@ -14,8 +14,7 @@
           <i class="fa fa-arrow-alt-circle-left"></i>
           <span>Build Details</span>
         </button>
-        <button type="button" class="button" [disabled]="fetching || job?.processing || !job?.hasPermission"
-          (click)="restartJob($event)">
+        <button type="button" class="button" [disabled]="fetching || job?.processing || !job?.hasPermission" (click)="restartJob($event)">
           <i class="fa fa-sync-alt"></i>
           <span>Restart Job</span>
         </button>
@@ -25,57 +24,57 @@
           <span>Stop Job</span>
         </button>
       </div>
-      <div class="column is-11 align-center data-column">
-        <img [src]="build?.author_avatar" class="info-avatar" [alt]="build?.author_name">
-        <img [src]="build?.committer_avatar" class="info-avatar committer-avatar" [alt]="build?.committer_name"
-          *ngIf="build?.committer_avatar && build?.author_avatar !== build?.committer_avatar">
-        <span *ngIf="build?.author_name && build?.committer_name === build?.author_name">
-          {{ build?.author_name }} authored and committed
-        </span>
-        <span *ngIf="build?.committer_name !== build?.author_name">
-          {{ build?.author_name }} committed with {{ build?.committer_name }}
-        </span>
-        <img src="/assets/images/icons/code-commit.svg" alt="Commit">
-        <span>{{ build?.getSHA() }}</span>
-        <i class="fas fa-comment"></i>
-        <span class="commit-message">{{ build?.commit_message }}</span>
-      </div>
-      <div class="column is-1 align-center time-column justify-end">
-        <img src="/assets/images/icons/clock.svg" class="icon-clock">
-        <span class="build-time" *ngIf="jobRun?.status === 'running'">
-          {{ currentTime - jobRun.start_time | toTime }}
-        </span>
-        <span class="build-time" *ngIf="jobRun?.status !== 'running' && jobRun?.end_time">
-          {{ jobRun.end_time - jobRun.start_time | toTime }}
-        </span>
+      <div class="column is-12 pb0">
+        <hr />
+        <div class="columns pb0">
+          <div class="column is-2 align-center status-column">
+            <span class="status-item align-center running" *ngIf="jobRun?.status === 'running'">
+              <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
+              <span>Job is running.</span>
+            </span>
+            <span class="status-item align-center passed" *ngIf="jobRun?.status === 'success'">
+              <i class="fas fa-check"></i>
+              <span>Job passed.</span>
+            </span>
+            <span class="status-item align-center failed" *ngIf="jobRun?.status === 'failed'">
+              <i class="fas fa-times"></i>
+              <span>Job failed.</span>
+            </span>
+            <span class="status-item align-center queued" *ngIf="jobRun?.status === 'queued'">
+              <i class="fas fa-clock"></i>
+              <span>Job is queued.</span>
+            </span>
+          </div>
+          <div class="column is-9 align-center data-column">
+            <img [src]="build?.author_avatar" class="info-avatar" [alt]="build?.author_name">
+            <img [src]="build?.committer_avatar" class="info-avatar committer-avatar" [alt]="build?.committer_name"
+              *ngIf="build?.committer_avatar && build?.author_avatar !== build?.committer_avatar">
+            <span *ngIf="build?.author_name && build?.committer_name === build?.author_name">
+              {{ build?.author_name }} authored and committed
+            </span>
+            <span *ngIf="build?.committer_name !== build?.author_name">
+              {{ build?.author_name }} committed with {{ build?.committer_name }}
+            </span>
+            <img src="/assets/images/icons/code-commit.svg" alt="Commit">
+            <span>{{ build?.getSHA() }}</span>
+            <i class="fas fa-comment"></i>
+            <span class="commit-message">{{ build?.commit_message }}</span>
+          </div>
+          <div class="column is-1 align-center time-column justify-end">
+            <img src="/assets/images/icons/clock.svg" class="icon-clock">
+            <span class="build-time" *ngIf="jobRun?.status === 'running'">
+              {{ currentTime - jobRun.start_time | toTime }}
+            </span>
+            <span class="build-time" *ngIf="jobRun?.status !== 'running' && jobRun?.end_time">
+              {{ jobRun.end_time - jobRun.start_time | toTime }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!fetching">
-    <div class="message is-green" *ngIf="jobRun?.status === 'success'">
-      <p>
-        <i class="fas fa-check"></i>
-        <span>Job passed.</span>
-      </p>
-    </div>
-    <div class="message is-red" *ngIf="jobRun?.status === 'failed'">
-      <p>
-        <i class="fas fa-times"></i>
-        <span>Job failed.</span>
-      </p>
-    </div>
-    <div class="message is-yellow" *ngIf="jobRun?.status === 'running'">
-      <p>
-        <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
-        <span>Job is running.</span>
-      </p>
-    </div>
-    <div class="message" *ngIf="jobRun?.status === 'queued'">
-      <p>
-        <i class="fas fa-clock"></i>
-        <span>Job is queued.</span>
-      </p>
-    </div>
+  <div class="column is-12 pb0" *ngIf="!fetching">
+    <hr />
   </div>
   <div class="column is-12" *ngIf="!fetching">
     <div class="tabs justify-end">
@@ -89,8 +88,8 @@
         <app-terminal [data]="terminalInput"></app-terminal>
       </div>
       <div [class.is-hidden]="tab !== 'history'">
-        <app-build-job-run-item *ngFor="let jobRun of job?.runs.reverse(); let i = index;" [run]="jobRun"
-          [num]="job?.runs.length - i" (click)="viewLog(i)"></app-build-job-run-item>
+        <app-build-job-run-item *ngFor="let jobRun of job?.runs.reverse(); let i = index;" [run]="jobRun" [num]="job?.runs.length - i"
+          (click)="viewLog(i)"></app-build-job-run-item>
       </div>
     </div>
   </div>

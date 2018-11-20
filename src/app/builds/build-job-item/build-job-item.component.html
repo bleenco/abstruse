@@ -30,7 +30,7 @@
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
-      <button class="button is-small" [disabled]="job?.processing || !build?.hasPermission" (click)="stopJob($event)">
+      <button class="button is-small" [disabled]="job?.processing || !build?.hasPermission || job?.status !== 'running'" (click)="stopJob($event)">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>
