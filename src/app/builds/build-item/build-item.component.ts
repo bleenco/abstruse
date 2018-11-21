@@ -22,6 +22,7 @@ export class BuildItemComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.currentTime = new Date().getTime();
     this.subscribeToTimer();
   }
 

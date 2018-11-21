@@ -8,7 +8,6 @@ import {
   getBuildStatus,
   getLastRunId,
   getDepracatedBuilds,
-  getLastBuild
 } from './db/build';
 import { insertBuildRun, updateBuildRun } from './db/build-run';
 import * as dbJob from './db/job';
@@ -293,7 +292,7 @@ export async function stopJob(jobId: number): Promise<void> {
         .then(async status => {
           if (status === 'success') {
             return getBuild(job.builds_id)
-              .then(build => {
+              .then(async build => {
                 return updateBuild({ id: build.id, end_time: time })
                   .then(() => getLastRunId(build.id))
                   .then(id => updateBuildRun({ id: id, end_time: time }))
@@ -746,6 +745,7 @@ async function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
           return dbJobRuns.updateJobRun(data);
         })
         .then(() => updateBuild({ id: proc.build_id, end_time: time }))
+        .then(() => getLastRunId(proc.build_id))
         .then(id => updateBuildRun({ id: id, end_time: time }))
         .then(() => getBuild(proc.build_id))
         .then(build => sendFailureStatus(build, build.id))

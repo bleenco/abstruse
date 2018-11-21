@@ -18,7 +18,7 @@ const server = new ExpressServer({ port: 6500 });
 
 setup.writeDefaultConfigAsync()
   .then(() => setup.initSetup())
-  .then(() => db.create())
+  // .then(() => db.create())
   .then(() => {
     const version = getAbstruseVersion();
     const msg: LogMessageType = {

@@ -36,6 +36,7 @@ export class BuildDetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.build = null;
     this.buildId = this.route.snapshot.params.id;
+    this.currentTime = new Date().getTime();
     this.fetchBuild();
   }
 
@@ -90,32 +91,28 @@ export class BuildDetailsComponent implements OnInit, OnDestroy {
           case 'job started':
             job.status = BuildStatus.running;
             job.end_time = null;
-            job.start_time = event.additionalData;
-            job.runs.push({ start_time: event.additionalData, end_time: null });
+            job.start_time = new Date(event.additionalData).getTime();
+            job.runs.push({ start_time: new Date(event.additionalData).getTime(), end_time: null });
             break;
           case 'job succeded':
             job.status = BuildStatus.passed;
-            job.end_time = event.additionalData;
-            job.runs[job.runs.length - 1].end_time = event.additionalData;
+            job.end_time = new Date(event.additionalData).getTime();
+            job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
             break;
           case 'job failed':
             job.status = BuildStatus.failed;
-            if (job.end_time) {
-              job.end_time = event.additionalData;
-            }
+            job.end_time = new Date(event.additionalData).getTime();
             if (job.runs[job.runs.length - 1].end_time) {
-              job.runs[job.runs.length - 1].end_time = event.additionalData;
+              job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
             }
             break;
           case 'job stopped':
             if (job.status !== BuildStatus.passed) {
               job.status = BuildStatus.failed;
             }
-            if (job.end_time) {
-              job.end_time = event.additionalData;
-            }
+            job.end_time = new Date(event.additionalData).getTime();
             if (job.runs[job.runs.length - 1].end_time) {
-              job.runs[job.runs.length - 1].end_time = event.additionalData;
+              job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
             }
             break;
           case 'job queued':

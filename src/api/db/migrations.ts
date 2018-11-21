@@ -1,11 +1,9 @@
 import * as knex from 'knex';
-import { Bookshelf } from './config';
+import { Knex } from './config';
 
 export function create(): Promise<null> {
-  let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
-
   return new Promise((resolve, reject) => {
-    schema.createTableIfNotExists('users', (t: knex.TableBuilder) => {
+    Knex.schema.createTableIfNotExists('users', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('email').notNullable();
       t.string('fullname').notNullable();
@@ -14,7 +12,7 @@ export function create(): Promise<null> {
       t.string('avatar').notNullable().defaultTo('/avatars/user.svg');
       t.timestamps();
     })
-    .then(() => schema.createTableIfNotExists('access_tokens', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('access_tokens', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('description').notNullable();
       t.string('token');
@@ -23,11 +21,11 @@ export function create(): Promise<null> {
       t.string('bitbucket_oauth_key');
       t.string('bitbucket_oauth_secret');
       t.enum('type', ['github', 'gitlab', 'bitbucket', 'gogs']);
-      t.integer('users_id').notNullable();
-      t.foreign('users_id').references('users.id');
       t.timestamps();
+      t.integer('users_id').unsigned().notNullable();
+      t.foreign('users_id').references('users.id').onDelete('cascade');
     }))
-    .then(() => schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('repositories', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('github_id');
       t.string('bitbucket_id');
@@ -48,13 +46,13 @@ export function create(): Promise<null> {
       t.string('user_avatar_url');
       t.string('user_url');
       t.string('user_html_url');
-      t.integer('access_tokens_id');
+      t.integer('access_tokens_id').unsigned();
       t.foreign('access_tokens_id').references('access_tokens.id');
       t.boolean('public').notNullable().defaultTo(true);
       t.json('data');
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('builds', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.string('branch');
       t.integer('pr');
@@ -63,49 +61,48 @@ export function create(): Promise<null> {
       t.json('parsed_config');
       t.dateTime('start_time');
       t.dateTime('end_time');
-      t.integer('repositories_id').notNullable();
+      t.integer('repositories_id').unsigned().notNullable();
       t.foreign('repositories_id').references('repositories.id');
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('build_runs', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('build_runs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.integer('head_id');
       t.dateTime('start_time');
       t.dateTime('end_time');
-      t.integer('build_id').notNullable();
+      t.integer('build_id').unsigned().notNullable();
       t.foreign('build_id').references('builds.id');
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('jobs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.text('data');
-      t.integer('builds_id').notNullable();
+      t.integer('builds_id').unsigned().notNullable();
       t.foreign('builds_id').references('builds.id');
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('job_runs', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('job_runs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.dateTime('start_time').notNullable();
       t.dateTime('end_time');
-      t.enum('status', ['queued', 'running', 'success', 'failed'])
-        .notNullable().defaultTo('queue');
+      t.enum('status', ['queued', 'running', 'success', 'failed']).notNullable().defaultTo('queued');
       t.text('log');
-      t.integer('job_id').notNullable();
-      t.foreign('job_id').references('job.id');
-      t.integer('build_run_id').notNullable();
-      t.foreign('build_run_id').references('build_run.id');
+      t.integer('job_id').unsigned().notNullable();
+      t.foreign('job_id').references('jobs.id');
+      t.integer('build_run_id').unsigned().notNullable();
+      t.foreign('build_run_id').references('build_runs.id');
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('permissions', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.integer('repositories_id').notNullable();
+      t.integer('repositories_id').unsigned().notNullable();
       t.foreign('repositories_id').references('repositories.id');
-      t.integer('users_id').notNullable();
+      t.integer('users_id').unsigned().notNullable();
       t.foreign('users_id').references('users.id');
       t.boolean('permission').notNullable().defaultTo(true);
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('logs', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('logs', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
       t.enum('type', ['info', 'warning', 'error']).notNullable();
       t.text('message').notNullable();
@@ -113,9 +110,9 @@ export function create(): Promise<null> {
       t.boolean('read').notNullable().defaultTo(false);
       t.timestamps();
     }))
-    .then(() => schema.createTableIfNotExists('environment_variables', (t: knex.TableBuilder) => {
+    .then(() => Knex.schema.createTableIfNotExists('environment_variables', (t: knex.TableBuilder) => {
       t.increments('id').unsigned().primary();
-      t.integer('repositories_id').notNullable();
+      t.integer('repositories_id').unsigned().notNullable();
       t.foreign('repositories_id').references('repositories.id');
       t.string('name').notNullable();
       t.string('value').notNullable();
@@ -131,14 +128,12 @@ export function create(): Promise<null> {
 }
 
 export function dropTables(): Promise<null> {
-  let schema: knex.SchemaBuilder = Bookshelf.knex.schema;
-
   return new Promise((resolve, reject) => {
-    schema.dropTableIfExists('user')
+    Knex.schema.dropTableIfExists('user')
       .then(() => resolve());
   });
 }
 
-export function reinitializeDatabase(): Promise<null> {
+export async function reinitializeDatabase(): Promise<null> {
   return dropTables().then(() => create());
 }

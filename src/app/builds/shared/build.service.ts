@@ -128,7 +128,7 @@ export class BuildService {
             status = BuildStatus.passed;
           }
 
-          maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+          maxCompletedJobTime = Math.max(...build.jobs.map(job => new Date(job.end_time).getTime() - new Date(job.start_time).getTime()));
           minRunningJobStartTime = Math.min(...build.jobs.filter(job => job.status === 'running').map(job => job.start_time));
 
           if (status === BuildStatus.running && maxCompletedJobTime && minRunningJobStartTime) {
@@ -254,10 +254,10 @@ export class BuildService {
         status = BuildStatus.passed;
       }
 
-      build.maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+      build.maxCompletedJobTime = Math.max(...build.jobs.map(job => new Date(job.end_time).getTime() - new Date(job.start_time).getTime()));
       build.minRunningJobStartTime = Math.min(...build.jobs
         .filter(job => job.status === 'running')
-        .map(job => job.start_time)
+        .map(job => new Date(job.start_time).getTime())
       );
       build.status = status;
       return build;
@@ -265,29 +265,39 @@ export class BuildService {
   }
 
   updateJobTimes(build: Build): { build: Build, maxCompletedJobTime: number, minRunningJobStartTime: number} {
-    const maxCompletedJobTime = Math.max(...build.jobs.map(job => job.end_time - job.start_time));
+    const maxCompletedJobTime = Math.max(...build.jobs.map(job => new Date(job.end_time).getTime() - new Date(job.start_time).getTime()));
     let minRunningJobStartTime;
     if (build.status === BuildStatus.running) {
       minRunningJobStartTime = Math.min(...build.jobs
-        .filter(job => job.status === BuildStatus.running).map(job => job.start_time));
+        .filter(job => job.status === BuildStatus.running).map(job => new Date(job.start_time).getTime()));
     }
 
-    build.jobs = build.jobs.map(job => {
-      const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
-        job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
-      if (lastRun) {
-        job.lastRunTime = lastRun.end_time - lastRun.start_time;
-      }
+    build.jobs = build.jobs
+      .map(job => {
+        if (job.start_time) {
+          job.start_time = new Date(job.start_time).getTime();
+        }
+        if (job.end_time) {
+          job.end_time = new Date(job.end_time).getTime();
+        }
+        return job;
+      })
+      .map(job => {
+        const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ?
+          job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
+        if (lastRun) {
+          job.lastRunTime = lastRun.end_time - lastRun.start_time;
+        }
 
-      return job;
-    });
+        return job;
+      });
 
     return { build, maxCompletedJobTime, minRunningJobStartTime };
   }
 
   getBuildStatus(build: Build): BuildStatus {
     let status: BuildStatus = BuildStatus.queued;
-    let favicon = '/assets/images/favicon-queued.png';
+    let favicon = '/assets/images/favicons/favicon-queued.png';
 
     if (build && build.jobs && build.jobs.length) {
       if (build.jobs.findIndex(job => job.status === BuildStatus.failed) !== -1) {

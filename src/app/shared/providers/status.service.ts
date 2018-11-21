@@ -4,14 +4,18 @@ import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL, handleError } from '../../core/shared/shared-functions';
 import { catchError } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatusService {
   status: 'ready' | 'setup' | 'loading';
+  status$: BehaviorSubject<'ready' | 'setup' | 'loading'>;
 
-  constructor(public http: HttpClient, public router: Router) { }
+  constructor(public http: HttpClient, public router: Router) {
+    this.status$ = new BehaviorSubject<'ready' | 'setup' | 'loading'>('loading');
+  }
 
   checkStatus(): void {
     this.status = 'loading';
@@ -24,12 +28,13 @@ export class StatusService {
       .subscribe(resp => {
         if (resp && resp.data) {
           this.status = resp.data;
+          this.status$.next(this.status);
         }
 
         const currentUrl: string = this.router.url;
         switch (this.status) {
           case 'setup':
-            if (currentUrl === '' || currentUrl === '/') {
+            if (currentUrl === '' || currentUrl === '/' || currentUrl === '/login') {
               this.router.navigate(['/setup']);
             }
             break;

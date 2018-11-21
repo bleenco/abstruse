@@ -79,11 +79,13 @@ export function getBuild(id: number, userId?: number): Promise<any> {
       .query(q => q.where('id', id))
       .fetch({
         withRelated: [{
+          'repository': (query) => {
+            query.where('public', true);
+          },
           'repository.permissions': (query) => {
             if (userId) {
               query.where('permissions.users_id', userId)
-                .andWhere('permissions.permission', true)
-                .orWhere('public', true);
+                .andWhere('permissions.permission', true);
             }
           }
         },

@@ -7,17 +7,28 @@ if (!setup.configExists()) {
   setup.writeDefaultConfig();
 }
 
-let config: any = setup.getConfig();
-let dbConfig = Object.assign({}, config.db, {
-  migrations: {
-    tableName: 'knex_migrations',
-    directory: setup.getFilePath('migrations')
-  }
-});
+const config: any = setup.getConfig();
+// const dbConfig = Object.assign({}, config.db, {
+//   migrations: {
+//     tableName: 'knex_migrations',
+//     directory: setup.getFilePath('migrations')
+//   }
+// });
 
-if (dbConfig.connection.filename) {
-  dbConfig.connection.filename = setup.getFilePath(dbConfig.connection.filename);
-}
+// if (dbConfig.connection.filename) {
+//   dbConfig.connection.filename = setup.getFilePath(dbConfig.connection.filename);
+// }
+const dbConfig = {
+  client: 'mysql',
+  connection: {
+    host: '127.0.0.1',
+    user: 'root',
+    password: 'xx2n5',
+    database: 'abstruse',
+    charset: 'utf8'
+  },
+  debug: false
+};
 
 export let Knex: knex = knex(dbConfig);
 export let Bookshelf: bookshelf = bookshelf(Knex);

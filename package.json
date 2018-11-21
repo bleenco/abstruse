@@ -52,6 +52,7 @@
     "bcrypt": "^3.0.2",
     "dockerode": "^2.5.7",
     "knex": "^0.13.0",
+    "mysql": "^2.16.0",
     "rsa-compat-ssl": "^1.0.0",
     "sqlite3": "^4.0.4"
   },
