@@ -69,29 +69,37 @@ export function getBuilds(
         });
 
         resolve(builds);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
 export function getBuild(id: number, userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build()
-      .query(q => q.where('id', id))
+      .query(q => {
+        if (userId) {
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+            .where('builds.id', id)
+            .andWhere('permissions.users_id', userId)
+            .andWhere(function () {
+              this.where('permissions.permission', true).orWhere('repositories.public', true);
+            });
+        } else {
+          q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .where('builds.id', id)
+            .andWhere('repositories.public', true);
+        }
+      })
       .fetch({
-        withRelated: [{
-          'repository': (query) => {
-            query.where('public', true);
-          },
-          'repository.permissions': (query) => {
-            if (userId) {
-              query.where('permissions.users_id', userId)
-                .andWhere('permissions.permission', true);
-            }
-          }
-        },
+        withRelated: [
+          'repository',
+          'repository.permissions',
           'repository.access_token',
           'jobs.runs',
-          'runs.job_runs']
+          'runs.job_runs'
+        ]
       })
       .then(build => {
         if (!build) {
@@ -171,26 +179,29 @@ export function getBuild(id: number, userId?: number): Promise<any> {
               return job;
             });
             resolve(build);
-          });
+          })
+          .catch(err => reject(err));
       });
   });
 }
 
 export function getLastBuild(userId?: number): Promise<any> {
   return new Promise((resolve, reject) => {
-    new Build().query(q => q.orderBy('id', 'desc'))
-      .fetch({
-        withRelated: [{
-          'repository.permissions': (query) => {
-            if (userId) {
-              query.where('permissions.users_id', userId)
-                .andWhere('permissions.permission', true)
-                .orWhere('public', true);
-            }
-          }
-        },
-          'jobs.runs']
-      })
+    new Build().query(q => {
+      if (userId) {
+        q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+          .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+          .where('permissions.users_id', userId)
+          .andWhere(function () {
+            this.where('permissions.permission', true).orWhere('repositories.public', true);
+          });
+      } else {
+        q.innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+          .where('repositories.public', true);
+      }
+      q.orderBy('id', 'desc');
+    })
+      .fetch({ withRelated: ['repository.permissions', 'jobs.runs'] })
       .then(build => {
         if (!build) {
           reject(build);
@@ -207,7 +218,7 @@ export function getLastBuild(userId?: number): Promise<any> {
           return job;
         });
 
-        userId = parseInt(<any>userId, 10);
+        userId = Number(userId);
         if (build.repository.permissions && build.repository.permissions.length) {
           const index = build.repository.permissions.findIndex(p => p.users_id === userId);
           if (index !== -1 && build.repository.permissions[index].permission) {
@@ -220,7 +231,8 @@ export function getLastBuild(userId?: number): Promise<any> {
         }
 
         resolve(build);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -234,7 +246,8 @@ export function getLastRunId(buildId: number): Promise<any> {
         const runs = build.related('runs').toJSON();
 
         resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -271,7 +284,8 @@ export function updateBuild(data: any): Promise<boolean> {
 export function getBuildRepositoryId(buildId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Build({ id: buildId }).fetch()
-      .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id));
+      .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id))
+      .catch(err => reject(err));
   });
 }
 
@@ -296,7 +310,8 @@ export function getBuildStatus(buildId: number): Promise<any> {
 
             return accu;
           })));
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -335,6 +350,7 @@ export function getDepracatedBuilds(build: any): Promise<any> {
         builds = builds.map(b => b.id);
 
         resolve(builds);
-      });
+      })
+      .catch(err => reject(err));
   });
 }

@@ -4,23 +4,27 @@ export function getJob(jobId: number, buildId?: number, userId?: number): Promis
   return new Promise((resolve, reject) => {
     new Job()
       .query(q => {
-        if (buildId) {
-          return q.where('id', jobId).andWhere('builds_id', buildId);
+        if (userId) {
+          q.innerJoin('builds', 'builds.id', 'jobs.builds_id')
+            .innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .innerJoin('permissions', 'permissions.repositories_id', 'repositories.id')
+            .where('permissions.users_id', userId)
+            .andWhere(function () {
+              this.where('permissions.permission', true).orWhere('repositories.public', true);
+            });
         } else {
-          return q.where('id', jobId);
+          q.innerJoin('builds', 'builds.id', 'jobs.builds_id')
+            .innerJoin('repositories', 'repositories.id', 'builds.repositories_id')
+            .where('repositories.public', true);
+        }
+
+        if (buildId) {
+          q.andWhere('jobs.id', jobId).andWhere('jobs.builds_id', buildId);
+        } else {
+          q.andWhere('jobs.id', jobId);
         }
       })
-      .fetch({
-        withRelated: [{
-          'build.repository.permissions': (query) => {
-            if (userId) {
-              query.where('permissions.users_id', userId)
-                .andWhere('permissions.permission', true)
-                .orWhere('public', true);
-            }
-          }
-        }, 'runs']
-      })
+      .fetch({ withRelated: ['build.repository.permissions', 'runs'] })
       .then(job => {
         if (!job) {
           reject();
@@ -43,7 +47,8 @@ export function getJob(jobId: number, buildId?: number, userId?: number): Promis
         }
 
         resolve(job);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -57,7 +62,8 @@ export function getLastRunId(jobId: number): Promise<any> {
         const runs = job.related('runs').toJSON();
 
         resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -71,7 +77,8 @@ export function getLastRun(jobId: number): Promise<any> {
         const runs = job.related('runs').toJSON();
 
         resolve(runs[runs.length - 1]);
-      });
+      })
+      .catch(err => reject(err));
   });
 }
 
@@ -83,7 +90,8 @@ export function insertJob(data: any): Promise<any> {
       }
 
       resolve(job.toJSON());
-    });
+    })
+      .catch(err => reject(err));
   });
 }
 
@@ -104,7 +112,8 @@ export function resetJobs(buildId: number): Promise<any> {
     };
 
     new Job().where({ builds_id: buildId }).save(data, { method: 'update', require: false })
-      .then(jobs => !jobs ? reject() : resolve(jobs.toJSON()));
+      .then(jobs => !jobs ? reject() : resolve(jobs.toJSON()))
+      .catch(err => reject(err));
   });
 }
 
@@ -118,13 +127,15 @@ export function resetJob(jobId: number): Promise<any> {
     };
 
     new Job({ id: jobId }).save(data, { method: 'update', require: false })
-      .then(job => resolve(job.toJSON()));
+      .then(job => resolve(job.toJSON()))
+      .catch(err => reject(err));
   });
 }
 
 export function getJobRepositoryId(jobId: number): Promise<any> {
   return new Promise((resolve, reject) => {
     new Job({ id: jobId }).fetch({ withRelated: ['build'] })
-      .then(job => !job ? reject(job) : resolve(job.toJSON().build.repositories_id));
+      .then(job => !job ? reject(job) : resolve(job.toJSON().build.repositories_id))
+      .catch(err => reject(err));
   });
 }

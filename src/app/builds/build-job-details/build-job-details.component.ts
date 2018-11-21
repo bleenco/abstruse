@@ -97,13 +97,23 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
         this.build = job.build;
         this.job = job;
 
+        this.job.runs = this.job.runs.map(run => {
+          if (run.start_time) {
+            run.start_time = new Date(run.start_time).getTime();
+          }
+          if (run.end_time) {
+            run.end_time = new Date(run.end_time).getTime();
+          }
+          return run;
+        });
+
         this.jobRun = this.job.runs[this.job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
         this.timeWords = distanceInWordsToNow(this.build.created_at);
 
         const lastRun = job.runs && job.runs[job.runs.length - 1].end_time ? job.runs[job.runs.length - 1] : job.runs[job.runs.length - 2];
         if (lastRun) {
-          this.previousRuntime = lastRun.end_time - lastRun.start_time;
+          this.previousRuntime = new Date(lastRun.end_time).getTime() - new Date(lastRun.start_time).getTime();
         }
 
         if (loading) {
@@ -164,15 +174,15 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
         if (event.data === 'job started') {
           this.jobRun.status = 'running';
           this.jobRun.end_time = null;
-          this.jobRun.start_time = event.additionalData;
+          this.jobRun.start_time = new Date(event.additionalData).getTime();
         } else if (event.data === 'job succeded') {
           this.jobRun.status = 'success';
-          this.jobRun.end_time = event.additionalData;
-          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
+          this.jobRun.end_time = new Date(event.additionalData).getTime();
+          this.previousRuntime = new Date(this.jobRun.end_time).getTime() - new Date(this.jobRun.start_time).getTime();
         } else if (event.data === 'job failed') {
           this.jobRun.status = 'failed';
-          this.jobRun.end_time = event.additionalData;
-          this.previousRuntime = this.jobRun.end_time - this.jobRun.start_time;
+          this.jobRun.end_time = new Date(event.additionalData).getTime();
+          this.previousRuntime = new Date(this.jobRun.end_time).getTime() - new Date(this.jobRun.start_time).getTime();
         }
 
         this.buildService.setFavicon(this.build.repository_name, this.jobRun.status);
@@ -202,12 +212,5 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
     this.tab = 'log';
     this.terminalInput = { clear: true };
     setTimeout(() => this.terminalInput = this.job.runs[index].log);
-
-    // this.buildService.terminalInput = { clear: true };
-    // const log = this.buildService.job.runs[index].log;
-    // setTimeout(() => {
-    //   this.tab = 'log';
-    //   this.buildService.terminalInput = log;
-    // });
   }
 }
