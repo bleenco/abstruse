@@ -198,7 +198,7 @@ export function getBaseImages(): Promise<any> {
         let listedImage = null;
         let index = null;
         listedImages.forEach(li => {
-          if (!listedImage) {
+          if (!listedImage && li && li.RepoTags) {
             index = li.RepoTags.findIndex(tag => tag.split(':')[0] === curr);
             if (index !== -1) {
               listedImage = li;
