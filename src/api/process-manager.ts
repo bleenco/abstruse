@@ -211,7 +211,6 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
 
 export async function restartJob(jobId: number): Promise<void> {
   const time = new Date();
-  let job = null;
   const process = processes.find(p => p.job_id === Number(jobId));
   if (process && process.debug) {
     process.debug = false;
@@ -231,36 +230,29 @@ export async function restartJob(jobId: number): Promise<void> {
     });
   }
 
-  return stopJob(jobId)
-    .then(() => dbJob.getLastRun(jobId))
-    .then(lastRun => dbJobRuns.insertJobRun({
-      start_time: time,
-      end_time: null,
-      status: 'queued',
-      log: '',
-      build_run_id: lastRun.build_run_id,
-      job_id: jobId
-    }))
-    .then(() => queueJob(jobId))
-    .then(() => dbJob.getJob(jobId))
-    .then(j => job = j)
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job restarted',
-        additionalData: time.getTime()
-      });
-    })
-    .then(() => getBuild(job.builds_id))
-    .then(build => sendPendingStatus(build, build.id))
-    .catch(err => {
-      const msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
-    });
+  await stopJob(jobId);
+  const lastRun = await dbJob.getLastRun(jobId);
+  await dbJobRuns.insertJobRun({
+    start_time: time,
+    end_time: null,
+    status: 'queued',
+    log: '',
+    build_run_id: lastRun.build_run_id,
+    job_id: jobId
+  });
+  await queueJob(jobId);
+  const job = await dbJob.getJob(jobId);
+
+  jobEvents.next({
+    type: 'process',
+    build_id: job.builds_id,
+    job_id: job.id,
+    data: 'job restarted',
+    additionalData: time.getTime()
+  });
+
+  const build = await getBuild(job.builds_id);
+  await sendPendingStatus(build, build.id);
 }
 
 
@@ -285,110 +277,58 @@ export async function stopJob(jobId: number): Promise<void> {
     });
   }
 
-  return Promise.resolve()
-    .then(() => dbJob.getJob(jobId))
-    .then(async job => {
-      return killContainer(`abstruse_${job.builds_id}_${jobId}`)
-        .then(() => getBuildStatus(job.builds_id))
-        .then(async status => {
-          if (status === 'success') {
-            return getBuild(job.builds_id)
-              .then(async build => {
-                return updateBuild({ id: build.id, end_time: time })
-                  .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: time }))
-                  .then(() => sendSuccessStatus(build, build.id))
-                  .then(() => {
-                    jobEvents.next({
-                      type: 'process',
-                      build_id: build.id,
-                      data: 'build succeeded',
-                      additionalData: time.getTime()
-                    });
-                  })
-                  .catch(err => {
-                    const msg: LogMessageType = {
-                      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
-                      type: 'error',
-                      notify: false
-                    };
-                    logger.next(msg);
-                  });
-              }).catch(err => {
-                const msg: LogMessageType = {
-                  message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
-                  type: 'error',
-                  notify: false
-                };
-                logger.next(msg);
-              });
-          } else if (status === 'failed') {
-            return getBuild(job.builds_id)
-              .then(async build => {
-                return updateBuild({ id: build.id, end_time: time })
-                  .then(() => getLastRunId(build.id))
-                  .then(id => updateBuildRun({ id: id, end_time: time }))
-                  .then(() => sendFailureStatus(build, build.id))
-                  .then(() => {
-                    jobEvents.next({
-                      type: 'process',
-                      build_id: build.id,
-                      data: 'build failed',
-                      additionalData: time.getTime()
-                    });
-                  })
-                  .catch(err => {
-                    const msg: LogMessageType = {
-                      message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
-                      type: 'error',
-                      notify: false
-                    };
-                    logger.next(msg);
-                  });
-              }).catch(err => {
-                const msg: LogMessageType = {
-                  message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
-                  type: 'error',
-                  notify: false
-                };
-                logger.next(msg);
-              });
-          }
-        }).catch(err => {
-          const msg: LogMessageType = {
-            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-          };
-          logger.next(msg);
-        });
-    })
-    .then(() => dbJob.getLastRunId(jobId))
-    .then(runId => dbJobRuns.getRun(runId))
-    .then(jobRun => {
-      if (!jobRun.end_time) {
-        return dbJobRuns.updateJobRun({ id: jobRun.id, end_time: time, status: 'failed' });
-      }
-    })
-    .then(() => dbJob.getJob(jobId))
-    .then(job => {
-      const data = {
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job stopped',
-        additionalData: time.getTime()
-      };
-      jobEvents.next(data);
-    }).then(() => {
-      if (buildSub[jobId]) {
-        buildSub[jobId].unsubscribe();
-        delete buildSub[jobId];
-      }
-    }).catch(err => {
-      const msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
+  let job = await dbJob.getJob(jobId);
+  await killContainer(`abstruse_${job.builds_id}_${jobId}`);
+  const status = await getBuildStatus(job.builds_id);
+
+  if (status === 'success') {
+    const build = await getBuild(job.builds_id);
+    await updateBuild({ id: build.id, end_time: time });
+    const id = await getLastRunId(build.id);
+    await updateBuildRun({ id, end_time: time });
+    await sendSuccessStatus(build, build.id);
+
+    jobEvents.next({
+      type: 'process',
+      build_id: build.id,
+      data: 'build succeeded',
+      additionalData: time.getTime()
     });
+  } else if (status === 'failed') {
+    const build = await getBuild(job.builds_id);
+    await updateBuild({ id: build.id, end_time: time });
+    const id = await getLastRunId(build.id);
+    await updateBuildRun({ id, end_time: time });
+    await sendFailureStatus(build, build.id);
+
+    jobEvents.next({
+      type: 'process',
+      build_id: build.id,
+      data: 'build failed',
+      additionalData: time.getTime()
+    });
+  }
+
+  const runId = await dbJob.getLastRunId(jobId);
+  const jobRun = await dbJobRuns.getRun(runId);
+  if (!jobRun.end_time) {
+    await dbJobRuns.updateJobRun({ id: jobRun.id, end_time: time, status: 'failed' });
+  }
+  job = await dbJob.getJob(jobId);
+
+  const data = {
+    type: 'process',
+    build_id: job.builds_id,
+    job_id: job.id,
+    data: 'job stopped',
+    additionalData: time.getTime()
+  };
+  jobEvents.next(data);
+
+  if (buildSub[jobId]) {
+    buildSub[jobId].unsubscribe();
+    delete buildSub[jobId];
+  }
 }
 
 export function debugJob(jobId: number, debug: boolean): Promise<void> {
@@ -419,117 +359,102 @@ export async function startBuild(data: any, buildConfig?: any): Promise<any> {
   let pr = null;
   let sha = null;
   let branch = null;
-  let buildData = null;
 
-  return getRepositoryOnly(data.repositories_id)
-    .then(repository => {
-      const isGithub = repository.github_id ? true : false;
-      const isBitbucket = repository.bitbucket_id ? true : false;
-      const isGitlab = repository.gitlab_id ? true : false;
-      const isGogs = repository.gogs_id ? true : false;
+  const repository = await getRepositoryOnly(data.repositories_id);
+  const isGithub = repository.github_id ? true : false;
+  const isBitbucket = repository.bitbucket_id ? true : false;
+  const isGitlab = repository.gitlab_id ? true : false;
+  const isGogs = repository.gogs_id ? true : false;
 
-      if (isGithub) {
-        if (data.data.pull_request) {
-          pr = data.data.pull_request.number;
-          sha = data.data.pull_request.head.sha;
-          branch = data.data.pull_request.base.ref;
-        } else {
-          sha = data.data.after || data.data.sha;
-          if (data.data && data.data.ref) {
-            branch = data.data.ref.replace('refs/heads/', '');
-          }
-        }
-      } else if (isBitbucket) {
-        if (data.data.push) {
-          const push = data.data.push.changes[data.data.push.changes.length - 1];
-          const commit = push.commits[push.commits.length - 1];
-          sha = commit.hash;
-          branch = push.new.type === 'branch' ? push.new.name : 'master';
-        } else if (data.data.pullrequest) {
-          pr = data.data.pullrequest.id;
-          sha = data.data.pullrequest.source.commit.hash;
-          branch = data.data.pullrequest.source.branch.name;
-        } else if (data.hash) {
-          sha = data.data.hash;
-        }
-      } else if (isGitlab) {
-        if (data.data.name) {
-          sha = data.data.commit.id;
-          branch = data.data.name;
-        }
+  if (isGithub) {
+    if (data.data.pull_request) {
+      pr = data.data.pull_request.number;
+      sha = data.data.pull_request.head.sha;
+      branch = data.data.pull_request.base.ref;
+    } else {
+      sha = data.data.after || data.data.sha;
+      if (data.data && data.data.ref) {
+        branch = data.data.ref.replace('refs/heads/', '');
       }
+    }
+  } else if (isBitbucket) {
+    if (data.data.push) {
+      const push = data.data.push.changes[data.data.push.changes.length - 1];
+      const commit = push.commits[push.commits.length - 1];
+      sha = commit.hash;
+      branch = push.new.type === 'branch' ? push.new.name : 'master';
+    } else if (data.data.pullrequest) {
+      pr = data.data.pullrequest.id;
+      sha = data.data.pullrequest.source.commit.hash;
+      branch = data.data.pullrequest.source.branch.name;
+    } else if (data.hash) {
+      sha = data.data.hash;
+    }
+  } else if (isGitlab) {
+    if (data.data.name) {
+      sha = data.data.commit.id;
+      branch = data.data.name;
+    }
+  } else if (isGogs) {
+    // TODO: implement this!
+  }
 
-      branch = branch || repository.default_branch || 'master';
+  branch = branch || repository.default_branch || 'master';
 
-      const repo = {
-        clone_url: repository.clone_url,
-        branch: branch,
-        pr: pr,
-        sha: sha,
-        access_token: repository.access_token || null,
-        type: repository.repository_provider
+  const repo = {
+    clone_url: repository.clone_url,
+    branch: branch,
+    pr: pr,
+    sha: sha,
+    access_token: repository.access_token || null,
+    type: repository.repository_provider
+  };
+
+  if (!buildConfig) {
+    cfg = await getRemoteParsedConfig(repo);
+  } else {
+    cfg = buildConfig;
+  }
+
+  data.parsed_config = cfg;
+  data = Object.assign(data, { branch: branch, pr: pr });
+  const build = await insertBuild(data);
+  data = Object.assign(data, { build_id: build.id });
+  delete data.repositories_id;
+  delete data.pr;
+  delete data.parsed_config;
+  await insertBuildRun(data);
+
+  const buildData = await getBuild(data.build_id);
+  await sendPendingStatus(buildData, buildData.id);
+
+  await cfg.reduce(async (prev, c) => {
+    await prev.then(async () => {
+      const job = await dbJob.insertJob({ data: c, builds_id: data.build_id });
+      const lastRunId = await getLastRunId(data.build_id);
+      const jobRun = {
+        start_time: new Date,
+        status: 'queued',
+        build_run_id: lastRunId,
+        job_id: job.id
       };
-
-      if (buildConfig) {
-        return Promise.resolve(buildConfig);
-      } else {
-        return getRemoteParsedConfig(repo);
-      }
-    })
-    .then(parsedConfig => cfg = parsedConfig)
-    .then(() => data.parsed_config = cfg)
-    .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
-    .then(() => insertBuild(data))
-    .then(build => {
-      data = Object.assign(data, { build_id: build.id });
-      delete data.repositories_id;
-      delete data.pr;
-      delete data.parsed_config;
-      return insertBuildRun(data);
-    })
-    .then(() => getBuild(data.build_id))
-    .then(bdata => buildData = bdata)
-    .then(() => sendPendingStatus(buildData, buildData.id))
-    .then(() => {
-      return cfg.reduce((prev, c, i) => {
-        return prev.then(() => {
-          let dataJob = null;
-
-          return dbJob.insertJob({ data: c, builds_id: data.build_id })
-            .then(job => dataJob = job)
-            .then(() => getLastRunId(data.build_id))
-            .then(lastRunId => {
-              const jobRun = {
-                start_time: new Date,
-                status: 'queued',
-                build_run_id: lastRunId,
-                job_id: dataJob.id
-              };
-
-              return dbJobRuns.insertJobRun(jobRun);
-            })
-            .then(() => queueJob(dataJob.id));
-        });
-      }, Promise.resolve());
-    })
-    .then(() => {
-      jobEvents.next({
-        type: 'process',
-        build_id: data.build_id,
-        repository_id: repoId,
-        data: 'build added',
-        additionalData: null
-      });
-    })
-    .then(() => getDepracatedBuilds(buildData))
-    .then(builds => Promise.all(builds.map(build => stopBuild(build))))
-    .then(() => ({ buildId: buildData.id }))
-    .catch(err => {
-      const msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
+      await dbJobRuns.insertJobRun(jobRun);
+      await queueJob(job.id);
     });
+  }, Promise.resolve());
+
+  jobEvents.next({
+    type: 'process',
+    build_id: data.build_id,
+    repository_id: repoId,
+    data: 'build added',
+    additionalData: null
+  });
+
+  // const builds = await getDepracatedBuilds(buildData);
+  // await Promise.all(builds.map(b => stopBuild(b)));
+
+  return ({ buildId: buildData.id });
 }
 
 export async function restartBuild(buildId: number): Promise<any> {

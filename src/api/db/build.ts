@@ -107,9 +107,13 @@ export function getBuild(id: number, userId?: number): Promise<any> {
 
         build = build.toJSON();
         build.jobs = build.jobs.map(job => {
-          job.end_time = job.runs[job.runs.length - 1].end_time;
-          job.start_time = job.runs[job.runs.length - 1].start_time;
-          job.status = job.runs[job.runs.length - 1].status;
+          if (job.runs.length > 0) {
+            job.end_time = job.runs[job.runs.length - 1].end_time;
+            job.start_time = job.runs[job.runs.length - 1].start_time;
+            job.status = job.runs[job.runs.length - 1].status;
+          }
+
+          delete job.runs;
           return job;
         });
 
@@ -266,8 +270,8 @@ export function updateBuild(data: any): Promise<boolean> {
     delete data.runs;
     delete data.hasPermission;
 
-    delete data.data;
-    delete data.parsed_config;
+    // delete data.data;
+    // delete data.parsed_config;
 
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
@@ -293,7 +297,7 @@ export function getBuildStatus(buildId: number): Promise<any> {
       .query(q => q.where('builds_id', buildId))
       .fetchAll()
       .then(jobs => {
-        Promise.all(jobs.map(j => getLastRun(j.id).then(r => r.status)))
+        Promise.all(jobs.map(j => getLastRun(j.id).then(r => r && r.status || 'queued')))
           .then(data => resolve(data.reduce((accu, curr) => {
             if (curr === 'queued') {
               return curr;
