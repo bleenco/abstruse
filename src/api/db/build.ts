@@ -1,6 +1,5 @@
-import { Build, BuildRun, Job, JobRun } from './model';
+import { Build, BuildRun, Job } from './model';
 import { getLastRun } from './job';
-import { getBitBucketAccessToken } from '../utils';
 
 export function getBuilds(
   limit: number,
@@ -130,7 +129,7 @@ export function getBuild(id: number, userId?: number): Promise<any> {
           return run;
         });
 
-        userId = parseInt(<any>userId, 10);
+        userId = Number(userId);
         if (build.repository.permissions && build.repository.permissions.length) {
           const index = build.repository.permissions.findIndex(p => p.users_id === userId);
           if (index !== -1 && build.repository.permissions[index].permission) {
@@ -174,10 +173,6 @@ export function getBuild(id: number, userId?: number): Promise<any> {
               build.lastBuild = lastBuild.toJSON();
             }
 
-            build.jobs = build.jobs.map(job => {
-              job.data = JSON.parse(job.data);
-              return job;
-            });
             resolve(build);
           })
           .catch(err => reject(err));
@@ -271,13 +266,16 @@ export function updateBuild(data: any): Promise<boolean> {
     delete data.runs;
     delete data.hasPermission;
 
+    delete data.data;
+    delete data.parsed_config;
+
     new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
       if (!build) {
         reject(build);
       } else {
         resolve(build.toJSON());
       }
-    });
+    }).catch(err => reject(err));
   });
 }
 

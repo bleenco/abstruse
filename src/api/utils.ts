@@ -138,7 +138,6 @@ export function demuxStream(source: Readable, destination: Writable): void {
         try {
           destination.write(payload);
         } catch (e) {
-          console.log(e);
           break;
         }
         header = source.read(8);

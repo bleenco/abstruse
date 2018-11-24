@@ -1,4 +1,3 @@
-import * as bookshelf from 'bookshelf';
 import { Bookshelf } from './config';
 
 export class User extends Bookshelf.Model<any> {
@@ -17,6 +16,7 @@ export class AccessToken extends Bookshelf.Model<any> {
 export class Repository extends Bookshelf.Model<any> {
   get tableName() { return 'repositories'; }
   get hasTimestamps() { return true; }
+  static jsonColumns = ['data'];
   access_token() { return this.belongsTo(AccessToken, 'access_tokens_id'); }
   builds() { return this.hasMany(Build, 'repositories_id'); }
   permissions() { return this.hasMany(Permission, 'repositories_id'); }
@@ -26,7 +26,7 @@ export class Repository extends Bookshelf.Model<any> {
 export class Build extends Bookshelf.Model<any> {
   get tableName() { return 'builds'; }
   get hasTimestamps() { return true; }
-  static jsonColumns = ['data'];
+  static jsonColumns = ['data', 'parsed_config'];
   repository() { return this.belongsTo(Repository, 'repositories_id'); }
   jobs() { return this.hasMany(Job, 'builds_id'); }
   runs() { return this.hasMany(BuildRun, 'build_id'); }
@@ -43,6 +43,7 @@ export class BuildRun extends Bookshelf.Model<any> {
 export class Job extends Bookshelf.Model<any> {
   get tableName() { return 'jobs'; }
   get hasTimestamps() { return true; }
+  static jsonColumns = ['data'];
   build() { return this.belongsTo(Build, 'builds_id'); }
   runs() { return this.hasMany(JobRun, 'job_id'); }
 }

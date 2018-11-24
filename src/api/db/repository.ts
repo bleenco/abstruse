@@ -616,7 +616,7 @@ function generateGitHubRepositoryData(data: any): any {
     user_html_url: data.repository.owner.html_url,
     repository_provider: 'github',
     api_url: apiUrl,
-    data: JSON.stringify(data)
+    data: data
   };
 }
 
@@ -640,7 +640,7 @@ function generateBitbucketRepositoryData(data: any): any {
     user_html_url: data.actor.links.html.href,
     repository_provider: 'bitbucket',
     api_url: apiUrl,
-    data: JSON.stringify(data)
+    data: data
   };
 }
 
@@ -663,7 +663,7 @@ function generateGitLabRepositoryData(data: any): any {
     user_avatar_url: data.user_avatar ? data.user_avatar : data.user.avatar_url,
     repository_provider: 'gitlab',
     api_url: apiUrl,
-    data: JSON.stringify(data)
+    data: data
   };
 }
 
@@ -686,6 +686,6 @@ function generateGogsRepositoryData(data: any): any {
     user_avatar_url: data.repository.owner.avatar_url,
     repository_provider: 'gogs',
     api_url: apiUrl,
-    data: JSON.stringify(data)
+    data: data
   };
 }

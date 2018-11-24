@@ -197,7 +197,8 @@ export function startJobProcess(proc: JobProcess): Observable<{}> {
               additionalData: time.getTime()
             };
             jobEvents.next(jobRunData);
-          });
+          })
+          .catch(err => Promise.reject(err));
       })
       .catch(err => {
         const msg: LogMessageType = {
@@ -476,7 +477,7 @@ export async function startBuild(data: any, buildConfig?: any): Promise<any> {
       }
     })
     .then(parsedConfig => cfg = parsedConfig)
-    .then(() => data.parsed_config = JSON.stringify(cfg))
+    .then(() => data.parsed_config = cfg)
     .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
     .then(() => insertBuild(data))
     .then(build => {
@@ -494,7 +495,7 @@ export async function startBuild(data: any, buildConfig?: any): Promise<any> {
         return prev.then(() => {
           let dataJob = null;
 
-          return dbJob.insertJob({ data: JSON.stringify(c), builds_id: data.build_id })
+          return dbJob.insertJob({ data: c, builds_id: data.build_id })
             .then(job => dataJob = job)
             .then(() => getLastRunId(data.build_id))
             .then(lastRunId => {
@@ -540,7 +541,7 @@ export async function restartBuild(buildId: number): Promise<any> {
     .then(() => getBuild(buildId))
     .then(build => buildData = build)
     .then(() => accessToken = buildData.repository.access_token || null)
-    .then(() => {
+    .then(async () => {
       const jobs = buildData.jobs;
       buildData.start_time = time;
       buildData.end_time = null;
@@ -564,7 +565,7 @@ export async function restartBuild(buildId: number): Promise<any> {
         })
         .then(() => {
           return jobs.reduce((prev, curr) => {
-            return prev.then(() => {
+            return prev.then(async () => {
               return stopJob(curr.id).then(() => queueJob(curr.id));
             });
           }, Promise.resolve());
@@ -585,7 +586,8 @@ export async function restartBuild(buildId: number): Promise<any> {
           };
           logger.next(msg);
         });
-    }).catch(err => {
+    })
+    .catch(err => {
       const msg: LogMessageType = {
         message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
       };
@@ -617,7 +619,7 @@ async function queueJob(jobId: number): Promise<void> {
     .then(() => getBuild(job.builds_id))
     .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
     .then(() => {
-      const data = JSON.parse(job.data);
+      const data = job.data;
       const jobProcess: JobProcess = {
         build_id: job.builds_id,
         job_id: jobId,
@@ -641,7 +643,7 @@ async function queueJob(jobId: number): Promise<void> {
         job_id: job.id,
         data: 'job queued'
       });
-    });
+    }).catch(err => Promise.reject(err));
 }
 
 async function jobSucceded(proc: JobProcess): Promise<any> {
@@ -663,8 +665,7 @@ async function jobSucceded(proc: JobProcess): Promise<any> {
         .then(() => getBuildStatus(proc.build_id))
         .then(async status => {
           if (status === 'success') {
-            return updateBuild({ id: proc.build_id, end_time: time })
-              .then(() => getLastRunId(proc.build_id))
+            return getLastRunId(proc.build_id)
               .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
               .then(build => sendSuccessStatus(build, build.id))
@@ -675,11 +676,9 @@ async function jobSucceded(proc: JobProcess): Promise<any> {
                   data: 'build succeeded',
                   additionalData: time.getTime()
                 });
-              });
+              }).catch(err => Promise.reject(err));
           } else if (status === 'failed') {
-            return getBuild(proc.build_id)
-              .then(build => updateBuild({ id: proc.build_id, end_time: time }))
-              .then(() => getLastRunId(proc.build_id))
+            return getLastRunId(proc.build_id)
               .then(id => updateBuildRun({ id: id, end_time: time }))
               .then(() => getBuild(proc.build_id))
               .then(build => sendFailureStatus(build, build.id))
@@ -690,7 +689,7 @@ async function jobSucceded(proc: JobProcess): Promise<any> {
                   data: 'build failed',
                   additionalData: time.getTime()
                 });
-              });
+              }).catch(err => Promise.reject(err));
           } else {
             return Promise.resolve();
           }
@@ -721,7 +720,7 @@ async function jobSucceded(proc: JobProcess): Promise<any> {
           return getLastRunId(proc.build_id)
             .then(id => updateBuildRun({ id: id, end_time: time }));
         });
-    });
+    }).catch(err => Promise.reject(err));
 }
 
 async function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
@@ -772,5 +771,5 @@ async function jobFailed(proc: JobProcess, msg?: LogMessageType): Promise<any> {
           };
           logger.next(logMessage);
         });
-    });
+    }).catch(err => Promise.reject(err));
 }

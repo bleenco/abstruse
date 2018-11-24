@@ -24,8 +24,7 @@ const dbConfig = {
     host: '127.0.0.1',
     user: 'root',
     password: 'xx2n5',
-    database: 'abstruse',
-    charset: 'utf8'
+    database: 'abstruse'
   },
   debug: false
 };

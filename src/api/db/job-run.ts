@@ -25,7 +25,7 @@ export function getJobRuns(): Promise<any> {
 
           resolve(runs);
         }
-      });
+      }).catch(err => reject(err));
   });
 }
 
@@ -58,7 +58,7 @@ export function getJobRunsBetween(dateFrom: string, dateTo: string): Promise<any
 
           resolve(runs);
         }
-      });
+      }).catch(err => reject(err));
   });
 }
 
@@ -71,25 +71,34 @@ export function getRun(runId: number): Promise<any> {
         }
 
         resolve(job.toJSON());
-      });
+      }).catch(err => reject(err));
   });
 }
 
 export function insertJobRun(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
+    if (!data.log) {
+      data.log = '';
+    }
+    data.log = data.log.replace(/\'/g, '');
     new JobRun(data).save(null, { method: 'insert' }).then(job => {
       if (!job) {
-        reject();
+        reject(job);
       }
 
       resolve(job.toJSON());
-    });
+    }).catch(err => reject(err));
   });
 }
 
 export function updateJobRun(data: any): Promise<any> {
   return new Promise((resolve, reject) => {
+    if (!data.log) {
+      data.log = '';
+    }
+    data.log = data.log.replace(/\'/g, '');
     new JobRun({ id: data.id }).save(data, { method: 'update', require: false })
-      .then(job => resolve(job.toJSON()));
+      .then(job => resolve(job.toJSON()))
+      .catch(err => reject(err));
   });
 }
