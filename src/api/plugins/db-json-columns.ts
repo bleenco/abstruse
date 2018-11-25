@@ -9,14 +9,10 @@ export function JSONColumns(Bookshelf) {
         return Model.initialize.apply(this, arguments);
       }
 
-      // Stringify JSON columns before model is saved.
       this.on('saving', stringify.bind(this));
-
-      // Parse JSON columns after model is saved.
       this.on('saved', parse.bind(this));
 
       if (parseOnFetch) {
-        // Parse JSON columns after model is fetched.
         this.on('fetched', parse.bind(this));
       }
 
@@ -27,7 +23,6 @@ export function JSONColumns(Bookshelf) {
         return Model.save.apply(this, arguments);
       }
 
-      // Handle arguments as Bookshelf.
       let attributes;
 
       if (key === null || typeof key === 'object') {
@@ -38,12 +33,10 @@ export function JSONColumns(Bookshelf) {
         options = options ? { ...options } : {};
       }
 
-      // Only handle arguments with `patch` option.
       if (!options.patch) {
         return Model.save.apply(this, arguments);
       }
 
-      // Stringify JSON columns.
       Object.keys(attributes).forEach(attribute => {
         if (this.constructor.jsonColumns.includes(attribute) && attributes[attribute]) {
           attributes[attribute] = JSON.stringify(attributes[attribute]);
@@ -52,7 +45,6 @@ export function JSONColumns(Bookshelf) {
 
       return Model.save.call(this, attributes, options)
         .then(model => {
-          // Parse JSON columns.
           Object.keys(attributes).forEach(attribute => {
             if (this.constructor.jsonColumns.includes(attribute) && model.attributes[attribute]) {
               model.attributes[attribute] = JSON.parse(model.attributes[attribute]);
@@ -76,7 +68,6 @@ export function JSONColumns(Bookshelf) {
         return Collection.initialize.apply(this, arguments);
       }
 
-      // Parse JSON columns after collection is fetched.
       this.on('fetched', collection => {
         collection.models.forEach(model => {
           parse.apply(model);
@@ -89,17 +80,16 @@ export function JSONColumns(Bookshelf) {
 }
 
 function stringify(model, attributes, options) {
-  // Do not stringify with `patch` option.
   if (options && options.patch) {
     return;
   }
 
-  // Mark json columns as stringfied.
   options.parseJsonColumns = true;
 
   this.constructor.jsonColumns.forEach(column => {
     if (this.attributes[column]) {
       this.attributes[column] = JSON.stringify(this.attributes[column]);
+      this.attributes[column] = this.attributes[column].replace(/\'/g, `\\\'`);
     }
   });
 }
@@ -118,14 +108,14 @@ function parse(model, response) {
   this.constructor.jsonColumns.forEach(column => {
     if (this.attributes[column]) {
       try {
+        this.attributes[column] = this.attributes[column];
         this.attributes[column] = JSON.parse(this.attributes[column]);
       } catch (e) {
-        this.attributes[column] = String(this.attributes[column])
-          .replace(/\\/g, '')
-          .replace(/(?<!:|: )"(?=[^"]*?"(( [^:])|([,}])))/g, '\\"');
         try {
+          this.attributes[column] = this.attributes[column].replace(/\\"/g, '"').replace(/(?<!:|: )"(?=[^"]*?"(( [^:])|([,}])))/g, '\\"');
           this.attributes[column] = JSON.parse(this.attributes[column]);
         } catch (e) {
+          console.error(this.attributes[column]);
           throw new Error(e);
         }
       }

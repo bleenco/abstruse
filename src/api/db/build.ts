@@ -48,11 +48,10 @@ export function getBuilds(
               job.status = job.runs[job.runs.length - 1].status;
             }
 
-            delete job.runs;
             return job;
           });
 
-          userId = parseInt(<any>userId, 10);
+          userId = Number(userId);
           if (build.repository.permissions && build.repository.permissions.length) {
             const index = build.repository.permissions.findIndex(p => p.users_id === userId);
             if (index !== -1 && build.repository.permissions[index].permission) {
@@ -113,7 +112,6 @@ export function getBuild(id: number, userId?: number): Promise<any> {
             job.status = job.runs[job.runs.length - 1].status;
           }
 
-          delete job.runs;
           return job;
         });
 

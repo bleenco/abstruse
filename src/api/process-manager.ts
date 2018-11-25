@@ -255,6 +255,132 @@ export async function restartJob(jobId: number): Promise<void> {
   await sendPendingStatus(build, build.id);
 }
 
+// export async function stopJob(jobId: number): Promise<void> {
+//   const time = new Date();
+//   const process = processes.find(p => p.job_id === Number(jobId));
+//   if (process && process.debug) {
+//     process.debug = false;
+//     jobEvents.next({
+//       type: 'process',
+//       build_id: process.build_id,
+//       job_id: jobId,
+//       data: 'job failed',
+//       additionalData: time.getTime()
+//     });
+
+//     jobEvents.next({
+//       type: 'debug',
+//       build_id: process.build_id,
+//       job_id: jobId,
+//       data: 'false'
+//     });
+//   }
+
+//   return Promise.resolve()
+//     .then(() => dbJob.getJob(jobId))
+//     .then(async job => {
+//       return killContainer(`abstruse_${job.builds_id}_${jobId}`)
+//         .then(() => getBuildStatus(job.builds_id))
+//         .then(async status => {
+//           if (status === 'success') {
+//             return getBuild(job.builds_id)
+//               .then(async build => {
+//                 return updateBuild({ id: build.id, end_time: time })
+//                   .then(() => getLastRunId(build.id))
+//                   .then(id => updateBuildRun({ id: id, end_time: time }))
+//                   .then(() => sendSuccessStatus(build, build.id))
+//                   .then(() => {
+//                     jobEvents.next({
+//                       type: 'process',
+//                       build_id: build.id,
+//                       data: 'build succeeded',
+//                       additionalData: time.getTime()
+//                     });
+//                   })
+//                   .catch(err => {
+//                     const msg: LogMessageType = {
+//                       message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
+//                       type: 'error',
+//                       notify: false
+//                     };
+//                     logger.next(msg);
+//                   });
+//               }).catch(err => {
+//                 const msg: LogMessageType = {
+//                   message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
+//                   type: 'error',
+//                   notify: false
+//                 };
+//                 logger.next(msg);
+//               });
+//           } else if (status === 'failed') {
+//             return getBuild(job.builds_id)
+//               .then(async build => {
+//                 return updateBuild({ id: build.id, end_time: time })
+//                   .then(() => getLastRunId(build.id))
+//                   .then(id => updateBuildRun({ id: id, end_time: time }))
+//                   .then(() => sendFailureStatus(build, build.id))
+//                   .then(() => {
+//                     jobEvents.next({
+//                       type: 'process',
+//                       build_id: build.id,
+//                       data: 'build failed',
+//                       additionalData: time.getTime()
+//                     });
+//                   })
+//                   .catch(err => {
+//                     const msg: LogMessageType = {
+//                       message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
+//                       type: 'error',
+//                       notify: false
+//                     };
+//                     logger.next(msg);
+//                   });
+//               }).catch(err => {
+//                 const msg: LogMessageType = {
+//                   message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`,
+//                   type: 'error',
+//                   notify: false
+//                 };
+//                 logger.next(msg);
+//               });
+//           }
+//         }).catch(err => {
+//           const msg: LogMessageType = {
+//             message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+//           };
+//           logger.next(msg);
+//         });
+//     })
+//     .then(() => dbJob.getLastRunId(jobId))
+//     .then(runId => dbJobRuns.getRun(runId))
+//     .then(jobRun => {
+//       if (!jobRun.end_time) {
+//         return dbJobRuns.updateJobRun({ id: jobRun.id, end_time: time, status: 'failed' });
+//       }
+//     })
+//     .then(() => dbJob.getJob(jobId))
+//     .then(job => {
+//       const data = {
+//         type: 'process',
+//         build_id: job.builds_id,
+//         job_id: job.id,
+//         data: 'job stopped',
+//         additionalData: time.getTime()
+//       };
+//       jobEvents.next(data);
+//     }).then(() => {
+//       if (buildSub[jobId]) {
+//         buildSub[jobId].unsubscribe();
+//         delete buildSub[jobId];
+//       }
+//     }).catch(err => {
+//       const msg: LogMessageType = {
+//         message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+//       };
+//       logger.next(msg);
+//     });
+// }
 
 export async function stopJob(jobId: number): Promise<void> {
   const time = new Date();
@@ -352,6 +478,125 @@ export function debugJob(jobId: number, debug: boolean): Promise<void> {
     }
   });
 }
+
+// export async function startBuild(data: any, buildConfig?: any): Promise<any> {
+//   let cfg: JobsAndEnv[];
+//   const repoId = data.repositories_id;
+//   let pr = null;
+//   let sha = null;
+//   let branch = null;
+//   let buildData = null;
+
+//   return getRepositoryOnly(data.repositories_id)
+//     .then(repository => {
+//       const isGithub = repository.github_id ? true : false;
+//       const isBitbucket = repository.bitbucket_id ? true : false;
+//       const isGitlab = repository.gitlab_id ? true : false;
+//       const isGogs = repository.gogs_id ? true : false;
+
+//       if (isGithub) {
+//         if (data.data.pull_request) {
+//           pr = data.data.pull_request.number;
+//           sha = data.data.pull_request.head.sha;
+//           branch = data.data.pull_request.base.ref;
+//         } else {
+//           sha = data.data.after || data.data.sha;
+//           if (data.data && data.data.ref) {
+//             branch = data.data.ref.replace('refs/heads/', '');
+//           }
+//         }
+//       } else if (isBitbucket) {
+//         if (data.data.push) {
+//           const push = data.data.push.changes[data.data.push.changes.length - 1];
+//           const commit = push.commits[push.commits.length - 1];
+//           sha = commit.hash;
+//           branch = push.new.type === 'branch' ? push.new.name : 'master';
+//         } else if (data.data.pullrequest) {
+//           pr = data.data.pullrequest.id;
+//           sha = data.data.pullrequest.source.commit.hash;
+//           branch = data.data.pullrequest.source.branch.name;
+//         } else if (data.hash) {
+//           sha = data.data.hash;
+//         }
+//       } else if (isGitlab) {
+//         if (data.data.name) {
+//           sha = data.data.commit.id;
+//           branch = data.data.name;
+//         }
+//       }
+
+//       branch = branch || repository.default_branch || 'master';
+
+//       const repo = {
+//         clone_url: repository.clone_url,
+//         branch: branch,
+//         pr: pr,
+//         sha: sha,
+//         access_token: repository.access_token || null,
+//         type: repository.repository_provider
+//       };
+
+//       if (buildConfig) {
+//         return Promise.resolve(buildConfig);
+//       } else {
+//         return getRemoteParsedConfig(repo);
+//       }
+//     })
+//     .then(parsedConfig => cfg = parsedConfig)
+//     .then(() => data.parsed_config = cfg)
+//     .then(() => data = Object.assign(data, { branch: branch, pr: pr }))
+//     .then(() => insertBuild(data))
+//     .then(build => {
+//       data = Object.assign(data, { build_id: build.id });
+//       delete data.repositories_id;
+//       delete data.pr;
+//       delete data.parsed_config;
+//       return insertBuildRun(data);
+//     })
+//     .then(() => getBuild(data.build_id))
+//     .then(bdata => buildData = bdata)
+//     .then(() => sendPendingStatus(buildData, buildData.id))
+//     .then(() => {
+//       return cfg.reduce((prev, c, i) => {
+//         return prev.then(() => {
+//           let dataJob = null;
+
+//           return dbJob.insertJob({ data: c, builds_id: data.build_id })
+//             .then(job => dataJob = job)
+//             .then(() => getLastRunId(data.build_id))
+//             .then(lastRunId => {
+//               const jobRun = {
+//                 start_time: new Date,
+//                 status: 'queued',
+//                 build_run_id: lastRunId,
+//                 job_id: dataJob.id
+//               };
+
+//               return dbJobRuns.insertJobRun(jobRun);
+//             })
+//             .then(() => queueJob(dataJob.id));
+//         });
+//       }, Promise.resolve());
+//     })
+//     .then(() => {
+//       jobEvents.next({
+//         type: 'process',
+//         build_id: data.build_id,
+//         repository_id: repoId,
+//         data: 'build added',
+//         additionalData: null
+//       });
+//     })
+//     .then(() => getDepracatedBuilds(buildData))
+//     .then(builds => Promise.all(builds.map(build => stopBuild(build))))
+//     .then(() => ({ buildId: buildData.id }))
+//     .catch(err => {
+//       const msg: LogMessageType = {
+//         message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+//       };
+//       logger.next(msg);
+//     });
+// }
 
 export async function startBuild(data: any, buildConfig?: any): Promise<any> {
   let cfg: JobsAndEnv[];
@@ -451,74 +696,115 @@ export async function startBuild(data: any, buildConfig?: any): Promise<any> {
     additionalData: null
   });
 
-  // const builds = await getDepracatedBuilds(buildData);
-  // await Promise.all(builds.map(b => stopBuild(b)));
+  const builds = await getDepracatedBuilds(buildData);
+  await Promise.all(builds.map(b => stopBuild(b)));
 
   return ({ buildId: buildData.id });
 }
 
-export async function restartBuild(buildId: number): Promise<any> {
+export async function restartBuild(buildId: number): Promise<void> {
   const time = new Date();
-  let buildData;
-  let accessToken;
 
-  return stopBuild(buildId)
-    .then(() => getBuild(buildId))
-    .then(build => buildData = build)
-    .then(() => accessToken = buildData.repository.access_token || null)
-    .then(async () => {
-      const jobs = buildData.jobs;
-      buildData.start_time = time;
-      buildData.end_time = null;
+  await stopBuild(buildId);
+  const build = await getBuild(buildId);
+  const jobs = build.jobs;
 
-      return updateBuild(buildData)
-        .then(() => {
-          buildData.build_id = buildId;
-          return insertBuildRun(buildData);
-        })
-        .then(buildRun => {
-          return Promise.all(jobs.map(job => {
-            dbJobRuns.insertJobRun({
-              start_time: time,
-              end_time: null,
-              status: 'queued',
-              log: '',
-              build_run_id: buildRun.id,
-              job_id: job.id
-            });
-          }));
-        })
-        .then(() => {
-          return jobs.reduce((prev, curr) => {
-            return prev.then(async () => {
-              return stopJob(curr.id).then(() => queueJob(curr.id));
-            });
-          }, Promise.resolve());
-        })
-        .then(() => getBuild(buildId))
-        .then(build => sendPendingStatus(build, build.id))
-        .then(() => {
-          jobEvents.next({
-            type: 'process',
-            build_id: buildId,
-            data: 'build restarted',
-            additionalData: time.getTime()
-          });
-        })
-        .catch(err => {
-          const msg: LogMessageType = {
-            message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-          };
-          logger.next(msg);
-        });
-    })
-    .catch(err => {
-      const msg: LogMessageType = {
-        message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
-      };
-      logger.next(msg);
+  build.start_time = time;
+  build.end_time = null;
+
+  await updateBuild(build);
+  const brun = Object.assign(build, { build_id: buildId });
+  const buildRun = await insertBuildRun(brun);
+  await Promise.all(jobs.map(job => {
+    dbJobRuns.insertJobRun({
+      start_time: time,
+      end_time: null,
+      status: 'queued',
+      log: '',
+      build_run_id: buildRun.id,
+      job_id: job.id
     });
+  }));
+
+  await jobs.reduce((prev, curr) => {
+    return prev.then(async () => {
+      await stopJob(curr.id);
+      return queueJob(curr.id);
+    });
+  }, Promise.resolve());
+
+  await sendPendingStatus(build, build.id);
+
+  jobEvents.next({
+    type: 'process',
+    build_id: buildId,
+    data: 'build restarted',
+    additionalData: time.getTime()
+  });
 }
+
+// export async function restartBuild(buildId: number): Promise<any> {
+//   const time = new Date();
+//   let buildData;
+//   let accessToken;
+
+//   return stopBuild(buildId)
+//     .then(() => getBuild(buildId))
+//     .then(build => buildData = build)
+//     .then(() => accessToken = buildData.repository.access_token || null)
+//     .then(async () => {
+//       const jobs = buildData.jobs;
+//       buildData.start_time = time;
+//       buildData.end_time = null;
+
+//       return updateBuild(buildData)
+//         .then(() => {
+//           buildData.build_id = buildId;
+//           return insertBuildRun(buildData);
+//         })
+//         .then(buildRun => {
+//           return Promise.all(jobs.map(job => {
+//             dbJobRuns.insertJobRun({
+//               start_time: time,
+//               end_time: null,
+//               status: 'queued',
+//               log: '',
+//               build_run_id: buildRun.id,
+//               job_id: job.id
+//             });
+//           }));
+//         })
+//         .then(() => {
+//           return jobs.reduce((prev, curr) => {
+//             return prev.then(async () => {
+//               return stopJob(curr.id).then(() => queueJob(curr.id));
+//             });
+//           }, Promise.resolve());
+//         })
+//         .then(() => getBuild(buildId))
+//         .then(build => sendPendingStatus(build, build.id))
+//         .then(() => {
+//           jobEvents.next({
+//             type: 'process',
+//             build_id: buildId,
+//             data: 'build restarted',
+//             additionalData: time.getTime()
+//           });
+//         })
+//         .catch(err => {
+//           const msg: LogMessageType = {
+//             message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+//           };
+//           logger.next(msg);
+//         });
+//     })
+//     .catch(err => {
+//       const msg: LogMessageType = {
+//         message: typeof err === 'object' ? `[error]: ${JSON.stringify(err)}` : `[error]: ${err}`, type: 'error', notify: false
+//       };
+//       logger.next(msg);
+//     });
+// }
 
 export async function stopBuild(buildId: number): Promise<any> {
   return getBuild(buildId)
@@ -536,40 +822,72 @@ export async function stopBuild(buildId: number): Promise<any> {
 }
 
 async function queueJob(jobId: number): Promise<void> {
-  let job = null;
-  let requestData = null;
+  const job = await dbJob.getJob(jobId);
+  const build = await getBuild(job.builds_id);
+  const requestData = { branch: build.branch, pr: build.pr, data: build.data };
+  const data = job.data;
 
-  return dbJob.getJob(jobId)
-    .then(jobData => job = jobData)
-    .then(() => getBuild(job.builds_id))
-    .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
-    .then(() => {
-      const data = job.data;
-      const jobProcess: JobProcess = {
-        build_id: job.builds_id,
-        job_id: jobId,
-        status: 'queued',
-        requestData: requestData,
-        commands: data.commands,
-        cache: data.cache || null,
-        repo_name: job.build.repository.full_name || null,
-        branch: job.build.branch || null,
-        env: data.env,
-        image_name: data.image,
-        exposed_ports: null,
-        log: '',
-        debug: false
-      };
+  const jobProcess: JobProcess = {
+    build_id: job.builds_id,
+    job_id: jobId,
+    status: 'queued',
+    requestData: requestData,
+    commands: data.commands,
+    cache: data.cache || null,
+    repo_name: job.build.repository.full_name || null,
+    branch: job.build.branch || null,
+    env: data.env,
+    image_name: data.image,
+    exposed_ports: null,
+    log: '',
+    debug: false
+  };
 
-      jobProcesses.next(jobProcess);
-      jobEvents.next({
-        type: 'process',
-        build_id: job.builds_id,
-        job_id: job.id,
-        data: 'job queued'
-      });
-    }).catch(err => Promise.reject(err));
+  jobProcesses.next(jobProcess);
+  jobEvents.next({
+    type: 'process',
+    build_id: job.builds_id,
+    job_id: job.id,
+    data: 'job queued'
+  });
 }
+
+
+// async function queueJob(jobId: number): Promise<void> {
+//   let job = null;
+//   let requestData = null;
+
+//   return dbJob.getJob(jobId)
+//     .then(jobData => job = jobData)
+//     .then(() => getBuild(job.builds_id))
+//     .then(build => requestData = { branch: build.branch, pr: build.pr, data: build.data })
+//     .then(() => {
+//       const data = job.data;
+//       const jobProcess: JobProcess = {
+//         build_id: job.builds_id,
+//         job_id: jobId,
+//         status: 'queued',
+//         requestData: requestData,
+//         commands: data.commands,
+//         cache: data.cache || null,
+//         repo_name: job.build.repository.full_name || null,
+//         branch: job.build.branch || null,
+//         env: data.env,
+//         image_name: data.image,
+//         exposed_ports: null,
+//         log: '',
+//         debug: false
+//       };
+
+//       jobProcesses.next(jobProcess);
+//       jobEvents.next({
+//         type: 'process',
+//         build_id: job.builds_id,
+//         job_id: job.id,
+//         data: 'job queued'
+//       });
+//     }).catch(err => Promise.reject(err));
+// }
 
 async function jobSucceded(proc: JobProcess): Promise<any> {
   return Promise.resolve()
