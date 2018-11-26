@@ -4,6 +4,7 @@ import { Build, BuildStatus } from '../shared/build.model';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { filter } from 'rxjs/operators';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-builds-latest',
@@ -22,10 +23,16 @@ export class BuildsLatestComponent implements OnInit, OnDestroy {
   buildsSub: Subscription;
   buildsSubUpdate: Subscription;
 
-  constructor(public buildService: BuildService, public dataService: DataService) { }
+  constructor(
+    public buildService: BuildService,
+    public dataService: DataService,
+    public router: Router,
+    public route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     this.resetFields();
+    this.show = this.route.snapshot.queryParams['tab'] || 'all';
     this.fetchBuilds();
     this.subscribeToBuilds();
   }
@@ -42,6 +49,7 @@ export class BuildsLatestComponent implements OnInit, OnDestroy {
 
     this.resetFields();
     this.show = tab;
+    this.router.navigate([], { relativeTo: this.route, queryParams: { tab } });
     this.fetchBuilds();
   }
 
