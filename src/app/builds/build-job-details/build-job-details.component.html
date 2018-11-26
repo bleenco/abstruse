@@ -27,6 +27,25 @@
       <div class="column is-12 pb0">
         <hr />
         <div class="columns pb0">
+          <div class="column is-7 align-center justify-start">
+            <div class="env-column">
+              <i class="fa fa-code"></i>
+              <span>{{ job?.getEnv() }}</span>
+            </div>
+          </div>
+          <div class="column is-5 align-center justify-end">
+            <div class="commit-column">
+              <img src="/assets/images/icons/code-commit.svg" alt="Commit">
+              <span class="commit-hash">{{ build?.getSHA() }}</span>
+              <i class="far fa-comment"></i>
+              <span>{{ build?.commit_message }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-12 pb0">
+        <hr />
+        <div class="columns pb0">
           <div class="column is-2 align-center status-column">
             <span class="status-item align-center running" *ngIf="jobRun?.status === 'running'">
               <img src="/assets/images/icons/spinner-yellow.svg" class="img-icon">
@@ -55,10 +74,8 @@
             <span *ngIf="build?.committer_name !== build?.author_name">
               {{ build?.author_name }} committed with {{ build?.committer_name }}
             </span>
-            <img src="/assets/images/icons/code-commit.svg" alt="Commit">
-            <span>{{ build?.getSHA() }}</span>
-            <i class="fas fa-comment"></i>
-            <span class="commit-message">{{ build?.commit_message }}</span>
+            <i class="far fa-calendar"></i>
+            <span>{{ build?.getDateTime() }} ago ({{ build?.dateTime | date:'medium' }})</span>
           </div>
           <div class="column is-1 align-center time-column justify-end">
             <img src="/assets/images/icons/clock.svg" class="icon-clock">

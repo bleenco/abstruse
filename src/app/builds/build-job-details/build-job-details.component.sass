@@ -54,15 +54,32 @@
       top: 15px
       left: 26px
 
-    .commit-message
-      +ellipsis
-      max-width: 320px
-
   .time-column
 
     .build-time
       font-size: 16px
       color: $text-secondary
+
+  .env-column
+    +ellipsis
+
+    i
+      font-size: 16px
+      margin-left: 5px
+      margin-right: 10px
+
+    span
+      font-size: 14px
+
+  .commit-column
+    +ellipsis
+    text-align: right
+
+    span
+      margin-right: 5px
+
+      &.commit-hash
+        margin-right: 15px
 
   .author-column
     display: flex
