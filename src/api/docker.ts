@@ -3,7 +3,7 @@ import { spawn } from 'child_process';
 import * as commandExists from 'command-exists';
 import * as dockerode from 'dockerode';
 import { pathExists } from 'fs-extra';
-import { platform } from 'os';
+import { homedir, platform } from 'os';
 import { Observable, Observer } from 'rxjs';
 import { Writable } from 'stream';
 
@@ -15,7 +15,7 @@ import { demuxStream } from './utils';
 export const docker = new dockerode();
 
 const binds = [
-  '/usr/local/share/.cache/yarn/v1:/usr/local/share/.cache/yarn/v1',
+  `${homedir()}/.cache/yarn/v2:/usr/local/share/.cache/yarn/v2`,
   ...(platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'])
 ];
 
