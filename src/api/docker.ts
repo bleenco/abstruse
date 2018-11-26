@@ -13,6 +13,7 @@ import { ProcessOutput } from './process';
 import { demuxStream } from './utils';
 
 export const docker = new dockerode();
+
 const binds = [
   '/usr/local/share/.cache/yarn/v1:/usr/local/share/.cache/yarn/v1',
   ...(platform() === 'darwin' ? [] : ['/var/run/docker.sock:/var/run/docker.sock'])
@@ -28,7 +29,6 @@ export function createContainer(
     // wrap in async function to avoid returning invalid type to Observable
     const create = async () => {
       try {
-
         const container = await docker.createContainer({
           Image: image,
           name: name,
@@ -183,13 +183,6 @@ export function listContainers(): Promise<dockerode.ContainerInfo[]> {
   return docker.listContainers();
 }
 
-export async function stopAllContainers(): Promise<any[]> {
-  const containers = await listContainers();
-  return Promise.all(containers.map(containerInfo => {
-    return docker.getContainer(containerInfo.Id).stop();
-  }));
-}
-
 export function stopContainer(id: string): Observable<any> {
   return new Observable(observer => {
 
@@ -226,26 +219,20 @@ export async function killContainer(id: string): Promise<void> {
     if (State.Status === 'running') {
       await container.kill();
     }
-    await removeContainer(id);
+
+    return docker.getContainer(id).remove();
+
   } catch (err) {
-    if (err.statusCode !== 404) {
+    if (![404, 409].includes(err.statusCode)) {
+      console.log('Kill container error');
       console.error(err);
     }
   }
 }
 
-export async function removeContainer(id: string): Promise<void> {
-  try {
-    return docker.getContainer(id).remove();
-  } catch {
-    return;
-  }
-}
-
 export function imageExists(name: string): Observable<boolean> {
   return new Observable(observer => {
-    let image = spawn('docker', ['inspect', '--type=image', name]);
-    image.on('close', code => {
+    spawn('docker', ['inspect', '--type=image', name]).on('close', code => {
       observer.next(code === 0 ? true : false);
       observer.complete();
     });
@@ -276,27 +263,24 @@ export function isDockerInstalled(): Observable<boolean> {
   });
 }
 
-export function calculateContainerStats(
+export async function calculateContainerStats(
   container: dockerode.ContainerInfo,
   processes: any
 ): Promise<any> {
-  return docker.getContainer(container.Id).stats({ stream: false })
-    .then(stats => {
-      const data = stats;
-      if (data && data.precpu_stats.system_cpu_usage) {
-        const jobId = container.Names[0].split('_')[2] || -1;
-        const job = processes.find(p => p.job_id === Number(jobId));
-        const debug = job && job.debug || false;
-        const statsData = {
-          id: container.Id,
-          name: container.Names[0].substr(1) || '',
-          debug: debug,
-          data: data
-        };
+  const stats = await docker.getContainer(container.Id).stats({ stream: false });
 
-        return statsData;
-      } else {
-        return null;
-      }
-    });
+  if (!stats || !stats.precpu_stats.system_cpu_usage) {
+    return null;
+  }
+
+  const jobId = container.Names[0].split('_')[2] || -1;
+  const job = processes.find(({ job_id }) => job_id === Number(jobId));
+  const debug = job && job.debug || false;
+
+  return {
+    id: container.Id,
+    name: container.Names[0].substr(1) || '',
+    debug: debug,
+    data: stats
+  };
 }

@@ -40,7 +40,7 @@ export function startBuildProcess(
 ): Observable<ProcessOutput> {
   return new Observable(observer => {
     let image = proc.image_name;
-    let name = 'abstruse_' + proc.build_id + '_' + proc.job_id;
+    let name = `abstruse_${proc.build_id}_${proc.job_id}`;
 
     proc.commands
       .filter(cmd => typeof cmd.command === 'string' && cmd.command.startsWith('export'))
