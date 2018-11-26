@@ -1,4 +1,4 @@
-<div class="build-item">
+<div class="build-item" [@fadeAnimation]="'in'">
   <div class="columns is-marginless is-paddingless">
     <div class="column is-1 is-marginless is-paddingless avatar-column" [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passed': build?.status === 'passed', 'is-failed': build?.status === 'failed', 'is-running': build?.status === 'running' }">
       <img *ngIf="build?.author_avatar" [src]="build?.author_avatar" class="build-avatar">

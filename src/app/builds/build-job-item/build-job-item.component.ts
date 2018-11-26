@@ -1,11 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { BuildJob, Build } from '../shared/build.model';
 import { DataService } from 'src/app/shared/providers/data.service';
+import { fadeAnimation } from 'src/app/core/shared/animations';
 
 @Component({
   selector: 'app-build-job-item',
   templateUrl: './build-job-item.component.html',
-  styleUrls: ['./build-job-item.component.sass']
+  styleUrls: ['./build-job-item.component.sass'],
+  animations: [fadeAnimation]
 })
 export class BuildJobItemComponent implements OnInit {
   @Input() job: BuildJob;

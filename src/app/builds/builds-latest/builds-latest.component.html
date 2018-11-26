@@ -27,7 +27,7 @@
 </div>
 
 <div class="mtb20 justify-center align-center">
-  <button class="button w100" (click)="fetchBuilds()" [disabled]="fetchingBuilds" *ngIf="!loading">
+  <button class="button w100" (click)="fetchBuilds()" [disabled]="fetchingBuilds" *ngIf="!loading" [@fadeAnimation]="'in'">
     <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="fetchingBuilds">
     <span *ngIf="!fetchingBuilds">Load more</span>
   </button>

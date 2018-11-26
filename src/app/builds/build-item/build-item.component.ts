@@ -3,11 +3,13 @@ import { Build } from '../shared/build.model';
 import { TimeService } from 'src/app/shared/providers/time.service';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
+import { fadeAnimation } from 'src/app/core/shared/animations';
 
 @Component({
   selector: 'app-build-item',
   templateUrl: './build-item.component.html',
-  styleUrls: ['./build-item.component.sass']
+  styleUrls: ['./build-item.component.sass'],
+  animations: [fadeAnimation]
 })
 export class BuildItemComponent implements OnInit, OnDestroy {
   @Input() build: Build;

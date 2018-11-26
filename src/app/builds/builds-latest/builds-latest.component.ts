@@ -5,11 +5,13 @@ import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { filter } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
+import { fadeAnimation } from 'src/app/core/shared/animations';
 
 @Component({
   selector: 'app-builds-latest',
   templateUrl: './builds-latest.component.html',
-  styleUrls: ['./builds-latest.component.sass']
+  styleUrls: ['./builds-latest.component.sass'],
+  animations: [fadeAnimation]
 })
 export class BuildsLatestComponent implements OnInit, OnDestroy {
   builds: Build[] = [];

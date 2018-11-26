@@ -1,4 +1,4 @@
-<div class="build-job-item" [routerLink]="['/builds', build?.id, job?.id]">
+<div class="build-job-item" [routerLink]="['/builds', build?.id, job?.id]" [@fadeAnimation]="'in'">
   <div class="columns is-marginless is-paddingless">
     <div class="column is-2 is-marginless is-paddingless id-column" [ngClass]="{ 'is-queued': job?.status === 'queued', 'is-passed': job?.status === 'passed', 'is-failed': job?.status === 'failed', 'is-running': job?.status === 'running' }">
       <span class="id-title">#{{ job?.build_id }}.{{ job?.id }}</span>
