@@ -221,55 +221,47 @@ export function getLastBuild(userId?: number): Promise<any> {
   });
 }
 
-export function getLastRunId(buildId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new Build({ id: buildId }).fetch({ withRelated: ['runs'] })
-      .then(build => {
-        if (!build) {
-          reject();
-        }
-        let  runs = build.related('runs').toJSON();
+export async function getLastRunId(buildId: number): Promise<any> {
+  const build = await new Build({ id: buildId }).fetch({ withRelated: ['runs'] });
+  if (!build) {
+    throw new Error('Build id not found!');
+  }
 
-        resolve(runs.length > 0 ? runs[runs.length - 1].id : -1);
-      });
-  });
+  let runs = build.related('runs').toJSON();
+  return runs.length > 0
+    ? runs[runs.length - 1].id
+    : -1;
 }
 
-export function insertBuild(data: any): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new Build().save(data, { method: 'insert' }).then(build => {
-      if (!build) {
-        reject(build);
-      } else {
-        resolve(build.toJSON());
-      }
-    }).catch(err => reject(err));
-  });
+export async function insertBuild(data: any): Promise<any> {
+  const build = await new Build().save(data, { method: 'insert' });
+  if (!build) {
+    throw new Error('Insert build failed!');
+  }
+  return build.toJSON();
 }
 
-export function updateBuild(data: any): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    delete data.jobs;
-    delete data.repository;
-    delete data.lastBuild;
-    delete data.runs;
-    delete data.hasPermission;
+export async function updateBuild(data: any): Promise<boolean> {
+  delete data.jobs;
+  delete data.repository;
+  delete data.lastBuild;
+  delete data.runs;
+  delete data.hasPermission;
 
-    new Build({ id: data.id }).save(data, { method: 'update', require: false }).then(build => {
-      if (!build) {
-        reject(build);
-      } else {
-        resolve(build.toJSON());
-      }
-    });
-  });
+  const build = await new Build({ id: data.id }).save(data, { method: 'update', require: false });
+  if (!build) {
+    throw new Error('Update build failed!');
+  }
+  return build.toJSON();
 }
 
-export function getBuildRepositoryId(buildId: number): Promise<any> {
-  return new Promise((resolve, reject) => {
-    new Build({ id: buildId }).fetch()
-      .then(build => !build ? reject(build) : resolve(build.toJSON().repositories_id));
-  });
+export async function getBuildRepositoryId(buildId: number): Promise<any> {
+  const build = await new Build({ id: buildId }).fetch();
+  if (!build) {
+    throw new Error('Build id not found!');
+  }
+
+  return build.toJSON().repositories_id;
 }
 
 export function getBuildStatus(buildId: number): Promise<any> {
