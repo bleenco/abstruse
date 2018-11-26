@@ -103,7 +103,7 @@ RUN rm -rf node_modules && \
 # Remove files not required for production
 RUN apk del build-dependencies && \
   rm -rf src && \
-  rm -rf /tmp
+  rm -rf /tmp/*
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
