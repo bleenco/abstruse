@@ -89,7 +89,6 @@ function stringify(model, attributes, options) {
   this.constructor.jsonColumns.forEach(column => {
     if (this.attributes[column]) {
       this.attributes[column] = JSON.stringify(this.attributes[column]);
-      this.attributes[column] = this.attributes[column].replace(/\'/g, `\\\'`);
     }
   });
 }
@@ -107,18 +106,7 @@ function parse(model, response) {
 
   this.constructor.jsonColumns.forEach(column => {
     if (this.attributes[column]) {
-      try {
-        this.attributes[column] = this.attributes[column];
-        this.attributes[column] = JSON.parse(this.attributes[column]);
-      } catch (e) {
-        try {
-          this.attributes[column] = this.attributes[column].replace(/\\"/g, '"').replace(/(?<!:|: )"(?=[^"]*?"(( [^:])|([,}])))/g, '\\"');
-          this.attributes[column] = JSON.parse(this.attributes[column]);
-        } catch (e) {
-          console.error(this.attributes[column]);
-          throw new Error(e);
-        }
-      }
+      this.attributes[column] = JSON.parse(this.attributes[column]);
     }
   });
 }
