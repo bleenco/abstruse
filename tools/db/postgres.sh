@@ -108,6 +108,35 @@ function handleTable {
   fi
 }
 
+read -r -d '' fixSequencesScript <<-"EOT"
+CREATE OR REPLACE FUNCTION fix_sequence(tableName text, columnName text)
+RETURNS void AS $$
+DECLARE
+BEGIN
+    EXECUTE 'SELECT setval(pg_get_serial_sequence(''' || tableName || ''', ''' || columnName || '''), (SELECT COALESCE (MAX(' || columnName || ') + 1, 1) FROM ' || tableName || '), false)';
+END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+SELECT
+    table_name || '_' || column_name || '_seq' AS Sequence,
+    fix_sequence(table_name, column_name) AS ResetResult
+FROM information_schema.columns
+WHERE column_default LIKE 'nextval%';
+
+DROP FUNCTION fix_sequence(text, text);
+EOT
+
+function fixSequences {
+  echo "==> Updating sequences in database..."
+  docker exec -it -e PGPASSWORD=$tmppasswd postgres-import sh -c "psql -h localhost -U postgres -d abstruse -c \"$fixSequenceScript\""
+  if [ $? != 0 ]; then
+    echo "Error: error updating sequences in database" >&2
+    stopPostgres
+    cleanup
+    exit 1
+  fi
+}
+
 function createDump {
   echo "==> Exporting database into ./abstruse.gz..."
   docker exec -it -e PGPASSWORD=$tmppasswd postgres-import sh -c "pg_dump -h localhost -U postgres -d abstruse | gzip > /tmp/tmp-data/abstruse.gz" &> /dev/null
@@ -163,6 +192,7 @@ handleTable "permissions" "CREATE TABLE permissions (id SERIAL PRIMARY KEY, repo
 handleTable "environment_variables" "CREATE TABLE environment_variables (id SERIAL PRIMARY KEY, repositories_id INT NOT NULL, name VARCHAR (255) NOT NULL, value VARCHAR (255) NOT NULL, created_at TIMESTAMP, updated_at TIMESTAMP);"
 handleTable "logs" "CREATE TABLE logs (id SERIAL PRIMARY KEY, type VARCHAR(20) NOT NULL, message TEXT NOT NULL, read BOOLEAN NOT NULL DEFAULT '0', created_at TIMESTAMP, updated_at TIMESTAMP, notify BOOLEAN NOT NULL DEFAULT '0');"
 
+fixSequences
 createDump
 
 stopPostgres
