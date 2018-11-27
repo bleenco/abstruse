@@ -151,7 +151,7 @@ export class BuildService {
         }
 
         // repo name
-        if (build.repository && build.repository.full_nmae) {
+        if (build.repository && build.repository.full_name) {
           repo_name = build.repository.full_name;
         } else {
           repo_name = data.repository.full_name;

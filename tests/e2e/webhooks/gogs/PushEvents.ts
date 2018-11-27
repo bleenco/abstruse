@@ -1,3 +1,5 @@
+import { createHmac } from 'crypto';
+
 export let request = {
   'ref': 'refs/heads/master',
   'before': '5a8a18dd7383b9c070061bcb710cc4076f2a834a',
@@ -117,5 +119,9 @@ export let header = {
   'Content-Type': 'application/json',
   'X-Gogs-Delivery': '9c669ca7-3021-438e-8777-da9e7f0aea65',
   'X-Gogs-Event': 'push',
-  'X-Gogs-Signature': '23033a73b5dcbd037199a9b82554045567890dfa826ff4e5b08c997fa57e686c'
+  'X-Gogs-Signature': 'dfd4cc4cd56466c90d43766377c452c6d905b3cf87c4f33adf023025f3055d1a'
 };
+
+function calculateSignature(secret: string, payload: any): string {
+  return createHmac('sha256', secret).update(JSON.stringify(payload, null, 2)).digest('hex');
+}

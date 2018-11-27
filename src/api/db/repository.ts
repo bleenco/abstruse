@@ -317,7 +317,7 @@ export function pingBitbucketRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-            .then(result => {
+            .then(async result => {
               if (!result) {
                 reject(result);
               } else {
@@ -349,7 +349,7 @@ export function pingGitLabRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-            .then(result => {
+            .then(async result => {
               if (!result) {
                 reject(result);
               } else {
@@ -383,7 +383,7 @@ export function pingGogsRepository(data: any): Promise<any> {
       .then(repo => {
         if (!repo) {
           new Repository().save(saveData, { method: 'insert' })
-            .then(result => {
+            .then(async result => {
               if (!result) {
                 reject(result);
               } else {

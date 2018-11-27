@@ -104,5 +104,5 @@ export let request = {
 export let header = {
   'Content-Type': 'application/json',
   'X-Gitlab-Event': 'Push Hook',
-  'X-Gitlab-Token': 'thisIsSecret'
+  'X-Gitlab-Token': 'defaultPassword'
 };
