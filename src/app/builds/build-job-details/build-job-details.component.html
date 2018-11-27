@@ -105,7 +105,7 @@
         <app-terminal [data]="terminalInput"></app-terminal>
       </div>
       <div [class.is-hidden]="tab !== 'history'">
-        <app-build-job-run-item *ngFor="let jobRun of job?.runs.reverse(); let i = index;" [run]="jobRun" [num]="job?.runs.length - i" [index]="i"
+        <app-build-job-run-item *ngFor="let jobRun of job?.runs; let i = index;" [run]="jobRun" [num]="job?.runs.length - i" [index]="i"
           (click)="viewLog(job?.runs?.length - i - 1)"></app-build-job-run-item>
       </div>
     </div>

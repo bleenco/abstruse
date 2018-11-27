@@ -96,15 +96,16 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
         this.build = job.build;
         this.job = job;
 
-        this.job.runs = this.job.runs.map(run => {
-          if (run.start_time) {
-            run.start_time = new Date(run.start_time).getTime();
-          }
-          if (run.end_time) {
-            run.end_time = new Date(run.end_time).getTime();
-          }
-          return run;
-        });
+        this.job.runs = this.job.runs
+          .map(run => {
+            if (run.start_time) {
+              run.start_time = new Date(run.start_time).getTime();
+            }
+            if (run.end_time) {
+              run.end_time = new Date(run.end_time).getTime();
+            }
+            return run;
+          });
 
         this.jobRun = this.job.runs[this.job.runs.length - 1];
         this.terminalInput = this.jobRun.log;
@@ -114,6 +115,8 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
         if (lastRun) {
           this.previousRuntime = new Date(lastRun.end_time).getTime() - new Date(lastRun.start_time).getTime();
         }
+
+        this.job.runs = this.job.runs.reverse();
 
         if (loading) {
           this.fetching = false;

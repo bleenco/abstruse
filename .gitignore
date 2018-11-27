@@ -9,3 +9,4 @@ src/server/logs/
 scripts/abstruse*
 scripts/nodec
 yarn-error.log
+package-lock.json
