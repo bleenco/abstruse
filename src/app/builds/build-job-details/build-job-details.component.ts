@@ -74,7 +74,6 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
     e.preventDefault();
     e.stopPropagation();
 
-    this.tab = 'log';
     this.job.processing = true;
     this.dataService.socketInput.emit({ type: 'restartJob', data: { jobId: this.jobId } });
   }
@@ -128,13 +127,6 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
       .subscribe(event => {
         if (event.type === 'data' || event.type === 'exit' || event.type === 'container' || event.type === 'jobLog') {
           if (Number(event.job_id) === Number(this.jobId) || event.type === 'jobLog') {
-            if (event.data.toString().includes('starting container')) {
-              setTimeout(() => this.terminalInput = { clear: true });
-              if (event.data.toString().includes('executed command')) {
-                const splitted = event.data.toString().split('==>');
-                event.data = '==>' + splitted[1];
-              }
-            }
             setTimeout(() => this.terminalInput = event.data);
           }
         } else if (event.type === 'job stopped' && event.data === this.jobId) {
