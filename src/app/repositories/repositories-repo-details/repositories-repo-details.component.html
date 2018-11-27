@@ -34,18 +34,18 @@
 
 <div class="repository-content">
   <div *ngIf="tab === 'builds'">
-    <div class="mtb20" *ngIf="fetchingRepository || buildService?.loading">
+    <div class="mtb20" *ngIf="fetchingRepository || loading">
       <app-loader></app-loader>
     </div>
 
-    <div class="builds" *ngIf="!buildService?.loading">
-      <app-build-item *ngFor="let build of buildService.builds; let i = index;" [build]="build" [routerLink]="['/builds', build.id]"></app-build-item>
+    <div class="builds" *ngIf="!loading">
+      <app-build-item *ngFor="let build of builds; let i = index;" [build]="build" [routerLink]="['/builds', build.id]"></app-build-item>
     </div>
 
     <div class="mtb20 justify-center align-center">
-      <button class="button w100" (click)="buildService.fetchBuilds(id)" [disabled]="buildService.fetchingBuilds" *ngIf="!buildService.loading">
-        <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="buildService.fetchingBuilds">
-        <span *ngIf="!buildService.fetchingBuilds">Load more</span>
+      <button class="button w100" (click)="fetchBuilds(id)" [disabled]="fetchingBuilds" *ngIf="!loading">
+        <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="fetchingBuilds">
+        <span *ngIf="!fetchingBuilds">Load more</span>
       </button>
     </div>
   </div>
