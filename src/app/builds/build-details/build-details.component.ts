@@ -100,19 +100,25 @@ export class BuildDetailsComponent implements OnInit, OnDestroy {
             job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
             break;
           case 'job failed':
-            job.status = BuildStatus.failed;
-            job.end_time = new Date(event.additionalData).getTime();
-            if (job.runs[job.runs.length - 1].end_time) {
+            if (job.status === BuildStatus.running) {
+              job.end_time = new Date(event.additionalData).getTime();
               job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
+            } else {
+              job.end_time = null;
+              job.runs[job.runs.length - 1].end_time = null;
             }
             break;
           case 'job stopped':
+            if (job.status === BuildStatus.running) {
+              job.end_time = new Date(event.additionalData).getTime();
+              job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
+            } else {
+              job.end_time = null;
+              job.runs[job.runs.length - 1].end_time = null;
+            }
+
             if (job.status !== BuildStatus.passed) {
               job.status = BuildStatus.failed;
-            }
-            job.end_time = new Date(event.additionalData).getTime();
-            if (job.runs[job.runs.length - 1].end_time) {
-              job.runs[job.runs.length - 1].end_time = new Date(event.additionalData).getTime();
             }
             break;
           case 'job queued':

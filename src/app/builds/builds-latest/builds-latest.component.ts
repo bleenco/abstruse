@@ -90,26 +90,42 @@ export class BuildsLatestComponent implements OnInit, OnDestroy {
 
         const index = this.builds[build].jobs.findIndex(job => job.id === e.job_id);
         if (index !== -1) {
+          const job = this.builds[build].jobs[index];
           switch (e.data) {
             case 'job succeded':
-              this.builds[build].jobs[index].status = BuildStatus.passed;
-              this.builds[build].jobs[index].end_time = e.additionalData;
+              if (job.status === BuildStatus.running) {
+                job.end_time = e.additionalData;
+                job.runs[job.runs.length - 1].end_time = e.additionalData;
+              } else {
+                job.end_time = null;
+                job.runs[job.runs.length - 1].end_time = null;
+              }
+              job.status = BuildStatus.passed;
               break;
             case 'job queued':
-              this.builds[build].jobs[index].status = BuildStatus.queued;
+              job.status = BuildStatus.queued;
               break;
             case 'job started':
-              this.builds[build].jobs[index].status = BuildStatus.running;
-              this.builds[build].jobs[index].start_time = e.additionalData;
-              this.builds[build].jobs[index].end_time = null;
+              job.status = BuildStatus.running;
+              job.start_time = e.additionalData;
+              job.end_time = null;
               break;
             case 'job failed':
-              this.builds[build].jobs[index].status = BuildStatus.failed;
-              this.builds[build].jobs[index].end_time = e.additionalData;
+              if (job.status === BuildStatus.running) {
+                job.end_time = e.additionalData;
+                job.runs[job.runs.length - 1].end_time = e.additionalData;
+              } else {
+                job.end_time = null;
+                job.runs[job.runs.length - 1].end_time = null;
+              }
+              job.status = BuildStatus.failed;
               break;
             case 'job stopped':
-              this.builds[build].jobs[index].status = BuildStatus.failed;
-              this.builds[build].jobs[index].end_time = e.additionalData;
+              if (job.status === BuildStatus.running) {
+                job.end_time = e.additionalData;
+                job.runs[job.runs.length - 1].end_time = e.additionalData;
+              }
+              job.status = BuildStatus.failed;
               break;
           }
 
