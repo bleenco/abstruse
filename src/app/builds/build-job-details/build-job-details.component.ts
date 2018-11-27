@@ -136,6 +136,7 @@ export class BuildJobDetailsComponent implements OnInit, OnDestroy {
           this.job.processing = false;
         } else if (event.type === 'job restarted' && event.data === this.jobId) {
           this.job.processing = false;
+          this.terminalInput = { clear: true };
         } else if (event.type === 'exposed ports') {
           const portData = event.data && event.data.info || null;
 

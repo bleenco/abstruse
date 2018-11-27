@@ -3,38 +3,76 @@
 @import 'variables'
 
 \:host
-  width: 200px
+  width: 230px
   background: $white
   position: absolute
   top: 40px
   right: -20px
-  z-index: 20
-  box-shadow: $box-shadow
-  border-radius: 5px
+  z-index: -1
+  border-radius: 6px
+  opacity: 0
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 32px
+  transform: translateY(-10px)
+  transition: transform 0.15s cubic-bezier(0.36, 0.66, 0.04, 1) 0s, opacity 0.15s ease 0s, top 0.25s step-end 0s
+
+  &.is-open
+    opacity: 1
+    transform: translateY(0px)
+    transition: transform 0.15s cubic-bezier(0.36, 0.66, 0.04, 1) 0s, opacity 0.15s ease 0s
+    z-index: 20
 
   .header-dropdown-container
     width: 100%
-    padding: 5px 0
+    padding: 0
     text-transform: none
 
     .hd-item
       width: 100%
-      height: 40px
       display: flex
       align-items: center
-      padding: 0 10px
-      color: $text-primary
+      color: $text-menu
+      font-size: 13px
+      transition: color 0.15s ease-in 0s
+      padding: 8px 18px
 
       &.bordered-bottom
         border-bottom: 1px solid $border-box
 
       &:hover
-        background: $background-light
+        color: $green
 
-      .hd-avatar
-        width: 25px
-        height: 25px
-        border-radius: 50%
-        border: 1px solid $border-primary
-        margin-right: 15px
-        background: $white
+      &.avatar-item
+        padding-top: 16px
+        padding-bottom: 16px
+
+        &:hover
+          color: $text-menu
+
+        .hd-avatar
+          width: 32px
+          height: 32px
+          border-radius: 24px
+          border: 1px solid rgb(232, 235, 240)
+          margin-right: 20px
+          background: rgb(39, 44, 55)
+          color: $white
+
+        .name, .email
+          display: block
+          text-align: left
+          line-height: 12px
+
+        .name
+          font-size: 13px
+          color: rgb(39, 44, 55)
+          padding-top: 5px
+          padding-bottom: 5px
+
+        .email
+          font-size: 11px
+          color: rgb(142, 155, 178)
+
+      &.logout-item
+        padding-bottom: 16px
+        padding-top: 14px
+        border-top: 1px solid $border-box

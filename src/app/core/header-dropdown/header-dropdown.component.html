@@ -1,12 +1,24 @@
 <div class="header-dropdown-container">
-  <a class="hd-item bordered-bottom">
+  <div class="hd-item bordered-bottom avatar-item align-center">
     <img [src]="authService.userInfo?.avatar" class="hd-avatar">
-    <span>{{ authService.userInfo?.fullname }}</span>
+    <div class="user-info">
+      <span class="name">{{ authService.userInfo?.fullname }}</span>
+      <span class="email">{{ authService.userInfo?.email }}</span>
+    </div>
+  </div>
+  <a class="hd-item">
+    <span>Personal Settings</span>
   </a>
   <a class="hd-item">
-    <span>Settings</span>
+    <span>Administration</span>
   </a>
-  <a class="hd-item" (click)="authService.logout()">
+  <a class="hd-item">
+    <span>Help & Support</span>
+  </a>
+  <a class="hd-item">
+    <span>About</span>
+  </a>
+  <a class="hd-item logout-item" (click)="authService.logout()">
     <span>Logout</span>
   </a>
 </div>
