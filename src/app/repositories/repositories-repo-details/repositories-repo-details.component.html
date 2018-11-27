@@ -1,26 +1,29 @@
 <div class="columns is-multiline">
   <div class="column is-12">
-    <div class="box has-less-padding has-dark-border">
-      <div class="columns">
-        <div class="column is-9">
-          <div class="data-item">
-            <i class="fab fa-github" *ngIf="repo?.repository_provider === 'github'"></i>
-            <i class="fab fa-gitlab" *ngIf="repo?.repository_provider === 'gitlab'"></i>
-            <i class="fab fa-bitbucket" *ngIf="repo?.repository_provider === 'bitbucket'"></i>
-            <img src="/assets/images/icons/gogs.svg" *ngIf="repo?.repository_provider === 'gogs'">
-            <i class="fas fa-question-circle" *ngIf="!repo?.repository_provider"></i>
-            <span class="full-name"><a href="repo?.html_url" target="_blank">{{ repo?.full_name }}</a></span>
-            <span class="repo-description">{{ repo?.description }}</span>
-          </div>
-        </div>
-        <div class="column is-2">
-          <svg-icon [src]="'/badge/' + repo?.full_name" [svgStyle]="{ 'height.px': 20 }"></svg-icon>
-        </div>
-        <div class="column is-1 justify-end">
-          <span class="tag" *ngIf="!repo?.is_public">Private</span>
-          <span class="tag" *ngIf="repo?.is_public">Public</span>
+    <div class="columns is-multiline">
+      <div class="column is-10">
+        <div class="data-item">
+          <i class="fab fa-github" *ngIf="repo?.repository_provider === 'github'"></i>
+          <i class="fab fa-gitlab" *ngIf="repo?.repository_provider === 'gitlab'"></i>
+          <i class="fab fa-bitbucket" *ngIf="repo?.repository_provider === 'bitbucket'"></i>
+          <img src="/assets/images/icons/gogs.svg" *ngIf="repo?.repository_provider === 'gogs'">
+          <i class="fas fa-question-circle" *ngIf="!repo?.repository_provider"></i>
+          <span class="full-name"><a [href]="repo?.html_url" target="_blank">{{ repo?.full_name }}</a></span>
+          <span class="repo-description">{{ repo?.description }}</span>
+          <svg-icon *ngIf="repo?.id" [src]="'/badge/' + repo?.id" [svgStyle]="{ 'height.px': 20 }"></svg-icon>
         </div>
       </div>
+      <div class="column is-2 justify-end">
+        <span class="tag" *ngIf="!repo?.is_public">
+          <i class="fa fa-eye-slash"></i>
+          <span>Private</span>
+        </span>
+        <span class="tag" *ngIf="repo?.is_public">
+          <i class="fa fa-eye"></i>
+          <span>Public</span>
+        </span>
+      </div>
+      <hr />
     </div>
   </div>
 
@@ -86,14 +89,16 @@
           <div class="message">
             <p>
               <i class="fas fa-info-circle"></i>
-              <span>Environment variables are the way to customize the build process. They can be accessed from any stage
+              <span>Environment variables are the way to customize the build process. They can be accessed from any
+                stage
                 of the build.</span>
             </p>
           </div>
           <form #envForm="ngForm">
             <div class="field">
               <label class="label">Name</label>
-              <input type="text" name="name" class="input" [(ngModel)]="envVariablesForm.name" placeholder="VARIABLE_NAME" required>
+              <input type="text" name="name" class="input" [(ngModel)]="envVariablesForm.name" placeholder="VARIABLE_NAME"
+                required>
               <div class="input-info">
                 <span>Name of the variable, please use uppercase letters. Example: <code>DEPLOY_KEY</code></span>
               </div>
@@ -125,11 +130,13 @@
           <div class="message">
             <p>
               <i class="fas fa-info-circle"></i>
-              <span>Here you can make test if settings provided works in the wild. Tests includes access to repository and
+              <span>Here you can make test if settings provided works in the wild. Tests includes access to repository
+                and
                 checking presence of <code>.abstruse.yml</code> config file inside repository.</span>
             </p>
           </div>
-          <button type="button" class="button is-fullwidth mtb10" (click)="checkRepositoryConfiguration()">Check Configuration</button>
+          <button type="button" class="button is-fullwidth mtb10" (click)="checkRepositoryConfiguration()">Check
+            Configuration</button>
         </div>
       </div>
     </div>

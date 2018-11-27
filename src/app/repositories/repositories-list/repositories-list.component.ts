@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RepositoriesService } from '../shared/repositories.service';
 import { Repository } from '../shared/repository.model';
+import * as Fuse from 'fuse.js';
 
 @Component({
   selector: 'app-repositories-list',
@@ -9,7 +10,10 @@ import { Repository } from '../shared/repository.model';
 })
 export class RepositoriesListComponent implements OnInit {
   repos: Repository[] = [];
+  displayedRepos: Repository[] = [];
   fetching: boolean;
+  fuse: any;
+  searchKeyword: string;
 
   constructor(public service: RepositoriesService) { }
 
@@ -48,7 +52,23 @@ export class RepositoriesListComponent implements OnInit {
         });
       }
 
+      this.displayedRepos = [...this.repos];
       this.fetching = false;
     });
+  }
+
+  onKeywordChanged(): void {
+    if (this.searchKeyword === '') {
+      this.displayedRepos = [...this.repos];
+      return;
+    }
+
+    const options = {
+      keys: ['name', 'full_name', 'repository_provider', 'description', 'html_url'] as any[],
+      id: 'id'
+    };
+    this.fuse = new Fuse(this.repos, options);
+    const ids = this.fuse.search(this.searchKeyword).map(id => Number(id));
+    this.displayedRepos = this.repos.filter(repo => ids.indexOf(Number(repo.id)) !== -1);
   }
 }

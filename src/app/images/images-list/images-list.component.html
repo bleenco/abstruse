@@ -1,8 +1,14 @@
 <div class="columns is-multiline">
   <div class="column is-12 ptb0 mb15">
     <div class="tabs justify-end">
-      <span class="tab" [class.is-active]="imageService?.tab === 'build images'" (click)="imageService.switchTab('build images')">Build Images</span>
-      <span class="tab" [class.is-active]="imageService?.tab === 'base images'" (click)="imageService.switchTab('base images')">Base Images</span>
+      <span class="tab" [class.is-active]="imageService?.tab === 'build images'" (click)="imageService.switchTab('build images')">
+        <i class="fab fa-docker"></i>
+        <span>Build Images</span>
+      </span>
+      <span class="tab" [class.is-active]="imageService?.tab === 'base images'" (click)="imageService.switchTab('base images')">
+        <i class="fab fa-docker"></i>
+        <span>Base Images</span>
+      </span>
     </div>
   </div>
 </div>
@@ -16,8 +22,9 @@
     <div class="columns is-multiline" *ngIf="!imageService.loadingBuildImages">
       <div class="column is-12">
         <div class="space-between align-center">
-          <p>Build images are used or are mandatory to run build jobs.</p>
-          <button type="button" class="button is-small is-green" (click)="imageService?.openCreateDialog()">Create Image</button>
+          <p>Build images are mandatory to run build jobs.</p>
+          <button type="button" class="button is-small is-green" (click)="imageService?.openCreateDialog()">Create
+            Image</button>
         </div>
       </div>
       <div class="column is-12" *ngIf="!imageService?.buildImages.length">

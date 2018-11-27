@@ -1,12 +1,12 @@
 <div class="repo-item">
   <div class="columns is-marginless is-paddingless">
-    <div class="column is-3 is-marginless is-paddingless data-column">
+    <div class="column is-4 is-marginless is-paddingless data-column">
       <span class="heading-text">Repository</span>
       <span class="data-text">{{ repo?.full_name }}</span>
     </div>
     <div class="column is-3 is-marginless is-paddingless data-column">
       <span class="heading-text">Description</span>
-      <span class="data-text">{{ repo?.description || 'N/A' }}</span>
+      <span class="data-text">{{ repo?.description || 'No description' }}</span>
     </div>
     <div class="column is-2 is-marginless is-paddingless data-column">
       <span class="heading-text">Provider</span>
@@ -18,7 +18,7 @@
         <i class="fas fa-question-circle" *ngIf="!repo?.repository_provider"></i>
       </span>
     </div>
-    <div class="column is-4 is-marginless is-paddingless data-column">
+    <div class="column is-3 is-marginless is-paddingless data-column">
       <span class="heading-text">URL</span>
       <span class="data-text"><a [href]="repo?.html_url">{{ repo?.html_url }}</a></span>
     </div>

@@ -21,7 +21,7 @@ export class Image {
 
   getCreatedTime(): string {
     if (this.created) {
-      return distanceInWordsToNow(new Date(this.created * 1000));
+      return distanceInWordsToNow(new Date(this.created * 1000)) + ' ago';
     } else {
       return '';
     }
