@@ -7,6 +7,8 @@ import { SettingsIntegrationDialogComponent } from './settings-integration-dialo
 import { FormsModule } from '@angular/forms';
 import { IntegrationService } from './shared/integration.service';
 import { SettingsIntegrationItemComponent } from './settings-integration-item/settings-integration-item.component';
+import { SettingsIntegrationDetailsComponent } from './settings-integration-details/settings-integration-details.component';
+import { SettingsComponent } from './settings.component';
 
 @NgModule({
   imports: [
@@ -17,7 +19,9 @@ import { SettingsIntegrationItemComponent } from './settings-integration-item/se
   declarations: [
     SettingsIntegrationsComponent,
     SettingsIntegrationDialogComponent,
-    SettingsIntegrationItemComponent
+    SettingsIntegrationItemComponent,
+    SettingsIntegrationDetailsComponent,
+    SettingsComponent
   ],
   providers: [IntegrationService]
 })

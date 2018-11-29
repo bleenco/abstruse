@@ -3,6 +3,7 @@ package integration
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/bleenco/abstruse/api"
@@ -43,7 +44,7 @@ type githubDataType struct {
 	UpdatedAt         time.Time `json:"updated_at"`
 }
 
-// FindIntegrationsHandler => /api/integration/:userID
+// FindIntegrationsHandler => /api/integrations
 func FindIntegrationsHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	token := req.Header.Get("Authorization")
 	userID, err := security.GetUserIDFromJWT(token)
@@ -77,6 +78,42 @@ func FindIntegrationsHandler(res http.ResponseWriter, req *http.Request, ps http
 			in.GithubData = data
 		}
 		resp = append(resp, in)
+	}
+
+	api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})
+}
+
+// FindIntegrationHandler => /api/integrations/:id
+func FindIntegrationHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	integrationID, _ := strconv.Atoi(ps.ByName("id"))
+	token := req.Header.Get("Authorization")
+	userID, err := security.GetUserIDFromJWT(token)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	integration := db.Integration{}
+	integration, err = integration.Find(integrationID, userID)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	resp := integrationType{
+		ID:        integration.ID,
+		CreatedAt: integration.CreatedAt,
+		UpdatedAt: integration.UpdatedAt,
+		Provider:  integration.Provider,
+	}
+	switch integration.Provider {
+	case "github":
+		resp.GithubURL = integration.GithubURL
+		var data githubDataType
+		if err := json.Unmarshal([]byte(integration.Data), &data); err != nil {
+			break
+		}
+		resp.GithubData = data
 	}
 
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})

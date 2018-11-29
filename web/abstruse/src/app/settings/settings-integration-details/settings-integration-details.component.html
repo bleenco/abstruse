@@ -1,0 +1,58 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="box">
+      <h2>Integration</h2>
+      <hr />
+      <div class="columns is-multiline">
+
+        <div class="column is-12 is-marginless">
+          <div class="list-item no-pointer-events no-hover-effect">
+            <div class="columns is-marginless is-paddingless">
+              <div class="column is-2 is-marginless is-paddingless data-column">
+                <span class="data-text">
+                  <i class="fab fa-github" *ngIf="i?.provider === 'github'"></i>
+                  <i class="fab fa-gitlab" *ngIf="i?.provider === 'gitlab'"></i>
+                  <i class="fab fa-bitbucket" *ngIf="i?.provider === 'bitbucket'"></i>
+                  <img src="/assets/images/icons/gitea.svg" *ngIf="i?.provider === 'gitea'">
+                  <i class="fas fa-question-circle" *ngIf="!i?.provider"></i>
+                </span>
+                <span class="data-text">{{ i?.provider }}</span>
+              </div>
+              <div class="column is-1 is-marginless is-paddingless data-column">
+                <span class="heading-text">Repositories</span>
+                <span class="data-text" *ngIf="i?.provider === 'github'">{{ i?.github_data?.public_repos }} / {{
+                  i?.github_data?.total_private_repos }}</span>
+              </div>
+              <div class="column is-3 is-marginless is-paddingless data-column">
+                <span class="heading-text">Updated</span>
+                <span class="data-text">{{ i?.updated_at | date:'MMM d, yyyy, h:mm:ss' }}</span>
+              </div>
+              <div class="column is-3 is-marginless is-paddingless data-column">
+                <span class="heading-text">Created</span>
+                <span class="data-text">{{ i?.created_at | date:'MMM d, yyyy, h:mm:ss' }}</span>
+              </div>
+              <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="i?.provider === 'github'">
+                <span class="data-text">
+                  <img [src]="i.github_data.avatar_url">
+                </span>
+                <span class="data-text">{{ i?.github_data?.name }}</span>
+              </div>
+              <div class="column is-1 is-marginless data-column justify-end plr10">
+                <button type="button" class="button is-small update-button" [disabled]="processing" (click)="update($event)">
+                  <i class="fa fa-sync"></i>
+                  <span>Update</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column is-12 is-marginless">
+          <h2>Repositories</h2>
+          <hr />
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

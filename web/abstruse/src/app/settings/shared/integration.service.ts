@@ -25,8 +25,13 @@ export class IntegrationService {
     return this.http.get<JSONResponse>(url);
   }
 
-  updateIntegration(integrationID: number): Observable<JSONResponse> {
-    const url = getAPIURL() + `/integrations/update/${String(integrationID)}`;
+  fetchIntegration(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/integrations/${String(id)}`;
+    return this.http.get<JSONResponse>(url);
+  }
+
+  updateIntegration(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/integrations/${String(id)}/update`;
     return this.http.get<JSONResponse>(url);
   }
 
