@@ -8,10 +8,12 @@
         <img src="/assets/images/icons/gitea.svg" *ngIf="data?.provider === 'gitea'">
         <i class="fas fa-question-circle" *ngIf="!data?.provider"></i>
       </span>
-    </div>
-    <div class="column is-2 is-marginless is-paddingless data-column">
-      <span class="heading-text">Provider</span>
       <span class="data-text">{{ data?.provider }}</span>
+    </div>
+    <div class="column is-1 is-marginless is-paddingless data-column">
+      <span class="heading-text">Repositories</span>
+      <span class="data-text" *ngIf="data?.provider === 'github'">{{ data?.github_data?.public_repos }} / {{
+        data?.github_data?.total_private_repos }}</span>
     </div>
     <div class="column is-2 is-marginless is-paddingless data-column">
       <span class="heading-text">Updated</span>
@@ -21,12 +23,18 @@
       <span class="heading-text">Created</span>
       <span class="data-text">{{ data?.created_at | date:'MMM d, yyyy, h:mm:ss' }}</span>
     </div>
-    <div class="column is-4 is-marginless data-column justify-end plr10">
-      <button type="button" class="button" [disabled]="processing" (click)="update($event)">
+    <div class="column is-2 is-marginless is-paddingless data-column" *ngIf="data?.provider === 'github'">
+      <span class="data-text">
+        <img [src]="data.github_data.avatar_url">
+      </span>
+      <span class="data-text">{{ data?.github_data?.name }}</span>
+    </div>
+    <div class="column is-3 is-marginless data-column justify-end plr10">
+      <button type="button" class="button is-small" [disabled]="processing" (click)="update($event)">
         <i class="fa fa-sync"></i>
         <span>Update</span>
       </button>
-      <button type="button" class="button" [disabled]="processing">
+      <button type="button" class="button is-small" [disabled]="processing">
         <img src="/assets/images/icons/code-repo.svg">
         <span>Import</span>
       </button>

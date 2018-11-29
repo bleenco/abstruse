@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { IntegrationService } from '../shared/integration.service';
 
 @Component({
-  selector: 'app-settings-personal',
-  templateUrl: './settings-personal.component.html',
-  styleUrls: ['./settings-personal.component.sass']
+  selector: 'app-settings-integrations',
+  templateUrl: './settings-integrations.component.html',
+  styleUrls: ['./settings-integrations.component.sass']
 })
-export class SettingsPersonalComponent implements OnInit {
+export class SettingsIntegrationsComponent implements OnInit {
   fetchingIntegrations: boolean;
   integrations: any[];
 
