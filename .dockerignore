@@ -1,2 +1,4 @@
-node_modules/*
-dist/*
+**/node_modules/*
+web/abstruse/dist/*
+statik/*
+build/*
