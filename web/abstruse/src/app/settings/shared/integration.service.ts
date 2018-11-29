@@ -21,14 +21,19 @@ export class IntegrationService {
   }
 
   fetchIntegrations(): Observable<JSONResponse> {
-    const url = getAPIURL() + '/integration';
+    const url = getAPIURL() + '/integrations';
+    return this.http.get<JSONResponse>(url);
+  }
+
+  updateIntegration(integrationID: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/integrations/update/${String(integrationID)}`;
     return this.http.get<JSONResponse>(url);
   }
 
   checkIntegrationValidity(provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs', data: any): Observable<JSONResponse> {
     let url: string;
     if (provider === 'github') {
-      url = getAPIURL() + '/integration/github/add';
+      url = getAPIURL() + '/integrations/github/add';
     }
 
     return this.http.post<JSONResponse>(url, data);

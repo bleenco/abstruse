@@ -28,8 +28,9 @@ func NewRouter() *Router {
 func (r *Router) initAPI() {
 	r.Router.GET("/api/setup/ready", setup.ReadyHandler)
 	r.Router.POST("/api/user/login", user.LoginHandler)
-	r.Router.POST("/api/integration/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
-	r.Router.GET("/api/integration", integration.FindIntegrationsHandler)
+	r.Router.POST("/api/integrations/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
+	r.Router.GET("/api/integrations", api.AuthorizationMiddleware(integration.FindIntegrationsHandler))
+	r.Router.GET("/api/integrations/update/:integrationID", api.AuthorizationMiddleware(integration.UpdateGitHubIntegration))
 }
 
 func (r *Router) initUI() {

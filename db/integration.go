@@ -11,6 +11,7 @@ type Integration struct {
 
 	Provider string `gorm:"not null" json:"provider"`
 
+	GithubURL         string `gorm:"column:github_url" json:"github_url"`
 	GithubUsername    string `gorm:"column:github_username" json:"-"`
 	GithubPassword    string `gorm:"column:github_password" json:"-"`
 	GithubAccessToken string `gorm:"column:github_access_token" json:"-"`
@@ -27,18 +28,23 @@ func (i *Integration) Create() (*Integration, error) {
 	i.UpdatedAt = time.Now()
 
 	if i.UserID == 0 {
-		return i, errors.New("users_id field is nil")
+		return i, errors.New("user_id field is nil")
 	}
 
 	err := DB.Create(i).Error
 	return i, err
 }
 
+// Find method.
+func (i *Integration) Find(integrationID, userID int) (Integration, error) {
+	var integration Integration
+	err := DB.Where("user_id = ? AND id = ?", userID, integrationID).Find(&integration).Error
+	return integration, err
+}
+
 // Update method.
 func (i *Integration) Update() (*Integration, error) {
-	i.UpdatedAt = time.Now()
-
-	err := DB.Update(i).Error
+	err := DB.Model(i).Update(map[string]interface{}{"updated_at": time.Now(), "data": i.Data}).Error
 	return i, err
 }
 

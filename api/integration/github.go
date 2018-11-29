@@ -3,6 +3,7 @@ package integration
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/bleenco/abstruse/api"
 	"github.com/bleenco/abstruse/api/providers/github"
@@ -41,4 +42,23 @@ func AddGitHubIntegration(res http.ResponseWriter, req *http.Request, _ httprout
 	}
 
 	api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: true})
+}
+
+// UpdateGitHubIntegration => /api/integrations/update/:integrationID
+func UpdateGitHubIntegration(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	integrationID, _ := strconv.Atoi(ps.ByName("integrationID"))
+	token := req.Header.Get("Authorization")
+	userID, err := security.GetUserIDFromJWT(token)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	ok, err := github.CheckAndUpdateIntegration(integrationID, userID)
+	if ok && err == nil {
+		api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: true})
+		return
+	}
+
+	api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: false})
 }

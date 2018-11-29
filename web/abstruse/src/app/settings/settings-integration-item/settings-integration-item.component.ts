@@ -1,4 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { IntegrationService } from '../shared/integration.service';
 
 @Component({
   selector: 'app-settings-integration-item',
@@ -7,10 +8,30 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class SettingsIntegrationItemComponent implements OnInit {
   @Input() data: any;
+  @Output() updated: EventEmitter<void>;
 
-  constructor() { }
+  processing: boolean;
 
-  ngOnInit() {
+  constructor(public integration: IntegrationService) {
+    this.updated = new EventEmitter<void>();
+  }
+
+  ngOnInit() { }
+
+  update(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+
+    this.processing = true;
+    this.integration.updateIntegration(this.data.id).subscribe(resp => {
+      if (resp && resp.data) {
+        this.updated.emit();
+      }
+    }, err => {
+      console.error(err);
+    }, () => {
+      this.processing = false;
+    });
   }
 
 }

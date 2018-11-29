@@ -31,4 +31,8 @@ export class SettingsPersonalComponent implements OnInit {
       this.fetchingIntegrations = false;
     });
   }
+
+  integrationsUpdated(): void {
+    this.fetchIntegrations();
+  }
 }

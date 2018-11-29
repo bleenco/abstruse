@@ -22,11 +22,11 @@
       <span class="data-text">{{ data?.created_at | date:'MMM d, yyyy, h:mm:ss' }}</span>
     </div>
     <div class="column is-4 is-marginless data-column justify-end plr10">
-      <button type="button" class="button">
+      <button type="button" class="button" [disabled]="processing" (click)="update($event)">
         <i class="fa fa-sync"></i>
         <span>Update</span>
       </button>
-      <button type="button" class="button">
+      <button type="button" class="button" [disabled]="processing">
         <img src="/assets/images/icons/code-repo.svg">
         <span>Import</span>
       </button>
