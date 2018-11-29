@@ -1,0 +1,102 @@
+<div class="dialog-overlay">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <h1>Integration</h1>
+      <i class="fa fa-times"></i>
+    </div>
+    <div class="dialog-body">
+      <div class="columns is-multiline" *ngIf="!provider">
+        <div class="column is-12">
+          <div class="message mb10">
+            <p>
+              <i class="fa fa-info-circle"></i>
+              <span>Choose your git repository provider to continue on next step.</span>
+            </p>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="integration-button" (click)="chooseProvider('github')">
+            <div class="ib-content">
+              <i class="fab fa-github"></i>
+              <span>GitHub</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="integration-button">
+            <div class="ib-content">
+              <i class="fab fa-gitlab"></i>
+              <span>GitLab</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="integration-button">
+            <div class="ib-content">
+              <i class="fab fa-bitbucket"></i>
+              <span>BitBucket</span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="integration-button">
+            <div class="ib-content">
+              <img src="/assets/images/icons/gogs.png">
+              <span>Gogs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="columns is-multiline" *ngIf="provider === 'github'">
+        <div class="column is-12">
+          <div class="message is-blue mb10">
+            <p>
+              <i class="fab fa-github"></i>
+              <span>Enter your GitHub access token or credentials.</span>
+            </p>
+          </div>
+        </div>
+        <div class="column is-12">
+          <form #githubForm="ngForm" (ngSubmit)="checkIntegration()">
+            <div class="field">
+              <label class="label">URL</label>
+              <input type="text" class="input" placeholder="URL" [(ngModel)]="githubProviderForm.url" name="url"
+                required>
+              <div class="input-info">
+                <span>If you are not using self-hosted or enterprise version leave this as predefined.</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Access Token</label>
+              <input type="password" class="input" placeholder="Access Token" [(ngModel)]="githubProviderForm.access_token"
+                name="access_token" #accessToken>
+              <div class="input-info">
+                <span>When access token is entered, credentials below are not needed.</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">GitHub Username</label>
+              <input type="text" class="input" placeholder="GitHub Username" [(ngModel)]="githubProviderForm.username"
+                name="username" #username>
+              <div class="input-info">
+                <span>When using username and password credentials you don't have to enter access token.</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">GitHub Password</label>
+              <input type="password" class="input" placeholder="GitHub Password" [(ngModel)]="githubProviderForm.password"
+                name="password" #password>
+            </div>
+            <div class="justify-end mt10">
+              <button type="submit" class="button" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">
+                <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+                <span *ngIf="!loading">Add Integration</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

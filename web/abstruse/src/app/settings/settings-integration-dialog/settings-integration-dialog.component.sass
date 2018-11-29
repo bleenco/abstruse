@@ -1,0 +1,43 @@
+@import 'variables'
+@import 'typography'
+@import 'colours'
+@import 'mixins'
+
+.integration-button
+  +unselectable
+  display: flex
+  align-items: center
+  justify-content: center
+  height: 100px
+  border: 1px solid $border-primary
+  border-radius: 4px
+  box-shadow: 0 0 0 rgba(0,16,44,.18), 0 1px 5px rgba(0,16,44,.2)
+
+  .ib-content
+    text-align: center
+
+    i, img, span
+      display: block
+      color: $text-secondary
+
+    i
+      font-size: 32px
+      display: block
+
+    img
+      display: block
+      width: 32px
+      height: 32px
+
+    span
+      font-family: $font-family-medium
+      padding-top: 5px
+
+  &:hover
+    cursor: pointer
+    box-shadow: 0 10px 28px rgba(0,16,44,.18), 0 1px 5px rgba(0,16,44,.2)
+
+    .ib-content
+
+      i, span
+        color: $text-dark

@@ -1,0 +1,114 @@
+@import 'colours'
+@import 'typography'
+
+.field
+  display: inline-block
+  width: 100%
+  max-width: 100%
+  position: relative
+
+  &:not(:last-child)
+    margin-bottom: 10px
+
+  &.is-grouped
+    display: flex
+    justify-content: flex-start
+
+    & > .control
+      flex-grow: 1
+      flex-shrink: 1
+
+      &:not(:last-child)
+        margin-bottom: 0
+        margin-right: 15px
+
+      &.is-expanded
+        flex-grow: 1
+        flex-shrink: 1
+
+  .input-right-icon
+    position: absolute
+    right: 10px
+    top: 40px
+    cursor: pointer
+    color: $text-primary
+    font-size: 20px
+
+    &:hover
+      color: $text-secondary
+
+.label
+  display: block
+  color: $text-primary
+  font-size: 13px
+  font-family: $font-family-medium
+  margin: 5px 0 0
+
+.input
+  color: $text-input
+  font-size: 14px
+  height: 40px
+  text-indent: 14px
+  border: 1px solid $border-input
+  outline: none
+  display: flex
+  align-items: center
+  justify-content: center
+  line-height: 100%
+  margin: 0
+  padding: 0 30px 0 0
+  width: 100%
+
+  &[disabled]
+    opacity: .5
+
+  &::placeholder
+    color: $text-primary
+    opacity: 1
+
+  &::-ms-input-placeholder
+    color: $text-primary
+
+  &:focus
+    border-color: $border-primary
+
+  &[type="number"]
+    -moz-appearance:textfield
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      -webkit-appearance: none
+
+textarea
+
+  &.input
+    height: 150px
+
+.input-info
+  width: 100%
+  color: $text-primary
+  display: flex
+  align-items: center
+  margin: 0 3px
+
+  i
+    margin-right: 5px
+
+  span
+    font-size: 12px
+
+.search-input
+  position: relative
+  display: block
+  width: 100%
+
+  .input
+    padding-left: 25px
+    border-radius: 2px
+
+  i
+    position: absolute
+    top: 11px
+    left: 10px
+    font-size: 20px
+    opacity: .9
+    color: $green

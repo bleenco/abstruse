@@ -1,0 +1,49 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <h2>Personal Settings</h2>
+    <hr />
+
+    <div class="columns is-multiline">
+      <div class="column is-12">
+        <div class="box">
+          <h2>Integrations</h2>
+          <hr />
+
+          <div class="columns is-multiline">
+            <div class="column is-12 mb10">
+              <div class="space-between align-center">
+                <span>Git repository provider integrations.</span>
+                <button type="button" class="button">
+                  <i class="fab fa-git"></i>
+                  <span>Add Integration</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="column is-12 mb10">
+              <div class="message is-yellow">
+                <p>
+                  <i class="fa fa-info-circle"></i>
+                  No existing integrations found.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- <form>
+            <div class="field">
+              <label class="label">GitHub Access Token</label>
+              <input class="input" type="text" placeholder="Access Token">
+              <i class="fab fa-github input-right-icon"></i>
+            </div>
+            <div class="justify-end">
+              <button type="button" class="button">Check</button>
+            </div>
+          </form> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-settings-integration-dialog></app-settings-integration-dialog>

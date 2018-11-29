@@ -1,0 +1,69 @@
+.message
+  display: block
+  width: 100%
+  padding: 7.5px 20px 7.5px 15px
+  position: relative
+  background: $white
+  border: 1px solid $border-primary
+  color: $text-secondary
+  font-size: 13px
+
+  & > .delete
+    position: absolute
+    right: 10px
+    top: 10px
+    cursor: pointer
+
+  p
+    margin: 2.5px 0
+    padding-left: 25px
+    position: relative
+
+    i
+      position: absolute
+      top: 6px
+      left: 0
+
+    img
+      position: absolute
+      top: 3px
+      left: 0
+      width: 16px
+      height: 16px
+      display: block
+
+  &.is-green
+    background: rgba($green, .1)
+    border-color: $green
+    color: $green
+    font-family: $font-family-medium
+
+    i
+      color: $green
+
+  &.is-red
+    background: rgba($red, .1)
+    border-color: $red
+    color: $red
+    font-family: $font-family-medium
+
+    i
+      color: $red
+
+  &.is-blue
+    background: rgba($blue, .1)
+    border-color: $blue
+    color: $blue
+    font-family: $font-family-medium
+
+    i
+      color: $blue
+
+  &.is-yellow
+    background: rgba($yellow, .1)
+    border-color: $yellow
+    color: $yellow
+    font-family: $font-family-medium
+
+    i
+      color: $yellow

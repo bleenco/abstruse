@@ -10,3 +10,7 @@ scripts/abstruse*
 scripts/nodec
 yarn-error.log
 package-lock.json
+
+build/
+statik/
+dist/
