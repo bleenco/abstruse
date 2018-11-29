@@ -59,17 +59,51 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     });
   }
 
-  fetchRepos(): void {
-    this.fetchingRepositories = true;
+  fetchRepos(loader = true): void {
+    if (loader) {
+      this.fetchingRepositories = true;
+    }
     this.integration.fetchIntegrationRepos(this.integrationID).subscribe(resp => {
       if (resp && resp.data) {
         this.repositories = resp.data;
-        console.log(this.repositories);
+        this.fetchDBRepositories(loader);
       }
     }, err => {
       console.error(err);
     }, () => {
       this.fetchingRepositories = false;
     });
+  }
+
+  fetchDBRepositories(loader = true): void {
+    if (loader) {
+      this.fetchingRepositories = true;
+    }
+    this.integration.fetchRepositories().subscribe(resp => {
+      if (resp && resp.data) {
+        const dbrepos = resp.data;
+        const provider = this.i.provider;
+        this.repositories = this.repositories.map(repo => {
+          repo.is_imported = false;
+          switch (provider) {
+            case 'github':
+              if (dbrepos.find(dbrepo => dbrepo.provider_id === repo.id)) {
+                repo.is_imported = true;
+              }
+            break;
+          }
+
+          return repo;
+        });
+      }
+    }, err => {
+      console.error(err);
+    }, () => {
+      this.fetchingRepositories = false;
+    });
+  }
+
+  repoImported(): void {
+    this.fetchRepos(false);
   }
 }

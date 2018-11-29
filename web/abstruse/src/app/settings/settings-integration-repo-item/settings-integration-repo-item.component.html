@@ -4,7 +4,7 @@
       <span class="heading-text">Repository</span>
       <span class="data-text">{{ repo?.full_name }}</span>
     </div>
-    <div class="column is-4 is-marginless is-paddingless data-column">
+    <div class="column is-3 is-marginless is-paddingless data-column">
       <span class="heading-text">URL</span>
       <span class="data-text">{{ repo?.html_url }}</span>
     </div>
@@ -16,8 +16,13 @@
       <span class="heading-text">Pushed At</span>
       <span class="data-text">{{ repo?.pushed_at | date:'MMM d, yyyy, h:mm:ss' }}</span>
     </div>
-    <div class="column is-1 is-marginless data-column justify-end plr10">
-      <button type="button" class="button is-small" [disabled]="processing">
+    <div class="column is-2 is-marginless data-column justify-center">
+      <div *ngIf="repo?.is_imported">
+        <span class="data-text">
+          <i class="fa fa-check is-green"></i>
+        </span>
+      </div>
+      <button type="button" class="button is-small" [disabled]="processing" (click)="import($event)" *ngIf="!repo?.is_imported">
         <img src="/assets/images/icons/code-repo.svg">
         <span>Import</span>
       </button>

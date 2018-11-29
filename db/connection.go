@@ -31,6 +31,7 @@ func Connect(opts Options) error {
 	DB.AutoMigrate(
 		&User{},
 		&Integration{},
+		&Repository{},
 	)
 
 	return nil

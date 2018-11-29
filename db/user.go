@@ -18,6 +18,8 @@ type User struct {
 	Password string `gorm:"not null;varchar(255);column:password" json:"-"`
 	Fullname string `gorm:"not null;varchar(255)" json:"fullname"`
 	Avatar   string `gorm:"not null;varchar(255);default:'/assets/avatars/avatar_1.svg'" json:"avatar"`
+
+	Repositories []Repository `json:"repositories"`
 }
 
 // Find finds user by id.

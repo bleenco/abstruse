@@ -1,16 +1,4 @@
-node_modules/
-dist/
-.DS_Store
-abstruse-ci.sqlite3
-aot/
-src/ngfactory
-coverage/
-src/server/logs/
-scripts/abstruse*
-scripts/nodec
-yarn-error.log
-package-lock.json
-
 build/
 statik/
 dist/
+.DS_Store

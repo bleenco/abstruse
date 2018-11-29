@@ -48,4 +48,18 @@ export class IntegrationService {
 
     return this.http.post<JSONResponse>(url, data);
   }
+
+  importRepository(provider: string, data: any): Observable<JSONResponse> {
+    let url;
+    switch (provider) {
+      case 'github': url = getAPIURL() + `/integrations/github/import`; break;
+    }
+
+    return this.http.post<JSONResponse>(url, data);
+  }
+
+  fetchRepositories(): Observable<JSONResponse> {
+    const url = getAPIURL() + `/repositories`;
+    return this.http.get<JSONResponse>(url);
+  }
 }
