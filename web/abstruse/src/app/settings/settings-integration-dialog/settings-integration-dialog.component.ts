@@ -43,8 +43,15 @@ export class SettingsIntegrationDialogComponent implements OnInit {
 
     this.integration.checkIntegrationValidity(this.provider, data)
       .subscribe(resp => {
+        if (resp.data) {
+          this.integration.closeIntegrationDialog();
+        } else {
+
+        }
+      }, err => {
+        console.log(err);
+      }, () => {
         this.loading = false;
-        console.log(resp);
       });
   }
 

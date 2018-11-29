@@ -2,15 +2,17 @@ package github
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/http"
 	"strings"
 
+	"github.com/bleenco/abstruse/db"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
-func CheckAccessTokenValidity(url, accessToken, username, password string) (bool, error) {
+// CheckAndAddIntegration checks credentials and adds integration into db if valid.
+func CheckAndAddIntegration(url, accessToken, username, password string, userID int) (bool, error) {
 	ctx := context.Background()
 	var tc *http.Client
 
@@ -23,6 +25,8 @@ func CheckAccessTokenValidity(url, accessToken, username, password string) (bool
 			Password: strings.TrimSpace(password),
 		}
 		tc = tp.Client()
+	} else {
+		return false, errors.New("credentials not provided")
 	}
 
 	var client *github.Client
@@ -36,12 +40,22 @@ func CheckAccessTokenValidity(url, accessToken, username, password string) (bool
 		client = c
 	}
 
-	user, _, err := client.Users.Get(ctx, "")
+	_, _, err := client.Users.Get(ctx, "")
 	if err != nil {
 		return false, err
 	}
 
-	fmt.Printf("\n%v\n", github.Stringify(user))
+	integration := &db.Integration{
+		Provider:          "github",
+		GithubUsername:    username,
+		GithubPassword:    password,
+		GithubAccessToken: accessToken,
+		UserID:            userID,
+	}
+
+	if _, err := integration.Create(); err != nil {
+		return false, err
+	}
 
 	return true, nil
 }

@@ -1,6 +1,10 @@
 package security
 
 import (
+	"errors"
+	"fmt"
+	"strconv"
+
 	"github.com/bleenco/abstruse/config"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -43,4 +47,27 @@ func GenerateJWT(user UserJWT) (string, error) {
 	})
 
 	return token.SignedString(jwtSecret)
+}
+
+// GetUserIDFromJWT returns users ID from token.
+func GetUserIDFromJWT(tokenString string) (int, error) {
+	var userID int
+	if tokenString == "" {
+		return userID, errors.New("invalid token")
+	}
+
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(config.Configuration.Security.JWTSecret), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		userID, _ = strconv.Atoi(claims["id"].(string))
+		return userID, nil
+	}
+
+	return userID, nil
 }

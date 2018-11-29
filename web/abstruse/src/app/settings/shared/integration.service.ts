@@ -8,8 +8,22 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class IntegrationService {
+  integrationDialogOpened: boolean;
 
   constructor(public http: HttpClient) { }
+
+  openIntegrationDialog(): void {
+    this.integrationDialogOpened = true;
+  }
+
+  closeIntegrationDialog(): void {
+    this.integrationDialogOpened = false;
+  }
+
+  fetchIntegrations(): Observable<JSONResponse> {
+    const url = getAPIURL() + '/integration';
+    return this.http.get<JSONResponse>(url);
+  }
 
   checkIntegrationValidity(provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs', data: any): Observable<JSONResponse> {
     let url: string;

@@ -6,6 +6,7 @@ import { SettingsPersonalComponent } from './settings-personal/settings-personal
 import { SettingsIntegrationDialogComponent } from './settings-integration-dialog/settings-integration-dialog.component';
 import { FormsModule } from '@angular/forms';
 import { IntegrationService } from './shared/integration.service';
+import { SettingsIntegrationItemComponent } from './settings-integration-item/settings-integration-item.component';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { IntegrationService } from './shared/integration.service';
   ],
   declarations: [
     SettingsPersonalComponent,
-    SettingsIntegrationDialogComponent
+    SettingsIntegrationDialogComponent,
+    SettingsIntegrationItemComponent
   ],
   providers: [IntegrationService]
 })

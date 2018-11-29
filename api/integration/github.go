@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/api"
-	"github.com/bleenco/abstruse/providers/github"
+	"github.com/bleenco/abstruse/api/providers/github"
+	"github.com/bleenco/abstruse/security"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -18,6 +19,7 @@ type githubCheckForm struct {
 
 // AddGitHubIntegration => /api/integration/github/add
 func AddGitHubIntegration(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+	token := req.Header.Get("Authorization")
 	var form githubCheckForm
 	decoder := json.NewDecoder(req.Body)
 	if err := decoder.Decode(&form); err != nil {
@@ -26,7 +28,13 @@ func AddGitHubIntegration(res http.ResponseWriter, req *http.Request, _ httprout
 	}
 	defer req.Body.Close()
 
-	valid, err := github.CheckAccessTokenValidity(form.URL, form.AccessToken, form.Username, form.Password)
+	userID, err := security.GetUserIDFromJWT(token)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	valid, err := github.CheckAndAddIntegration(form.URL, form.AccessToken, form.Username, form.Password, userID)
 	if err != nil || !valid {
 		api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: false})
 		return

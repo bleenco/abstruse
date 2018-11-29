@@ -15,7 +15,7 @@ type User struct {
 	BaseModel
 
 	Email    string `gorm:"not null;varchar(255);unique_index" json:"email"`
-	Password string `gorm:"not null;varchar(255)" json:"password"`
+	Password string `gorm:"not null;varchar(255);column:password" json:"-"`
 	Fullname string `gorm:"not null;varchar(255)" json:"fullname"`
 	Avatar   string `gorm:"not null;varchar(255);default:'/assets/avatars/avatar_1.svg'" json:"avatar"`
 }

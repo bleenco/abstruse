@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/api"
+	"github.com/bleenco/abstruse/api/integration"
 	"github.com/bleenco/abstruse/fs"
-	"github.com/bleenco/abstruse/integration"
 	"github.com/bleenco/abstruse/setup"
 	"github.com/bleenco/abstruse/user"
 	"github.com/julienschmidt/httprouter"
@@ -29,6 +29,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/setup/ready", setup.ReadyHandler)
 	r.Router.POST("/api/user/login", user.LoginHandler)
 	r.Router.POST("/api/integration/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
+	r.Router.GET("/api/integration", integration.FindIntegrationsHandler)
 }
 
 func (r *Router) initUI() {

@@ -13,37 +13,31 @@
             <div class="column is-12 mb10">
               <div class="space-between align-center">
                 <span>Git repository provider integrations.</span>
-                <button type="button" class="button">
-                  <i class="fab fa-git"></i>
+                <button type="button" class="button" (click)="integration.openIntegrationDialog()">
+                  <i class="fa fa-plus"></i>
                   <span>Add Integration</span>
                 </button>
               </div>
             </div>
 
             <div class="column is-12 mb10">
-              <div class="message is-yellow">
+              <div class="message is-yellow" *ngIf="!integrations?.length">
                 <p>
                   <i class="fa fa-info-circle"></i>
                   No existing integrations found.
                 </p>
               </div>
+
+              <div class="integrations" *ngIf="integrations?.length">
+                <app-settings-integration-item [data]="i" *ngFor="let i of integrations"></app-settings-integration-item>
+              </div>
             </div>
           </div>
 
-          <!-- <form>
-            <div class="field">
-              <label class="label">GitHub Access Token</label>
-              <input class="input" type="text" placeholder="Access Token">
-              <i class="fab fa-github input-right-icon"></i>
-            </div>
-            <div class="justify-end">
-              <button type="button" class="button">Check</button>
-            </div>
-          </form> -->
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<app-settings-integration-dialog></app-settings-integration-dialog>
+<app-settings-integration-dialog *ngIf="integration.integrationDialogOpened"></app-settings-integration-dialog>

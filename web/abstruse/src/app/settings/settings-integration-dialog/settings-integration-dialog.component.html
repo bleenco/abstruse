@@ -1,8 +1,8 @@
 <div class="dialog-overlay">
-  <div class="dialog-container">
+  <div class="dialog-container is-wide">
     <div class="dialog-header">
       <h1>Integration</h1>
-      <i class="fa fa-times"></i>
+      <i class="fa fa-times" (click)="integration.closeIntegrationDialog()"></i>
     </div>
     <div class="dialog-body">
       <div class="columns is-multiline" *ngIf="!provider">
@@ -41,8 +41,8 @@
         <div class="column is-3">
           <div class="integration-button">
             <div class="ib-content">
-              <img src="/assets/images/icons/gogs.png">
-              <span>Gogs</span>
+              <img src="/assets/images/icons/gitea.svg">
+              <span>Gitea</span>
             </div>
           </div>
         </div>
