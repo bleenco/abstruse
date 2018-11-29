@@ -30,6 +30,11 @@ export class IntegrationService {
     return this.http.get<JSONResponse>(url);
   }
 
+  fetchIntegrationRepos(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/integrations/${String(id)}/repos`;
+    return this.http.get<JSONResponse>(url);
+  }
+
   updateIntegration(id: number): Observable<JSONResponse> {
     const url = getAPIURL() + `/integrations/${String(id)}/update`;
     return this.http.get<JSONResponse>(url);

@@ -9,19 +9,23 @@ import { IntegrationService } from './shared/integration.service';
 import { SettingsIntegrationItemComponent } from './settings-integration-item/settings-integration-item.component';
 import { SettingsIntegrationDetailsComponent } from './settings-integration-details/settings-integration-details.component';
 import { SettingsComponent } from './settings.component';
+import { SettingsIntegrationRepoItemComponent } from './settings-integration-repo-item/settings-integration-repo-item.component';
+import { SharedModule } from '../shared/modules/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    SettingsRoutingModule
+    SettingsRoutingModule,
+    SharedModule.forRoot()
   ],
   declarations: [
     SettingsIntegrationsComponent,
     SettingsIntegrationDialogComponent,
     SettingsIntegrationItemComponent,
     SettingsIntegrationDetailsComponent,
-    SettingsComponent
+    SettingsComponent,
+    SettingsIntegrationRepoItemComponent
   ],
   providers: [IntegrationService]
 })

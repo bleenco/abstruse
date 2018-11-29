@@ -12,6 +12,8 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
   fetchingIntegration: boolean;
   i: any;
   processing: boolean;
+  fetchingRepositories: boolean;
+  repositories: any[];
 
   constructor(
     public integration: IntegrationService,
@@ -22,6 +24,8 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     this.integrationID = this.route.snapshot.params.id;
     this.processing = false;
     this.i = null;
+    this.fetchingRepositories = false;
+    this.repositories = [];
     this.fetchIntegration();
   }
 
@@ -46,11 +50,26 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     this.integration.fetchIntegration(this.integrationID).subscribe(resp => {
       if (resp && resp.data) {
         this.i = resp.data;
+        this.fetchRepos();
       }
     }, err => {
       console.error(err);
     }, () => {
       this.fetchingIntegration = false;
+    });
+  }
+
+  fetchRepos(): void {
+    this.fetchingRepositories = true;
+    this.integration.fetchIntegrationRepos(this.integrationID).subscribe(resp => {
+      if (resp && resp.data) {
+        this.repositories = resp.data;
+        console.log(this.repositories);
+      }
+    }, err => {
+      console.error(err);
+    }, () => {
+      this.fetchingRepositories = false;
     });
   }
 }

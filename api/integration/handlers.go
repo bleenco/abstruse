@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/bleenco/abstruse/api"
+	"github.com/bleenco/abstruse/api/providers/github"
 	"github.com/bleenco/abstruse/db"
 	"github.com/bleenco/abstruse/security"
 	"github.com/julienschmidt/httprouter"
@@ -117,4 +118,33 @@ func FindIntegrationHandler(res http.ResponseWriter, req *http.Request, ps httpr
 	}
 
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})
+}
+
+// FetchIntegrationRepositoriesHandler => /api/integrations/:id/repositories
+func FetchIntegrationRepositoriesHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	integrationID, _ := strconv.Atoi(ps.ByName("id"))
+	token := req.Header.Get("Authorization")
+	userID, err := security.GetUserIDFromJWT(token)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	integration := db.Integration{}
+	integration, err = integration.Find(integrationID, userID)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	switch integration.Provider {
+	case "github":
+		resp, err := github.FetchIntegrationRepositories(integration.GithubURL, integration.GithubAccessToken, integration.GithubUsername, integration.GithubPassword)
+		if err != nil {
+			api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+			return
+		}
+
+		api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})
+	}
 }

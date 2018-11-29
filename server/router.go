@@ -32,6 +32,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/integrations", api.AuthorizationMiddleware(integration.FindIntegrationsHandler))
 	r.Router.GET("/api/integrations/:id", api.AuthorizationMiddleware(integration.FindIntegrationHandler))
 	r.Router.GET("/api/integrations/:id/update", api.AuthorizationMiddleware(integration.UpdateGitHubIntegration))
+	r.Router.GET("/api/integrations/:id/repos", api.AuthorizationMiddleware(integration.FetchIntegrationRepositoriesHandler))
 }
 
 func (r *Router) initUI() {

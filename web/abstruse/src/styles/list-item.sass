@@ -3,9 +3,12 @@ $list-item-height: 70px
 .list-item
   width: 100%
   height: $list-item-height
-  border: 1px solid $border-primary
   outline: none
-  margin-bottom: 7px
+  border-bottom: 1px solid $border-primary
+
+  &.is-bordered
+    border: 1px solid $border-primary
+    margin-bottom: 7px
 
   &:hover:not(.no-hover-effect)
     cursor: pointer

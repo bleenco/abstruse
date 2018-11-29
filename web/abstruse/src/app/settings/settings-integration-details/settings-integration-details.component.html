@@ -47,9 +47,19 @@
           </div>
         </div>
 
-        <div class="column is-12 is-marginless">
+        <div class="column is-12">
           <h2>Repositories</h2>
           <hr />
+        </div>
+
+        <div class="column is-12" *ngIf="fetchingRepositories">
+          <app-loader class="pb20"></app-loader>
+        </div>
+
+        <div class="column is-12" *ngIf="!fetchingRepositories">
+          <div class="repositories-list" *ngIf="!fetchingRepositories">
+            <app-settings-integration-repo-item [repo]="repo" [provider]="i?.provider" *ngFor="let repo of repositories"></app-settings-integration-repo-item>
+          </div>
         </div>
 
       </div>
