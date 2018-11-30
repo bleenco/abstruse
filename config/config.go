@@ -30,6 +30,8 @@ type Database struct {
 // Security defines data for security such as jwt tokens.
 type Security struct {
 	JWTSecret string `json:"jwt_secret"`
+	Cert      string `json:"cert"`
+	CertKey   string `json:"cert_key"`
 }
 
 // ReadAndParseConfig reads and parses configuration from JSON file
@@ -64,6 +66,8 @@ func WriteDefaultConfig(configPath string) error {
 		},
 		Security: Security{
 			JWTSecret: "defaultSecret",
+			Cert:      "",
+			CertKey:   "",
 		},
 	}
 

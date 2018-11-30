@@ -37,17 +37,23 @@ type Abstruse struct {
 }
 
 // NewAbstruse creates a new main master server instance.
-func NewAbstruse(config *AbstruseConfig) (*Abstruse, error) {
-	log := logger.NewLogger("", true, config.Debug)
+func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
+	log := logger.NewLogger("", true, c.Debug)
 
-	dir := config.Dir
+	dir := c.Dir
 	if dir == "" {
 		dir, _ = fs.GetHomeDir()
 		dir = dir + "/abstruse"
 	}
 
+	if c.CertFile == "" || c.KeyFile == "" {
+		cfg := config.ReadAndParseConfig(dir + "/config.json")
+		c.CertFile = cfg.Security.Cert
+		c.KeyFile = cfg.Security.CertKey
+	}
+
 	return &Abstruse{
-		config:  config,
+		config:  c,
 		router:  NewRouter(),
 		server:  &http.Server{},
 		logger:  log,
@@ -82,7 +88,7 @@ func (a *Abstruse) Run() error {
 		}()
 	}
 
-	if a.config.HTTPSAddress != "" {
+	if a.config.HTTPSAddress != "" && a.config.CertFile != "" && a.config.KeyFile != "" {
 		go func() {
 			a.server.Addr = a.config.HTTPSAddress
 			a.server.Handler = handler

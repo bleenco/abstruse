@@ -1,0 +1,36 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="box">
+      <h2>Repositories</h2>
+      <hr />
+
+      <div class="columns is-multiline">
+        <div class="column is-12 mb10">
+          <div class="space-between align-center">
+            <span class="has-icon">
+              <span>My and public repositories.</span>
+            </span>
+            <button type="button" class="button">
+              <i class="fa fa-plus"></i>
+              <span>Import Repository</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="column is-12 mb10">
+          <div class="message is-yellow" *ngIf="!repositories?.length">
+            <p>
+              <i class="fa fa-info-circle"></i>
+              No existing repositories found.
+            </p>
+          </div>
+
+          <div class="repositories" *ngIf="repositories?.length">
+            <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

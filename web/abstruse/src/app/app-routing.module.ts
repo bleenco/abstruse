@@ -15,6 +15,11 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
+    path: 'repositories',
+    loadChildren: './repositories/repositories.module#RepositoriesModule',
+    canActivate: [AuthGuardService]
+  },
+  {
     path: 'settings',
     loadChildren: './settings/settings.module#SettingsModule',
     canActivate: [AuthGuardService]
