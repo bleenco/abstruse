@@ -21,6 +21,7 @@ type AbstruseConfig struct {
 	HTTPSAddress string
 	CertFile     string
 	KeyFile      string
+	GRPCConfig    *GRPCServerConfig
 	Dir          string
 	Debug        bool
 }
@@ -31,6 +32,7 @@ type Abstruse struct {
 	router *Router
 	server *http.Server
 	logger *logger.Logger
+	grpcserver *GRPCServer
 	dir    string
 
 	running chan error
@@ -46,16 +48,33 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		dir = dir + "/abstruse"
 	}
 
+	cfg := config.ReadAndParseConfig(dir + "/config.json")
+
 	if c.CertFile == "" || c.KeyFile == "" {
-		cfg := config.ReadAndParseConfig(dir + "/config.json")
 		c.CertFile = cfg.Security.Cert
 		c.KeyFile = cfg.Security.CertKey
 	}
+
+	if c.GRPCConfig.Port == 0 {
+		c.GRPCConfig.Port = cfg.GRPC.Port
+	}
+
+	if c.GRPCConfig.Cert == "" || c.GRPCConfig.CertKey == "" {
+		c.GRPCConfig.Cert = cfg.GRPC.Cert
+		c.GRPCConfig.CertKey = cfg.GRPC.CertKey
+	}
+
+	gRPCServer, err := NewGRPCServer(c.GRPCConfig, log)
+	if err != nil {
+		return nil, err
+	}
+	gRPCServer.logger = log
 
 	return &Abstruse{
 		config:  c,
 		router:  NewRouter(),
 		server:  &http.Server{},
+		grpcserver: gRPCServer,
 		logger:  log,
 		dir:     dir,
 		running: make(chan error, 1),
@@ -97,6 +116,16 @@ func (a *Abstruse) Run() error {
 			a.logger.Infof("https listening on %s", a.config.HTTPSAddress)
 			log.Fatal(a.server.ListenAndServeTLS(a.config.CertFile, a.config.KeyFile))
 		}()
+	}
+
+	if a.config.GRPCConfig.Cert != "" && a.config.GRPCConfig.CertKey != "" {
+		go func() {
+			if err := a.grpcserver.Listen(); err != nil {
+				log.Fatal(err)
+			}
+		}()
+	} else {
+		log.Fatal("gRPC server cannot work without certificate and key path specified. exiting...")
 	}
 
 	return a.wait()

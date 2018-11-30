@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package abstruse.api.v1;
+
+service ApiService {
+  rpc Upload(stream Chunk) returns (TransferStatus) {}
+}
+
+message Chunk {
+  bytes Content = 1;
+}
+
+message TransferStatus {
+  string Message = 1;
+  TransferStatusCode Code = 2;
+}
+
+enum TransferStatusCode {
+  Unknown = 0;
+  Ok = 1;
+  Failed = 2;
+}

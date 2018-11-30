@@ -2,3 +2,4 @@ build/
 statik/
 dist/
 .DS_Store
+proto/abstruse.pb.go

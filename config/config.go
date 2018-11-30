@@ -14,6 +14,7 @@ var Configuration Config
 type Config struct {
 	Database Database `json:"database"`
 	Security Security `json:"security"`
+	GRPC     GRPC     `json:"grpc"`
 }
 
 // Database holds data for db configuration
@@ -33,6 +34,13 @@ type Security struct {
 	JWTSecret string `json:"jwt_secret"`
 	Cert      string `json:"cert"`
 	CertKey   string `json:"cert_key"`
+}
+
+// GRPC defines configuration for gRPC server.
+type GRPC struct {
+	Port    int    `json:"port"`
+	Cert    string `json:"cert"`
+	CertKey string `json:"cert_key"`
 }
 
 // ReadAndParseConfig reads and parses configuration from JSON file
@@ -70,6 +78,11 @@ func WriteDefaultConfig(configPath string) error {
 			JWTSecret: "defaultSecret",
 			Cert:      "",
 			CertKey:   "",
+		},
+		GRPC: GRPC{
+			Port:    3330,
+			Cert:    "",
+			CertKey: "",
 		},
 	}
 
