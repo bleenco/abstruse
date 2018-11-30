@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { IntegrationService } from '../shared/integration.service';
 
 @Component({
@@ -9,13 +9,10 @@ import { IntegrationService } from '../shared/integration.service';
 export class SettingsIntegrationRepoItemComponent implements OnInit {
   @Input() repo: any;
   @Input() provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs' | 'gitea';
-  @Output() imported: EventEmitter<void>;
 
   processing: boolean;
 
-  constructor(public integration: IntegrationService) {
-    this.imported = new EventEmitter<void>();
-  }
+  constructor(public integration: IntegrationService) { }
 
   ngOnInit() { }
 
@@ -27,10 +24,12 @@ export class SettingsIntegrationRepoItemComponent implements OnInit {
     this.integration.importRepository(this.provider, this.repo)
       .subscribe(resp => {
         if (resp && resp.data) {
-          this.imported.emit();
+          this.repo.is_imported = true;
         }
       }, err => {
         console.error(err);
+      }, () => {
+        this.processing = false;
       });
   }
 }

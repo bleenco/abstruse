@@ -59,14 +59,12 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     });
   }
 
-  fetchRepos(loader = true): void {
-    if (loader) {
-      this.fetchingRepositories = true;
-    }
+  fetchRepos(): void {
+    this.fetchingRepositories = true;
     this.integration.fetchIntegrationRepos(this.integrationID).subscribe(resp => {
       if (resp && resp.data) {
         this.repositories = resp.data;
-        this.fetchDBRepositories(loader);
+        this.fetchDBRepositories();
       }
     }, err => {
       console.error(err);
@@ -75,10 +73,8 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     });
   }
 
-  fetchDBRepositories(loader = true): void {
-    if (loader) {
-      this.fetchingRepositories = true;
-    }
+  fetchDBRepositories(): void {
+    this.fetchingRepositories = true;
     this.integration.fetchRepositories().subscribe(resp => {
       if (resp && resp.data) {
         const dbrepos = resp.data;
@@ -101,9 +97,5 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
     }, () => {
       this.fetchingRepositories = false;
     });
-  }
-
-  repoImported(): void {
-    this.fetchRepos(false);
   }
 }
