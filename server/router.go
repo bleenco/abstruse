@@ -5,11 +5,11 @@ import (
 
 	"github.com/bleenco/abstruse/api"
 	"github.com/bleenco/abstruse/api/repos"
+	"github.com/bleenco/abstruse/api/user"
+	"github.com/bleenco/abstruse/api/setup"
 	"github.com/bleenco/abstruse/api/integration"
 	"github.com/bleenco/abstruse/api/providers/github"
 	"github.com/bleenco/abstruse/fs"
-	"github.com/bleenco/abstruse/setup"
-	"github.com/bleenco/abstruse/user"
 	"github.com/julienschmidt/httprouter"
 )
 
