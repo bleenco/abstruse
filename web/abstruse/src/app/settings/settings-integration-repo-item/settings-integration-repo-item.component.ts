@@ -8,7 +8,7 @@ import { IntegrationService } from '../shared/integration.service';
 })
 export class SettingsIntegrationRepoItemComponent implements OnInit {
   @Input() repo: any;
-  @Input() provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs' | 'gitea';
+  @Input() i: any;
 
   processing: boolean;
 
@@ -21,7 +21,7 @@ export class SettingsIntegrationRepoItemComponent implements OnInit {
     e.stopPropagation();
 
     this.processing = true;
-    this.integration.importRepository(this.provider, this.repo)
+    this.integration.importRepository(this.i.provider, this.repo, this.i.id)
       .subscribe(resp => {
         if (resp && resp.data) {
           this.repo.is_imported = true;

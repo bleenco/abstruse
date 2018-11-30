@@ -49,10 +49,10 @@ export class IntegrationService {
     return this.http.post<JSONResponse>(url, data);
   }
 
-  importRepository(provider: string, data: any): Observable<JSONResponse> {
+  importRepository(provider: string, data: any, integrationID: number): Observable<JSONResponse> {
     let url;
     switch (provider) {
-      case 'github': url = getAPIURL() + `/integrations/github/import`; break;
+      case 'github': url = getAPIURL() + `/integrations/github/import/${integrationID}`; break;
     }
 
     return this.http.post<JSONResponse>(url, data);

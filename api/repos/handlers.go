@@ -25,6 +25,9 @@ func FetchRepositoriesHandler(res http.ResponseWriter, req *http.Request, ps htt
 		return
 	}
 
+	// hooks, _ := github.ListHooks(1, userID, 1)
+	// fmt.Printf("%+v\n", hooks)
+
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: repos})
 }
 

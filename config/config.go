@@ -29,6 +29,7 @@ type Database struct {
 
 // Security defines data for security such as jwt tokens.
 type Security struct {
+	Secret    string `json:"secret"`
 	JWTSecret string `json:"jwt_secret"`
 	Cert      string `json:"cert"`
 	CertKey   string `json:"cert_key"`
@@ -65,6 +66,7 @@ func WriteDefaultConfig(configPath string) error {
 			Charset:  "utf8",
 		},
 		Security: Security{
+			Secret:    "defaultWebhooksSecret",
 			JWTSecret: "defaultSecret",
 			Cert:      "",
 			CertKey:   "",

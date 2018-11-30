@@ -14,7 +14,7 @@
                 <i class="fas fa-hammer"></i>
                 <span>Trigger Build</span>
               </button>
-              <button type="button" class="button">
+              <button type="button" class="button" (click)="repos.openConfigurationDialog()">
                 <i class="far fa-file-alt"></i>
                 <span>Check Configuration</span>
               </button>
@@ -38,3 +38,5 @@
     </div>
   </div>
 </div>
+
+<app-repositories-configuration-dialog *ngIf="repos.configurationDialogOpened" [repo]="repo"></app-repositories-configuration-dialog>

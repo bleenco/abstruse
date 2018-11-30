@@ -7,6 +7,8 @@ import { SharedModule } from '../shared/modules/shared.module';
 import { RepositoriesListComponent } from './repositories-list/repositories-list.component';
 import { RepositoriesListItemComponent } from './repositories-list-item/repositories-list-item.component';
 import { RepositoriesDetailsComponent } from './repositories-details/repositories-details.component';
+import { RepositoriesConfigurationDialogComponent } from './repositories-configuration-dialog/repositories-configuration-dialog.component';
+import { RepositoriesHookItemComponent } from './repositories-hook-item/repositories-hook-item.component';
 
 @NgModule({
   imports: [
@@ -17,7 +19,9 @@ import { RepositoriesDetailsComponent } from './repositories-details/repositorie
   declarations: [
     RepositoriesListComponent,
     RepositoriesListItemComponent,
-    RepositoriesDetailsComponent
+    RepositoriesDetailsComponent,
+    RepositoriesConfigurationDialogComponent,
+    RepositoriesHookItemComponent
   ],
   providers: [ReposService]
 })

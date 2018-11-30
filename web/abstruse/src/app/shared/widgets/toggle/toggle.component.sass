@@ -1,0 +1,34 @@
+@import 'colours'
+
+$toggle-background: #DFE1E5
+$toggle-enabled-background: $green
+
+\:host
+  width: 38px
+  height: 20px
+
+.toggle-button
+  width: 38px
+  height: 20px
+  background: $toggle-background
+  border-radius: 83px
+  position: relative
+  cursor: pointer
+  transition: background 300ms ease
+  display: inline-block
+
+  &.enabled
+    background: $toggle-enabled-background
+
+    .toggle-circle
+      left: 20px
+
+  .toggle-circle
+    border-radius: 83px
+    width: 16px
+    height: 16px
+    position: absolute
+    top: 2px
+    left: 2px
+    background: $white
+    transition: all 200ms ease

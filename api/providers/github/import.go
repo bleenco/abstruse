@@ -3,6 +3,7 @@ package github
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/bleenco/abstruse/api"
 	"github.com/bleenco/abstruse/db"
@@ -13,6 +14,7 @@ import (
 
 // ImportRepositoryHandler => /apis/integrations/:id
 func ImportRepositoryHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	integrationID, _ := strconv.Atoi(ps.ByName("id"))
 	token := req.Header.Get("Authorization")
 	var form github.Repository
 
@@ -45,6 +47,7 @@ func ImportRepositoryHandler(res http.ResponseWriter, req *http.Request, ps http
 		Fork:          form.GetFork(),
 		Size:          form.GetSize(),
 		UserID:        uint(userID),
+		IntegrationID: uint(integrationID),
 	}
 
 	if err := repo.Create(); err != nil {

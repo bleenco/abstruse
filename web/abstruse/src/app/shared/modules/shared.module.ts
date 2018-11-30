@@ -15,6 +15,7 @@ import { AvatarPickerComponent } from '../widgets/avatar-picker/avatar-picker.co
 import { TerminalComponent } from '../widgets/terminal/terminal.component';
 import { EditorComponent } from '../widgets/editor/editor.component';
 import { ConfirmDialogComponent } from '../widgets/confirm-dialog/confirm-dialog.component';
+import { ToggleComponent } from '../widgets/toggle/toggle.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
@@ -39,7 +40,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     EqualValidatorDirective,
     ToTimePipe,
     HumanizeBytesPipe,
-    StopPropagationDirective
+    StopPropagationDirective,
+    ToggleComponent
   ],
   exports: [
     CommonModule,
@@ -55,7 +57,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     EqualValidatorDirective,
     ToTimePipe,
     HumanizeBytesPipe,
-    StopPropagationDirective
+    StopPropagationDirective,
+    ToggleComponent
   ]
 })
 export class SharedModule {

@@ -1,5 +1,5 @@
 .dialog-overlay
-  background: rgba($background, 1)
+  background: rgba($background, .95)
   position: fixed
   z-index: 200
   top: 0
@@ -10,13 +10,14 @@
   height: 100%
   display: flex
   justify-content: center
-  align-items: center
 
   .dialog-container
+    position: absolute
     background: $background
     width: 550px
     border-radius: 4px
     box-shadow: 0 2px 3px rgba(0,16,44,.05), 0 1px 5px rgba(0,16,44,.2)
+    margin-top: 75px
 
     &.is-wide
       width: 850px

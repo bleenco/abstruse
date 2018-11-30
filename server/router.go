@@ -35,9 +35,11 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/integrations/:id/update", api.AuthorizationMiddleware(integration.UpdateGitHubIntegration))
 	r.Router.GET("/api/integrations/:id/repos", api.AuthorizationMiddleware(integration.FetchIntegrationRepositoriesHandler))
 	r.Router.POST("/api/integrations/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
-	r.Router.POST("/api/integrations/github/import", api.AuthorizationMiddleware(github.ImportRepositoryHandler))
+	r.Router.POST("/api/integrations/github/import/:id", api.AuthorizationMiddleware(github.ImportRepositoryHandler))
 	r.Router.GET("/api/repositories", api.AuthorizationMiddleware(repos.FetchRepositoriesHandler))
 	r.Router.GET("/api/repositories/:id", api.AuthorizationMiddleware(repos.FetchRepositoryHandler))
+	r.Router.GET("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.ListHooksHandler))
+	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
 }
 
 func (r *Router) initUI() {

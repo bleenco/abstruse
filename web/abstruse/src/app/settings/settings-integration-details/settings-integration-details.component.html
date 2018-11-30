@@ -58,7 +58,7 @@
 
         <div class="column is-12" *ngIf="!fetchingRepositories">
           <div class="repositories-list" *ngIf="!fetchingRepositories">
-            <app-settings-integration-repo-item [repo]="repo" [provider]="i?.provider" *ngFor="let repo of repositories"></app-settings-integration-repo-item>
+            <app-settings-integration-repo-item [repo]="repo" [i]="i" *ngFor="let repo of repositories"></app-settings-integration-repo-item>
           </div>
         </div>
 

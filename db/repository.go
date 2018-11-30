@@ -23,6 +23,9 @@ type Repository struct {
 
 	User   User `json:"-"`
 	UserID uint `json:"-"`
+
+	Integration   Integration `json:"-"`
+	IntegrationID uint        `json:"-"`
 }
 
 // TableName method.
@@ -40,7 +43,7 @@ func (r *Repository) Create() error {
 
 // Find method.
 func (r *Repository) Find(id int) error {
-	return DB.Find(r).Error
+	return DB.Find(r, id).Error
 }
 
 // FindRepositories method.
