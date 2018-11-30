@@ -50,10 +50,11 @@
 
       <div class="columns is-multiline" *ngIf="provider === 'github'">
         <div class="column is-12">
-          <div class="message is-blue mb10">
+          <h2>GitHub Integration</h2>
+          <div class="message">
             <p>
               <i class="fab fa-github"></i>
-              <span>Enter your GitHub access token or credentials.</span>
+              <span>Enter your GitHub access token or username and password.</span>
             </p>
           </div>
         </div>
@@ -67,26 +68,22 @@
                 <span>If you are not using self-hosted or enterprise version leave this as predefined.</span>
               </div>
             </div>
+            <div class="field is-grouped">
+              <div class="control">
+                <label class="label">GitHub Username</label>
+                <input type="text" class="input" placeholder="GitHub Username" [(ngModel)]="githubProviderForm.username"
+                  name="username" #username [disabled]="accessToken.value !== ''">
+              </div>
+              <div class="control">
+                <label class="label">GitHub Password</label>
+                <input type="password" class="input" placeholder="GitHub Password" [(ngModel)]="githubProviderForm.password"
+                  name="password" #password [disabled]="accessToken.value !== ''">
+              </div>
+            </div>
             <div class="field">
               <label class="label">Access Token</label>
               <input type="password" class="input" placeholder="Access Token" [(ngModel)]="githubProviderForm.access_token"
-                name="access_token" #accessToken>
-              <div class="input-info">
-                <span>When access token is entered, credentials below are not needed.</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">GitHub Username</label>
-              <input type="text" class="input" placeholder="GitHub Username" [(ngModel)]="githubProviderForm.username"
-                name="username" #username>
-              <div class="input-info">
-                <span>When using username and password credentials you don't have to enter access token.</span>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">GitHub Password</label>
-              <input type="password" class="input" placeholder="GitHub Password" [(ngModel)]="githubProviderForm.password"
-                name="password" #password>
+                name="access_token" #accessToken [disabled]="username.value !== '' || password.value !== ''">
             </div>
             <div class="justify-end mt10">
               <button type="submit" class="button" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">

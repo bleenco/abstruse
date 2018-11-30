@@ -4,15 +4,19 @@ $list-item-height: 70px
   width: 100%
   height: $list-item-height
   outline: none
-  border-bottom: 1px solid $border-primary
+  border-bottom: 1px solid $border-default
 
   &.is-bordered
-    border: 1px solid $border-primary
-    margin-bottom: 7px
+    border: 1px solid $border-default
+    margin-bottom: 10px
+    border-radius: 4px
+    padding-left: 10px
+    padding-right: 10px
 
   &:hover:not(.no-hover-effect)
     cursor: pointer
     background: $background-light
+    border-color: $border-primary
 
   .columns
     display: flex
@@ -33,7 +37,6 @@ $list-item-height: 70px
 
       .data-text
         font-size: 13px
-        color: $text-secondary
         font-family: $font-family-medium
 
         i, img
