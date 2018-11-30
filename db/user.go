@@ -17,7 +17,7 @@ type User struct {
 	Email    string `gorm:"not null;varchar(255);unique_index" json:"email"`
 	Password string `gorm:"not null;varchar(255);column:password" json:"-"`
 	Fullname string `gorm:"not null;varchar(255)" json:"fullname"`
-	Avatar   string `gorm:"not null;varchar(255);default:'/assets/avatars/avatar_1.svg'" json:"avatar"`
+	Avatar   string `gorm:"not null;varchar(255);default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"avatar"`
 
 	Repositories []Repository `json:"repositories"`
 }
@@ -58,9 +58,10 @@ func (u *User) CheckPassword(password string) bool {
 // GenerateJWT returns JSON Web Token.
 func (u *User) GenerateJWT() (string, error) {
 	su := security.UserJWT{
-		ID:     strconv.Itoa(int(u.ID)),
-		Email:  u.Email,
-		Avatar: u.Avatar,
+		ID:       strconv.Itoa(int(u.ID)),
+		Email:    u.Email,
+		Fullname: u.Fullname,
+		Avatar:   u.Avatar,
 	}
 	return security.GenerateJWT(su)
 }

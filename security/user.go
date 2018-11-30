@@ -16,9 +16,10 @@ var (
 
 // UserJWT defines structure for generating JWT based on user.
 type UserJWT struct {
-	ID     string `json:"id"`
-	Email  string `json:"email"`
-	Avatar string `json:"avatar"`
+	ID       string `json:"id"`
+	Email    string `json:"email"`
+	Fullname string `json:"fullname"`
+	Avatar   string `json:"avatar"`
 }
 
 // InitSecurity initializes security tokens with values from config file.
@@ -41,9 +42,10 @@ func CheckPasswordHash(password, hash string) bool {
 // GenerateJWT generates JSON Web Token
 func GenerateJWT(user UserJWT) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":     user.ID,
-		"email":  user.Email,
-		"avatar": user.Avatar,
+		"id":       user.ID,
+		"email":    user.Email,
+		"fullname": user.Fullname,
+		"avatar":   user.Avatar,
 	})
 
 	return token.SignedString(jwtSecret)

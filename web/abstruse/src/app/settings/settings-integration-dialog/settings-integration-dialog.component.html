@@ -86,8 +86,8 @@
                 name="access_token" #accessToken [disabled]="username.value !== '' || password.value !== ''">
             </div>
             <div class="justify-end mt10">
-              <button type="submit" class="button" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">
-                <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+              <button type="submit" class="button is-green" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">
+                <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="loading">
                 <span *ngIf="!loading">Add Integration</span>
               </button>
             </div>
