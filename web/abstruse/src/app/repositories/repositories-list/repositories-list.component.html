@@ -26,7 +26,7 @@
           </div>
 
           <div class="repositories" *ngIf="repositories?.length">
-            <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
+            <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories" [routerLink]="['/repositories', repo.id]" routerLinkActive="router-link-active" ></app-repositories-list-item>
           </div>
         </div>
       </div>

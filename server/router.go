@@ -37,6 +37,7 @@ func (r *Router) initAPI() {
 	r.Router.POST("/api/integrations/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
 	r.Router.POST("/api/integrations/github/import", api.AuthorizationMiddleware(github.ImportRepositoryHandler))
 	r.Router.GET("/api/repositories", api.AuthorizationMiddleware(repos.FetchRepositoriesHandler))
+	r.Router.GET("/api/repositories/:id", api.AuthorizationMiddleware(repos.FetchRepositoryHandler))
 }
 
 func (r *Router) initUI() {

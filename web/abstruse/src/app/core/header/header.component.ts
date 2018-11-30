@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, HostListener, OnDestroy } from '@angular/core';
 import { AuthService } from '../../shared/providers/auth.service';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.dropdownOpened = false;
     this.sub = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
+      if (event instanceof NavigationStart) {
         this.dropdownOpened = false;
       }
     });

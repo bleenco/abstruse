@@ -6,6 +6,7 @@ import { ReposService } from './shared/repos.service';
 import { SharedModule } from '../shared/modules/shared.module';
 import { RepositoriesListComponent } from './repositories-list/repositories-list.component';
 import { RepositoriesListItemComponent } from './repositories-list-item/repositories-list-item.component';
+import { RepositoriesDetailsComponent } from './repositories-details/repositories-details.component';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { RepositoriesListItemComponent } from './repositories-list-item/reposito
   ],
   declarations: [
     RepositoriesListComponent,
-    RepositoriesListItemComponent
+    RepositoriesListItemComponent,
+    RepositoriesDetailsComponent
   ],
   providers: [ReposService]
 })

@@ -38,6 +38,11 @@ func (r *Repository) Create() error {
 	return DB.Create(r).Error
 }
 
+// Find method.
+func (r *Repository) Find(id int) error {
+	return DB.Find(r).Error
+}
+
 // FindRepositories method.
 func FindRepositories(userID int) ([]Repository, error) {
 	var repos []Repository

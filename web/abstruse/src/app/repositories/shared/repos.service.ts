@@ -17,4 +17,9 @@ export class ReposService {
     const url = getAPIURL() + `/repositories`;
     return this.http.get<JSONResponse>(url);
   }
+
+  fetchRepository(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/repositories/${id}`;
+    return this.http.get<JSONResponse>(url);
+  }
 }
