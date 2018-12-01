@@ -1,11 +1,15 @@
 package server
 
 import (
+	"github.com/bleenco/abstruse/security"
+	"context"
 	"crypto/tls"
+	"fmt"
 	"io"
 	"net"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
@@ -13,6 +17,13 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
+)
+
+type contextKey int
+
+const (
+	workerIdentifierKey contextKey = iota
 )
 
 // GRPCServer defines gRPC server.
@@ -72,6 +83,8 @@ func (s *GRPCServer) Listen() error {
 		InsecureSkipVerify: true,
 	})
 	grpcOpts = append(grpcOpts, grpc.Creds(creds))
+	grpcOpts = append(grpcOpts, grpc.UnaryInterceptor(unaryInterceptor))
+	grpcOpts = append(grpcOpts, grpc.StreamInterceptor(streamInterceptor))
 
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterApiServiceServer(s.server, s)
@@ -153,9 +166,53 @@ func (s *GRPCServer) Close() {
 	}
 }
 
-// func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-// 	s, ok := info.Server.(*server)
-// 	if !ok {
-// 		return nil, fmt.Errorf("unable to cast server")
-// 	}
-// }
+func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	server, ok := info.Server.(*GRPCServer)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast server")
+	}
+
+	identifier, err := authenticateWorker(ctx, server)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx = context.WithValue(ctx, workerIdentifierKey, identifier)
+
+	return handler(ctx, req)
+}
+
+func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	ctx := stream.Context()
+	server, ok := srv.(*GRPCServer)
+	if !ok {
+		return fmt.Errorf("unable to cast server")
+	}
+
+	_, err := authenticateWorker(ctx, server)
+	if err != nil {
+		return err
+	}
+
+	return handler(srv, stream)
+}
+
+func authenticateWorker(ctx context.Context, s *GRPCServer) (string, error) {
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		identifier := strings.Join(md["identifier"], "")
+		jwt := strings.Join(md["jwt"], "")
+
+		calcID, err := security.GetWorkerIdentifierByJWT(jwt)
+		if err != nil {
+			return "", fmt.Errorf("invalid credentials")
+		}
+
+		if calcID == identifier {
+			return identifier, nil
+		}
+
+		return "", fmt.Errorf("invalid credentials")
+	}
+
+	return "", fmt.Errorf("missing credentials")
+}

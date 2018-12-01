@@ -50,6 +50,7 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	}
 
 	cfg := config.ReadAndParseConfig(path.Join(dir, "config.json"))
+	security.InitSecurity(cfg.Security)
 
 	if c.CertFile == "" || c.KeyFile == "" {
 		c.CertFile = cfg.Security.Cert
