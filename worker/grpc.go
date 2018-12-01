@@ -64,17 +64,44 @@ func NewGRPCClient(cfg *GRPCClientConfig, logger *logger.Logger) (*GRPCClient, e
 	}, nil
 }
 
+// Run starts worker gRPC client.
+func (c *GRPCClient) Run() error {
+	if err := c.StreamOnlineStatus(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// StreamOnlineStatus streams status about worker to server.
+func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
+	stream, err := c.client.OnlineCheck(ctx)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+
+	for {
+		status := &pb.OnlineStatus{Code: pb.OnlineStatus_Up}
+		if err := stream.Send(status); err != nil {
+			return err
+		}
+
+		time.Sleep(5 * time.Second)
+	}
+}
+
 // UploadFile uploads file to server.
 func (c *GRPCClient) UploadFile(ctx context.Context, f string) (*UploadStats, error) {
 	file, err := os.Open(f)
 	if err != nil {
-		return nil, errors.New("failed to open file " + f + ", error: " + err.Error())
+		return nil, err
 	}
 	defer file.Close()
 
 	stream, err := c.client.Upload(ctx)
 	if err != nil {
-		return nil, errors.New("failed to initialize upload stream for file " + f + ", error: " + err.Error())
+		return nil, err
 	}
 	defer stream.CloseSend()
 
@@ -91,13 +118,13 @@ func (c *GRPCClient) UploadFile(ctx context.Context, f string) (*UploadStats, er
 				break
 			}
 
-			return nil, errors.New("errored while copying from file to buffer")
+			return nil, err
 		}
 
 		if err := stream.Send(&pb.Chunk{
 			Content: buf[:n],
 		}); err != nil {
-			return nil, errors.New("failed to send chunk via stream, error: " + err.Error())
+			return nil, err
 		}
 		stats.BytesSent += int64(n)
 	}
@@ -106,11 +133,11 @@ func (c *GRPCClient) UploadFile(ctx context.Context, f string) (*UploadStats, er
 
 	status, err := stream.CloseAndRecv()
 	if err != nil {
-		return nil, errors.New("failed to receive status response from server, error: " + err.Error())
+		return nil, err
 	}
 
 	if status.Code != pb.TransferStatusCode_Ok {
-		return nil, errors.New("upload failed - msg: " + status.Message)
+		return nil, err
 	}
 
 	return stats, nil

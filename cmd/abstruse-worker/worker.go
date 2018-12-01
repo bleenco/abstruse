@@ -1,13 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/worker"
-	humanize "github.com/dustin/go-humanize"
 )
 
 func main() {
@@ -41,13 +39,17 @@ func main() {
 	}
 	defer client.Close()
 
-	file := "/Users/jan/Documents/abstruse.sqlite"
-	stat, err := client.UploadFile(context.Background(), file)
-	if err != nil {
-		fatal(err)
+	if err := client.Run(); err != nil {
+		os.Exit(1)
 	}
 
-	fmt.Printf("%s\n", humanize.Bytes(uint64(stat.BytesSent)))
+	// file := "/Users/jan/Documents/abstruse.sqlite"
+	// stat, err := client.UploadFile(context.Background(), file)
+	// if err != nil {
+	// 	fatal(err)
+	// }
+
+	// fmt.Printf("%s\n", humanize.Bytes(uint64(stat.BytesSent)))
 
 	os.Exit(0)
 }

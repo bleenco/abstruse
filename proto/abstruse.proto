@@ -2,8 +2,20 @@ syntax = "proto3";
 
 package abstruse.api.v1;
 
+import "google/protobuf/empty.proto";
+
 service ApiService {
   rpc Upload(stream Chunk) returns (TransferStatus) {}
+  rpc OnlineCheck(stream OnlineStatus) returns (google.protobuf.Empty) {}
+}
+
+message OnlineStatus {
+  enum OnlineStatusCode {
+    Unknown = 0;
+    Up = 1;
+    Down = 2;
+  }
+  OnlineStatusCode Code = 1;
 }
 
 message Chunk {

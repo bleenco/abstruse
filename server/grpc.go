@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -70,6 +72,26 @@ func (s *GRPCServer) Listen() error {
 	return s.server.Serve(listener)
 }
 
+// OnlineCheck gRPC channel.
+func (s *GRPCServer) OnlineCheck(stream pb.ApiService_OnlineCheckServer) error {
+	for {
+		status, err := stream.Recv()
+		if err != nil {
+			goto end
+		}
+
+		fmt.Printf("%+v\n", status)
+	}
+
+end:
+	fmt.Printf("worker disconnected\n")
+	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Upload gRPC channel
 func (s *GRPCServer) Upload(stream pb.ApiService_UploadServer) error {
 	file, err := os.Create("/Users/jan/Desktop/test-file")
@@ -111,3 +133,10 @@ func (s *GRPCServer) Close() {
 		s.server.Stop()
 	}
 }
+
+// func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// 	s, ok := info.Server.(*server)
+// 	if !ok {
+// 		return nil, fmt.Errorf("unable to cast server")
+// 	}
+// }

@@ -1,6 +1,7 @@
 module github.com/bleenco/abstruse
 
 require (
+	github.com/calmh/luhn v2.0.0+incompatible
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.6.2+incompatible // indirect
