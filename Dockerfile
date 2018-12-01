@@ -32,4 +32,4 @@ COPY --from=build /app/build/abstruse /usr/bin/abstruse
 
 ENTRYPOINT [ "/usr/bin/abstruse" ]
 
-EXPOSE 80 443
+EXPOSE 80 443 3330
