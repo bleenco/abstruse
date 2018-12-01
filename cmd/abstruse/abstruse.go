@@ -14,6 +14,7 @@ var (
 	certFile  = flag.String("cert", "", "path to cert file")
 	keyFile   = flag.String("certkey", "", "path to cert key file")
 	grpcPort  = flag.Int("grpc-port", 3330, "gRPC server port")
+	debug     = flag.Bool("debug", true, "debug mode")
 )
 
 func main() {
@@ -24,6 +25,7 @@ func main() {
 		HTTPSAddress: *httpsAddr,
 		CertFile:     *certFile,
 		KeyFile:      *keyFile,
+		Debug:        *debug,
 		GRPCConfig: &server.GRPCServerConfig{
 			Port: *grpcPort,
 		},

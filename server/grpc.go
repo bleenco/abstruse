@@ -2,7 +2,6 @@ package server
 
 import (
 	"crypto/tls"
-	"fmt"
 	"io"
 	"net"
 	"os"
@@ -18,11 +17,12 @@ import (
 
 // GRPCServer defines gRPC server.
 type GRPCServer struct {
-	logger  *logger.Logger
-	server  *grpc.Server
-	port    int
-	cert    string
-	certkey string
+	logger   *logger.Logger
+	server   *grpc.Server
+	registry *WorkerRegistry
+	port     int
+	cert     string
+	certkey  string
 }
 
 // GRPCServerConfig defines configuration for gRPC server.
@@ -39,10 +39,11 @@ func NewGRPCServer(cfg *GRPCServerConfig, logger *logger.Logger) (*GRPCServer, e
 	}
 
 	server := &GRPCServer{
-		port:    cfg.Port,
-		cert:    cfg.Cert,
-		certkey: cfg.CertKey,
-		logger:  logger,
+		port:     cfg.Port,
+		cert:     cfg.Cert,
+		certkey:  cfg.CertKey,
+		logger:   logger,
+		registry: NewWorkerRegistry(logger),
 	}
 
 	return server, nil
@@ -82,17 +83,27 @@ func (s *GRPCServer) Listen() error {
 
 // OnlineCheck gRPC channel.
 func (s *GRPCServer) OnlineCheck(stream pb.ApiService_OnlineCheckServer) error {
+	var identifier string
+
 	for {
 		status, err := stream.Recv()
 		if err != nil {
 			goto end
 		}
 
-		fmt.Printf("%+v\n", status)
+		identifier = status.Identifier
+		if status.Code == pb.OnlineStatus_Up {
+			if !s.registry.IsSubscribed(identifier) {
+				s.registry.Subscribe(identifier)
+			}
+		}
 	}
 
 end:
-	fmt.Printf("worker disconnected\n")
+	if s.registry.IsSubscribed(identifier) {
+		s.registry.Unsubscribe(identifier)
+	}
+
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
 	}

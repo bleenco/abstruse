@@ -63,7 +63,7 @@ func GetUserIDFromJWT(tokenString string) (int, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(config.Configuration.Security.JWTSecret), nil
+		return jwtSecret, nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
@@ -72,4 +72,30 @@ func GetUserIDFromJWT(tokenString string) (int, error) {
 	}
 
 	return userID, nil
+}
+
+// GetWorkerIdentifierByJWT return workers identifier by token string.
+func GetWorkerIdentifierByJWT(token string) (string, error) {
+	var identifier string
+
+	if token == "" {
+		return identifier, errors.New("invalid token")
+	}
+
+	t, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
+		}
+
+		return jwtSecret, nil
+	})
+	if err != nil {
+		return identifier, err
+	}
+
+	if claims, ok := t.Claims.(jwt.MapClaims); ok {
+		identifier = claims["identifier"].(string)
+	}
+
+	return identifier, nil
 }

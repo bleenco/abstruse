@@ -24,7 +24,7 @@ type GRPCClient struct {
 }
 
 // NewGRPCClient returns new instance of GRPCClient.
-func NewGRPCClient(identifier id.ID, address, cert, key string, logger *logger.Logger) (*GRPCClient, error) {
+func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *logger.Logger) (*GRPCClient, error) {
 	if address == "" {
 		return nil, errors.New("grpc address endpoint must be specified")
 	}
@@ -45,7 +45,13 @@ func NewGRPCClient(identifier id.ID, address, cert, key string, logger *logger.L
 		InsecureSkipVerify: true,
 	})
 
+	auth := &Authentication{
+		Identifier: identifier.String(),
+		JWT:        jwt,
+	}
+
 	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(creds))
+	grpcOpts = append(grpcOpts, grpc.WithPerRPCCredentials(auth))
 
 	conn, err := grpc.Dial(address, grpcOpts...)
 	if err != nil {

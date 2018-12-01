@@ -12,8 +12,9 @@ import (
 
 // Worker defines worker instance.
 type Worker struct {
-	Identifier id.ID
 	Client     *GRPCClient
+	Identifier id.ID
+	JWT        string
 
 	ConfigDir string
 	Config    *Config
@@ -50,13 +51,19 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 	}
 	identifier := id.New(certificate.Certificate[0])
 
-	gRPCClient, err := NewGRPCClient(identifier, config.ServerAddress, cert, key, logger)
+	jwt, err := GenerateWorkerJWT(identifier, config.ServerSecret)
+	if err != nil {
+		return nil, err
+	}
+
+	gRPCClient, err := NewGRPCClient(identifier, jwt, config.ServerAddress, cert, key, logger)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Worker{
 		Identifier: identifier,
+		JWT:        jwt,
 		Client:     gRPCClient,
 		ConfigDir:  configDir,
 		Config:     config,

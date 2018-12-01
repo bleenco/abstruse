@@ -3,7 +3,6 @@ package server
 import (
 	"sync"
 
-	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
 )
 
@@ -14,7 +13,7 @@ type WorkerRegistryItem struct {
 
 // WorkerRegistry defines registry for workers.
 type WorkerRegistry struct {
-	items  map[id.ID]*WorkerRegistryItem
+	items  map[string]*WorkerRegistryItem
 	mu     sync.RWMutex
 	logger *logger.Logger
 }
@@ -22,13 +21,13 @@ type WorkerRegistry struct {
 // NewWorkerRegistry initializes and returns new instance of worker registry.
 func NewWorkerRegistry(logger *logger.Logger) *WorkerRegistry {
 	return &WorkerRegistry{
-		items:  make(map[id.ID]*WorkerRegistryItem),
+		items:  make(map[string]*WorkerRegistryItem),
 		logger: logger,
 	}
 }
 
 // Subscribe allows to connect worker with a given identifier.
-func (wr *WorkerRegistry) Subscribe(identifier id.ID) {
+func (wr *WorkerRegistry) Subscribe(identifier string) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()
 
@@ -42,7 +41,7 @@ func (wr *WorkerRegistry) Subscribe(identifier id.ID) {
 }
 
 // IsSubscribed returns true if worker is subscribed.
-func (wr *WorkerRegistry) IsSubscribed(identifier id.ID) bool {
+func (wr *WorkerRegistry) IsSubscribed(identifier string) bool {
 	wr.mu.RLock()
 	defer wr.mu.RUnlock()
 	_, ok := wr.items[identifier]
@@ -50,7 +49,7 @@ func (wr *WorkerRegistry) IsSubscribed(identifier id.ID) bool {
 }
 
 // Unsubscribe removes worker from registry
-func (wr *WorkerRegistry) Unsubscribe(identifier id.ID) {
+func (wr *WorkerRegistry) Unsubscribe(identifier string) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()
 
