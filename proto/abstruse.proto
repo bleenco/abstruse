@@ -15,7 +15,8 @@ message OnlineStatus {
     Up = 1;
     Down = 2;
   }
-  OnlineStatusCode Code = 1;
+  string Identifier = 1;
+  OnlineStatusCode Code = 2;
 }
 
 message Chunk {

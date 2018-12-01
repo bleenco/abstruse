@@ -50,7 +50,7 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 	}
 	identifier := id.New(certificate.Certificate[0])
 
-	gRPCClient, err := NewGRPCClient(config.ServerAddress, cert, key, logger)
+	gRPCClient, err := NewGRPCClient(identifier, config.ServerAddress, cert, key, logger)
 	if err != nil {
 		return nil, err
 	}

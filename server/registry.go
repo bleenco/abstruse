@@ -40,3 +40,26 @@ func (wr *WorkerRegistry) Subscribe(identifier id.ID) {
 
 	wr.items[identifier] = &WorkerRegistryItem{Online: true}
 }
+
+// IsSubscribed returns true if worker is subscribed.
+func (wr *WorkerRegistry) IsSubscribed(identifier id.ID) bool {
+	wr.mu.RLock()
+	defer wr.mu.RUnlock()
+	_, ok := wr.items[identifier]
+	return ok
+}
+
+// Unsubscribe removes worker from registry
+func (wr *WorkerRegistry) Unsubscribe(identifier id.ID) {
+	wr.mu.Lock()
+	defer wr.mu.Unlock()
+
+	_, ok := wr.items[identifier]
+	if !ok {
+		return
+	}
+
+	wr.logger.Debugf("worker %s unsubscribed\n", identifier)
+
+	delete(wr.items, identifier)
+}

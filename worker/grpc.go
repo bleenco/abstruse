@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"google.golang.org/grpc"
@@ -16,13 +17,14 @@ import (
 
 // GRPCClient represents workers gRPC client.
 type GRPCClient struct {
-	logger *logger.Logger
-	conn   *grpc.ClientConn
-	client pb.ApiServiceClient
+	identifier id.ID
+	logger     *logger.Logger
+	conn       *grpc.ClientConn
+	client     pb.ApiServiceClient
 }
 
 // NewGRPCClient returns new instance of GRPCClient.
-func NewGRPCClient(address, cert, key string, logger *logger.Logger) (*GRPCClient, error) {
+func NewGRPCClient(identifier id.ID, address, cert, key string, logger *logger.Logger) (*GRPCClient, error) {
 	if address == "" {
 		return nil, errors.New("grpc address endpoint must be specified")
 	}
@@ -53,9 +55,10 @@ func NewGRPCClient(address, cert, key string, logger *logger.Logger) (*GRPCClien
 	client := pb.NewApiServiceClient(conn)
 
 	return &GRPCClient{
-		logger: logger,
-		conn:   conn,
-		client: client,
+		identifier: identifier,
+		logger:     logger,
+		conn:       conn,
+		client:     client,
 	}, nil
 }
 
@@ -79,7 +82,10 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 	defer stream.CloseSend()
 
 	for {
-		status := &pb.OnlineStatus{Code: pb.OnlineStatus_Up}
+		status := &pb.OnlineStatus{
+			Identifier: c.identifier.String(),
+			Code:       pb.OnlineStatus_Up,
+		}
 		if err := stream.Send(status); err != nil {
 			return err
 		}
