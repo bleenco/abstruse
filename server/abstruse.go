@@ -3,15 +3,16 @@ package server
 import (
 	"log"
 	"net/http"
+	"path"
 
 	"github.com/bleenco/abstruse/db"
-	humanize "github.com/dustin/go-humanize"
-	"github.com/felixge/httpsnoop"
-
 	"github.com/bleenco/abstruse/config"
 	"github.com/bleenco/abstruse/fs"
 	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/security"
 
+	humanize "github.com/dustin/go-humanize"
+	"github.com/felixge/httpsnoop"
 	"golang.org/x/net/http2"
 )
 
@@ -45,10 +46,10 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	dir := c.Dir
 	if dir == "" {
 		dir, _ = fs.GetHomeDir()
-		dir = dir + "/abstruse"
+		dir = path.Join(dir, "abstruse")
 	}
 
-	cfg := config.ReadAndParseConfig(dir + "/config.json")
+	cfg := config.ReadAndParseConfig(path.Join(dir, "config.json"))
 
 	if c.CertFile == "" || c.KeyFile == "" {
 		c.CertFile = cfg.Security.Cert
@@ -59,10 +60,14 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		c.GRPCConfig.Port = cfg.GRPC.Port
 	}
 
-	if c.GRPCConfig.Cert == "" || c.GRPCConfig.CertKey == "" {
-		c.GRPCConfig.Cert = cfg.GRPC.Cert
-		c.GRPCConfig.CertKey = cfg.GRPC.CertKey
+	if !path.IsAbs(cfg.GRPC.Cert) && !path.IsAbs(cfg.GRPC.CertKey) {
+		cfg.GRPC.Cert = path.Join(dir, cfg.GRPC.Cert)
+		cfg.GRPC.CertKey = path.Join(dir, cfg.GRPC.CertKey)
 	}
+	security.CheckAndGenerateCert(cfg.GRPC.Cert, cfg.GRPC.CertKey)
+
+	c.GRPCConfig.Cert = cfg.GRPC.Cert
+	c.GRPCConfig.CertKey = cfg.GRPC.CertKey
 
 	gRPCServer, err := NewGRPCServer(c.GRPCConfig, log)
 	if err != nil {

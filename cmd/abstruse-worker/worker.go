@@ -9,6 +9,16 @@ import (
 )
 
 func main() {
+	logger := logger.NewLogger("", true, false)
+	w, err := worker.NewWorker(logger)
+	if err != nil {
+		fatal(err)
+	}
+
+	if err := w.Run(); err != nil {
+		fatal(err)
+	}
+
 	// url := "https://github.com/jkuri/d3-bundle.git"
 
 	// if err := git.TestClone(url); err != nil {
@@ -27,21 +37,6 @@ func main() {
 	// if err := worker.RunContainer(); err != nil {
 	// 	fatal(err)
 	// }
-
-	cfg := &worker.GRPCClientConfig{
-		Address:         "0.0.0.0:3330",
-		Compress:        false,
-		RootCertificate: "/Users/jan/Dev/certs/local.test+4.pem",
-	}
-	client, err := worker.NewGRPCClient(cfg, logger.NewLogger("", true, false))
-	if err != nil {
-		fatal(err)
-	}
-	defer client.Close()
-
-	if err := client.Run(); err != nil {
-		os.Exit(1)
-	}
 
 	// file := "/Users/jan/Documents/abstruse.sqlite"
 	// stat, err := client.UploadFile(context.Background(), file)

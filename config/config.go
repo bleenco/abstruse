@@ -81,8 +81,8 @@ func WriteDefaultConfig(configPath string) error {
 		},
 		GRPC: GRPC{
 			Port:    3330,
-			Cert:    "",
-			CertKey: "",
+			Cert:    "./grpc-cert.pem",
+			CertKey: "./grpc-key.pem",
 		},
 	}
 

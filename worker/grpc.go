@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"io"
 	"os"
@@ -11,7 +12,6 @@ import (
 	pb "github.com/bleenco/abstruse/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	_ "google.golang.org/grpc/encoding/gzip" // gzip compressor
 )
 
 // GRPCClient represents workers gRPC client.
@@ -21,38 +21,33 @@ type GRPCClient struct {
 	client pb.ApiServiceClient
 }
 
-// GRPCClientConfig defines configuration for gRPC client.
-type GRPCClientConfig struct {
-	Address         string
-	RootCertificate string
-	Compress        bool
-}
-
 // NewGRPCClient returns new instance of GRPCClient.
-func NewGRPCClient(cfg *GRPCClientConfig, logger *logger.Logger) (*GRPCClient, error) {
-	var grpcOpts = []grpc.DialOption{}
-
-	if cfg.Address == "" {
+func NewGRPCClient(address, cert, key string, logger *logger.Logger) (*GRPCClient, error) {
+	if address == "" {
 		return nil, errors.New("grpc address endpoint must be specified")
 	}
 
-	if cfg.Compress {
-		grpcOpts = append(grpcOpts, grpc.WithDefaultCallOptions(grpc.UseCompressor("gzip")))
+	if cert == "" {
+		return nil, errors.New("grpc client cert must be specified")
 	}
 
-	if cfg.RootCertificate != "" {
-		grpcCreds, err := credentials.NewClientTLSFromFile(cfg.RootCertificate, "localhost")
-		if err != nil {
-			return nil, err
-		}
-		grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(grpcCreds))
-	} else {
-		grpcOpts = append(grpcOpts, grpc.WithInsecure())
-	}
+	var grpcOpts = []grpc.DialOption{}
 
-	conn, err := grpc.Dial(cfg.Address, grpcOpts...)
+	certificate, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
-		return nil, errors.New("failed to start grpc session to address: " + cfg.Address)
+		return nil, err
+	}
+
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates:       []tls.Certificate{certificate},
+		InsecureSkipVerify: true,
+	})
+
+	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(creds))
+
+	conn, err := grpc.Dial(address, grpcOpts...)
+	if err != nil {
+		return nil, errors.New("failed to start grpc session to address: " + address)
 	}
 
 	client := pb.NewApiServiceClient(conn)
@@ -66,6 +61,8 @@ func NewGRPCClient(cfg *GRPCClientConfig, logger *logger.Logger) (*GRPCClient, e
 
 // Run starts worker gRPC client.
 func (c *GRPCClient) Run() error {
+	defer c.Close()
+
 	if err := c.StreamOnlineStatus(context.Background()); err != nil {
 		return err
 	}

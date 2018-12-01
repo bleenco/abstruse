@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"net"
@@ -51,18 +52,25 @@ func NewGRPCServer(cfg *GRPCServerConfig, logger *logger.Logger) (*GRPCServer, e
 func (s *GRPCServer) Listen() error {
 	grpcOpts := []grpc.ServerOption{}
 
+	if s.cert == "" || s.certkey == "" {
+		return errors.New("cert and key are mandatory to run grpc server")
+	}
+
+	certificate, err := tls.LoadX509KeyPair(s.cert, s.certkey)
+	if err != nil {
+		return err
+	}
+
 	listener, err := net.Listen("tcp", "0.0.0.0:"+strconv.Itoa(s.port))
 	if err != nil {
 		return err
 	}
 
-	if s.cert != "" && s.certkey != "" {
-		grpcCreds, err := credentials.NewServerTLSFromFile(s.cert, s.certkey)
-		if err != nil {
-			return err
-		}
-		grpcOpts = append(grpcOpts, grpc.Creds(grpcCreds))
-	}
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates:       []tls.Certificate{certificate},
+		InsecureSkipVerify: true,
+	})
+	grpcOpts = append(grpcOpts, grpc.Creds(creds))
 
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterApiServiceServer(s.server, s)

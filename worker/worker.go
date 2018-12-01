@@ -1,50 +1,78 @@
 package worker
 
 import (
-	"context"
-	"fmt"
-	"io"
-	"os"
+	"crypto/tls"
+	"path"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
+	"github.com/bleenco/abstruse/fs"
+	"github.com/bleenco/abstruse/id"
+	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/security"
 )
 
-// RunContainer runs container.
-func RunContainer() error {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
+// Worker defines worker instance.
+type Worker struct {
+	Identifier id.ID
+	Client     *GRPCClient
+
+	ConfigDir string
+	Config    *Config
+	Logger    *logger.Logger
+}
+
+// NewWorker returns new worker instance.
+func NewWorker(logger *logger.Logger) (*Worker, error) {
+	homeDir, err := fs.GetHomeDir()
 	if err != nil {
-		return err
+		return nil, err
+	}
+	configDir := path.Join(homeDir, "abstruse-worker")
+	configPath := path.Join(configDir, "config.json")
+
+	if !fs.Exists(configDir) {
+		if err := fs.MakeDir(configDir); err != nil {
+			return nil, err
+		}
 	}
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "test-worker",
-		Cmd:   []string{"echo", "hello world"},
-		Tty:   true,
-	}, nil, nil, "")
+	config, err := readAndParseConfig(configPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		return err
-	}
+	cert := path.Join(configDir, config.Cert)
+	key := path.Join(configDir, config.Key)
 
-	code, err := cli.ContainerWait(ctx, resp.ID)
+	security.CheckAndGenerateCert(cert, key)
+	certificate, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	identifier := id.New(certificate.Certificate[0])
 
-	fmt.Println(code)
-
-	out, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{ShowStdout: true})
+	gRPCClient, err := NewGRPCClient(config.ServerAddress, cert, key, logger)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	io.Copy(os.Stdout, out)
+	return &Worker{
+		Identifier: identifier,
+		Client:     gRPCClient,
+		ConfigDir:  configDir,
+		Config:     config,
+		Logger:     logger,
+	}, nil
+}
 
-	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: false})
+// Run starts the worker process.
+func (w *Worker) Run() error {
+	ch := make(chan error)
+
+	go func() {
+		if err := w.Client.Run(); err != nil {
+			ch <- err
+		}
+	}()
+
+	return <-ch
 }
