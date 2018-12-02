@@ -12,7 +12,7 @@ import (
 )
 
 // RunContainer runs container.
-func RunContainer() error {
+func RunContainer(name string) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -23,7 +23,7 @@ func RunContainer() error {
 		Image: "test-worker",
 		Cmd:   []string{"echo", "hello world"},
 		Tty:   true,
-	}, nil, nil, "")
+	}, nil, nil, name)
 	if err != nil {
 		return err
 	}
@@ -46,5 +46,5 @@ func RunContainer() error {
 
 	io.Copy(os.Stdout, out)
 
-	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: false})
+	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
 }

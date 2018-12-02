@@ -81,5 +81,12 @@ func (w *Worker) Run() error {
 		}
 	}()
 
+	queue := NewQueue(5)
+	go queue.Run()
+
+	for i := 0; i < 10; i++ {
+		queue.job <- i
+	}
+
 	return <-ch
 }
