@@ -10,6 +10,7 @@ import (
 	"github.com/bleenco/abstruse/api/integration"
 	"github.com/bleenco/abstruse/api/providers/github"
 	"github.com/bleenco/abstruse/fs"
+	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -21,6 +22,7 @@ type Router struct {
 // NewRouter returns new instance of main HTTP router.
 func NewRouter() *Router {
 	router := &Router{httprouter.New()}
+	router.initWebsocket()
 	router.initAPI()
 	router.initUI()
 
@@ -44,4 +46,8 @@ func (r *Router) initAPI() {
 
 func (r *Router) initUI() {
 	r.Router.NotFound = http.FileServer(&spaWrapper{fs.StatikFS})
+}
+
+func (r *Router) initWebsocket() {
+	r.Router.GET("/ws", websocket.UpstreamHandler("127.0.0.1:7100"))
 }

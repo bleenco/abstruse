@@ -14,6 +14,9 @@ require (
 	github.com/felixge/httpsnoop v1.0.0
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
+	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee // indirect
+	github.com/gobwas/pool v0.2.0 // indirect
+	github.com/gobwas/ws v1.0.0
 	github.com/golang/protobuf v1.2.0
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
@@ -22,6 +25,7 @@ require (
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/kr/pty v1.1.3 // indirect
+	github.com/mailru/easygo v0.0.0-20180630075556-0c8322a753d0
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.0.0

@@ -4,12 +4,14 @@ import (
 	"log"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/bleenco/abstruse/db"
 	"github.com/bleenco/abstruse/config"
 	"github.com/bleenco/abstruse/fs"
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/server/websocket"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
@@ -34,6 +36,7 @@ type Abstruse struct {
 	server *http.Server
 	logger *logger.Logger
 	grpcserver *GRPCServer
+	ws *websocket.Server
 	dir    string
 
 	running chan error
@@ -41,8 +44,6 @@ type Abstruse struct {
 
 // NewAbstruse creates a new main master server instance.
 func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
-	log := logger.NewLogger("", true, c.Debug)
-
 	dir := c.Dir
 	if dir == "" {
 		dir, _ = fs.GetHomeDir()
@@ -70,18 +71,18 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	c.GRPCConfig.Cert = cfg.GRPC.Cert
 	c.GRPCConfig.CertKey = cfg.GRPC.CertKey
 
-	gRPCServer, err := NewGRPCServer(c.GRPCConfig, log)
+	gRPCServer, err := NewGRPCServer(c.GRPCConfig, logger.NewLogger("grpc", true, c.Debug))
 	if err != nil {
 		return nil, err
 	}
-	gRPCServer.logger = log
 
 	return &Abstruse{
 		config:  c,
 		router:  NewRouter(),
 		server:  &http.Server{},
 		grpcserver: gRPCServer,
-		logger:  log,
+		ws: websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
+		logger:  logger.NewLogger("", true, c.Debug),
 		dir:     dir,
 		running: make(chan error, 1),
 	}, nil
@@ -93,9 +94,11 @@ func (a *Abstruse) Run() error {
 		return err
 	}
 
+	httpLogger := logger.NewLogger("http", a.logger.Info, a.logger.Debug)
+
 	handler := http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		m := httpsnoop.CaptureMetrics(a.router, res, req)
-		a.logger.Infof(
+		httpLogger.Debugf(
 			"%s %s (code=%d dt=%s written=%s remote=%s)",
 			req.Method,
 			req.URL,
@@ -108,7 +111,7 @@ func (a *Abstruse) Run() error {
 
 	if a.config.HTTPAddress != "" {
 		go func() {
-			a.logger.Infof("http listening on %s", a.config.HTTPAddress)
+			httpLogger.Infof("http listening on %s", a.config.HTTPAddress)
 			log.Fatal(http.ListenAndServe(a.config.HTTPAddress, handler))
 		}()
 	}
@@ -119,10 +122,16 @@ func (a *Abstruse) Run() error {
 			a.server.Handler = handler
 			http2.ConfigureServer(a.server, nil)
 
-			a.logger.Infof("https listening on %s", a.config.HTTPSAddress)
+			httpLogger.Infof("https listening on %s", a.config.HTTPSAddress)
 			log.Fatal(a.server.ListenAndServeTLS(a.config.CertFile, a.config.KeyFile))
 		}()
 	}
+
+	go func() {
+		if err := a.ws.Run(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	if a.config.GRPCConfig.Cert != "" && a.config.GRPCConfig.CertKey != "" {
 		go func() {

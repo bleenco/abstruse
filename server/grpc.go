@@ -48,7 +48,7 @@ type GRPCServerConfig struct {
 }
 
 // NewGRPCServer returns new instance of gRPC server.
-func NewGRPCServer(cfg *GRPCServerConfig, logger *logger.Logger) (*GRPCServer, error) {
+func NewGRPCServer(cfg *GRPCServerConfig, log *logger.Logger) (*GRPCServer, error) {
 	if cfg.Port == 0 {
 		return nil, errors.Errorf("port must be specified")
 	}
@@ -57,8 +57,8 @@ func NewGRPCServer(cfg *GRPCServerConfig, logger *logger.Logger) (*GRPCServer, e
 		port:     cfg.Port,
 		cert:     cfg.Cert,
 		certkey:  cfg.CertKey,
-		logger:   logger,
-		registry: NewWorkerRegistry(logger),
+		logger:   log,
+		registry: NewWorkerRegistry(logger.NewLogger("registry", log.Info, log.Debug)),
 	}
 	MainGRPCServer = server
 
