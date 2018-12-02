@@ -27,7 +27,7 @@ export class RxWebSocket {
     if (!this._out) {
       this._out = Observable.create((subscriber: Subscriber<any>) => {
         const wsurl = getWebSocketURL();
-        this.socket = new WebSocket(wsurl,  `${localStorage.getItem('abstruse-auth-token') || ''}`);
+        this.socket = new WebSocket(wsurl);
 
         if (this.willOpen) {
           this.willOpen();
