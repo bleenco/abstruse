@@ -10,7 +10,7 @@
               <span>{{ repo?.html_url }}</span>
             </span>
             <div class="repo-actions align-center">
-              <button type="button" class="button">
+              <button type="button" class="button" [disabled]="processing" (click)="triggerBuild()">
                 <i class="fas fa-hammer"></i>
                 <span>Trigger Build</span>
               </button>

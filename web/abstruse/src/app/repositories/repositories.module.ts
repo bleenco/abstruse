@@ -9,6 +9,7 @@ import { RepositoriesListItemComponent } from './repositories-list-item/reposito
 import { RepositoriesDetailsComponent } from './repositories-details/repositories-details.component';
 import { RepositoriesConfigurationDialogComponent } from './repositories-configuration-dialog/repositories-configuration-dialog.component';
 import { RepositoriesHookItemComponent } from './repositories-hook-item/repositories-hook-item.component';
+import { BuildService } from '../builds/shared/build.service';
 
 @NgModule({
   imports: [
@@ -23,6 +24,6 @@ import { RepositoriesHookItemComponent } from './repositories-hook-item/reposito
     RepositoriesConfigurationDialogComponent,
     RepositoriesHookItemComponent
   ],
-  providers: [ReposService]
+  providers: [ReposService, BuildService]
 })
 export class RepositoriesModule { }

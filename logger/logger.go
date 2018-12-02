@@ -59,7 +59,9 @@ func (l *Logger) Debugf(f string, args ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		l.logger.Printf("["+l.prefix+"]: "+f, args...)
+		c := color.New(color.FgCyan, color.BgBlack).SprintFunc()
+		prefix := c(l.prefix)
+		l.logger.Printf("["+prefix+"]: "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}

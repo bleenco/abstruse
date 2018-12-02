@@ -42,6 +42,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/repositories/:id", api.AuthorizationMiddleware(repos.FetchRepositoryHandler))
 	r.Router.GET("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.ListHooksHandler))
 	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
+	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(TriggerBuildHandler))
 }
 
 func (r *Router) initUI() {

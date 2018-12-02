@@ -149,25 +149,25 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 
 	registryItem.JobProcessStream = stream
 
-	jobTask := &pb.JobTask{
-		Name:     "abstruse_job_256_512",
-		Code:     pb.JobTask_Start,
-		Commands: []string{"git clone https://github.com/jkuri/d3-bundle.git --depth 1", "ls -alh"},
-	}
+	// jobTask := &pb.JobTask{
+	// 	Name:     "abstruse_job_256_512",
+	// 	Code:     pb.JobTask_Start,
+	// 	Commands: []string{"git clone https://github.com/jkuri/d3-bundle.git --depth 1", "ls -alh"},
+	// }
 
-	if err := stream.Send(jobTask); err != nil {
-		return err
-	}
+	// if err := stream.Send(jobTask); err != nil {
+	// 	return err
+	// }
 
-	jobTask.Name = "abstruse_job_256_513"
-	if err := stream.Send(jobTask); err != nil {
-		return err
-	}
+	// jobTask.Name = "abstruse_job_256_513"
+	// if err := stream.Send(jobTask); err != nil {
+	// 	return err
+	// }
 
-	jobTask.Name = "abstruse_job_256_514"
-	if err := stream.Send(jobTask); err != nil {
-		return err
-	}
+	// jobTask.Name = "abstruse_job_256_514"
+	// if err := stream.Send(jobTask); err != nil {
+	// 	return err
+	// }
 
 	for {
 		jobStatus, err := stream.Recv()

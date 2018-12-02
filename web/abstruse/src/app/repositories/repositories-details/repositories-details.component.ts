@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
 import { ActivatedRoute } from '@angular/router';
+import { BuildService } from 'src/app/builds/shared/build.service';
 
 @Component({
   selector: 'app-repositories-details',
@@ -12,10 +13,12 @@ export class RepositoriesDetailsComponent implements OnInit {
   fetching: boolean;
   repo: any;
   tab: 'all' | 'commits' | 'pr';
+  processing: boolean;
 
   constructor(
     public repos: ReposService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    public buildService: BuildService
   ) { }
 
   ngOnInit() {
@@ -31,6 +34,19 @@ export class RepositoriesDetailsComponent implements OnInit {
     }
 
     this.tab = tab;
+  }
+
+  triggerBuild(): void {
+    this.processing = true;
+    this.buildService.triggerBuild().subscribe(resp => {
+      if (resp && resp.data) {
+        console.log('yes');
+      }
+    }, err => {
+      console.error(err);
+    }, () => {
+      this.processing = false;
+    });
   }
 
   fetchRepository(): void {
