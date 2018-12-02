@@ -87,10 +87,5 @@ func (w *Worker) Run() error {
 
 	go w.Queue.Run()
 
-	// for i := 0; i < 5; i++ {
-	// time.Sleep(time.Second * 5)
-	// w.Queue.job <- 1
-	// }
-
 	return <-ch
 }

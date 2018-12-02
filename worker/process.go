@@ -2,31 +2,26 @@ package worker
 
 import (
 	"context"
-	"fmt"
+	"strings"
 
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/worker/docker"
 	"github.com/docker/docker/api/types"
 )
 
-// StartJob adds job task to the
+// StartJob starts job task.
 func StartJob(task *pb.JobTask) error {
-	if err := TestContainer(task.GetName()); err != nil {
-		fmt.Println(err)
-		return err
-	}
-	return nil
-}
-
-func TestContainer(name string) error {
+	name := task.GetName()
 	cli, err := docker.GetClient()
 	if err != nil {
 		return err
 	}
 
-	commands := [][]string{
-		[]string{"git", "clone", "https://github.com/jkuri/d3-bundle", "--depth", "1"},
-		[]string{"ls", "-alh"},
+	var commands [][]string
+
+	for _, taskcmd := range task.GetCommands() {
+		splitted := strings.Split(taskcmd, " ")
+		commands = append(commands, splitted)
 	}
 
 	resp, err := docker.CreateContainer(cli, name, "test-worker", []string{"/bin/sh"})
@@ -35,6 +30,12 @@ func TestContainer(name string) error {
 	}
 
 	containerID := resp.ID
+
+	if err := SendRunningStatus(name); err != nil {
+		return err
+	}
+
+	var exitCode int
 
 	for _, command := range commands {
 		if !docker.IsContainerRunning(cli, containerID) {
@@ -57,7 +58,17 @@ func TestContainer(name string) error {
 			return err
 		}
 
-		fmt.Printf("Exit code: %d\n", inspect.ExitCode)
+		exitCode = inspect.ExitCode
+	}
+
+	if exitCode == 0 {
+		if err := SendPassingStatus(name); err != nil {
+			return err
+		}
+	} else {
+		if err := SendFailingStatus(name); err != nil {
+			return err
+		}
 	}
 
 	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})

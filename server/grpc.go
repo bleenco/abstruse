@@ -152,7 +152,7 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 	jobTask := &pb.JobTask{
 		Name:     "abstruse_job_256_512",
 		Code:     pb.JobTask_Start,
-		Commands: []string{"git clone https://github.com/bleenco/d3-bundle.git", "ls -alh"},
+		Commands: []string{"git clone https://github.com/jkuri/d3-bundle.git --depth 1", "ls -alh"},
 	}
 
 	if err := stream.Send(jobTask); err != nil {

@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"time"
-	"fmt"
 
 	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
@@ -27,6 +26,9 @@ type GRPCClient struct {
 	logger     *logger.Logger
 	conn       *grpc.ClientConn
 	client     pb.ApiServiceClient
+	running chan struct{}
+
+	JobProcessStream pb.ApiService_JobProcessClient
 }
 
 // UploadStats defines basic upload statistics.
@@ -78,6 +80,7 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 		logger:     logger,
 		conn:       conn,
 		client:     client,
+		running: make(chan struct{}),
 	}
 	Client = c
 
@@ -88,13 +91,19 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 func (c *GRPCClient) Run() error {
 	defer c.Close()
 
-	// if err := c.StreamOnlineStatus(context.Background()); err != nil {
-	// 	return err
-	// }
-	go c.StreamOnlineStatus(context.Background())
-	if err := c.StreamJobProcess(context.Background()); err != nil {
-		return err
-	}
+	go func() {
+		if err := c.StreamOnlineStatus(context.Background()); err != nil {
+			c.logger.Debugf("error: %s", err)
+		}
+	}()
+
+	go func() {
+		if err := c.StreamJobProcess(context.Background()); err != nil {
+			c.logger.Debugf("error: %s", err)
+		}
+	}()
+
+	<-c.running
 
 	return nil
 }
@@ -128,16 +137,25 @@ func (c *GRPCClient) StreamJobProcess(ctx context.Context) error {
 		return err
 	}
 
-	defer stream.CloseSend()
+	defer func() {
+		stream.CloseSend()
+		c.JobProcessStream = nil
+	}()
+
+	c.JobProcessStream = stream
+
 	for {
 		jobTask, err := stream.Recv()
 		if err != nil {
 			return err
 		}
 
-		fmt.Printf("%+v\n", jobTask)
-
+		c.logger.Debugf("received job task: %+v", jobTask)
 		JobQueue.job <- jobTask
+
+		if err := SendQueuedStatus(jobTask.GetName()); err != nil {
+			return err
+		}
 	}
 }
 

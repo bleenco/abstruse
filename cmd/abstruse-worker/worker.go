@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	logger := logger.NewLogger("", true, false)
+	logger := logger.NewLogger("", true, true)
 	w, err := worker.NewWorker(logger)
 	if err != nil {
 		fatal(err)
