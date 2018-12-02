@@ -4,11 +4,15 @@ import (
 	"sync"
 
 	"github.com/bleenco/abstruse/logger"
+	pb "github.com/bleenco/abstruse/proto"
+	"github.com/pkg/errors"
 )
 
 // WorkerRegistryItem holds information about worker.
 type WorkerRegistryItem struct {
 	Online bool
+
+	JobProcessStream pb.ApiService_JobProcessServer
 }
 
 // WorkerRegistry defines registry for workers.
@@ -48,7 +52,7 @@ func (wr *WorkerRegistry) IsSubscribed(identifier string) bool {
 	return ok
 }
 
-// Unsubscribe removes worker from registry
+// Unsubscribe removes worker from registry.
 func (wr *WorkerRegistry) Unsubscribe(identifier string) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()
@@ -61,4 +65,15 @@ func (wr *WorkerRegistry) Unsubscribe(identifier string) {
 	wr.logger.Debugf("worker %s unsubscribed\n", identifier)
 
 	delete(wr.items, identifier)
+}
+
+// Find returns worker registry item.
+func (wr *WorkerRegistry) Find(identifier string) (*WorkerRegistryItem, error) {
+	wr.mu.RLock()
+	defer wr.mu.RUnlock()
+	item, ok := wr.items[identifier]
+	if !ok {
+		return item, errors.New("worker registry item not found")
+	}
+	return item, nil
 }

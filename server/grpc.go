@@ -23,6 +23,9 @@ import (
 
 type contextKey int
 
+// MainGRPCServer exports main gRPC server instance.
+var MainGRPCServer *GRPCServer
+
 const (
 	workerIdentifierKey contextKey = iota
 )
@@ -57,6 +60,7 @@ func NewGRPCServer(cfg *GRPCServerConfig, logger *logger.Logger) (*GRPCServer, e
 		logger:   logger,
 		registry: NewWorkerRegistry(logger),
 	}
+	MainGRPCServer = server
 
 	return server, nil
 }
@@ -127,23 +131,53 @@ end:
 
 // JobProcess gRPC channel.
 func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
+	registryItem := &WorkerRegistryItem{}
+	ctx := stream.Context()
+	identifier, ok := ctx.Value(workerIdentifierKey).(string)
+	if !ok {
+		return errors.New("identifier not found in stream context")
+	}
+
 	for {
-		jobTask := &pb.JobTask{
-			Name:     "abstruse_job_256_512",
-			Code:     pb.JobTask_Start,
-			Commands: []string{"git clone https://github.com/bleenco/d3-bundle.git", "ls -alh"},
+		var err error
+		registryItem, err = s.registry.Find(identifier)
+		if err != nil || registryItem == nil {
+			continue
 		}
+		break
+	}
 
-		if err := stream.Send(jobTask); err != nil {
-			return err
-		}
+	registryItem.JobProcessStream = stream
 
+	jobTask := &pb.JobTask{
+		Name:     "abstruse_job_256_512",
+		Code:     pb.JobTask_Start,
+		Commands: []string{"git clone https://github.com/bleenco/d3-bundle.git", "ls -alh"},
+	}
+
+	if err := stream.Send(jobTask); err != nil {
+		return err
+	}
+
+	jobTask.Name = "abstruse_job_256_513"
+	if err := stream.Send(jobTask); err != nil {
+		return err
+	}
+
+	jobTask.Name = "abstruse_job_256_514"
+	if err := stream.Send(jobTask); err != nil {
+		return err
+	}
+
+	for {
 		jobStatus, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
+				registryItem.JobProcessStream = nil
 				return nil
 			}
 
+			registryItem.JobProcessStream = nil
 			return err
 		}
 
@@ -226,6 +260,15 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 	return handler(ctx, req)
 }
 
+type grpcServerStream struct {
+	identifier string
+	grpc.ServerStream
+}
+
+func (s grpcServerStream) Context() context.Context {
+	return context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
+}
+
 func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	ctx := stream.Context()
 	server, ok := srv.(*GRPCServer)
@@ -238,9 +281,12 @@ func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.Str
 		return err
 	}
 
-	ctx = context.WithValue(ctx, workerIdentifierKey, identifier)
+	s := grpcServerStream{
+		identifier: identifier,
+		ServerStream: stream,
+	}
 
-	return handler(srv, stream)
+	return handler(srv, s)
 }
 
 func authenticateWorker(ctx context.Context, s *GRPCServer) (string, error) {
