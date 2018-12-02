@@ -1,5 +1,37 @@
-FROM mhart/alpine-node:10 as build
+# Stage 1 image
+
+# FROM arm64v8/node:alpine as base # aarch64
+FROM mhart/alpine-node:10 as base
+
+ENV DOCKER_VERSION=18.03.1-ce
+
+#ENV ARCH=aarch64 # aarch64
+ENV ARCH=x86_64
+
+RUN apk --no-cache add openssl \
+  && wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz \
+  && mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp \
+  && ln -s /tmp/docker/docker /usr/bin/docker && chmod 755 /usr/bin/docker && rm -rf /tmp/docker.tgz \
+  && apk del openssl
+
+
+# Stage 2 image
+FROM base as build
+
 WORKDIR /app
+
+COPY package.json package-lock.json tsconfig.json webpack.*.js angular.json /app/
+COPY src /app/src
+
+RUN apk add --no-cache --virtual .build-dependencies make gcc g++ python curl sqlite git \
+  && npm set progress=false && npm config set depth 0 \
+  && npm i --only=production \
+  && cp -R node_modules prod_node_modules \
+  && npm i && npm run build:prod && ls -lha /usr/lib/node_modules \
+  && apk del .build-dependencies
+
+# Stage 3 image
+FROM alpine:3.7
 
 ARG VCS_REF=n/a
 ARG VERSION=dev
@@ -16,94 +48,26 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
   org.label-schema.version=$VERSION \
   org.label-schema.build-date=$BUILD_DATE
 
-ENV ARCH=x86_64
-ENV DOCKER_VERSION=18.03.1-ce
+WORKDIR /app
 
-RUN apk add \
-  --no-cache \
-  --virtual build-dependencies \
-  openssl && \
-  wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz && \
-  mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp && \
-  mv /tmp/docker/docker /usr/bin/docker && \
-  chmod 755 /usr/bin/docker
+RUN apk --no-cache add tini sqlite git wget
 
-# Development dependencies
-RUN apk add \
-  --no-cache \
-  --virtual build-dependencies \
-  curl \
-  g++ \
-  gcc \
-  git \
-  make \
-  sqlite \
-  python
+COPY --from=base /usr/bin/node /usr/bin
+COPY --from=base /usr/lib/libgcc* /usr/lib/libstdc* /usr/lib/
+COPY --from=base /tmp/docker/docker /usr/bin/docker
 
-# Production dependencies
-RUN apk add \
-  --no-cache \
-  bash \
-  git \
-  sqlite \
-  tini \
-  wget
+COPY --from=build /app/package.json /app/
+COPY --from=build /app/prod_node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/src/files /app/src/files
 
-# NPM dependencies
-COPY package.json package-lock.json /app/
-
-RUN npm install --only=production && \
-  cp -R node_modules prod_node_modules && \
-  npm install
-
-# Copy shared files
-COPY tsconfig.json /app
-
-# Copy frontend
-COPY angular.json /app
-COPY src/environments /app/src/environments
-COPY src/app /app/src/app
-COPY src/assets /app/src/assets
-COPY src/styles /app/src/styles
-COPY src/testing /app/src/testing
-
-COPY src/index.html \
-  src/main.ts \
-  src/polyfills.ts \
-  src/test.ts \
-  src/tsconfig.app.json \
-  src/tsconfig.spec.json \
-  src/typings.d.ts \
-  /app/src/
-
-# Build frontend
-RUN npm run build:app
-
-# Copy backend dependencies
+# backend dependencies
 COPY src/files/docker-essential/fluxbox /etc/init.d/
 COPY src/files/docker-essential/x11vnc /etc/init.d/
 COPY src/files/docker-essential/xvfb /etc/init.d/
 COPY src/files/docker-essential/entry.sh /
 COPY src/files/docker-essential/abstruse-pty-amd64 /usr/bin/abstruse-pty
 RUN chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*
-
-# Copy backend
-COPY webpack.api.js /app
-COPY src/api /app/src/api
-COPY src/files /app/src/files
-COPY src/tsconfig.api.json /app/src
-
-# Build backend
-RUN npm run build
-
-# Restore production node_modules
-RUN rm -rf node_modules && \
-  mv prod_node_modules node_modules
-
-# Remove files not required for production
-RUN apk del build-dependencies && \
-  rm -rf src && \
-  rm -rf /tmp/*
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
