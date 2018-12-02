@@ -22,7 +22,7 @@ RUN go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go
 
 RUN statik -src=./dist
 
-RUN make
+RUN make grpc && make
 
 # stage 3 image
 FROM scratch
