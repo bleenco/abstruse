@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/bleenco/abstruse/security"
 	"context"
 	"crypto/tls"
 	"fmt"
@@ -10,6 +9,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/bleenco/abstruse/security"
 
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
@@ -122,6 +123,32 @@ end:
 	}
 
 	return nil
+}
+
+// JobProcess gRPC channel.
+func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
+	for {
+		jobTask := &pb.JobTask{
+			Name:     "abstruse_job_256_512",
+			Code:     pb.JobTask_Start,
+			Commands: []string{"git clone https://github.com/bleenco/d3-bundle.git", "ls -alh"},
+		}
+
+		if err := stream.Send(jobTask); err != nil {
+			return err
+		}
+
+		jobStatus, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return nil
+			}
+
+			return err
+		}
+
+		fmt.Printf("%+v\n", jobStatus)
+	}
 }
 
 // ContainerOutput gRPC channel.

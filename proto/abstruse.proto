@@ -8,6 +8,7 @@ service ApiService {
   rpc Upload(stream Chunk) returns (TransferStatus) {}
   rpc OnlineCheck(stream OnlineStatus) returns (google.protobuf.Empty) {}
   rpc ContainerOutput(stream ContainerOutputChunk) returns (google.protobuf.Empty) {}
+  rpc JobProcess(stream JobStatus) returns (stream JobTask) {}
 }
 
 message OnlineStatus {
@@ -38,4 +39,27 @@ enum TransferStatusCode {
 message ContainerOutputChunk {
   string Id = 1;
   bytes Content = 2;
+}
+
+message JobStatus {
+  enum JobStatusCode {
+    Stopped = 0;
+    Queued = 1;
+    Running = 2;
+    Failing = 3;
+    Passing = 4;
+  }
+  string Id = 1;
+  JobStatusCode Code = 2;
+}
+
+message JobTask {
+  enum JobTaskCode {
+    Stop = 0;
+    Start = 1;
+    Restart = 2;
+  }
+  string Name = 1;
+  JobTaskCode Code = 2;
+  repeated string Commands = 3;
 }

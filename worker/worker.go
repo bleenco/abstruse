@@ -3,19 +3,17 @@ package worker
 import (
 	"crypto/tls"
 	"path"
-	"time"
 
 	"github.com/bleenco/abstruse/fs"
 	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
-	"github.com/bleenco/abstruse/worker/client"
 )
 
 // Worker defines worker instance.
 type Worker struct {
 	Queue      *Queue
-	Client     *client.GRPCClient
+	Client     *GRPCClient
 	Identifier id.ID
 	JWT        string
 
@@ -59,7 +57,7 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 		return nil, err
 	}
 
-	gRPCClient, err := client.NewGRPCClient(identifier, jwt, config.ServerAddress, cert, key, logger)
+	gRPCClient, err := NewGRPCClient(identifier, jwt, config.ServerAddress, cert, key, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +69,7 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 		ConfigDir:  configDir,
 		Config:     config,
 		Logger:     logger,
-		Queue:      NewQueue(2),
+		Queue:      JobQueue,
 	}
 
 	return worker, nil
@@ -90,8 +88,8 @@ func (w *Worker) Run() error {
 	go w.Queue.Run()
 
 	// for i := 0; i < 5; i++ {
-	time.Sleep(time.Second * 5)
-	w.Queue.job <- 1
+	// time.Sleep(time.Second * 5)
+	// w.Queue.job <- 1
 	// }
 
 	return <-ch

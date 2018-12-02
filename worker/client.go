@@ -1,4 +1,4 @@
-package client
+package worker
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"time"
+	"fmt"
 
 	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
@@ -15,7 +16,6 @@ import (
 	"github.com/docker/docker/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"github.com/golang/protobuf/ptypes/empty"
 )
 
 // Client is exported main grpc client instance.
@@ -88,7 +88,11 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 func (c *GRPCClient) Run() error {
 	defer c.Close()
 
-	if err := c.StreamOnlineStatus(context.Background()); err != nil {
+	// if err := c.StreamOnlineStatus(context.Background()); err != nil {
+	// 	return err
+	// }
+	go c.StreamOnlineStatus(context.Background())
+	if err := c.StreamJobProcess(context.Background()); err != nil {
 		return err
 	}
 
@@ -116,11 +120,32 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 	}
 }
 
+// StreamJobProcess streams job build status from client to server and
+// job tasks that should be queued and eventually runned on worker.
+func (c *GRPCClient) StreamJobProcess(ctx context.Context) error {
+	stream, err := c.client.JobProcess(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer stream.CloseSend()
+	for {
+		jobTask, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%+v\n", jobTask)
+
+		JobQueue.job <- jobTask
+	}
+}
+
 // StreamContainerOutput streams output log of container to server.
-func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.HijackedResponse, containerID string) (*empty.Empty, error) {
+func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.HijackedResponse, containerID string) error {
 	stream, err := c.client.ContainerOutput(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer stream.CloseSend()
 
@@ -129,7 +154,7 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 		n, err := conn.Reader.Read(buf)
 		if err != nil {
 			conn.Close()
-			return nil, nil
+			return nil
 		}
 
 		// stream output log to server
@@ -137,7 +162,7 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 			Id: containerID,
 			Content: buf[:n],
 		}); err != nil {
-			return nil, err
+			return err
 		}
 	}
 }

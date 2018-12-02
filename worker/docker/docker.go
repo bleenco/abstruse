@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/bleenco/abstruse/utils"
-	grpc "github.com/bleenco/abstruse/worker/client"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -61,51 +60,6 @@ func RunContainer(name string) error {
 	fmt.Println(code)
 
 	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: false})
-}
-
-func TestContainer(name string) error {
-	cli, err := GetClient()
-	if err != nil {
-		return err
-	}
-
-	commands := [][]string{
-		[]string{"git", "clone", "https://github.com/jkuri/d3-bundle", "--depth", "1"},
-		[]string{"ls", "-alh"},
-	}
-
-	resp, err := CreateContainer(cli, name, "test-worker", []string{"/bin/sh"})
-	if err != nil {
-		return err
-	}
-
-	containerID := resp.ID
-
-	for _, command := range commands {
-		if !IsContainerRunning(cli, containerID) {
-			if err := StartContainer(cli, containerID); err != nil {
-				return err
-			}
-		}
-
-		conn, execID, err := Exec(cli, containerID, command)
-		if err != nil {
-			return err
-		}
-
-		if _, err := grpc.Client.StreamContainerOutput(context.Background(), conn, containerID); err != nil {
-			return err
-		}
-
-		inspect, err := cli.ContainerExecInspect(context.Background(), execID)
-		if err != nil {
-			return err
-		}
-
-		fmt.Printf("Exit code: %d\n", inspect.ExitCode)
-	}
-
-	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
 }
 
 // Exec executes specified command inside Docker container.

@@ -2,18 +2,24 @@ package worker
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
-	"github.com/bleenco/abstruse/worker/docker"
+	pb "github.com/bleenco/abstruse/proto"
 )
+
+// JobQueue is exported main job Queue instance.
+var JobQueue *Queue
+
+func init() {
+	JobQueue = NewQueue(2)
+}
 
 // Queue of concurrently started jobs with ability to limit parallelization.
 type Queue struct {
 	Concurrency int
 
 	current chan struct{}
-	job     chan int
+	job     chan *pb.JobTask
 	wg      sync.WaitGroup
 	quit    chan struct{}
 }
@@ -27,7 +33,7 @@ func NewQueue(concurrency int) *Queue {
 	return &Queue{
 		Concurrency: concurrency,
 		current:     make(chan struct{}, concurrency),
-		job:         make(chan int),
+		job:         make(chan *pb.JobTask),
 		wg:          sync.WaitGroup{},
 		quit:        make(chan struct{}),
 	}
@@ -40,15 +46,19 @@ func (q *Queue) Run() {
 loop:
 	for {
 		select {
-		case job := <-q.job:
+		case jobTask := <-q.job:
 			q.add()
-			go func(i int) {
+			go func(task *pb.JobTask) {
 				defer q.done()
-				name := fmt.Sprintf("jan-%d", i)
-				if err := docker.TestContainer(name); err != nil {
-					fmt.Println(err)
+
+				if task.Code == pb.JobTask_Start {
+					StartJob(task)
+				} else if task.Code == pb.JobTask_Stop {
+
+				} else if task.Code == pb.JobTask_Restart {
+
 				}
-			}(job)
+			}(jobTask)
 		case <-q.quit:
 			break loop
 		}
