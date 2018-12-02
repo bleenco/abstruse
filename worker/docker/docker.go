@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -21,8 +22,10 @@ func RunContainer(name string) error {
 
 	resp, err := cli.ContainerCreate(ctx, &container.Config{
 		Image: "test-worker",
-		Cmd:   []string{"echo", "hello world"},
-		Tty:   true,
+		// Cmd:   []string{"echo", "hello world"},
+		Cmd: []string{"git", "clone", "https://github.com/jkuri/d3-bundle", "--depth", "1"},
+		// Cmd: []string{"sh"},
+		Tty: true,
 	}, nil, nil, name)
 	if err != nil {
 		return err
@@ -31,6 +34,24 @@ func RunContainer(name string) error {
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		return err
 	}
+
+	go func() {
+		reader, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{
+			ShowStdout: true,
+			ShowStderr: true,
+			Follow:     true,
+			Timestamps: false,
+		})
+		if err != nil {
+			return
+		}
+		defer reader.Close()
+
+		scanner := bufio.NewScanner(reader)
+		for scanner.Scan() {
+			fmt.Println(scanner.Text())
+		}
+	}()
 
 	code, err := cli.ContainerWait(ctx, resp.ID)
 	if err != nil {
@@ -46,5 +67,5 @@ func RunContainer(name string) error {
 
 	io.Copy(os.Stdout, out)
 
-	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: false})
 }
