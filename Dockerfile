@@ -50,7 +50,7 @@ RUN apk add \
   wget
 
 # NPM dependencies
-COPY package.json package-lock.json /app/
+COPY package.json package-lock.json npm-shrinkwrap.json /app/
 
 RUN npm install --only=production && \
   cp -R node_modules prod_node_modules && \
