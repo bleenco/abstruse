@@ -59,6 +59,10 @@ func StartJob(task *pb.JobTask) error {
 		}
 
 		exitCode = inspect.ExitCode
+
+		if exitCode != 0 {
+			break
+		}
 	}
 
 	if exitCode == 0 {

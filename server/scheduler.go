@@ -23,11 +23,11 @@ func NewScheduler() *Scheduler {
 }
 
 // SendJobTask triggers job task call.
-func (s *Scheduler) SendJobTask() error {
+func (s *Scheduler) SendJobTask(image string, commands []string) error {
 	jobTask := &pb.JobTask{
 		Name:     "abstruse_job_256_512",
 		Code:     pb.JobTask_Start,
-		Commands: []string{"git clone https://github.com/jkuri/d3-bundle.git --depth 1", "ls -alh"},
+		Commands: commands,
 	}
 
 	registryItem, err := MainGRPCServer.registry.Find(workerID)
