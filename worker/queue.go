@@ -35,6 +35,8 @@ func NewQueue(concurrency int) *Queue {
 
 // Run starts the queue.
 func (q *Queue) Run() {
+	q.quit = make(chan struct{})
+
 loop:
 	for {
 		select {
@@ -43,7 +45,7 @@ loop:
 			go func(i int) {
 				defer q.done()
 				name := fmt.Sprintf("jan-%d", i)
-				if err := docker.RunContainer(name); err != nil {
+				if err := docker.TestContainer(name); err != nil {
 					fmt.Println(err)
 				}
 			}(job)

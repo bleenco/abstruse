@@ -7,6 +7,7 @@ import "google/protobuf/empty.proto";
 service ApiService {
   rpc Upload(stream Chunk) returns (TransferStatus) {}
   rpc OnlineCheck(stream OnlineStatus) returns (google.protobuf.Empty) {}
+  rpc ContainerOutput(stream ContainerOutputChunk) returns (google.protobuf.Empty) {}
 }
 
 message OnlineStatus {
@@ -32,4 +33,9 @@ enum TransferStatusCode {
   Unknown = 0;
   Ok = 1;
   Failed = 2;
+}
+
+message ContainerOutputChunk {
+  string Id = 1;
+  bytes Content = 2;
 }

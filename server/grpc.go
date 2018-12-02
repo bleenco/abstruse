@@ -124,6 +124,23 @@ end:
 	return nil
 }
 
+// ContainerOutput gRPC channel.
+func (s *GRPCServer) ContainerOutput(stream pb.ApiService_ContainerOutputServer) error {
+	for {
+		chunk, err := stream.Recv()
+
+		if err != nil {
+			if err == io.EOF {
+				return nil
+			}
+
+			return err
+		}
+
+		fmt.Printf("%s\n", string(chunk.Content))
+	}
+}
+
 // Upload gRPC channel
 func (s *GRPCServer) Upload(stream pb.ApiService_UploadServer) error {
 	file, err := os.Create("/Users/jan/Desktop/test-file")
@@ -189,10 +206,12 @@ func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.Str
 		return fmt.Errorf("unable to cast server")
 	}
 
-	_, err := authenticateWorker(ctx, server)
+	identifier, err := authenticateWorker(ctx, server)
 	if err != nil {
 		return err
 	}
+
+	ctx = context.WithValue(ctx, workerIdentifierKey, identifier)
 
 	return handler(srv, stream)
 }

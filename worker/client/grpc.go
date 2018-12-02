@@ -1,4 +1,4 @@
-package worker
+package client
 
 import (
 	"context"
@@ -10,10 +10,16 @@ import (
 
 	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/worker/auth"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/docker/docker/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"github.com/golang/protobuf/ptypes/empty"
 )
+
+// Client is exported main grpc client instance.
+var Client *GRPCClient
 
 // GRPCClient represents workers gRPC client.
 type GRPCClient struct {
@@ -21,6 +27,13 @@ type GRPCClient struct {
 	logger     *logger.Logger
 	conn       *grpc.ClientConn
 	client     pb.ApiServiceClient
+}
+
+// UploadStats defines basic upload statistics.
+type UploadStats struct {
+	StartedAt  time.Time
+	FinishedAt time.Time
+	BytesSent  int64
 }
 
 // NewGRPCClient returns new instance of GRPCClient.
@@ -45,7 +58,7 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 		InsecureSkipVerify: true,
 	})
 
-	auth := &Authentication{
+	auth := &auth.Authentication{
 		Identifier: identifier.String(),
 		JWT:        jwt,
 	}
@@ -60,12 +73,15 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 
 	client := pb.NewApiServiceClient(conn)
 
-	return &GRPCClient{
+	c := &GRPCClient{
 		identifier: identifier,
 		logger:     logger,
 		conn:       conn,
 		client:     client,
-	}, nil
+	}
+	Client = c
+
+	return c, nil
 }
 
 // Run starts worker gRPC client.
@@ -97,6 +113,32 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 		}
 
 		time.Sleep(5 * time.Second)
+	}
+}
+
+// StreamContainerOutput streams output log of container to server.
+func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.HijackedResponse, containerID string) (*empty.Empty, error) {
+	stream, err := c.client.ContainerOutput(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer stream.CloseSend()
+
+	for {
+		buf := make([]byte, 4096)
+		n, err := conn.Reader.Read(buf)
+		if err != nil {
+			conn.Close()
+			return nil, nil
+		}
+
+		// stream output log to server
+		if err := stream.Send(&pb.ContainerOutputChunk{
+			Id: containerID,
+			Content: buf[:n],
+		}); err != nil {
+			return nil, err
+		}
 	}
 }
 
