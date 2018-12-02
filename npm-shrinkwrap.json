@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "event-stream": {
+      "version": "4.0.1"
+    }
+  }
+}
