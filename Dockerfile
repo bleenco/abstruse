@@ -59,7 +59,8 @@ COPY package.json package-lock.json npm-shrinkwrap.json /app/
 
 # TODO: Remove below block
 RUN npm install && \
-  ln -s node_modules prod_node_modules && \
+  mv node_modules prod_node_modules && \
+  ln -s prod_node_modules node_modules && \
   rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Copy shared files
