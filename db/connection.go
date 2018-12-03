@@ -32,6 +32,7 @@ func Connect(opts Options) error {
 		&User{},
 		&Integration{},
 		&Repository{},
+		&Worker{},
 	)
 
 	return nil

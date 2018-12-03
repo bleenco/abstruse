@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/api/workers"
 
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
@@ -19,15 +20,18 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/peer"
 )
 
 type contextKey int
+type contextIP int
 
 // MainGRPCServer exports main gRPC server instance.
 var MainGRPCServer *GRPCServer
 
 const (
 	workerIdentifierKey contextKey = iota
+	workerIP contextIP = iota
 )
 
 // GRPCServer defines gRPC server.
@@ -115,12 +119,20 @@ func (s *GRPCServer) OnlineCheck(stream pb.ApiService_OnlineCheckServer) error {
 				s.registry.Subscribe(identifier)
 			}
 		}
+
+		ip, _ := stream.Context().Value(workerIP).(string)
+		host, _, _ := net.SplitHostPort(ip)
+		if status.Code == pb.OnlineStatus_Up {
+			workers.WorkersAPI.Subscribe(identifier, host)
+		}
 	}
 
 end:
 	if s.registry.IsSubscribed(identifier) {
 		s.registry.Unsubscribe(identifier)
 	}
+
+	workers.WorkersAPI.Unsubscribe(identifier)
 
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
@@ -262,11 +274,14 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 
 type grpcServerStream struct {
 	identifier string
+	ip string
 	grpc.ServerStream
 }
 
 func (s grpcServerStream) Context() context.Context {
-	return context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
+	c :=  context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
+	c = context.WithValue(c, workerIP, s.ip)
+	return c
 }
 
 func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
@@ -284,6 +299,10 @@ func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.Str
 	s := grpcServerStream{
 		identifier: identifier,
 		ServerStream: stream,
+	}
+
+	if peer, ok := peer.FromContext(ctx); ok {
+		s.ip = peer.Addr.String()
 	}
 
 	return handler(srv, s)

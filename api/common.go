@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+// Event defines common api event for EventEmitter.
+type Event struct {
+	Action string
+	Data   interface{}
+}
+
 // Response is interface flexible data response.
 type Response struct {
 	Data interface{} `json:"data"`

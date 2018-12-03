@@ -12,6 +12,7 @@ import (
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
 	"github.com/bleenco/abstruse/server/websocket"
+	"github.com/bleenco/abstruse/api/workers"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
@@ -37,6 +38,7 @@ type Abstruse struct {
 	logger *logger.Logger
 	grpcserver *GRPCServer
 	ws *websocket.Server
+	workersAPI *workers.Workers
 	dir    string
 
 	running chan error
@@ -82,6 +84,7 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		server:  &http.Server{},
 		grpcserver: gRPCServer,
 		ws: websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
+		workersAPI: workers.NewWorkersAPI(),
 		logger:  logger.NewLogger("", true, c.Debug),
 		dir:     dir,
 		running: make(chan error, 1),

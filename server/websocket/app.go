@@ -37,14 +37,29 @@ func (a *Application) Register(conn net.Conn) *Client {
 // Remove removes client from app.
 func (a *Application) Remove(client *Client) {
 	a.mu.Lock()
+	defer a.mu.Unlock()
 
 	for i, c := range a.Clients {
 		if c == client {
 			a.Clients = append(a.Clients[:i], a.Clients[i+1:]...)
 		}
 	}
+}
 
-	a.mu.Unlock()
+// Broadcast sends socket event to all subscribers.
+func (a *Application) Broadcast(event string, data Object, subscription string) {
+	var clients []*Client
+	for _, c := range a.Clients {
+		for _, sub := range c.subs {
+			if sub.Event == subscription {
+				clients = append(clients, c)
+			}
+		}
+	}
+
+	for _, client := range clients {
+		client.Send(event, data)
+	}
 }
 
 // InitClient initializes reading client input messages.

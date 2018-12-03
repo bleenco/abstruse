@@ -1,27 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DataService } from '../shared/providers/data.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-workers',
   template: `<router-outlet></router-outlet>`
 })
-export class WorkersComponent implements OnInit, OnDestroy {
-  sub: Subscription;
+export class WorkersComponent implements OnInit {
 
-  constructor(
-    public dataService: DataService
-  ) { }
+  constructor() { }
 
-  ngOnInit() {
-    this.sub = this.dataService.socketOutput.subscribe(event => {
-      console.log(event);
-    });
-  }
-
-  ngOnDestroy() {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-  }
+  ngOnInit() { }
 }

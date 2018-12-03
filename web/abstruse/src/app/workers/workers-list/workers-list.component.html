@@ -14,13 +14,22 @@
     <div class="table">
       <div class="headers">
         <div class="columns">
-          <div class="column is-4 justify-center">
-            <span class="header-title">Cert ID</span>
+          <div class="column is-1 justify-center">
+            <span class="header-title">ID</span>
           </div>
-          <div class="column is-2 justify-center">
+          <div class="column is-3 justify-center">
             <span class="header-title">IP</span>
           </div>
-          <div class="column is-2 justify-center">
+          <div class="column is-1 justify-center">
+            <span class="header-title">Capacity</span>
+          </div>
+          <div class="column is-1 justify-center">
+            <span class="header-title">CPU</span>
+          </div>
+          <div class="column is-1 justify-center">
+            <span class="header-title">Memory</span>
+          </div>
+          <div class="column is-1 justify-center">
             <span class="header-title">Priority</span>
           </div>
           <div class="column is-2 justify-center">
@@ -30,24 +39,35 @@
         </div>
       </div>
       <div class="table-items">
-        <div class="table-item" *ngFor="let worker of [0, 1, 2, 3, 4, 5]">
+        <div class="table-item" *ngFor="let w of workers">
           <div class="columns">
-            <div class="column is-4 justify-center">
-              <span class="table-data">01234-144321-123532-123543-12334</span>
+            <div class="column is-1 justify-center">
+              <div class="table-data">
+                <span class="heading-text is-larger">{{ w.id }}</span>
+              </div>
             </div>
-            <div class="column is-2 justify-center">
-              <span class="table-data">172.10.0.10</span>
+            <div class="column is-3 justify-center">
+              <span class="table-data">{{ w.ip }}</span>
             </div>
-            <div class="column is-2 justify-center">
+            <div class="column is-1 justify-center">
+              <span class="table-data">4 / 6</span>
+            </div>
+            <div class="column is-1 justify-center">
+              <span class="table-data">12%</span>
+            </div>
+            <div class="column is-1 justify-center">
+              <span class="table-data">45%</span>
+            </div>
+            <div class="column is-1 justify-center">
               <div class="table-data">
                 <span class="heading-text">High</span>
-                <span class="data-text">9</span>
+                <span class="data-text">{{ w.priority }}</span>
               </div>
             </div>
             <div class="column is-2 justify-center">
-              <div class="status-item is-green">
+              <div class="status-item" [ngClass]="{ 'is-green': w.status === 'operational', 'is-red': w.status === 'down' }">
                 <span class="status-circle"></span>
-                <span class="status-title">Operational</span>
+                <span class="status-title">{{ w.status }}</span>
               </div>
             </div>
             <div class="column is-2 justify-center">
