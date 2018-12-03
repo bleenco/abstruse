@@ -41,16 +41,7 @@ RUN apk add \
 
 # NPM dependencies
 COPY package.json package-lock.json npm-shrinkwrap.json /app/
-
-# TODO: Restore below block
-# RUN npm install --only=production && \
-#   cp -R node_modules prod_node_modules && \
-#   npm install
-
-# TODO: Remove below block
-RUN npm install && \
-  mv node_modules prod_node_modules && \
-  ln -s prod_node_modules node_modules && \
+RUN yarn install && \
   rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Copy shared files
@@ -74,7 +65,7 @@ COPY src/index.html \
   /app/src/
 
 # Build frontend
-RUN npm run build:app
+RUN yarn build:app
 
 # Copy backend dependencies
 COPY src/files/docker-essential/fluxbox /etc/init.d/
@@ -92,15 +83,7 @@ COPY src/tsconfig.api.json /app/src
 COPY src/files /app/src/files
 
 # Build backend
-RUN npm run build
-
-# Restore production node_modules
-RUN rm -rf node_modules && \
-  mv prod_node_modules node_modules
-
-# Remove files not required for production
-# RUN apk del build-dependencies && \
-#   rm -rf /tmp/*
+RUN yarn build
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
