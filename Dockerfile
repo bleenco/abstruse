@@ -93,6 +93,7 @@ COPY webpack.api.js /app
 COPY src/api /app/src/api
 COPY src/files /app/src/files
 COPY src/tsconfig.api.json /app/src
+COPY src/files /app/src/files
 
 # Build backend
 RUN npm run build
