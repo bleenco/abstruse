@@ -16,18 +16,6 @@ LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
   org.label-schema.version=$VERSION \
   org.label-schema.build-date=$BUILD_DATE
 
-ENV ARCH=x86_64
-ENV DOCKER_VERSION=18.03.1-ce
-
-RUN apk add \
-  --no-cache \
-  --virtual build-dependencies \
-  openssl && \
-  wget https://download.docker.com/linux/static/stable/$ARCH/docker-$DOCKER_VERSION.tgz -O /tmp/docker.tgz && \
-  mkdir /tmp/docker && tar xzf /tmp/docker.tgz -C /tmp && \
-  mv /tmp/docker/docker /usr/bin/docker && \
-  chmod 755 /usr/bin/docker
-
 # Development dependencies
 RUN apk add \
   --no-cache \
@@ -43,7 +31,9 @@ RUN apk add \
 # Production dependencies
 RUN apk add \
   --no-cache \
+  --repository http://dl-cdn.alpinelinux.org/alpine/latest-stable/community \
   bash \
+  docker \
   git \
   sqlite \
   tini \
