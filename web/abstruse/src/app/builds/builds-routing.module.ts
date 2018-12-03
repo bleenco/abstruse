@@ -15,11 +15,7 @@ const buildsRoutes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(buildsRoutes)
-  ],
-  exports: [
-    RouterModule
-  ]
+  imports: [RouterModule.forChild(buildsRoutes)],
+  exports: [RouterModule]
 })
 export class BuildsRoutingModule { }

@@ -15,6 +15,9 @@
             <a class="header-item" [routerLink]="['/repositories']" routerLinkActive="is-active">
               Repositories
             </a>
+            <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
+              Workers
+            </a>
             <a class="header-item" [routerLink]="['/team']" routerLinkActive="is-active" *ngIf="authService?.userInfo">
               Team
             </a>

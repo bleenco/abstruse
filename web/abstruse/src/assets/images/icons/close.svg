@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="10px" height="10px" version="1.1" viewBox="0 0 10 10">
+    <defs>
+        <path id="path-1" d="M8,8 L8,3 L10,3 L10,8 L15,8 L15,10 L10,10 L10,15 L8,15 L8,10 L3,10 L3,8 L8,8 Z"/>
+    </defs>
+    <g id="Symbols" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+        <g id="Notification" transform="translate(-510.000000, -19.000000)">
+            <g id="Message">
+                <g transform="translate(506.000000, 15.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"/>
+                    </mask>
+                    <use id="Close-Button" fill="#FFFFFF" fill-opacity="0" fill-rule="evenodd" transform="translate(9.000000, 9.000000) rotate(-315.000000) translate(-9.000000, -9.000000) " xlink:href="#path-1"/>
+                    <g fill="#FFFFFF" fill-rule="evenodd" mask="url(#mask-2)">
+                        <rect id="Rectangle" width="18" height="18" x="0" y="0"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

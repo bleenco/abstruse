@@ -8,7 +8,10 @@ import { AuthService } from './shared/providers/auth.service';
 })
 export class AppComponent implements OnInit {
 
-  constructor(public statusService: StatusService, public authService: AuthService) { }
+  constructor(
+    public statusService: StatusService,
+    public authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.statusService.checkStatus();
