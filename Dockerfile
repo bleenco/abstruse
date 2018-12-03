@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:10 as build
+FROM mhart/alpine-node:8.11 as build
 WORKDIR /app
 
 ARG VCS_REF=n/a
