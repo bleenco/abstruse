@@ -1,24 +1,68 @@
 <div class="columns is-multiline">
-  <div class="column is-12">
-    <div class="notification is-green">
-      <img src="/assets/images/icons/question.svg" class="notification-icon">
-      <img src="/assets/images/icons/close.svg" class="close-icon">
-      <p>Your latest transaction may take a few minutes to show up in your activity.</p>
-    </div>
-    <div class="notification is-blue">
-      <img src="/assets/images/icons/important.svg" class="notification-icon">
-      <img src="/assets/images/icons/close.svg" class="close-icon">
-      <p>Your latest transaction may take a few minutes to show up in your activity.</p>
-    </div>
-    <div class="notification is-red">
-      <img src="/assets/images/icons/important.svg" class="notification-icon">
-      <img src="/assets/images/icons/close.svg" class="close-icon">
-      <p>Your latest transaction may take a few minutes to show up in your activity.</p>
-    </div>
+  <div class="column is-12 align-center">
+    <h1>Workers</h1>
+    <h4>Server nodes</h4>
+  </div>
+  <!-- <div class="column is-12">
     <div class="notification is-orange">
       <img src="/assets/images/icons/important.svg" class="notification-icon">
       <img src="/assets/images/icons/close.svg" class="close-icon">
-      <p>Your latest transaction may take a few minutes to show up in your activity.</p>
+      <p>No workers found. Please connect at least one worker in order to run builds.</p>
+    </div>
+  </div> -->
+  <div class="column is-12">
+    <div class="table">
+      <div class="headers">
+        <div class="columns">
+          <div class="column is-4 justify-center">
+            <span class="header-title">Cert ID</span>
+          </div>
+          <div class="column is-2 justify-center">
+            <span class="header-title">IP</span>
+          </div>
+          <div class="column is-2 justify-center">
+            <span class="header-title">Priority</span>
+          </div>
+          <div class="column is-2 justify-center">
+            <span class="header-title">Status</span>
+          </div>
+          <div class="column is-2 justify-center"></div>
+        </div>
+      </div>
+      <div class="table-items">
+        <div class="table-item" *ngFor="let worker of [0, 1, 2, 3, 4, 5]">
+          <div class="columns">
+            <div class="column is-4 justify-center">
+              <span class="table-data">01234-144321-123532-123543-12334</span>
+            </div>
+            <div class="column is-2 justify-center">
+              <span class="table-data">172.10.0.10</span>
+            </div>
+            <div class="column is-2 justify-center">
+              <div class="table-data">
+                <span class="heading-text">High</span>
+                <span class="data-text">9</span>
+              </div>
+            </div>
+            <div class="column is-2 justify-center">
+              <div class="status-item is-green">
+                <span class="status-circle"></span>
+                <span class="status-title">Operational</span>
+              </div>
+            </div>
+            <div class="column is-2 justify-center">
+              <button type="button" class="button is-small">
+                <i class="far fa-edit"></i>
+                <span>Edit</span>
+              </button>
+              <button type="button" class="button is-small">
+                <i class="far fa-chart-bar"></i>
+                <span>Stats</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1,7 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { SocketService } from './socket.service';
 import { Observable } from 'rxjs';
-import { share } from 'rxjs/operators';
 
 
 @Injectable({

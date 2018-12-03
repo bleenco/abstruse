@@ -12,10 +12,10 @@
 
   .status-title
     font-size: 13px
-    color: $green
-    font-family: $font-family-bold
+    color: $text-primary
+    font-family: $font-family-medium
 
-  &.is-passed
+  &.is-green
 
     .status-circle
       background: $green
@@ -23,7 +23,7 @@
     .status-title
       color: $green
 
-  &.is-failed
+  &.is-red
 
     .status-circle
       background: $red
@@ -31,7 +31,7 @@
     .status-title
       color: $red
 
-  &.is-running
+  &.is-yellow
 
     .status-circle
       background: $yellow
@@ -39,7 +39,7 @@
     .status-title
       color: $yellow
 
-  &.is-queued
+  &.is-grey
 
     .status-circle
       background: $text-primary

@@ -1,0 +1,86 @@
+.table
+  background: $white
+  border: 1px solid $border-default
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04)
+  width: 100%
+  border-radius: 4px
+
+  .headers
+    background: transparent
+    box-shadow: 0 1px 0 0 #EAECEE
+    height: 44px
+
+    .columns
+      margin: 0
+
+      .column
+        margin: 0
+        display: flex
+        align-items: center
+        height: 44px
+
+    .header-title
+      font-size: 12px
+      font-family: $font-family-medium
+      color: $text-label
+      text-transform: uppercase
+      padding: 0 10px
+
+  .table-item
+    height: 70px
+    background: transparent
+    color: $text-primary
+    line-height: 22px
+    font-size: 14px
+    box-shadow: 0 1px 0 0 #EAEDF3
+
+    .columns
+      margin: 0
+
+      .column
+        margin: 0
+        display: flex
+        align-items: center
+        height: 70px
+
+      .table-data, .status-item
+        padding: 0 10px
+
+      .table-data
+
+        .heading-text, .data-text
+          +ellipsis
+          display: block
+          line-height: 20px
+          text-align: center
+
+        .heading-text
+          font-size: 11px
+          color: $text-primary
+
+        .data-text
+          font-size: 13px
+          font-family: $font-family-medium
+
+          i, img
+            width: 20px
+            height: 20px
+            display: block
+            margin: 0 auto
+            font-size: 20px
+
+          img
+            width: 20px
+            height: 20px
+            border-radius: 50%
+
+          i
+
+            &.is-yellow
+              color: $yellow
+
+            &.is-green
+              color: $green
+
+            &.is-red
+              color: $red
