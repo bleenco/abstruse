@@ -54,7 +54,8 @@ COPY package.json package-lock.json npm-shrinkwrap.json /app/
 
 RUN npm install --only=production && \
   cp -R node_modules prod_node_modules && \
-  npm install
+  npm install && \
+  rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Copy shared files
 COPY tsconfig.json /app
