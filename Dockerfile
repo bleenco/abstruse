@@ -52,9 +52,15 @@ RUN apk add \
 # NPM dependencies
 COPY package.json package-lock.json npm-shrinkwrap.json /app/
 
-RUN npm install --only=production && \
-  cp -R node_modules prod_node_modules && \
-  npm install
+# TODO: Restore below block
+# RUN npm install --only=production && \
+#   cp -R node_modules prod_node_modules && \
+#   npm install
+
+# TODO: Remove below block
+RUN npm install && \
+  ln -s node_modules prod_node_modules && \
+  rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Copy shared files
 COPY tsconfig.json /app
@@ -99,8 +105,7 @@ RUN npm run build
 
 # Restore production node_modules
 RUN rm -rf node_modules && \
-  mv prod_node_modules node_modules && \
-  rm -rf node_modules/@types/mocha # TODO: fix this type conflict
+  mv prod_node_modules node_modules
 
 # Remove files not required for production
 # RUN apk del build-dependencies && \
