@@ -54,8 +54,7 @@ COPY package.json package-lock.json npm-shrinkwrap.json /app/
 
 RUN npm install --only=production && \
   cp -R node_modules prod_node_modules && \
-  npm install && \
-  rm -rf node_modules/@types/mocha # TODO: fix this type conflict
+  npm install
 
 # Copy shared files
 COPY tsconfig.json /app
@@ -100,11 +99,12 @@ RUN npm run build
 
 # Restore production node_modules
 RUN rm -rf node_modules && \
-  mv prod_node_modules node_modules
+  mv prod_node_modules node_modules && \
+  rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Remove files not required for production
-RUN apk del build-dependencies && \
-  rm -rf /tmp/*
+# RUN apk del build-dependencies && \
+#   rm -rf /tmp/*
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
