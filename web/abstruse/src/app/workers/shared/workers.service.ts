@@ -8,11 +8,20 @@ import { getAPIURL } from 'src/app/core/shared/shared-functions';
   providedIn: 'root'
 })
 export class WorkersService {
+  editDialogOpened: boolean;
 
   constructor(public http: HttpClient) { }
 
   fetchWorkers(): Observable<JSONResponse> {
     const url = getAPIURL() + '/workers';
     return this.http.get<JSONResponse>(url);
+  }
+
+  openEditDialog(): void {
+    this.editDialogOpened = true;
+  }
+
+  closeEditDialog(): void {
+    this.editDialogOpened = false;
   }
 }

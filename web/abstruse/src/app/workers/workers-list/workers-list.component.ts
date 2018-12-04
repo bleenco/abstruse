@@ -10,6 +10,7 @@ import { DataService } from 'src/app/shared/providers/data.service';
   styleUrls: ['./workers-list.component.sass']
 })
 export class WorkersListComponent implements OnInit, OnDestroy {
+  worker: Worker;
   workers: Worker[];
   fetchingWorkers: boolean;
   sub: Subscription;
@@ -20,6 +21,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.worker = null;
     this.workers = [];
     this.fetchWorkers();
 
@@ -39,6 +41,11 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+  }
+
+  edit(id: number): void {
+    this.worker = Object.assign({}, this.workers.find(worker => worker.id === id));
+    this.workersService.openEditDialog();
   }
 
   fetchWorkers(): void {

@@ -66,7 +66,7 @@
               </div>
             </div>
             <div class="column is-2 justify-center">
-              <button type="button" class="button is-small">
+              <button type="button" class="button is-small" (click)="edit(w.id)">
                 <i class="far fa-edit"></i>
                 <span>Edit</span>
               </button>
@@ -77,12 +77,12 @@
             </div>
           </div>
         </div>
-        <div class="table-item">
+        <div class="table-item" *ngIf="!workers.length">
           <div class="columns">
             <div class="column is-12 justify-center align-center">
               <span class="table-data justify-center align-center">
                 <img class="img-icon" src="/assets/images/icons/important-dark.svg">
-                <span class="color-secondary is-medium">No workers found</span>
+                <span class="color-secondary is-medium">No workers found.</span>
               </span>
             </div>
           </div>
@@ -91,3 +91,5 @@
     </div>
   </div>
 </div>
+
+<app-workers-edit-dialog *ngIf="workersService.editDialogOpened" [worker]="worker"></app-workers-edit-dialog>

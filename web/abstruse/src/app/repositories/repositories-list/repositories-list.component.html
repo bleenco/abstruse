@@ -2,7 +2,7 @@
   <div class="column is-12 align-center space-between">
     <div class="align-center">
       <h1>Repositories</h1>
-      <h4>Available git repositories.</h4>
+      <h4>Imported repos</h4>
     </div>
     <button type="button" class="button">
       <i class="fa fa-plus"></i>
@@ -11,18 +11,19 @@
   </div>
   <div class="column is-12">
     <div class="columns is-multiline">
-      <div class="column is-12 mb10">
-        <div class="message is-yellow" *ngIf="!repositories?.length">
-          <p>
-            <i class="fa fa-info-circle"></i>
-            No existing repositories found.
-          </p>
-        </div>
-
+      <div class="column is-12">
         <div class="repositories" *ngIf="repositories?.length">
           <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories" [routerLink]="['/repositories', repo.id]"
             routerLinkActive="router-link-active"></app-repositories-list-item>
         </div>
+      </div>
+    </div>
+    <div class="columns h70" *ngIf="repositories?.length">
+      <div class="column is-12 justify-center align-center">
+        <span class="table-data justify-center align-center">
+          <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+          <span class="color-secondary is-medium">No repositories found.</span>
+        </span>
       </div>
     </div>
   </div>

@@ -6,7 +6,7 @@ export enum WorkerStatus {
 
 export class Worker {
   constructor(
-    public id: string,
+    public id: number,
     public cert_id: string,
     public ip: string,
     public priority: number,

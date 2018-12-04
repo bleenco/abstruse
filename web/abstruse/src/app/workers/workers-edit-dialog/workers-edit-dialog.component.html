@@ -1,0 +1,36 @@
+<div class="dialog-overlay">
+  <div class="dialog-container">
+    <div class="dialog-header align-center">
+      <h1>Worker {{ worker?.id }}</h1>
+      <h4>{{ worker?.cert_id }}</h4>
+      <img src="/assets/images/icons/close-dark.svg" (click)="workersService.closeEditDialog()">
+    </div>
+    <div class="dialog-body">
+      <form>
+        <div class="columns is-multiline is-marginless is-paddingless">
+          <div class="column is-12 align-center is-marginless is-paddingless">
+            <img class="img-icon" src="/assets/images/icons/q.svg">
+            <span class="note">ID is generated from workers client TLS certificate.</span>
+          </div>
+          <div class="column is-10">
+            <div class="field">
+              <label class="label">Certificate ID</label>
+              <input class="input" type="text" [value]="worker?.cert_id" disabled>
+            </div>
+          </div>
+          <div class="column is-2">
+            <div class="field">
+              <label class="label">Priority</label>
+              <app-selectbox [values]="priorityValues" [(ngModel)]="worker.priority" name="priority"></app-selectbox>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="dialog-footer justify-end">
+      <button type="button" class="button" (click)="workersService.closeEditDialog()">
+        <span>Close</span>
+      </button>
+    </div>
+  </div>
+</div>
