@@ -17,6 +17,8 @@ import { EditorComponent } from '../widgets/editor/editor.component';
 import { ConfirmDialogComponent } from '../widgets/confirm-dialog/confirm-dialog.component';
 import { ToggleComponent } from '../widgets/toggle/toggle.component';
 import { ProgressBarComponent } from '../widgets/progress-bar/progress-bar.component';
+import { PlaceholderComponent } from '../widgets/placeholder/placeholder.component';
+import { ColorPickerComponent } from '../widgets/color-picker/color-picker.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { TooltipDirective } from '../directives/tooltip.directive';
@@ -24,7 +26,6 @@ import { EqualValidatorDirective } from '../validators/equal-password.directive'
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
 import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
-import { PlaceholderComponent } from '../widgets/placeholder/placeholder.component';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import { PlaceholderComponent } from '../widgets/placeholder/placeholder.compone
     ToggleComponent,
     ProgressBarComponent,
     PlaceholderComponent,
-    TooltipDirective
+    TooltipDirective,
+    ColorPickerComponent
   ],
   exports: [
     CommonModule,
@@ -67,7 +69,8 @@ import { PlaceholderComponent } from '../widgets/placeholder/placeholder.compone
     ToggleComponent,
     ProgressBarComponent,
     PlaceholderComponent,
-    TooltipDirective
+    TooltipDirective,
+    ColorPickerComponent
   ]
 })
 export class SharedModule {

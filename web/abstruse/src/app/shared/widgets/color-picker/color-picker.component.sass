@@ -1,0 +1,17 @@
+@import 'colours'
+
+.color-picker-container
+  display: flex
+  padding: 2px 0
+  align-items: center
+
+  .color
+    width: 20px
+    height: 20px
+    border-radius: 4px
+    margin-right: 3px
+    border: 2px solid transparent
+    cursor: pointer
+
+    &.is-active
+      border: 2px solid $border-dark

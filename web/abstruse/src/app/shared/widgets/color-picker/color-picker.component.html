@@ -1,0 +1,3 @@
+<div class="color-picker-container">
+  <span class="color" [style.background]="c" *ngFor="let c of colors" (click)="pick(c)" [class.is-active]="color == c"></span>
+</div>
