@@ -87,8 +87,7 @@ export class TooltipDirective {
       this.renderer.setStyle(this.tooltipEl, 'top', -(height + 12) + 'px');
       this.renderer.setStyle(this.tooltipEl, 'left', (-(this.textWidth / 2) + (this.elementWidth / 2)) + 'px');
       this.renderer.setStyle(this.arrowEl, 'left', (this.textWidth / 2 - 5) + 'px');
-
-      setTimeout(() => this.renderer.setStyle(this.tooltipEl, 'display', 'none'));
+      this.renderer.setStyle(this.tooltipEl, 'display', 'none');
     });
   }
 
