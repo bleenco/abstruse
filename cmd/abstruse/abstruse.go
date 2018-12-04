@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -15,10 +16,16 @@ var (
 	keyFile   = flag.String("certkey", "", "path to cert key file")
 	grpcPort  = flag.Int("grpc-port", 3330, "gRPC server port")
 	debug     = flag.Bool("debug", true, "debug mode")
+	version   = flag.Bool("version", false, "version")
 )
 
 func main() {
 	flag.Parse()
+
+	if *version {
+		fmt.Printf("%s\n", server.GenerateBuildVersionString())
+		os.Exit(0)
+	}
 
 	config := &server.AbstruseConfig{
 		HTTPAddress:  *httpAddr,
