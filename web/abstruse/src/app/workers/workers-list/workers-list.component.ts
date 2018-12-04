@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WorkersService } from '../shared/workers.service';
 import { Worker } from '../shared/worker.class';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { DataService } from 'src/app/shared/providers/data.service';
   templateUrl: './workers-list.component.html',
   styleUrls: ['./workers-list.component.sass']
 })
-export class WorkersListComponent implements OnInit {
+export class WorkersListComponent implements OnInit, OnDestroy {
   workers: Worker[];
   fetchingWorkers: boolean;
   sub: Subscription;
@@ -32,6 +32,13 @@ export class WorkersListComponent implements OnInit {
         break;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_updates', id: '' } });
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 
   fetchWorkers(): void {

@@ -14,4 +14,9 @@ export class Worker {
     public created_at?: Date,
     public updated_at?: Date
   ) { }
+
+  getStatus(): string {
+    const status = String(this.status);
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
 }

@@ -47,6 +47,37 @@
         padding: 0 10px
 
       .table-data
+        font-size: 13px
+
+        &.is-number
+          +unselectable
+          display: flex
+          align-items: center
+          justify-content: center
+          border: 1px solid $border-default
+          border-radius: 4px
+          line-height: 22px
+          width: 40px
+          height: 28px
+          font-size: 13px
+
+          &.is-green
+            background: rgba($green, .25)
+            color: $green
+            border: 2px solid $green
+            font-family: $font-family-medium
+
+          &.is-red
+            background: rgba($red, .25)
+            color: $red
+            border: 2px solid $red
+            font-family: $font-family-medium
+
+          &.is-orange
+            background: rgba($orange, .25)
+            color: $orange
+            border: 2px solid $orange
+            font-family: $font-family-medium
 
         .heading-text, .data-text
           +ellipsis

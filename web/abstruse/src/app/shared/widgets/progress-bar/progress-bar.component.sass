@@ -1,0 +1,33 @@
+@import 'colours'
+@import 'mixins'
+
+$progress-height: 26px
+
+\:host
+  width: 100%
+
+.progress-bar
+  +unselectable
+  display: flex
+  width: 100%
+  height: $progress-height
+  background: rgba($blue, .5)
+  position: relative
+  border-radius: 4px
+  justify-content: center
+  align-items: center
+
+  .progress
+    position: absolute
+    left: 0
+    top: 0
+    height: $progress-height
+    border-radius: 4px
+    background: $blue
+    transition: width 200ms ease-out
+
+  .progress-text
+    color: $white
+    font-size: 12px
+    z-index: 10
+    position: relative

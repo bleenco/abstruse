@@ -42,32 +42,27 @@
         <div class="table-item" *ngFor="let w of workers">
           <div class="columns">
             <div class="column is-1 justify-center">
-              <div class="table-data">
-                <span class="heading-text is-larger">{{ w.id }}</span>
-              </div>
+              <span class="table-data is-number">{{ w.id }}</span>
             </div>
             <div class="column is-3 justify-center">
               <span class="table-data">{{ w.ip }}</span>
             </div>
             <div class="column is-1 justify-center">
-              <span class="table-data">4 / 6</span>
+              <app-progress-bar [text]="'0 / 2'" [percent]="0"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
-              <span class="table-data">12%</span>
+              <app-progress-bar [text]="'35%'" [percent]="35"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
-              <span class="table-data">45%</span>
+              <app-progress-bar [text]="'76%'" [percent]="76"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
-              <div class="table-data">
-                <span class="heading-text">High</span>
-                <span class="data-text">{{ w.priority }}</span>
-              </div>
+              <span class="table-data is-number" [ngClass]="{ 'is-green': w.priority >= 8 && w.priority, 'is-orange': w.priority >= 4 && w.priority < 8, 'is-red': w.priority < 4 }">{{ w.priority }}</span>
             </div>
             <div class="column is-2 justify-center">
               <div class="status-item" [ngClass]="{ 'is-green': w.status === 'operational', 'is-red': w.status === 'down' }">
                 <span class="status-circle"></span>
-                <span class="status-title">{{ w.status }}</span>
+                <span class="status-title">{{ w.getStatus() }}</span>
               </div>
             </div>
             <div class="column is-2 justify-center">
@@ -79,6 +74,16 @@
                 <i class="far fa-chart-bar"></i>
                 <span>Stats</span>
               </button>
+            </div>
+          </div>
+        </div>
+        <div class="table-item">
+          <div class="columns">
+            <div class="column is-12 justify-center align-center">
+              <span class="table-data justify-center align-center">
+                <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+                <span class="color-secondary is-medium">No workers found</span>
+              </span>
             </div>
           </div>
         </div>
