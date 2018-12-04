@@ -6,10 +6,10 @@ export class TooltipOptions {
     public backgroundColor: string = '#3E3F42',
     public color: string = '#FFFFFF',
     public borderRadius: string = '4px',
-    public fontSize: string = '14px',
+    public fontSize: string = '13px',
     public lineHeight: string = '22px',
     public textAlign: string = 'center',
-    public padding: string = '5px 8px'
+    public padding: string = '3px 8px'
   ) { }
 }
 
@@ -31,10 +31,11 @@ export class TooltipDirective {
     public renderer: Renderer2
   ) {
     this.element = el.nativeElement;
-    this.generateTooltip();
+    setTimeout(() => this.generateTooltip());
   }
 
   private generateTooltip(): void {
+    const rect = this.element.getBoundingClientRect();
     this.tooltipEl = this.renderer.createElement('div');
     const text = this.renderer.createText(this.element.getAttribute('title'));
     this.textWidth = this.getTextWidth(this.element.getAttribute('title')) + 16;
@@ -52,9 +53,9 @@ export class TooltipDirective {
     this.wrapper = this.renderer.createElement('div');
     this.renderer.setStyle(this.wrapper, 'position', 'relative');
     this.renderer.setStyle(this.wrapper, 'display', 'inline-block');
-    this.renderer.setStyle(this.wrapper, 'margin', getComputedStyle(this.element).margin);
-    this.renderer.setStyle(this.wrapper, 'height', getComputedStyle(this.element).height);
+    this.renderer.setStyle(this.wrapper, 'height', `${rect.height}px`);
     this.renderer.setStyle(this.wrapper, 'overflow', 'visible');
+    this.renderer.setStyle(this.wrapper, 'cursor', 'pointer');
 
     this.renderer.appendChild(this.tooltipEl, this.arrowEl);
     this.renderer.insertBefore(this.element.parentNode, this.wrapper, this.element);
@@ -74,7 +75,7 @@ export class TooltipDirective {
     this.renderer.setStyle(this.tooltipEl, 'text-align', this.tooltipOptions.textAlign);
     this.renderer.setStyle(this.tooltipEl, 'padding', this.tooltipOptions.padding);
     this.renderer.setStyle(this.tooltipEl, 'z-index', 100);
-    this.renderer.setStyle(this.tooltipEl, 'display', 'inline-block');
+    this.renderer.setStyle(this.tooltipEl, 'display', 'block');
     this.renderer.setStyle(this.tooltipEl, 'width', this.textWidth + 'px');
   }
 
