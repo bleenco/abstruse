@@ -7,14 +7,51 @@
     <div class="dialog-body">
       <form>
         <div class="field">
+          <label class="label">Team Name</label>
+          <input type="text" class="input" name="name" placeholder="Team Name">
+          <p class="input-info">Team name or title.</p>
+        </div>
+        <div class="field">
+          <label class="label">Description</label>
+          <input type="text" class="input" name="description" placeholder="Team Description">
+          <p class="input-info">A few words what this group is all about.</p>
+        </div>
+        <div class="field">
           <label class="label">Placeholder Color</label>
-          <app-color-picker></app-color-picker>
+          <app-color-picker name="color"></app-color-picker>
+          <p class="input-info">Pick a color used in placeholders and tags for this group.</p>
+        </div>
+        <div class="field">
+          <label class="label">Group Permissions</label>
+          <div class="checkboxes-container">
+            <div class="checkbox-item">
+              <span class="label">Can configure worker nodes</span>
+              <app-checkbox></app-checkbox>
+            </div>
+            <div class="checkbox-item">
+              <span class="label">Can import new repositories</span>
+              <app-checkbox></app-checkbox>
+            </div>
+            <div class="checkbox-item">
+              <span class="label">Can manage users</span>
+              <app-checkbox></app-checkbox>
+            </div>
+            <div class="checkbox-item">
+              <span class="label">Can manage teams</span>
+              <app-checkbox></app-checkbox>
+            </div>
+          </div>
         </div>
       </form>
     </div>
     <div class="dialog-footer justify-end">
       <button type="button" class="button">
-        <span>Close</span>
+        <i class="fa fa-times"></i>
+        <span>Cancel</span>
+      </button>
+      <button type="button" class="button">
+        <i class="fa fa-check"></i>
+        <span>Save</span>
       </button>
     </div>
   </div>

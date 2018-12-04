@@ -19,6 +19,7 @@ import { ToggleComponent } from '../widgets/toggle/toggle.component';
 import { ProgressBarComponent } from '../widgets/progress-bar/progress-bar.component';
 import { PlaceholderComponent } from '../widgets/placeholder/placeholder.component';
 import { ColorPickerComponent } from '../widgets/color-picker/color-picker.component';
+import { CheckboxComponent } from '../widgets/checkbox/checkbox.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
 import { TooltipDirective } from '../directives/tooltip.directive';
@@ -49,7 +50,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     ProgressBarComponent,
     PlaceholderComponent,
     TooltipDirective,
-    ColorPickerComponent
+    ColorPickerComponent,
+    CheckboxComponent
   ],
   exports: [
     CommonModule,
@@ -70,7 +72,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     ProgressBarComponent,
     PlaceholderComponent,
     TooltipDirective,
-    ColorPickerComponent
+    ColorPickerComponent,
+    CheckboxComponent
   ]
 })
 export class SharedModule {
