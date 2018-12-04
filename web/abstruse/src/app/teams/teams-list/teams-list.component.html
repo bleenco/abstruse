@@ -1,77 +1,87 @@
 <div class="columns is-multiline">
-  <div class="column is-12 align-center">
-    <h1>Teams</h1>
-    <h4>Manage teams and team permissions</h4>
+  <div class="column is-12">
+    <div class="tabs">
+      <div class="tabs-heading">
+        <h1>Teams</h1>
+        <h4>Manage teams and team permissions</h4>
+      </div>
+      <div class="tabs-items">
+        <span class="tab is-active">Teams</span>
+        <span class="tab">Users</span>
+      </div>
+    </div>
   </div>
   <div class="column is-12">
-    <div class="table">
-      <div class="headers">
-        <div class="columns">
-          <div class="column is-1 justify-center">
-            <span class="header-title"></span>
-          </div>
-          <div class="column is-2">
-            <span class="header-title">Title</span>
-          </div>
-          <div class="column is-3">
-            <span class="header-title">Description</span>
-          </div>
-          <div class="column is-5">
-            <span class="header-title">Members</span>
-          </div>
-          <div class="column is-1"></div>
-        </div>
-      </div>
-      <div class="table-items">
-        <div class="table-item">
+    <div class="tabs-content">
+      <div class="table">
+        <div class="headers">
           <div class="columns">
-            <div class="column is-1 justify-center align-center">
-              <app-placeholder [text]="'A'" [background]="'#34AA44'"></app-placeholder>
+            <div class="column is-1 justify-center">
+              <span class="header-title"></span>
             </div>
-            <div class="column is-2 align-center">
-              <span class="table-data is-medium color-secondary is-larger">Admins</span>
+            <div class="column is-2">
+              <span class="header-title">Title</span>
             </div>
-            <div class="column is-3 align-center">
-              <span class="table-data">Can access and set anything.</span>
+            <div class="column is-3">
+              <span class="header-title">Description</span>
             </div>
-            <div class="column is-5 align-center">
-              <div class="members-avatars align-center">
-                <span class="member-avatar">
-                  <img src="/assets/images/avatars/predefined/avatar_2.svg" class="member-avatar">
-                </span>
-                <span class="member-avatar">
-                  <img src="/assets/images/avatars/predefined/avatar_6.svg" class="member-avatar">
-                </span>
-                <span class="member-avatar">
-                  <img src="/assets/images/avatars/predefined/avatar_12.svg" class="member-avatar">
-                </span>
-                <span class="member-avatar">
-                  <img src="/assets/images/avatars/predefined/avatar_18.svg" class="member-avatar">
-                </span>
-                <span class="member-avatar">
-                  <img src="/assets/images/avatars/predefined/avatar_5.svg" class="member-avatar">
-                </span>
-                <span class="plus-icon">+3</span>
+            <div class="column is-5">
+              <span class="header-title">Members</span>
+            </div>
+            <div class="column is-1"></div>
+          </div>
+        </div>
+        <div class="table-items">
+          <div class="table-item">
+            <div class="columns">
+              <div class="column is-1 justify-center align-center">
+                <app-placeholder [text]="'A'" [background]="'#34AA44'"></app-placeholder>
+              </div>
+              <div class="column is-2 align-center">
+                <span class="table-data is-medium color-secondary is-larger">Admins</span>
+              </div>
+              <div class="column is-3 align-center">
+                <span class="table-data">Can access and set anything.</span>
+              </div>
+              <div class="column is-5 align-center">
+                <div class="members-avatars align-center">
+                  <span class="member-avatar">
+                    <img src="/assets/images/avatars/predefined/avatar_2.svg" class="member-avatar">
+                  </span>
+                  <span class="member-avatar">
+                    <img src="/assets/images/avatars/predefined/avatar_6.svg" class="member-avatar">
+                  </span>
+                  <span class="member-avatar">
+                    <img src="/assets/images/avatars/predefined/avatar_12.svg" class="member-avatar">
+                  </span>
+                  <span class="member-avatar">
+                    <img src="/assets/images/avatars/predefined/avatar_18.svg" class="member-avatar">
+                  </span>
+                  <span class="member-avatar">
+                    <img src="/assets/images/avatars/predefined/avatar_5.svg" class="member-avatar">
+                  </span>
+                  <span class="plus-icon">+3</span>
+                </div>
+              </div>
+              <div class="column is-1 justify-end align-center">
+                <button type="button" class="button is-small mr10">
+                  <i class="fa fa-edit"></i>
+                  <span>Edit</span>
+                </button>
               </div>
             </div>
-            <div class="column is-1 justify-end align-center">
-              <button type="button" class="button is-small mr10">
-                <i class="fa fa-edit"></i>
-                <span>Edit</span>
-              </button>
-            </div>
           </div>
+          <!-- <div class="table-item">
+            <div class="columns">
+              <div class="column is-12 justify-center align-center">
+                <span class="table-data justify-center align-center">
+                  <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+                  <span class="color-secondary is-medium">No teams found.</span>
+                </span>
+              </div>
+            </div>
+          </div> -->
         </div>
-        <!-- <div class="table-item">
-          <div class="columns">
-            <div class="column is-12 justify-center align-center">
-              <span class="table-data justify-center align-center">
-                <img class="img-icon" src="/assets/images/icons/important-dark.svg">
-                <span class="color-secondary is-medium">No teams found.</span>
-              </span>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
   </div>

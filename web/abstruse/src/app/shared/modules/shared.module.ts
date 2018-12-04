@@ -19,6 +19,7 @@ import { ToggleComponent } from '../widgets/toggle/toggle.component';
 import { ProgressBarComponent } from '../widgets/progress-bar/progress-bar.component';
 
 import { StopPropagationDirective } from '../directives/stop-propagation.directive';
+import { TooltipDirective } from '../directives/tooltip.directive';
 import { EqualValidatorDirective } from '../validators/equal-password.directive';
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
@@ -45,7 +46,8 @@ import { PlaceholderComponent } from '../widgets/placeholder/placeholder.compone
     StopPropagationDirective,
     ToggleComponent,
     ProgressBarComponent,
-    PlaceholderComponent
+    PlaceholderComponent,
+    TooltipDirective
   ],
   exports: [
     CommonModule,
@@ -64,7 +66,8 @@ import { PlaceholderComponent } from '../widgets/placeholder/placeholder.compone
     StopPropagationDirective,
     ToggleComponent,
     ProgressBarComponent,
-    PlaceholderComponent
+    PlaceholderComponent,
+    TooltipDirective
   ]
 })
 export class SharedModule {
