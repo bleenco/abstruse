@@ -21,7 +21,8 @@ type User struct {
 
 	Repositories []Repository `json:"repositories"`
 
-	Team []Team `gorm:"many2many:team_users;"`
+	Team       []*Team       `gorm:"many2many:team_users;"`
+	Permission []*Permission `gorm:"many2many:user_permissions;"`
 }
 
 // Find finds user by id.

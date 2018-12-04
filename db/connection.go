@@ -37,5 +37,7 @@ func Connect(opts Options) error {
 		&Worker{},
 	)
 
+	initDefaultValues()
+
 	return nil
 }

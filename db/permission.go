@@ -6,14 +6,16 @@ import "database/sql"
 type Permission struct {
 	BaseModel
 
-	Admin  bool `gorm:"not_null;default:false"`
-	System bool `gorm:"not_null;default:false"`
-	Read   bool `gorm:"not_null;default:false"`
-	Write  bool `gorm:"not_null;default:false"`
+	Module string `json:"module"`
+	Title  string `json:"title"`
 
 	Repository   Repository
 	RepositoryID sql.NullInt64
 
-	User  []User `gorm:"many2many:user_permissions;"`
-	Teams []Team `gorm:"many2many:team_permissions;"`
+	Read    bool `gorm:"not_null;default:false" json:"read"`
+	Write   bool `gorm:"not_null;default:false" json:"write"`
+	Execute bool `gorm:"not_null;default:false" json:"execute"`
+
+	User  []*User `gorm:"many2many:user_permissions;"`
+	Teams []*Team `gorm:"many2many:team_permissions;"`
 }
