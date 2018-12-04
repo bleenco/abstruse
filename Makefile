@@ -21,7 +21,7 @@ install_dependencies:
 	@cd web/abstruse && npm install
 
 dev:
-	reflex -sr '\.go$$' -R '^web/' -- sh -c 'make && ./build/abstruse'
+	@reflex -sr '\.go$$' -R '^web/' -R '^statik/statik.go' -- sh -c 'make && ./build/abstruse'
 
 worker:
 	@CGO_ENABLED=0 go build -o build/abstruse-worker cmd/abstruse-worker/worker.go

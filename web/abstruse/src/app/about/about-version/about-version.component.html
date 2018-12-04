@@ -1,0 +1,31 @@
+<div class="columns is-multiline">
+  <div class="column is-12 align-center">
+    <h1>About</h1>
+    <h4>Abstruse version and other information</h4>
+  </div>
+  <div class="column is-12">
+    <hr />
+  </div>
+  <div class="column is-12">
+    <div class="list-item is-bordered no-hover-effect">
+      <div class="columns is-marginless is-paddingless">
+        <div class="column is-2 data-column">
+          <span class="heading-text">API Version</span>
+          <span class="data-text">{{ version?.api }}</span>
+        </div>
+        <div class="column is-2 data-column">
+          <span class="heading-text">UI Version</span>
+          <span class="data-text">{{ version?.ui }}</span>
+        </div>
+        <div class="column is-5 data-column">
+          <span class="heading-text">Commit Hash</span>
+          <span class="data-text">{{ version?.commit_hash }}</span>
+        </div>
+        <div class="column is-3 data-column">
+          <span class="heading-text">Build Date</span>
+          <span class="data-text">{{ version?.build_date | date:'medium' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
