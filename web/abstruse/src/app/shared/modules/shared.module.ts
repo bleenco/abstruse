@@ -23,6 +23,7 @@ import { EqualValidatorDirective } from '../validators/equal-password.directive'
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
 import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
+import { PlaceholderComponent } from '../widgets/placeholder/placeholder.component';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     HumanizeBytesPipe,
     StopPropagationDirective,
     ToggleComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    PlaceholderComponent
   ],
   exports: [
     CommonModule,
@@ -61,7 +63,8 @@ import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
     HumanizeBytesPipe,
     StopPropagationDirective,
     ToggleComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    PlaceholderComponent
   ]
 })
 export class SharedModule {

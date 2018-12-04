@@ -30,6 +30,8 @@ func Connect(opts Options) error {
 
 	DB.AutoMigrate(
 		&User{},
+		&Team{},
+		&Permission{},
 		&Integration{},
 		&Repository{},
 		&Worker{},

@@ -49,6 +49,9 @@
       .table-data
         font-size: 13px
 
+        &.is-larger
+          font-size: 14px
+
         &.is-number
           +unselectable
           display: flex
@@ -118,3 +121,31 @@
 
             &.is-red
               color: $red
+
+      .members-avatars
+        padding: 0 10px
+
+        .member-avatar, .plus-icon
+          width: 28px
+          height: 28px
+          background: $white
+          border-radius: 50%
+          margin-right: 5px
+          border: 1px solid $border-default
+          display: inline-flex
+          align-items: center
+          justify-content: center
+
+          img
+            width: 28px
+            height: 28px
+            background: $white
+            border-radius: 50%
+
+        .plus-icon
+          cursor: pointer
+          font-size: 12px
+
+          &:hover
+            +unselectable
+            border-color: $border-primary

@@ -20,6 +20,8 @@ type User struct {
 	Avatar   string `gorm:"not null;varchar(255);default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"avatar"`
 
 	Repositories []Repository `json:"repositories"`
+
+	Team []Team `gorm:"many2many:team_users;"`
 }
 
 // Find finds user by id.

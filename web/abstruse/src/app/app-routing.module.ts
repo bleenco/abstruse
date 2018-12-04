@@ -20,6 +20,11 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
+    path: 'teams',
+    loadChildren: './teams/teams.module#TeamsModule',
+    canActivate: [AuthGuardService]
+  },
+  {
     path: 'workers',
     loadChildren: './workers/workers.module#WorkersModule',
     canActivate: [AuthGuardService]
