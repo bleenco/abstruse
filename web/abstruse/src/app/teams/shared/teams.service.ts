@@ -4,6 +4,7 @@ import { getAPIURL } from 'src/app/core/shared/shared-functions';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { Observable } from 'rxjs';
 import { Team } from './team.model';
+import { TeamForm } from '../teams-team-dialog/teams-team-dialog.component';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,11 @@ export class TeamsService {
   closeTeamDialog(): void {
     this.teamDialogOpened = false;
     this.team = null;
+  }
+
+  saveTeam(form: TeamForm): Observable<JSONResponse> {
+    const url = getAPIURL() + `/teams/${form.id}`;
+    return this.http.post<JSONResponse>(url, form);
   }
 
   fetchTeams(): Observable<JSONResponse> {

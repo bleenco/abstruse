@@ -7,11 +7,16 @@ form
   &.has-padding
     padding: 5px 20px 15px
 
+  &.no-padding
+    padding: 5px 0 0 0
+
 .field
   display: inline-block
   width: 100%
   max-width: 100%
   position: relative
+  padding-left: 20px
+  padding-right: 20px
 
   &:not(:last-child)
     margin-bottom: 10px
@@ -150,3 +155,25 @@ textarea
       color: $text-secondary
       font-size: 11px
       font-family: $font-family-regular
+
+.input
+
+  &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
+    border-color: $green
+    background: rgba($green, .1)
+
+    &::placeholder
+      color: $green
+
+    &::-ms-input-placeholder
+      color: $green
+
+  &.ng-invalid:not(form):not(.ng-untouched)
+    border-color: $red
+    background: rgba($red, .1)
+
+    &::placeholder
+      color: $red
+
+    &::-ms-input-placeholder
+      color: $red

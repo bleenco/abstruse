@@ -86,4 +86,4 @@
   </div>
 </div>
 
-<app-teams-team-dialog *ngIf="teamsService.teamDialogOpened"></app-teams-team-dialog>
+<app-teams-team-dialog *ngIf="teamsService.teamDialogOpened" (teamSaved)="teamSavedEvent()"></app-teams-team-dialog>

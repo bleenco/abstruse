@@ -44,7 +44,7 @@ export class ColorPickerComponent implements OnInit, ControlValueAccessor {
   }
 
   pick(color: string): void {
-    this.color = color;
+    this.value = color;
   }
 
   writeValue(color: string) {

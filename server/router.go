@@ -48,6 +48,7 @@ func (r *Router) initAPI() {
 	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
 	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(TriggerBuildHandler))
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))
+	r.Router.POST("/api/teams/:id", api.AuthorizationMiddleware(teams.SaveTeamHandler))
 }
 
 func (r *Router) initUI() {

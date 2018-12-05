@@ -2,7 +2,7 @@ package db
 
 import (
 	"errors"
-	"fmt"
+	"time"
 )
 
 // Team defines `teams` table in db.
@@ -21,6 +21,40 @@ type Team struct {
 // Find method
 func (t *Team) Find(teamID int) error {
 	return DB.First(t, teamID).Error
+}
+
+// Update updates team general properties.
+func (t *Team) Update(userID int) error {
+	var team Team
+	if err := DB.Preload("User.Team.Permission").Find(&team).Error; err != nil {
+		return err
+	}
+
+	checkPerm := func(team Team) bool {
+		for _, user := range team.User {
+			if user.ID == uint(userID) {
+				for _, permission := range user.Permission {
+					if permission.Module == "teams_write" {
+						return true
+					}
+				}
+				for _, t := range user.Team {
+					for _, permission := range t.Permission {
+						if permission.Module == "teams_write" {
+							return true
+						}
+					}
+				}
+			}
+		}
+		return false
+	}
+
+	if !checkPerm(team) {
+		return errors.New("permission denied")
+	}
+
+	return DB.Model(t).Updates(map[string]interface{}{"updated_at": time.Now(), "color": t.Color, "description": t.Description, "title": t.Title}).Error
 }
 
 // AddUser to team.
@@ -62,7 +96,9 @@ func FindTeams(userID int) ([]Team, error) {
 		return false
 	}
 
-	fmt.Println(checkPerm(teams))
-
-	return teams, nil
+	if checkPerm(teams) {
+		return teams, nil
+	} else {
+		return nil, errors.New("permission denied")
+	}
 }

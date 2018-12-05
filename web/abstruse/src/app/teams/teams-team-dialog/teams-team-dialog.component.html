@@ -12,20 +12,22 @@
         <span class="tab" [class.is-active]="tab === 'permissions'" (click)="switchTab('permissions')">Permissions</span>
       </div>
 
-      <form class="has-padding" *ngIf="tab === 'general'">
+      <form #form="ngForm" class="no-padding" *ngIf="tab === 'general'">
         <div class="field">
           <label class="label">Team Title</label>
-          <input type="text" class="input" name="title" placeholder="Team Title" [(ngModel)]="teamForm.title">
-          <p class="input-info">Team name or title.</p>
+          <input type="text" class="input" name="title" placeholder="Team Title" [(ngModel)]="teamForm.title" required
+            minlength="3">
+          <p class="input-info">Name.</p>
         </div>
         <div class="field">
           <label class="label">Description</label>
-          <input type="text" class="input" name="description" placeholder="Team Description" [(ngModel)]="teamForm.description">
+          <input type="text" class="input" name="description" placeholder="Team Description" [(ngModel)]="teamForm.description"
+            required>
           <p class="input-info">A few words what this group is all about.</p>
         </div>
         <div class="field">
           <label class="label">Placeholder Color</label>
-          <app-color-picker name="color" [(ngModel)]="teamForm.color"></app-color-picker>
+          <app-color-picker name="color" [(ngModel)]="teamForm.color" required></app-color-picker>
           <p class="input-info">Pick a color used in placeholders and tags for this group.</p>
         </div>
         <!-- <div class="field">
@@ -49,25 +51,23 @@
             </div>
           </div>
         </div> -->
+        <div class="dialog-footer justify-end">
+          <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
+            <i class="fa fa-times"></i>
+            <span>Cancel</span>
+          </button>
+          <button type="button" class="button" [disabled]="!form.valid || savingTeam" (click)="saveTeam()">
+            <i class="fa fa-check"></i>
+            <span>Save</span>
+          </button>
+        </div>
       </form>
     </div>
-    <div class="dialog-footer justify-end">
-      <div *ngIf="tab === 'general'">
-        <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
-          <i class="fa fa-times"></i>
-          <span>Cancel</span>
-        </button>
-        <button type="button" class="button">
-          <i class="fa fa-check"></i>
-          <span>Save</span>
-        </button>
-      </div>
-      <div *ngIf="tab !== 'general'">
-        <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
-          <i class="fa fa-times"></i>
-          <span>Close</span>
-        </button>
-      </div>
+    <div class="dialog-footer justify-end" *ngIf="tab !== 'general'">
+      <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
+        <i class="fa fa-times"></i>
+        <span>Close</span>
+      </button>
     </div>
   </div>
 </div>

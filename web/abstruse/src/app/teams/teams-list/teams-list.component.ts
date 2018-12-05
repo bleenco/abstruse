@@ -20,6 +20,10 @@ export class TeamsListComponent implements OnInit {
     this.fetchTeams();
   }
 
+  teamSavedEvent(): void {
+    this.fetchTeams();
+  }
+
   fetchTeams(): void {
     this.fetchingTeams = true;
     this.teamsService.fetchTeams().subscribe(resp => {
@@ -32,5 +36,4 @@ export class TeamsListComponent implements OnInit {
       this.errorFetchingTeams = (((err || {}).error || {}).error || {}).message || JSON.stringify(err);
     }, () => this.fetchingTeams = false);
   }
-
 }
