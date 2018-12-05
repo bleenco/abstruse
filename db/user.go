@@ -19,7 +19,7 @@ type User struct {
 	Fullname string `gorm:"not null;varchar(255)" json:"fullname"`
 	Avatar   string `gorm:"not null;varchar(255);default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"avatar"`
 
-	Repositories []Repository `json:"repositories"`
+	Repositories []*Repository `json:"repositories"`
 
 	Team       []*Team       `gorm:"many2many:team_users;" json:"teams"`
 	Permission []*Permission `gorm:"many2many:user_permissions;" json:"permissions"`

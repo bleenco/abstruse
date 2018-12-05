@@ -36,4 +36,9 @@ export class TeamsService {
     const url = getAPIURL() + '/teams';
     return this.http.get<JSONResponse>(url);
   }
+
+  fetchPredefinedPermissions(teamID: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/permissions/teams/${teamID}?type=predefined`;
+    return this.http.get<JSONResponse>(url);
+  }
 }

@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import {
   HttpInterceptor,
   HttpRequest,
-  HttpResponse,
   HttpErrorResponse,
   HttpHandler,
   HttpEvent
 } from '@angular/common/http';
 import { Observable, throwError, of, empty } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, mergeMap } from 'rxjs/operators';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
@@ -17,7 +16,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
       .pipe(
         catchError((err: HttpErrorResponse) => {
           return empty();
-        })
+        }),
+        mergeMap((err: any) => of((((err || {}).error || {}).error || {}).message || JSON.stringify(err)))
       );
   }
 }

@@ -30,27 +30,6 @@
           <app-color-picker name="color" [(ngModel)]="teamForm.color" required></app-color-picker>
           <p class="input-info">Pick a color used in placeholders and tags for this group.</p>
         </div>
-        <!-- <div class="field">
-          <label class="label">Group Permissions</label>
-          <div class="checkboxes-container">
-            <div class="checkbox-item">
-              <span class="label">Can configure worker nodes</span>
-              <app-checkbox></app-checkbox>
-            </div>
-            <div class="checkbox-item">
-              <span class="label">Can import new repositories</span>
-              <app-checkbox></app-checkbox>
-            </div>
-            <div class="checkbox-item">
-              <span class="label">Can manage users</span>
-              <app-checkbox></app-checkbox>
-            </div>
-            <div class="checkbox-item">
-              <span class="label">Can manage teams</span>
-              <app-checkbox></app-checkbox>
-            </div>
-          </div>
-        </div> -->
         <div class="dialog-footer justify-end">
           <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
             <i class="fa fa-times"></i>
@@ -62,6 +41,29 @@
           </button>
         </div>
       </form>
+
+      <div class="users-tab" *ngIf="tab === 'users'">
+
+      </div>
+
+      <div class="permissions-tab" *ngIf="tab === 'permissions'">
+        <div class="notification is-red mt20" *ngIf="errorFetchingPredefinedPermissions">
+          <img src="/assets/images/icons/important-red.svg" class="notification-icon">
+          <i class="fa fa-times close-icon" (click)="errorFetchingPredefinedPermissions = null"></i>
+          <p>HTTP Error: {{ errorFetchingPredefinedPermissions | json }}</p>
+        </div>
+        <app-loader *ngIf="fetchingPredefinedPermissions && !errorFetchingPredefinedPermissions" class="mtb20"></app-loader>
+        <div class="field" *ngIf="!fetchingPredefinedPermissions">
+          <label class="label">Team Applied Permissions</label>
+          <div class="checkboxes-container">
+            <div class="checkbox-item" *ngFor="let permission of predefinedPermissions">
+              <span class="label">{{ permission.title }}</span>
+              <app-checkbox [(ngModel)]="permission.enabled" [disabled]="teamForm.id === 1"></app-checkbox>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="dialog-footer justify-end" *ngIf="tab !== 'general'">
       <button type="button" class="button" (click)="teamsService.closeTeamDialog()">

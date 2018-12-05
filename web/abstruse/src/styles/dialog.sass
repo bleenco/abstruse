@@ -72,13 +72,13 @@
         margin: 10px 0
 
       .tabs
-        height: 52px
+        height: 42px
         border-color: $border-default
         width: 100%
         border-bottom: none
 
         .tab
-          height: 50px
+          height: 40px
           background: $white
           border-radius: 0
           border-color: $border-default
@@ -98,6 +98,12 @@
 
           &:hover
             color: $text-secondary
+
+          &.is-red
+            color: $red !important
+
+            &.is-active
+              border-bottom: 2px solid $red
 
     .dialog-footer
       padding: 13px 25px

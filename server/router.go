@@ -9,6 +9,7 @@ import (
 	"github.com/bleenco/abstruse/api/setup"
 	"github.com/bleenco/abstruse/api/workers"
 	"github.com/bleenco/abstruse/api/teams"
+	"github.com/bleenco/abstruse/api/permissions"
 	"github.com/bleenco/abstruse/api/integration"
 	"github.com/bleenco/abstruse/api/providers/github"
 	"github.com/bleenco/abstruse/fs"
@@ -49,6 +50,7 @@ func (r *Router) initAPI() {
 	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(TriggerBuildHandler))
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))
 	r.Router.POST("/api/teams/:id", api.AuthorizationMiddleware(teams.SaveTeamHandler))
+	r.Router.GET("/api/permissions/teams/:id", api.AuthorizationMiddleware(permissions.FetchPermissionsHandler))
 }
 
 func (r *Router) initUI() {

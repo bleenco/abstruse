@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 @Component({
@@ -10,6 +10,8 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   ]
 })
 export class CheckboxComponent implements ControlValueAccessor {
+  @Input() disabled: boolean;
+
   isEnabled: boolean;
 
   private onTouchedCallback: () => void = () => { };
