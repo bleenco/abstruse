@@ -27,6 +27,7 @@ import { EqualValidatorDirective } from '../validators/equal-password.directive'
 
 import { ToTimePipe } from '../pipes/to-time.pipe';
 import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
+import { HttpErrorInterceptor } from '../interceptors/http-error.interceptor';
 
 @NgModule({
   imports: [
@@ -82,6 +83,7 @@ export class SharedModule {
       ngModule: SharedModule,
       providers: [
         TokenInterceptorProvider,
+        HttpErrorInterceptor,
         AuthGuardService,
         StatusService,
         TimeService

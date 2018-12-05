@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px" version="1.1" viewBox="0 0 20 20">
+    <defs>
+        <path id="path-1" d="M11,5.007 L11,12.007 C11,12.559 10.552,13.007 10,13.007 C9.448,13.007 9,12.559 9,12.007 L9,5.007 C9,4.455 9.448,4.007 10,4.007 C10.552,4.007 11,4.455 11,5.007 L11,5.007 Z M11,15.007 C11,15.559 10.552,16.007 10,16.007 C9.448,16.007 9,15.559 9,15.007 C9,14.455 9.448,14.007 10,14.007 C10.552,14.007 11,14.455 11,15.007 L11,15.007 Z M18,17 C18,17.552 17.552,18 17,18 L3,18 C2.448,18 2,17.552 2,17 L2,3 C2,2.448 2.448,2 3,2 L17,2 C17.552,2 18,2.448 18,3 L18,17 Z M18,0 L2,0 C0.895,0 0,0.899 0,2.003 L0,2.007 L0,18.007 C0,19.112 0.895,20 2,20 L18,20 C19.105,20 20,19.108 20,18.003 L20,2.007 C20,0.902 19,0 18,0 L18,0 Z"/>
+    </defs>
+    <g id="Symbols" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+        <g id="Notification" transform="translate(-16.000000, -14.000000)">
+            <g id="Message">
+                <g transform="translate(16.000000, 14.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"/>
+                    </mask>
+                    <use fill="#E6492D" fill-opacity="0" fill-rule="evenodd" xlink:href="#path-1"/>
+                    <g fill="#E6492D" fill-rule="evenodd" mask="url(#mask-2)">
+                        <g id="Rectangle" transform="translate(-1.000000, -1.000000)">
+                            <rect width="22" height="22" x="0" y="0"/>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -16,6 +16,8 @@ type Permission struct {
 	Write   bool `gorm:"not_null;default:false" json:"write"`
 	Execute bool `gorm:"not_null;default:false" json:"execute"`
 
-	User  []*User `gorm:"many2many:user_permissions;"`
-	Teams []*Team `gorm:"many2many:team_permissions;"`
+	User  []*User `gorm:"many2many:user_permissions;" json:"users"`
+	Teams []*Team `gorm:"many2many:team_permissions; json:"teams""`
 }
+
+// func CheckPermissions()

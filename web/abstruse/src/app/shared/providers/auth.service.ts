@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
-import { getAPIURL, handleError } from '../../core/shared/shared-functions';
-import { catchError } from 'rxjs/operators';
+import { getAPIURL } from '../../core/shared/shared-functions';
 import * as jwt from 'jwt-decode';
 import { Login } from '../../login/login.model';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -44,10 +43,7 @@ export class AuthService {
 
   authenticate(credentials: Login): Observable<JSONResponse> {
     const url = getAPIURL() + `/user/login`;
-    return this.http.post<JSONResponse>(url, credentials)
-      .pipe(
-        catchError(handleError<JSONResponse>('/auth/login'))
-      );
+    return this.http.post<JSONResponse>(url, credentials);
   }
 
   checkAuthenticated(): void {

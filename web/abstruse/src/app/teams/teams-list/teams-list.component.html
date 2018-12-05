@@ -14,7 +14,7 @@
   <div class="column is-12">
     <div class="tabs-content">
       <div class="align-center justify-end mb10">
-        <button type="button" class="button">
+        <button type="button" class="button" (click)="teamsService?.openTeamDialog(null)">
           <i class="fa fa-plus"></i>
           <span>Add Team</span>
         </button>
@@ -38,46 +38,34 @@
           </div>
         </div>
         <div class="table-items">
-          <div class="table-item">
+          <div class="table-item" *ngFor="let team of teams">
             <div class="columns">
               <div class="column is-1 justify-center align-center">
-                <app-placeholder [text]="'A'" [background]="'#34AA44'"></app-placeholder>
+                <app-placeholder [text]="team?.getInitials()" [background]="team?.color"></app-placeholder>
               </div>
               <div class="column is-2 align-center">
-                <span class="table-data is-medium color-secondary is-larger">Admins</span>
+                <span class="table-data is-medium color-secondary is-larger">{{ team?.title }}</span>
               </div>
               <div class="column is-3 align-center">
-                <span class="table-data">Can access and set anything.</span>
+                <span class="table-data">{{ team?.description }}</span>
               </div>
               <div class="column is-5 align-center">
                 <div class="members-avatars align-center">
-                  <span class="member-avatar">
-                    <img src="/assets/images/avatars/predefined/avatar_2.svg" class="member-avatar" appTooltip title="Jan Kuri">
+                  <span class="member-avatar" *ngFor="let user of team?.users">
+                    <img [src]="user.avatar" class="member-avatar" appTooltip [title]="user.fullname">
                   </span>
-                  <span class="member-avatar">
-                    <img src="/assets/images/avatars/predefined/avatar_6.svg" class="member-avatar">
-                  </span>
-                  <span class="member-avatar">
-                    <img src="/assets/images/avatars/predefined/avatar_12.svg" class="member-avatar">
-                  </span>
-                  <span class="member-avatar">
-                    <img src="/assets/images/avatars/predefined/avatar_18.svg" class="member-avatar">
-                  </span>
-                  <span class="member-avatar">
-                    <img src="/assets/images/avatars/predefined/avatar_5.svg" class="member-avatar">
-                  </span>
-                  <span class="plus-icon" appTooltip title="Jan Kuri, Renata Kuri, Matic Kuri">+3</span>
+                  <!-- <span class="plus-icon" appTooltip title="Jan Kuri, Renata Kuri, Matic Kuri">+3</span> -->
                 </div>
               </div>
               <div class="column is-1 justify-end align-center">
-                <button type="button" class="button is-small mr10">
+                <button type="button" class="button is-small mr10" (click)="teamsService?.openTeamDialog(team)">
                   <i class="fa fa-edit"></i>
                   <span>Edit</span>
                 </button>
               </div>
             </div>
           </div>
-          <!-- <div class="table-item">
+          <div class="table-item" *ngIf="!teams.length && !errorFetchingTeams && !fetchingTeams">
             <div class="columns">
               <div class="column is-12 justify-center align-center">
                 <span class="table-data justify-center align-center">
@@ -86,11 +74,16 @@
                 </span>
               </div>
             </div>
-          </div> -->
+          </div>
         </div>
+      </div>
+      <div class="notification is-red mt20" *ngIf="errorFetchingTeams && !fetchingTeams">
+        <img src="/assets/images/icons/important-red.svg" class="notification-icon">
+        <i class="fa fa-times close-icon" (click)="errorFetchingTeams = null"></i>
+        <p>HTTP Error: {{ errorFetchingTeams }}</p>
       </div>
     </div>
   </div>
 </div>
 
-<app-teams-team-dialog></app-teams-team-dialog>
+<app-teams-team-dialog *ngIf="teamsService.teamDialogOpened"></app-teams-team-dialog>

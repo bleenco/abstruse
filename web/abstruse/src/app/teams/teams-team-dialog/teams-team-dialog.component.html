@@ -2,26 +2,33 @@
   <div class="dialog-container">
     <div class="dialog-header">
       <h1>Team</h1>
-      <i class="fa fa-times"></i>
+      <i class="fa fa-times" (click)="teamsService.closeTeamDialog()"></i>
     </div>
     <div class="dialog-body">
-      <form>
+
+      <div class="tabs">
+        <span class="tab" [class.is-active]="tab === 'general'" (click)="switchTab('general')">General</span>
+        <span class="tab" [class.is-active]="tab === 'users'" (click)="switchTab('users')">Users</span>
+        <span class="tab" [class.is-active]="tab === 'permissions'" (click)="switchTab('permissions')">Permissions</span>
+      </div>
+
+      <form class="has-padding" *ngIf="tab === 'general'">
         <div class="field">
-          <label class="label">Team Name</label>
-          <input type="text" class="input" name="name" placeholder="Team Name">
+          <label class="label">Team Title</label>
+          <input type="text" class="input" name="title" placeholder="Team Title" [(ngModel)]="teamForm.title">
           <p class="input-info">Team name or title.</p>
         </div>
         <div class="field">
           <label class="label">Description</label>
-          <input type="text" class="input" name="description" placeholder="Team Description">
+          <input type="text" class="input" name="description" placeholder="Team Description" [(ngModel)]="teamForm.description">
           <p class="input-info">A few words what this group is all about.</p>
         </div>
         <div class="field">
           <label class="label">Placeholder Color</label>
-          <app-color-picker name="color"></app-color-picker>
+          <app-color-picker name="color" [(ngModel)]="teamForm.color"></app-color-picker>
           <p class="input-info">Pick a color used in placeholders and tags for this group.</p>
         </div>
-        <div class="field">
+        <!-- <div class="field">
           <label class="label">Group Permissions</label>
           <div class="checkboxes-container">
             <div class="checkbox-item">
@@ -41,18 +48,26 @@
               <app-checkbox></app-checkbox>
             </div>
           </div>
-        </div>
+        </div> -->
       </form>
     </div>
     <div class="dialog-footer justify-end">
-      <button type="button" class="button">
-        <i class="fa fa-times"></i>
-        <span>Cancel</span>
-      </button>
-      <button type="button" class="button">
-        <i class="fa fa-check"></i>
-        <span>Save</span>
-      </button>
+      <div *ngIf="tab === 'general'">
+        <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
+          <i class="fa fa-times"></i>
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="button">
+          <i class="fa fa-check"></i>
+          <span>Save</span>
+        </button>
+      </div>
+      <div *ngIf="tab !== 'general'">
+        <button type="button" class="button" (click)="teamsService.closeTeamDialog()">
+          <i class="fa fa-times"></i>
+          <span>Close</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

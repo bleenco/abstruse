@@ -1,4 +1,5 @@
 import { Observable, of } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export function throwIfAlreadyLoaded(parentModule: any, moduleName: string) {
   if (parentModule) {

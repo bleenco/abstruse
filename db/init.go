@@ -6,8 +6,8 @@ func initDefaultValues() {
 	// insert default teams
 	rootTeam := Team{
 		Title:       "Root",
-		Description: "We have guns and...",
-		Color:       "rgba(22,101,216,1)",
+		Description: "Can access and set anything.",
+		Color:       "#333333",
 		IsDeletable: false,
 		Permission: []*Permission{
 			{Module: "server_management", Title: "Allows managing server settings.", Read: true, Write: true, Execute: true},

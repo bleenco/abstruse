@@ -67,10 +67,37 @@
           color: $text-secondary
 
     .dialog-body
-      padding: 5px 20px
 
       h1
         margin: 10px 0
+
+      .tabs
+        height: 52px
+        border-color: $border-default
+        width: 100%
+        border-bottom: none
+
+        .tab
+          height: 50px
+          background: $white
+          border-radius: 0
+          border-color: $border-default
+          flex-grow: 1
+          justify-content: center
+          font-size: 14px
+          font-family: $font-family-regular
+          color: $text-primary
+          border: none
+          border-left: 1px solid $border-default
+          border-bottom: 1px solid $border-default
+
+          &.is-active
+            border-bottom: 2px solid $blue
+            padding-top: 6px
+            color: $text-secondary
+
+          &:hover
+            color: $text-secondary
 
     .dialog-footer
       padding: 13px 25px

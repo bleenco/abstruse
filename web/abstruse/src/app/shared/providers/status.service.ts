@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { JSONResponse } from '../../core/shared/shared.model';
-import { getAPIURL, handleError } from '../../core/shared/shared-functions';
-import { catchError } from 'rxjs/operators';
+import { getAPIURL } from '../../core/shared/shared-functions';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -22,9 +21,6 @@ export class StatusService {
     const url = getAPIURL() + `/setup/ready`;
 
     this.http.get<JSONResponse>(url)
-      .pipe(
-        catchError(handleError<JSONResponse>('setup/ready'))
-      )
       .subscribe(resp => {
         if (resp && resp.data) {
           this.status = resp.data;

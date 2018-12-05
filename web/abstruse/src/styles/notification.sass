@@ -1,13 +1,12 @@
 .notification
   display: flex
   align-items: center
-  min-height: 36px
+  min-height: 40px
   width: 100%
   line-height: 22px
   font-family: $font-family-medium
   font-size: 14px
-  padding-left: 50px
-  padding-right: 50px
+  padding: 6px 50px
   position: relative
   border-radius: 4px
   border: 1px solid $border-box
@@ -25,11 +24,13 @@
     width: 16px
     height: 16px
     display: block
-    top: 12px
+    top: 13px
     right: 17px
     position: absolute
-    transform: rotate(45deg)
     cursor: pointer
+
+    &:not(i)
+      transform: rotate(45deg)
 
   p
     padding: 0
