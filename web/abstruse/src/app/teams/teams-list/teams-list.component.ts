@@ -11,6 +11,7 @@ export class TeamsListComponent implements OnInit {
   fetchingTeams: boolean;
   errorFetchingTeams: string | any;
   teams: Team[] = [];
+  teamID: number;
 
   constructor(
     public teamsService: TeamsService
@@ -35,5 +36,10 @@ export class TeamsListComponent implements OnInit {
     }, err => {
       this.errorFetchingTeams = (((err || {}).error || {}).error || {}).message || JSON.stringify(err);
     }, () => this.fetchingTeams = false);
+  }
+
+  openDialog(teamID: number): void {
+    this.teamID = teamID;
+    this.teamsService.openTeamDialog();
   }
 }

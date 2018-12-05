@@ -11,20 +11,17 @@ import { TeamForm } from '../teams-team-dialog/teams-team-dialog.component';
 })
 export class TeamsService {
   teamDialogOpened: boolean;
-  team: Team;
 
   constructor(
     public http: HttpClient
   ) { }
 
-  openTeamDialog(team: Team | null): void {
-    this.team = team;
+  openTeamDialog(): void {
     this.teamDialogOpened = true;
   }
 
   closeTeamDialog(): void {
     this.teamDialogOpened = false;
-    this.team = null;
   }
 
   saveTeam(form: TeamForm): Observable<JSONResponse> {
@@ -34,6 +31,11 @@ export class TeamsService {
 
   fetchTeams(): Observable<JSONResponse> {
     const url = getAPIURL() + '/teams';
+    return this.http.get<JSONResponse>(url);
+  }
+
+  fetchTeam(teamID: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/teams/${teamID}`;
     return this.http.get<JSONResponse>(url);
   }
 

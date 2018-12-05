@@ -29,6 +29,25 @@ func FetchTeamsHandler(res http.ResponseWriter, req *http.Request, _ httprouter.
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: teams})
 }
 
+// FetchTeamHandler => GET /api/teams/:id
+func FetchTeamHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	teamID, _ := strconv.Atoi(ps.ByName("id"))
+	token := req.Header.Get("Authorization")
+	userID, err := security.GetUserIDFromJWT(token)
+	if err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	var team db.Team
+	if err := team.Find(teamID, userID); err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	api.JSONResponse(res, http.StatusOK, api.Response{Data: team})
+}
+
 // SaveTeamHandler => POST /api/teams/:id
 func SaveTeamHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	teamID, _ := strconv.Atoi(ps.ByName("id"))

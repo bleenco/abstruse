@@ -14,7 +14,7 @@
   <div class="column is-12">
     <div class="tabs-content">
       <div class="align-center justify-end mb10">
-        <button type="button" class="button" (click)="teamsService?.openTeamDialog(null)">
+        <button type="button" class="button" (click)="openDialog(null)">
           <i class="fa fa-plus"></i>
           <span>Add Team</span>
         </button>
@@ -58,7 +58,7 @@
                 </div>
               </div>
               <div class="column is-1 justify-end align-center">
-                <button type="button" class="button is-small mr10" (click)="teamsService?.openTeamDialog(team)">
+                <button type="button" class="button is-small mr10" (click)="openDialog(team.id)">
                   <i class="fa fa-edit"></i>
                   <span>Edit</span>
                 </button>
@@ -86,4 +86,4 @@
   </div>
 </div>
 
-<app-teams-team-dialog *ngIf="teamsService.teamDialogOpened" (teamSaved)="teamSavedEvent()"></app-teams-team-dialog>
+<app-teams-team-dialog *ngIf="teamsService.teamDialogOpened" [teamID]="teamID" (teamSaved)="teamSavedEvent()"></app-teams-team-dialog>

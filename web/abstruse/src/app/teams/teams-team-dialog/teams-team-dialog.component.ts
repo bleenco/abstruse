@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { TeamsService } from '../shared/teams.service';
 
 export class TeamForm {
@@ -6,7 +6,9 @@ export class TeamForm {
     public id: number = null,
     public title: string = '',
     public description: string = '',
-    public color: string = 'rgba(246,171,47,1)'
+    public color: string = 'rgba(246,171,47,1)',
+    public users: any[] = [],
+    public permissions: any[] = []
   ) { }
 }
 
@@ -16,16 +18,16 @@ export class TeamForm {
   styleUrls: ['./teams-team-dialog.component.sass']
 })
 export class TeamsTeamDialogComponent implements OnInit {
+  @Input() teamID: number;
   @Output() teamSaved: EventEmitter<void>;
 
   tab: 'general' | 'users' | 'permissions' | 'danger_zone';
+  fetchingTeam: boolean;
+
   fetchingTeams: boolean;
-  teamForm: TeamForm = new TeamForm();
+  team: TeamForm = new TeamForm();
   savingTeam: boolean;
   errorSavingTeam: string | any;
-  predefinedPermissions: any[] = [];
-  fetchingPredefinedPermissions: boolean;
-  errorFetchingPredefinedPermissions: string | any;
 
   constructor(
     public teamsService: TeamsService
@@ -35,11 +37,9 @@ export class TeamsTeamDialogComponent implements OnInit {
 
   ngOnInit() {
     this.tab = 'general';
-    this.predefinedPermissions = [];
-    if (this.teamsService && this.teamsService.team) {
-      const t = this.teamsService.team;
-      this.teamForm = new TeamForm(t.id, t.title, t.description, t.color);
-    }
+
+    this.team = new TeamForm();
+    this.fetchTeam();
   }
 
   switchTab(tab: 'general' | 'users' | 'permissions' | 'danger_zone'): void {
@@ -47,15 +47,11 @@ export class TeamsTeamDialogComponent implements OnInit {
       return;
     }
     this.tab = tab;
-
-    if (this.tab === 'permissions') {
-      this.fetchPredefinedPermissions();
-    }
   }
 
   saveTeam(): void {
     this.savingTeam = true;
-    this.teamsService.saveTeam(this.teamForm).subscribe(resp => {
+    this.teamsService.saveTeam(this.team).subscribe(resp => {
       if (resp && resp.data) {
         this.teamSaved.emit();
         this.teamsService.closeTeamDialog();
@@ -65,16 +61,18 @@ export class TeamsTeamDialogComponent implements OnInit {
     }, () => this.savingTeam = true);
   }
 
-  fetchPredefinedPermissions(): void {
-    this.errorFetchingPredefinedPermissions = null;
-    this.fetchingPredefinedPermissions = true;
-    this.teamsService.fetchPredefinedPermissions(this.teamForm.id).subscribe(resp => {
-      if (resp && resp.data && resp.data.length) {
-        this.predefinedPermissions = resp.data;
+  fetchTeam(): void {
+    this.fetchingTeam = true;
+    this.teamsService.fetchTeam(this.teamID).subscribe(resp => {
+      if (resp && resp.data) {
+        const t = resp.data;
+        this.team = new TeamForm(t.id, t.title, t.description, t.color, t.users, t.permissions);
       }
     }, err => {
-      this.errorFetchingPredefinedPermissions = err;
-    }, () => this.fetchingPredefinedPermissions = false);
+      console.error(err);
+    }, () => {
+      this.fetchingTeam = false;
+    });
   }
 
 }

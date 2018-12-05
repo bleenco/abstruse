@@ -19,8 +19,8 @@ type Team struct {
 }
 
 // Find method
-func (t *Team) Find(teamID int) error {
-	return DB.First(t, teamID).Error
+func (t *Team) Find(teamID, userID int) error {
+	return DB.Preload("User").Preload("Permission").First(t, teamID).Error
 }
 
 // Update updates team general properties.

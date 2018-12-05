@@ -1,2 +1,46 @@
+@import 'colours'
+@import 'typography'
+
+.general-tab, .users-tab, .permissions-tab
+  height: 380px
+
 .permissions-tab
   padding: 5px 20px
+
+.users-tab
+  padding: 0
+  max-height: 500px
+  overflow: hidden
+  overflow-y: scroll
+
+  .user-item
+    width: 100%
+    height: 50px
+    border-bottom: 1px solid $border-default
+
+    .columns
+      padding: 0
+      margin: 0
+      height: 50px
+
+    .user-data
+      line-height: 18px
+
+      .name
+        display: block
+        font-size: 13px
+        color: $text-primary
+        font-family: $font-family-medium
+        margin-top: 2px
+
+      .email
+        display: block
+        font-size: 11px
+        color: $text-secondary
+
+    .user-avatar
+      display: block
+      width: 32px
+      height: 32px
+      border-radius: 3px
+      background: $white
