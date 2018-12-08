@@ -32,6 +32,8 @@ export class TeamsListComponent implements OnInit {
         this.teams = resp.data.map(d => {
           return new Team(d.id, d.title, d.description, d.color, d.is_deletable, d.users, d.permissions);
         });
+
+        // this.openDialog(1);
       }
     }, err => {
       this.errorFetchingTeams = (((err || {}).error || {}).error || {}).message || JSON.stringify(err);

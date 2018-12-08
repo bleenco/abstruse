@@ -35,6 +35,12 @@
       </div>
 
       <div class="users-tab" *ngIf="tab === 'users'">
+
+        <div class="dialog-search-input">
+          <input type="text" class="input" placeholder="Search to add users...">
+          <i class="fa fa-search"></i>
+        </div>
+
         <div class="user-item" *ngFor="let user of team?.users">
           <div class="columns">
             <div class="column is-2 justify-center align-center">
