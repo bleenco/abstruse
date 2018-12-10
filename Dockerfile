@@ -1,9 +1,11 @@
 FROM mhart/alpine-node:10 as build
-WORKDIR /app
 
+ARG APP_ROOT=/app
 ARG VCS_REF=n/a
 ARG VERSION=dev
 ARG BUILD_DATE=n/a
+
+WORKDIR $APP_ROOT
 
 LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
   org.label-schema.schema-version="1.0" \
@@ -50,22 +52,22 @@ RUN apk add \
   wget
 
 # NPM dependencies
-COPY package.json package-lock.json /app/
+COPY package.json package-lock.json $APP_ROOT/
 
 RUN npm install --only=production && \
   cp -R node_modules prod_node_modules && \
   npm install
 
 # Copy shared files
-COPY tsconfig.json /app
+COPY tsconfig.json $APP_ROOT
 
 # Copy frontend
-COPY angular.json /app
-COPY src/environments /app/src/environments
-COPY src/app /app/src/app
-COPY src/assets /app/src/assets
-COPY src/styles /app/src/styles
-COPY src/testing /app/src/testing
+COPY angular.json $APP_ROOT
+COPY src/environments $APP_ROOT/src/environments
+COPY src/app $APP_ROOT/src/app
+COPY src/assets $APP_ROOT/src/assets
+COPY src/styles $APP_ROOT/src/styles
+COPY src/testing $APP_ROOT/src/testing
 
 COPY src/index.html \
   src/main.ts \
@@ -74,7 +76,7 @@ COPY src/index.html \
   src/tsconfig.app.json \
   src/tsconfig.spec.json \
   src/typings.d.ts \
-  /app/src/
+  $APP_ROOT/src/
 
 # Build frontend
 RUN npm run build:app
@@ -88,10 +90,10 @@ COPY src/files/docker-essential/abstruse-pty-amd64 /usr/bin/abstruse-pty
 RUN chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*
 
 # Copy backend
-COPY webpack.api.js /app
-COPY src/api /app/src/api
-COPY src/files /app/src/files
-COPY src/tsconfig.api.json /app/src
+COPY webpack.api.js $APP_ROOT
+COPY src/api $APP_ROOT/src/api
+COPY src/files $APP_ROOT/src/files
+COPY src/tsconfig.api.json $APP_ROOT/src
 
 # Build backend
 RUN npm run build
@@ -103,7 +105,7 @@ RUN rm -rf node_modules && \
 # Remove files not required for production
 RUN apk del build-dependencies && \
   rm -rf src && \
-  rm -rf /tmp
+  rm -rf /tmp/*
 
 HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
   CMD wget -q -O- http://localhost:6500/status || exit 1
