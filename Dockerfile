@@ -5,7 +5,7 @@ ARG VCS_REF=n/a
 ARG VERSION=dev
 ARG BUILD_DATE=n/a
 
-ENV APP_ROOT $APP_ROOT
+ENV APP_ROOT=$APP_ROOT
 WORKDIR $APP_ROOT
 
 LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
