@@ -1,6 +1,6 @@
 FROM mhart/alpine-node:8.11 as build
 
-ARG APP_ROOT=/app
+ARG APP_ROOT=/opt/abstruse
 ARG VCS_REF=n/a
 ARG VERSION=dev
 ARG BUILD_DATE=n/a
