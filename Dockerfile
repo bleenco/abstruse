@@ -92,5 +92,7 @@ HEALTHCHECK --interval=10s --timeout=2s --start-period=20s \
 
 EXPOSE 6500
 
+WORKDIR /app
+
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD [ "node", "dist/api/index.js" ]
+CMD [ "node", "$APP_ROOT/dist/api/index.js" ]
