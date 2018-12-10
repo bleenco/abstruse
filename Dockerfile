@@ -5,6 +5,7 @@ ARG VCS_REF=n/a
 ARG VERSION=dev
 ARG BUILD_DATE=n/a
 
+ENV APP_ROOT $APP_ROOT
 WORKDIR $APP_ROOT
 
 LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
@@ -95,4 +96,4 @@ EXPOSE 6500
 WORKDIR /app
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "$APP_ROOT/dist/api/index.js"]
+CMD ["node", "${APP_ROOT}/dist/api/index.js"]
