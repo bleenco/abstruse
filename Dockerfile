@@ -96,4 +96,4 @@ EXPOSE 6500
 WORKDIR /app
 
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "${APP_ROOT}/dist/api/index.js"]
+CMD ["sh", "-c", "node $APP_ROOT/dist/api/index.js"]
