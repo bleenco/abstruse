@@ -1,9 +1,11 @@
 FROM mhart/alpine-node:8.11 as build
-WORKDIR /app
 
+ARG APP_ROOT=/app
 ARG VCS_REF=n/a
 ARG VERSION=dev
 ARG BUILD_DATE=n/a
+
+WORKDIR $APP_ROOT
 
 LABEL maintainer="Jan Kuri <jan@bleenco.com>" \
   org.label-schema.schema-version="1.0" \
@@ -40,20 +42,20 @@ RUN apk add \
   wget
 
 # NPM dependencies
-COPY package.json package-lock.json npm-shrinkwrap.json /app/
+COPY package.json package-lock.json npm-shrinkwrap.json $APP_ROOT/
 RUN yarn install && \
   rm -rf node_modules/@types/mocha # TODO: fix this type conflict
 
 # Copy shared files
-COPY tsconfig.json /app
+COPY tsconfig.json $APP_ROOT
 
 # Copy frontend
-COPY angular.json /app
-COPY src/environments /app/src/environments
-COPY src/app /app/src/app
-COPY src/assets /app/src/assets
-COPY src/styles /app/src/styles
-COPY src/testing /app/src/testing
+COPY angular.json $APP_ROOT
+COPY src/environments $APP_ROOT/src/environments
+COPY src/app $APP_ROOT/src/app
+COPY src/assets $APP_ROOT/src/assets
+COPY src/styles $APP_ROOT/src/styles
+COPY src/testing $APP_ROOT/src/testing
 
 COPY src/index.html \
   src/main.ts \
@@ -62,7 +64,7 @@ COPY src/index.html \
   src/tsconfig.app.json \
   src/tsconfig.spec.json \
   src/typings.d.ts \
-  /app/src/
+  $APP_ROOT/src/
 
 # Build frontend
 RUN yarn build:app
@@ -76,11 +78,11 @@ COPY src/files/docker-essential/abstruse-pty-amd64 /usr/bin/abstruse-pty
 RUN chmod +x /entry.sh /etc/init.d/* /usr/bin/abstruse*
 
 # Copy backend
-COPY webpack.api.js /app
-COPY src/api /app/src/api
-COPY src/files /app/src/files
-COPY src/tsconfig.api.json /app/src
-COPY src/files /app/src/files
+COPY webpack.api.js $APP_ROOT
+COPY src/api $APP_ROOT/src/api
+COPY src/files $APP_ROOT/src/files
+COPY src/tsconfig.api.json $APP_ROOT/src
+COPY src/files $APP_ROOT/src/files
 
 # Build backend
 RUN yarn build
