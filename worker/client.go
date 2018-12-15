@@ -10,8 +10,8 @@ import (
 
 	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
-	"github.com/bleenco/abstruse/worker/auth"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/bleenco/abstruse/worker/auth"
 	"github.com/docker/docker/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -26,7 +26,7 @@ type GRPCClient struct {
 	logger     *logger.Logger
 	conn       *grpc.ClientConn
 	client     pb.ApiServiceClient
-	running chan struct{}
+	running    chan struct{}
 
 	JobProcessStream pb.ApiService_JobProcessClient
 }
@@ -80,7 +80,7 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 		logger:     logger,
 		conn:       conn,
 		client:     client,
-		running: make(chan struct{}),
+		running:    make(chan struct{}),
 	}
 	Client = c
 
@@ -177,7 +177,7 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 
 		// stream output log to server
 		if err := stream.Send(&pb.ContainerOutputChunk{
-			Id: containerID,
+			Id:      containerID,
 			Content: buf[:n],
 		}); err != nil {
 			return err
