@@ -17,7 +17,7 @@ statik:
 	@statik -src=./web/abstruse/dist
 
 install_dependencies:
-	@go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex github.com/golang/protobuf/protoc-gen-go
+	@go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
 	@cd web/abstruse && npm install
 
 dev:
