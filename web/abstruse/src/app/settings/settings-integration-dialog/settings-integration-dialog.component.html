@@ -58,12 +58,14 @@
 
       <div class="columns is-multiline" *ngIf="provider === 'github'">
         <div class="column is-12">
-          <h2>GitHub Integration</h2>
-          <div class="message">
-            <p>
-              <i class="fab fa-github"></i>
-              <span>Enter your GitHub access token or username and password.</span>
-            </p>
+          <div class="plr20">
+            <h2>GitHub Integration</h2>
+            <div class="message">
+              <p>
+                <i class="fab fa-github"></i>
+                <span>Enter your GitHub access token or username and password.</span>
+              </p>
+            </div>
           </div>
         </div>
         <div class="column is-12">
@@ -93,9 +95,10 @@
               <input type="password" class="input" placeholder="Access Token" [(ngModel)]="githubProviderForm.access_token"
                 name="access_token" #accessToken [disabled]="username.value !== '' || password.value !== ''">
             </div>
-            <div class="justify-end mt10">
-              <button type="submit" class="button is-green" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">
-                <img class="spinner" src="/assets/images/icons/spinner-green.svg" *ngIf="loading">
+            <div class="dialog-footer justify-end">
+              <button type="submit" class="button" [disabled]="accessToken.value === '' && (username.value === '' || password.value === '')">
+                <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+                <i class="fa fa-check" *ngIf="!loading"></i>
                 <span *ngIf="!loading">Add Integration</span>
               </button>
             </div>

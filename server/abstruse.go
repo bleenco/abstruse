@@ -6,13 +6,13 @@ import (
 	"path"
 	"time"
 
-	"github.com/bleenco/abstruse/db"
+	"github.com/bleenco/abstruse/api/workers"
 	"github.com/bleenco/abstruse/config"
+	"github.com/bleenco/abstruse/db"
 	"github.com/bleenco/abstruse/fs"
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
 	"github.com/bleenco/abstruse/server/websocket"
-	"github.com/bleenco/abstruse/api/workers"
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
@@ -25,21 +25,21 @@ type AbstruseConfig struct {
 	HTTPSAddress string
 	CertFile     string
 	KeyFile      string
-	GRPCConfig    *GRPCServerConfig
+	GRPCConfig   *GRPCServerConfig
 	Dir          string
 	Debug        bool
 }
 
 // Abstruse represents main master server.
 type Abstruse struct {
-	config *AbstruseConfig
-	router *Router
-	server *http.Server
-	logger *logger.Logger
+	config     *AbstruseConfig
+	router     *Router
+	server     *http.Server
+	logger     *logger.Logger
 	grpcserver *GRPCServer
-	ws *websocket.Server
+	ws         *websocket.Server
 	workersAPI *workers.Workers
-	dir    string
+	dir        string
 
 	running chan error
 }
@@ -79,15 +79,15 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	}
 
 	return &Abstruse{
-		config:  c,
-		router:  NewRouter(),
-		server:  &http.Server{},
+		config:     c,
+		router:     NewRouter(),
+		server:     &http.Server{},
 		grpcserver: gRPCServer,
-		ws: websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
+		ws:         websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
 		workersAPI: workers.NewWorkersAPI(),
-		logger:  logger.NewLogger("", true, c.Debug),
-		dir:     dir,
-		running: make(chan error, 1),
+		logger:     logger.NewLogger("", true, c.Debug),
+		dir:        dir,
+		running:    make(chan error, 1),
 	}, nil
 }
 

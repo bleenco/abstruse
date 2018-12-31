@@ -120,7 +120,7 @@ func FindIntegrationHandler(res http.ResponseWriter, req *http.Request, ps httpr
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})
 }
 
-// FetchIntegrationRepositoriesHandler => /api/integrations/:id/repositories
+// FetchIntegrationRepositoriesHandler => /api/integrations/:id/repos
 func FetchIntegrationRepositoriesHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	integrationID, _ := strconv.Atoi(ps.ByName("id"))
 	token := req.Header.Get("Authorization")

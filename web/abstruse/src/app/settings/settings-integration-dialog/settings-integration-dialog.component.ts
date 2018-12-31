@@ -17,7 +17,7 @@ export class GitHubForm {
 })
 export class SettingsIntegrationDialogComponent implements OnInit {
   loading: boolean;
-  provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs';
+  provider: 'github' | 'gitlab' | 'bitbucket' | 'gitea';
   githubProviderForm: GitHubForm;
 
   constructor(public integration: IntegrationService) { }
@@ -28,7 +28,7 @@ export class SettingsIntegrationDialogComponent implements OnInit {
     this.githubProviderForm = new GitHubForm();
   }
 
-  chooseProvider(provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs'): void {
+  chooseProvider(provider: 'github' | 'gitlab' | 'bitbucket' | 'gitea'): void {
     this.provider = provider;
   }
 

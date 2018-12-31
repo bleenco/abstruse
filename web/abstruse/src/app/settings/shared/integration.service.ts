@@ -40,7 +40,7 @@ export class IntegrationService {
     return this.http.get<JSONResponse>(url);
   }
 
-  checkIntegrationValidity(provider: 'github' | 'gitlab' | 'bitbucket' | 'gogs', data: any): Observable<JSONResponse> {
+  checkIntegrationValidity(provider: 'github' | 'gitlab' | 'bitbucket' | 'gitea', data: any): Observable<JSONResponse> {
     let url: string;
     if (provider === 'github') {
       url = getAPIURL() + '/integrations/github/add';
