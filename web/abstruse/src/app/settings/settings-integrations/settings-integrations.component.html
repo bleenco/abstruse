@@ -1,37 +1,37 @@
 <div class="columns is-multiline">
   <div class="column is-12">
-    <div class="box">
-      <h2>Integrations</h2>
-      <hr />
-
-      <div class="columns is-multiline">
-        <div class="column is-12 mb10">
-          <div class="space-between align-center">
-            <span class="has-icon">
-              <i class="fab fa-git-square is-large"></i>
-              <span>Provider integrations</span>
-            </span>
-            <button type="button" class="button is-filled is-green" (click)="integration.openIntegrationDialog()">
-              <i class="fa fa-plus"></i>
-              <span>Add Integration</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="column is-12 mb10">
-          <div class="message is-yellow" *ngIf="!integrations?.length">
-            <p>
-              <i class="fa fa-info-circle"></i>
-              No existing integrations found.
-            </p>
-          </div>
-
-          <div class="integrations" *ngIf="integrations?.length">
-            <app-settings-integration-item [data]="i" (updated)="integrationsUpdated($event)" *ngFor="let i of integrations"></app-settings-integration-item>
-          </div>
-        </div>
+    <div class="tabs">
+      <div class="tabs-heading">
+        <h1>Settings</h1>
+        <h4>Manage settings and integrations</h4>
       </div>
+      <div class="tabs-items">
+        <span class="tab is-active">Integrations</span>
+      </div>
+    </div>
+  </div>
 
+  <div class="column is-12">
+    <div class="tabs-content">
+      <div class="align-center justify-end mb10">
+        <button type="button" class="button" (click)="integration.openIntegrationDialog()">
+          <i class="fa fa-plus"></i>
+          <span>Add Integration</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12 mb10">
+    <div class="message" *ngIf="!integrations?.length">
+      <p>
+        <i class="fa fa-info-circle"></i>
+        No existing integrations found.
+      </p>
+    </div>
+
+    <div class="integrations" *ngIf="integrations?.length">
+      <app-settings-integration-item [data]="i" (updated)="integrationsUpdated($event)" *ngFor="let i of integrations"></app-settings-integration-item>
     </div>
   </div>
 </div>
