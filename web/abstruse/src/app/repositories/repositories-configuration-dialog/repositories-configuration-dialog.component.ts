@@ -65,6 +65,6 @@ export class RepositoriesConfigurationDialogComponent implements OnInit {
       console.error(err);
     }, () => {
       this.saving = false;
-    })
+    });
   }
 }

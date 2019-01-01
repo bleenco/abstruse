@@ -6,17 +6,15 @@ import {
   HttpHandler,
   HttpEvent
 } from '@angular/common/http';
-import { Observable, throwError, of, empty } from 'rxjs';
-import { tap, catchError, mergeMap } from 'rxjs/operators';
+import { Observable, of, EMPTY } from 'rxjs';
+import { catchError, mergeMap } from 'rxjs/operators';
 
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request)
       .pipe(
-        catchError((err: HttpErrorResponse) => {
-          return empty();
-        }),
+        catchError((err: HttpErrorResponse) => EMPTY),
         mergeMap((err: any) => of((((err || {}).error || {}).error || {}).message || JSON.stringify(err)))
       );
   }
