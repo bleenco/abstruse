@@ -22,6 +22,7 @@
                 <h2>Personal Data</h2>
               </div>
               <div class="field">
+                <label class="label">Avatar</label>
                 <app-avatar-picker [(ngModel)]="user.avatar" name="avatar"></app-avatar-picker>
               </div>
               <div class="field">
@@ -31,6 +32,31 @@
               <div class="field">
                 <label class="label">Name and Lastname</label>
                 <input type="text" class="input" placeholder="Name and Lastname" name="fullname" [(ngModel)]="user.fullname">
+              </div>
+            </form>
+          </div>
+          <div class="column is-6">
+            <form>
+              <div class="field">
+                <h2>Authentication</h2>
+              </div>
+              <div class="field">
+                <label class="label">Old Password</label>
+                <input type="password" class="input" name="password">
+              </div>
+              <div class="field">
+                <label class="label">New Password</label>
+                <input type="password" class="input" name="new_password">
+              </div>
+              <div class="field">
+                <label class="label">Repeat Password</label>
+                <input type="password" class="input" name="repeat_password">
+              </div>
+              <div class="field">
+                <div class="space-between align-center">
+                  <label class="label">Enable Two-factor Authentication (2FA)</label>
+                  <app-checkbox></app-checkbox>
+                </div>
               </div>
             </form>
           </div>
