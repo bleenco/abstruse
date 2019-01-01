@@ -8,7 +8,7 @@ import (
 )
 
 // APIVersion represents current version of bh-platform API
-const APIVersion = "0.0.0"
+const APIVersion = "0.0.10"
 
 var (
 	// UIVersion is build time var and represents version of the user interface
