@@ -10,7 +10,9 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   ]
 })
 export class AvatarPickerComponent implements ControlValueAccessor, OnInit {
-  @Input() values: string[];
+  @Input() values: string[] = Array.apply(null, { length: 30 }).map(Number.call, Number).map((i: number) => {
+    return `/assets/images/avatars/predefined/avatar_${i + 1}.svg`;
+  });
 
   innerValue: string;
   isOpened: boolean;

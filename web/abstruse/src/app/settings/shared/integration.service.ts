@@ -50,7 +50,7 @@ export class IntegrationService {
   }
 
   importRepository(provider: string, data: any, integrationID: number): Observable<JSONResponse> {
-    let url;
+    let url: string;
     switch (provider) {
       case 'github': url = getAPIURL() + `/integrations/github/import/${integrationID}`; break;
     }

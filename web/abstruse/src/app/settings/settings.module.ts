@@ -10,6 +10,8 @@ import { SettingsIntegrationItemComponent } from './settings-integration-item/se
 import { SettingsIntegrationDetailsComponent } from './settings-integration-details/settings-integration-details.component';
 import { SettingsIntegrationRepoItemComponent } from './settings-integration-repo-item/settings-integration-repo-item.component';
 import { SharedModule } from '../shared/modules/shared.module';
+import { SettingsPersonalComponent } from './settings-personal/settings-personal.component';
+import { PersonalService } from './shared/personal.service';
 
 @NgModule({
   imports: [
@@ -23,8 +25,9 @@ import { SharedModule } from '../shared/modules/shared.module';
     SettingsIntegrationDialogComponent,
     SettingsIntegrationItemComponent,
     SettingsIntegrationDetailsComponent,
-    SettingsIntegrationRepoItemComponent
+    SettingsIntegrationRepoItemComponent,
+    SettingsPersonalComponent
   ],
-  providers: [IntegrationService]
+  providers: [IntegrationService, PersonalService]
 })
 export class SettingsModule { }

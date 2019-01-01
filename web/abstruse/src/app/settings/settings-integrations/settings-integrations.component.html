@@ -6,7 +6,8 @@
         <h4>Manage settings and integrations</h4>
       </div>
       <div class="tabs-items">
-        <span class="tab is-active">Integrations</span>
+        <span class="tab" [routerLink]="['/settings/personal']" routerLinkActive="is-active">Personal Settings</span>
+        <span class="tab is-active" [routerLink]="['/settings/integrations']" routerLinkActive="is-active">Integrations</span>
       </div>
     </div>
   </div>

@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/api"
-	"github.com/bleenco/abstruse/api/repos"
-	"github.com/bleenco/abstruse/api/user"
-	"github.com/bleenco/abstruse/api/setup"
-	"github.com/bleenco/abstruse/api/workers"
-	"github.com/bleenco/abstruse/api/teams"
 	"github.com/bleenco/abstruse/api/integration"
 	"github.com/bleenco/abstruse/api/providers/github"
+	"github.com/bleenco/abstruse/api/repos"
+	"github.com/bleenco/abstruse/api/setup"
+	"github.com/bleenco/abstruse/api/teams"
+	"github.com/bleenco/abstruse/api/user"
+	"github.com/bleenco/abstruse/api/workers"
 	"github.com/bleenco/abstruse/fs"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/julienschmidt/httprouter"
@@ -50,6 +50,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))
 	r.Router.GET("/api/teams/:id", api.AuthorizationMiddleware(teams.FetchTeamHandler))
 	r.Router.POST("/api/teams/:id", api.AuthorizationMiddleware(teams.SaveTeamHandler))
+	r.Router.GET("/api/users/personal", api.AuthorizationMiddleware(user.FetchPersonalInfo))
 }
 
 func (r *Router) initUI() {

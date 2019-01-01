@@ -1,6 +1,7 @@
 module github.com/bleenco/abstruse
 
 require (
+	github.com/boombuler/barcode v1.0.0 // indirect
 	github.com/calmh/luhn v2.0.0+incompatible
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -32,6 +33,7 @@ require (
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/pkg/errors v0.8.0
+	github.com/pquerna/otp v1.1.0
 	github.com/rakyll/statik v0.1.5
 	golang.org/x/crypto v0.0.0-20181127143415-eb0de9b17e85
 	golang.org/x/net v0.0.0-20181129055619-fae4c4e3ad76
