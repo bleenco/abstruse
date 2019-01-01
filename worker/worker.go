@@ -5,9 +5,9 @@ import (
 	"path"
 
 	"github.com/bleenco/abstruse/fs"
-	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/worker/id"
 )
 
 // Worker defines worker instance.
@@ -80,6 +80,7 @@ func (w *Worker) Run() error {
 	ch := make(chan error)
 
 	go func() {
+		w.Logger.Infof("starting abstruse worker")
 		if err := w.Client.Run(); err != nil {
 			ch <- err
 		}

@@ -10,11 +10,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bleenco/abstruse/security"
 	"github.com/bleenco/abstruse/api/workers"
-
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
@@ -31,7 +31,7 @@ var MainGRPCServer *GRPCServer
 
 const (
 	workerIdentifierKey contextKey = iota
-	workerIP contextIP = iota
+	workerIP            contextIP  = iota
 )
 
 // GRPCServer defines gRPC server.
@@ -137,6 +137,51 @@ end:
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+// WorkerStatus gRPC channel.
+func (s *GRPCServer) WorkerStatus(stream pb.ApiService_WorkerStatusServer) error {
+	registryItem := &WorkerRegistryItem{}
+	ctx := stream.Context()
+	identifier, ok := ctx.Value(workerIdentifierKey).(string)
+	if !ok {
+		return errors.New("identifier not found in stream context")
+	}
+
+	for {
+		var err error
+		registryItem, err := s.registry.Find(identifier)
+		if err != nil || registryItem == nil {
+			continue
+		}
+		break
+	}
+
+	registryItem.WorkerStatusStream = stream
+
+	for {
+		usage, err := stream.Recv()
+		if err != nil {
+			goto end
+		}
+
+		data := map[string]interface{}{
+			"cert_id":       identifier,
+			"capacity":      usage.GetCapacity(),
+			"capacity_load": usage.GetCapacityLoad(),
+			"cpu":           usage.GetCpu(),
+			"memory":        usage.GetMemory(),
+		}
+		websocket.App.Broadcast("worker_usage", data, "worker_usage")
+	}
+
+end:
+	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
+		return err
+	}
+	registryItem.WorkerStatusStream = nil
 
 	return nil
 }
@@ -274,12 +319,12 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 
 type grpcServerStream struct {
 	identifier string
-	ip string
+	ip         string
 	grpc.ServerStream
 }
 
 func (s grpcServerStream) Context() context.Context {
-	c :=  context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
+	c := context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
 	c = context.WithValue(c, workerIP, s.ip)
 	return c
 }
@@ -297,7 +342,7 @@ func streamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.Str
 	}
 
 	s := grpcServerStream{
-		identifier: identifier,
+		identifier:   identifier,
 		ServerStream: stream,
 	}
 

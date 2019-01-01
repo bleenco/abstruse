@@ -4,7 +4,18 @@ export enum WorkerStatus {
   OPERATIONAL
 }
 
+export class WorkerUsage {
+  constructor(
+    public capacity: number = 4,
+    public capacity_load: number = 0,
+    public cpu: number = 0,
+    public memory: number = 0
+  ) { }
+}
+
 export class Worker {
+  usage: WorkerUsage;
+
   constructor(
     public id: number,
     public cert_id: string,
@@ -18,5 +29,9 @@ export class Worker {
   getStatus(): string {
     const status = String(this.status);
     return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  setUsage(usage: WorkerUsage) {
+    this.usage = usage;
   }
 }

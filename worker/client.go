@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/bleenco/abstruse/id"
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/worker/auth"
+	"github.com/bleenco/abstruse/worker/id"
 	"github.com/docker/docker/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -28,7 +28,8 @@ type GRPCClient struct {
 	client     pb.ApiServiceClient
 	running    chan struct{}
 
-	JobProcessStream pb.ApiService_JobProcessClient
+	JobProcessStream   pb.ApiService_JobProcessClient
+	WorkerStatusStream pb.ApiService_WorkerStatusClient
 }
 
 // UploadStats defines basic upload statistics.
@@ -103,6 +104,12 @@ func (c *GRPCClient) Run() error {
 		}
 	}()
 
+	go func() {
+		if err := c.StreamWorkerStatus(context.Background()); err != nil {
+			c.logger.Debugf("error: %s", err)
+		}
+	}()
+
 	<-c.running
 
 	return nil
@@ -122,6 +129,37 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 			Code:       pb.OnlineStatus_Up,
 		}
 		if err := stream.Send(status); err != nil {
+			return err
+		}
+
+		time.Sleep(5 * time.Second)
+	}
+}
+
+// StreamWorkerStatus streams worker informational statistics about system
+// usage for CPU, memory and capacity load.
+func (c *GRPCClient) StreamWorkerStatus(ctx context.Context) error {
+	stream, err := c.client.WorkerStatus(ctx)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		stream.CloseSend()
+		c.WorkerStatusStream = nil
+	}()
+
+	c.WorkerStatusStream = stream
+
+	for {
+		c, cl, cpu, mem := getWorkerUsageStats()
+		usage := &pb.WorkerUsage{
+			Capacity:     c,
+			CapacityLoad: cl,
+			Cpu:          cpu,
+			Memory:       mem,
+		}
+		if err := stream.Send(usage); err != nil {
 			return err
 		}
 

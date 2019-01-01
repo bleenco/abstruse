@@ -35,6 +35,7 @@ require (
 	github.com/pkg/errors v0.8.0
 	github.com/pquerna/otp v1.1.0
 	github.com/rakyll/statik v0.1.5
+	github.com/shirou/gopsutil v2.18.12+incompatible
 	golang.org/x/crypto v0.0.0-20181127143415-eb0de9b17e85
 	golang.org/x/net v0.0.0-20181129055619-fae4c4e3ad76
 	golang.org/x/oauth2 v0.0.0-20181128211412-28207608b838

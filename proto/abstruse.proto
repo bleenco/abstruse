@@ -9,6 +9,7 @@ service ApiService {
   rpc OnlineCheck(stream OnlineStatus) returns (google.protobuf.Empty) {}
   rpc ContainerOutput(stream ContainerOutputChunk) returns (google.protobuf.Empty) {}
   rpc JobProcess(stream JobStatus) returns (stream JobTask) {}
+  rpc WorkerStatus(stream WorkerUsage) returns (google.protobuf.Empty) {}
 }
 
 message OnlineStatus {
@@ -62,4 +63,11 @@ message JobTask {
   string Name = 1;
   JobTaskCode Code = 2;
   repeated string Commands = 3;
+}
+
+message WorkerUsage {
+  int32 Capacity = 1;
+  int32 CapacityLoad = 2;
+  int32 Cpu = 3;
+  int32 Memory = 4;
 }

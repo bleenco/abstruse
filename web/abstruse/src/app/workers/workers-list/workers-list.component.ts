@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WorkersService } from '../shared/workers.service';
-import { Worker } from '../shared/worker.class';
+import { Worker, WorkerUsage } from '../shared/worker.class';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
 
@@ -26,18 +26,25 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     this.fetchWorkers();
 
     this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_updates', id: '' } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_usage', id: '' } });
+
     this.sub = this.dataService.socketOutput.subscribe(ev => {
+      const worker = this.findWorker(ev.data.cert_id);
+      console.log(ev);
       switch (ev.type) {
         case 'worker_status':
-        const worker = this.findWorker(ev.data.cert_id);
-        worker.status = ev.data.status;
-        break;
+          worker.status = ev.data.status;
+          break;
+        case 'worker_usage':
+          worker.setUsage(new WorkerUsage(ev.data.capacity, ev.data.capacity_load, ev.data.cpu, ev.data.memory));
+          break;
       }
     });
   }
 
   ngOnDestroy() {
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_updates', id: '' } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_usage', id: '' } });
     if (this.sub) {
       this.sub.unsubscribe();
     }

@@ -48,13 +48,13 @@
               <span class="table-data">{{ w.ip }}</span>
             </div>
             <div class="column is-1 justify-center">
-              <app-progress-bar [text]="'0 / 2'" [percent]="0"></app-progress-bar>
+              <app-progress-bar [text]="w?.usage?.capacity_load + ' / ' + w?.usage?.capacity" [percent]="0"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
-              <app-progress-bar [text]="'35%'" [percent]="35"></app-progress-bar>
+              <app-progress-bar [text]="w?.usage?.cpu + '%'" [percent]="w?.usage?.cpu"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
-              <app-progress-bar [text]="'76%'" [percent]="76"></app-progress-bar>
+              <app-progress-bar [text]="w?.usage?.memory + '%'" [percent]="w?.usage?.memory"></app-progress-bar>
             </div>
             <div class="column is-1 justify-center">
               <span class="table-data is-number" [ngClass]="{ 'is-green': w.priority >= 8 && w.priority, 'is-orange': w.priority >= 4 && w.priority < 8, 'is-red': w.priority < 4 }">{{ w.priority }}</span>

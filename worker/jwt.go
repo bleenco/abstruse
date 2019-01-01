@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"github.com/bleenco/abstruse/id"
+	"github.com/bleenco/abstruse/worker/id"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 

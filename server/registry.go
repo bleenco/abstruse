@@ -12,7 +12,8 @@ import (
 type WorkerRegistryItem struct {
 	Online bool
 
-	JobProcessStream pb.ApiService_JobProcessServer
+	JobProcessStream   pb.ApiService_JobProcessServer
+	WorkerStatusStream pb.ApiService_WorkerStatusServer
 }
 
 // WorkerRegistry defines registry for workers.
