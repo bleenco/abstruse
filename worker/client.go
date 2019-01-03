@@ -26,7 +26,6 @@ type GRPCClient struct {
 	logger     *logger.Logger
 	conn       *grpc.ClientConn
 	client     pb.ApiServiceClient
-	running    chan struct{}
 
 	JobProcessStream   pb.ApiService_JobProcessClient
 	WorkerStatusStream pb.ApiService_WorkerStatusClient
@@ -81,7 +80,6 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 		logger:     logger,
 		conn:       conn,
 		client:     client,
-		running:    make(chan struct{}),
 	}
 	Client = c
 
@@ -90,29 +88,28 @@ func NewGRPCClient(identifier id.ID, jwt, address, cert, key string, logger *log
 
 // Run starts worker gRPC client.
 func (c *GRPCClient) Run() error {
-	defer c.Close()
+	c.logger.Infof("connecting to gRPC server...")
+	ch := make(chan error)
 
 	go func() {
 		if err := c.StreamOnlineStatus(context.Background()); err != nil {
-			c.logger.Debugf("error: %s", err)
+			ch <- err
 		}
 	}()
 
 	go func() {
 		if err := c.StreamJobProcess(context.Background()); err != nil {
-			c.logger.Debugf("error: %s", err)
+			ch <- err
 		}
 	}()
 
 	go func() {
 		if err := c.StreamWorkerStatus(context.Background()); err != nil {
-			c.logger.Debugf("error: %s", err)
+			ch <- err
 		}
 	}()
 
-	<-c.running
-
-	return nil
+	return <-ch
 }
 
 // StreamOnlineStatus streams status about worker to server.
@@ -122,6 +119,7 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 		return err
 	}
 	defer stream.CloseSend()
+	c.logger.Infof("connected to gRPC server")
 
 	for {
 		status := &pb.OnlineStatus{

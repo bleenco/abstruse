@@ -5,6 +5,7 @@ require (
 	github.com/StackExchange/wmi v0.0.0-20181212234831-e0a55b97c705 // indirect
 	github.com/boombuler/barcode v1.0.0 // indirect
 	github.com/calmh/luhn v2.0.0+incompatible
+	github.com/cenkalti/backoff v2.1.0+incompatible
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

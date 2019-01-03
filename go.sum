@@ -12,6 +12,8 @@ github.com/boombuler/barcode v1.0.0 h1:s1TvRnXwL2xJRaccrdcBQMZxq6X7DvsMogtmJeHDd
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/calmh/luhn v2.0.0+incompatible h1:xHkbAc8FBgMiGUaKsiYcwtf8xhSXVtRKA2NhY7hFCAc=
 github.com/calmh/luhn v2.0.0+incompatible/go.mod h1:70IGmMi0GKRs073gl/oH5/yiJnTt61h35YQhvo/k3Cc=
+github.com/cenkalti/backoff v2.1.0+incompatible h1:FIRvWBZrzS4YC7NT5cOuZjexzFvIr+Dbi6aD1cZaNBk=
+github.com/cenkalti/backoff v2.1.0+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
 github.com/cespare/reflex v0.2.0 h1:6d9WpWJseKjJvZEevKP7Pk42nPx2+BUTqmhNk8wZPwM=
 github.com/cespare/reflex v0.2.0/go.mod h1:ooqOLJ4algvHP/oYvKWfWJ9tFUzCLDk5qkIJduMYrgI=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=

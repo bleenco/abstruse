@@ -8,6 +8,7 @@ import (
 	"github.com/bleenco/abstruse/logger"
 	"github.com/bleenco/abstruse/security"
 	"github.com/bleenco/abstruse/worker/id"
+	"github.com/cenkalti/backoff"
 )
 
 // WorkerProcess is main worker process instance.
@@ -85,15 +86,22 @@ func NewWorker(log *logger.Logger) (*Worker, error) {
 // Run starts the worker process.
 func (w *Worker) Run() error {
 	w.Logger.Infof("starting abstruse worker")
-	ch := make(chan error)
 
-	go func() {
-		if err := w.Client.Run(); err != nil {
-			ch <- err
-		}
-	}()
-
+	defer w.Client.Close()
 	go w.Queue.Run()
 
-	return <-ch
+	ticker := backoff.NewTicker(backoff.NewExponentialBackOff())
+	var err error
+
+	for range ticker.C {
+		if err = w.Client.Run(); err != nil {
+			w.Logger.Infof("%s, retrying...", err.Error())
+			continue
+		}
+
+		ticker.Stop()
+		break
+	}
+
+	return err
 }
