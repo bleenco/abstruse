@@ -223,6 +223,24 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 	}
 }
 
+// WriteContainerOutput writes text of container to server.
+func (c *GRPCClient) WriteContainerOutput(ctx context.Context, containerID, text string) error {
+	stream, err := c.client.ContainerOutput(ctx)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+
+	if err := stream.Send(&pb.ContainerOutputChunk{
+		Id:      containerID,
+		Content: []byte(text),
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // UploadFile uploads file to server.
 func (c *GRPCClient) UploadFile(ctx context.Context, f string) (*UploadStats, error) {
 	file, err := os.Open(f)

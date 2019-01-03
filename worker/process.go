@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
 	pb "github.com/bleenco/abstruse/proto"
@@ -24,7 +25,7 @@ func StartJob(task *pb.JobTask) error {
 		commands = append(commands, splitted)
 	}
 
-	resp, err := docker.CreateContainer(cli, name, "test-worker", []string{"/bin/sh"})
+	resp, err := docker.CreateContainer(cli, name, "ubuntu_latest_node", []string{})
 	if err != nil {
 		return err
 	}
@@ -35,7 +36,9 @@ func StartJob(task *pb.JobTask) error {
 		return err
 	}
 
+	ctx := context.Background()
 	var exitCode int
+	var lastCommand []string
 
 	for _, command := range commands {
 		if !docker.IsContainerRunning(cli, containerID) {
@@ -44,20 +47,26 @@ func StartJob(task *pb.JobTask) error {
 			}
 		}
 
-		conn, execID, err := docker.Exec(cli, containerID, command)
+		text := "\033[33;1m" + strings.Join(append([]string{"==>"}, command...), " ") + "\033[0m"
+		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+			return err
+		}
+
+		conn, execID, err := docker.Exec(cli, containerID, append([]string{"pty"}, command...))
 		if err != nil {
 			return err
 		}
 
-		if err := Client.StreamContainerOutput(context.Background(), conn, containerID); err != nil {
+		if err := Client.StreamContainerOutput(ctx, conn, containerID); err != nil {
 			return err
 		}
 
-		inspect, err := cli.ContainerExecInspect(context.Background(), execID)
+		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
 			return err
 		}
 
+		lastCommand = command
 		exitCode = inspect.ExitCode
 
 		if exitCode != 0 {
@@ -66,10 +75,18 @@ func StartJob(task *pb.JobTask) error {
 	}
 
 	if exitCode == 0 {
+		text := "\n\033[32;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with 0.\033[0m"
+		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+			return err
+		}
 		if err := SendPassingStatus(name); err != nil {
 			return err
 		}
 	} else {
+		text := "\n\033[31;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with " + strconv.Itoa(exitCode) + ".\033[0m"
+		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+			return err
+		}
 		if err := SendFailingStatus(name); err != nil {
 			return err
 		}

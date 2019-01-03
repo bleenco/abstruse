@@ -3,6 +3,8 @@ package docker
 import (
 	"context"
 
+	"github.com/docker/go-connections/nat"
+
 	"github.com/bleenco/abstruse/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -57,10 +59,21 @@ func CreateContainer(cli *client.Client, name, image string, cmd []string) (cont
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
 		Cmd:        cmd,
-		WorkingDir: "/build",
-		User:       "root",
+		WorkingDir: "/home/abstruse/build",
 		Tty:        true,
-	}, nil, nil, name)
+		Entrypoint: []string{"/entry.sh"},
+		Env:        []string{"NODE_VERSION=10", "SCRIPT=test"},
+		Shell:      []string{"/bin/bash"},
+		ExposedPorts: nat.PortSet{
+			nat.Port("22/tcp"):   {},
+			nat.Port("5900/tcp"): {},
+		},
+	}, &container.HostConfig{
+		PortBindings: nat.PortMap{
+			nat.Port("22/tcp"):   []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
+			nat.Port("5900/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
+		},
+	}, nil, name)
 }
 
 // IsContainerRunning returns true if container is running.
