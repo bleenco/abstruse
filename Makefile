@@ -14,7 +14,7 @@ build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && npm run build; fi
 
 statik:
-	@statik -src=./web/abstruse/dist
+	@if [ ! -d "statik" ]; then statik -src=./web/abstruse/dist; fi
 
 install_dependencies:
 	@go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
