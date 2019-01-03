@@ -3,17 +3,10 @@ package worker
 import (
 	"context"
 	"sync"
-	"time"
 
+	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
 )
-
-// JobQueue is exported main job Queue instance.
-var JobQueue *Queue
-
-func init() {
-	JobQueue = NewQueue(2)
-}
 
 // Queue of concurrently started jobs with ability to limit parallelization.
 type Queue struct {
@@ -23,10 +16,12 @@ type Queue struct {
 	job     chan *pb.JobTask
 	wg      sync.WaitGroup
 	quit    chan struct{}
+
+	logger *logger.Logger
 }
 
 // NewQueue returns new instance of Queue
-func NewQueue(concurrency int) *Queue {
+func NewQueue(concurrency int, log *logger.Logger) *Queue {
 	if concurrency <= 0 {
 		concurrency = 1
 	}
@@ -37,33 +32,32 @@ func NewQueue(concurrency int) *Queue {
 		job:         make(chan *pb.JobTask),
 		wg:          sync.WaitGroup{},
 		quit:        make(chan struct{}),
+		logger:      log,
 	}
 }
 
 // Run starts the queue.
 func (q *Queue) Run() {
+	q.logger.Infof("starting worker main queue loop")
 	q.quit = make(chan struct{})
 
 loop:
 	for {
 		select {
 		case jobTask := <-q.job:
-			q.add()
 			go func(task *pb.JobTask) {
-				defer q.done()
-
 				if task.Code == pb.JobTask_Start {
-					go func() {
-						time.Sleep(5 * time.Second)
-						StopJob(task.GetName())
-					}()
-
+					q.add()
+					defer q.done()
+					q.logger.Infof("starting job task: %s", jobTask.GetName())
 					StartJob(task)
 				} else if task.Code == pb.JobTask_Stop {
-
+					q.logger.Infof("stopping job task: %s", jobTask.GetName())
+					StopJob(task.GetName())
 				} else if task.Code == pb.JobTask_Restart {
 
 				}
+				q.logger.Infof("done job task: %s", jobTask.GetName())
 			}(jobTask)
 		case <-q.quit:
 			break loop

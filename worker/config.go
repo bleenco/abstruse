@@ -13,6 +13,7 @@ type Config struct {
 	ServerSecret  string `json:"server_secret"`
 	Cert          string `json:"cert"`
 	Key           string `json:"key"`
+	Concurrency   int    `json:"concurrency"`
 }
 
 func readAndParseConfig(configPath string) (*Config, error) {
@@ -43,6 +44,7 @@ func writeDefaultConfig(configPath string) error {
 		ServerSecret:  "defaultSecret",
 		Cert:          "./cert.pem",
 		Key:           "./key.pem",
+		Concurrency:   2,
 	}
 
 	configJSON, err := json.MarshalIndent(config, "", "  ")

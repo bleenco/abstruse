@@ -188,8 +188,7 @@ func (c *GRPCClient) StreamJobProcess(ctx context.Context) error {
 			return err
 		}
 
-		c.logger.Debugf("received job task: %+v", jobTask)
-		JobQueue.job <- jobTask
+		WorkerProcess.Queue.job <- jobTask
 
 		if err := SendQueuedStatus(jobTask.GetName()); err != nil {
 			return err

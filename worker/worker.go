@@ -10,6 +10,9 @@ import (
 	"github.com/bleenco/abstruse/worker/id"
 )
 
+// WorkerProcess is main worker process instance.
+var WorkerProcess *Worker
+
 // Worker defines worker instance.
 type Worker struct {
 	Queue      *Queue
@@ -23,7 +26,7 @@ type Worker struct {
 }
 
 // NewWorker returns new worker instance.
-func NewWorker(logger *logger.Logger) (*Worker, error) {
+func NewWorker(log *logger.Logger) (*Worker, error) {
 	homeDir, err := fs.GetHomeDir()
 	if err != nil {
 		return nil, err
@@ -57,10 +60,12 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 		return nil, err
 	}
 
-	gRPCClient, err := NewGRPCClient(identifier, jwt, config.ServerAddress, cert, key, logger)
+	gRPCClient, err := NewGRPCClient(identifier, jwt, config.ServerAddress, cert, key, log)
 	if err != nil {
 		return nil, err
 	}
+
+	queueLogger := logger.NewLogger("queue", log.Info, log.Debug)
 
 	worker := &Worker{
 		Identifier: identifier,
@@ -68,19 +73,21 @@ func NewWorker(logger *logger.Logger) (*Worker, error) {
 		Client:     gRPCClient,
 		ConfigDir:  configDir,
 		Config:     config,
-		Logger:     logger,
-		Queue:      JobQueue,
+		Logger:     log,
+		Queue:      NewQueue(config.Concurrency, queueLogger),
 	}
+
+	WorkerProcess = worker
 
 	return worker, nil
 }
 
 // Run starts the worker process.
 func (w *Worker) Run() error {
+	w.Logger.Infof("starting abstruse worker")
 	ch := make(chan error)
 
 	go func() {
-		w.Logger.Infof("starting abstruse worker")
 		if err := w.Client.Run(); err != nil {
 			ch <- err
 		}
