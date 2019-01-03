@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"sync"
+	"time"
 
 	pb "github.com/bleenco/abstruse/proto"
 )
@@ -52,6 +53,11 @@ loop:
 				defer q.done()
 
 				if task.Code == pb.JobTask_Start {
+					go func() {
+						time.Sleep(5 * time.Second)
+						StopJob(task.GetName())
+					}()
+
 					StartJob(task)
 				} else if task.Code == pb.JobTask_Stop {
 

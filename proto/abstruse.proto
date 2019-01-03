@@ -44,8 +44,8 @@ message ContainerOutputChunk {
 
 message JobStatus {
   enum JobStatusCode {
-    Stopped = 0;
-    Queued = 1;
+    Queued = 0;
+    Stopped = 1;
     Running = 2;
     Failing = 3;
     Passing = 4;

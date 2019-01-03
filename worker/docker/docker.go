@@ -62,7 +62,7 @@ func CreateContainer(cli *client.Client, name, image string, cmd []string) (cont
 		WorkingDir: "/home/abstruse/build",
 		Tty:        true,
 		Entrypoint: []string{"/entry.sh"},
-		Env:        []string{"NODE_VERSION=10", "SCRIPT=test"},
+		Env:        []string{"NODE_VERSION=11", "SCRIPT=test"},
 		Shell:      []string{"/bin/bash"},
 		ExposedPorts: nat.PortSet{
 			nat.Port("22/tcp"):   {},
@@ -96,12 +96,7 @@ func ListRunningContainers(cli *client.Client) ([]string, error) {
 	}
 
 	for _, container := range containers {
-		data, err := InspectContainer(cli, container.ID)
-		if err != nil {
-			return names, nil
-		}
-
-		if data.State.Running {
+		if container.Status == "Up" {
 			names = append(names, container.ID)
 		}
 	}

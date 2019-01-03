@@ -229,16 +229,14 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 	for {
 		jobStatus, err := stream.Recv()
 		if err != nil {
+			registryItem.JobProcessStream = nil
 			if err == io.EOF {
-				registryItem.JobProcessStream = nil
 				return nil
 			}
-
-			registryItem.JobProcessStream = nil
 			return err
 		}
 
-		fmt.Printf("%+v\n", jobStatus)
+		fmt.Printf("job status: %s => %s\n", jobStatus.GetId(), jobStatus.GetCode())
 	}
 }
 

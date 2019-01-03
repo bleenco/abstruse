@@ -82,6 +82,14 @@ func StartJob(task *pb.JobTask) error {
 		if err := SendPassingStatus(name); err != nil {
 			return err
 		}
+	} else if exitCode == 137 {
+		text := "\n\033[31;1mJob stopped with exit code 137.\033[0m"
+		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+			return err
+		}
+		if err := SendStoppedStatus(name); err != nil {
+			return err
+		}
 	} else {
 		text := "\n\033[31;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with " + strconv.Itoa(exitCode) + ".\033[0m"
 		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
@@ -90,6 +98,16 @@ func StartJob(task *pb.JobTask) error {
 		if err := SendFailingStatus(name); err != nil {
 			return err
 		}
+	}
+
+	return cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
+}
+
+// StopJob stops job task.
+func StopJob(containerID string) error {
+	cli, err := docker.GetClient()
+	if err != nil {
+		return err
 	}
 
 	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
