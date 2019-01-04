@@ -14,13 +14,11 @@ WORKDIR /app
 
 RUN apk --no-cache add git make protobuf protobuf-dev ca-certificates
 
-COPY --from=ui /app/ui/dist /app/dist
+COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
 RUN go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go
-
-RUN statik -src=./dist
 
 RUN make grpc && make
 
