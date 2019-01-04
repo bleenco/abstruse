@@ -55,7 +55,7 @@ func StartContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func CreateContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
+func CreateContainer(cli *client.Client, name, image string, env []string) (container.ContainerCreateCreatedBody, error) {
 	var mounts []mount.Mount
 
 	if utils.IsInContainer() && utils.IsDockerRunning() {
@@ -64,11 +64,10 @@ func CreateContainer(cli *client.Client, name, image string, cmd []string) (cont
 
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
-		Cmd:        cmd,
+		Env:        env,
 		WorkingDir: "/home/abstruse/build",
 		Tty:        true,
 		Entrypoint: []string{"/entry.sh"},
-		Env:        []string{"NODE_VERSION=11", "SCRIPT=test"},
 		Shell:      []string{"/bin/bash"},
 		ExposedPorts: nat.PortSet{
 			nat.Port("22/tcp"):   {},

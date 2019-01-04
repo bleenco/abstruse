@@ -65,6 +65,7 @@ message JobTask {
   JobTaskCode Code = 2;
   repeated string Commands = 3;
   string Image = 4;
+  repeated string Env = 5;
 }
 
 message WorkerUsage {

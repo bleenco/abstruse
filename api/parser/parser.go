@@ -94,15 +94,33 @@ func (c *ConfigParser) Parse() error {
 		return err
 	}
 
+	c.Env = c.generateEnv()
 	c.Commands = c.generateCommands()
 
 	return nil
 }
 
+func (c *ConfigParser) generateEnv() []string {
+	var env []string
+
+	for _, matrixItem := range c.Parsed.Matrix {
+		env = append(env, matrixItem.Env)
+	}
+
+	return env
+}
+
 func (c *ConfigParser) generateCommands() []string {
 	var commands []string
 
-	commands = append(commands, "git clone -q "+c.CloneURL+" .")
+	commands = append(commands, "git clone -q "+c.CloneURL+" --branch "+c.Branch+" .")
+	if c.PR != "" {
+		commands = append(commands, "git fetch origin pull/"+c.PR+"/head:pr"+c.PR)
+	}
+	if c.Commit != "" {
+		commands = append(commands, "git checkout -qf "+c.Commit)
+	}
+
 	commands = appendCommands(commands, c.Parsed.BeforeInstall)
 	commands = appendCommands(commands, c.Parsed.Install)
 	commands = appendCommands(commands, c.Parsed.BeforeScript)

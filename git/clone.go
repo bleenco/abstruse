@@ -21,7 +21,7 @@ func FetchAbstruseConfig(url, branch, commit, pr string) (string, error) {
 	}
 
 	if pr != "" {
-		referenceName := "refs/remotes/origin/pr/" + pr
+		referenceName := "origin/pr/" + pr
 
 		if err := r.Fetch(&git.FetchOptions{
 			RefSpecs: []config.RefSpec{

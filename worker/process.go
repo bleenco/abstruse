@@ -25,7 +25,7 @@ func StartJob(task *pb.JobTask) error {
 		commands = append(commands, splitted)
 	}
 
-	resp, err := docker.CreateContainer(cli, name, task.GetImage(), []string{})
+	resp, err := docker.CreateContainer(cli, name, task.GetImage(), task.GetEnv())
 	if err != nil {
 		return err
 	}

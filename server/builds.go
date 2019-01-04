@@ -3,6 +3,7 @@ package server
 import (
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bleenco/abstruse/api/parser"
@@ -21,6 +22,8 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 		branch = repo.DefaultBranch
 	}
 
+	commit = "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320"
+
 	configParser := &parser.ConfigParser{
 		CloneURL: repo.HTMLURL,
 		Branch:   branch,
@@ -36,7 +39,7 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 		return err
 	}
 
-	_, commands, config := configParser.Parsed.Image, configParser.Commands, configParser.Raw
+	_, commands, config, env := configParser.Parsed.Image, configParser.Commands, configParser.Raw, configParser.Env
 
 	build := db.Build{
 		Branch:       branch,
@@ -52,13 +55,16 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 
 	name := "abstruse_job_" + strconv.Itoa(int(build.ID)) + "_" + strconv.Itoa(rand.Intn(500))
 
-	jobTask := &pb.JobTask{
-		Name:     name,
-		Code:     pb.JobTask_Start,
-		Commands: commands,
-		Image:    "ubuntu_latest_node",
+	for _, e := range env {
+		jobTask := &pb.JobTask{
+			Name:     name,
+			Code:     pb.JobTask_Start,
+			Commands: commands,
+			Image:    "ubuntu_latest_node",
+			Env:      strings.Split(e, " "),
+		}
+		MainScheduler.ScheduleJobTask(jobTask)
 	}
-	MainScheduler.ScheduleJobTask(jobTask)
 
 	return nil
 }
