@@ -75,7 +75,7 @@ type ConfigParser struct {
 
 // FetchRawConfig fetches raw config from repository.
 func (c *ConfigParser) FetchRawConfig() error {
-	raw, err := git.FetchAbstruseConfig(c.CloneURL)
+	raw, err := git.FetchAbstruseConfig(c.CloneURL, c.Branch, c.Commit, c.PR)
 	if err != nil {
 		return err
 	}

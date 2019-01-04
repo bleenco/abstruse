@@ -48,7 +48,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20181128211412-28207608b838
 	golang.org/x/sys v0.0.0-20181128092732-4ed8d59d0b35 // indirect
 	google.golang.org/grpc v1.16.0
-	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
+	gopkg.in/src-d/go-billy.v4 v4.3.0
 	gopkg.in/src-d/go-git-fixtures.v3 v3.3.0 // indirect
 	gopkg.in/src-d/go-git.v4 v4.8.1
 	gopkg.in/yaml.v2 v2.2.2
