@@ -3,12 +3,12 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/go-connections/nat"
-
 	"github.com/bleenco/abstruse/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
+	"github.com/docker/go-connections/nat"
 )
 
 // Exec executes specified command inside Docker container.
@@ -56,6 +56,12 @@ func StartContainer(cli *client.Client, id string) error {
 
 // CreateContainer creates new Docker container.
 func CreateContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
+	var mounts []mount.Mount
+
+	if utils.IsInContainer() && utils.IsDockerRunning() {
+		mounts = []mount.Mount{{Type: mount.TypeBind, Source: "/var/run/docker.sock", Target: "/var/run/docker.sock"}}
+	}
+
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
 		Cmd:        cmd,
@@ -73,6 +79,7 @@ func CreateContainer(cli *client.Client, name, image string, cmd []string) (cont
 			nat.Port("22/tcp"):   []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
 			nat.Port("5900/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
 		},
+		Mounts: mounts,
 	}, nil, name)
 }
 
