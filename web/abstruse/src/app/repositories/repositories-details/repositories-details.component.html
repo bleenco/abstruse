@@ -1,10 +1,10 @@
 <div class="columns is-multiline">
   <div class="column is-12">
-    <div class="box">
+    <div class="box bg-light has-dark-border mb10">
       <h2>{{ repo?.full_name }}</h2>
-      <hr />
+      <hr class="mb10" />
       <div class="columns is-multiline">
-        <div class="column is-12 mb10">
+        <div class="column is-12">
           <div class="space-between align-center">
             <span class="has-icon">
               <span>{{ repo?.html_url }}</span>
@@ -27,13 +27,14 @@
         </div>
       </div>
     </div>
-    <div class="columns is-multiline">
-      <div class="column is-12 ptb0 mb15">
-        <div class="tabs justify-end">
-          <span class="tab" [class.is-active]="tab === 'all'" (click)="switchTab('all')">All Builds</span>
-          <span class="tab" [class.is-active]="tab === 'commits'" (click)="switchTab('commits')">Commits</span>
-          <span class="tab" [class.is-active]="tab === 'pr'" (click)="switchTab('pr')">Pull Requests</span>
-        </div>
+  </div>
+  <div class="column is-12">
+    <div class="tabs">
+      <div class="tabs-heading"></div>
+      <div class="tabs-items">
+        <span class="tab" [class.is-active]="tab === 'all'" (click)="switchTab('all')">All Builds</span>
+        <span class="tab" [class.is-active]="tab === 'commits'" (click)="switchTab('commits')">Commits</span>
+        <span class="tab" [class.is-active]="tab === 'pr'" (click)="switchTab('pr')">Pull Requests</span>
       </div>
     </div>
   </div>
