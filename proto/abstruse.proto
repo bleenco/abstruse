@@ -64,6 +64,7 @@ message JobTask {
   string Name = 1;
   JobTaskCode Code = 2;
   repeated string Commands = 3;
+  string Image = 4;
 }
 
 message WorkerUsage {

@@ -3,7 +3,7 @@ package parser
 import yaml "gopkg.in/yaml.v2"
 
 const rawData = `
-image: abstruse
+image: ubuntu_latest_node
 
 matrix:
   - env: SCRIPT=lint NODE_VERSION=10

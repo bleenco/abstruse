@@ -178,15 +178,22 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 		}
 		websocket.App.Broadcast("worker_capacity", data, "worker_capacity")
 
-		t, u := s.registry.GetWorkersCapacityInfo()
-		s.logger.Debugf("workers capacity: %d, used: %d", t, u)
+		totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
+		MainScheduler.SetSize(totalCapacity, totalUsed)
 	}
 
 end:
+	registryItem.Online = false
+	registryItem.WorkerCapacityStatusStream = nil
+	registryItem.CapacityTotal = 0
+	registryItem.CapacityUsed = 0
+
+	totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
+	MainScheduler.SetSize(totalCapacity, totalUsed)
+
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
 	}
-	registryItem.WorkerCapacityStatusStream = nil
 
 	return nil
 }
@@ -254,26 +261,6 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 
 	registryItem.JobProcessStream = stream
 
-	// jobTask := &pb.JobTask{
-	// 	Name:     "abstruse_job_256_512",
-	// 	Code:     pb.JobTask_Start,
-	// 	Commands: []string{"git clone https://github.com/jkuri/d3-bundle.git --depth 1", "ls -alh"},
-	// }
-
-	// if err := stream.Send(jobTask); err != nil {
-	// 	return err
-	// }
-
-	// jobTask.Name = "abstruse_job_256_513"
-	// if err := stream.Send(jobTask); err != nil {
-	// 	return err
-	// }
-
-	// jobTask.Name = "abstruse_job_256_514"
-	// if err := stream.Send(jobTask); err != nil {
-	// 	return err
-	// }
-
 	for {
 		jobStatus, err := stream.Recv()
 		if err != nil {
@@ -285,6 +272,10 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 		}
 
 		fmt.Printf("job status: %s => %s\n", jobStatus.GetId(), jobStatus.GetCode())
+
+		if jobStatus.GetCode() != pb.JobStatus_Queued && jobStatus.GetCode() != pb.JobStatus_Running {
+			MainScheduler.FinishJobTask()
+		}
 	}
 }
 

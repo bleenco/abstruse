@@ -37,6 +37,7 @@ type Abstruse struct {
 	server     *http.Server
 	logger     *logger.Logger
 	grpcserver *GRPCServer
+	scheduler  *Scheduler
 	ws         *websocket.Server
 	workersAPI *workers.Workers
 	dir        string
@@ -83,6 +84,7 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		router:     NewRouter(),
 		server:     &http.Server{},
 		grpcserver: gRPCServer,
+		scheduler:  NewScheduler(logger.NewLogger("scheduler", true, c.Debug)),
 		ws:         websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
 		workersAPI: workers.NewWorkersAPI(),
 		logger:     logger.NewLogger("", true, c.Debug),
