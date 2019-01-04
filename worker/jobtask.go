@@ -5,9 +5,10 @@ import (
 )
 
 // SendQueuedStatus sends job status queued to server.
-func SendQueuedStatus(id string) error {
+func SendQueuedStatus(id, name string) error {
 	task := &pb.JobStatus{
 		Id:   id,
+		Name: name,
 		Code: pb.JobStatus_Queued,
 	}
 
@@ -15,9 +16,10 @@ func SendQueuedStatus(id string) error {
 }
 
 // SendStoppedStatus sends job status stopped to server.
-func SendStoppedStatus(id string) error {
+func SendStoppedStatus(id, name string) error {
 	task := &pb.JobStatus{
 		Id:   id,
+		Name: name,
 		Code: pb.JobStatus_Stopped,
 	}
 
@@ -25,9 +27,10 @@ func SendStoppedStatus(id string) error {
 }
 
 // SendRunningStatus sends job status running to server.
-func SendRunningStatus(id string) error {
+func SendRunningStatus(id, name string) error {
 	task := &pb.JobStatus{
 		Id:   id,
+		Name: name,
 		Code: pb.JobStatus_Running,
 	}
 
@@ -35,9 +38,10 @@ func SendRunningStatus(id string) error {
 }
 
 // SendFailingStatus sends job status failing to server.
-func SendFailingStatus(id string) error {
+func SendFailingStatus(id, name string) error {
 	task := &pb.JobStatus{
 		Id:   id,
+		Name: name,
 		Code: pb.JobStatus_Failing,
 	}
 
@@ -45,9 +49,10 @@ func SendFailingStatus(id string) error {
 }
 
 // SendPassingStatus sends job status passing to server.
-func SendPassingStatus(id string) error {
+func SendPassingStatus(id, name string) error {
 	task := &pb.JobStatus{
 		Id:   id,
+		Name: name,
 		Code: pb.JobStatus_Passing,
 	}
 

@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bleenco/abstruse/api/workers"
 	"github.com/bleenco/abstruse/logger"
@@ -271,9 +272,33 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 			return err
 		}
 
-		fmt.Printf("job status: %s => %s\n", jobStatus.GetId(), jobStatus.GetCode())
+		jobProcess, err := MainScheduler.findJobProcessByName(jobStatus.GetName())
+		if err != nil {
+			MainScheduler.processes = append(MainScheduler.processes, &JobProcess{
+				ContainerID:      jobStatus.GetId(),
+				ContainerName:    jobStatus.GetName(),
+				WorkerIdentifier: identifier,
+				Log:              []string{},
+			})
+			jobProcess, _ = MainScheduler.findJobProcess(jobStatus.GetId())
+		}
+
+		switch jobStatus.GetCode() {
+		case pb.JobStatus_Queued:
+			jobProcess.Status = "queued"
+		case pb.JobStatus_Running:
+			jobProcess.Status = "running"
+			jobProcess.StartTime = time.Now()
+		case pb.JobStatus_Passing:
+			jobProcess.Status = "passing"
+			jobProcess.EndTime = time.Now()
+		case pb.JobStatus_Failing:
+			jobProcess.Status = "failing"
+			jobProcess.EndTime = time.Now()
+		}
 
 		if jobStatus.GetCode() != pb.JobStatus_Queued && jobStatus.GetCode() != pb.JobStatus_Running {
+			fmt.Printf("%s\n", strings.Join(jobProcess.Log, ""))
 			MainScheduler.FinishJobTask()
 		}
 	}
@@ -292,7 +317,9 @@ func (s *GRPCServer) ContainerOutput(stream pb.ApiService_ContainerOutputServer)
 			return err
 		}
 
-		fmt.Printf("%s\n", string(chunk.Content))
+		if err := MainScheduler.AppendLog(chunk.Id, chunk.Name, string(chunk.Content)); err != nil {
+			s.logger.Debugf("error: %s", err.Error())
+		}
 	}
 }
 

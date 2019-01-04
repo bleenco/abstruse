@@ -30,9 +30,13 @@ func StartJob(task *pb.JobTask) error {
 		return err
 	}
 
-	containerID := resp.ID
+	data, err := docker.InspectContainer(cli, resp.ID)
+	if err != nil {
+		return err
+	}
+	containerID := data.ID
 
-	if err := SendRunningStatus(name); err != nil {
+	if err := SendRunningStatus(containerID, name); err != nil {
 		return err
 	}
 
@@ -47,8 +51,8 @@ func StartJob(task *pb.JobTask) error {
 			}
 		}
 
-		text := "\033[33;1m" + strings.Join(append([]string{"==>"}, command...), " ") + "\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+		text := "\033[33;1m" + strings.Join(append([]string{"==>"}, command...), " ") + "\033[0m\n"
+		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
 			return err
 		}
 
@@ -57,7 +61,7 @@ func StartJob(task *pb.JobTask) error {
 			return err
 		}
 
-		if err := Client.StreamContainerOutput(ctx, conn, containerID); err != nil {
+		if err := Client.StreamContainerOutput(ctx, conn, containerID, name); err != nil {
 			return err
 		}
 
@@ -75,27 +79,27 @@ func StartJob(task *pb.JobTask) error {
 	}
 
 	if exitCode == 0 {
-		text := "\n\033[32;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with 0.\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+		text := "\n\033[32;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with 0.\033[0m\n"
+		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
 			return err
 		}
-		if err := SendPassingStatus(name); err != nil {
+		if err := SendPassingStatus(containerID, name); err != nil {
 			return err
 		}
 	} else if exitCode == 137 {
-		text := "\n\033[31;1mJob stopped with exit code 137.\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+		text := "\n\033[31;1mJob stopped with exit code 137.\033[0m\n"
+		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
 			return err
 		}
-		if err := SendStoppedStatus(name); err != nil {
+		if err := SendStoppedStatus(containerID, name); err != nil {
 			return err
 		}
 	} else {
-		text := "\n\033[31;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with " + strconv.Itoa(exitCode) + ".\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, text); err != nil {
+		text := "\n\033[31;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with " + strconv.Itoa(exitCode) + ".\033[0m\n"
+		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
 			return err
 		}
-		if err := SendFailingStatus(name); err != nil {
+		if err := SendFailingStatus(containerID, name); err != nil {
 			return err
 		}
 	}

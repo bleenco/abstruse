@@ -40,7 +40,8 @@ enum TransferStatusCode {
 
 message ContainerOutputChunk {
   string Id = 1;
-  bytes Content = 2;
+  string Name = 2;
+  bytes Content = 3;
 }
 
 message JobStatus {
@@ -52,7 +53,8 @@ message JobStatus {
     Passing = 4;
   }
   string Id = 1;
-  JobStatusCode Code = 2;
+  string Name = 2;
+  JobStatusCode Code = 3;
 }
 
 message JobTask {

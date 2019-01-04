@@ -231,14 +231,14 @@ func (c *GRPCClient) StreamJobProcess(ctx context.Context) error {
 
 		WorkerProcess.Queue.job <- jobTask
 
-		if err := SendQueuedStatus(jobTask.GetName()); err != nil {
+		if err := SendQueuedStatus("", jobTask.GetName()); err != nil {
 			return err
 		}
 	}
 }
 
 // StreamContainerOutput streams output log of container to server.
-func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.HijackedResponse, containerID string) error {
+func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.HijackedResponse, containerID, containerName string) error {
 	stream, err := c.client.ContainerOutput(ctx)
 	if err != nil {
 		return err
@@ -256,6 +256,7 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 		// stream output log to server
 		if err := stream.Send(&pb.ContainerOutputChunk{
 			Id:      containerID,
+			Name:    containerName,
 			Content: buf[:n],
 		}); err != nil {
 			return err
@@ -264,7 +265,7 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 }
 
 // WriteContainerOutput writes text of container to server.
-func (c *GRPCClient) WriteContainerOutput(ctx context.Context, containerID, text string) error {
+func (c *GRPCClient) WriteContainerOutput(ctx context.Context, containerID, containerName, text string) error {
 	stream, err := c.client.ContainerOutput(ctx)
 	if err != nil {
 		return err
@@ -273,6 +274,7 @@ func (c *GRPCClient) WriteContainerOutput(ctx context.Context, containerID, text
 
 	if err := stream.Send(&pb.ContainerOutputChunk{
 		Id:      containerID,
+		Name:    containerName,
 		Content: []byte(text),
 	}); err != nil {
 		return err

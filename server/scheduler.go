@@ -3,13 +3,13 @@ package server
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/bleenco/abstruse/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/eapache/channels"
+	"github.com/pkg/errors"
 )
-
-const workerID = "3PZJACK-CTNATVU-5D3EWEF-F7PIPLE-STU4XUQ-EK66A2X-2ZCJIGX-MALTKAY"
 
 // MainScheduler is exported main scheduler.
 var MainScheduler *Scheduler
@@ -24,7 +24,22 @@ type Scheduler struct {
 	wg      sync.WaitGroup
 	quit    chan struct{}
 
+	processes []*JobProcess
+
 	logger *logger.Logger
+}
+
+// JobProcess defines remote job process.
+type JobProcess struct {
+	ContainerID      string
+	ContainerName    string
+	WorkerIdentifier string
+
+	Status string
+
+	Log       []string
+	StartTime time.Time
+	EndTime   time.Time
 }
 
 // NewScheduler returns instance of Scheduler.
@@ -94,6 +109,38 @@ func (s *Scheduler) ScheduleJobTask(job *pb.JobTask) {
 // FinishJobTask decreases size of used job tasks number in scheduler.
 func (s *Scheduler) FinishJobTask() {
 	defer s.done()
+}
+
+// AppendLog appends output log for running job.
+func (s *Scheduler) AppendLog(containerID, containerName, log string) error {
+	proc, err := s.findJobProcessByName(containerName)
+	if err != nil {
+		return err
+	}
+	proc.ContainerID = containerID
+
+	proc.Log = append(proc.Log, log)
+	return nil
+}
+
+func (s *Scheduler) findJobProcess(containerID string) (*JobProcess, error) {
+	for _, proc := range s.processes {
+		if proc.ContainerID == containerID {
+			return proc, nil
+		}
+	}
+
+	return &JobProcess{}, errors.New("job process not found")
+}
+
+func (s *Scheduler) findJobProcessByName(containerName string) (*JobProcess, error) {
+	for _, proc := range s.processes {
+		if proc.ContainerName == containerName {
+			return proc, nil
+		}
+	}
+
+	return &JobProcess{}, errors.New("job process not found")
 }
 
 func (s *Scheduler) add() error {
