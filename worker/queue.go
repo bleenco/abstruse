@@ -11,6 +11,7 @@ import (
 // Queue of concurrently started jobs with ability to limit parallelization.
 type Queue struct {
 	Concurrency int
+	Used        int
 
 	current chan struct{}
 	job     chan *pb.JobTask
@@ -28,6 +29,7 @@ func NewQueue(concurrency int, log *logger.Logger) *Queue {
 
 	return &Queue{
 		Concurrency: concurrency,
+		Used:        0,
 		current:     make(chan struct{}, concurrency),
 		job:         make(chan *pb.JobTask),
 		wg:          sync.WaitGroup{},
@@ -40,6 +42,7 @@ func NewQueue(concurrency int, log *logger.Logger) *Queue {
 func (q *Queue) Run() {
 	q.logger.Infof("starting worker main queue loop")
 	q.quit = make(chan struct{})
+	q.sendCapacityInfo()
 
 loop:
 	for {
@@ -82,15 +85,25 @@ func (q *Queue) add() error {
 	case q.current <- struct{}{}:
 		break
 	}
+
 	q.wg.Add(1)
-	return nil
+	q.Used++
+
+	return q.sendCapacityInfo()
 }
 
 func (q *Queue) done() {
 	<-q.current
 	q.wg.Done()
+
+	q.Used--
+	q.sendCapacityInfo()
 }
 
 func (q *Queue) wait() {
 	q.wg.Wait()
+}
+
+func (q *Queue) sendCapacityInfo() error {
+	return WorkerProcess.Client.UpdateWorkerCapacityStatus(context.Background())
 }

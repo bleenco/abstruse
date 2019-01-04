@@ -141,8 +141,58 @@ end:
 	return nil
 }
 
-// WorkerStatus gRPC channel.
-func (s *GRPCServer) WorkerStatus(stream pb.ApiService_WorkerStatusServer) error {
+// WorkerCapacityStatus gRPC channel.
+func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacityStatusServer) error {
+	registryItem := &WorkerRegistryItem{}
+	ctx := stream.Context()
+	identifier, ok := ctx.Value(workerIdentifierKey).(string)
+	if !ok {
+		return errors.New("identifier not found in stream context")
+	}
+
+	for {
+		var err error
+		registryItem, err = s.registry.Find(identifier)
+		if err != nil || registryItem == nil {
+			continue
+		}
+		break
+	}
+
+	registryItem.WorkerCapacityStatusStream = stream
+
+	for {
+		usage, err := stream.Recv()
+		if err != nil {
+			goto end
+		}
+
+		total, used := usage.GetTotal(), usage.GetUsed()
+		registryItem.CapacityTotal = int(total)
+		registryItem.CapacityUsed = int(used)
+
+		data := map[string]interface{}{
+			"cert_id": identifier,
+			"total":   total,
+			"used":    used,
+		}
+		websocket.App.Broadcast("worker_capacity", data, "worker_capacity")
+
+		t, u := s.registry.GetWorkersCapacityInfo()
+		s.logger.Debugf("workers capacity: %d, used: %d", t, u)
+	}
+
+end:
+	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
+		return err
+	}
+	registryItem.WorkerCapacityStatusStream = nil
+
+	return nil
+}
+
+// WorkerUsageStatus gRPC channel.
+func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusServer) error {
 	registryItem := &WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
@@ -159,7 +209,7 @@ func (s *GRPCServer) WorkerStatus(stream pb.ApiService_WorkerStatusServer) error
 		break
 	}
 
-	registryItem.WorkerStatusStream = stream
+	registryItem.WorkerUsageStatusStream = stream
 
 	for {
 		usage, err := stream.Recv()
@@ -168,11 +218,9 @@ func (s *GRPCServer) WorkerStatus(stream pb.ApiService_WorkerStatusServer) error
 		}
 
 		data := map[string]interface{}{
-			"cert_id":       identifier,
-			"capacity":      usage.GetCapacity(),
-			"capacity_load": usage.GetCapacityLoad(),
-			"cpu":           usage.GetCpu(),
-			"memory":        usage.GetMemory(),
+			"cert_id": identifier,
+			"cpu":     usage.GetCpu(),
+			"memory":  usage.GetMemory(),
 		}
 		websocket.App.Broadcast("worker_usage", data, "worker_usage")
 	}
@@ -181,7 +229,7 @@ end:
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
 	}
-	registryItem.WorkerStatusStream = nil
+	registryItem.WorkerUsageStatusStream = nil
 
 	return nil
 }

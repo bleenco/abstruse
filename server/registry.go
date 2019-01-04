@@ -12,8 +12,12 @@ import (
 type WorkerRegistryItem struct {
 	Online bool
 
-	JobProcessStream   pb.ApiService_JobProcessServer
-	WorkerStatusStream pb.ApiService_WorkerStatusServer
+	JobProcessStream           pb.ApiService_JobProcessServer
+	WorkerUsageStatusStream    pb.ApiService_WorkerUsageStatusServer
+	WorkerCapacityStatusStream pb.ApiService_WorkerCapacityStatusServer
+
+	CapacityTotal int
+	CapacityUsed  int
 }
 
 // WorkerRegistry defines registry for workers.
@@ -37,12 +41,15 @@ func (wr *WorkerRegistry) Subscribe(identifier string) {
 	defer wr.mu.Unlock()
 
 	if _, ok := wr.items[identifier]; ok {
+		wr.items[identifier].Online = true
 		return
 	}
 
 	wr.logger.Debugf("worker %s subscribed\n", identifier)
 
-	wr.items[identifier] = &WorkerRegistryItem{Online: true}
+	wr.items[identifier] = &WorkerRegistryItem{
+		Online: true,
+	}
 }
 
 // IsSubscribed returns true if worker is subscribed.
@@ -77,4 +84,21 @@ func (wr *WorkerRegistry) Find(identifier string) (*WorkerRegistryItem, error) {
 		return item, errors.New("worker registry item not found")
 	}
 	return item, nil
+}
+
+// GetWorkersCapacityInfo returns ccurrent total capacity status across workers.
+func (wr *WorkerRegistry) GetWorkersCapacityInfo() (int, int) {
+	wr.mu.Lock()
+	defer wr.mu.Unlock()
+
+	total, used := 0, 0
+
+	for _, item := range wr.items {
+		if item.Online {
+			total += item.CapacityTotal
+			used += item.CapacityUsed
+		}
+	}
+
+	return total, used
 }

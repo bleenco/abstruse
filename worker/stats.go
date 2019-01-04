@@ -5,8 +5,8 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-func getWorkerUsageStats() (int32, int32, int32, int32) {
-	return 4, 1, getCPUPercent(), getMemoryPercent()
+func getWorkerUsageStats() (int32, int32) {
+	return getCPUPercent(), getMemoryPercent()
 }
 
 func getCPUPercent() int32 {

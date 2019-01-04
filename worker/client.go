@@ -27,8 +27,9 @@ type GRPCClient struct {
 	conn       *grpc.ClientConn
 	client     pb.ApiServiceClient
 
-	JobProcessStream   pb.ApiService_JobProcessClient
-	WorkerStatusStream pb.ApiService_WorkerStatusClient
+	JobProcessStream           pb.ApiService_JobProcessClient
+	WorkerUsageStatusStream    pb.ApiService_WorkerUsageStatusClient
+	WorkerCapacityStatusStream pb.ApiService_WorkerCapacityStatusClient
 }
 
 // UploadStats defines basic upload statistics.
@@ -104,7 +105,13 @@ func (c *GRPCClient) Run() error {
 	}()
 
 	go func() {
-		if err := c.StreamWorkerStatus(context.Background()); err != nil {
+		if err := c.StreamWorkerUsageStatus(context.Background()); err != nil {
+			ch <- err
+		}
+	}()
+
+	go func() {
+		if err := c.StreamWorkerCapacityStatus(context.Background()); err != nil {
 			ch <- err
 		}
 	}()
@@ -134,28 +141,64 @@ func (c *GRPCClient) StreamOnlineStatus(ctx context.Context) error {
 	}
 }
 
-// StreamWorkerStatus streams worker informational statistics about system
-// usage for CPU, memory and capacity load.
-func (c *GRPCClient) StreamWorkerStatus(ctx context.Context) error {
-	stream, err := c.client.WorkerStatus(ctx)
+// StreamWorkerCapacityStatus streams worker capacity information to the server.
+func (c *GRPCClient) StreamWorkerCapacityStatus(ctx context.Context) error {
+	stream, err := c.client.WorkerCapacityStatus(ctx)
+	if err != nil {
+		return err
+	}
+
+	c.WorkerCapacityStatusStream = stream
+
+	status := &pb.WorkerCapacity{
+		Total: int32(WorkerProcess.Queue.Concurrency),
+		Used:  int32(WorkerProcess.Queue.Used),
+	}
+	if err := stream.Send(status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdateWorkerCapacityStatus sends latest capacity information to server.
+func (c *GRPCClient) UpdateWorkerCapacityStatus(ctx context.Context) error {
+	if c.WorkerCapacityStatusStream == nil {
+		return nil
+	}
+
+	status := &pb.WorkerCapacity{
+		Total: int32(WorkerProcess.Queue.Concurrency),
+		Used:  int32(WorkerProcess.Queue.Used),
+	}
+
+	if err := c.WorkerCapacityStatusStream.Send(status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// StreamWorkerUsageStatus streams worker informational statistics about system
+// usage for CPU and memory.
+func (c *GRPCClient) StreamWorkerUsageStatus(ctx context.Context) error {
+	stream, err := c.client.WorkerUsageStatus(ctx)
 	if err != nil {
 		return err
 	}
 
 	defer func() {
 		stream.CloseSend()
-		c.WorkerStatusStream = nil
+		c.WorkerUsageStatusStream = nil
 	}()
 
-	c.WorkerStatusStream = stream
+	c.WorkerUsageStatusStream = stream
 
 	for {
-		c, cl, cpu, mem := getWorkerUsageStats()
+		cpu, mem := getWorkerUsageStats()
 		usage := &pb.WorkerUsage{
-			Capacity:     c,
-			CapacityLoad: cl,
-			Cpu:          cpu,
-			Memory:       mem,
+			Cpu:    cpu,
+			Memory: mem,
 		}
 		if err := stream.Send(usage); err != nil {
 			return err
