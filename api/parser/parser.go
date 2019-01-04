@@ -1,6 +1,11 @@
 package parser
 
-import yaml "gopkg.in/yaml.v2"
+import (
+	"errors"
+
+	"github.com/bleenco/abstruse/git"
+	yaml "gopkg.in/yaml.v2"
+)
 
 const rawData = `
 image: ubuntu_latest_node
@@ -58,21 +63,32 @@ type BranchesConfig struct {
 type ConfigParser struct {
 	Raw string
 
-	CloneURL    string
-	Branch      string
-	CommitHash  string
-	PullRequest int
+	CloneURL string
+	Branch   string
+	Commit   string
+	PR       string
 
 	Parsed   RepoConfig
 	Env      []string
 	Commands []string
 }
 
+// FetchRawConfig fetches raw config from repository.
+func (c *ConfigParser) FetchRawConfig() error {
+	raw, err := git.FetchAbstruseConfig(c.CloneURL)
+	if err != nil {
+		return err
+	}
+	c.Raw = raw
+
+	return nil
+}
+
 // Parse parses raw config.
 func (c *ConfigParser) Parse() error {
-	c.Raw = rawData // temporary
-	c.CloneURL = "https://github.com/jkuri/d3-bundle"
-	c.Branch = "master"
+	if c.Raw == "" {
+		return errors.New("cannot parse empty config")
+	}
 
 	if err := yaml.Unmarshal([]byte(c.Raw), &c.Parsed); err != nil {
 		return err
@@ -86,7 +102,7 @@ func (c *ConfigParser) Parse() error {
 func (c *ConfigParser) generateCommands() []string {
 	var commands []string
 
-	commands = append(commands, "git clone -q "+c.CloneURL+" --depth 1 .")
+	commands = append(commands, "git clone -q "+c.CloneURL+" .")
 	commands = appendCommands(commands, c.Parsed.BeforeInstall)
 	commands = appendCommands(commands, c.Parsed.Install)
 	commands = appendCommands(commands, c.Parsed.BeforeScript)

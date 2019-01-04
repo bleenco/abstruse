@@ -1,9 +1,7 @@
 package git
 
 import (
-	"os"
-
-	"gopkg.in/src-d/go-git.v4"
+	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
@@ -11,9 +9,8 @@ import (
 // so then reads it contents and returns it.
 func FetchAbstruseConfig(url string) (string, error) {
 	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
-		URL:      url,
-		Progress: os.Stdout,
-		Depth:    1,
+		URL:   url,
+		Depth: 20,
 	})
 	if err != nil {
 		return "", err

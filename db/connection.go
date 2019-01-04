@@ -35,6 +35,7 @@ func Connect(opts Options) error {
 		&Integration{},
 		&Repository{},
 		&Worker{},
+		&Build{},
 	)
 
 	initDefaultValues()
