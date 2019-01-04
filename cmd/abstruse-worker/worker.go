@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -8,9 +9,16 @@ import (
 	"github.com/bleenco/abstruse/worker"
 )
 
+var (
+	configPath = flag.String("configPath", "", "path to abstruse worker config.json")
+	debug      = flag.Bool("debug", true, "debug mode")
+)
+
 func main() {
-	logger := logger.NewLogger("worker", true, true)
-	w, err := worker.NewWorker(logger)
+	flag.Parse()
+
+	logger := logger.NewLogger("worker", true, *debug)
+	w, err := worker.NewWorker(logger, *configPath)
 	if err != nil {
 		fatal(err)
 	}

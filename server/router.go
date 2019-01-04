@@ -11,7 +11,7 @@ import (
 	"github.com/bleenco/abstruse/api/teams"
 	"github.com/bleenco/abstruse/api/user"
 	"github.com/bleenco/abstruse/api/workers"
-	"github.com/bleenco/abstruse/fs"
+	"github.com/bleenco/abstruse/server/httpfs"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/julienschmidt/httprouter"
 )
@@ -54,7 +54,7 @@ func (r *Router) initAPI() {
 }
 
 func (r *Router) initUI() {
-	r.Router.NotFound = http.FileServer(&spaWrapper{fs.StatikFS})
+	r.Router.NotFound = http.FileServer(&spaWrapper{httpfs.StatikFS})
 }
 
 func (r *Router) initWebsocket() {

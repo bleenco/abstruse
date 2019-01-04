@@ -1,4 +1,5 @@
-**/node_modules/*
-web/abstruse/dist/*
-statik/*
-build/*
+web/abstruse/node_modules
+web/abstruse/dist
+statik/
+build/
+go.sum

@@ -21,24 +21,28 @@ type Worker struct {
 	Identifier id.ID
 	JWT        string
 
-	ConfigDir string
-	Config    *Config
-	Logger    *logger.Logger
+	Config *Config
+	Logger *logger.Logger
 }
 
 // NewWorker returns new worker instance.
-func NewWorker(log *logger.Logger) (*Worker, error) {
-	homeDir, err := fs.GetHomeDir()
-	if err != nil {
-		return nil, err
-	}
-	configDir := path.Join(homeDir, "abstruse-worker")
-	configPath := path.Join(configDir, "config.json")
-
-	if !fs.Exists(configDir) {
-		if err := fs.MakeDir(configDir); err != nil {
+func NewWorker(log *logger.Logger, configFile string) (*Worker, error) {
+	var configPath string
+	if configFile == "" {
+		homeDir, err := fs.GetHomeDir()
+		if err != nil {
 			return nil, err
 		}
+		configDir := path.Join(homeDir, "abstruse-worker")
+		configPath = path.Join(configDir, "config.json")
+
+		if !fs.Exists(configDir) {
+			if err := fs.MakeDir(configDir); err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		configPath = configFile
 	}
 
 	config, err := readAndParseConfig(configPath)
@@ -46,6 +50,7 @@ func NewWorker(log *logger.Logger) (*Worker, error) {
 		return nil, err
 	}
 
+	configDir := path.Dir(configPath)
 	cert := path.Join(configDir, config.Cert)
 	key := path.Join(configDir, config.Key)
 
@@ -72,7 +77,6 @@ func NewWorker(log *logger.Logger) (*Worker, error) {
 		Identifier: identifier,
 		JWT:        jwt,
 		Client:     gRPCClient,
-		ConfigDir:  configDir,
 		Config:     config,
 		Logger:     log,
 		Queue:      NewQueue(config.Concurrency, queueLogger),

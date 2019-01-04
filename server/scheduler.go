@@ -80,7 +80,9 @@ func (s *Scheduler) Stop() {
 func (s *Scheduler) SetSize(size, used int) {
 	s.Total = size
 	s.Used = used
-	s.current.Resize(channels.BufferCap(size))
+	if size > 0 {
+		s.current.Resize(channels.BufferCap(size))
+	}
 	s.logger.Debugf("capacity: [%d / %d]", s.Used, s.Total)
 }
 
