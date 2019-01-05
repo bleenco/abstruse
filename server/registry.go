@@ -81,7 +81,7 @@ func (wr *WorkerRegistry) Find(identifier string) (*WorkerRegistryItem, error) {
 	defer wr.mu.RUnlock()
 	item, ok := wr.items[identifier]
 	if !ok {
-		return item, errors.New("worker registry item not found")
+		return item, errors.New("no available workers found")
 	}
 	return item, nil
 }

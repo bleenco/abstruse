@@ -25,6 +25,7 @@ type Scheduler struct {
 	quit    chan struct{}
 
 	processes []*JobProcess
+	queue     *Queue
 
 	logger *logger.Logger
 }
@@ -43,12 +44,16 @@ type JobProcess struct {
 }
 
 // NewScheduler returns instance of Scheduler.
-func NewScheduler(logger *logger.Logger) *Scheduler {
+func NewScheduler(l *logger.Logger) *Scheduler {
 	scheduler := &Scheduler{
 		current: channels.NewResizableChannel(),
 		job:     make(chan *pb.JobTask),
 		wg:      sync.WaitGroup{},
-		logger:  logger,
+		queue: &Queue{
+			nodes:  make([]*pb.JobTask, 100),
+			logger: logger.NewLogger("queue", l.Info, l.Debug),
+		},
+		logger: l,
 	}
 	MainScheduler = scheduler
 
@@ -58,7 +63,7 @@ func NewScheduler(logger *logger.Logger) *Scheduler {
 
 // Run starts the scheduler.
 func (s *Scheduler) Run() {
-	s.logger.Infof("starting main scheduler loop...")
+	s.logger.Infof("starting main scheduler loop")
 	s.quit = make(chan struct{})
 
 loop:
@@ -68,7 +73,9 @@ loop:
 			go func(job *pb.JobTask) {
 				if job.Code == pb.JobTask_Start {
 					if err := s.sendJobTask(job); err != nil {
-						s.logger.Debugf("error: %s", err.Error())
+						s.done()
+						s.logger.Debugf(err.Error())
+						s.queue.Push(job)
 					}
 				} else if job.Code == pb.JobTask_Stop {
 
@@ -91,6 +98,14 @@ func (s *Scheduler) Stop() {
 	}()
 }
 
+// RunQueue takes buffered job tasks from front to back and sends it forward.
+func (s *Scheduler) RunQueue() {
+	for s.queue.count > 0 {
+		jobTask := s.queue.Pop()
+		s.ScheduleJobTask(jobTask)
+	}
+}
+
 // SetSize sets total concurrency counter of scheduler.
 func (s *Scheduler) SetSize(size, used int) {
 	s.Total = size
@@ -103,6 +118,7 @@ func (s *Scheduler) SetSize(size, used int) {
 
 // ScheduleJobTask puts incoming job task into scheduler.
 func (s *Scheduler) ScheduleJobTask(job *pb.JobTask) {
+	s.logger.Debugf("scheduling job task %s", job.GetName())
 	s.job <- job
 }
 
@@ -201,4 +217,42 @@ func (s *Scheduler) getWorker() string {
 	}
 
 	return workerID
+}
+
+// Queue defines FIFO job task buffer.
+type Queue struct {
+	nodes  []*pb.JobTask
+	size   int
+	head   int
+	tail   int
+	count  int
+	logger *logger.Logger
+}
+
+// Push adds a node to the queue.
+func (q *Queue) Push(n *pb.JobTask) {
+	if q.head == q.tail && q.count > 0 {
+		nodes := make([]*pb.JobTask, len(q.nodes)+q.size)
+		copy(nodes, q.nodes[q.head:])
+		copy(nodes[len(q.nodes)-q.head:], q.nodes[:q.head])
+		q.head = 0
+		q.tail = len(q.nodes)
+		q.nodes = nodes
+	}
+	q.nodes[q.tail] = n
+	q.tail = (q.tail + 1) % len(q.nodes)
+	q.count++
+	q.logger.Debugf("job task %s saved to buffer [%d jobs in buffer]", n.Name, q.count)
+}
+
+// Pop removes and returns a node from the queue in first to last order.
+func (q *Queue) Pop() *pb.JobTask {
+	if q.count == 0 {
+		return nil
+	}
+	node := q.nodes[q.head]
+	q.head = (q.head + 1) % len(q.nodes)
+	q.count--
+	q.logger.Debugf("returning job task %s from buffer [%d jobs in buffer]", node.Name, q.count)
+	return node
 }

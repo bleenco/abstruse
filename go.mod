@@ -33,6 +33,7 @@ require (
 	github.com/pquerna/otp v1.1.0
 	github.com/rakyll/statik v0.1.5
 	github.com/shirou/gopsutil v2.18.12+incompatible
+	golang.org/x/arch v0.0.0-20181203225421-5a4828bb7045 // indirect
 	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
 	golang.org/x/net v0.0.0-20181220203305-927f97764cc3
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be

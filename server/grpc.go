@@ -181,6 +181,10 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 
 		totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
 		MainScheduler.SetSize(totalCapacity, totalUsed)
+
+		if MainScheduler.queue.count > 0 {
+			MainScheduler.RunQueue()
+		}
 	}
 
 end:
