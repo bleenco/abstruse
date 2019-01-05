@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/eapache/channels"
 	"github.com/pkg/errors"

@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/server/gopool"
 	"github.com/gobwas/ws"
 	"github.com/mailru/easygo/netpoll"

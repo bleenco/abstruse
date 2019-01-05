@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bleenco/abstruse/api/workers"
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
+	"github.com/bleenco/abstruse/pkg/security"
 	pb "github.com/bleenco/abstruse/proto"
-	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/server/api/workers"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"

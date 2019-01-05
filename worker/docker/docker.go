@@ -3,7 +3,7 @@ package docker
 import (
 	"context"
 
-	"github.com/bleenco/abstruse/utils"
+	"github.com/bleenco/abstruse/pkg/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"

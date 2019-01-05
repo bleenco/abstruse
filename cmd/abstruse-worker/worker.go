@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/worker"
 )
 

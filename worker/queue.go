@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
 )
 

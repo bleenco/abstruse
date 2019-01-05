@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/bleenco/abstruse/fs"
+	"github.com/bleenco/abstruse/pkg/fs"
 )
 
 // Config holds data for configuration JSON file.

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/worker/auth"
 	"github.com/bleenco/abstruse/worker/id"

@@ -6,12 +6,12 @@ import (
 	"path"
 	"time"
 
-	"github.com/bleenco/abstruse/api/workers"
-	"github.com/bleenco/abstruse/config"
-	"github.com/bleenco/abstruse/db"
-	"github.com/bleenco/abstruse/fs"
-	"github.com/bleenco/abstruse/logger"
-	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/pkg/fs"
+	"github.com/bleenco/abstruse/pkg/logger"
+	"github.com/bleenco/abstruse/pkg/security"
+	"github.com/bleenco/abstruse/server/api/workers"
+	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/websocket"
 
 	humanize "github.com/dustin/go-humanize"

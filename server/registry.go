@@ -3,7 +3,7 @@ package server
 import (
 	"sync"
 
-	"github.com/bleenco/abstruse/logger"
+	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/pkg/errors"
 )

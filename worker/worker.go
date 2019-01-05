@@ -4,9 +4,9 @@ import (
 	"crypto/tls"
 	"path"
 
-	"github.com/bleenco/abstruse/fs"
-	"github.com/bleenco/abstruse/logger"
-	"github.com/bleenco/abstruse/security"
+	"github.com/bleenco/abstruse/pkg/fs"
+	"github.com/bleenco/abstruse/pkg/logger"
+	"github.com/bleenco/abstruse/pkg/security"
 	"github.com/bleenco/abstruse/worker/id"
 	"github.com/cenkalti/backoff"
 )

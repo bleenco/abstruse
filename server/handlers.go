@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/bleenco/abstruse/api"
+	"github.com/bleenco/abstruse/server/api"
 	"github.com/julienschmidt/httprouter"
 )
 

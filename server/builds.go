@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bleenco/abstruse/api/parser"
-	"github.com/bleenco/abstruse/db"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/bleenco/abstruse/server/api/parser"
+	"github.com/bleenco/abstruse/server/db"
 )
 
 // StartBuild saves new build info into db and schedule related jobs.
