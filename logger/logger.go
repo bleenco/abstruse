@@ -12,7 +12,7 @@ import (
 type logWriter struct{}
 
 func (w *logWriter) Write(bytes []byte) (int, error) {
-	c := color.New(color.FgMagenta, color.BgBlack).SprintFunc()
+	c := color.New(color.BgBlue, color.FgWhite).SprintFunc()
 	timestr := c("[" + time.Now().Format("2006-01-02 15:04:05") + "]")
 	return fmt.Print(timestr + " " + string(bytes))
 }
@@ -44,9 +44,9 @@ func (l *Logger) Infof(f string, args ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		c := color.New(color.FgCyan, color.BgBlack).SprintFunc()
-		prefix := c(l.prefix)
-		l.logger.Printf("["+prefix+"]: "+f, args...)
+		c := color.New(color.BgBlack, color.FgWhite).SprintFunc()
+		prefix := c(fixedLengthString(10, l.prefix))
+		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}
@@ -59,10 +59,15 @@ func (l *Logger) Debugf(f string, args ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		c := color.New(color.FgCyan, color.BgBlack).SprintFunc()
-		prefix := c(l.prefix)
-		l.logger.Printf("["+prefix+"]: "+f, args...)
+		c := color.New(color.BgBlack, color.FgWhite).SprintFunc()
+		prefix := c(fixedLengthString(10, l.prefix))
+		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}
+}
+
+func fixedLengthString(length int, str string) string {
+	verb := fmt.Sprintf("%%-%d.%ds", length, length)
+	return fmt.Sprintf(verb, str)
 }
