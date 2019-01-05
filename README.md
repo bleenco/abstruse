@@ -18,6 +18,10 @@
 
 Abstruse CI is parted on main `abstruse` server instance and multiple or single `abstruse-worker` instances.
 
+<br>
+
+![screenshot](https://user-images.githubusercontent.com/1796022/50724592-77d2a600-10f0-11e9-8253-f55319768460.png)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
