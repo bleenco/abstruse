@@ -20,24 +20,30 @@ type Scheduler struct {
 	Used  int
 
 	current *channels.ResizableChannel
-	job     chan *pb.JobTask
+	job     chan *JobTask
 	wg      sync.WaitGroup
 	quit    chan struct{}
 
-	processes []*JobProcess
+	processes []*JobTask
 	queue     *Queue
 
 	logger *logger.Logger
 }
 
-// JobProcess defines remote job process.
-type JobProcess struct {
+// JobTask defines job task.
+type JobTask struct {
+	task *pb.JobTask
+
 	ContainerID      string
 	ContainerName    string
 	WorkerIdentifier string
 
-	Status string
+	buildID    uint
+	buildRunID uint
+	jobID      uint
+	jobRunID   uint
 
+	Status    string
 	Log       []string
 	StartTime time.Time
 	EndTime   time.Time
@@ -47,10 +53,10 @@ type JobProcess struct {
 func NewScheduler(l *logger.Logger) *Scheduler {
 	scheduler := &Scheduler{
 		current: channels.NewResizableChannel(),
-		job:     make(chan *pb.JobTask),
+		job:     make(chan *JobTask),
 		wg:      sync.WaitGroup{},
 		queue: &Queue{
-			nodes:  make([]*pb.JobTask, 100),
+			nodes:  make([]*JobTask, 100),
 			logger: logger.NewLogger("queue", l.Info, l.Debug),
 		},
 		logger: l,
@@ -70,16 +76,16 @@ loop:
 	for {
 		select {
 		case job := <-s.job:
-			go func(job *pb.JobTask) {
-				if job.Code == pb.JobTask_Start {
+			go func(job *JobTask) {
+				if job.task.Code == pb.JobTask_Start {
 					if err := s.sendJobTask(job); err != nil {
-						s.done()
+						defer s.done()
 						s.logger.Debugf(err.Error())
 						s.queue.Push(job)
 					}
-				} else if job.Code == pb.JobTask_Stop {
+				} else if job.task.Code == pb.JobTask_Stop {
 
-				} else if job.Code == pb.JobTask_Restart {
+				} else if job.task.Code == pb.JobTask_Restart {
 
 				}
 			}(job)
@@ -102,7 +108,7 @@ func (s *Scheduler) Stop() {
 func (s *Scheduler) RunQueue() {
 	for s.queue.count > 0 {
 		jobTask := s.queue.Pop()
-		s.ScheduleJobTask(jobTask)
+		s.ScheduleJobTask(jobTask.task, jobTask.buildID, jobTask.buildRunID, jobTask.jobID, jobTask.jobRunID)
 	}
 }
 
@@ -117,46 +123,55 @@ func (s *Scheduler) SetSize(size, used int) {
 }
 
 // ScheduleJobTask puts incoming job task into scheduler.
-func (s *Scheduler) ScheduleJobTask(job *pb.JobTask) {
-	s.logger.Debugf("scheduling job task %s", job.GetName())
-	s.job <- job
+func (s *Scheduler) ScheduleJobTask(job *pb.JobTask, buildID, buildRunID, jobID, jobRunID uint) {
+	jobTask := &JobTask{
+		task:       job,
+		buildID:    buildID,
+		buildRunID: buildRunID,
+		jobID:      jobID,
+		jobRunID:   jobRunID,
+	}
+
+	s.logger.Debugf("scheduling job task %s", jobTask.task.GetName())
+	s.processes = append(s.processes, jobTask)
+	s.job <- jobTask
 }
 
 // FinishJobTask decreases size of used job tasks number in scheduler.
-func (s *Scheduler) FinishJobTask() {
+func (s *Scheduler) FinishJobTask(job *JobTask) {
 	defer s.done()
+	var index int
+
+	for i, jobTask := range s.processes {
+		if jobTask.ContainerID == job.ContainerID && jobTask.ContainerName == job.ContainerName {
+			index = i
+			break
+		}
+	}
+
+	timeDiff := time.Time{}.Add(job.EndTime.Sub(job.StartTime)).Format("15:04:05")
+	s.logger.Debugf("finishing job task %s with status %s [time: %s]", job.task.GetName(), job.Status, timeDiff)
+	s.processes = append(s.processes[:index], s.processes[index+1:]...)
 }
 
 // AppendLog appends output log for running job.
 func (s *Scheduler) AppendLog(containerID, containerName, log string) error {
-	proc, err := s.findJobProcessByName(containerName)
+	proc, err := s.findJobProcess(containerName)
 	if err != nil {
 		return err
 	}
-	proc.ContainerID = containerID
-
 	proc.Log = append(proc.Log, log)
 	return nil
 }
 
-func (s *Scheduler) findJobProcess(containerID string) (*JobProcess, error) {
+func (s *Scheduler) findJobProcess(containerName string) (*JobTask, error) {
 	for _, proc := range s.processes {
-		if proc.ContainerID == containerID {
+		if proc.task.GetName() == containerName {
 			return proc, nil
 		}
 	}
 
-	return &JobProcess{}, errors.New("job process not found")
-}
-
-func (s *Scheduler) findJobProcessByName(containerName string) (*JobProcess, error) {
-	for _, proc := range s.processes {
-		if proc.ContainerName == containerName {
-			return proc, nil
-		}
-	}
-
-	return &JobProcess{}, errors.New("job process not found")
+	return &JobTask{}, errors.New("job process not found")
 }
 
 func (s *Scheduler) add() error {
@@ -185,7 +200,7 @@ func (s *Scheduler) wait() {
 	s.wg.Wait()
 }
 
-func (s *Scheduler) sendJobTask(job *pb.JobTask) error {
+func (s *Scheduler) sendJobTask(job *JobTask) error {
 	s.add()
 
 	workerID := s.getWorker()
@@ -195,8 +210,8 @@ func (s *Scheduler) sendJobTask(job *pb.JobTask) error {
 	}
 
 	if registryItem.JobProcessStream != nil {
-		s.logger.Debugf("sending job task %s to worker %s", job.GetName(), workerID)
-		if err := registryItem.JobProcessStream.Send(job); err != nil {
+		s.logger.Debugf("sending job task %s to worker %s", job.task.GetName(), workerID)
+		if err := registryItem.JobProcessStream.Send(job.task); err != nil {
 			return err
 		}
 	}
@@ -221,7 +236,7 @@ func (s *Scheduler) getWorker() string {
 
 // Queue defines FIFO job task buffer.
 type Queue struct {
-	nodes  []*pb.JobTask
+	nodes  []*JobTask
 	size   int
 	head   int
 	tail   int
@@ -230,9 +245,9 @@ type Queue struct {
 }
 
 // Push adds a node to the queue.
-func (q *Queue) Push(n *pb.JobTask) {
+func (q *Queue) Push(n *JobTask) {
 	if q.head == q.tail && q.count > 0 {
-		nodes := make([]*pb.JobTask, len(q.nodes)+q.size)
+		nodes := make([]*JobTask, len(q.nodes)+q.size)
 		copy(nodes, q.nodes[q.head:])
 		copy(nodes[len(q.nodes)-q.head:], q.nodes[:q.head])
 		q.head = 0
@@ -242,17 +257,17 @@ func (q *Queue) Push(n *pb.JobTask) {
 	q.nodes[q.tail] = n
 	q.tail = (q.tail + 1) % len(q.nodes)
 	q.count++
-	q.logger.Debugf("job task %s saved to buffer [%d jobs in buffer]", n.Name, q.count)
+	q.logger.Debugf("job task %s saved to buffer [%d jobs in buffer]", n.task.Name, q.count)
 }
 
 // Pop removes and returns a node from the queue in first to last order.
-func (q *Queue) Pop() *pb.JobTask {
+func (q *Queue) Pop() *JobTask {
 	if q.count == 0 {
 		return nil
 	}
 	node := q.nodes[q.head]
 	q.head = (q.head + 1) % len(q.nodes)
 	q.count--
-	q.logger.Debugf("returning job task %s from buffer [%d jobs in buffer]", node.Name, q.count)
+	q.logger.Debugf("returning job task %s from buffer [%d jobs in buffer]", node.task.Name, q.count)
 	return node
 }

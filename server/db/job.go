@@ -6,7 +6,9 @@ import "time"
 type Job struct {
 	BaseModel
 
-	Data string `sql:"type:text" json:"data"`
+	Commands string `sql:"type:text" json:"commands"`
+	Image    string `json:"image"`
+	Env      string `json:"env"`
 
 	Build   Build `json:"build"`
 	BuildID uint  `json:"build_id"`
@@ -18,6 +20,11 @@ func (j *Job) Create() error {
 	j.CreatedAt = time.Now()
 
 	return DB.Create(j).Error
+}
+
+// Update method.
+func (j *Job) Update() error {
+	return DB.Model(j).Updates(map[string]interface{}{"updated_at": time.Now()}).Error
 }
 
 // Find method.

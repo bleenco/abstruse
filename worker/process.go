@@ -52,7 +52,7 @@ func StartJob(task *pb.JobTask) error {
 		}
 
 		text := "\033[33;1m" + strings.Join(append([]string{"==>"}, command...), " ") + "\033[0m\n"
-		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
+		if err := Client.WriteContainerOutput(containerID, name, text); err != nil {
 			return err
 		}
 
@@ -80,7 +80,7 @@ func StartJob(task *pb.JobTask) error {
 
 	if exitCode == 0 {
 		text := "\033[32;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with 0.\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
+		if err := Client.WriteContainerOutput(containerID, name, text); err != nil {
 			return err
 		}
 		if err := SendPassingStatus(containerID, name); err != nil {
@@ -88,7 +88,7 @@ func StartJob(task *pb.JobTask) error {
 		}
 	} else if exitCode == 137 {
 		text := "\033[31;1mJob stopped with exit code 137.\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
+		if err := Client.WriteContainerOutput(containerID, name, text); err != nil {
 			return err
 		}
 		if err := SendStoppedStatus(containerID, name); err != nil {
@@ -96,7 +96,7 @@ func StartJob(task *pb.JobTask) error {
 		}
 	} else {
 		text := "\033[31;1mThe command \"" + strings.Join(lastCommand, " ") + "\" exited with " + strconv.Itoa(exitCode) + ".\033[0m"
-		if err := Client.WriteContainerOutput(ctx, containerID, name, text); err != nil {
+		if err := Client.WriteContainerOutput(containerID, name, text); err != nil {
 			return err
 		}
 		if err := SendFailingStatus(containerID, name); err != nil {

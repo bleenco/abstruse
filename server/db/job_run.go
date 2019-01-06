@@ -3,6 +3,7 @@ package db
 import "time"
 
 // JobRun defines `job_runs` database table.
+// Status values: queued, stopped, failed, passed.
 type JobRun struct {
 	BaseModel
 
@@ -23,8 +24,18 @@ type JobRun struct {
 func (j *JobRun) Create() error {
 	j.UpdatedAt = time.Now()
 	j.CreatedAt = time.Now()
+	j.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
 
 	return DB.Create(j).Error
+}
+
+// Update method.
+func (j *JobRun) Update(status, log string) error {
+	return DB.Model(j).Updates(map[string]interface{}{
+		"end_time": func(t time.Time) *time.Time { return &t }(time.Now()),
+		"status":   status,
+		"log":      log,
+	}).Error
 }
 
 // Find method.

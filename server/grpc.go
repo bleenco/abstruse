@@ -276,18 +276,17 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 			return err
 		}
 
-		jobProcess, err := MainScheduler.findJobProcessByName(jobStatus.GetName())
+		jobProcess, err := MainScheduler.findJobProcess(jobStatus.GetName())
 		if err != nil {
-			MainScheduler.processes = append(MainScheduler.processes, &JobProcess{
-				ContainerID:      jobStatus.GetId(),
-				ContainerName:    jobStatus.GetName(),
-				WorkerIdentifier: identifier,
-				Log:              []string{},
-			})
-			jobProcess, _ = MainScheduler.findJobProcess(jobStatus.GetId())
+			s.logger.Debugf("error adding job process to slice: %s", jobStatus.GetId())
+			continue
 		}
+		jobProcess.ContainerID = jobStatus.GetId()
+		jobProcess.WorkerIdentifier = identifier
 
-		switch jobStatus.GetCode() {
+		status := jobStatus.GetCode()
+
+		switch status {
 		case pb.JobStatus_Queued:
 			jobProcess.Status = "queued"
 		case pb.JobStatus_Running:
@@ -301,9 +300,9 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 			jobProcess.EndTime = time.Now()
 		}
 
-		if jobStatus.GetCode() != pb.JobStatus_Queued && jobStatus.GetCode() != pb.JobStatus_Running {
-			fmt.Printf("%s\n", strings.Join(jobProcess.Log, ""))
-			MainScheduler.FinishJobTask()
+		if status == pb.JobStatus_Passing || status == pb.JobStatus_Failing || status == pb.JobStatus_Stopped {
+			// fmt.Printf("%s\n", strings.Join(jobProcess.Log, ""))
+			MainScheduler.FinishJobTask(jobProcess)
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package server
 
 import (
-	"math/rand"
+	"encoding/json"
 	"strconv"
 	"strings"
 	"time"
@@ -21,8 +21,6 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 	if branch == "" {
 		branch = repo.DefaultBranch
 	}
-
-	commit = "8e1c6452d41d7a45d0b16d5f711befdbbe2c0320"
 
 	configParser := &parser.ConfigParser{
 		CloneURL: repo.HTMLURL,
@@ -53,9 +51,38 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 		return err
 	}
 
-	name := "abstruse_job_" + strconv.Itoa(int(build.ID)) + "_" + strconv.Itoa(rand.Intn(500))
+	buildRun := db.BuildRun{BuildID: build.ID}
+	if err := buildRun.Create(); err != nil {
+		return err
+	}
+
+	commandsJSON, err := json.Marshal(commands)
+	if err != nil {
+		return err
+	}
 
 	for _, e := range env {
+		job := db.Job{
+			Image:    "ubuntu_latest_node",
+			Commands: string(commandsJSON),
+			Env:      e,
+			BuildID:  build.ID,
+		}
+		if err := job.Create(); err != nil {
+			return err
+		}
+
+		jobRun := db.JobRun{
+			Status:     "queued",
+			Log:        "",
+			JobID:      job.ID,
+			BuildRunID: buildRun.ID,
+		}
+		if err := jobRun.Create(); err != nil {
+			return err
+		}
+
+		name := "abstruse_job_" + strconv.Itoa(int(build.ID)) + "_" + strconv.Itoa(int(job.ID)) + "_" + strconv.Itoa(int(buildRun.ID)) + "_" + strconv.Itoa(int(jobRun.ID))
 		jobTask := &pb.JobTask{
 			Name:     name,
 			Code:     pb.JobTask_Start,
@@ -63,7 +90,8 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 			Image:    "ubuntu_latest_node",
 			Env:      strings.Split(e, " "),
 		}
-		MainScheduler.ScheduleJobTask(jobTask)
+
+		MainScheduler.ScheduleJobTask(jobTask, build.ID, buildRun.ID, job.ID, jobRun.ID)
 	}
 
 	return nil

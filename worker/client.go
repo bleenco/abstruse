@@ -28,6 +28,7 @@ type GRPCClient struct {
 	client     pb.ApiServiceClient
 
 	JobProcessStream           pb.ApiService_JobProcessClient
+	ContainerOutputStream      pb.ApiService_ContainerOutputClient
 	WorkerUsageStatusStream    pb.ApiService_WorkerUsageStatusClient
 	WorkerCapacityStatusStream pb.ApiService_WorkerCapacityStatusClient
 }
@@ -243,7 +244,13 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 	if err != nil {
 		return err
 	}
-	defer stream.CloseSend()
+
+	defer func() {
+		defer stream.CloseSend()
+		c.ContainerOutputStream = nil
+	}()
+
+	c.ContainerOutputStream = stream
 
 	for {
 		buf := make([]byte, 4096)
@@ -265,14 +272,12 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 }
 
 // WriteContainerOutput writes text of container to server.
-func (c *GRPCClient) WriteContainerOutput(ctx context.Context, containerID, containerName, text string) error {
-	stream, err := c.client.ContainerOutput(ctx)
-	if err != nil {
-		return err
+func (c *GRPCClient) WriteContainerOutput(containerID, containerName, text string) error {
+	if c.ContainerOutputStream == nil {
+		return nil
 	}
-	defer stream.CloseSend()
 
-	if err := stream.Send(&pb.ContainerOutputChunk{
+	if err := c.ContainerOutputStream.Send(&pb.ContainerOutputChunk{
 		Id:      containerID,
 		Name:    containerName,
 		Content: []byte(text),

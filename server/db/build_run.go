@@ -17,8 +17,14 @@ type BuildRun struct {
 func (br *BuildRun) Create() error {
 	br.UpdatedAt = time.Now()
 	br.CreatedAt = time.Now()
+	br.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
 
 	return DB.Create(br).Error
+}
+
+// Update method.
+func (br *BuildRun) Update() error {
+	return DB.Model(br).Updates(map[string]interface{}{"end_time": func(t time.Time) *time.Time { return &t }(time.Now())}).Error
 }
 
 // Find method.
