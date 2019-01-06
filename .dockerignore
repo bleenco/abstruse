@@ -1,5 +1,5 @@
 web/abstruse/node_modules
 web/abstruse/dist
-statik/
+server/statik
 build/
 go.sum
