@@ -4,6 +4,12 @@ ABSTRUSE_UI_VERSION=$(shell cat web/abstruse/package.json | grep version | head 
 ABSTRUSE_VERSION_PATH=github.com/bleenco/abstruse/server
 GIT_COMMIT=$(shell git rev-list -1 HEAD)
 BUILD_DATE=$(shell date +%FT%T%z)
+UNAME=$(shell uname -s)
+CGO_ENABLED=0
+
+ifeq ($(UNAME),Darwin)
+	CGO_ENABLED=1
+endif
 
 build:
 	@make build_ui
@@ -27,7 +33,7 @@ dev_worker:
 	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -- sh -c 'make worker && ./build/abstruse-worker'
 
 worker:
-	@CGO_ENABLED=0 go build -o build/abstruse-worker cmd/abstruse-worker/worker.go
+	@CGO_ENABLED=$(CGO_ENABLED) go build -o build/abstruse-worker cmd/abstruse-worker/worker.go
 
 grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.

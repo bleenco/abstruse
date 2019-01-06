@@ -10,17 +10,25 @@ func getWorkerUsageStats() (int32, int32) {
 }
 
 func getCPUPercent() int32 {
-	percent, err := cpu.Percent(0, false)
+	percent, err := cpu.Percent(0, true)
 	if err != nil {
 		return 0
 	}
-	return int32(percent[0])
+	total := func() int {
+		var t float64
+		for _, p := range percent {
+			t += p
+		}
+		return int(int(t) / len(percent))
+	}()
+
+	return int32(total)
 }
 
 func getMemoryPercent() int32 {
 	stat, err := mem.VirtualMemory()
 	if err != nil {
-		panic(err)
+		return 0
 	}
 	return int32(stat.UsedPercent)
 }

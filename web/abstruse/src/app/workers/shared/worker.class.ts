@@ -47,11 +47,11 @@ export class Worker {
   }
 
   getCpuUsage(): string {
-    return this.usage && this.usage.cpu ? String(this.usage.cpu) + '%' : '/';
+    return this.usage && this.usage.cpu ? String(this.usage.cpu) + '%' : '0%';
   }
 
   getMemoryUsage(): string {
-    return this.usage && this.usage.memory ? String(this.usage.memory) + '%' : '/';
+    return this.usage && this.usage.memory ? String(this.usage.memory) + '%' : '0%';
   }
 
   private resetUsage(): void {
