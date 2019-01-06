@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	_ "github.com/bleenco/abstruse/statik" // static UI files
+	_ "github.com/bleenco/abstruse/server/statik" // static UI files
 	"github.com/rakyll/statik/fs"
 )
 
