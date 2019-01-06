@@ -87,7 +87,6 @@ func (w *Workers) Subscribe(certID, ip string) error {
 
 	dbWorker, err := db.FindWorker(item.Data.CertID)
 	if err != nil {
-		item.Data.Priority = 9
 		item.Data.Status = "operational"
 		item.Data.IP = ip
 		if err := item.Data.Create(); err != nil {
@@ -118,6 +117,7 @@ func (w *Workers) Unsubscribe(certID string) {
 			worker.Data.UpdateStatus("down")
 			w.items = append(w.items[:i], w.items[i+1:]...)
 			w.EventEmitter <- api.Event{Action: "unsubscribed", Data: certID}
+			break
 		}
 	}
 }

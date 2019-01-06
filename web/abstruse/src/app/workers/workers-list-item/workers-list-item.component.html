@@ -1,0 +1,31 @@
+<div class="table-item">
+  <div class="columns">
+    <div class="column is-1 justify-center">
+      <span class="table-data is-number">{{ worker?.id }}</span>
+    </div>
+    <div class="column is-3 justify-center">
+      <span class="table-data">{{ worker?.ip }}</span>
+    </div>
+    <div class="column is-1 justify-center">
+      <app-progress-bar [text]="worker?.getCapacityUsage()" [percent]="0"></app-progress-bar>
+    </div>
+    <div class="column is-1 justify-center">
+      <app-progress-bar [text]="worker?.getCpuUsage()" [percent]="worker?.usage?.cpu"></app-progress-bar>
+    </div>
+    <div class="column is-1 justify-center">
+      <app-progress-bar [text]="worker?.getMemoryUsage()" [percent]="worker?.usage?.memory"></app-progress-bar>
+    </div>
+    <div class="column is-3 justify-center">
+      <div class="status-item" [ngClass]="{ 'is-green': worker?.status === 'operational', 'is-red': worker?.status === 'down' }">
+        <span class="status-circle"></span>
+        <span class="status-title">{{ worker?.getStatus() }}</span>
+      </div>
+    </div>
+    <div class="column is-2 justify-center">
+      <button type="button" class="button is-small" (click)="edit()">
+        <i class="far fa-edit"></i>
+        <span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

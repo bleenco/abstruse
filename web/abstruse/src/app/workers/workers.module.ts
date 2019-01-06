@@ -6,6 +6,7 @@ import { WorkersComponent } from './workers.component';
 import { WorkersListComponent } from './workers-list/workers-list.component';
 import { SharedModule } from '../shared/modules/shared.module';
 import { WorkersEditDialogComponent } from './workers-edit-dialog/workers-edit-dialog.component';
+import { WorkersListItemComponent } from './workers-list-item/workers-list-item.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { WorkersEditDialogComponent } from './workers-edit-dialog/workers-edit-d
   declarations: [
     WorkersComponent,
     WorkersListComponent,
-    WorkersEditDialogComponent
+    WorkersEditDialogComponent,
+    WorkersListItemComponent
   ]
 })
 export class WorkersModule { }

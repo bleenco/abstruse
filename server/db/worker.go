@@ -6,10 +6,9 @@ import "time"
 type Worker struct {
 	BaseModel
 
-	CertID   string `gorm:"not null;unique_index" json:"cert_id"`
-	IP       string `json:"ip"`
-	Priority int    `json:"priority"`
-	Status   string `json:"status"`
+	CertID string `gorm:"not null;unique_index" json:"cert_id"`
+	IP     string `json:"ip"`
+	Status string `json:"status"`
 }
 
 // Create method.
@@ -23,11 +22,6 @@ func (w *Worker) Create() error {
 // UpdateStatus method.
 func (w *Worker) UpdateStatus(status string) error {
 	return DB.Model(w).Update(map[string]interface{}{"updated_at": time.Now(), "status": status}).Error
-}
-
-// UpdatePriority method.
-func (w *Worker) UpdatePriority(priority int) error {
-	return DB.Model(w).Update(map[string]interface{}{"updated_at": time.Now(), "priority": priority}).Error
 }
 
 // UpdateIP method.

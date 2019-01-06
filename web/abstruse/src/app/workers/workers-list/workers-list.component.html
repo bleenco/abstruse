@@ -29,53 +29,15 @@
           <div class="column is-1 justify-center">
             <span class="header-title">Memory</span>
           </div>
-          <div class="column is-1 justify-center">
-            <span class="header-title">Priority</span>
-          </div>
-          <div class="column is-2 justify-center">
+          <div class="column is-3 justify-center">
             <span class="header-title">Status</span>
           </div>
           <div class="column is-2 justify-center"></div>
         </div>
       </div>
       <div class="table-items">
-        <div class="table-item" *ngFor="let w of workers">
-          <div class="columns">
-            <div class="column is-1 justify-center">
-              <span class="table-data is-number">{{ w.id }}</span>
-            </div>
-            <div class="column is-3 justify-center">
-              <span class="table-data">{{ w.ip }}</span>
-            </div>
-            <div class="column is-1 justify-center">
-              <app-progress-bar [text]="w?.usage?.capacity_load + ' / ' + w?.usage?.capacity" [percent]="0"></app-progress-bar>
-            </div>
-            <div class="column is-1 justify-center">
-              <app-progress-bar [text]="w?.usage?.cpu + '%'" [percent]="w?.usage?.cpu"></app-progress-bar>
-            </div>
-            <div class="column is-1 justify-center">
-              <app-progress-bar [text]="w?.usage?.memory + '%'" [percent]="w?.usage?.memory"></app-progress-bar>
-            </div>
-            <div class="column is-1 justify-center">
-              <span class="table-data is-number" [ngClass]="{ 'is-green': w.priority >= 8 && w.priority, 'is-orange': w.priority >= 4 && w.priority < 8, 'is-red': w.priority < 4 }">{{ w.priority }}</span>
-            </div>
-            <div class="column is-2 justify-center">
-              <div class="status-item" [ngClass]="{ 'is-green': w.status === 'operational', 'is-red': w.status === 'down' }">
-                <span class="status-circle"></span>
-                <span class="status-title">{{ w.getStatus() }}</span>
-              </div>
-            </div>
-            <div class="column is-2 justify-center">
-              <button type="button" class="button is-small" (click)="edit(w.id)">
-                <i class="far fa-edit"></i>
-                <span>Edit</span>
-              </button>
-              <button type="button" class="button is-small">
-                <i class="far fa-chart-bar"></i>
-                <span>Stats</span>
-              </button>
-            </div>
-          </div>
+        <div *ngIf="workers.length">
+          <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
         </div>
         <div class="table-item" *ngIf="!workers.length">
           <div class="columns">
@@ -92,4 +54,4 @@
   </div>
 </div>
 
-<app-workers-edit-dialog *ngIf="workersService.editDialogOpened" [worker]="worker"></app-workers-edit-dialog>
+<app-workers-edit-dialog *ngIf="workersService.editDialogOpened"></app-workers-edit-dialog>
