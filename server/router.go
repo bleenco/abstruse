@@ -10,6 +10,7 @@ import (
 	"github.com/bleenco/abstruse/server/api/setup"
 	"github.com/bleenco/abstruse/server/api/teams"
 	"github.com/bleenco/abstruse/server/api/user"
+	"github.com/bleenco/abstruse/server/api/workers"
 	"github.com/bleenco/abstruse/server/httpfs"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/julienschmidt/httprouter"
@@ -40,7 +41,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/integrations/:id/repos", api.AuthorizationMiddleware(integration.FetchIntegrationRepositoriesHandler))
 	r.Router.POST("/api/integrations/github/add", api.AuthorizationMiddleware(integration.AddGitHubIntegration))
 	r.Router.POST("/api/integrations/github/import/:id", api.AuthorizationMiddleware(github.ImportRepositoryHandler))
-	r.Router.GET("/api/workers", api.AuthorizationMiddleware(FindAllWorkersHandler))
+	r.Router.GET("/api/workers", api.AuthorizationMiddleware(workers.FindAllHandler))
 	r.Router.GET("/api/repositories", api.AuthorizationMiddleware(repos.FetchRepositoriesHandler))
 	r.Router.GET("/api/repositories/:id", api.AuthorizationMiddleware(repos.FetchRepositoryHandler))
 	r.Router.GET("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.ListHooksHandler))

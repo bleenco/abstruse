@@ -15,6 +15,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/security"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/server/api/workers"
+	"github.com/bleenco/abstruse/server/registry"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
@@ -39,7 +40,7 @@ const (
 type GRPCServer struct {
 	logger   *logger.Logger
 	server   *grpc.Server
-	registry *WorkerRegistry
+	registry *registry.WorkerRegistry
 	port     int
 	cert     string
 	certkey  string
@@ -63,7 +64,7 @@ func NewGRPCServer(cfg *GRPCServerConfig, log *logger.Logger) (*GRPCServer, erro
 		cert:     cfg.Cert,
 		certkey:  cfg.CertKey,
 		logger:   log,
-		registry: NewWorkerRegistry(logger.NewLogger("registry", log.Info, log.Debug)),
+		registry: registry.NewWorkerRegistry(logger.NewLogger("registry", log.Info, log.Debug)),
 	}
 	MainGRPCServer = server
 
@@ -144,7 +145,7 @@ end:
 
 // WorkerCapacityStatus gRPC channel.
 func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacityStatusServer) error {
-	registryItem := &WorkerRegistryItem{}
+	registryItem := &registry.WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {
@@ -207,7 +208,7 @@ end:
 
 // WorkerUsageStatus gRPC channel.
 func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusServer) error {
-	registryItem := &WorkerRegistryItem{}
+	registryItem := &registry.WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {
@@ -254,7 +255,7 @@ end:
 
 // JobProcess gRPC channel.
 func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
-	registryItem := &WorkerRegistryItem{}
+	registryItem := &registry.WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {

@@ -1,4 +1,4 @@
-package server
+package registry
 
 import (
 	"sync"
@@ -27,7 +27,7 @@ type WorkerRegistryItem struct {
 
 // WorkerRegistry defines registry for workers.
 type WorkerRegistry struct {
-	items  map[string]*WorkerRegistryItem
+	Items  map[string]*WorkerRegistryItem
 	mu     sync.RWMutex
 	logger *logger.Logger
 }
@@ -35,7 +35,7 @@ type WorkerRegistry struct {
 // NewWorkerRegistry initializes and returns new instance of worker registry.
 func NewWorkerRegistry(logger *logger.Logger) *WorkerRegistry {
 	registry := &WorkerRegistry{
-		items:  make(map[string]*WorkerRegistryItem),
+		Items:  make(map[string]*WorkerRegistryItem),
 		logger: logger,
 	}
 
@@ -48,14 +48,14 @@ func (wr *WorkerRegistry) Subscribe(identifier string) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()
 
-	if _, ok := wr.items[identifier]; ok {
-		wr.items[identifier].Online = true
+	if _, ok := wr.Items[identifier]; ok {
+		wr.Items[identifier].Online = true
 		return
 	}
 
 	wr.logger.Debugf("worker %s subscribed\n", identifier)
 
-	wr.items[identifier] = &WorkerRegistryItem{
+	wr.Items[identifier] = &WorkerRegistryItem{
 		Online: true,
 	}
 }
@@ -64,7 +64,7 @@ func (wr *WorkerRegistry) Subscribe(identifier string) {
 func (wr *WorkerRegistry) IsSubscribed(identifier string) bool {
 	wr.mu.RLock()
 	defer wr.mu.RUnlock()
-	_, ok := wr.items[identifier]
+	_, ok := wr.Items[identifier]
 	return ok
 }
 
@@ -73,21 +73,21 @@ func (wr *WorkerRegistry) Unsubscribe(identifier string) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()
 
-	_, ok := wr.items[identifier]
+	_, ok := wr.Items[identifier]
 	if !ok {
 		return
 	}
 
 	wr.logger.Debugf("worker %s unsubscribed\n", identifier)
 
-	delete(wr.items, identifier)
+	delete(wr.Items, identifier)
 }
 
 // Find returns worker registry item.
 func (wr *WorkerRegistry) Find(identifier string) (*WorkerRegistryItem, error) {
 	wr.mu.RLock()
 	defer wr.mu.RUnlock()
-	item, ok := wr.items[identifier]
+	item, ok := wr.Items[identifier]
 	if !ok {
 		return item, errors.New("no available workers found")
 	}
@@ -101,7 +101,7 @@ func (wr *WorkerRegistry) GetWorkersCapacityInfo() (int, int) {
 
 	total, used := 0, 0
 
-	for _, item := range wr.items {
+	for _, item := range wr.Items {
 		if item.Online {
 			total += item.Capacity
 			used += item.CapacityUsed
