@@ -14,7 +14,6 @@ export class Worker {
     public id: number,
     public cert_id: string,
     public ip: string,
-    public priority: number,
     public status: 'down' | 'operational',
     public created_at?: Date,
     public updated_at?: Date

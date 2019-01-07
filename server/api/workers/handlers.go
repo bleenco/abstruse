@@ -18,12 +18,13 @@ func FindAllHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Pa
 	}
 
 	for i, worker := range workers {
+		workers[i].Status = "down"
 		if registryItem, err := registry.Registry.Find(worker.CertID); err == nil {
-			worker.Capacity = registryItem.Capacity
-			worker.CapacityLoad = registryItem.CapacityUsed
-			worker.CPU = registryItem.CPU
-			worker.Memory = registryItem.Memory
-			workers[i] = worker
+			workers[i].Status = "operational"
+			workers[i].Capacity = registryItem.Capacity
+			workers[i].CapacityLoad = registryItem.CapacityUsed
+			workers[i].CPU = registryItem.CPU
+			workers[i].Memory = registryItem.Memory
 		}
 	}
 
