@@ -8,7 +8,7 @@ export class WorkerUsage {
 }
 
 export class Worker {
-  usage: WorkerUsage;
+  usage: WorkerUsage = new WorkerUsage();
 
   constructor(
     public id: number,
@@ -34,12 +34,18 @@ export class Worker {
     }
   }
 
-  setUsage(usage: WorkerUsage): void {
-    this.usage = usage;
+  setUsage(cpu: number, memory: number): void {
+    this.usage.cpu = cpu;
+    this.usage.memory = memory;
+  }
+
+  setCapacity(total: number, used: number): void {
+    this.usage.capacity = total;
+    this.usage.capacity_load = used;
   }
 
   getCapacityUsage(): string {
-    if (this.usage && this.usage.capacity && this.usage.capacity_load) {
+    if (this.usage && typeof this.usage.capacity !== null && typeof this.usage.capacity_load !== null) {
       return this.usage.capacity_load + ' / ' + this.usage.capacity;
     } else {
       return '/';

@@ -27,6 +27,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
 
     this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_updates', id: '' } });
     this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_usage', id: '' } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_capacity', id: '' } });
 
     this.sub = this.dataService.socketOutput.subscribe(ev => {
       const worker = this.findWorker(ev.data.cert_id);
@@ -35,7 +36,10 @@ export class WorkersListComponent implements OnInit, OnDestroy {
           worker.setStatus(ev.data.status);
           break;
         case 'worker_usage':
-          worker.setUsage(new WorkerUsage(ev.data.capacity, ev.data.capacity_load, ev.data.cpu, ev.data.memory));
+          worker.setUsage(ev.data.cpu, ev.data.memory);
+          break;
+        case 'worker_capacity':
+          worker.setCapacity(ev.data.total, ev.data.used);
           break;
       }
     });
@@ -44,6 +48,8 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_updates', id: '' } });
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_usage', id: '' } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'worker_capacity', id: '' } });
+
     if (this.sub) {
       this.sub.unsubscribe();
     }
