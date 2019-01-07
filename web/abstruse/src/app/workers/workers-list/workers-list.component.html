@@ -55,3 +55,5 @@
 </div>
 
 <app-workers-edit-dialog *ngIf="workersService.editDialogOpened"></app-workers-edit-dialog>
+<app-confirm-dialog [title]="'Are you sure?'" [text]="'You really want to delete worker from database? This cannot be undone.'"
+  (confirmed)="workersService.deleteConfirmed()" (cancelled)="workersService.deleteCancelled()" *ngIf="workersService.deleteConfirmDialogOpened"></app-confirm-dialog>

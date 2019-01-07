@@ -11,6 +11,7 @@ import { Worker } from './worker.class';
 export class WorkersService {
   worker: Worker;
   editDialogOpened: boolean;
+  deleteConfirmDialogOpened: boolean;
 
   constructor(public http: HttpClient) { }
 
@@ -27,5 +28,27 @@ export class WorkersService {
   closeEditDialog(): void {
     this.editDialogOpened = false;
     this.worker = null;
+  }
+
+  openDeleteConfirmDialog(): void {
+    if (!this.worker) {
+      return;
+    }
+
+    this.editDialogOpened = false;
+    this.deleteConfirmDialogOpened = true;
+  }
+
+  deleteConfirmed(): void {
+    if (this.worker && this.worker.id) {
+      console.log('DELETE!');
+    }
+    this.deleteConfirmDialogOpened = false;
+    this.worker = null;
+  }
+
+  deleteCancelled(): void {
+    this.deleteConfirmDialogOpened = false;
+    this.editDialogOpened = true;
   }
 }

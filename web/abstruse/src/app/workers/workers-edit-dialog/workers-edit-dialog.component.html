@@ -1,5 +1,5 @@
 <div class="dialog-overlay">
-  <div class="dialog-container">
+  <div class="dialog-container workers-edit-dialog-container">
     <div class="dialog-header align-center">
       <h1>Worker {{ workersService?.worker?.id }}</h1>
       <img src="/assets/images/icons/close-dark.svg" (click)="workersService.closeEditDialog()">
@@ -10,11 +10,29 @@
           <div class="column is-12">
             <div class="field">
               <label class="label">Certificate ID</label>
-              <input class="input" type="text" [value]="workersService?.worker?.cert_id" disabled>
+              <input class="input" type="text" [value]="workersService?.worker?.cert_id">
             </div>
           </div>
         </div>
       </form>
+      <hr />
+      <div class="columns is-multiline">
+        <div class="column is-12 plr30 mtb10">
+          <h2 class="ptb0 pb5">Danger Zone</h2>
+          <div class="notification mb15" *ngIf="workersService?.worker?.status === 'operational'">
+            <img src="/assets/images/icons/question-dark.svg" class="notification-icon">
+            <p>You cannot delete operational worker node.</p>
+          </div>
+          <div class="space-between align-center">
+            <label class="label">Delete worker from registry</label>
+            <button class="button is-red is-small" type="button" (click)="workersService.openDeleteConfirmDialog()"
+              [disabled]="workersService?.worker?.status !== 'down'">
+              <i class="fas fa-times"></i>
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="dialog-footer justify-end">
       <button type="button" class="button" (click)="workersService.closeEditDialog()">
