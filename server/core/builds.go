@@ -1,4 +1,4 @@
-package server
+package core
 
 import (
 	"encoding/json"

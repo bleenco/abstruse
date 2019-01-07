@@ -9,8 +9,8 @@ import (
 	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/security"
-	"github.com/bleenco/abstruse/server/api/workers"
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/websocket"
 
@@ -25,7 +25,7 @@ type AbstruseConfig struct {
 	HTTPSAddress string
 	CertFile     string
 	KeyFile      string
-	GRPCConfig   *GRPCServerConfig
+	GRPCConfig   *core.GRPCServerConfig
 	Dir          string
 	Debug        bool
 }
@@ -36,10 +36,10 @@ type Abstruse struct {
 	router     *Router
 	server     *http.Server
 	logger     *logger.Logger
-	grpcserver *GRPCServer
-	scheduler  *Scheduler
+	grpcserver *core.GRPCServer
+	Scheduler  *core.Scheduler
 	ws         *websocket.Server
-	workersAPI *workers.Workers
+	workersAPI *core.Workers
 	dir        string
 
 	running chan error
@@ -74,7 +74,7 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	c.GRPCConfig.Cert = cfg.GRPC.Cert
 	c.GRPCConfig.CertKey = cfg.GRPC.CertKey
 
-	gRPCServer, err := NewGRPCServer(c.GRPCConfig, logger.NewLogger("grpc", true, c.Debug))
+	gRPCServer, err := core.NewGRPCServer(c.GRPCConfig, logger.NewLogger("grpc", true, c.Debug))
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +84,9 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		router:     NewRouter(),
 		server:     &http.Server{},
 		grpcserver: gRPCServer,
-		scheduler:  NewScheduler(logger.NewLogger("scheduler", true, c.Debug)),
+		Scheduler:  core.NewScheduler(logger.NewLogger("scheduler", true, c.Debug)),
 		ws:         websocket.NewServer("0.0.0.0:7100", 2048, 1, time.Millisecond*100),
-		workersAPI: workers.NewWorkersAPI(),
+		workersAPI: core.NewWorkersAPI(),
 		logger:     logger.NewLogger("", true, c.Debug),
 		dir:        dir,
 		running:    make(chan error, 1),

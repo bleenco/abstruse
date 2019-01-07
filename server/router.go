@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/server/api"
+	"github.com/bleenco/abstruse/server/api/builds"
 	"github.com/bleenco/abstruse/server/api/integration"
 	"github.com/bleenco/abstruse/server/api/providers/github"
 	"github.com/bleenco/abstruse/server/api/repos"
@@ -46,7 +47,7 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/repositories/:id", api.AuthorizationMiddleware(repos.FetchRepositoryHandler))
 	r.Router.GET("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.ListHooksHandler))
 	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
-	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(TriggerBuildHandler))
+	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(builds.TriggerBuildHandler))
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))
 	r.Router.GET("/api/teams/:id", api.AuthorizationMiddleware(teams.FetchTeamHandler))
 	r.Router.POST("/api/teams/:id", api.AuthorizationMiddleware(teams.SaveTeamHandler))

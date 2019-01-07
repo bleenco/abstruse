@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/bleenco/abstruse/server"
+	"github.com/bleenco/abstruse/server/core"
 )
 
 var (
@@ -33,7 +34,7 @@ func main() {
 		CertFile:     *certFile,
 		KeyFile:      *keyFile,
 		Debug:        *debug,
-		GRPCConfig: &server.GRPCServerConfig{
+		GRPCConfig: &core.GRPCServerConfig{
 			Port: *grpcPort,
 		},
 	}

@@ -1,4 +1,4 @@
-package registry
+package core
 
 import (
 	"sync"
@@ -38,8 +38,8 @@ func NewWorkerRegistry(logger *logger.Logger) *WorkerRegistry {
 		Items:  make(map[string]*WorkerRegistryItem),
 		logger: logger,
 	}
-
 	Registry = registry
+
 	return registry
 }
 

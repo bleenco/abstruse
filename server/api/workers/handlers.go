@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/server/api"
+	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/db"
-	"github.com/bleenco/abstruse/server/registry"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -19,7 +19,7 @@ func FindAllHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Pa
 
 	for i, worker := range workers {
 		workers[i].Status = "down"
-		if registryItem, err := registry.Registry.Find(worker.CertID); err == nil {
+		if registryItem, err := core.Registry.Find(worker.CertID); err == nil {
 			workers[i].Status = "operational"
 			workers[i].Capacity = registryItem.Capacity
 			workers[i].CapacityLoad = registryItem.CapacityUsed

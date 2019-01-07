@@ -1,4 +1,4 @@
-package server
+package core
 
 import (
 	"context"
@@ -14,8 +14,6 @@ import (
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/security"
 	pb "github.com/bleenco/abstruse/proto"
-	"github.com/bleenco/abstruse/server/api/workers"
-	"github.com/bleenco/abstruse/server/registry"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
@@ -25,11 +23,11 @@ import (
 	"google.golang.org/grpc/peer"
 )
 
+// MainGRPCServer is an exported main instance of gRPC server.
+var MainGRPCServer *GRPCServer
+
 type contextKey int
 type contextIP int
-
-// MainGRPCServer exports main gRPC server instance.
-var MainGRPCServer *GRPCServer
 
 const (
 	workerIdentifierKey contextKey = iota
@@ -40,7 +38,7 @@ const (
 type GRPCServer struct {
 	logger   *logger.Logger
 	server   *grpc.Server
-	registry *registry.WorkerRegistry
+	registry *WorkerRegistry
 	port     int
 	cert     string
 	certkey  string
@@ -64,7 +62,7 @@ func NewGRPCServer(cfg *GRPCServerConfig, log *logger.Logger) (*GRPCServer, erro
 		cert:     cfg.Cert,
 		certkey:  cfg.CertKey,
 		logger:   log,
-		registry: registry.NewWorkerRegistry(logger.NewLogger("registry", log.Info, log.Debug)),
+		registry: NewWorkerRegistry(logger.NewLogger("registry", log.Info, log.Debug)),
 	}
 	MainGRPCServer = server
 
@@ -117,24 +115,24 @@ func (s *GRPCServer) OnlineCheck(stream pb.ApiService_OnlineCheckServer) error {
 
 		identifier = status.Identifier
 		if status.Code == pb.OnlineStatus_Up {
-			if !s.registry.IsSubscribed(identifier) {
-				s.registry.Subscribe(identifier)
+			if !Registry.IsSubscribed(identifier) {
+				Registry.Subscribe(identifier)
 			}
 		}
 
 		ip, _ := stream.Context().Value(workerIP).(string)
 		host, _, _ := net.SplitHostPort(ip)
 		if status.Code == pb.OnlineStatus_Up {
-			workers.WorkersAPI.Subscribe(identifier, host)
+			WorkersAPI.Subscribe(identifier, host)
 		}
 	}
 
 end:
-	if s.registry.IsSubscribed(identifier) {
-		s.registry.Unsubscribe(identifier)
+	if Registry.IsSubscribed(identifier) {
+		Registry.Unsubscribe(identifier)
 	}
 
-	workers.WorkersAPI.Unsubscribe(identifier)
+	WorkersAPI.Unsubscribe(identifier)
 
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
 		return err
@@ -145,7 +143,7 @@ end:
 
 // WorkerCapacityStatus gRPC channel.
 func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacityStatusServer) error {
-	registryItem := &registry.WorkerRegistryItem{}
+	registryItem := &WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {
@@ -154,7 +152,7 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 
 	for {
 		var err error
-		registryItem, err = s.registry.Find(identifier)
+		registryItem, err = Registry.Find(identifier)
 		if err != nil || registryItem == nil {
 			continue
 		}
@@ -180,7 +178,7 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 		}
 		websocket.App.Broadcast("worker_capacity", data, "worker_capacity")
 
-		totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
+		totalCapacity, totalUsed := Registry.GetWorkersCapacityInfo()
 		MainScheduler.SetSize(totalCapacity, totalUsed)
 
 		if MainScheduler.queue.count > 0 {
@@ -196,7 +194,7 @@ end:
 	registryItem.CPU = 0
 	registryItem.Memory = 0
 
-	totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
+	totalCapacity, totalUsed := Registry.GetWorkersCapacityInfo()
 	MainScheduler.SetSize(totalCapacity, totalUsed)
 
 	if err := stream.SendAndClose(&empty.Empty{}); err != nil {
@@ -208,7 +206,7 @@ end:
 
 // WorkerUsageStatus gRPC channel.
 func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusServer) error {
-	registryItem := &registry.WorkerRegistryItem{}
+	registryItem := &WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {
@@ -217,7 +215,7 @@ func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusSer
 
 	for {
 		var err error
-		registryItem, err = s.registry.Find(identifier)
+		registryItem, err = Registry.Find(identifier)
 		if err != nil || registryItem == nil {
 			continue
 		}
@@ -255,7 +253,7 @@ end:
 
 // JobProcess gRPC channel.
 func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
-	registryItem := &registry.WorkerRegistryItem{}
+	registryItem := &WorkerRegistryItem{}
 	ctx := stream.Context()
 	identifier, ok := ctx.Value(workerIdentifierKey).(string)
 	if !ok {
@@ -264,7 +262,7 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 
 	for {
 		var err error
-		registryItem, err = s.registry.Find(identifier)
+		registryItem, err = Registry.Find(identifier)
 		if err != nil || registryItem == nil {
 			continue
 		}
@@ -308,7 +306,6 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 		}
 
 		if status == pb.JobStatus_Passing || status == pb.JobStatus_Failing || status == pb.JobStatus_Stopped {
-			// fmt.Printf("%s\n", strings.Join(jobProcess.Log, ""))
 			MainScheduler.FinishJobTask(jobProcess)
 		}
 	}
