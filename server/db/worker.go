@@ -9,6 +9,11 @@ type Worker struct {
 	CertID string `gorm:"not null;unique_index" json:"cert_id"`
 	IP     string `json:"ip"`
 	Status string `json:"status"`
+
+	Capacity     int `gorm:"-" json:"capacity"`
+	CapacityLoad int `gorm:"-" json:"capacity_load"`
+	CPU          int `gorm:"-" json:"cpu"`
+	Memory       int `gorm:"-" json:"memory"`
 }
 
 // Create method.

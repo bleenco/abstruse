@@ -224,7 +224,7 @@ func (s *Scheduler) getWorker() string {
 	var max int
 
 	for id, item := range MainGRPCServer.registry.items {
-		diff := item.CapacityTotal - item.CapacityUsed
+		diff := item.Capacity - item.CapacityUsed
 		if diff > max {
 			max = diff
 			workerID = id

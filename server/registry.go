@@ -8,6 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Registry is exported main worker registry instance.
+var Registry *WorkerRegistry
+
 // WorkerRegistryItem holds information about worker.
 type WorkerRegistryItem struct {
 	Online bool
@@ -16,8 +19,10 @@ type WorkerRegistryItem struct {
 	WorkerUsageStatusStream    pb.ApiService_WorkerUsageStatusServer
 	WorkerCapacityStatusStream pb.ApiService_WorkerCapacityStatusServer
 
-	CapacityTotal int
-	CapacityUsed  int
+	Capacity     int
+	CapacityUsed int
+	CPU          int
+	Memory       int
 }
 
 // WorkerRegistry defines registry for workers.
@@ -29,10 +34,13 @@ type WorkerRegistry struct {
 
 // NewWorkerRegistry initializes and returns new instance of worker registry.
 func NewWorkerRegistry(logger *logger.Logger) *WorkerRegistry {
-	return &WorkerRegistry{
+	registry := &WorkerRegistry{
 		items:  make(map[string]*WorkerRegistryItem),
 		logger: logger,
 	}
+
+	Registry = registry
+	return registry
 }
 
 // Subscribe allows to connect worker with a given identifier.
@@ -95,7 +103,7 @@ func (wr *WorkerRegistry) GetWorkersCapacityInfo() (int, int) {
 
 	for _, item := range wr.items {
 		if item.Online {
-			total += item.CapacityTotal
+			total += item.Capacity
 			used += item.CapacityUsed
 		}
 	}

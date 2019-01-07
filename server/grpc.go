@@ -169,7 +169,7 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 		}
 
 		total, used := usage.GetTotal(), usage.GetUsed()
-		registryItem.CapacityTotal = int(total)
+		registryItem.Capacity = int(total)
 		registryItem.CapacityUsed = int(used)
 
 		data := map[string]interface{}{
@@ -190,8 +190,10 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 end:
 	registryItem.Online = false
 	registryItem.WorkerCapacityStatusStream = nil
-	registryItem.CapacityTotal = 0
+	registryItem.Capacity = 0
 	registryItem.CapacityUsed = 0
+	registryItem.CPU = 0
+	registryItem.Memory = 0
 
 	totalCapacity, totalUsed := s.registry.GetWorkersCapacityInfo()
 	MainScheduler.SetSize(totalCapacity, totalUsed)
@@ -214,7 +216,7 @@ func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusSer
 
 	for {
 		var err error
-		registryItem, err := s.registry.Find(identifier)
+		registryItem, err = s.registry.Find(identifier)
 		if err != nil || registryItem == nil {
 			continue
 		}
@@ -229,10 +231,14 @@ func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusSer
 			goto end
 		}
 
+		cpu, memory := usage.GetCpu(), usage.GetMemory()
+		registryItem.CPU = int(cpu)
+		registryItem.Memory = int(memory)
+
 		data := map[string]interface{}{
 			"cert_id": identifier,
-			"cpu":     usage.GetCpu(),
-			"memory":  usage.GetMemory(),
+			"cpu":     cpu,
+			"memory":  memory,
 		}
 		websocket.App.Broadcast("worker_usage", data, "worker_usage")
 	}

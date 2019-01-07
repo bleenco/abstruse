@@ -16,7 +16,7 @@ var WorkersAPI *Workers
 // Workers defines workers API.
 type Workers struct {
 	mu    sync.Mutex
-	items []*WorkerItem
+	Items []*WorkerItem
 
 	EventEmitter chan api.Event
 }
@@ -62,7 +62,7 @@ func (w *Workers) Find(certID string) (*WorkerItem, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	for _, worker := range w.items {
+	for _, worker := range w.Items {
 		if worker.Data.CertID == certID {
 			return worker, nil
 		}
@@ -101,7 +101,7 @@ func (w *Workers) Subscribe(certID, ip string) error {
 		}
 	}
 
-	w.items = append(w.items, item)
+	w.Items = append(w.Items, item)
 	w.EventEmitter <- api.Event{Action: "subscribed", Data: certID}
 
 	return nil
@@ -112,10 +112,10 @@ func (w *Workers) Unsubscribe(certID string) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
-	for i, worker := range w.items {
+	for i, worker := range w.Items {
 		if worker.Data.CertID == certID {
 			worker.Data.UpdateStatus("down")
-			w.items = append(w.items[:i], w.items[i+1:]...)
+			w.Items = append(w.Items[:i], w.Items[i+1:]...)
 			w.EventEmitter <- api.Event{Action: "unsubscribed", Data: certID}
 			break
 		}
@@ -124,7 +124,7 @@ func (w *Workers) Unsubscribe(certID string) {
 
 // IsSubscribed returns true if worker is subscribed into API registry.
 func (w *Workers) IsSubscribed(item *WorkerItem) bool {
-	for _, worker := range w.items {
+	for _, worker := range w.Items {
 		if worker.Data.CertID == item.Data.CertID {
 			return true
 		}

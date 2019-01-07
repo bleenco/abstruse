@@ -60,7 +60,10 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     this.workersService.fetchWorkers().subscribe(resp => {
       if (resp && resp.data && resp.data.length) {
         this.workers = resp.data.map((w: any) => {
-          return new Worker(w.id, w.cert_id, w.ip, w.priority, w.status, w.created_at, w.updated_at);
+          const worker = new Worker(w.id, w.cert_id, w.ip, w.priority, w.status, w.created_at, w.updated_at);
+          worker.setCapacity(w.capacity, w.capacity_load);
+          worker.setUsage(w.cpu, w.memory);
+          return worker;
         });
       }
     }, err => {
