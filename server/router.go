@@ -56,11 +56,10 @@ func (r *Router) initAPI() {
 
 func (r *Router) initUI() {
 	r.Router.NotFound = http.FileServer(&assetfs.AssetFS{
-		Asset:     Asset,
-		AssetDir:  AssetDir,
-		AssetInfo: AssetInfo,
-		Prefix:    "web/abstruse/dist",
-		Fallback:  "index.html",
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Prefix:   "web/abstruse/dist",
+		Fallback: "index.html",
 	})
 }
 

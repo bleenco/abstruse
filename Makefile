@@ -20,10 +20,10 @@ build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && npm run build; fi
 
 bindata:
-	@if [ ! -f "server/bindata.go" ]; then go-bindata -o server/bindata.go -pkg server web/abstruse/dist/...; fi
+	@if [ ! -r "server/bindata.go" ]; then go-bindata -o server/bindata.go -pkg server web/abstruse/dist/...; fi
 
 install_dependencies:
-	@go get -u github.com/jteeuwen/go-bindata/... github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
+	@go get github.com/jteeuwen/go-bindata/... github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
 	@cd web/abstruse && npm install
 
 dev:

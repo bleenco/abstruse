@@ -3,3 +3,4 @@ server/bindata.go
 dist/
 .DS_Store
 proto/abstruse.pb.go
+go.sum
