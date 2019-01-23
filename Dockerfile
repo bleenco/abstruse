@@ -18,7 +18,7 @@ COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
-RUN go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go
+RUN go get -u github.com/jteeuwen/go-bindata/... github.com/golang/protobuf/protoc-gen-go
 
 RUN make grpc && make
 
