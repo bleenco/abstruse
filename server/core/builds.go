@@ -63,7 +63,7 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 
 	for _, e := range env {
 		job := db.Job{
-			Image:    "ubuntu_latest_node",
+			Image:    "abstruse_18_04_nodejs",
 			Commands: string(commandsJSON),
 			Env:      e,
 			BuildID:  build.ID,
@@ -87,7 +87,7 @@ func StartBuild(repoID int, branch, pr, commit string) error {
 			Name:     name,
 			Code:     pb.JobTask_Start,
 			Commands: commands,
-			Image:    "ubuntu_latest_node",
+			Image:    "abstruse_18_04_nodejs",
 			Env:      strings.Split(e, " "),
 		}
 

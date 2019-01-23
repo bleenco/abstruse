@@ -56,7 +56,7 @@ func StartJob(task *pb.JobTask) error {
 			return err
 		}
 
-		conn, execID, err := docker.Exec(cli, containerID, append([]string{"pty"}, command...))
+		conn, execID, err := docker.Exec(cli, containerID, append([]string{"abstruse-pty"}, command...))
 		if err != nil {
 			return err
 		}
