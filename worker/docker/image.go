@@ -4,14 +4,16 @@ import (
 	"archive/tar"
 	"bytes"
 	"context"
+	"encoding/binary"
 	"io"
 	"os"
-	"path/filepath"
-	"strings"
+	"path"
 
+	"github.com/bleenco/abstruse/worker/data"
 	"github.com/docker/docker/api/types"
 )
 
+// BuildImage builds Docker image from Dockerfile and additional files.
 func BuildImage(tags []string, folderPath string) error {
 	ctx := context.Background()
 	cli, err := GetClient()
@@ -21,44 +23,35 @@ func BuildImage(tags []string, folderPath string) error {
 
 	buf := new(bytes.Buffer)
 	tw := tar.NewWriter(buf)
-	defer tw.Close()
 
-	err = filepath.Walk(folderPath, func(file string, fi os.FileInfo, err error) error {
+	files, err := data.AssetDir(folderPath)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		filePath := path.Join(folderPath, file)
+
+		fileData, err := data.Asset(filePath)
 		if err != nil {
 			return err
 		}
 
-		header, err := tar.FileInfoHeader(fi, fi.Name())
-		if err != nil {
-			return err
+		header := &tar.Header{
+			Name: file,
+			Size: int64(binary.Size(fileData)),
 		}
-
-		header.Name = strings.TrimPrefix(strings.Replace(file, folderPath, "", -1), string(filepath.Separator))
 
 		if err := tw.WriteHeader(header); err != nil {
 			return err
 		}
 
-		if !fi.Mode().IsRegular() {
-			return nil
-		}
-
-		f, err := os.Open(file)
-		if err != nil {
+		if _, err := io.Copy(tw, bytes.NewReader(fileData)); err != nil {
 			return err
 		}
-
-		if _, err := io.Copy(tw, f); err != nil {
-			return err
-		}
-
-		f.Close()
-
-		return nil
-	})
-	if err != nil {
-		return err
 	}
+
+	tw.Close()
 
 	imageContext := bytes.NewReader(buf.Bytes())
 

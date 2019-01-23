@@ -3,3 +3,4 @@ web/abstruse/dist
 server/bindata.go
 build/
 go.sum
+worker/data

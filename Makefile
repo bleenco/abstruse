@@ -32,13 +32,17 @@ dev:
 dev_worker:
 	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -- sh -c 'make worker && ./build/abstruse-worker'
 
+bindata_worker:
+	@if [ ! -r "worker/data/data.go" ]; then go-bindata -o worker/data/data.go -pkg data -prefix "files/base_images/" files/base_images/...; fi
+
 worker:
+	@make bindata_worker
 	@CGO_ENABLED=$(CGO_ENABLED) go build -o build/abstruse-worker cmd/abstruse-worker/worker.go
 
 grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.
 
 clean:
-	@rm -rf build/ server/bindata.go web/abstruse/dist
+	@rm -rf build/ server/bindata.go worker/data web/abstruse/dist
 
 .PHONY: clean build worker statik

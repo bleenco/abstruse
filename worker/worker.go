@@ -95,7 +95,7 @@ func (w *Worker) Run() error {
 	go w.Queue.Run()
 
 	// go func() {
-	// 	if err := docker.BuildImage([]string{"ubuntu_18_04:latest"}, "/Users/jan/Desktop/ubuntu_18_04"); err != nil {
+	// 	if err := docker.BuildImage([]string{"ubuntu_18_04:latest"}, "ubuntu_18_04"); err != nil {
 	// 		fmt.Println(err)
 	// 	}
 	// }()
