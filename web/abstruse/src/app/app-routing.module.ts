@@ -30,6 +30,11 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
+    path: 'images',
+    loadChildren: './images/images.module#ImagesModule',
+    canActivate: [AuthGuardService]
+  },
+  {
     path: 'settings',
     loadChildren: './settings/settings.module#SettingsModule',
     canActivate: [AuthGuardService]
