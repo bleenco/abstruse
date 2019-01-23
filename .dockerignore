@@ -1,5 +1,5 @@
 web/abstruse/node_modules
 web/abstruse/dist
-server/statik
+server/bindata.go
 build/
 go.sum

@@ -9,7 +9,5 @@ export class ImagesListComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() { }
 }

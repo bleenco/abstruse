@@ -13,21 +13,21 @@ endif
 
 build:
 	@make build_ui
-	@make statik
+	@make bindata
 	@CGO_ENABLED=0 go build -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse cmd/abstruse/abstruse.go
 
 build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && npm run build; fi
 
-statik:
-	@if [ ! -d "server/statik" ]; then statik -src=./web/abstruse/dist -dest=./server; fi
+bindata:
+	@if [ ! -f "server/bindata.go" ]; then go-bindata -o server/bindata.go -pkg server web/abstruse/dist/...; fi
 
 install_dependencies:
-	@go get -u github.com/rakyll/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
+	@go get -u github.com/jteeuwen/go-bindata/... github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
 	@cd web/abstruse && npm install
 
 dev:
-	@reflex -sr '\.go$$' -R '^web/' -R '^server/statik' -R '^worker/' -- sh -c 'make && ./build/abstruse'
+	@reflex -sr '\.go$$' -R '^web/' -R '^server/bindata.go' -R '^worker/' -- sh -c 'make && ./build/abstruse'
 
 dev_worker:
 	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -- sh -c 'make worker && ./build/abstruse-worker'
@@ -39,6 +39,6 @@ grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.
 
 clean:
-	@rm -rf build/ server/statik/ web/abstruse/dist
+	@rm -rf build/ server/bindata.go web/abstruse/dist
 
 .PHONY: clean build worker statik

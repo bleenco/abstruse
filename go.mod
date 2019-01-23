@@ -3,9 +3,9 @@ module github.com/bleenco/abstruse
 require (
 	github.com/boombuler/barcode v1.0.0 // indirect
 	github.com/calmh/luhn v2.0.0+incompatible
-	github.com/cenkalti/backoff v2.1.0+incompatible
+	github.com/cenkalti/backoff v2.1.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/docker/distribution v2.7.0+incompatible // indirect
+	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.3.3 // indirect
@@ -31,13 +31,11 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pquerna/otp v1.1.0
-	github.com/rakyll/statik v0.1.5
 	github.com/shirou/gopsutil v2.18.12+incompatible
-	golang.org/x/arch v0.0.0-20181203225421-5a4828bb7045 // indirect
-	golang.org/x/crypto v0.0.0-20190103213133-ff983b9c42bc
-	golang.org/x/net v0.0.0-20181220203305-927f97764cc3
-	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
-	google.golang.org/grpc v1.17.0
+	golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b
+	golang.org/x/net v0.0.0-20190119204137-ed066c81e75e
+	golang.org/x/oauth2 v0.0.0-20190115181402-5dab4167f31c
+	google.golang.org/grpc v1.18.0
 	gopkg.in/src-d/go-billy.v4 v4.3.0
 	gopkg.in/src-d/go-git.v4 v4.8.1
 	gopkg.in/yaml.v2 v2.2.2

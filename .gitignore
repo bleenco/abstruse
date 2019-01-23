@@ -1,5 +1,5 @@
 build/
-statik/
+server/bindata.go
 dist/
 .DS_Store
 proto/abstruse.pb.go

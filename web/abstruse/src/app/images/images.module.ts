@@ -6,7 +6,9 @@ import { SharedModule } from '../shared/modules/shared.module';
 import { ImagesListComponent } from './images-list/images-list.component';
 
 @NgModule({
-  declarations: [ImagesListComponent],
+  declarations: [
+    ImagesListComponent
+  ],
   imports: [
     CommonModule,
     ImagesRoutingModule,

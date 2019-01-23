@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/bleenco/abstruse/pkg/assetfs"
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/api/builds"
 	"github.com/bleenco/abstruse/server/api/integration"
@@ -12,7 +13,6 @@ import (
 	"github.com/bleenco/abstruse/server/api/teams"
 	"github.com/bleenco/abstruse/server/api/user"
 	"github.com/bleenco/abstruse/server/api/workers"
-	"github.com/bleenco/abstruse/server/httpfs"
 	"github.com/bleenco/abstruse/server/websocket"
 	"github.com/julienschmidt/httprouter"
 )
@@ -55,7 +55,13 @@ func (r *Router) initAPI() {
 }
 
 func (r *Router) initUI() {
-	r.Router.NotFound = http.FileServer(&spaWrapper{httpfs.StatikFS})
+	r.Router.NotFound = http.FileServer(&assetfs.AssetFS{
+		Asset:     Asset,
+		AssetDir:  AssetDir,
+		AssetInfo: AssetInfo,
+		Prefix:    "web/abstruse/dist",
+		Fallback:  "index.html",
+	})
 }
 
 func (r *Router) initWebsocket() {
