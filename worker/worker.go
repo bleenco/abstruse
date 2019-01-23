@@ -94,6 +94,12 @@ func (w *Worker) Run() error {
 	defer w.Client.Close()
 	go w.Queue.Run()
 
+	// go func() {
+	// 	if err := docker.BuildImage([]string{"ubuntu_18_04:latest"}, "/Users/jan/Desktop/ubuntu_18_04"); err != nil {
+	// 		fmt.Println(err)
+	// 	}
+	// }()
+
 	ticker := backoff.NewTicker(backoff.NewExponentialBackOff())
 	var err error
 
