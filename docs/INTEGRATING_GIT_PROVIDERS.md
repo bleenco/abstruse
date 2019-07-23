@@ -27,7 +27,9 @@ An example of a successful webhook entry can be seen in a screenshot below. Inst
 Your new code repositories will automatically appear in Abstruse
 after the first commit or pull request.
 
-**Note: Please make sure your local repository includes .abstruse.yml file.**
+**Note:**
+ - **Please make sure your local repository includes .abstruse.yml file.**
+ - **Please make sure to add ACCESS TOKEN in Abstruse (you can do that in Repository Settings)**
 
 #### 4. Setting up protected branches
 
