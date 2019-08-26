@@ -8,7 +8,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
-	"github.com/docker/go-connections/nat"
 )
 
 // Exec executes specified command inside Docker container.
@@ -29,6 +28,9 @@ func Exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, 
 	}
 
 	conn, err = cli.ContainerExecAttach(ctx, exec.ID, types.ExecConfig{
+		AttachStderr: true,
+		AttachStdin:  false,
+		AttachStdout: true,
 		Detach: false,
 		Tty:    true,
 	})
@@ -67,17 +69,9 @@ func CreateContainer(cli *client.Client, name, image string, env []string) (cont
 		Env:        env,
 		WorkingDir: "/home/abstruse/build",
 		Tty:        true,
-		Entrypoint: []string{"/entry.sh"},
+		Entrypoint: []string{"/bin/bash"},
 		Shell:      []string{"/bin/bash"},
-		ExposedPorts: nat.PortSet{
-			nat.Port("22/tcp"):   {},
-			nat.Port("5900/tcp"): {},
-		},
 	}, &container.HostConfig{
-		PortBindings: nat.PortMap{
-			nat.Port("22/tcp"):   []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
-			nat.Port("5900/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: ""}},
-		},
 		Mounts: mounts,
 	}, nil, name)
 }

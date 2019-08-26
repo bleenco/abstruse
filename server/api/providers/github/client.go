@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/go-github/v27/github"
 	"github.com/bleenco/abstruse/server/db"
-	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 )
 
@@ -45,10 +45,10 @@ func getIntegrationClientData(integrationID, userID int) (url, accessToken, user
 	var i db.Integration
 	integration, err := i.Find(integrationID, userID)
 	if err == nil {
-		url = integration.GithubURL
-		accessToken = integration.GithubAccessToken
-		username = integration.GithubUsername
-		password = integration.GithubPassword
+		url = integration.URL
+		accessToken = integration.AccessToken
+		username = integration.Username
+		password = integration.Password
 	}
 
 	return url, accessToken, username, password, err

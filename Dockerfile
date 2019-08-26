@@ -8,7 +8,7 @@ WORKDIR /app/ui
 RUN npm install && npm run build
 
 # stage 2 build
-FROM golang:1.11-alpine as build
+FROM golang:1.12-alpine as build
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
-RUN go get github.com/jteeuwen/go-bindata/... github.com/golang/protobuf/protoc-gen-go
+RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go
 
 RUN make grpc && make
 

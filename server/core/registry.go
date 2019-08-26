@@ -94,7 +94,7 @@ func (wr *WorkerRegistry) Find(identifier string) (*WorkerRegistryItem, error) {
 	return item, nil
 }
 
-// GetWorkersCapacityInfo returns ccurrent total capacity status across workers.
+// GetWorkersCapacityInfo returns current total capacity status across workers.
 func (wr *WorkerRegistry) GetWorkersCapacityInfo() (int, int) {
 	wr.mu.Lock()
 	defer wr.mu.Unlock()

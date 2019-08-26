@@ -6,21 +6,19 @@ import { share } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class TimeService {
-  timer: Observable<any>;
+  timer: Observable<number>;
 
   constructor() {
     this.timer = timer(1000, 1000);
   }
 
-  getCurrentTime(): Observable<any> {
-    return new Observable(observer => {
+  getCurrentTime(): Observable<Date> {
+    return new Observable<Date>(observer => {
       const sub = this.timer.subscribe(() => {
-        observer.next(new Date().getTime());
+        observer.next(new Date());
       });
 
-      return () => {
-        sub.unsubscribe();
-      };
+      return () => sub.unsubscribe();
     }).pipe(share());
   }
 }

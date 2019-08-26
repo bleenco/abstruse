@@ -14,8 +14,8 @@ export class RxWebSocket {
   didOpen: (e: Event) => void;
   willOpen: () => void;
   didClose: (e?: any) => void;
-  _out: Observable<any>;
-  _in: Observer<any>;
+  out$: Observable<any>;
+  in$: Observer<any>;
 
   constructor() { }
 
@@ -24,8 +24,8 @@ export class RxWebSocket {
   }
 
   get out(): Observable<any> {
-    if (!this._out) {
-      this._out = Observable.create((subscriber: Subscriber<any>) => {
+    if (!this.out$) {
+      this.out$ = new Observable((subscriber: Subscriber<any>) => {
         const wsurl = getWebSocketURL();
         this.socket = new WebSocket(wsurl);
 
@@ -57,12 +57,12 @@ export class RxWebSocket {
         return () => {
           this.socket.close();
           this.socket = null;
-          this._out = null;
+          this.out$ = null;
         };
       });
     }
 
-    return this._out;
+    return this.out$;
   }
 
   send(message: any) {
@@ -75,8 +75,8 @@ export class RxWebSocket {
   }
 
   get in(): Observer<any> {
-    if (!this._in) {
-      this._in = {
+    if (!this.in$) {
+      this.in$ = {
         next: (message: any) => {
           const data = typeof message === 'string' ? message : JSON.stringify(message);
           if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -96,7 +96,7 @@ export class RxWebSocket {
       };
     }
 
-    return this._in;
+    return this.in$;
   }
 
   flushMessages() {

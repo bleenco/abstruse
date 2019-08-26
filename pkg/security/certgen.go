@@ -50,7 +50,7 @@ func generateCertAndKey(certPath, keyPath string) {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{"Abstruse CI"},
+			Organization: []string{"abstruse CI"},
 		},
 		NotBefore:             notBefore,
 		NotAfter:              notAfter,

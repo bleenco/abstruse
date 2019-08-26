@@ -1,0 +1,13 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <app-builds-nav [tab]="'job'" [buildId]="build_id" [jobId]="id"></app-builds-nav>
+  </div>
+  <div class="column is-12">
+    <app-builds-info-container></app-builds-info-container>
+  </div>
+  <div class="column is-12">
+    <div class="console-output" *ngIf="job">
+      <app-terminal [data]="job?.log"></app-terminal>
+    </div>
+  </div>
+</div>

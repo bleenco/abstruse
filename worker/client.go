@@ -8,11 +8,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/docker/docker/api/types"
 	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/worker/auth"
 	"github.com/bleenco/abstruse/worker/id"
-	"github.com/docker/docker/api/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -117,7 +117,10 @@ func (c *GRPCClient) Run() error {
 		}
 	}()
 
-	return <-ch
+	err := <-ch
+	c.logger.Debugf("failed connection, retrying in 10s...")
+
+	return err
 }
 
 // StreamOnlineStatus streams status about worker to server.
@@ -252,13 +255,15 @@ func (c *GRPCClient) StreamContainerOutput(ctx context.Context, conn types.Hijac
 
 	c.ContainerOutputStream = stream
 
+	buf := make([]byte, 4096)
 	for {
-		buf := make([]byte, 4096)
 		n, err := conn.Reader.Read(buf)
 		if err != nil {
 			conn.Close()
 			return nil
 		}
+
+		// fmt.Printf("%s", string(buf[:n]))
 
 		// stream output log to server
 		if err := stream.Send(&pb.ContainerOutputChunk{

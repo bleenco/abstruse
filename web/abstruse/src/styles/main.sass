@@ -1,14 +1,54 @@
 .main
   margin: 30px 0 100px 0
 
+  .title-header
+    display: flex
+    width: 100%
+    align-items: center
+    padding-top: 0
+    padding-bottom: 0
+    border-bottom: 1px solid $border-secondary
+    margin-bottom: 12px
+
   code
     background: $white
     border: 1px solid $border-box
     border-radius: 4px
     padding: 2px 8px
 
-  ul
-    list-style: disc
+    &.is-medium
+      +unselectable
+      font-size: 12px
+      font-family: $font-family-medium
+      height: 24px
+      display: inline-flex
+      align-items: center
+      justify-content: center
+      padding: 0 10px
+      box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
 
-    li
-      margin-left: 15px
+  pre
+    white-space: pre
+    word-wrap: break-word
+    overflow: auto
+    background: $white
+    border-radius: 4px
+    border: 1px solid $border-default
+    position: relative
+
+    code
+      display: block
+      margin: 0 0 0 10px
+      padding: 10px
+      border: none
+      outline: none
+      overflow-x: auto
+      font-size: 12px
+      line-height: 15px
+
+    label
+      font-family: $font-family-bold
+      font-size: 13px
+      display: block
+      padding: 10px 20px
+      border-bottom: 1px solid $border-default

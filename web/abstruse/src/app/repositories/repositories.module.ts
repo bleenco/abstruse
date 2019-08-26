@@ -10,12 +10,14 @@ import { RepositoriesDetailsComponent } from './repositories-details/repositorie
 import { RepositoriesConfigurationDialogComponent } from './repositories-configuration-dialog/repositories-configuration-dialog.component';
 import { RepositoriesHookItemComponent } from './repositories-hook-item/repositories-hook-item.component';
 import { BuildService } from '../builds/shared/build.service';
+import { BuildsModule } from '../builds/builds.module';
 
 @NgModule({
   imports: [
     CommonModule,
     RepositoriesRoutingModule,
-    SharedModule.forRoot()
+    SharedModule.forRoot(),
+    BuildsModule
   ],
   declarations: [
     RepositoriesListComponent,

@@ -1,0 +1,39 @@
+.breadcrumb
+  +unselectable
+  white-space: nowrap
+  border-bottom: 1px solid $border-secondary
+
+  li
+    display: flex
+    align-items: center
+    justify-content: center
+    padding: 5px 0
+    margin: 0 8px
+    cursor: pointer
+    font-family: $font-family-medium
+    font-size: 13px
+    border-bottom: 2px solid transparent
+    outline: none
+
+    &.is-active, &:hover
+      color: $green
+      border-bottom: 2px solid $green
+
+    &.is-active
+      cursor: default
+      pointer-events: none
+
+    &.separator
+      cursor: default
+
+      &::before
+        content: "\0002f"
+        display: block
+        font-size: 16px
+        color: $text-primary
+
+  ul
+    align-items: center
+    display: flex
+    flex-wrap: wrap
+    justify-content: flex-start

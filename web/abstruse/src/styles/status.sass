@@ -2,47 +2,83 @@
   display: flex
   align-items: center
   justify-content: center
+  padding: 0 8px
+  border-radius: 4px
+  border: 1px solid transparent
+  background: transparent
 
-  .status-circle
-    width: 10px
-    height: 10px
-    border-radius: 50%
-    background: $green
-    margin-right: 5px
+  &.is-medium
+    width: 100px
+    display: block
+    margin-left: auto
+    margin-right: auto
 
   .status-title
-    font-size: 13px
+    font-size: 12px
     color: $text-primary
-    font-family: $font-family-medium
+    font-family: $font-family-bold
+    text-transform: uppercase
+    display: inline-flex
+    width: 100%
+    align-items: center
+    justify-content: center
+
+    i
+      margin-right: 10px
+
+    img
+      width: 12px
+      height: 12px
+      margin-right: 10px
+      display: block
 
   &.is-green
 
-    .status-circle
-      background: $green
+    background: rgba($green, 0.1)
+    border: 1px solid $green
 
     .status-title
       color: $green
 
   &.is-red
 
-    .status-circle
-      background: $red
+    background: rgba($red, 0.1)
+    border: 1px solid $red
 
     .status-title
       color: $red
 
   &.is-yellow
 
-    .status-circle
-      background: $yellow
+    background: rgba($yellow, 0.1)
+    border: 1px solid $yellow
 
     .status-title
       color: $yellow
 
   &.is-grey
 
-    .status-circle
-      background: $text-primary
+    background: rgba($text-primary, 0.01)
+    border: 1px solid $text-primary
 
     .status-title
       color: $text-primary
+
+.status-line
+  width: 3px
+  height: 25px
+  background: transparent
+  display: inline-block
+  margin-right: 15px
+
+  &.is-queued
+    background: $grey
+
+  &.is-passing
+    background: $green
+
+  &.is-failing
+    background: $red
+
+  &.is-running
+    background: $yellow

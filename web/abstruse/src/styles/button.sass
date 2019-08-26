@@ -1,7 +1,7 @@
 .button
-  color: $text-primary
+  color: $text-button
   border-radius: 3px
-  border: 1px solid $border-secondary
+  border: 1px solid $border-button
   padding: 9px 16px
   display: inline-flex
   align-items: center
@@ -11,6 +11,7 @@
   outline: none
   cursor: pointer
   background: $white
+  box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
 
   &[disabled]
     opacity: .5 !important
@@ -22,7 +23,9 @@
 
   &:hover, &.is-active
     border-color: $border-button
-    color: $text-secondary
+    color: $text-button
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.13)
+
 
   &.is-xsmall
     padding: 0 12px
@@ -32,6 +35,9 @@
   &.is-small
     padding: 7px 15px
     font-size: 12px
+
+    i
+      font-size: 14px
 
   &.is-large
     padding: 10px 30px

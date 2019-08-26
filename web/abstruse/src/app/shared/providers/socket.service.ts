@@ -1,13 +1,13 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, Subscriber, BehaviorSubject, timer, fromEvent } from 'rxjs';
 import { share, retryWhen, take, switchMap } from 'rxjs/operators';
 import { RxWebSocket, ConnectionStates } from '../models/socket.class';
+import { SocketEvent } from '../models/socket.model';
 
 @Injectable()
 export class SocketService {
   connectionState: BehaviorSubject<ConnectionStates>;
   socket: RxWebSocket;
-  outputEvents: EventEmitter<any>;
   timeSyncDiff: number;
 
   constructor() {
@@ -16,11 +16,10 @@ export class SocketService {
     this.socket.didOpen = () => this.connectionState.next(ConnectionStates.CONNECTED);
     this.socket.willOpen = () => this.connectionState.next(ConnectionStates.CONNECTING);
     this.socket.didClose = () => this.connectionState.next(ConnectionStates.CLOSED);
-    this.outputEvents = new EventEmitter<any>();
   }
 
-  connect(): Observable<any> {
-    return new Observable((subscriber: Subscriber<any>) => {
+  connect(): Observable<SocketEvent> {
+    return new Observable((subscriber: Subscriber<SocketEvent>) => {
       const sub = this.socket.out.subscribe(subscriber);
 
       return () => {
@@ -41,11 +40,11 @@ export class SocketService {
       );
   }
 
-  onMessage(): Observable<any> {
+  onMessage(): Observable<SocketEvent> {
     return this.connect();
   }
 
-  emit(msg: any) {
+  emit(msg: SocketEvent): void {
     const data = typeof msg === 'string' ? msg : JSON.stringify(msg);
     this.socket.in.next(data);
   }

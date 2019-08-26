@@ -8,7 +8,7 @@ import { Login } from './login.model';
   styleUrls: ['./login.component.sass']
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('usernameField') usernameField: ElementRef;
+  @ViewChild('usernameField', { static: false }) usernameField: ElementRef;
 
   login: Login;
   loading: boolean;

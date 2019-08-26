@@ -8,9 +8,9 @@ import * as fit from 'xterm/lib/addons/fit/fit';
   styleUrls: ['./terminal.component.sass']
 })
 export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() data: any;
+  @Input() data: string;
 
-  terminal: any;
+  terminal: Terminal;
   theme: ITheme = {
     foreground: '#F8F8F2',
     background: '#262626',
@@ -32,11 +32,11 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     brightWhite: '#ffffff',
     cursor: 'rgba(0, 0, 0, 0)',
     cursorAccent: 'rgba(0, 0, 0, 0)',
-    selection: 'rgba(0, 0, 0, .3)'
+    selection: 'rgba(0, 0, 0, 0)'
   };
 
   constructor(public elementRef: ElementRef) {
-    Terminal.applyAddon(fit);
+    Terminal.applyAddon(fit); // tslint:disable-line
     this.terminal = new Terminal({
       allowTransparency: true,
       disableStdin: true,
@@ -47,10 +47,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
-    this.terminal.setOption('fontFamily', 'Monaco, Menlo, "Ubuntu Mono", monospace');
-    this.terminal.setOption('fontSize', 11);
+    this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
+    this.terminal.setOption('fontSize', 12);
     this.terminal.setOption('theme', this.theme);
-    this.terminal.fit();
+    (this.terminal as any).fit();
   }
 
   ngOnChanges() {
@@ -58,10 +58,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    if (typeof this.data.clear !== 'undefined') {
-      this.terminal.reset();
-      return;
-    }
+    // if (typeof this.data.clear !== 'undefined') {
+    //   this.terminal.reset();
+    //   return;
+    // }
 
     this.terminal.write(this.data);
   }

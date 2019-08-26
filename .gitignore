@@ -1,7 +1,8 @@
 build/
-server/bindata.go
+server/ui
 dist/
 .DS_Store
 proto/abstruse.pb.go
 go.sum
 worker/data
+abstruse-pty

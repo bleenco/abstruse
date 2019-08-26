@@ -32,7 +32,7 @@
     </div>
 
     <div class="integrations" *ngIf="integrations?.length">
-      <app-settings-integration-item [data]="i" (updated)="integrationsUpdated($event)" *ngFor="let i of integrations"></app-settings-integration-item>
+      <app-settings-integration-item [data]="i" (updated)="integrationsUpdated()" *ngFor="let i of integrations"></app-settings-integration-item>
     </div>
   </div>
 </div>

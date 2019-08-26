@@ -11,12 +11,11 @@ type Integration struct {
 
 	Provider string `gorm:"not null" json:"provider"`
 
-	GithubURL         string `gorm:"column:github_url" json:"github_url"`
-	GithubUsername    string `gorm:"column:github_username" json:"-"`
-	GithubPassword    string `gorm:"column:github_password" json:"-"`
-	GithubAccessToken string `gorm:"column:github_access_token" json:"-"`
-
-	Data string `gorm:"type:text" json:"data"`
+	URL         string `gorm:"column:url" json:"url"`
+	APIURL      string `gorm:"column:api_url" json:"api_url"`
+	Username    string `gorm:"column:username" json:"-"`
+	Password    string `gorm:"column:password" json:"-"`
+	AccessToken string `gorm:"column:access_token" json:"-"`
 
 	UserID int  `gorm:"not null" json:"-"`
 	User   User `json:"-"`
@@ -44,7 +43,7 @@ func (i *Integration) Find(integrationID, userID int) (Integration, error) {
 
 // Update method.
 func (i *Integration) Update() (*Integration, error) {
-	err := DB.Model(i).Update(map[string]interface{}{"updated_at": time.Now(), "data": i.Data}).Error
+	err := DB.Model(i).Update(map[string]interface{}{"updated_at": time.Now()}).Error
 	return i, err
 }
 

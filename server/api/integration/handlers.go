@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"time"
@@ -17,32 +16,8 @@ type integrationType struct {
 	ID        uint      `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
-
-	Provider string `json:"provider"`
-
-	GithubURL  string         `json:"github_url"`
-	GithubData githubDataType `json:"github_data"`
-}
-
-type githubDataType struct {
-	Login             string    `json:"string"`
-	ID                int       `json:"id"`
-	NodeID            string    `json:"node_id"`
-	AvatarURL         string    `json:"avatar_url"`
-	HTMLURL           string    `json:"html_url"`
-	Name              string    `json:"name"`
-	Company           string    `json:"company"`
-	Blog              string    `json:"blog"`
-	Location          string    `json:"location"`
-	Email             string    `json:"email"`
-	Bio               string    `json:"bio"`
-	PublicRepos       int       `json:"public_repos"`
-	PublicGists       int       `json:"public_gists"`
-	TotalPrivateRepos int       `json:"total_private_repos"`
-	Followers         int       `json:"followers"`
-	Following         int       `json:"following"`
-	CreatedAt         time.Time `json:"created_at"`
-	UpdatedAt         time.Time `json:"updated_at"`
+	Provider  string    `json:"provider"`
+	URL       string    `json:"url"`
 }
 
 // FindIntegrationsHandler => /api/integrations
@@ -68,15 +43,6 @@ func FindIntegrationsHandler(res http.ResponseWriter, req *http.Request, ps http
 			CreatedAt: i.CreatedAt,
 			UpdatedAt: i.UpdatedAt,
 			Provider:  i.Provider,
-		}
-		switch i.Provider {
-		case "github":
-			in.GithubURL = i.GithubURL
-			var data githubDataType
-			if err := json.Unmarshal([]byte(i.Data), &data); err != nil {
-				continue
-			}
-			in.GithubData = data
 		}
 		resp = append(resp, in)
 	}
@@ -107,15 +73,6 @@ func FindIntegrationHandler(res http.ResponseWriter, req *http.Request, ps httpr
 		UpdatedAt: integration.UpdatedAt,
 		Provider:  integration.Provider,
 	}
-	switch integration.Provider {
-	case "github":
-		resp.GithubURL = integration.GithubURL
-		var data githubDataType
-		if err := json.Unmarshal([]byte(integration.Data), &data); err != nil {
-			break
-		}
-		resp.GithubData = data
-	}
 
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: resp})
 }
@@ -139,7 +96,7 @@ func FetchIntegrationRepositoriesHandler(res http.ResponseWriter, req *http.Requ
 
 	switch integration.Provider {
 	case "github":
-		resp, err := github.FetchIntegrationRepositories(integration.GithubURL, integration.GithubAccessToken, integration.GithubUsername, integration.GithubPassword)
+		resp, err := github.FetchIntegrationRepositories(integration.APIURL, integration.AccessToken, integration.Username, integration.Password)
 		if err != nil {
 			api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 			return

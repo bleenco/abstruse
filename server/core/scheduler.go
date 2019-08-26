@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/eapache/channels"
 	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
-	"github.com/eapache/channels"
 	"github.com/pkg/errors"
 )
 
@@ -38,10 +38,8 @@ type JobTask struct {
 	ContainerName    string
 	WorkerIdentifier string
 
-	buildID    uint
-	buildRunID uint
-	jobID      uint
-	jobRunID   uint
+	buildID uint
+	jobID   uint
 
 	Status    string
 	Log       []string
@@ -108,7 +106,7 @@ func (s *Scheduler) Stop() {
 func (s *Scheduler) RunQueue() {
 	for s.queue.count > 0 {
 		jobTask := s.queue.Pop()
-		s.ScheduleJobTask(jobTask.task, jobTask.buildID, jobTask.buildRunID, jobTask.jobID, jobTask.jobRunID)
+		s.ScheduleJobTask(jobTask.task, jobTask.buildID, jobTask.jobID)
 	}
 }
 
@@ -123,13 +121,11 @@ func (s *Scheduler) SetSize(size, used int) {
 }
 
 // ScheduleJobTask puts incoming job task into scheduler.
-func (s *Scheduler) ScheduleJobTask(job *pb.JobTask, buildID, buildRunID, jobID, jobRunID uint) {
+func (s *Scheduler) ScheduleJobTask(job *pb.JobTask, buildID, jobID uint) {
 	jobTask := &JobTask{
-		task:       job,
-		buildID:    buildID,
-		buildRunID: buildRunID,
-		jobID:      jobID,
-		jobRunID:   jobRunID,
+		task:    job,
+		buildID: buildID,
+		jobID:   jobID,
 	}
 
 	s.logger.Debugf("scheduling job task %s", jobTask.task.GetName())

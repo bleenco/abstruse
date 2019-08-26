@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { Repo } from '../shared/repo.model';
 
 @Component({
   selector: 'app-repositories-list-item',
@@ -6,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./repositories-list-item.component.sass']
 })
 export class RepositoriesListItemComponent implements OnInit {
-  @Input() repo: any;
+  @Input() repo: Repo;
 
   constructor() { }
 

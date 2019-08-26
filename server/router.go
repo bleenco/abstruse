@@ -1,9 +1,11 @@
 package server
 
 import (
+	"log"
 	"net/http"
+	"os"
+	"path"
 
-	"github.com/bleenco/abstruse/pkg/assetfs"
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/api/builds"
 	"github.com/bleenco/abstruse/server/api/integration"
@@ -13,7 +15,9 @@ import (
 	"github.com/bleenco/abstruse/server/api/teams"
 	"github.com/bleenco/abstruse/server/api/user"
 	"github.com/bleenco/abstruse/server/api/workers"
+	_ "github.com/bleenco/abstruse/server/ui" // Web UI binary data.
 	"github.com/bleenco/abstruse/server/websocket"
+	"github.com/jkuri/statik/fs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -48,6 +52,9 @@ func (r *Router) initAPI() {
 	r.Router.GET("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.ListHooksHandler))
 	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
 	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(builds.TriggerBuildHandler))
+	r.Router.GET("/api/builds/info/:id", builds.FindBuildInfoHandler)
+	r.Router.GET("/api/builds/repo/:id", api.AuthorizationMiddleware(builds.FindBuildsByRepoHandler))
+	r.Router.GET("/api/builds/job/:id", api.AuthorizationMiddleware(builds.FindJobInfoHandler))
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))
 	r.Router.GET("/api/teams/:id", api.AuthorizationMiddleware(teams.FetchTeamHandler))
 	r.Router.POST("/api/teams/:id", api.AuthorizationMiddleware(teams.SaveTeamHandler))
@@ -55,14 +62,28 @@ func (r *Router) initAPI() {
 }
 
 func (r *Router) initUI() {
-	r.Router.NotFound = http.FileServer(&assetfs.AssetFS{
-		Asset:    Asset,
-		AssetDir: AssetDir,
-		Prefix:   "web/abstruse/dist",
-		Fallback: "index.html",
-	})
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.Router.NotFound = http.FileServer(&statikWrapper{statikFS})
 }
 
 func (r *Router) initWebsocket() {
 	r.Router.GET("/ws", websocket.UpstreamHandler("127.0.0.1:7100"))
+}
+
+type statikWrapper struct {
+	assets http.FileSystem
+}
+
+// Open method.
+func (sw *statikWrapper) Open(name string) (http.File, error) {
+	ret, err := sw.assets.Open(name)
+	if !os.IsNotExist(err) || path.Ext(name) != "" {
+		return ret, err
+	}
+
+	return sw.assets.Open("/index.html")
 }

@@ -34,7 +34,7 @@ func main() {
 		CertFile:     *certFile,
 		KeyFile:      *keyFile,
 		Debug:        *debug,
-		GRPCConfig: &core.GRPCServerConfig{
+		GRPCServerConfig: &core.GRPCServerConfig{
 			Port: *grpcPort,
 		},
 	}

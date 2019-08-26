@@ -11,7 +11,7 @@ import (
 func GenerateTOTP(email string) (*otp.Key, bytes.Buffer, error) {
 	var buf bytes.Buffer
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "abstruse-ci",
+		Issuer:      "jkuri",
 		AccountName: email,
 	})
 	if err != nil {

@@ -9,7 +9,7 @@ import { AvatarPickerComponent } from './avatar-picker.component';
   template: `<app-avatar-picker [values]="data" [(ngModel)]="model"></app-avatar-picker>`
 })
 class TestHostComponent {
-  @ViewChild(AvatarPickerComponent) avatarPickerComponent: AvatarPickerComponent;
+  @ViewChild(AvatarPickerComponent, /* TODO: add static flag */ {}) avatarPickerComponent: AvatarPickerComponent;
   data: string[] = ['/assets/images/icons/spinner.svg', '/assets/images/icons/spinner-green.svg'];
   model: string;
 }

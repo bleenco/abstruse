@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"sync"
+	"net"
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
@@ -17,6 +18,11 @@ import (
 type Client struct {
 	io   sync.Mutex
 	conn io.ReadWriteCloser
+	c    net.Conn
+
+	id    int
+	email string
+	name  string
 
 	subs []*subscription
 	app  *Application

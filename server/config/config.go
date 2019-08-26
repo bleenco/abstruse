@@ -70,7 +70,7 @@ func WriteDefaultConfig(configPath string) error {
 			Port:     "3306",
 			User:     "root",
 			Password: "xx2n5",
-			Name:     "abstruse_go",
+			Name:     "abstruse",
 			Charset:  "utf8",
 		},
 		Security: Security{

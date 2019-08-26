@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net"
 	"sync"
+
+	"github.com/bleenco/abstruse/pkg/logger"
 )
 
 // App is an Application instance.
@@ -13,23 +15,32 @@ var App *Application
 type Application struct {
 	mu      sync.RWMutex
 	Clients []*Client
+	Logger  *logger.Logger
 }
 
 // NewApplication inits new app instance and returns it.
-func NewApplication() *Application {
-	return &Application{}
+func NewApplication(log *logger.Logger) *Application {
+	return &Application{
+		Logger: log,
+	}
 }
 
 // Register registers new connection as a Client.
-func (a *Application) Register(conn net.Conn) *Client {
+func (a *Application) Register(conn net.Conn, id int, email, name string) *Client {
 	client := &Client{
 		conn: conn,
+		c:    conn,
 		app:  a,
+		id: id,
+		email: email,
+		name: name,
 	}
 
 	a.mu.Lock()
 	a.Clients = append(a.Clients, client)
 	a.mu.Unlock()
+
+	a.Logger.Debugf("ws user %s (%s) registered", name, email)
 
 	return client
 }
@@ -42,6 +53,7 @@ func (a *Application) Remove(client *Client) {
 	for i, c := range a.Clients {
 		if c == client {
 			a.Clients = append(a.Clients[:i], a.Clients[i+1:]...)
+			a.Logger.Debugf("ws user disconnected: %s", client.c.RemoteAddr().String())
 		}
 	}
 }
@@ -58,7 +70,9 @@ func (a *Application) Broadcast(event string, data Object, subscription string) 
 	}
 
 	for _, client := range clients {
-		client.Send(event, data)
+		if err := client.Send(event, data); err != nil {
+			a.Logger.Debugf("error: %s\n", err.Error())
+		}
 	}
 }
 

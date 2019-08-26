@@ -11,11 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/security"
+	"github.com/bleenco/abstruse/pkg/utils"
 	pb "github.com/bleenco/abstruse/proto"
 	"github.com/bleenco/abstruse/server/websocket"
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -281,33 +282,49 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 			return err
 		}
 
-		jobProcess, err := MainScheduler.findJobProcess(jobStatus.GetName())
+		jobTask, err := MainScheduler.findJobProcess(jobStatus.GetName())
 		if err != nil {
 			s.logger.Debugf("error adding job process to slice: %s", jobStatus.GetId())
 			continue
 		}
-		jobProcess.ContainerID = jobStatus.GetId()
-		jobProcess.WorkerIdentifier = identifier
+		jobTask.ContainerID = jobStatus.GetId()
+		jobTask.WorkerIdentifier = identifier
 
 		status := jobStatus.GetCode()
 
 		switch status {
 		case pb.JobStatus_Queued:
-			jobProcess.Status = "queued"
+			jobTask.Status = "queued"
+			jobTask.EndTime = time.Time{}
 		case pb.JobStatus_Running:
-			jobProcess.Status = "running"
-			jobProcess.StartTime = time.Now()
+			jobTask.Status = "running"
+			jobTask.StartTime = time.Now()
+			jobTask.EndTime = time.Time{}
 		case pb.JobStatus_Passing:
-			jobProcess.Status = "passing"
-			jobProcess.EndTime = time.Now()
+			jobTask.Status = "passing"
+			jobTask.EndTime = time.Now()
 		case pb.JobStatus_Failing:
-			jobProcess.Status = "failing"
-			jobProcess.EndTime = time.Now()
+			jobTask.Status = "failing"
+			jobTask.EndTime = time.Now()
+		}
+
+		if err := updateJob(jobTask); err != nil {
+			s.logger.Debugf("error updating job info: %s", err.Error())
 		}
 
 		if status == pb.JobStatus_Passing || status == pb.JobStatus_Failing || status == pb.JobStatus_Stopped {
-			MainScheduler.FinishJobTask(jobProcess)
+			MainScheduler.FinishJobTask(jobTask)
 		}
+
+		socketEvent := map[string]interface{}{
+			"build_id":   jobTask.buildID,
+			"job_id":     jobTask.jobID,
+			"status":     jobTask.Status,
+			"start_time": utils.FormatTime(jobTask.StartTime),
+			"end_time":   utils.FormatTime(jobTask.EndTime),
+		}
+
+		websocket.App.Broadcast("job_events", socketEvent, "job_events")
 	}
 }
 

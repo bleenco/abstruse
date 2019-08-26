@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
+import { Repo, generateRepoModel } from '../shared/repo.model';
 
 @Component({
   selector: 'app-repositories-list',
@@ -8,7 +9,7 @@ import { ReposService } from '../shared/repos.service';
 })
 export class RepositoriesListComponent implements OnInit {
   fetchingRepositories: boolean;
-  repositories: any[];
+  repositories: Repo[] = [];
 
   constructor(
     public repos: ReposService
@@ -22,8 +23,8 @@ export class RepositoriesListComponent implements OnInit {
   fetchRepositories(): void {
     this.fetchingRepositories = true;
     this.repos.fetchRepositories().subscribe(resp => {
-      if (resp && resp.data) {
-        this.repositories = resp.data;
+      if (resp && resp.data && resp.data.length) {
+        this.repositories = resp.data.map(generateRepoModel);
       }
     }, err => {
       console.error(err);

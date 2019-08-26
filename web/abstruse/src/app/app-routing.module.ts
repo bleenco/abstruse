@@ -11,42 +11,42 @@ const routes: Routes = [
   },
   {
     path: 'builds',
-    loadChildren: './builds/builds.module#BuildsModule',
+    loadChildren: () => import('./builds/builds.module').then(m => m.BuildsModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'repositories',
-    loadChildren: './repositories/repositories.module#RepositoriesModule',
+    loadChildren: () => import('./repositories/repositories.module').then(m => m.RepositoriesModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'teams',
-    loadChildren: './teams/teams.module#TeamsModule',
+    loadChildren: () => import('./teams/teams.module').then(m => m.TeamsModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'workers',
-    loadChildren: './workers/workers.module#WorkersModule',
+    loadChildren: () => import('./workers/workers.module').then(m => m.WorkersModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'images',
-    loadChildren: './images/images.module#ImagesModule',
+    loadChildren: () => import('./images/images.module').then(m => m.ImagesModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'settings',
-    loadChildren: './settings/settings.module#SettingsModule',
+    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'dashboard',
-    loadChildren: './dashboard/dashboard.module#DashboardModule',
+    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [AuthGuardService]
   },
   {
     path: 'about',
-    loadChildren: './about/about.module#AboutModule',
+    loadChildren: () => import('./about/about.module').then(m => m.AboutModule),
     canActivate: [AuthGuardService]
   },
   {

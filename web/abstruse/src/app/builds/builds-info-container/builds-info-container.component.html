@@ -1,0 +1,69 @@
+<div class="builds-info-container" *ngIf="build">
+  <div class="columns is-multiline info-columns">
+    <div class="column is-12">
+      <div class="columns align-center">
+        <div class="column is-8 align-center">
+          <div class="info-text">
+            <i class="octicon octicon-repo repo-icon"></i>
+            <span class="repo-name">{{ build?.repository?.name }}</span>
+          </div>
+          <div class="info-text">
+            <i class="octicon octicon-git-branch"></i>
+            <span class="branch">{{ build?.branch }}</span>
+          </div>
+        </div>
+        <div class="column is-4 justify-end">
+          <button type="button" class="button" [disabled]="build?.processing">
+            <i class="fas fa-sync-alt"></i>
+            <span>Restart</span>
+          </button>
+          <button type="button" class="button" [disabled]="build?.processing || build?.status !== 'running'">
+            <i class="fas fa-hand-paper"></i>
+            <span>Stop</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12">
+      <hr />
+    </div>
+    <div class="column is-12">
+      <div class="columns align-center">
+        <div class="column is-2">
+          <div class="info-text">
+            <span class="status-item"
+              [ngClass]="{ 'is-grey': build?.status === 'queued', 'is-green': build?.status === 'passing', 'is-red': build?.status === 'failing', 'is-yellow': build?.status === 'running' }">
+              <div class="status-title">
+                <i class="fas fa-check" *ngIf="build?.status === 'passing'"></i>
+                <i class="fas fa-times" *ngIf="build?.status === 'failing'"></i>
+                <i class="fas fa-clock" *ngIf="build?.status === 'queued'"></i>
+                <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="build?.status === 'running'" />
+                <span>{{ build?.getStatus() }}</span>
+              </div>
+            </span>
+          </div>
+        </div>
+        <div class="column is-9 align-center">
+          <div class="info-text">
+            <img [src]="build?.committer_avatar" class="committer-avatar">
+            <span class="desc-text">{{ build?.committer_name }} authored and commited</span>
+          </div>
+          <div class="info-text">
+            <i class="octicon octicon-git-commit"></i>
+            <span class="desc-text">{{ build?.getCommit() }}</span>
+          </div>
+          <div class="info-text">
+            <i class="far fa-comment-alt"></i>
+            <span class="desc-text">{{ build?.commit_message }}</span>
+          </div>
+        </div>
+        <div class="column is-1 justify-end">
+          <div class="info-text running-time">
+            <i class="far fa-clock time-icon"></i>
+            <span>{{ build?.running_time | async }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

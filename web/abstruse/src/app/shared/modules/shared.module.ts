@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgDatepickerModule } from 'ng2-datepicker';
 import { AngularSvgIconModule } from 'angular-svg-icon';
+import { HighlightModule } from 'ngx-highlightjs';
+import { CookieService } from 'ngx-cookie-service';
 
 import { AuthGuardService } from '../providers/auth-guard.service';
 import { StatusService } from '../providers/status.service';
@@ -29,12 +31,20 @@ import { ToTimePipe } from '../pipes/to-time.pipe';
 import { HumanizeBytesPipe } from '../pipes/humanize-bytes.pipe';
 import { HttpErrorInterceptor } from '../interceptors/http-error.interceptor';
 
+import yaml from 'highlight.js/lib/languages/yaml';
+
+export function langs() {
+  return [{ name: 'yaml', func: yaml }];
+}
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     NgDatepickerModule,
-    AngularSvgIconModule
+    AngularSvgIconModule,
+    HighlightModule.forRoot({ languages: langs }),
+
   ],
   declarations: [
     LoaderComponent,
@@ -86,7 +96,8 @@ export class SharedModule {
         HttpErrorInterceptor,
         AuthGuardService,
         StatusService,
-        TimeService
+        TimeService,
+        CookieService
       ]
     };
   }

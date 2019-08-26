@@ -43,7 +43,7 @@ func (r *Repository) Create() error {
 
 // Find method.
 func (r *Repository) Find(id int) error {
-	return DB.Find(r, id).Error
+	return DB.Preload("User").Find(r, id).Error
 }
 
 // FindRepositories method.

@@ -1,22 +1,25 @@
 $list-item-height: 70px
+$list-item-label-height: 22px
 
 .list-item
   width: 100%
   height: $list-item-height
   outline: none
   border-bottom: 1px solid $border-default
+  border-left: 2px solid transparent
 
   &.is-bordered
     border: 1px solid $border-default
     margin-bottom: 10px
-    border-radius: 4px
     padding-left: 10px
     padding-right: 10px
 
   &:hover:not(.no-hover-effect)
     cursor: pointer
     background: $background-light
-    border-color: $border-primary
+
+    &.is-bordered
+      box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
 
   .columns
     display: flex
@@ -25,19 +28,54 @@ $list-item-height: 70px
 
     .data-column
 
-      .heading-text, .data-text
+      .heading-text, .data-text, .info-text
         +ellipsis
         display: block
         line-height: 20px
         text-align: center
 
       .heading-text
-        font-size: 11px
+        font-size: 12px
         color: $text-primary
 
+      .info-text
+        font-size: 15px
+        font-family: $font-family-regular
+        color: $text-button
+
+        i
+          margin-right: 10px
+          color: $text-button
+
       .data-text
-        font-size: 13px
-        font-family: $font-family-medium
+        font-size: 14px
+        font-family: $font-family-regular
+        height: 25px
+
+        &.is-title
+          font-size: 12px
+          font-family: $font-family-bold
+          color: $text-label
+          text-transform: uppercase
+          height: $list-item-label-height
+
+        &.is-number
+          +unselectable
+          display: flex
+          align-items: center
+          justify-content: center
+          border: 1px solid $border-default
+          border-radius: 4px
+          line-height: 22px
+          width: 150px
+          height: 40px
+          font-size: 13px
+          background: $white
+          font-family: $font-family-medium
+
+        &.is-light
+          color: $text-button
+          font-family: $font-family-regular
 
         i, img
           width: 20px
@@ -47,9 +85,11 @@ $list-item-height: 70px
           font-size: 20px
 
         img
-          width: 20px
-          height: 20px
-          border-radius: 50%
+          width: 30px
+          height: 30px
+          border: 1px solid $border-secondary
+          border-radius: 4px
+          margin-bottom: 3px
 
         i
 
@@ -61,10 +101,6 @@ $list-item-height: 70px
 
           &.is-red
             color: $red
-
-      .status-item
-        width: 100%
-        text-align: center
 
     .svg-column
       display: flex

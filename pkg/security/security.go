@@ -74,6 +74,28 @@ func GetUserIDFromJWT(tokenString string) (int, error) {
 	return userID, nil
 }
 
+// GetUserDataFromJWT returns users data included in token.
+func GetUserDataFromJWT(tokenString string) (int, string, string, string, error) {
+	if tokenString == "" {
+		return 0, "", "", "", errors.New("invalid token")
+	}
+
+	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return jwtSecret, nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
+		userID, _ := strconv.Atoi(claims["id"].(string))
+		return userID, claims["email"].(string), claims["fullname"].(string), claims["avatar"].(string), nil
+	}
+
+	return 0, "", "", "", errors.New("invalid token")
+}
+
 // GetWorkerIdentifierByJWT return workers identifier by token string.
 func GetWorkerIdentifierByJWT(token string) (string, error) {
 	var identifier string

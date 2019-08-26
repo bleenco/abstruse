@@ -1,0 +1,51 @@
+<div class="list-item is-bordered" [routerLink]="['/builds', build?.id]">
+  <div class="columns is-marginless is-paddingless">
+    <div class="column is-1 data-column">
+      <span class="data-text is-number">{{ build?.id }}</span>
+    </div>
+    <div class="column is-2 data-column">
+      <span class="data-text is-title">{{ build?.repository?.name }}</span>
+      <span class="heading-text">{{ build?.branch }}</span>
+    </div>
+    <div class="column is-2 data-column">
+      <span class="heading-text">Commit Hash</span>
+      <span class="data-text">{{ build?.getCommit() }}</span>
+      <!-- <i class="fab fa-github" *ngIf="repo?.provider === 'github'"></i>
+        <i class="fab fa-gitlab" *ngIf="repo?.provider === 'gitlab'"></i>
+        <i class="fab fa-bitbucket" *ngIf="repo?.provider === 'bitbucket'"></i>
+        <img src="/assets/images/icons/gitea.svg" *ngIf="repo?.provider === 'gitea'">
+        <img src="/assets/images/icons/gogs.svg" *ngIf="repo?.provider === 'gogs'">
+        <i class="fas fa-question-circle" *ngIf="!repo?.provider"></i> -->
+    </div>
+    <div class="column is-1 data-column">
+      <div class="data-text">
+        <img [src]="build?.author_avatar">
+      </div>
+    </div>
+    <div class="column is-2 data-column">
+      <span class="heading-text">Created</span>
+      <span class="data-text">{{ build?.created_at_words | async }}</span>
+    </div>
+    <div class="column is-1 data-column">
+      <span class="heading-text">Running Time</span>
+      <span class="data-text">{{ build?.running_time | async }}</span>
+    </div>
+    <div class="column is-2 data-column">
+      <!-- <span class="status-item is-medium"
+        [ngClass]="{ 'is-grey': build?.status === 'queued', 'is-green': build?.status === 'passing', 'is-red': build?.status === 'failing', 'is-yellow': build?.status === 'running' }">
+        <div class="status-title">
+          <i class="fas fa-check" *ngIf="build?.status === 'passing'"></i>
+          <i class="fas fa-times" *ngIf="build?.status === 'failing'"></i>
+          <i class="fas fa-clock" *ngIf="build?.status === 'queued'"></i>
+          <i class="fas fa-hammer" *ngIf="build?.status === 'running'"></i>
+          <span>{{ build?.getStatus() }}</span>
+        </div>
+      </span> -->
+    </div>
+    <div class="column is-1 data-column justify-center">
+      <button type="button" class="button is-small">
+        <i class="fas fa-chevron-down mr0"></i>
+      </button>
+    </div>
+  </div>
+</div>

@@ -21,13 +21,13 @@ import (
 
 // AbstruseConfig defines configuration of the main master server.
 type AbstruseConfig struct {
-	HTTPAddress  string
-	HTTPSAddress string
-	CertFile     string
-	KeyFile      string
-	GRPCConfig   *core.GRPCServerConfig
-	Dir          string
-	Debug        bool
+	HTTPAddress      string
+	HTTPSAddress     string
+	CertFile         string
+	KeyFile          string
+	GRPCServerConfig *core.GRPCServerConfig
+	Dir              string
+	Debug            bool
 }
 
 // Abstruse represents main master server.
@@ -53,7 +53,20 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		dir = path.Join(dir, "abstruse")
 	}
 
-	cfg := config.ReadAndParseConfig(path.Join(dir, "config.json"))
+	if !fs.Exists(dir) {
+		if err := fs.MakeDir(dir); err != nil {
+			return nil, err
+		}
+	}
+
+	configPath := path.Join(dir, "config.json")
+	if !fs.Exists(configPath) {
+		if err := config.WriteDefaultConfig(configPath); err != nil {
+			return nil, err
+		}
+	}
+
+	cfg := config.ReadAndParseConfig(configPath)
 	security.InitSecurity(cfg.Security)
 
 	if c.CertFile == "" || c.KeyFile == "" {
@@ -61,8 +74,8 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 		c.KeyFile = cfg.Security.CertKey
 	}
 
-	if c.GRPCConfig.Port == 0 {
-		c.GRPCConfig.Port = cfg.GRPC.Port
+	if c.GRPCServerConfig.Port == 0 {
+		c.GRPCServerConfig.Port = cfg.GRPC.Port
 	}
 
 	if !path.IsAbs(cfg.GRPC.Cert) && !path.IsAbs(cfg.GRPC.CertKey) {
@@ -71,10 +84,10 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 	}
 	security.CheckAndGenerateCert(cfg.GRPC.Cert, cfg.GRPC.CertKey)
 
-	c.GRPCConfig.Cert = cfg.GRPC.Cert
-	c.GRPCConfig.CertKey = cfg.GRPC.CertKey
+	c.GRPCServerConfig.Cert = cfg.GRPC.Cert
+	c.GRPCServerConfig.CertKey = cfg.GRPC.CertKey
 
-	gRPCServer, err := core.NewGRPCServer(c.GRPCConfig, logger.NewLogger("grpc", true, c.Debug))
+	gRPCServer, err := core.NewGRPCServer(c.GRPCServerConfig, logger.NewLogger("grpc", true, c.Debug))
 	if err != nil {
 		return nil, err
 	}
@@ -94,15 +107,15 @@ func NewAbstruse(c *AbstruseConfig) (*Abstruse, error) {
 }
 
 // Run starts the main server instance.
-func (a *Abstruse) Run() error {
-	if err := a.init(); err != nil {
+func (abstruse *Abstruse) Run() error {
+	if err := abstruse.init(); err != nil {
 		return err
 	}
 
-	httpLogger := logger.NewLogger("http", a.logger.Info, a.logger.Debug)
+	httpLogger := logger.NewLogger("http", abstruse.logger.Info, abstruse.logger.Debug)
 
 	handler := http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		m := httpsnoop.CaptureMetrics(a.router, res, req)
+		m := httpsnoop.CaptureMetrics(abstruse.router, res, req)
 		httpLogger.Debugf(
 			"%s %s (code=%d dt=%s written=%s remote=%s)",
 			req.Method,
@@ -114,33 +127,33 @@ func (a *Abstruse) Run() error {
 		)
 	})
 
-	if a.config.HTTPAddress != "" {
+	if abstruse.config.HTTPAddress != "" {
 		go func() {
-			httpLogger.Infof("http listening on %s", a.config.HTTPAddress)
-			log.Fatal(http.ListenAndServe(a.config.HTTPAddress, handler))
+			httpLogger.Infof("http listening on %s", abstruse.config.HTTPAddress)
+			log.Fatal(http.ListenAndServe(abstruse.config.HTTPAddress, handler))
 		}()
 	}
 
-	if a.config.HTTPSAddress != "" && a.config.CertFile != "" && a.config.KeyFile != "" {
+	if abstruse.config.HTTPSAddress != "" && abstruse.config.CertFile != "" && abstruse.config.KeyFile != "" {
 		go func() {
-			a.server.Addr = a.config.HTTPSAddress
-			a.server.Handler = handler
-			http2.ConfigureServer(a.server, nil)
+			abstruse.server.Addr = abstruse.config.HTTPSAddress
+			abstruse.server.Handler = handler
+			http2.ConfigureServer(abstruse.server, nil)
 
-			httpLogger.Infof("https listening on %s", a.config.HTTPSAddress)
-			log.Fatal(a.server.ListenAndServeTLS(a.config.CertFile, a.config.KeyFile))
+			httpLogger.Infof("https listening on %s", abstruse.config.HTTPSAddress)
+			log.Fatal(abstruse.server.ListenAndServeTLS(abstruse.config.CertFile, abstruse.config.KeyFile))
 		}()
 	}
 
 	go func() {
-		if err := a.ws.Run(); err != nil {
+		if err := abstruse.ws.Run(); err != nil {
 			log.Fatal(err)
 		}
 	}()
 
-	if a.config.GRPCConfig.Cert != "" && a.config.GRPCConfig.CertKey != "" {
+	if abstruse.config.GRPCServerConfig.Cert != "" && abstruse.config.GRPCServerConfig.CertKey != "" {
 		go func() {
-			if err := a.grpcserver.Listen(); err != nil {
+			if err := abstruse.grpcserver.Listen(); err != nil {
 				log.Fatal(err)
 			}
 		}()
@@ -148,34 +161,21 @@ func (a *Abstruse) Run() error {
 		log.Fatal("gRPC server cannot work without certificate and key path specified. exiting...")
 	}
 
-	return a.wait()
+	return abstruse.wait()
 }
 
 // Close gracefully stops main server.
-func (a *Abstruse) Close() {
-	a.logger.Infof("closing down http server...")
-	if err := a.server.Close(); err != nil {
-		a.running <- err
+func (abstruse *Abstruse) Close() {
+	abstruse.logger.Infof("closing down http server...")
+	if err := abstruse.server.Close(); err != nil {
+		abstruse.running <- err
 	}
 
-	a.running <- nil
+	abstruse.running <- nil
 }
 
-func (a *Abstruse) init() error {
-	if !fs.Exists(a.dir) {
-		if err := fs.MakeDir(a.dir); err != nil {
-			return err
-		}
-	}
-
-	configPath := a.dir + "/config.json"
-	if !fs.Exists(configPath) {
-		if err := config.WriteDefaultConfig(configPath); err != nil {
-			return err
-		}
-	}
-
-	config := config.ReadAndParseConfig(configPath)
+func (abstruse *Abstruse) init() error {
+	config := config.ReadAndParseConfig(path.Join(abstruse.dir, "config.json"))
 
 	dbopts := db.Options{
 		Client:   config.Database.Client,
@@ -193,6 +193,6 @@ func (a *Abstruse) init() error {
 	return nil
 }
 
-func (a *Abstruse) wait() error {
-	return <-a.running
+func (abstruse *Abstruse) wait() error {
+	return <-abstruse.running
 }

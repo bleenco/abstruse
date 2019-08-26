@@ -1,0 +1,12 @@
+<nav class="breadcrumb">
+  <ul>
+    <li [class.is-active]="tab === 'current'">Current</li>
+    <li [class.is-active]="tab === 'branches'">Branches</li>
+    <li [class.is-active]="tab === 'history'">Build History</li>
+    <li [class.is-active]="tab === 'pull_requests'">Pull Requests</li>
+    <li class="separator" *ngIf="tab === 'build' || tab === 'job'"></li>
+    <li [class.is-active]="tab === 'build'" *ngIf="tab === 'build' || tab === 'job'" [routerLink]="['/builds', buildId]">Build #{{ buildId }}</li>
+    <li class="separator" *ngIf="tab === 'job'"></li>
+    <li [class.is-active]="tab === 'job'" *ngIf="tab === 'job'" [routerLink]="['/builds', buildId, jobId]">Job #{{ buildId }}.{{ jobId }}</li>
+  </ul>
+</nav>

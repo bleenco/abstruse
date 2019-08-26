@@ -7,6 +7,12 @@
 .is-hidden
   display: none
 
+.flex-row
+  display: flex
+  flex-direction: row
+  align-items: stretch
+  width: 100%
+
 .space-between
   display: flex
   justify-content: space-between
@@ -24,7 +30,7 @@
   justify-content: center
 
 .align-center
-  display: flex
+  display: flex !important
   align-items: center
 
 .has-text-left
@@ -51,6 +57,9 @@
 .is-uppercase
   text-transform: uppercase
 
+.is-normal-text
+  text-transform: none
+
 .is-bold
   font-weight: bold
 
@@ -66,7 +75,7 @@ h1
 
 h2
   color: $text-primary
-  font-size: 13px
+  font-size: 15px
   display: inline-flex
   align-items: center
   text-transform: uppercase
@@ -75,20 +84,25 @@ h2
   padding-bottom: 10px
 
 h3
-  color: $text-primary
+  color: $text-dark
   font-size: 14px
-  padding: 0 20px
+  padding: 5px 10px 0 5px
 
 h4
   color: $text-primary
   font-size: 12px
   padding: 3px 10px 0 5px
+  text-transform: uppercase
+  font-family: $font-family-medium
 
 hr
   border: 0
   width: 100%
   height: 1px
   background: $border-secondary
+
+  &.header-border
+    margin: 0 0 15px 0
 
 .color-secondary
   color: $text-secondary
@@ -105,6 +119,10 @@ hr
 .mt20
   margin-top: 20px
 
+.mtb0
+  margin-top: 0
+  margin-bottom: 0
+
 .mtb10
   margin-top: 10px
   margin-bottom: 10px
@@ -119,13 +137,17 @@ hr
 .mb15
   margin-bottom: 15px !important
 
-.mb15
-  margin-bottom: 15px
-
 .mb20
   margin-bottom: 20px
 
+.mr0
+  margin-right: 0 !important
+
 .mr10
+  margin-right: 10px
+
+.mlr10
+  margin-left: 10px
   margin-right: 10px
 
 .p20
@@ -160,7 +182,12 @@ hr
   padding-top: 15px
 
 .plr10
+  padding-left: 10px
   padding-right: 10px
+
+.plr0
+  padding-left: 0 !important
+  padding-right: 0 !important
 
 .w70
   width: 70px

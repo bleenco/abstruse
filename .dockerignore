@@ -1,6 +1,6 @@
 web/abstruse/node_modules
 web/abstruse/dist
-server/bindata.go
+server/ui
 build/
 go.sum
 worker/data

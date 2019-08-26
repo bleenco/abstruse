@@ -1,29 +1,26 @@
 <div class="columns is-multiline">
-  <div class="column is-12 align-center space-between">
-    <div class="align-center">
+  <div class="column is-12 align-center">
+    <div class="title-header">
       <h1>Repositories</h1>
-      <h4>Imported repos</h4>
+      <h4>Imported git repositories</h4>
     </div>
-    <button type="button" class="button">
-      <i class="fa fa-plus"></i>
-      <span>Import Repository</span>
-    </button>
   </div>
   <div class="column is-12">
-    <div class="columns is-multiline">
-      <div class="column is-12">
-        <div class="repositories" *ngIf="repositories?.length">
-          <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories" [routerLink]="['/repositories', repo.id]"
-            routerLinkActive="router-link-active"></app-repositories-list-item>
+    <div class="table is-borderless">
+      <div class="table-items">
+        <div *ngIf="repositories?.length">
+          <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
         </div>
-      </div>
-    </div>
-    <div class="columns h70" *ngIf="!repositories?.length">
-      <div class="column is-12 justify-center align-center">
-        <span class="table-data justify-center align-center">
-          <img class="img-icon" src="/assets/images/icons/important-dark.svg">
-          <span class="color-secondary is-medium">No repositories found.</span>
-        </span>
+        <div class="table-item" *ngIf="!repositories?.length">
+          <div class="columns">
+            <div class="column is-12 justify-center align-center">
+              <span class="table-data justify-center align-center">
+                <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+                <span class="color-secondary is-medium">No repositories found.</span>
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -9,8 +9,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/bleenco/abstruse/worker/data"
+	_ "github.com/bleenco/abstruse/worker/data" // Compressed static files.
 	"github.com/docker/docker/api/types"
+	"github.com/jkuri/statik/fs"
 )
 
 // BuildImage builds Docker image from Dockerfile and additional files.
@@ -24,7 +25,12 @@ func BuildImage(tags []string, folderPath string) error {
 	buf := new(bytes.Buffer)
 	tw := tar.NewWriter(buf)
 
-	files, err := data.AssetDir(folderPath)
+	statikFS, err := fs.New()
+	if err != nil {
+		return err
+	}
+
+	files, err := statikFS.Readdir(folderPath)
 	if err != nil {
 		return err
 	}
@@ -32,7 +38,7 @@ func BuildImage(tags []string, folderPath string) error {
 	for _, file := range files {
 		filePath := path.Join(folderPath, file)
 
-		fileData, err := data.Asset(filePath)
+		fileData, err := statikFS.Readfile(filePath)
 		if err != nil {
 			return err
 		}
@@ -63,7 +69,7 @@ func BuildImage(tags []string, folderPath string) error {
 			Context:    imageContext,
 			Dockerfile: "Dockerfile",
 			Remove:     true,
-			Squash:     true,
+			PullParent: true,
 		},
 	)
 	if err != nil {

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { WorkersService } from '../shared/workers.service';
-import { Worker, WorkerUsage } from '../shared/worker.class';
+import { Worker } from '../shared/worker.class';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
+import { SocketEvent } from 'src/app/shared/models/socket.model';
 
 @Component({
   selector: 'app-workers-list',
@@ -29,7 +30,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_usage', id: '' } });
     this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'worker_capacity', id: '' } });
 
-    this.sub = this.dataService.socketOutput.subscribe(ev => {
+    this.sub = this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
       const worker = this.findWorker(ev.data.cert_id);
       switch (ev.type) {
         case 'worker_status':

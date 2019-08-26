@@ -12,7 +12,7 @@ import (
 type logWriter struct{}
 
 func (w *logWriter) Write(bytes []byte) (int, error) {
-	c := color.New(color.BgBlue, color.FgWhite).SprintFunc()
+	c := color.New(color.BgBlack, color.FgWhite).SprintFunc()
 	timestr := c("[" + time.Now().Format("2006-01-02 15:04:05") + "]")
 	return fmt.Print(timestr + " " + string(bytes))
 }

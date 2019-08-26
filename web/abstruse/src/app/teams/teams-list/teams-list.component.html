@@ -52,9 +52,9 @@
               <div class="column is-5 align-center">
                 <div class="members-avatars align-center">
                   <span class="member-avatar" *ngFor="let user of team?.users">
-                    <img [src]="user.avatar" class="member-avatar" appTooltip [title]="user.fullname">
+                    <img [src]="user.avatar" class="member-avatar" appTooltip [attr.tooltipText]="user.fullname">
                   </span>
-                  <!-- <span class="plus-icon" appTooltip title="Jan Kuri, Renata Kuri, Matic Kuri">+3</span> -->
+                  <!-- <span class="plus-icon" appTooltip [attr.tooltipText]="Jan Kuri, Renata Kuri, Matic Kuri">+3</span> -->
                 </div>
               </div>
               <div class="column is-1 justify-end align-center">

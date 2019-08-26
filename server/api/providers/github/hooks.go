@@ -11,7 +11,7 @@ import (
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v27/github"
 	"github.com/julienschmidt/httprouter"
 )
 

@@ -1,3 +1,11 @@
+@import 'typography'
+@import 'colours'
+
+$table-item-height: 70px
+$table-header-item-height: 45px
+$table-item-data-height: 22px
+$table-item-label-height: 24px
+
 .table
   background: $white
   border: 1px solid $border-default
@@ -5,10 +13,19 @@
   width: 100%
   border-radius: 4px
 
+  &.is-borderless
+    border: none
+    box-shadow: none
+
+  &:hover:not(.no-hover-effect)
+    cursor: pointer
+    background: $background-light
+    box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
+
   .headers
     background: transparent
     box-shadow: 0 1px 0 0 #EAECEE
-    height: 44px
+    height: $table-header-item-height
 
     .columns
       margin: 0
@@ -17,7 +34,7 @@
         margin: 0
         display: flex
         align-items: center
-        height: 44px
+        height: $table-header-item-height
 
     .header-title
       font-size: 12px
@@ -27,12 +44,18 @@
       padding: 0 10px
 
   .table-item
-    height: 70px
+    height: $table-item-height
     background: transparent
-    color: $text-primary
+    color: $text-secondary
     line-height: 22px
     font-size: 14px
     box-shadow: 0 1px 0 0 #EAEDF3
+    outline: none
+
+    &.list-item-type
+      margin-bottom: 15px
+      border: 1px solid $border-default
+      box-shadow: 2px 3px 5px 0 rgba(0,0,0,0.02)
 
     .columns
       margin: 0
@@ -41,13 +64,15 @@
         margin: 0
         display: flex
         align-items: center
-        height: 70px
+        height: $table-item-height
 
-      .table-data, .status-item
+      .table-data, .icon-item
         padding: 0 10px
 
       .table-data
         font-size: 13px
+        display: block
+        width: 100%
 
         &.is-larger
           font-size: 14px
@@ -60,9 +85,10 @@
           border: 1px solid $border-default
           border-radius: 4px
           line-height: 22px
-          width: 40px
-          height: 28px
+          min-width: 40px
+          height: 38px
           font-size: 13px
+          font-family: $font-family-medium
 
           &.is-green
             background: rgba($green, .25)
@@ -82,7 +108,7 @@
             border: 2px solid $orange
             font-family: $font-family-medium
 
-        .heading-text, .data-text
+        .heading-text, .data-text, .data-label
           +ellipsis
           display: block
           line-height: 20px
@@ -95,9 +121,24 @@
           &.is-larger
             font-size: 12px
 
+        .data-label
+          font-size: 12px
+          font-family: $font-family-bold
+          color: $text-label
+          text-transform: uppercase
+          height: $table-item-label-height
+
         .data-text
           font-size: 13px
           font-family: $font-family-medium
+          height: $table-item-data-height
+          display: inline-flex
+          align-items: center
+          width: 100%
+
+          &.is-title
+            font-size: 15px
+            font-family: $font-family-bold
 
           i, img
             width: 20px
@@ -113,6 +154,13 @@
 
           i
 
+            &.inline-icon
+              display: inline
+              width: 18px
+              height: 18px
+              font-size: 18px
+              margin: 0
+
             &.is-yellow
               color: $yellow
 
@@ -121,6 +169,18 @@
 
             &.is-red
               color: $red
+
+      .icon-item
+        display: inline-block
+        width: 100%
+
+        i, img
+          width: 20px
+          height: 20px
+          display: block
+          margin: 0 auto
+          font-size: 20px
+
 
       .members-avatars
         padding: 0 10px

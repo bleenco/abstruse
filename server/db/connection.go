@@ -21,7 +21,7 @@ type Options struct {
 
 // Connect initializes database connection.
 func Connect(opts Options) error {
-	connstr := opts.User + ":" + opts.Password + "@tcp(" + opts.Hostname + ":" + opts.Port + ")/" + opts.Database + "?charset=" + opts.Charset + "&parseTime=True&loc=Local"
+	connstr := opts.User + ":" + opts.Password + "@tcp(" + opts.Hostname + ":" + opts.Port + ")/" + opts.Database + "?charset=" + opts.Charset + "&parseTime=true&loc=Local"
 	conn, err := gorm.Open("mysql", connstr)
 	if err != nil {
 		return err
@@ -36,9 +36,7 @@ func Connect(opts Options) error {
 		&Repository{},
 		&Worker{},
 		&Build{},
-		&BuildRun{},
 		&Job{},
-		&JobRun{},
 	)
 
 	initDefaultValues()

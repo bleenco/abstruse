@@ -1,14 +1,13 @@
 package websocket
 
 import (
-	"log"
 	"net"
 	"time"
 
-	"github.com/bleenco/abstruse/pkg/logger"
-	"github.com/bleenco/abstruse/server/gopool"
+	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"
-	"github.com/mailru/easygo/netpoll"
+	"github.com/bleenco/abstruse/pkg/logger"
+	"github.com/bleenco/abstruse/pkg/security"
 )
 
 // Server contains options and methods for running zero-copy
@@ -17,28 +16,20 @@ import (
 type Server struct {
 	logger    *logger.Logger
 	addr      string
-	pool      *gopool.Pool
 	ioTimeout time.Duration
-	poller    netpoll.Poller
 	exit      chan struct{}
 	app       *Application
 }
 
 // NewServer initializes and returns a new websocket server instance.
 func NewServer(addr string, workers, queue int, ioTimeout time.Duration) *Server {
-	poller, err := netpoll.New(nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	pool := gopool.NewPool(workers, queue, 1)
-	App = NewApplication()
+	log := logger.NewLogger("websocket", true, true)
+	App = NewApplication(log)
 
 	return &Server{
-		logger.NewLogger("websocket", true, true),
+		log,
 		addr,
-		pool,
 		ioTimeout,
-		poller,
 		make(chan struct{}),
 		App,
 	}
@@ -53,118 +44,66 @@ func (s *Server) Run() error {
 
 	s.logger.Infof("listening ws server on %s", ln.Addr().String())
 
-	// Create netpoll descriptor for the listener.
-	// We use OneShot here to manually resume events stream when we want to.
-	desc := netpoll.Must(netpoll.HandleListener(
-		ln, netpoll.EventRead|netpoll.EventOneShot,
-	))
-
-	accept := make(chan error, 1)
-
-	s.poller.Start(desc, func(e netpoll.Event) {
-		// We do not want to accept incoming connection when goroutine pool is
-		// busy. So if there are no free goroutines during 1ms we want to
-		// cooldown the server and do not receive connection for some
-		// short time.
-		err := s.pool.ScheduleTimeout(time.Millisecond, func() {
+	go func() {
+		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				accept <- err
-				return
+				s.logger.Debugf("error accepting incoming websocket connection: %s", err.Error())
+				break
 			}
-
-			accept <- nil
-			s.handle(conn)
-		})
-		if err == nil {
-			err = <-accept
+			go s.handle(conn)
 		}
-		if err != nil {
-			if err != gopool.ErrScheduleTimeout {
-				goto cooldown
-			}
-			if ne, ok := err.(net.Error); ok && ne.Temporary() {
-				goto cooldown
-			}
-
-			log.Fatalf("accept error: %v", err)
-
-		cooldown:
-			delay := 5 * time.Millisecond
-			time.Sleep(delay)
-		}
-
-		s.poller.Resume(desc)
-	})
+	}()
 
 	<-s.exit
 	return nil
 }
 
 func (s *Server) handle(conn net.Conn) {
-	safeConn := deadliner{conn, s.ioTimeout}
+	var id int
+	var email, fullname string
 
-	// Zero-copy upgrade to WebSocket connection.
-	hs, err := ws.Upgrade(safeConn)
-	if err != nil {
-		conn.Close()
-		return
+	upgrader := ws.Upgrader{
+		OnHost: func(host []byte) error {
+			return nil
+		},
+		OnHeader: func(key, value []byte) error {
+			if string(key) != "Cookie" {
+				return nil
+			}
+			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
+				if string(key) == "abstruse-auth-token" && string(value) != "" {
+					var err error
+					id, email, fullname, _, err = security.GetUserDataFromJWT(string(value))
+					if err != nil {
+						return false
+					}
+					return true
+				}
+				return false
+			})
+			if ok {
+				return nil
+			}
+			return ws.RejectConnectionError(
+				ws.RejectionReason("authentication failed"),
+				ws.RejectionStatus(400),
+			)
+		},
 	}
 
-	s.logger.Infof("%s: established websocket connection: %+v", nameConn(conn), hs)
+	_, err := upgrader.Upgrade(conn)
+	if err != nil {
+		s.logger.Debugf("error upgrading websocket connection: %s", err.Error())
+	}
 
-	client := s.app.Register(safeConn)
+	s.logger.Infof("established websocket connection: %s", nameConn(conn))
 
-	// Create netpoll event descriptor for conn.
-	// We want to handle only read events of it.
-	desc := netpoll.Must(netpoll.HandleRead(conn))
-
-	// Subscribe to events about conn.
-	s.poller.Start(desc, func(ev netpoll.Event) {
-		if ev&(netpoll.EventReadHup|netpoll.EventHup) != 0 {
-			// When ReadHup or Hup received, this mean that client has
-			// closed at least write end of the connection or connections
-			// itself. So we want to stop receive events about such conn
-			// and remove it from the chat registry.
-			s.poller.Stop(desc)
-			s.app.Remove(client)
-			return
-		}
-		// Here we can read some new message from connection.
-		// We can not read it right here in callback, because then we will
-		// block the poller's inner loop.
-		// We do not want to spawn a new goroutine to read single message.
-		// But we want to reuse previously spawned goroutine.
-		s.pool.Schedule(func() {
-			go func(c *Client) {
-				s.app.InitClient(c)
-			}(client)
-		})
-	})
-
+	client := s.app.Register(conn, id, email, fullname)
+	s.app.InitClient(client)
+	s.app.Remove(client)
 }
 
 func nameConn(conn net.Conn) string {
 	return conn.LocalAddr().String() + " <> " + conn.RemoteAddr().String()
-}
-
-// Deadliner is a wrapper around net.Conn that sets read/write deadlines before
-// every Read() or Write() call.
-type deadliner struct {
-	net.Conn
-	t time.Duration
-}
-
-func (d deadliner) Write(p []byte) (int, error) {
-	if err := d.Conn.SetWriteDeadline(time.Now().Add(d.t)); err != nil {
-		return 0, err
-	}
-	return d.Conn.Write(p)
-}
-
-func (d deadliner) Read(p []byte) (int, error) {
-	if err := d.Conn.SetReadDeadline(time.Now().Add(d.t)); err != nil {
-		return 0, err
-	}
-	return d.Conn.Read(p)
 }

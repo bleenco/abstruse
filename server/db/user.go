@@ -19,11 +19,6 @@ type User struct {
 	Fullname string `gorm:"not null;varchar(255)" json:"fullname"`
 	Avatar   string `gorm:"not null;varchar(255);default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"avatar"`
 
-	// 2FA Authentication
-	TOTPEnabled     bool   `gorm:"not null;default:false" json:"totp_enabled"`
-	TOTPAccountName string `gorm:"varchar(255)" json:"totp_account_name"`
-	TOTPSecret      string `gorm:"varchar(255)" json:"-"`
-
 	Repositories []*Repository `json:"repositories"`
 
 	Team       []*Team       `gorm:"many2many:team_users;" json:"teams"`

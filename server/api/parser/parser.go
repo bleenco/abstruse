@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/bleenco/abstruse/server/git"
 	yaml "gopkg.in/yaml.v2"
@@ -66,7 +67,7 @@ type ConfigParser struct {
 	CloneURL string
 	Branch   string
 	Commit   string
-	PR       string
+	PR       int
 
 	Parsed   RepoConfig
 	Env      []string
@@ -77,7 +78,7 @@ type ConfigParser struct {
 func (c *ConfigParser) FetchRawConfig() error {
 	raw, err := git.FetchAbstruseConfig(c.CloneURL, c.Branch, c.Commit, c.PR)
 	if err != nil {
-		return err
+		return errors.New("git error: " + err.Error())
 	}
 	c.Raw = raw
 
@@ -114,10 +115,11 @@ func (c *ConfigParser) generateCommands() []string {
 	var commands []string
 
 	commands = append(commands, "git clone -q "+c.CloneURL+" --branch "+c.Branch+" .")
-	if c.PR != "" {
-		commands = append(commands, "git fetch origin pull/"+c.PR+"/head:pr"+c.PR)
-	}
-	if c.Commit != "" {
+	if c.PR != 0 {
+		prstr := strconv.Itoa(c.PR)
+		commands = append(commands, "git fetch origin pull/"+prstr+"/head:pr"+prstr)
+		commands = append(commands, "git checkout pr"+prstr)
+	} else {
 		commands = append(commands, "git checkout -qf "+c.Commit)
 	}
 

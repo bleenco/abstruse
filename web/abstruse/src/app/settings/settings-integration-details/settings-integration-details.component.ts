@@ -81,12 +81,8 @@ export class SettingsIntegrationDetailsComponent implements OnInit {
         const provider = this.i.provider;
         this.repositories = this.repositories.map(repo => {
           repo.is_imported = false;
-          switch (provider) {
-            case 'github':
-              if (dbrepos.find(dbrepo => dbrepo.provider_id === repo.id)) {
-                repo.is_imported = true;
-              }
-            break;
+          if (dbrepos.find(dbrepo => dbrepo.provider_id === repo.id)) {
+            repo.is_imported = true;
           }
 
           return repo;

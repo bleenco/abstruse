@@ -1,17 +1,18 @@
 package git
 
 import (
-	"gopkg.in/src-d/go-git.v4/config"
+	"strconv"
 
 	"gopkg.in/src-d/go-billy.v4/memfs"
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/storage/memory"
 )
 
 // FetchAbstruseConfig checks if .abstruse.yml config exists in repository, if
 // so then reads it contents and returns it.
-func FetchAbstruseConfig(url, branch, commit, pr string) (string, error) {
+func FetchAbstruseConfig(url, branch, commit string, pr int) (string, error) {
 	r, err := git.Clone(memory.NewStorage(), memfs.New(), &git.CloneOptions{
 		URL:   url,
 		Depth: 50,
@@ -20,13 +21,14 @@ func FetchAbstruseConfig(url, branch, commit, pr string) (string, error) {
 		return "", err
 	}
 
-	if pr != "" {
-		referenceName := "origin/pr/" + pr
+	if pr != 0 { // pull request
+		prstr := strconv.Itoa(pr)
+		prname := "pr" + prstr
+		ref := "refs/pull/" + prstr + "/head:" + prname
 
 		if err := r.Fetch(&git.FetchOptions{
 			RefSpecs: []config.RefSpec{
-				config.RefSpec("+refs/heads/*:refs/remotes/origin/*"),
-				config.RefSpec("+refs/pull/*/head:refs/remotes/origin/pr/*"),
+				config.RefSpec(ref),
 			},
 		}); err != nil {
 			return "", err
@@ -38,13 +40,11 @@ func FetchAbstruseConfig(url, branch, commit, pr string) (string, error) {
 		}
 
 		if err := w.Checkout(&git.CheckoutOptions{
-			Branch: plumbing.ReferenceName(referenceName),
+			Branch: plumbing.ReferenceName(prname),
 		}); err != nil {
 			return "", err
 		}
-	}
-
-	if commit != "" {
+	} else { // commit
 		w, err := r.Worktree()
 		if err != nil {
 			return "", err

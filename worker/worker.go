@@ -1,14 +1,16 @@
 package worker
 
 import (
+	"context"
 	"crypto/tls"
 	"path"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/security"
 	"github.com/bleenco/abstruse/worker/id"
-	"github.com/cenkalti/backoff"
 )
 
 // WorkerProcess is main worker process instance.
@@ -95,23 +97,15 @@ func (w *Worker) Run() error {
 	go w.Queue.Run()
 
 	// go func() {
-	// 	if err := docker.BuildImage([]string{"ubuntu_18_04:latest"}, "ubuntu_18_04"); err != nil {
+	// 	if err := docker.BuildImage([]string{"ubuntu_19_04:latest"}, "ubuntu_19_04"); err != nil {
 	// 		fmt.Println(err)
 	// 	}
 	// }()
 
-	ticker := backoff.NewTicker(backoff.NewExponentialBackOff())
-	var err error
-
-	for range ticker.C {
-		if err = w.Client.Run(); err != nil {
-			w.Logger.Infof("%s, retrying...", err.Error())
-			continue
-		}
-
-		ticker.Stop()
-		break
+	err := backoff.Retry(w.Client.Run, backoff.WithContext(backoff.NewConstantBackOff(10*time.Second), context.Background()))
+	if err != nil {
+		return err
 	}
 
-	return err
+	return nil
 }

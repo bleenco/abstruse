@@ -2,24 +2,22 @@ package github
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/google/go-github/v27/github"
 	"github.com/bleenco/abstruse/server/db"
-	"github.com/google/go-github/github"
 )
 
 // CheckAndAddIntegration checks credentials and adds integration into db if valid.
 func CheckAndAddIntegration(url, accessToken, username, password string, userID int) (bool, error) {
-	ok, data, err := AuthenticateIntegration(url, accessToken, username, password)
+	ok, err := AuthenticateIntegration(url, accessToken, username, password)
 
 	if ok && err == nil {
 		integration := &db.Integration{
-			Provider:          "github",
-			GithubUsername:    username,
-			GithubPassword:    password,
-			GithubAccessToken: accessToken,
-			UserID:            userID,
-			Data:              data,
+			Provider:    "github",
+			Username:    username,
+			Password:    password,
+			AccessToken: accessToken,
+			UserID:      userID,
 		}
 
 		if _, err := integration.Create(); err != nil {
@@ -40,14 +38,9 @@ func CheckAndUpdateIntegration(integrationID, userID int) (bool, error) {
 		return false, err
 	}
 
-	ok, data, err := AuthenticateIntegration(i.GithubURL, i.GithubAccessToken, i.GithubUsername, i.GithubPassword)
+	ok, err := AuthenticateIntegration(i.URL, i.AccessToken, i.Username, i.Password)
 
 	if ok && err == nil {
-		integration.Data = data
-		if _, err := integration.Update(); err != nil {
-			return false, err
-		}
-
 		return true, nil
 	}
 
@@ -77,21 +70,16 @@ func FetchIntegrationRepositories(url, accessToken, username, password string) (
 }
 
 // AuthenticateIntegration returns boolean if auth is ok and response data.
-func AuthenticateIntegration(url, accessToken, username, password string) (bool, string, error) {
+func AuthenticateIntegration(url, accessToken, username, password string) (bool, error) {
 	client, err := getGitHubClient(url, accessToken, username, password)
 	if err != nil {
-		return false, "", err
+		return false, err
 	}
 
-	user, _, err := client.Users.Get(context.Background(), "")
+	_, _, err = client.Users.Get(context.Background(), "")
 	if err != nil {
-		return false, "", err
+		return false, err
 	}
 
-	data, err := json.Marshal(user)
-	if err != nil {
-		return false, "", err
-	}
-
-	return true, string(data), nil
+	return true, nil
 }

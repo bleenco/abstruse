@@ -22,7 +22,7 @@ export class SettingsPersonalComponent implements OnInit {
     this.personalService.fetchPersonalInfo().subscribe(resp => {
       if (resp && resp.data) {
         const user = resp.data;
-        this.user = new User(user.id, user.email, user.fullname, user.avatar, user.totp_enabled, user.totp_account_name);
+        this.user = new User(user.id, user.email, user.fullname, user.avatar);
       }
     }, err => {
       console.error(err);
