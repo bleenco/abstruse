@@ -7,21 +7,15 @@
   </div>
   <div class="column is-12">
     <div class="table is-borderless">
-      <div class="table-items">
-        <div *ngIf="repositories?.length">
-          <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
-        </div>
-        <div class="table-item" *ngIf="!repositories?.length">
-          <div class="columns">
-            <div class="column is-12 justify-center align-center">
-              <span class="table-data justify-center align-center">
-                <img class="img-icon" src="/assets/images/icons/important-dark.svg">
-                <span class="color-secondary is-medium">No repositories found.</span>
-              </span>
-            </div>
-          </div>
-        </div>
+      <div class="table-items" *ngIf="repositories?.length">
+        <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
       </div>
+    </div>
+    <div class="column is-12 justify-center align-center" *ngIf="!repositories.length && !fetchingRepositories">
+      <span class="table-data justify-center align-center">
+        <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+        <span class="color-secondary is-medium">No repositories found.</span>
+      </span>
     </div>
   </div>
 </div>

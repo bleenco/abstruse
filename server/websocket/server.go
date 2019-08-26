@@ -62,6 +62,7 @@ func (s *Server) Run() error {
 func (s *Server) handle(conn net.Conn) {
 	var id int
 	var email, fullname string
+	var err error
 
 	upgrader := ws.Upgrader{
 		OnHost: func(host []byte) error {
@@ -73,14 +74,10 @@ func (s *Server) handle(conn net.Conn) {
 			}
 			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
 				if string(key) == "abstruse-auth-token" && string(value) != "" {
-					var err error
 					id, email, fullname, _, err = security.GetUserDataFromJWT(string(value))
-					if err != nil {
-						return false
-					}
 					return true
 				}
-				return false
+				return true
 			})
 			if ok {
 				return nil
@@ -92,7 +89,12 @@ func (s *Server) handle(conn net.Conn) {
 		},
 	}
 
-	_, err := upgrader.Upgrade(conn)
+	if err != nil {
+		s.logger.Debugf("%s, websocket connection not upgraded", err.Error())
+		return
+	}
+
+	_, err = upgrader.Upgrade(conn)
 	if err != nil {
 		s.logger.Debugf("error upgrading websocket connection: %s", err.Error())
 	}

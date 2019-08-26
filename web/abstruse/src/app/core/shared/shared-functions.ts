@@ -26,11 +26,12 @@ export function getAPIURL(): string {
 
 export function getWebSocketURL(): string {
   const secure = location.protocol === 'https:' ? true : false;
+  const port = location.port === '80' ? '' : `:${location.port}`;
 
   if (secure) {
-    return `wss://${location.hostname}/ws`;
+    return `wss://${location.hostname}${port}/ws`;
   } else {
-    return `ws://${location.hostname}/ws`;
+    return `ws://${location.hostname}${port}/ws`;
   }
 }
 
