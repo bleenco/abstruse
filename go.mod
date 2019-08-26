@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/calmh/luhn v2.0.0+incompatible
 	github.com/cenkalti/backoff v2.2.1+incompatible
+	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
@@ -22,9 +23,11 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 	github.com/jkuri/statik v0.3.0
 	github.com/julienschmidt/httprouter v1.2.0
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pquerna/otp v1.2.0
