@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <br>
-  <a href="https://github.com/bleenco/abstruse"><img src="https://user-images.githubusercontent.com/1796022/41514005-9e827b86-72a3-11e8-9ca5-67736d9cab3e.png" alt="abstruse continuous integration" width="140"></a>
+  <a href="https://github.com/bleenco/abstruse"><img src="https://user-images.githubusercontent.com/1796022/41514005-9e827b86-72a3-11e8-9ca5-67736d9cab3e.png" alt="abstruse continuous integration" width="300"></a>
   <br>
   <br>
 </h1>
