@@ -15,6 +15,7 @@ require (
 	github.com/eapache/channels v1.1.0
 	github.com/fatih/color v1.7.0
 	github.com/felixge/httpsnoop v1.0.0
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.2
