@@ -5,7 +5,6 @@ import { SharedModule } from '../shared/modules/shared.module';
 import { HighlightModule } from 'ngx-highlightjs';
 
 import { BuildsComponent } from './builds.component';
-import { BuildsLatestComponent } from './builds-latest/builds-latest.component';
 import { BuildsListItemComponent } from './builds-list-item/builds-list-item.component';
 import { BuildService } from './shared/build.service';
 import { BuildsDetailsComponent } from './builds-details/builds-details.component';
@@ -13,6 +12,8 @@ import { BuildsJobListItemComponent } from './builds-job-list-item/builds-job-li
 import { BuildsJobDetailsComponent } from './builds-job-details/builds-job-details.component';
 import { BuildsNavComponent } from './builds-nav/builds-nav.component';
 import { BuildsInfoContainerComponent } from './builds-info-container/builds-info-container.component';
+import { BuildsCurrentComponent } from './builds-current/builds-current.component';
+import { BuildsHistoryComponent } from './builds-history/builds-history.component';
 
 @NgModule({
   imports: [
@@ -22,13 +23,14 @@ import { BuildsInfoContainerComponent } from './builds-info-container/builds-inf
   ],
   declarations: [
     BuildsComponent,
-    BuildsLatestComponent,
     BuildsListItemComponent,
     BuildsDetailsComponent,
     BuildsJobListItemComponent,
     BuildsJobDetailsComponent,
     BuildsNavComponent,
-    BuildsInfoContainerComponent
+    BuildsInfoContainerComponent,
+    BuildsCurrentComponent,
+    BuildsHistoryComponent
   ],
   providers: [
     BuildService

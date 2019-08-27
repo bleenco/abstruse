@@ -3,9 +3,9 @@ package websocket
 import (
 	"errors"
 	"net"
-	"sync"
 	"reflect"
 	"strconv"
+	"sync"
 
 	"github.com/bleenco/abstruse/pkg/logger"
 )
@@ -30,12 +30,12 @@ func NewApplication(log *logger.Logger) *Application {
 // Register registers new connection as a Client.
 func (a *Application) Register(conn net.Conn, id int, email, name string) *Client {
 	client := &Client{
-		conn: conn,
-		c:    conn,
-		app:  a,
-		id: id,
+		conn:  conn,
+		c:     conn,
+		app:   a,
+		id:    id,
 		email: email,
-		name: name,
+		name:  name,
 	}
 
 	a.mu.Lock()
@@ -88,11 +88,19 @@ func (a *Application) InitClient(client *Client) {
 		}
 
 		if msg.Type == "subscribe" {
-			client.subscribe(msg.Data["event"].(string), msg.Data["data"].(map[string]interface{}))
+			var data map[string]interface{}
+			if d, ok := msg.Data["data"].(map[string]interface{}); ok {
+				data = d
+			}
+			client.subscribe(msg.Data["event"].(string), data)
 		}
 
 		if msg.Type == "unsubscribe" {
-			client.unsubscribe(msg.Data["event"].(string), msg.Data["data"].(map[string]interface{}))
+			var data map[string]interface{}
+			if d, ok := msg.Data["data"].(map[string]interface{}); ok {
+				data = d
+			}
+			client.unsubscribe(msg.Data["event"].(string), data)
 		}
 	}
 }
@@ -116,13 +124,13 @@ func checkValidSubscription(data, checks map[string]interface{}) bool {
 	}
 
 	for key, value := range data {
-	  for k, val := range checks {
-	    if key == k {
+		for k, val := range checks {
+			if key == k {
 				if toString(value) == toString(val) {
 					return true
 				}
 			}
-	  }
+		}
 	}
 
 	return false

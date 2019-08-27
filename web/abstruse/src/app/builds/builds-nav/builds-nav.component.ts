@@ -7,8 +7,9 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class BuildsNavComponent implements OnInit {
   @Input() tab: 'current' | 'branches' | 'history' | 'pull_requests' | 'build' | 'job';
-  @Input() buildId: number;
-  @Input() jobId: number;
+  @Input() repoid: number;
+  @Input() buildid: number;
+  @Input() jobid: number;
 
   constructor() { }
 

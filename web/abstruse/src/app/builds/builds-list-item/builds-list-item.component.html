@@ -1,4 +1,4 @@
-<div class="list-item is-bordered" [routerLink]="['/builds', build?.id]">
+<div class="list-item is-bordered" [routerLink]="['/builds', build?.repository?.id, build?.id]">
   <div class="columns is-marginless is-paddingless">
     <div class="column is-1 data-column">
       <span class="data-text is-number">{{ build?.id }}</span>

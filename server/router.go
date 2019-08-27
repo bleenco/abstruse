@@ -53,6 +53,7 @@ func (r *Router) initAPI() {
 	r.Router.POST("/api/repositories/:id/hooks", api.AuthorizationMiddleware(github.CreateHookHandler))
 	r.Router.POST("/api/builds/trigger", api.AuthorizationMiddleware(builds.TriggerBuildHandler))
 	r.Router.GET("/api/builds/info/:id", builds.FindBuildInfoHandler)
+	r.Router.GET("/api/builds/current/:id", api.AuthorizationMiddleware(builds.FindCurrentByRepoHandler))
 	r.Router.GET("/api/builds/repo/:id", api.AuthorizationMiddleware(builds.FindBuildsByRepoHandler))
 	r.Router.GET("/api/builds/job/:id", api.AuthorizationMiddleware(builds.FindJobInfoHandler))
 	r.Router.GET("/api/teams", api.AuthorizationMiddleware(teams.FetchTeamsHandler))

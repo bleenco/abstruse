@@ -39,6 +39,19 @@ func FindBuildsByRepoHandler(res http.ResponseWriter, req *http.Request, ps http
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: builds})
 }
 
+// FindCurrentByRepoHandler => /api/builds/current/:id
+func FindCurrentByRepoHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	id, _ := strconv.Atoi(ps.ByName("id"))
+
+	var build db.Build
+	if err := build.FindCurrentByRepoID(id); err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	api.JSONResponse(res, http.StatusOK, api.Response{Data: build})
+}
+
 // FindBuildInfoHandler => /api/builds/info/:id
 func FindBuildInfoHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, _ := strconv.Atoi(ps.ByName("id"))

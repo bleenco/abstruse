@@ -63,6 +63,11 @@ func (b *Build) FindAll(id int) error {
 	return DB.Preload("Jobs").Preload("Repository").Find(b, id).Error
 }
 
+// FindCurrentByRepoID method.
+func (b *Build) FindCurrentByRepoID(repoID int) error {
+	return DB.Preload("Jobs").Preload("Repository").Where("repository_id = ?", repoID).Last(b).Error
+}
+
 // FindBuildsByRepoID method.
 func FindBuildsByRepoID(repoID int) ([]Build, error) {
 	var builds []Build

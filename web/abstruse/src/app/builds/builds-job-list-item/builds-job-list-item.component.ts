@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Job } from '../shared/build.model';
+import { Job, Build } from '../shared/build.model';
 
 @Component({
   selector: 'app-builds-job-list-item',
@@ -8,6 +8,7 @@ import { Job } from '../shared/build.model';
 })
 export class BuildsJobListItemComponent implements OnInit {
   @Input() job: Job;
+  @Input() build: Build;
 
   constructor() { }
 

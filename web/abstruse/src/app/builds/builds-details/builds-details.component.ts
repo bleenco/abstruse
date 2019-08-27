@@ -12,7 +12,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
   styleUrls: ['./builds-details.component.sass']
 })
 export class BuildsDetailsComponent implements OnInit, OnDestroy {
-  id: number;
+  buildid: number;
   fetching: boolean;
   build: Build;
   sub: Subscription;
@@ -24,7 +24,7 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.id = this.route.snapshot.params.id;
+    this.buildid = this.route.snapshot.params.buildid;
     this.tab = 'jobs';
     this.fetchBuildInfo();
 
@@ -34,16 +34,16 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.buildService.unsubscribeFromJobEvents({ build_id: this.id });
+    this.buildService.unsubscribeFromJobEvents({ build_id: this.buildid });
     this.sub.unsubscribe();
   }
 
   fetchBuildInfo(): void {
     this.fetching = true;
-    this.buildService.fetchBuildInfo(this.id).subscribe((resp: JSONResponse) => {
+    this.buildService.fetchBuildInfo(this.buildid).subscribe((resp: JSONResponse) => {
       if (resp && resp.data) {
         this.build = generateBuildModel(resp.data);
-        this.buildService.subscribeToJobEvents({ build_id: this.id });
+        this.buildService.subscribeToJobEvents({ build_id: this.buildid });
       }
     }, err => {
       console.error(err);

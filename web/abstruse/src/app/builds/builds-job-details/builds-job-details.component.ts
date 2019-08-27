@@ -12,8 +12,9 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
   styleUrls: ['./builds-job-details.component.sass']
 })
 export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
-  id: number;
-  build_id: number;
+  repoid: number;
+  buildid: number;
+  jobid: number;
   fetching: boolean;
   job: Job;
   sub: Subscription;
@@ -24,8 +25,9 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.id = this.route.snapshot.params.jobid;
-    this.build_id = this.route.snapshot.params.id;
+    this.repoid = this.route.snapshot.params.repoid;
+    this.buildid = this.route.snapshot.params.buildid;
+    this.jobid = this.route.snapshot.params.jobid;
 
     this.fetchJobInfo();
 
@@ -35,16 +37,16 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.buildService.unsubscribeFromJobEvents({ job_id: this.id });
+    this.buildService.unsubscribeFromJobEvents({ job_id: this.jobid });
     this.sub.unsubscribe();
   }
 
   fetchJobInfo(): void {
     this.fetching = true;
-    this.buildService.fetchJobInfo(this.id).subscribe((resp: JSONResponse) => {
+    this.buildService.fetchJobInfo(this.jobid).subscribe((resp: JSONResponse) => {
       if (resp && resp.data) {
         this.job = generateJobModel(resp.data);
-        this.buildService.subscribeToJobEvents({ job_id: this.id });
+        this.buildService.subscribeToJobEvents({ job_id: this.jobid });
       }
     }, err => {
       console.error(err);

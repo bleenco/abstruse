@@ -27,6 +27,11 @@ export class BuildService {
     return this.http.get<JSONResponse>(url);
   }
 
+  fetchCurrentBuildByRepoID(repoID: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/builds/current/${repoID}`;
+    return this.http.get<JSONResponse>(url);
+  }
+
   fetchBuildsByRepoID(repoID: number): Observable<JSONResponse> {
     const url = getAPIURL() + `/builds/repo/${repoID}`;
     return this.http.get<JSONResponse>(url);
