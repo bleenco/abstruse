@@ -4,8 +4,9 @@ $tab-height: 36px
   display: flex
   justify-content: space-between
   width: 100%
-  border-bottom: 1px solid $border-primary
+  border-bottom: 1px solid $border-default
   height: $tab-height
+  margin-top: 10px
 
   .tabs-heading
     display: flex
@@ -15,7 +16,7 @@ $tab-height: 36px
   .tab
     +unselectable
     height: $tab-height
-    font-size: 13px
+    font-size: 12px
     color: $text-secondary
     font-family: $font-family-medium
     display: inline-flex
@@ -36,9 +37,9 @@ $tab-height: 36px
       opacity: 1
 
     &.is-active
-      border-left: 1px solid $border-primary
-      border-top: 1px solid $border-primary
-      border-right: 1px solid $border-primary
+      border-left: 1px solid $border-default
+      border-top: 1px solid $border-default
+      border-right: 1px solid $border-default
       border-bottom: 1px solid $white
       opacity: 1
 

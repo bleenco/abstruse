@@ -1,7 +1,4 @@
 <div class="columns is-multiline">
-  <div class="column is-12">
-    <app-builds-repo-info [repo]="job?.build?.repository"></app-builds-repo-info>
-  </div>
   <div class="column is-12" *ngIf="!job">
     <app-loader></app-loader>
   </div>

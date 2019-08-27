@@ -1,9 +1,25 @@
 <div class="columns is-multiline">
-  <div class="column is-12">
-    <app-builds-repo-info [repo]="build?.repository"></app-builds-repo-info>
-  </div>
   <div class="column is-12" *ngIf="fetching">
     <app-loader></app-loader>
+  </div>
+  <div class="column is-12">
+    <div class="tabs">
+      <div class="tabs-heading"></div>
+      <div class="tabs-items">
+        <div class="tab" [class.is-active]="tab === 'all'">
+          <i class="octicon octicon-git-compare"></i>
+          <span>Builds</span>
+        </div>
+        <span class="tab" [class.is-active]="tab === 'commits'">
+          <i class="octicon octicon-git-commit"></i>
+          <span>Commits</span>
+        </span>
+        <span class="tab" [class.is-active]="tab === 'pr'">
+          <i class="octicon octicon-git-pull-request"></i>
+          <span>Pull Requests</span>
+        </span>
+      </div>
+    </div>
   </div>
   <div class="column is-12" *ngIf="!fetching && builds">
     <app-builds-list-item [build]="build" *ngFor="let build of builds"></app-builds-list-item>

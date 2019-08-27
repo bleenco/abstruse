@@ -13,9 +13,9 @@ export class BuildsHistoryComponent implements OnInit {
   repoid: number;
   fetching: boolean;
   builds: Build[];
-  build: Build;
   limit = 5;
   offset = 0;
+  tab: 'all' | 'commits' | 'pr';
 
   constructor(
     public route: ActivatedRoute,
@@ -24,6 +24,7 @@ export class BuildsHistoryComponent implements OnInit {
 
   ngOnInit() {
     this.repoid = this.route.snapshot.params.repoid;
+    this.tab = 'all';
 
     this.fetchBuilds();
   }
@@ -33,7 +34,6 @@ export class BuildsHistoryComponent implements OnInit {
     this.buildService.fetchBuildsByRepoID(this.repoid).subscribe((resp: JSONResponse) => {
       if (resp && resp.data && resp.data.length) {
         this.builds = resp.data.map(generateBuildModel);
-        this.build = this.builds[0];
       }
     }, err => {
       console.error(err);

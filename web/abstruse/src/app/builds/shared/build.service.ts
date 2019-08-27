@@ -17,6 +17,11 @@ export class BuildService {
     public dataService: DataService
   ) { }
 
+  fetchRepoInfo(id: number): Observable<JSONResponse> {
+    const url = getAPIURL() + `/repositories/${id}`;
+    return this.http.get<JSONResponse>(url);
+  }
+
   fetchBuildInfo(id: number): Observable<JSONResponse> {
     const url = getAPIURL() + `/builds/info/${id}`;
     return this.http.get<JSONResponse>(url);

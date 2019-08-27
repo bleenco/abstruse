@@ -13,6 +13,7 @@ import { BuildsJobDetailsComponent } from './builds-job-details/builds-job-detai
 import { BuildsInfoContainerComponent } from './builds-info-container/builds-info-container.component';
 import { BuildsHistoryComponent } from './builds-history/builds-history.component';
 import { BuildsRepoInfoComponent } from './builds-repo-info/builds-repo-info.component';
+import { BuildsRepoComponent } from './builds-repo/builds-repo.component';
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import { BuildsRepoInfoComponent } from './builds-repo-info/builds-repo-info.com
     BuildsJobDetailsComponent,
     BuildsInfoContainerComponent,
     BuildsHistoryComponent,
-    BuildsRepoInfoComponent
+    BuildsRepoInfoComponent,
+    BuildsRepoComponent
   ],
   providers: [
     BuildService
