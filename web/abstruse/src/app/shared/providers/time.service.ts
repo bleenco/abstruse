@@ -9,7 +9,7 @@ export class TimeService {
   timer: Observable<number>;
 
   constructor() {
-    this.timer = timer(1000, 1000);
+    this.timer = timer(0, 1000);
   }
 
   getCurrentTime(): Observable<Date> {

@@ -38,7 +38,7 @@
                 <i class="fas fa-times" *ngIf="build?.status === 'failing'"></i>
                 <i class="fas fa-clock" *ngIf="build?.status === 'queued'"></i>
                 <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="build?.status === 'running'" />
-                <span>{{ build?.getStatus() }}</span>
+                <span>{{ build?.build_status | async }}</span>
               </div>
             </span>
           </div>

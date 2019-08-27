@@ -5,6 +5,7 @@ import { Build, generateBuildModel } from '../shared/build.model';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { Subscription } from 'rxjs';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
+import { isValid } from 'date-fns';
 
 @Component({
   selector: 'app-builds-details',
@@ -58,16 +59,13 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.build.start_time = ev.data.start_time ? new Date(ev.data.start_time) : this.build.start_time;
-    this.build.end_time = ev.data.end_time ? new Date(ev.data.end_time) : this.build.end_time;
-
     const jobIndex = this.build.jobs.findIndex(job => job.id === ev.data.job_id);
     if (jobIndex < 0) {
       return;
     }
 
-    this.build.jobs[jobIndex].start_time = ev.data.start_time ? new Date(ev.data.start_time) : this.build.start_time;
-    this.build.jobs[jobIndex].end_time = ev.data.end_time ? new Date(ev.data.end_time) : this.build.end_time;
+    this.build.jobs[jobIndex].start_time = isValid(ev.data.start_time) ? ev.data.start_time : null;
+    this.build.jobs[jobIndex].end_time = isValid(ev.data.end_time) ? ev.data.end_time : null;
     this.build.jobs[jobIndex].status = ev.data.status;
   }
 }

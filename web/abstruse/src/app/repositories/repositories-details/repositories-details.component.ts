@@ -101,13 +101,13 @@ export class RepositoriesDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const build = this.builds.find(b => b.id === ev.data.build_id);
-    if (!build) {
-      return;
-    }
+    // const build = this.builds.find(b => b.id === ev.data.build_id);
+    // if (!build) {
+    //   return;
+    // }
 
-    build.start_time = ev.data.start_time ? new Date(ev.data.start_time) : build.start_time;
-    build.end_time = ev.data.end_time ? new Date(ev.data.end_time) : build.end_time;
-    build.status = ev.data.status || 'queued';
+    // build.start_time = ev.data.start_time ? new Date(ev.data.start_time) : build.start_time;
+    // build.end_time = ev.data.end_time ? new Date(ev.data.end_time) : build.end_time;
+    // build.status = ev.data.status || 'queued';
   }
 }

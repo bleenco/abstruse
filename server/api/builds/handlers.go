@@ -12,16 +12,16 @@ import (
 
 // TriggerBuildHandler triggers test build for repository.
 func TriggerBuildHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	// if err := core.StartBuild(11, 0, "abstruse-config-test", "", "3a0cb5c3ad82caf3bb935032e85919dec273bdc8", "build(abstruse): abstruse test commit"); err != nil {
-	// 	api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
-	// 	return
-	// }
-
-	// PR test
-	if err := core.StartBuild(11, 2, "master", "test pull request case for abstruse ci", "3a0cb5c3ad82caf3bb935032e85919dec273bdc8", "build(abstruse): abstruse test commit"); err != nil {
+	if err := core.StartBuild(1, 0, "abstruse-config-test", "", "3a1a22865810755508147331a08eb3af83946630", "chore(): update abstruse.yml configuration"); err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return
 	}
+
+	// PR test
+	// if err := core.StartBuild(11, 2, "master", "test pull request case for abstruse ci", "3a0cb5c3ad82caf3bb935032e85919dec273bdc8", "build(abstruse): abstruse test commit"); err != nil {
+	// 	api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+	// 	return
+	// }
 
 	api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: true})
 }
