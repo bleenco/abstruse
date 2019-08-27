@@ -35,16 +35,14 @@ export class RepositoriesDetailsComponent implements OnInit, OnDestroy {
     this.fetchingBuilds = true;
 
     this.fetchRepository();
-    this.buildService.subscribeToBuildEvents();
 
-    this.sub = this.buildService.socketEvents().subscribe((ev: SocketEvent) => {
-      console.log(ev);
-      this.updateBuildFromEvent(ev);
+    this.sub = this.buildService.jobEvents().subscribe((ev: SocketEvent) => {
+      this.updateJobFromEvent(ev);
     });
   }
 
   ngOnDestroy() {
-    this.buildService.unsubscribeFromBuildEvents();
+    this.builds.forEach(build => this.buildService.unsubscribeFromJobEvents({ build_id: build.id }));
     this.sub.unsubscribe();
   }
 
@@ -87,7 +85,10 @@ export class RepositoriesDetailsComponent implements OnInit, OnDestroy {
     this.fetchingBuilds = true;
     this.buildService.fetchBuildsByRepoID(this.id).subscribe(resp => {
       if (resp && resp.data && resp.data.length) {
-        this.builds = resp.data.map((build: any) => generateBuildModel(build));
+        this.builds = resp.data.map((build: any) => {
+          this.buildService.subscribeToJobEvents({ build_id: build.id });
+          return generateBuildModel(build);
+        });
       }
     }, err => {
       console.error(err);
@@ -96,7 +97,7 @@ export class RepositoriesDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateBuildFromEvent(ev: SocketEvent): void {
+  updateJobFromEvent(ev: SocketEvent): void {
     if (!this.builds || !this.builds.length) {
       return;
     }

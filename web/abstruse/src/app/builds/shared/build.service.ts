@@ -37,15 +37,15 @@ export class BuildService {
     return this.http.post<JSONResponse>(url, {});
   }
 
-  socketEvents(): Observable<SocketEvent> {
+  jobEvents(): Observable<SocketEvent> {
     return this.dataService.socketOutput.pipe(filter(ev => ev.type === 'job_events'));
   }
 
-  subscribeToBuildEvents(): void {
-    this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'job_events', id: '' } });
+  subscribeToJobEvents(data: { job_id?: number, build_id?: number }): void {
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { event: 'job_events', data } });
   }
 
-  unsubscribeFromBuildEvents(): void {
-    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'job_events', id: '' } });
+  unsubscribeFromJobEvents(data: { job_id?: number, build_id?: number }): void {
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { event: 'job_events', data } });
   }
 }

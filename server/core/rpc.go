@@ -177,7 +177,7 @@ func (s *GRPCServer) WorkerCapacityStatus(stream pb.ApiService_WorkerCapacitySta
 			"total":   total,
 			"used":    used,
 		}
-		websocket.App.Broadcast("worker_capacity", data, "worker_capacity")
+		websocket.App.Broadcast("worker_capacity", data, nil)
 
 		totalCapacity, totalUsed := Registry.GetWorkersCapacityInfo()
 		MainScheduler.SetSize(totalCapacity, totalUsed)
@@ -240,7 +240,7 @@ func (s *GRPCServer) WorkerUsageStatus(stream pb.ApiService_WorkerUsageStatusSer
 			"cpu":     cpu,
 			"memory":  memory,
 		}
-		websocket.App.Broadcast("worker_usage", data, "worker_usage")
+		websocket.App.Broadcast("worker_usage", data, nil)
 	}
 
 end:
@@ -324,7 +324,11 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 			"end_time":   utils.FormatTime(jobTask.EndTime),
 		}
 
-		websocket.App.Broadcast("job_events", socketEvent, "job_events")
+		checks := map[string]interface{}{
+			"build_id": jobTask.buildID,
+			"job_id": jobTask.jobID,
+		}
+		websocket.App.Broadcast("job_events", socketEvent, checks)
 	}
 }
 

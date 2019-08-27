@@ -5,6 +5,7 @@ import (
 	"io"
 	"sync"
 	"net"
+	"reflect"
 
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
@@ -30,7 +31,7 @@ type Client struct {
 
 type subscription struct {
 	Event string
-	Data  interface{}
+	Data  map[string]interface{}
 }
 
 // Receive reads next message from user's underlying connection.
@@ -109,23 +110,23 @@ func (c *Client) writeRaw(p []byte) error {
 	return err
 }
 
-func (c *Client) subscribe(event string, data interface{}) {
-	if !c.isSubscribed(event) {
+func (c *Client) subscribe(event string, data map[string]interface{}) {
+	if !c.isSubscribed(event, data) {
 		c.subs = append(c.subs, &subscription{Event: event, Data: data})
 	}
 }
 
-func (c *Client) unsubscribe(event string, data interface{}) {
+func (c *Client) unsubscribe(event string, data map[string]interface{}) {
 	for i, s := range c.subs {
-		if s.Event == event && s.Data == data {
+		if s.Event == event && reflect.DeepEqual(s.Data, data) {
 			c.subs = append(c.subs[:i], c.subs[i+1:]...)
 		}
 	}
 }
 
-func (c *Client) isSubscribed(event string) bool {
+func (c *Client) isSubscribed(event string, data map[string]interface{}) bool {
 	for _, s := range c.subs {
-		if s.Event == event {
+		if s.Event == event && reflect.DeepEqual(s.Data, data) {
 			return true
 		}
 	}

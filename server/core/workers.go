@@ -46,12 +46,12 @@ func (w *Workers) eventListener() {
 		case "subscribed":
 			{
 				data := map[string]interface{}{"cert_id": event.Data, "status": "operational"}
-				websocket.App.Broadcast("worker_status", data, "worker_updates")
+				websocket.App.Broadcast("worker_status", data, nil)
 			}
 		case "unsubscribed":
 			{
 				data := map[string]interface{}{"cert_id": event.Data, "status": "down"}
-				websocket.App.Broadcast("worker_status", data, "worker_updates")
+				websocket.App.Broadcast("worker_status", data, nil)
 			}
 		}
 	}

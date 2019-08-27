@@ -59,11 +59,12 @@ func (a *Application) Remove(client *Client) {
 }
 
 // Broadcast sends socket event to all subscribers.
-func (a *Application) Broadcast(event string, data Object, subscription string) {
+func (a *Application) Broadcast(event string, data map[string]interface{}, checks map[string]interface{}) {
 	var clients []*Client
+
 	for _, c := range a.Clients {
 		for _, sub := range c.subs {
-			if sub.Event == subscription {
+			if sub.Event == event && checkValidSubscription(sub.Data, checks) {
 				clients = append(clients, c)
 			}
 		}
@@ -85,11 +86,11 @@ func (a *Application) InitClient(client *Client) {
 		}
 
 		if msg.Type == "subscribe" {
-			client.subscribe(msg.Data["event"].(string), msg.Data["id"].(string))
+			client.subscribe(msg.Data["event"].(string), msg.Data)
 		}
 
 		if msg.Type == "unsubscribe" {
-			client.unsubscribe(msg.Data["event"].(string), msg.Data["id"].(string))
+			client.unsubscribe(msg.Data["event"].(string), msg.Data)
 		}
 	}
 }
@@ -105,4 +106,16 @@ func (a *Application) clientIndex(client *Client) (int, error) {
 	}
 
 	return index, errors.New("client not found")
+}
+
+func checkValidSubscription(data, checks map[string]interface{}) bool {
+	for key, value := range data {
+		for k, v := range data {
+			if key == k && value == v {
+				return true
+			}
+		}
+	}
+
+	return false
 }

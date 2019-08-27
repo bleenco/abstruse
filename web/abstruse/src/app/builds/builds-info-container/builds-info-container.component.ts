@@ -20,9 +20,5 @@ export class BuildsInfoContainerComponent implements OnInit, OnDestroy, OnChange
     if (!this.build && this.job) {
       this.build = this.job.build;
     }
-
-    if (this.build) {
-      console.log(this.build);
-    }
   }
 }

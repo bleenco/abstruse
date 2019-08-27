@@ -28,15 +28,13 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     this.tab = 'jobs';
     this.fetchBuildInfo();
 
-    this.buildService.subscribeToBuildEvents();
-
-    this.sub = this.buildService.socketEvents().subscribe((ev: SocketEvent) => {
-      this.updateBuildFromEvent(ev);
+    this.sub = this.buildService.jobEvents().subscribe((ev: SocketEvent) => {
+      this.updateJobFromEvent(ev);
     });
   }
 
   ngOnDestroy() {
-    this.buildService.unsubscribeFromBuildEvents();
+    this.buildService.unsubscribeFromJobEvents({ build_id: this.id });
     this.sub.unsubscribe();
   }
 
@@ -45,6 +43,7 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     this.buildService.fetchBuildInfo(this.id).subscribe((resp: JSONResponse) => {
       if (resp && resp.data) {
         this.build = generateBuildModel(resp.data);
+        this.buildService.subscribeToJobEvents({ build_id: this.id });
       }
     }, err => {
       console.error(err);
@@ -53,7 +52,7 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateBuildFromEvent(ev: SocketEvent): void {
+  updateJobFromEvent(ev: SocketEvent): void {
     if (!this.build || this.build.id !== ev.data.build_id) {
       return;
     }
