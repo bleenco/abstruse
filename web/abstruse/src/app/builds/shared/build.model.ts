@@ -21,6 +21,8 @@ export class Build {
     public config: string,
     public created_at: Date,
     public updated_at: Date,
+    public start_time: Date,
+    public end_time: Date,
     public repository: Repo,
     public author_avatar: string,
     public author_name: string,
@@ -73,7 +75,15 @@ export class Build {
       return '00:00';
     }
 
-    const millis = Math.max(...this.jobs.map(job => job.getTimeRunning().millis));
+    if (!this.start_time) {
+      this.start_time = new Date(Math.min(...this.jobs.map(job => job.start_time.getTime())));
+    }
+
+    if (!this.end_time && this.jobs.every(job => job.end_time)) {
+      this.end_time = new Date();
+    }
+
+    const millis = differenceInMilliseconds(this.end_time ? this.end_time : new Date(), this.start_time);
     return format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
@@ -127,6 +137,8 @@ export function generateBuildModel(data: any): Build {
     data.config,
     data.created_at ? new Date(data.created_at) : null,
     data.updated_at ? new Date(data.updated_at) : null,
+    data.start_time ? new Date(data.start_time) : null,
+    data.end_time ? new Date(data.end_time) : null,
     data.repository ? generateRepoModel(data.repository) : null,
     data.author_avatar,
     data.author_name,

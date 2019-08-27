@@ -26,6 +26,9 @@ type Build struct {
 	CommitterEmail  string `json:"committer_email"`
 	CommitterAvatar string `gorm:"default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"committer_avatar"`
 
+	StartTime *time.Time `json:"start_time"`
+	EndTime   *time.Time `json:"end_time"`
+
 	Jobs []*Job `gorm:"PRELOAD:false" json:"jobs,omitempty"`
 
 	Repository   *Repository `gorm:"PRELOAD:false" json:"repository,omitempty"`
@@ -43,6 +46,16 @@ func (b *Build) Create() error {
 // Find method.
 func (b *Build) Find(id int) error {
 	return DB.Find(b, id).Error
+}
+
+// UpdateStartTime method.
+func (b *Build) UpdateStartTime() error {
+	return DB.Model(b).Update("start_time", time.Now()).Error
+}
+
+// UpdateEndTime method.
+func (b *Build) UpdateEndTime() error {
+	return DB.Model(b).Update("end_time", time.Now()).Error
 }
 
 // FindAll method.

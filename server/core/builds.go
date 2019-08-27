@@ -124,5 +124,28 @@ func updateJob(task *JobTask) error {
 		return err
 	}
 
+	var build db.Build
+	if err := build.FindAll(int(task.buildID)); err == nil {
+		if build.StartTime == nil {
+			if err := build.UpdateStartTime(); err != nil {
+				return err
+			}
+		}
+		if build.EndTime == nil {
+			allDone := true
+			for _, j := range build.Jobs {
+				if j.EndTime == nil {
+					allDone = false
+					break
+				}
+			}
+			if allDone {
+				if err := build.UpdateEndTime(); err != nil {
+					return err
+				}
+			}
+		}
+	}
+
 	return nil
 }
