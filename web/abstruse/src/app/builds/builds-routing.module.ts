@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { BuildsComponent } from './builds.component';
 import { BuildsDetailsComponent } from './builds-details/builds-details.component';
 import { BuildsJobDetailsComponent } from './builds-job-details/builds-job-details.component';
-import { BuildsCurrentComponent } from './builds-current/builds-current.component';
+import { BuildsHistoryComponent } from './builds-history/builds-history.component';
 
 const buildsRoutes: Routes = [
   {
@@ -12,7 +12,7 @@ const buildsRoutes: Routes = [
     component: BuildsComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: '/repositories' },
-      { path: ':repoid', component: BuildsCurrentComponent },
+      { path: ':repoid', component: BuildsHistoryComponent },
       { path: ':repoid/:buildid', component: BuildsDetailsComponent },
       { path: ':repoid/:buildid/:jobid', component: BuildsJobDetailsComponent }
     ]

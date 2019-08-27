@@ -1,0 +1,23 @@
+<div class="builds-info-container is-borderless" *ngIf="repo">
+  <div class="columns is-multiline info-columns">
+    <div class="column is-8 align-center">
+      <a class="info-text" [routerLink]="['/builds', repo?.id]">
+        <i class="octicon octicon-repo repo-icon"></i>
+        <span class="repo-name">{{ repo?.name }}</span>
+      </a>
+      <div class="info-text">
+        <i class="octicon octicon-git-branch"></i>
+        <span class="branch">{{ repo?.default_branch }}</span>
+      </div>
+    </div>
+    <div class="column is-4 justify-end">
+      <button type="button" class="button">
+        <i class="fas fa-sliders-h"></i>
+        <span>Repository Settings</span>
+      </button>
+    </div>
+    <div class="column is-12">
+      <hr />
+    </div>
+  </div>
+</div>

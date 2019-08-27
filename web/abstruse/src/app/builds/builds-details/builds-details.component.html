@@ -1,15 +1,14 @@
 <div class="columns is-multiline">
   <div class="column is-12">
-    <app-builds-nav [tab]="'build'" [buildid]="buildid"></app-builds-nav>
+    <app-builds-repo-info [repo]="build?.repository"></app-builds-repo-info>
   </div>
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="!build">
+    <app-loader></app-loader>
+  </div>
+  <div class="column is-12" *ngIf="build">
     <app-builds-info-container [build]="build"></app-builds-info-container>
   </div>
-  <div class="column is-12">
-    <h2 class="plr10">Jobs</h2>
-    <hr class="header-border" />
-  </div>
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="build">
     <app-builds-job-list-item [build]="build" [job]="job" *ngFor="let job of build?.jobs"></app-builds-job-list-item>
   </div>
 </div>

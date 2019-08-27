@@ -2,33 +2,6 @@
   <div class="columns is-multiline info-columns">
     <div class="column is-12">
       <div class="columns align-center">
-        <div class="column is-8 align-center">
-          <div class="info-text">
-            <i class="octicon octicon-repo repo-icon"></i>
-            <span class="repo-name">{{ build?.repository?.name }}</span>
-          </div>
-          <div class="info-text">
-            <i class="octicon octicon-git-branch"></i>
-            <span class="branch">{{ build?.branch }}</span>
-          </div>
-        </div>
-        <div class="column is-4 justify-end">
-          <button type="button" class="button" [disabled]="build?.processing">
-            <i class="fas fa-sync-alt"></i>
-            <span>Restart</span>
-          </button>
-          <button type="button" class="button" [disabled]="build?.processing || build?.status !== 'running'">
-            <i class="fas fa-hand-paper"></i>
-            <span>Stop</span>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="column is-12">
-      <hr />
-    </div>
-    <div class="column is-12">
-      <div class="columns align-center">
         <div class="column is-2">
           <div class="info-text" *ngIf="!job">
             <span class="status-item"

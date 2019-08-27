@@ -1,1 +1,11 @@
-<p>builds-history works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <app-builds-repo-info [repo]="build?.repository"></app-builds-repo-info>
+  </div>
+  <div class="column is-12" *ngIf="fetching">
+    <app-loader></app-loader>
+  </div>
+  <div class="column is-12" *ngIf="!fetching && builds">
+    <app-builds-list-item [build]="build" *ngFor="let build of builds"></app-builds-list-item>
+  </div>
+</div>

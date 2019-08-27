@@ -12,11 +12,11 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
   styleUrls: ['./builds-details.component.sass']
 })
 export class BuildsDetailsComponent implements OnInit, OnDestroy {
+  repoid: number;
   buildid: number;
   fetching: boolean;
   build: Build;
   sub: Subscription;
-  tab: 'jobs' | 'config';
 
   constructor(
     public route: ActivatedRoute,
@@ -24,8 +24,8 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.repoid = this.route.snapshot.params.repoid;
     this.buildid = this.route.snapshot.params.buildid;
-    this.tab = 'jobs';
     this.fetchBuildInfo();
 
     this.sub = this.buildService.jobEvents().subscribe((ev: SocketEvent) => {

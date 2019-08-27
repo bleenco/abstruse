@@ -1,0 +1,79 @@
+.builds-info-container
+  margin: 10px 0
+
+  &.is-borderless
+    margin: 0
+
+    .info-columns
+      border: 1px solid transparent
+      padding: 0 !important
+
+  .info-columns
+    padding: 10px !important
+    margin: 0 !important
+    border: 1px solid $border-default
+
+  hr
+    background: $border-default
+
+  .info-text
+    display: inline-flex
+    align-items: center
+    padding: 5px 20px 5px 0
+
+    i
+      font-size: 16px
+      margin-right: 5px
+
+      &.repo-icon
+        font-size: 20px
+
+      &.time-icon
+        font-size: 18px
+
+    span
+      font-size: 15px
+
+      &.repo-name
+        font-family: $font-family-bold
+        font-size: 20px
+        margin-right: 15px
+
+      &.desc-text
+        font-size: 13px
+
+    &.running-time
+      padding-right: 0
+
+      span
+        font-size: 18px
+        font-family: $font-family-medium
+
+    .committer-avatar
+      display: block
+      width: 30px
+      height: 30px
+      margin-right: 10px
+
+    .status-item
+      padding: 3px 30px
+
+      .status-title
+
+        i
+          margin-right: 10px
+
+        span
+          font-size: 12px
+
+    &.is-green
+      color: $green
+
+    &.is-red
+      color: $red
+
+    &.is-yellow
+      color: $yellow
+
+    &.is-grey
+      color: $grey
