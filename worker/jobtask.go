@@ -1,11 +1,17 @@
 package worker
 
 import (
+	"fmt"
+
 	pb "github.com/bleenco/abstruse/proto"
 )
 
 // SendQueuedStatus sends job status queued to server.
 func SendQueuedStatus(id, name string) error {
+	if Client.JobProcessStream == nil {
+		return fmt.Errorf("job process stream unavailable")
+	}
+
 	task := &pb.JobStatus{
 		Id:   id,
 		Name: name,
@@ -17,6 +23,10 @@ func SendQueuedStatus(id, name string) error {
 
 // SendStoppedStatus sends job status stopped to server.
 func SendStoppedStatus(id, name string) error {
+	if Client.JobProcessStream == nil {
+		return fmt.Errorf("job process stream unavailable")
+	}
+
 	task := &pb.JobStatus{
 		Id:   id,
 		Name: name,
@@ -28,6 +38,10 @@ func SendStoppedStatus(id, name string) error {
 
 // SendRunningStatus sends job status running to server.
 func SendRunningStatus(id, name string) error {
+	if Client.JobProcessStream == nil {
+		return fmt.Errorf("job process stream unavailable")
+	}
+
 	task := &pb.JobStatus{
 		Id:   id,
 		Name: name,
@@ -39,6 +53,10 @@ func SendRunningStatus(id, name string) error {
 
 // SendFailingStatus sends job status failing to server.
 func SendFailingStatus(id, name string) error {
+	if Client.JobProcessStream == nil {
+		return fmt.Errorf("job process stream unavailable")
+	}
+
 	task := &pb.JobStatus{
 		Id:   id,
 		Name: name,
@@ -50,6 +68,10 @@ func SendFailingStatus(id, name string) error {
 
 // SendPassingStatus sends job status passing to server.
 func SendPassingStatus(id, name string) error {
+	if Client.JobProcessStream == nil {
+		return fmt.Errorf("job process stream unavailable")
+	}
+
 	task := &pb.JobStatus{
 		Id:   id,
 		Name: name,

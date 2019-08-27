@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net"
 	"sync"
+	"reflect"
+	"strconv"
 
 	"github.com/bleenco/abstruse/pkg/logger"
 )
@@ -86,11 +88,11 @@ func (a *Application) InitClient(client *Client) {
 		}
 
 		if msg.Type == "subscribe" {
-			client.subscribe(msg.Data["event"].(string), msg.Data)
+			client.subscribe(msg.Data["event"].(string), msg.Data["data"].(map[string]interface{}))
 		}
 
 		if msg.Type == "unsubscribe" {
-			client.unsubscribe(msg.Data["event"].(string), msg.Data)
+			client.unsubscribe(msg.Data["event"].(string), msg.Data["data"].(map[string]interface{}))
 		}
 	}
 }
@@ -109,13 +111,31 @@ func (a *Application) clientIndex(client *Client) (int, error) {
 }
 
 func checkValidSubscription(data, checks map[string]interface{}) bool {
+	if data == nil || checks == nil {
+		return true
+	}
+
 	for key, value := range data {
-		for k, v := range data {
-			if key == k && value == v {
-				return true
+	  for k, val := range checks {
+	    if key == k {
+				if toString(value) == toString(val) {
+					return true
+				}
 			}
-		}
+	  }
 	}
 
 	return false
+}
+
+func toString(val interface{}) string {
+	if reflect.TypeOf(val).String() == "string" {
+		return val.(string)
+	}
+
+	if reflect.TypeOf(val).String() == "int" {
+		return strconv.Itoa(val.(int))
+	}
+
+	return ""
 }

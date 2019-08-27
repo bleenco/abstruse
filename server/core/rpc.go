@@ -325,8 +325,8 @@ func (s *GRPCServer) JobProcess(stream pb.ApiService_JobProcessServer) error {
 		}
 
 		checks := map[string]interface{}{
-			"build_id": jobTask.buildID,
-			"job_id": jobTask.jobID,
+			"build_id": int(jobTask.buildID),
+			"job_id":   int(jobTask.jobID),
 		}
 		websocket.App.Broadcast("job_events", socketEvent, checks)
 	}
