@@ -1,3 +1,5 @@
+import { BehaviorSubject, timer } from 'rxjs';
+
 export class WorkerUsage {
   constructor(
     public capacity: number = 4,
@@ -9,6 +11,7 @@ export class WorkerUsage {
 
 export class Worker {
   usage: WorkerUsage = new WorkerUsage();
+  capacity_percent: BehaviorSubject<number>;
 
   constructor(
     public id: number,
@@ -19,6 +22,9 @@ export class Worker {
     public updated_at?: Date
   ) {
     this.resetUsage();
+    this.capacity_percent = new BehaviorSubject<number>(this.getCapacityPercent());
+
+    timer(0, 1000).subscribe(() => this.capacity_percent.next(this.getCapacityPercent()));
   }
 
   getStatus(): string {
@@ -57,6 +63,14 @@ export class Worker {
 
   getMemoryUsage(): string {
     return this.usage && this.usage.memory ? String(this.usage.memory) + '%' : '0%';
+  }
+
+  private getCapacityPercent(): number {
+    if (this.usage && typeof this.usage.capacity !== null && typeof this.usage.capacity_load !== null) {
+      return Number(this.usage.capacity_load) / Number(this.usage.capacity) * 100;
+    } else {
+      return 0;
+    }
   }
 
   private resetUsage(): void {
