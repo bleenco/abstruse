@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { getAPIURL } from 'src/app/core/shared/shared-functions';
-import { Hook } from './hook.model';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +32,13 @@ export class ReposService {
     return this.http.get<JSONResponse>(url);
   }
 
-  fetchRepositoryWebhooks(id: number): Observable<JSONResponse> {
-    const url = getAPIURL() + `/repositories/${id}/hooks`;
-    return this.http.get<JSONResponse>(url);
-  }
+  // fetchRepositoryWebhooks(id: number): Observable<JSONResponse> {
+  //   const url = getAPIURL() + `/repositories/${id}/hooks`;
+  //   return this.http.get<JSONResponse>(url);
+  // }
 
-  addRepositoryWebhook(id: number, data: Hook): Observable<JSONResponse> {
-    const url = getAPIURL() + `/repositories/${id}/hooks`;
-    return this.http.post<JSONResponse>(url, data);
-  }
+  // addRepositoryWebhook(id: number, data: Hook): Observable<JSONResponse> {
+  //   const url = getAPIURL() + `/repositories/${id}/hooks`;
+  //   return this.http.post<JSONResponse>(url, data);
+  // }
 }

@@ -137,7 +137,7 @@ export function generateBuildModel(data: any): Build {
     data.config,
     data.created_at ? new Date(data.created_at) : null,
     data.updated_at ? new Date(data.updated_at) : null,
-    data.start_time ? new Date(data.start_time) : null,
+    data.start_time ? new Date(data.start_time) : new Date(),
     data.end_time ? new Date(data.end_time) : null,
     data.repository ? generateRepoModel(data.repository) : null,
     data.author_avatar,

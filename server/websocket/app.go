@@ -3,9 +3,8 @@ package websocket
 import (
 	"errors"
 	"net"
-	"reflect"
-	"strconv"
 	"sync"
+	"fmt"
 
 	"github.com/bleenco/abstruse/pkg/logger"
 )
@@ -66,7 +65,7 @@ func (a *Application) Broadcast(event string, data map[string]interface{}, check
 
 	for _, c := range a.Clients {
 		for _, sub := range c.subs {
-			if sub.Event == event && checkValidSubscription(sub.Data, checks) {
+			if sub.Event == event && checkValidSubscription(sub.Data, checks, false) {
 				clients = append(clients, c)
 			}
 		}
@@ -118,7 +117,7 @@ func (a *Application) clientIndex(client *Client) (int, error) {
 	return index, errors.New("client not found")
 }
 
-func checkValidSubscription(data, checks map[string]interface{}) bool {
+func checkValidSubscription(data, checks map[string]interface{}, all bool) bool {
 	if data == nil || checks == nil {
 		return true
 	}
@@ -137,13 +136,9 @@ func checkValidSubscription(data, checks map[string]interface{}) bool {
 }
 
 func toString(val interface{}) string {
-	if reflect.TypeOf(val).String() == "string" {
-		return val.(string)
+	if val == nil {
+		return ""
 	}
 
-	if reflect.TypeOf(val).String() == "int" {
-		return strconv.Itoa(val.(int))
-	}
-
-	return ""
+	return fmt.Sprintf("%v", val)
 }

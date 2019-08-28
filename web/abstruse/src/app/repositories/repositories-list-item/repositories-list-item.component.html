@@ -1,22 +1,13 @@
-<div class="table-item list-item-type" [routerLink]="['/repositories', repo?.id]">
+<div class="table-item is-borderless" [routerLink]="['/builds', repo?.id]">
   <div class="columns">
     <div class="column is-3">
       <div class="justify-center align-center plr10">
         <div class="table-data is-number">
-          <i class="octicon octicon-code"></i>
+          <i class="octicon octicon-repo"></i>
         </div>
         <div class="table-data">
           <span class="data-text has-text-left is-title">{{ repo?.name }}</span>
         </div>
-      </div>
-    </div>
-    <div class="column is-1">
-      <div class="table-data justify-center">
-        <span class="data-label">Commit</span>
-        <span class="data-text justify-center">
-          <i class="octicon octicon-git-commit inline-icon"></i>
-          <span>21ce57f</span>
-        </span>
       </div>
     </div>
     <div class="column is-1">
@@ -28,6 +19,7 @@
         </span>
       </div>
     </div>
+    <div class="column is-2"></div>
     <div class="column is-1">
       <div class="table-data justify-center">
         <span class="data-label is-small">Provider</span>
@@ -42,15 +34,6 @@
       </div>
     </div>
     <div class="column is-2">
-      <div class="table-data justify-center">
-        <span class="data-label">Finished</span>
-        <div class="data-text justify-center">
-          <i class="octicon octicon-clock inline-icon"></i>
-          <span>1 month ago</span>
-        </div>
-      </div>
-    </div>
-    <div class="column is-2">
       <div class="table-data">
         <span class="data-label">Default Branch</span>
         <div class="data-text justify-center">
@@ -59,23 +42,7 @@
         </div>
       </div>
     </div>
-    <div class="column is-1">
-      <!-- <div class="table-data">
-        <div class="status-item is-medium" [ngClass]="{
-              'is-grey': repo?.status === 'queued',
-              'is-green': repo?.status === 'passing',
-              'is-red': repo?.status === 'failing',
-              'is-yellow': repo?.status === 'running' }">
-          <div class="status-title">
-            <i class="fas fa-check" *ngIf="repo?.status === 'passing'"></i>
-            <i class="fas fa-times" *ngIf="repo?.status === 'failing'"></i>
-            <i class="fas fa-clock" *ngIf="repo?.status === 'queued'"></i>
-            <i class="fas fa-hammer" *ngIf="repo?.status === 'running'"></i>
-            <span>{{ repo?.getStatus() }}</span>
-          </div>
-        </div>
-      </div> -->
-    </div>
+    <div class="column is-2"></div>
     <div class="column is-1 justify-center">
       <button type="button" class="button is-small">
         <i class="fas fa-chevron-down mr0"></i>

@@ -11,6 +11,10 @@
       </div>
     </div>
     <div class="column is-4 justify-end">
+      <button type="button" class="button" (click)="triggerBuild()" [disabled]="processing">
+        <i class="fas fa-hammer"></i>
+        <span>Trigger Build</span>
+      </button>
       <button type="button" class="button">
         <i class="fas fa-sliders-h"></i>
         <span>Repository Settings</span>

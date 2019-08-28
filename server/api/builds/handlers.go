@@ -36,20 +36,13 @@ func FindBuildsByRepoHandler(res http.ResponseWriter, req *http.Request, ps http
 		return
 	}
 
-	api.JSONResponse(res, http.StatusOK, api.Response{Data: builds})
-}
-
-// FindCurrentByRepoHandler => /api/builds/current/:id
-func FindCurrentByRepoHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-	id, _ := strconv.Atoi(ps.ByName("id"))
-
-	var build db.Build
-	if err := build.FindCurrentByRepoID(id); err != nil {
-		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
-		return
+	for _, build := range builds {
+		for _, job := range build.Jobs {
+			job.Log = ""
+		}
 	}
 
-	api.JSONResponse(res, http.StatusOK, api.Response{Data: build})
+	api.JSONResponse(res, http.StatusOK, api.Response{Data: builds})
 }
 
 // FindBuildInfoHandler => /api/builds/info/:id
@@ -60,6 +53,10 @@ func FindBuildInfoHandler(res http.ResponseWriter, req *http.Request, ps httprou
 	if err := build.FindAll(id); err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return
+	}
+
+	for _, job := range build.Jobs {
+		job.Log = ""
 	}
 
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: build})

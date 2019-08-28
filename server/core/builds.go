@@ -10,6 +10,7 @@ import (
 	"github.com/bleenco/abstruse/server/api/parser"
 	"github.com/bleenco/abstruse/server/api/providers/github"
 	"github.com/bleenco/abstruse/server/db"
+	"github.com/bleenco/abstruse/server/websocket"
 )
 
 // StartBuild saves new build info into db and schedule related jobs.
@@ -109,6 +110,14 @@ func StartBuild(repoID, pr int, branch, prTitle, commit, commitMessage string) e
 		}
 
 		MainScheduler.ScheduleJobTask(jobTask, build.ID, job.ID)
+	}
+
+	var b db.Build
+	if err := b.FindAll(int(build.ID)); err == nil {
+		data := map[string]interface{}{
+			"build": b,
+		}
+		websocket.App.Broadcast("build_events", data, nil)
 	}
 
 	return nil
