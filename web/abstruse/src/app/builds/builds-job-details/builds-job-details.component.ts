@@ -32,7 +32,7 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
     this.fetchJobInfo();
 
     this.sub = this.buildService.jobEvents().subscribe((ev: SocketEvent) => {
-
+      this.updateJobFromEvent(ev);
     });
   }
 
@@ -56,12 +56,21 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
   }
 
   updateJobFromEvent(ev: SocketEvent): void {
-    if (!this.job) {
+    if (!this.job || !ev.data) {
       return;
     }
 
-    this.job.start_time = ev.data.start_time;
-    this.job.end_time = ev.data.end_time;
-    this.job.status = ev.data.status;
+    if (ev.data.start_time) {
+      this.job.start_time = ev.data.start_time;
+    }
+    if (ev.data.end_time) {
+      this.job.end_time = ev.data.end_time;
+    }
+    if (ev.data.status) {
+      this.job.status = ev.data.status;
+    }
+    if (ev.data.log) {
+      this.job.log = ev.data.log;
+    }
   }
 }

@@ -58,16 +58,11 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    // if (typeof this.data.clear !== 'undefined') {
-    //   this.terminal.reset();
-    //   return;
-    // }
-
     this.terminal.write(this.data);
   }
 
   ngOnDestroy() {
     this.data = null;
-    this.terminal.destroy();
+    this.terminal.dispose();
   }
 }
