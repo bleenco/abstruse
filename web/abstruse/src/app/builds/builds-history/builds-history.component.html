@@ -21,8 +21,15 @@
       </div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!fetching && builds && builds.length">
+  <div class="column is-12" *ngIf="builds && builds.length">
     <app-builds-list-item [build]="build" *ngFor="let build of builds"></app-builds-list-item>
+    <div class="more-button-container align-center justify-center mtb10" *ngIf="!hideMoreButton">
+      <button type="button" class="button" (click)="fetchBuilds()">
+        <img src="/assets/images/icons/loader-bars-dark.svg" class="mr0" *ngIf="fetchingMore">
+        <i class="fas fa-ellipsis-v" *ngIf="!fetchingMore"></i>
+        <span *ngIf="!fetchingMore">Load More</span>
+      </button>
+    </div>
   </div>
   <div class="column is-4 is-offset-4 mtb10" *ngIf="!fetching && (!builds || !builds.length)">
     <div class="message">

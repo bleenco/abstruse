@@ -64,8 +64,8 @@ func (b *Build) FindAll(id int) error {
 }
 
 // FindBuildsByRepoID method.
-func FindBuildsByRepoID(repoID int) ([]Build, error) {
+func FindBuildsByRepoID(repoID, limit, offset int) ([]Build, error) {
 	var builds []Build
-	err := DB.Preload("Jobs").Preload("Repository").Where("repository_id = ?", repoID).Order("created_at desc").Find(&builds).Error
+	err := DB.Preload("Jobs").Preload("Repository").Where("repository_id = ?", repoID).Order("created_at desc").Limit(limit).Offset(offset).Find(&builds).Error
 	return builds, err
 }

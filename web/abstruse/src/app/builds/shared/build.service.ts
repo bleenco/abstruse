@@ -38,8 +38,8 @@ export class BuildService {
     return this.http.get<JSONResponse>(url);
   }
 
-  fetchBuildsByRepoID(repoID: number): Observable<JSONResponse> {
-    const url = getAPIURL() + `/builds/repo/${repoID}`;
+  fetchBuildsByRepoID(repoID: number, limit = 5, offset = 0): Observable<JSONResponse> {
+    const url = getAPIURL() + `/builds/repo/${repoID}/${limit}/${offset}`;
     return this.http.get<JSONResponse>(url);
   }
 

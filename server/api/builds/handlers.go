@@ -26,11 +26,13 @@ func TriggerBuildHandler(res http.ResponseWriter, req *http.Request, ps httprout
 	api.JSONResponse(res, http.StatusOK, api.BoolResponse{Data: true})
 }
 
-// FindBuildsByRepoHandler => /api/builds/repo/:id
+// FindBuildsByRepoHandler => /api/builds/repo/:id/:limit/:offset
 func FindBuildsByRepoHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, _ := strconv.Atoi(ps.ByName("id"))
+	limit, _ := strconv.Atoi(ps.ByName("limit"))
+	offset, _ := strconv.Atoi(ps.ByName("offset"))
 
-	builds, err := db.FindBuildsByRepoID(id)
+	builds, err := db.FindBuildsByRepoID(id, limit, offset)
 	if err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return

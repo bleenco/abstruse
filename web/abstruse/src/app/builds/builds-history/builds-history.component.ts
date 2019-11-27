@@ -14,11 +14,13 @@ import { Subscription } from 'rxjs';
 export class BuildsHistoryComponent implements OnInit, OnDestroy {
   repoid: number;
   fetching: boolean;
-  builds: Build[];
+  fetchingMore: boolean;
+  builds: Build[] = [];
   limit = 5;
   offset = 0;
   tab: 'all' | 'commits' | 'pr';
   sub: Subscription = new Subscription();
+  hideMoreButton = false;
 
   constructor(
     public route: ActivatedRoute,
@@ -54,16 +56,28 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
   }
 
   fetchBuilds(): void {
-    this.fetching = true;
-    this.buildService.fetchBuildsByRepoID(this.repoid).subscribe((resp: JSONResponse) => {
+    if (this.offset === 0) {
+      this.fetching = true;
+    } else {
+      this.fetchingMore = true;
+    }
+
+    this.buildService.fetchBuildsByRepoID(this.repoid, this.limit, this.offset).subscribe((resp: JSONResponse) => {
       if (resp && resp.data && resp.data.length) {
-        this.builds = resp.data.map(generateBuildModel);
-        this.builds.forEach(build => this.buildService.subscribeToJobEvents({ build_id: build.id }));
+        const builds = resp.data.map(generateBuildModel);
+        this.builds = this.builds.concat(builds);
+        builds.forEach(build => this.buildService.subscribeToJobEvents({ build_id: build.id }));
+        if (builds.length === this.limit) {
+          this.offset += builds.length;
+        } else {
+          this.hideMoreButton = true;
+        }
       }
     }, err => {
       console.error(err);
     }, () => {
       this.fetching = false;
+      this.fetchingMore = false;
     });
   }
 
