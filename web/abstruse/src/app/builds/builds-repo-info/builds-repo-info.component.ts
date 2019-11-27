@@ -19,7 +19,7 @@ export class BuildsRepoInfoComponent implements OnInit {
 
   triggerBuild(): void {
     this.processing = true;
-    this.buildService.triggerBuild().subscribe(resp => {
+    this.buildService.triggerBuild(this.repo.id).subscribe(resp => {
       console.log(resp);
     }, err => {
       console.error(err);

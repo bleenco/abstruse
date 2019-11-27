@@ -1,6 +1,7 @@
 package builds
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -10,8 +11,27 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// TriggerBuildHandler triggers test build for repository.
+// TriggerBuildHandler triggers test build for repository. => /api/builds/trigger
 func TriggerBuildHandler(res http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+	var form struct {
+		ID int `json:"id"`
+	}
+	if err := json.NewDecoder(req.Body).Decode(&form); err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	var repo db.Repository
+	if err := repo.Find(form.ID); err != nil {
+		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+		return
+	}
+
+	// if err := core.StartBuild(int(repo.ID), 3, "", "", "", ""); err != nil {
+	// 	api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
+	// 	return
+	// }
+
 	if err := core.StartBuild(1, 0, "abstruse-config-test", "", "3a1a22865810755508147331a08eb3af83946630", "chore(): update abstruse.yml configuration"); err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return

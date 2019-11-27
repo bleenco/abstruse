@@ -44,7 +44,7 @@ func FetchAbstruseConfig(url, branch, commit string, pr int) (string, error) {
 		}); err != nil {
 			return "", err
 		}
-	} else { // commit
+	} else if commit != "" { // commit
 		w, err := r.Worktree()
 		if err != nil {
 			return "", err

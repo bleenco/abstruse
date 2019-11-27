@@ -43,9 +43,9 @@ export class BuildService {
     return this.http.get<JSONResponse>(url);
   }
 
-  triggerBuild(): Observable<JSONResponse> {
+  triggerBuild(repoID: number): Observable<JSONResponse> {
     const url = getAPIURL() + '/builds/trigger';
-    return this.http.post<JSONResponse>(url, {});
+    return this.http.post<JSONResponse>(url, { id: repoID });
   }
 
   jobEvents(): Observable<SocketEvent> {
