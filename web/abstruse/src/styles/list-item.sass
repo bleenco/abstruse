@@ -28,7 +28,7 @@ $list-item-label-height: 22px
 
     .data-column
 
-      .heading-text, .data-text, .info-text
+      .heading-text, .data-text, .info-text, .data-with-label
         +ellipsis
         display: block
         line-height: 20px
@@ -55,9 +55,22 @@ $list-item-label-height: 22px
 
         .repo-name
           font-size: 15px
+          font-family: $font-family-medium
 
         .small-text
           font-size: 13px
+
+      .data-with-label
+
+        .data-label, .data-info
+          display: block
+
+        .data-label
+          margin-bottom: 3px
+          font-family: $font-family-medium
+          color: $text-label
+          text-transform: uppercase
+          font-size: 12px
 
       .data-text
         font-size: 14px
@@ -88,6 +101,10 @@ $list-item-label-height: 22px
         &.is-light
           color: $text-button
           font-family: $font-family-regular
+
+        .data-label
+          font-family: $font-family-medium
+          color: $text-label
 
         i, img
           width: 20px

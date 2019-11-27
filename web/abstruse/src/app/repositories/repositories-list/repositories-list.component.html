@@ -2,15 +2,13 @@
   <div class="column is-12 align-center">
     <div class="title-header">
       <h1>Repositories</h1>
-      <h4>Imported git repositories</h4>
+      <h4>git repositories</h4>
     </div>
   </div>
+  <div class="column is-12" *ngIf="repositories?.length">
+    <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
+  </div>
   <div class="column is-12">
-    <div class="table is-borderless">
-      <div class="table-items" *ngIf="repositories?.length">
-        <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>
-      </div>
-    </div>
     <div class="column is-12 justify-center align-center" *ngIf="!repositories.length && !fetchingRepositories">
       <span class="table-data justify-center align-center">
         <img class="img-icon" src="/assets/images/icons/important-dark.svg">
