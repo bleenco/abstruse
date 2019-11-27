@@ -1,5 +1,6 @@
 package db
 
+import "fmt"
 import "time"
 
 // Repository represents `repositories` db table.
@@ -47,9 +48,11 @@ func (r *Repository) Find(id int) error {
 }
 
 // FindRepositories method.
-func FindRepositories(userID int) ([]Repository, error) {
+func FindRepositories(userID int, order string) ([]Repository, error) {
 	var repos []Repository
 
-	err := DB.Where("user_id = ?", userID).Find(&repos).Error
+	fmt.Println(order)
+
+	err := DB.Where("user_id = ?", userID).Order(order).Find(&repos).Error
 	return repos, err
 }

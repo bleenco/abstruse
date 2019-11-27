@@ -19,7 +19,9 @@ func FetchRepositoriesHandler(res http.ResponseWriter, req *http.Request, ps htt
 		return
 	}
 
-	repos, err := db.FindRepositories(userID)
+	queryValues := req.URL.Query()
+
+	repos, err := db.FindRepositories(userID, queryValues.Get("order"))
 	if err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return

@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
+    "fuse.js": "^3.4.6",
     "highlight.js": "^9.15.10",
     "ngx-highlightjs": "^3.0.3",
     "rxjs": "~6.5.3",

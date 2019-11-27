@@ -11,6 +11,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 })
 export class SelectboxComponent implements ControlValueAccessor, OnInit {
   @Input() values: { value: any,  placeholder: string }[];
+  @Input() customIcon: string;
 
   innerValue: number | string | boolean;
   placeholder: string;

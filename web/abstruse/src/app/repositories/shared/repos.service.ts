@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { getAPIURL } from 'src/app/core/shared/shared-functions';
@@ -22,9 +22,10 @@ export class ReposService {
     this.configurationDialogOpened = false;
   }
 
-  fetchRepositories(): Observable<JSONResponse> {
+  fetchRepositories(order = 'updated_at desc'): Observable<JSONResponse> {
+    const params = new HttpParams().append('order', order);
     const url = getAPIURL() + `/repositories`;
-    return this.http.get<JSONResponse>(url);
+    return this.http.get<JSONResponse>(url, { params });
   }
 
   fetchRepository(id: number): Observable<JSONResponse> {

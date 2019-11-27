@@ -44,7 +44,6 @@ export function langs() {
     NgDatepickerModule,
     AngularSvgIconModule,
     HighlightModule.forRoot({ languages: langs }),
-
   ],
   declarations: [
     LoaderComponent,
