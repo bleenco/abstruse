@@ -1,9 +1,24 @@
-<div class="columns is-multiline">
-  <div class="column is-12 align-center">
-    <div class="title-header">
-      <h1>Repositories</h1>
-      <h4>git repositories</h4>
-    </div>
+<div class="columns is-multiline info-columns">
+  <div class="column is-6 align-center">
+    <h1>Repositories</h1>
+    <h4>git repositories</h4>
+  </div>
+  <div class="column is-6 justify-end align-center">
+    <button type="button" class="button">
+      <i class="fas fa-sliders-h"></i>
+      <span>Order: Last Build DESC</span>
+    </button>
+    <button type="button" class="button">
+      <i class="fas fa-eye"></i>
+      <span>Display: All</span>
+    </button>
+    <button type="button" class="button">
+      <i class="fas fa-search"></i>
+      <span>Search</span>
+    </button>
+  </div>
+  <div class="column is-12 mb10">
+    <hr />
   </div>
   <div class="column is-12" *ngIf="repositories?.length">
     <app-repositories-list-item [repo]="repo" *ngFor="let repo of repositories"></app-repositories-list-item>

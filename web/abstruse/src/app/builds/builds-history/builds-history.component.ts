@@ -47,8 +47,10 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.buildService.unsubscribeFromBuildEvents();
-    this.builds.forEach(build => this.buildService.unsubscribeFromJobEvents({ build_id: build.id }));
     this.sub.unsubscribe();
+    if (this.builds && this.builds.length) {
+      this.builds.forEach(build => this.buildService.unsubscribeFromJobEvents({ build_id: build.id }));
+    }
   }
 
   fetchBuilds(): void {

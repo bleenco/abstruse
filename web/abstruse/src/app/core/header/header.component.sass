@@ -1,6 +1,7 @@
 @import 'colours'
 @import 'typography'
 @import 'variables'
+@import 'mixins'
 
 .header
   width: 100%
@@ -23,6 +24,7 @@
       align-items: center
 
     .header-item
+      +unselectable
       display: block
       color: $text-secondary
       font-family: $font-family-medium

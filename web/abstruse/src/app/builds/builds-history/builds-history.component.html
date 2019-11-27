@@ -2,7 +2,7 @@
   <div class="column is-12" *ngIf="fetching">
     <app-loader></app-loader>
   </div>
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="!fetching && builds && builds.length">
     <div class="tabs">
       <div class="tabs-heading"></div>
       <div class="tabs-items">
@@ -21,7 +21,15 @@
       </div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="!fetching && builds">
+  <div class="column is-12" *ngIf="!fetching && builds && builds.length">
     <app-builds-list-item [build]="build" *ngFor="let build of builds"></app-builds-list-item>
+  </div>
+  <div class="column is-4 is-offset-4 mtb10" *ngIf="!fetching && (!builds || !builds.length)">
+    <div class="message">
+      <p>
+        <i class="fas fa-search"></i>
+        No builds found.
+      </p>
+    </div>
   </div>
 </div>
