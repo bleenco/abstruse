@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/core"
@@ -92,6 +93,10 @@ func FindJobInfoHandler(res http.ResponseWriter, req *http.Request, ps httproute
 	if err := job.Find(id); err != nil {
 		api.JSONResponse(res, http.StatusInternalServerError, api.ErrorResponse{Data: err.Error()})
 		return
+	}
+
+	if proc, err := core.MainScheduler.FindJobProcessByJobID(int(job.ID)); err == nil {
+		job.Log = strings.Join(proc.Log, "")
 	}
 
 	api.JSONResponse(res, http.StatusOK, api.Response{Data: job})

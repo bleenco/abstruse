@@ -2,12 +2,15 @@ package core
 
 import (
 	"context"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/eapache/channels"
 	"github.com/bleenco/abstruse/pkg/logger"
 	pb "github.com/bleenco/abstruse/proto"
+	"github.com/bleenco/abstruse/server/websocket"
+	"github.com/eapache/channels"
 	"github.com/pkg/errors"
 )
 
@@ -16,6 +19,8 @@ var MainScheduler *Scheduler
 
 // Scheduler represents main master server scheduler.
 type Scheduler struct {
+	mu sync.RWMutex
+
 	Total int
 	Used  int
 
@@ -152,12 +157,43 @@ func (s *Scheduler) FinishJobTask(job *JobTask) {
 
 // AppendLog appends output log for running job.
 func (s *Scheduler) AppendLog(containerID, containerName, log string) error {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
 	proc, err := s.findJobProcess(containerName)
 	if err != nil {
 		return err
 	}
 	proc.Log = append(proc.Log, log)
+
+	socketEvent := map[string]interface{}{
+		"build_id": proc.buildID,
+		"job_id":   proc.jobID,
+		"log":      log,
+	}
+
+	checks := map[string]interface{}{
+		"job_id": int(proc.jobID),
+	}
+	websocket.App.Broadcast("job_events", socketEvent, checks)
+
 	return nil
+}
+
+// FindJobProcessByJobID finds running process by id.
+func (s *Scheduler) FindJobProcessByJobID(jobID int) (*JobTask, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	for _, proc := range s.processes {
+		splitted := strings.Split(proc.task.GetName(), "_")
+		id := strconv.Itoa(jobID)
+		if splitted[3] == id {
+			return proc, nil
+		}
+	}
+
+	return &JobTask{}, errors.New("job process not found")
 }
 
 func (s *Scheduler) findJobProcess(containerName string) (*JobTask, error) {
@@ -228,42 +264,4 @@ func (s *Scheduler) getWorker() string {
 	}
 
 	return workerID
-}
-
-// Queue defines FIFO job task buffer.
-type Queue struct {
-	nodes  []*JobTask
-	size   int
-	head   int
-	tail   int
-	count  int
-	logger *logger.Logger
-}
-
-// Push adds a node to the queue.
-func (q *Queue) Push(n *JobTask) {
-	if q.head == q.tail && q.count > 0 {
-		nodes := make([]*JobTask, len(q.nodes)+q.size)
-		copy(nodes, q.nodes[q.head:])
-		copy(nodes[len(q.nodes)-q.head:], q.nodes[:q.head])
-		q.head = 0
-		q.tail = len(q.nodes)
-		q.nodes = nodes
-	}
-	q.nodes[q.tail] = n
-	q.tail = (q.tail + 1) % len(q.nodes)
-	q.count++
-	q.logger.Debugf("job task %s saved to buffer [%d jobs in buffer]", n.task.Name, q.count)
-}
-
-// Pop removes and returns a node from the queue in first to last order.
-func (q *Queue) Pop() *JobTask {
-	if q.count == 0 {
-		return nil
-	}
-	node := q.nodes[q.head]
-	q.head = (q.head + 1) % len(q.nodes)
-	q.count--
-	q.logger.Debugf("returning job task %s from buffer [%d jobs in buffer]", node.task.Name, q.count)
-	return node
 }
