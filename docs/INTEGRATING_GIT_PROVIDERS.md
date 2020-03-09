@@ -6,7 +6,7 @@
 
 #### 1. Configuring secret token
 
-Abstruse configuration file is located in **~/.abstruse/config.json**.
+Abstruse configuration file is located in **~/abstruse-config/config.json**.
 
 The integration of GitHub webhooks and Abstruse is done using `secret` token. The default `secret` is set to **thisIsSecret**.
 
