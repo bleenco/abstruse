@@ -53,7 +53,7 @@ sudo ./get-docker.sh
 After script is done with its work add your user to the docker group. This will allow you running Docker containers with your user and not only root. janez stands for your username.
 
 ```sh
-sudo usermod -aG docker janez
+sudo usermod -aG docker $USER
 ```
 
 After this you need to open a new terminal where groups are populated again. There's no other way than opening new terminal/tab.
