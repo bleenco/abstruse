@@ -3,15 +3,15 @@
 The .abstruse.yml file at the root of the repo configures how Abstruse
 is building, testing and deploying your code. This document will list
 the different attributes abstruse understand and you can use to
-configure your builds:
+configure your builds. The attributes marked with an * are mandatory:
 
-## `image`
+## `image` *
 
 The `image` attribute tells abstruse which image to use for the builds
 of this repo. It HAS to match the name of one of the image you've
 created in the Images section of the abstruse app.
 
-## `matrix`
+## `matrix` *
 
 The `matrix` attribute is an array of hash describing the different
 builds you want to run for each commit. The most commonly used option
@@ -41,7 +41,7 @@ cache:
   - /var/lib/something_else
 ```
 
-## `branches`
+## `branches` *
 
 The `branches` attribute allows you to restrict job execution to
 certain branches. It contains a hash with two attributes: `test` and `ignore`.
