@@ -1,18 +1,15 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"log"
 
-	"github.com/jkuri/abstruse/pkg/config"
-	"github.com/jkuri/abstruse/pkg/core"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	"github.com/jkuri/abstruse/master/app"
+	"github.com/jkuri/abstruse/master/etcdserver"
 )
 
 var (
+	configPath  = flag.String("config", "docs/config/master.json", "config path")
 	etcdname    = flag.String("etcd-name", "abstruse", "Etcd cluster name")
 	etcdhost    = flag.String("etcd-host", "0.0.0.0", "Etcd listen host")
 	etcdcport   = flag.Int("etcd-cport", 2379, "Etcd client listen port")
@@ -23,55 +20,30 @@ var (
 func main() {
 	flag.Parse()
 
-	cfg := config.AppConfig{
-		Etcd: config.EtcdConfig{
-			Name:       *etcdname,
-			Host:       *etcdhost,
-			ClientPort: *etcdcport,
-			PeerPort:   *etcdpport,
-			DataDir:    *etcddatadir,
-		},
+	cfg, err := app.ReadAndParseConfig(*configPath)
+	if err != nil {
+		cfg = app.Config{
+			Cert: "/var/tmp/abstruse-master/cert.pem",
+			Key:  "/var/tmp/abstruse-master/key.pem",
+			Etcd: etcdserver.Config{
+				Name:       *etcdname,
+				Host:       *etcdhost,
+				ClientPort: *etcdcport,
+				PeerPort:   *etcdpport,
+				DataDir:    *etcddatadir,
+			},
+			LogLevel: "debug",
+		}
 	}
 
-	app, err := core.NewApp(cfg)
+	app, err := app.NewApp(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	go func() {
-		prefix := fmt.Sprintf("/%s/%s", "etcdv3_resolver", "abstruse_service")
-		cli := app.Etcd.Client()
-
-		addrDict := make(map[string]string)
-
-		printWorkers := func() {
-			for _, addr := range addrDict {
-				fmt.Printf("worker: %s\n", addr)
-			}
-		}
-
-		resp, err := cli.Get(context.Background(), prefix, clientv3.WithPrefix())
-		if err == nil {
-			for i := range resp.Kvs {
-				addrDict[string(resp.Kvs[i].Value)] = string(resp.Kvs[i].Value)
-			}
-		}
-
-		printWorkers()
-
-		rch := cli.Watch(context.Background(), prefix, clientv3.WithPrefix(), clientv3.WithPrevKV())
-		for n := range rch {
-			for _, ev := range n.Events {
-				switch ev.Type {
-				case mvccpb.PUT:
-					addrDict[string(ev.Kv.Key)] = string(ev.Kv.Value)
-				case mvccpb.DELETE:
-					delete(addrDict, string(ev.PrevKv.Key))
-				}
-			}
-			printWorkers()
-		}
-	}()
+	if err := app.Run(); err != nil {
+		log.Fatal(err)
+	}
 
 	app.Wait()
 }

@@ -2,7 +2,7 @@ package etcdutil
 
 import "errors"
 
-const servicePrefix = "abstruse"
+const ServicePrefix = "abstruse"
 
 var (
 	ErrKeyExists      = errors.New("key already exists")

@@ -11,7 +11,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-const workerService = "workers"
+const WorkerService = "workers"
 
 // Register etcd service registration.
 func Register(target, addr string, ttl int64, log *logger.Logger) error {
@@ -21,7 +21,7 @@ func Register(target, addr string, ttl int64, log *logger.Logger) error {
 	}
 
 	serviceValue := fmt.Sprintf("%s:%s", getOutboundIP(), port)
-	serviceKey := path.Join(servicePrefix, workerService, serviceValue)
+	serviceKey := path.Join(ServicePrefix, WorkerService, serviceValue)
 
 	cli, err := NewClient(target)
 	if err != nil {
@@ -34,11 +34,11 @@ func Register(target, addr string, ttl int64, log *logger.Logger) error {
 	}
 
 	if _, err := cli.Put(context.TODO(), serviceKey, serviceValue, clientv3.WithLease(resp.ID)); err != nil {
-		return fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", workerService, err.Error())
+		return fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", WorkerService, err.Error())
 	}
 
 	if _, err := cli.KeepAlive(context.TODO(), resp.ID); err != nil {
-		return fmt.Errorf("grpclb: refresh service '%s' with ttl to clientv3 failed: %s", workerService, err.Error())
+		return fmt.Errorf("grpclb: refresh service '%s' with ttl to clientv3 failed: %s", WorkerService, err.Error())
 	}
 
 	return nil

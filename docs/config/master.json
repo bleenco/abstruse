@@ -1,0 +1,16 @@
+{
+  "cert": "/var/tmp/abstruse-master/cert.pem",
+  "key": "/var/tmp/abstruse-master/key.pem",
+  "etcd": {
+    "name": "abstruse",
+    "host": "0.0.0.0",
+    "client_port": 2379,
+    "peer_port": 2380,
+    "data_dir": "/var/tmp/abstruse-master/data"
+  },
+  "grpc": {
+    "cert": "/var/tmp/abstruse-master/cert.pem",
+    "key": "/var/tmp/abstruse-master/key.pem"
+  },
+  "log_level": "debug"
+}

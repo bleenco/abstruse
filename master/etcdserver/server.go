@@ -6,19 +6,22 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/jkuri/abstruse/pkg/config"
+	"github.com/jkuri/abstruse/pkg/logger"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
 	"go.etcd.io/etcd/etcdserver/api/v3client"
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
 )
 
+// EtcdServer represents etcd embedded server.
 type EtcdServer struct {
 	server *embed.Etcd
 	cli    *clientv3.Client
+	log    *logger.Logger
 }
 
-func NewEtcdServer(ctx context.Context, config config.EtcdConfig) (*EtcdServer, error) {
+// NewEtcdServer returns EtcdServer instance.
+func NewEtcdServer(ctx context.Context, config Config, logger *logger.Logger) (*EtcdServer, error) {
 	cfg := embed.NewConfig()
 
 	cfg.Name = config.Name
@@ -37,7 +40,10 @@ func NewEtcdServer(ctx context.Context, config config.EtcdConfig) (*EtcdServer, 
 	cfg.AutoCompactionMode = v3compactor.ModePeriodic
 	cfg.AutoCompactionRetention = "1h" // every hour
 
-	log.Printf("starting %q with endpoint %q", cfg.Name, curl.String())
+	cfg.ClientAutoTLS = true
+	cfg.PeerAutoTLS = true
+
+	logger.Infof("starting %q with endpoint %q", cfg.Name, curl.String())
 	server, err := embed.StartEtcd(cfg)
 	if err != nil {
 		return nil, err
@@ -54,18 +60,20 @@ func NewEtcdServer(ctx context.Context, config config.EtcdConfig) (*EtcdServer, 
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("started %q with endpoint %q", cfg.Name, curl.String())
+	logger.Infof("started %q with endpoint %q", cfg.Name, curl.String())
 
 	cli := v3client.New(server.Server)
-	return &EtcdServer{server, cli}, nil
+	return &EtcdServer{server, cli, logger}, nil
 }
 
+// Stop stops etcd embedded server.
 func (es *EtcdServer) Stop() {
 	log.Printf("stopping an embedded etcd server")
 	es.server.Close()
 	log.Printf("stopped an embedded etcd server")
 }
 
+// Client returns etcd client.
 func (es *EtcdServer) Client() *clientv3.Client {
 	return es.cli
 }

@@ -19,27 +19,26 @@ func (w *logWriter) Write(bytes []byte) (int, error) {
 
 // Logger represents application logger.
 type Logger struct {
-	prefix      string
-	logger      *log.Logger
-	Info, Debug bool
+	prefix string
+	logger *log.Logger
+	level  string
 }
 
 // NewLogger returns new instance of Logger.
-func NewLogger(prefix string, info bool, debug bool) *Logger {
+func NewLogger(prefix, level string) *Logger {
 	logger := log.New(os.Stdout, "", 0)
 	logger.SetOutput(new(logWriter))
 
 	return &Logger{
 		prefix: prefix,
 		logger: logger,
-		Info:   info,
-		Debug:  debug,
+		level:  level,
 	}
 }
 
 // Infof method is used to print info messages.
 func (l *Logger) Infof(f string, args ...interface{}) {
-	if !l.Info {
+	if l.level == "none" || l.level == "error" || l.level == "fatal" {
 		return
 	}
 
@@ -54,7 +53,7 @@ func (l *Logger) Infof(f string, args ...interface{}) {
 
 // Debugf method is used to print debug messages.
 func (l *Logger) Debugf(f string, args ...interface{}) {
-	if !l.Debug {
+	if l.level != "debug" {
 		return
 	}
 
@@ -69,8 +68,12 @@ func (l *Logger) Debugf(f string, args ...interface{}) {
 
 // Errorf method is used to print error messages.
 func (l *Logger) Errorf(f string, args ...interface{}) {
+	if l.level == "none" {
+		return
+	}
+
 	if l.prefix != "" {
-		c := color.New(color.BgBlack, color.FgRed).SprintFunc()
+		c := color.New(color.BgRed, color.FgWhite).SprintFunc()
 		prefix := c(fixedLengthString(10, l.prefix))
 		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
 	} else {

@@ -9,35 +9,22 @@ import (
 // App defines main worker application.
 type App struct {
 	Server *rpc.Server
-	Config Config
 
-	loginfo  bool
-	logdebug bool
-	errch    chan error
+	config Config
+	errch  chan error
 }
 
 // NewApp returns main worker app instance.
 func NewApp(config Config) (*App, error) {
-	var info, debug bool
-
-	if config.LogLevel == "debug" {
-		info = true
-		debug = true
-	} else if config.LogLevel == "info" {
-		info = true
-	}
-
-	grpcServer, err := rpc.NewServer(config.GRPC, logger.NewLogger("grpc", info, debug))
+	grpcServer, err := rpc.NewServer(config.GRPC, logger.NewLogger("grpc", config.LogLevel))
 	if err != nil {
 		return nil, err
 	}
 
 	return &App{
-		Server:   grpcServer,
-		Config:   config,
-		loginfo:  info,
-		logdebug: debug,
-		errch:    make(chan error),
+		Server: grpcServer,
+		config: config,
+		errch:  make(chan error),
 	}, nil
 }
 
@@ -50,8 +37,8 @@ func (app *App) Run() error {
 	}()
 
 	go func() {
-		log := logger.NewLogger("etcd", app.loginfo, app.logdebug)
-		if err := etcdutil.Register(app.Config.ServerAddr, app.Config.GRPC.ListenAddr, 5, log); err != nil {
+		log := logger.NewLogger("etcd", app.config.LogLevel)
+		if err := etcdutil.Register(app.config.ServerAddr, app.config.GRPC.ListenAddr, 5, log); err != nil {
 			log.Errorf("%v", err)
 		}
 	}()
