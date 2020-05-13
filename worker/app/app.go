@@ -51,7 +51,9 @@ func (app *App) Run() error {
 
 	go func() {
 		log := logger.NewLogger("etcd", app.loginfo, app.logdebug)
-		etcdutil.Register(app.Config.ServerAddr, app.Config.GRPC.ListenAddr, 10, log)
+		if err := etcdutil.Register(app.Config.ServerAddr, app.Config.GRPC.ListenAddr, 5, log); err != nil {
+			log.Errorf("%v", err)
+		}
 	}()
 
 	return <-app.errch
