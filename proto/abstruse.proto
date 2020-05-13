@@ -1,15 +1,22 @@
 syntax = "proto3";
 
-package abstruse.api.v1;
+package abstruse.api;
 
-option go_package = "proto;abstruse_api_v1";
+option go_package = "proto;abstruse_api";
 
-service Greeter {
-  rpc SayHello(HelloRequest) returns (HelloReply) {}
+import "google/protobuf/empty.proto";
+
+// service Greeter {
+//   rpc SayHello(HelloRequest) returns (HelloReply) {}
+// }
+
+// // The request message containing the user's name.
+// message HelloRequest { string name = 1; }
+
+// // The response message containing the greetings
+// message HelloReply { string message = 1; }
+
+service Api {
+  rpc Heartbeat(stream google.protobuf.Empty)
+      returns (stream google.protobuf.Empty) {}
 }
-
-// The request message containing the user's name.
-message HelloRequest { string name = 1; }
-
-// The response message containing the greetings
-message HelloReply { string message = 1; }

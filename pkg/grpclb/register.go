@@ -3,6 +3,7 @@ package grpclb
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ var Deregister = make(chan struct{})
 
 // Register impl.
 func Register(target, service, host, port string, interval time.Duration, ttl int) error {
-	serviceValue := net.JoinHostPort(host, port)
+	serviceValue := net.JoinHostPort(getOutboundIP(), port)
 	serviceKey := fmt.Sprintf("/%s/%s/%s", schema, service, serviceValue)
 
 	// get endpoints for register dial addr.
@@ -53,4 +54,16 @@ func Register(target, service, host, port string, interval time.Duration, ttl in
 func Unregister() {
 	Deregister <- struct{}{}
 	<-Deregister
+}
+
+func getOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP.String()
 }
