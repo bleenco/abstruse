@@ -67,6 +67,17 @@ func (l *Logger) Debugf(f string, args ...interface{}) {
 	}
 }
 
+// Errorf method is used to print error messages.
+func (l *Logger) Errorf(f string, args ...interface{}) {
+	if l.prefix != "" {
+		c := color.New(color.BgBlack, color.FgRed).SprintFunc()
+		prefix := c(fixedLengthString(10, l.prefix))
+		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
+	} else {
+		l.logger.Printf(f, args...)
+	}
+}
+
 func fixedLengthString(length int, str string) string {
 	verb := fmt.Sprintf("%%-%d.%ds", length, length)
 	return fmt.Sprintf(verb, str)

@@ -1,0 +1,9 @@
+{
+  "server_addr": "localhost:2379",
+  "grpc": {
+    "listen_addr": "0.0.0.0:3331",
+    "cert": "/var/tmp/worker2/cert.pem",
+    "key": "/var/tmp/worker2/key.pem"
+  },
+  "log_level": "debug"
+}

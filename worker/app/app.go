@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/jkuri/abstruse/pkg/etcdutil"
 	"github.com/jkuri/abstruse/pkg/logger"
 	"github.com/jkuri/abstruse/worker/rpc"
 )
@@ -8,8 +9,11 @@ import (
 // App defines main worker application.
 type App struct {
 	Server *rpc.Server
+	Config Config
 
-	errch chan error
+	loginfo  bool
+	logdebug bool
+	errch    chan error
 }
 
 // NewApp returns main worker app instance.
@@ -29,8 +33,11 @@ func NewApp(config Config) (*App, error) {
 	}
 
 	return &App{
-		Server: grpcServer,
-		errch:  make(chan error),
+		Server:   grpcServer,
+		Config:   config,
+		loginfo:  info,
+		logdebug: debug,
+		errch:    make(chan error),
 	}, nil
 }
 
@@ -40,6 +47,11 @@ func (app *App) Run() error {
 		if err := app.Server.Listen(); err != nil {
 			app.errch <- err
 		}
+	}()
+
+	go func() {
+		log := logger.NewLogger("etcd", app.loginfo, app.logdebug)
+		etcdutil.Register(app.Config.ServerAddr, app.Config.GRPC.ListenAddr, 10, log)
 	}()
 
 	return <-app.errch
