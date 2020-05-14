@@ -3,6 +3,8 @@ package rpc
 import (
 	"time"
 
+	"github.com/jkuri/abstruse/pkg/utils"
+
 	pb "github.com/jkuri/abstruse/proto"
 	"github.com/jkuri/abstruse/worker/stats"
 )
@@ -24,8 +26,9 @@ func (s *Server) UsageStats(stream pb.Api_UsageStatsServer) error {
 	for range ticker.C {
 		cpu, mem := stats.GetUsageStats()
 		if err := stream.Send(&pb.UsageStatsReply{
-			Cpu: cpu,
-			Mem: mem,
+			Cpu:       cpu,
+			Mem:       mem,
+			Timestamp: utils.FormatTime(time.Now()),
 		}); err != nil {
 			errch <- err
 		}

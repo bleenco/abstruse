@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"path"
 
 	"github.com/jkuri/abstruse/master/rpc"
@@ -23,6 +24,7 @@ func (app *App) watchWorkers() error {
 				}
 				app.workers[string(ev.Kv.Key)] = client
 				go app.initClient(client)
+				go app.handleWorkerUsage(client)
 			case mvccpb.DELETE:
 				delete(app.workers, string(ev.Kv.Key))
 			}
@@ -34,5 +36,15 @@ func (app *App) watchWorkers() error {
 func (app *App) initClient(client *rpc.Client) {
 	if err := client.Run(); err != nil {
 		app.log.Errorf("failed connecting to worker %s", client.Conn.Target())
+	}
+}
+
+func (app *App) handleWorkerUsage(client *rpc.Client) {
+	for {
+		usage, ok := <-client.Data.Usage
+		if !ok {
+			break
+		}
+		fmt.Printf("%+v\n", usage)
 	}
 }

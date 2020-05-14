@@ -34,4 +34,5 @@ message HostInfoReply {
 message UsageStatsReply {
   int32 cpu = 1;
   int32 mem = 2;
+  string timestamp = 3;
 }

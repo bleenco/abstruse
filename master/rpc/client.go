@@ -20,13 +20,19 @@ type Config struct {
 	Key  string `json:"key"`
 }
 
-// Client represent gRPC client connection.
+// Client represent gRPC client.
 type Client struct {
 	Host   *HostInfo
 	Conn   *grpc.ClientConn
 	CLI    pb.ApiClient
+	Data   Data
 	config Config
 	logger *logger.Logger
+}
+
+// Data represents data channels.
+type Data struct {
+	Usage chan *Usage
 }
 
 // NewClient returns new instance of gRPC client.
@@ -57,12 +63,16 @@ func NewClient(addr string, config Config, logLevel string) (*Client, error) {
 		return nil, err
 	}
 	cli := pb.NewApiClient(conn)
+	data := Data{
+		Usage: make(chan *Usage),
+	}
 
 	return &Client{
 		config: config,
 		logger: logger,
 		Conn:   conn,
 		CLI:    cli,
+		Data:   data,
 	}, nil
 }
 
@@ -86,7 +96,7 @@ func (c *Client) Run() error {
 	}()
 
 	go func() {
-		if err := c.UsageStats(context.Background()); err != nil {
+		if err := c.UsageStats(context.Background(), c.Data.Usage); err != nil {
 			ch <- err
 		}
 	}()
