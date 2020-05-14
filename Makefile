@@ -30,7 +30,7 @@ install_dependencies:
 	@cd web/abstruse && yarn install
 
 clean:
-	@rm -rf build/
+	@rm -rf build/ web/abstruse/dist master/ui/
 
 grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.
