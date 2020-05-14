@@ -22,11 +22,17 @@ func (app *App) watchWorkers() error {
 					return err
 				}
 				app.workers[string(ev.Kv.Key)] = client
-				go client.Run()
+				go app.initClient(client)
 			case mvccpb.DELETE:
 				delete(app.workers, string(ev.Kv.Key))
 			}
 		}
 	}
 	return nil
+}
+
+func (app *App) initClient(client *rpc.Client) {
+	if err := client.Run(); err != nil {
+		app.log.Errorf("worker connecting error %s %s", client.ID, client.Conn.Target())
+	}
 }

@@ -45,7 +45,7 @@ func (l *Logger) Infof(f string, args ...interface{}) {
 	if l.prefix != "" {
 		c := color.New(color.BgBlack, color.FgWhite).SprintFunc()
 		prefix := c(fixedLengthString(10, l.prefix))
-		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
+		l.logger.Printf("["+c(prefix)+"]"+": "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}
@@ -60,7 +60,7 @@ func (l *Logger) Debugf(f string, args ...interface{}) {
 	if l.prefix != "" {
 		c := color.New(color.BgBlack, color.FgWhite).SprintFunc()
 		prefix := c(fixedLengthString(10, l.prefix))
-		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
+		l.logger.Printf("["+c(prefix)+"]"+": "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}
@@ -73,9 +73,9 @@ func (l *Logger) Errorf(f string, args ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		c := color.New(color.BgRed, color.FgWhite).SprintFunc()
-		prefix := c(fixedLengthString(10, l.prefix))
-		l.logger.Printf(c("[")+prefix+c("]")+": "+f, args...)
+		c := color.New(color.BgBlack, color.FgRed).SprintFunc()
+		prefix := fixedLengthString(10, l.prefix)
+		l.logger.Printf("["+c(prefix)+"]"+": "+f, args...)
 	} else {
 		l.logger.Printf(f, args...)
 	}
