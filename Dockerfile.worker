@@ -1,0 +1,22 @@
+# stage 1 build
+FROM golang:1.14-alpine as build
+
+WORKDIR /app
+
+RUN apk --no-cache add git make protobuf protobuf-dev ca-certificates
+
+COPY . /app/
+
+RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go
+
+RUN make grpc && make worker
+
+# stage 2 image
+FROM alpine
+
+COPY --from=build /etc/ssl/certs /etc/ssl/certs
+COPY --from=build /app/build/abstruse-worker /usr/bin/abstruse-worker
+
+CMD [ "/usr/bin/abstruse-worker", "--config", "/config.json" ]
+
+EXPOSE 3330

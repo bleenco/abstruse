@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"time"
 
 	"github.com/jkuri/abstruse/pkg/security"
 
@@ -67,7 +68,9 @@ func NewClient(addr string, config Config, logLevel string) (*Client, error) {
 
 // Run connects to worker gRPC server.
 func (c *Client) Run() error {
-	info, err := c.HostInfo(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	info, err := c.HostInfo(ctx)
 	if err != nil {
 		return err
 	}

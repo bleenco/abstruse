@@ -16,7 +16,7 @@ func NewClient(target string) (*clientv3.Client, error) {
 
 	return clientv3.New(clientv3.Config{
 		Endpoints:   strings.Split(target, ","),
-		DialTimeout: 5 * time.Second,
+		DialTimeout: 3 * time.Second,
 		LogConfig:   &lcfg,
 	})
 }

@@ -11,16 +11,14 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-const WorkerService = "workers"
-
 // Register etcd service registration.
 func Register(target, addr string, ttl int64, log *logger.Logger) error {
-	_, port, err := net.SplitHostPort(addr)
+	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return err
 	}
 
-	serviceValue := fmt.Sprintf("%s:%s", getOutboundIP(), port)
+	serviceValue := fmt.Sprintf("%s:%s", host, port)
 	serviceKey := path.Join(ServicePrefix, WorkerService, serviceValue)
 
 	cli, err := NewClient(target)
