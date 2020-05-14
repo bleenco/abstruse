@@ -2,3 +2,4 @@ web/abstruse/node_modules
 web/abstruse/dist
 build/
 go.sum
+vendor/

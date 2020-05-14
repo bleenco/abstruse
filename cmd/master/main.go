@@ -2,12 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/jkuri/abstruse/master/app"
 	"github.com/jkuri/abstruse/master/etcdserver"
 	"github.com/jkuri/abstruse/master/httpserver"
 	"github.com/jkuri/abstruse/master/rpc"
+	"github.com/jkuri/abstruse/pkg/version"
 )
 
 var (
@@ -17,10 +20,16 @@ var (
 	etcdcport   = flag.Int("etcd-cport", 2379, "Etcd client listen port")
 	etcdpport   = flag.Int("etcd-pport", 2380, "Etcd peer listen port")
 	etcddatadir = flag.String("etcd-data-dir", "/var/tmp/etcd-data", "Etcd data directory")
+	versionflag = flag.Bool("version", false, "version")
 )
 
 func main() {
 	flag.Parse()
+
+	if *versionflag {
+		fmt.Printf("%s\n", version.GenerateBuildVersionString())
+		os.Exit(0)
+	}
 
 	cfg, err := app.ReadAndParseConfig(*configPath)
 	if err != nil {
