@@ -9,6 +9,7 @@ import { AuthGuardService } from './providers/auth-guard.service';
 import { StatusService } from './providers/status.service';
 import { TimeService } from './providers/time.service';
 import { HttpClientModule } from '@angular/common/http';
+import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
 
 @NgModule({
   imports: [
@@ -16,11 +17,14 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     HttpClientModule
   ],
-  declarations: [],
+  declarations: [
+    ProgressBarComponent
+  ],
   exports: [
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ProgressBarComponent
   ]
 })
 export class SharedModule {

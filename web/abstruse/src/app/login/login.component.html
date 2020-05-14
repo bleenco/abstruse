@@ -27,6 +27,7 @@
               <div class="align-center justify-center">
                 <button type="submit" class="button" [disabled]="!loginForm.valid">
                   <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+                  <span *ngIf="loading">Logging in...</span>
                   <span *ngIf="!loading">Login</span>
                 </button>
               </div>

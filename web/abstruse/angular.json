@@ -28,7 +28,7 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/@fortawesome-free/fontawesome/webfonts",
+                "input": "./node_modules/@fortawesome/fontawesome-free/webfonts",
                 "output": "./assets/fonts/fa"
               }
             ],
@@ -102,7 +102,7 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "./node_modules/@fortawesome-free/fontawesome/webfonts",
+                "input": "./node_modules/@fortawesome/fontawesome-free/webfonts",
                 "output": "./assets/fonts/fa"
               }
             ],

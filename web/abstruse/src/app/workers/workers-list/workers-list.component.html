@@ -1,1 +1,55 @@
-<p>workers-list works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12 align-center">
+    <h1>Workers</h1>
+    <h4>Server nodes</h4>
+  </div>
+  <!-- <div class="column is-12">
+    <div class="notification is-orange">
+      <img src="/assets/images/icons/important.svg" class="notification-icon">
+      <img src="/assets/images/icons/close.svg" class="close-icon">
+      <p>No workers found. Please connect at least one worker in order to run builds.</p>
+    </div>
+  </div> -->
+  <div class="column is-12">
+    <div class="table">
+      <div class="headers">
+        <div class="columns">
+          <div class="column is-1 justify-center">
+            <span class="header-title">ID</span>
+          </div>
+          <div class="column is-3 justify-center">
+            <span class="header-title">IP</span>
+          </div>
+          <div class="column is-1 justify-center">
+            <span class="header-title">Capacity</span>
+          </div>
+          <div class="column is-1 justify-center">
+            <span class="header-title">CPU</span>
+          </div>
+          <div class="column is-1 justify-center">
+            <span class="header-title">Memory</span>
+          </div>
+          <div class="column is-3 justify-center">
+            <span class="header-title">Status</span>
+          </div>
+          <div class="column is-2 justify-center"></div>
+        </div>
+      </div>
+      <div class="table-items">
+        <div *ngIf="workers.length">
+          <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
+        </div>
+        <div class="table-item" *ngIf="!workers.length">
+          <div class="columns">
+            <div class="column is-12 justify-center align-center">
+              <span class="table-data justify-center align-center">
+                <img class="img-icon" src="/assets/images/icons/important-dark.svg">
+                <span class="color-secondary is-medium">No workers found.</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,8 +6,8 @@
   width: 230px
   background: $white
   position: absolute
-  top: 40px
-  right: -20px
+  top: 52px
+  right: -15px
   border-radius: 4px
   display: none
   border: 1px solid $border-default
@@ -16,6 +16,19 @@
   &.is-open
     display: block
     z-index: 20
+
+  &:after
+    content: ''
+    display: block
+    width: 20px
+    height: 20px
+    position: absolute
+    transform: rotate(-45deg)
+    border: solid $border-default
+    border-width: 1px 1px 0 0
+    top: -10px
+    right: 20px
+    background: $white
 
   .header-dropdown-container
     width: 100%
@@ -27,13 +40,14 @@
       display: flex
       align-items: center
       color: $text-menu
-      font-size: 13px
-      padding: 8px 18px
+      font-size: 14px
+      padding: 10px 18px
+      font-family: $font-family-regular
 
       &.bordered-bottom
-        border-bottom: 1px solid $border-box
+        border-bottom: 1px solid $border-default
 
-      &:hover
+      &:hover:not(.avatar-item)
         color: $green
 
       &.avatar-item
@@ -46,7 +60,7 @@
         .hd-avatar
           width: 32px
           height: 32px
-          border-radius: 6px
+          border-radius: 50%
           border: 1px solid rgb(232, 235, 240)
           margin-right: 20px
           color: $white
