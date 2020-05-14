@@ -1,0 +1,36 @@
+<header class="header">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-12">
+        <nav class="header-container">
+          <div class="header-left">
+            <a class="header-item logo" [routerLink]="['/']">
+              <img src="/assets/images/abstruse-text-black.svg">
+            </a>
+          </div>
+          <div class="header-right">
+            <a class="header-item" [routerLink]="['/dashboard']" routerLinkActive="is-active">
+              Dashboard
+            </a>
+            <a class="header-item" [routerLink]="['/repositories']" routerLinkActive="is-active">
+              Repositories
+            </a>
+            <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
+              Workers
+            </a>
+            <a class="header-item" [routerLink]="['/teams']" routerLinkActive="is-active">
+              Teams
+            </a>
+            <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active">
+              Images
+            </a>
+            <div class="header-item">
+              <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
+              <app-header-dropdown [class.is-open]="dropdownOpened"></app-header-dropdown>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>

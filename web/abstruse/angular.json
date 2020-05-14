@@ -25,12 +25,22 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@fortawesome-free/fontawesome/webfonts",
+                "output": "./assets/fonts/fa"
+              }
             ],
             "styles": [
-              "src/styles.sass"
+              "src/styles/app.sass"
             ],
-            "scripts": []
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            }
           },
           "configurations": {
             "production": {
@@ -89,12 +99,22 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@fortawesome-free/fontawesome/webfonts",
+                "output": "./assets/fonts/fa"
+              }
             ],
             "styles": [
-              "src/styles.sass"
+              "src/styles/app.sass"
             ],
-            "scripts": []
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            }
           }
         },
         "lint": {
@@ -123,6 +143,13 @@
           }
         }
       }
-    }},
-  "defaultProject": "abstruse"
+    }
+  },
+  "defaultProject": "abstruse",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "sass",
+      "skipTests": true
+    }
+  }
 }

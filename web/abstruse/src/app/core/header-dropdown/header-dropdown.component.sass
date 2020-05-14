@@ -1,0 +1,72 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+
+\:host
+  width: 230px
+  background: $white
+  position: absolute
+  top: 40px
+  right: -20px
+  border-radius: 4px
+  display: none
+  border: 1px solid $border-default
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06)
+
+  &.is-open
+    display: block
+    z-index: 20
+
+  .header-dropdown-container
+    width: 100%
+    padding: 0
+    text-transform: none
+
+    .hd-item
+      width: 100%
+      display: flex
+      align-items: center
+      color: $text-menu
+      font-size: 13px
+      padding: 8px 18px
+
+      &.bordered-bottom
+        border-bottom: 1px solid $border-box
+
+      &:hover
+        color: $green
+
+      &.avatar-item
+        padding-top: 16px
+        padding-bottom: 16px
+
+        &:hover
+          color: $text-menu
+
+        .hd-avatar
+          width: 32px
+          height: 32px
+          border-radius: 6px
+          border: 1px solid rgb(232, 235, 240)
+          margin-right: 20px
+          color: $white
+
+        .name, .email
+          display: block
+          text-align: left
+          line-height: 12px
+
+        .name
+          font-size: 13px
+          color: rgb(39, 44, 55)
+          padding-top: 5px
+          padding-bottom: 5px
+
+        .email
+          font-size: 11px
+          color: rgb(142, 155, 178)
+
+      &.logout-item
+        padding-bottom: 16px
+        padding-top: 14px
+        border-top: 1px solid $border-box

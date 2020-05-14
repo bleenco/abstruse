@@ -1,0 +1,58 @@
+@import 'colours'
+@import 'typography'
+@import 'variables'
+@import 'mixins'
+
+.header
+  width: 100%
+  height: 60px
+  background: $background
+  display: flex
+  align-items: center
+  border-bottom: 1px solid $border-box
+  position: relative
+
+  .header-container
+    width: 100%
+    height: 60px
+    display: flex
+    justify-content: space-between
+
+    .header-left, .header-right
+      height: 60px
+      display: flex
+      align-items: center
+
+    .header-item
+      +unselectable
+      display: block
+      color: $text-secondary
+      font-family: $font-family-medium
+      cursor: pointer
+      position: relative
+      text-transform: uppercase
+      font-size: 13px
+      padding: 0 13px
+
+      &:first-child
+        padding-left: 0
+
+      &:last-child
+        margin-left: 10px
+        padding-right: 0
+
+      &:hover, &.is-active
+        color: $green
+
+      &.logo
+        height: 25px
+        margin-top: -5px
+
+        img
+          height: 25px
+
+      .avatar
+        width: 35px
+        height: 35px
+        border-radius: 6px
+        border: 1px solid $border-secondary

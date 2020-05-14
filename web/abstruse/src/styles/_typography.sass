@@ -1,0 +1,22 @@
+=font-face($family, $path, $weight: normal, $style: normal)
+  @font-face
+    font-family: $family
+    font-weight: $weight
+    font-style: $style
+    src: url("#{$path}.woff2") format("woff2"), url("#{$path}.woff") format("woff")
+
++font-face('Roboto-Thin', '/assets/fonts/Roboto/roboto-v20-latin-100', 100, 'normal')
++font-face('Roboto-Light', '/assets/fonts/Roboto/roboto-v20-latin-300', 300, 'normal')
++font-face('Roboto-Regular', '/assets/fonts/Roboto/roboto-v20-latin-regular', 400, 'normal')
++font-face('Roboto-Medium', '/assets/fonts/Roboto/roboto-v20-latin-500', 500, 'normal')
++font-face('Roboto-Bold', '/assets/fonts/Roboto/roboto-v20-latin-700', 700, 'normal')
++font-face('Roboto-Black', '/assets/fonts/Roboto/roboto-v20-latin-900', 900, 'normal')
++font-face('Menlo', '/assets/fonts/terminal/Menlo-Regular', 400, 'normal')
+
+$font-family-thin: 'Roboto-Thin', sans-serif
+$font-family-light: 'Roboto-Light', sans-serif
+$font-family-regular: 'Roboto-Regular', sans-serif
+$font-family-medium: 'Roboto-Medium', sans-serif
+$font-family-bold: 'Roboto-Bold', sans-serif
+$font-family-black: 'Roboto-Black', sans-serif
+$font-family-terminal: Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
