@@ -6,21 +6,32 @@ option go_package = "proto;abstruse_api";
 
 import "google/protobuf/empty.proto";
 
-// service Greeter {
-//   rpc SayHello(HelloRequest) returns (HelloReply) {}
-// }
-
-// // The request message containing the user's name.
-// message HelloRequest { string name = 1; }
-
-// // The response message containing the greetings
-// message HelloReply { string message = 1; }
-
 service Api {
   rpc Heartbeat(stream google.protobuf.Empty)
       returns (stream google.protobuf.Empty) {}
-
-  rpc WorkerID(google.protobuf.Empty) returns (WorkerIDReply) {}
+  rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
+  rpc UsageStats(stream google.protobuf.Empty)
+      returns (stream UsageStatsReply) {}
 }
 
-message WorkerIDReply { string id = 1; }
+message HostInfoReply {
+  string certID = 1;
+  string hostname = 2;
+  uint64 uptime = 3;
+  uint64 bootTime = 4;
+  uint64 procs = 5;
+  string os = 6;
+  string platform = 7;
+  string platformFamily = 8;
+  string platformVersion = 9;
+  string kernelVersion = 10;
+  string kernelArch = 11;
+  string virtualizationSystem = 12;
+  string virtualizationRole = 13;
+  string hostID = 14;
+}
+
+message UsageStatsReply {
+  int32 cpu = 1;
+  int32 mem = 2;
+}

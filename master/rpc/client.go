@@ -21,7 +21,7 @@ type Config struct {
 
 // Client represent gRPC client connection.
 type Client struct {
-	ID     string
+	Host   *HostInfo
 	Conn   *grpc.ClientConn
 	CLI    pb.ApiClient
 	config Config
@@ -67,12 +67,12 @@ func NewClient(addr string, config Config, logLevel string) (*Client, error) {
 
 // Run connects to worker gRPC server.
 func (c *Client) Run() error {
-	var err error
-	c.ID, err = c.WorkerID(context.Background())
+	info, err := c.HostInfo(context.Background())
 	if err != nil {
 		return err
 	}
-	c.logger.Infof("connected to worker %s %s", c.ID, c.Conn.Target())
+	c.Host = hostInfo(info)
+	c.logger.Infof("connected to worker %s %s", c.Host.CertID, c.Conn.Target())
 
 	ch := make(chan error)
 
@@ -82,7 +82,13 @@ func (c *Client) Run() error {
 		}
 	}()
 
+	go func() {
+		if err := c.UsageStats(context.Background()); err != nil {
+			ch <- err
+		}
+	}()
+
 	err = <-ch
-	c.logger.Infof("lost connection to worker %s %s", c.ID, c.Conn.Target())
+	c.logger.Infof("lost connection to worker %s %s", c.Host.CertID, c.Conn.Target())
 	return err
 }

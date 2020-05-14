@@ -33,6 +33,6 @@ func (app *App) watchWorkers() error {
 
 func (app *App) initClient(client *rpc.Client) {
 	if err := client.Run(); err != nil {
-		app.log.Errorf("worker connecting error %s %s", client.ID, client.Conn.Target())
+		app.log.Errorf("worker connecting error %s %s", client.Host.CertID, client.Conn.Target())
 	}
 }

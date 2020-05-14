@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"io"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
@@ -10,20 +9,24 @@ import (
 
 // Heartbeat implements abstruse.api.Heartbeat rpc.
 func (s *Server) Heartbeat(stream pb.Api_HeartbeatServer) error {
-	for {
-		_, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
+	errch := make(chan error)
 
-		ticker := time.NewTicker(5000 * time.Millisecond)
-		for range ticker.C {
-			stream.Send(&empty.Empty{})
+	go func() {
+		for {
+			_, err := stream.Recv()
+			if err != nil {
+				errch <- err
+				break
+			}
+		}
+	}()
+
+	ticker := time.NewTicker(5000 * time.Millisecond)
+	for range ticker.C {
+		if err := stream.Send(&empty.Empty{}); err != nil {
+			errch <- err
 		}
 	}
 
-	return nil
+	return <-errch
 }
