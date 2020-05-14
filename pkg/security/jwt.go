@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	jwtSecret []byte
+	// JWTSecret from config file.
+	JWTSecret []byte
 )
 
 // UserJWT defines structure for generating JWT based on user.
@@ -23,7 +24,7 @@ type UserJWT struct {
 
 // InitSecurity initializes security tokens with values from config file.
 func InitSecurity(jwtsecret string) {
-	jwtSecret = []byte(jwtsecret)
+	JWTSecret = []byte(jwtsecret)
 }
 
 // HashPassword generates encrypted password from password string
@@ -47,7 +48,7 @@ func GenerateJWT(user UserJWT) (string, error) {
 		"avatar":   user.Avatar,
 	})
 
-	return token.SignedString(jwtSecret)
+	return token.SignedString(JWTSecret)
 }
 
 // GetUserIDFromJWT returns users ID from token.
@@ -62,7 +63,7 @@ func GetUserIDFromJWT(tokenString string) (int, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return jwtSecret, nil
+		return JWTSecret, nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
@@ -84,7 +85,7 @@ func GetUserDataFromJWT(tokenString string) (int, string, string, string, error)
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return jwtSecret, nil
+		return JWTSecret, nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
@@ -108,7 +109,7 @@ func GetWorkerIdentifierByJWT(token string) (string, error) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", t.Header["alg"])
 		}
 
-		return jwtSecret, nil
+		return JWTSecret, nil
 	})
 	if err != nil {
 		return identifier, err

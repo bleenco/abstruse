@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/jkuri/abstruse/master/db"
 	"github.com/jkuri/abstruse/master/etcdserver"
 	"github.com/jkuri/abstruse/master/httpserver"
 	"github.com/jkuri/abstruse/master/rpc"
@@ -15,6 +16,7 @@ type Config struct {
 	HTTP      httpserver.Config `json:"http"`
 	Etcd      etcdserver.Config `json:"etcd"`
 	GRPC      rpc.Config        `json:"grpc"`
+	Database  db.Config         `json:"database"`
 	LogLevel  string            `json:"log_level"`
 	JWTSecret string            `json:"jwt_secret"`
 }

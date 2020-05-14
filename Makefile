@@ -32,6 +32,9 @@ install_dependencies:
 clean:
 	@rm -rf build/ web/abstruse/dist master/ui/
 
+dev:
+	@reflex -sr '\.go$$' -R '^web/' -R '^master/ui' -R '^worker/' -- sh -c 'make master && ./build/abstruse-master'
+
 grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.
 

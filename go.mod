@@ -4,21 +4,24 @@ go 1.14
 
 require (
 	github.com/calmh/luhn v2.0.0+incompatible
+	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0
 	github.com/felixge/httpsnoop v1.0.1
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.3
 	github.com/golang/protobuf v1.4.1
+	github.com/jinzhu/gorm v1.9.12
 	github.com/jkuri/statik v0.3.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/shirou/gopsutil v2.20.4+incompatible
 	go.etcd.io/etcd v0.0.0-00010101000000-000000000000
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
+	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/net v0.0.0-20200513185701-a91f0712d120
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.22.0

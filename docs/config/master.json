@@ -19,5 +19,15 @@
     "cert": "/var/tmp/abstruse-master/cert.pem",
     "key": "/var/tmp/abstruse-master/key.pem"
   },
-  "log_level": "debug"
+  "database": {
+    "client": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "xx2n5",
+    "database": "abstruse_dev",
+    "charset": "utf8"
+  },
+  "log_level": "debug",
+  "jwt_secret": "8100444538"
 }

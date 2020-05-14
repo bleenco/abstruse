@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/jkuri/abstruse/master/db"
+
 	"github.com/jkuri/abstruse/master/websocket"
 
 	"github.com/jkuri/abstruse/master/etcdserver"
@@ -66,6 +68,12 @@ func (app *App) Run() error {
 
 	go func() {
 		if err := app.ws.Run(); err != nil {
+			app.errch <- err
+		}
+	}()
+
+	go func() {
+		if err := db.Connect(app.config.Database); err != nil {
 			app.errch <- err
 		}
 	}()
