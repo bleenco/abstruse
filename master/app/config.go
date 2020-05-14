@@ -6,13 +6,13 @@ import (
 	"io/ioutil"
 
 	"github.com/jkuri/abstruse/master/etcdserver"
+	"github.com/jkuri/abstruse/master/httpserver"
 	"github.com/jkuri/abstruse/master/rpc"
 )
 
 // Config defines configuration for master application.
 type Config struct {
-	Cert     string            `json:"cert"`
-	Key      string            `json:"key"`
+	HTTP     httpserver.Config `json:"http"`
 	Etcd     etcdserver.Config `json:"etcd"`
 	GRPC     rpc.Config        `json:"grpc"`
 	LogLevel string            `json:"log_level"`

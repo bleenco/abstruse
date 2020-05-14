@@ -29,7 +29,9 @@ func NewServer(config Config, log *logger.Logger) (*Server, error) {
 	if config.Cert == "" || config.Key == "" {
 		return nil, fmt.Errorf("cert and key must be specified")
 	}
-	security.CheckAndGenerateCert(config.Cert, config.Key)
+	if err := security.CheckAndGenerateCert(config.Cert, config.Key); err != nil {
+		return nil, err
+	}
 
 	return &Server{
 		addr: config.ListenAddr,

@@ -6,6 +6,8 @@ import (
 
 	"github.com/jkuri/abstruse/master/app"
 	"github.com/jkuri/abstruse/master/etcdserver"
+	"github.com/jkuri/abstruse/master/httpserver"
+	"github.com/jkuri/abstruse/master/rpc"
 )
 
 var (
@@ -23,14 +25,25 @@ func main() {
 	cfg, err := app.ReadAndParseConfig(*configPath)
 	if err != nil {
 		cfg = app.Config{
-			Cert: "/var/tmp/abstruse-master/cert.pem",
-			Key:  "/var/tmp/abstruse-master/key.pem",
+			HTTP: httpserver.Config{
+				Host:      "0.0.0.0",
+				HTTPPort:  "80",
+				HTTPSPort: "443",
+				Cert:      "/var/tmp/abstruse-master/cert.pem",
+				Key:       "/var/tmp/abstruse-master/key.pem",
+			},
 			Etcd: etcdserver.Config{
 				Name:       *etcdname,
 				Host:       *etcdhost,
 				ClientPort: *etcdcport,
 				PeerPort:   *etcdpport,
 				DataDir:    *etcddatadir,
+				Cert:       "/var/tmp/abstruse-master/cert.pem",
+				Key:        "/var/tmp/abstruse-master/key.pem",
+			},
+			GRPC: rpc.Config{
+				Cert: "/var/tmp/abstruse-master/cert.pem",
+				Key:  "/var/tmp/abstruse-master/key.pem",
 			},
 			LogLevel: "debug",
 		}

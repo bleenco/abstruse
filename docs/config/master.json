@@ -1,12 +1,19 @@
 {
-  "cert": "/var/tmp/abstruse-master/cert.pem",
-  "key": "/var/tmp/abstruse-master/key.pem",
+  "http": {
+    "host": "0.0.0.0",
+    "http_port": "80",
+    "https_port": "443",
+    "cert": "/Users/jan/Dev/certs/_wildcard.jan.local.pem",
+    "key": "/Users/jan/Dev/certs/_wildcard.jan.local-key.pem"
+  },
   "etcd": {
     "name": "abstruse",
     "host": "0.0.0.0",
     "client_port": 2379,
     "peer_port": 2380,
-    "data_dir": "/var/tmp/abstruse-master/data"
+    "data_dir": "/var/tmp/abstruse-master/data",
+    "cert": "/var/tmp/abstruse-master/cert.pem",
+    "key": "/var/tmp/abstruse-master/key.pem"
   },
   "grpc": {
     "cert": "/var/tmp/abstruse-master/cert.pem",
