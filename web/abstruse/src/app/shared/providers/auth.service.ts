@@ -31,7 +31,7 @@ export class AuthService {
     localStorage.setItem(this.tokenName, token);
     if (this.hasToken()) {
       this.checkAuthenticated();
-      this.router.navigate(['/builds']);
+      this.router.navigate(['/workers']);
     }
   }
 

@@ -1290,6 +1290,11 @@
   dependencies:
     "@types/jasmine" "*"
 
+"@types/jwt-decode@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@types/jwt-decode/-/jwt-decode-2.2.1.tgz#afdf5c527fcfccbd4009b5fd02d1e18241f2d2f2"
+  integrity sha512-aWw2YTtAdT7CskFyxEX2K21/zSDStuf/ikI3yBqmwpwJF0pS+/IX5DWv+1UFffZIbruP6cnT9/LAJV1gFwAT1A==
+
 "@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
@@ -5962,6 +5967,11 @@ neo-async@^2.5.0, neo-async@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.1.tgz#ac27ada66167fa8849a6addd837f6b189ad2081c"
   integrity sha512-iyam8fBuCUpWeKPGpaNMetEocMt364qkCsfL9JuhjXX6dRnguRVOfk2GZaDpPjcOKiiXCPINZC1GczQ7iTq3Zw==
+
+ngx-cookie-service@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/ngx-cookie-service/-/ngx-cookie-service-3.0.4.tgz#603600bf575322aa0bd3f83cab42494e9aebb00a"
+  integrity sha512-g4KHpCWL2EtKatWqn8lz/DdyMQO8sDS7BNwCSvxF1ETTW5DPJnbdEwCjSdm84MmfqBh6JdgvoQd//rOxH5EbgQ==
 
 nice-try@^1.0.4:
   version "1.0.5"

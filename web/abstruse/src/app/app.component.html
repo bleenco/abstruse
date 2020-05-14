@@ -1,10 +1,14 @@
-<app-header></app-header>
-<main class="main">
-  <div class="container">
-    <div class="columns is-marginless">
-      <div class="column is-12">
-        <router-outlet></router-outlet>
+<router-outlet *ngIf="!(authService?.isLoggedIn | async)"></router-outlet>
+
+<section *ngIf="authService?.isLoggedIn | async">
+  <app-header></app-header>
+  <main class="main">
+    <div class="container">
+      <div class="columns is-marginless">
+        <div class="column is-12">
+          <router-outlet></router-outlet>
+        </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
+</section>

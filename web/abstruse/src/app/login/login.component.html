@@ -1,9 +1,9 @@
 <div class="hero is-fullheight" *ngIf="!(authService?.isLoggedIn | async)">
-  <div class="hero-body">
+  <div class="hero-head">
     <div class="container">
       <div class="columns">
         <div class="column is-4 is-offset-4">
-          <div class="box">
+          <div class="box login-box">
             <div class="login-logo-container justify-center align-center">
               <img src="/assets/images/abstruse-text-black.svg">
             </div>
@@ -16,11 +16,13 @@
             <form class="login-form" #loginForm="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
-                <input #usernameField type="text" name="username" class="input" [(ngModel)]="login.email" required [disabled]="loading">
+                <input #usernameField type="text" name="username" class="input" [(ngModel)]="login.email" required
+                  [disabled]="loading">
               </span>
               <span class="field">
                 <label class="label">Password</label>
-                <input type="password" name="password" class="input" [(ngModel)]="login.password" required [disabled]="loading">
+                <input type="password" name="password" class="input" [(ngModel)]="login.password" required
+                  [disabled]="loading">
               </span>
               <div class="align-center justify-center">
                 <button type="submit" class="button" [disabled]="!loginForm.valid">

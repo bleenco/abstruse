@@ -1,0 +1,118 @@
+.button
+  color: $text-button
+  border-radius: 3px
+  border: 1px solid $border-button
+  padding: 9px 16px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  font-size: 13px
+  font-family: $font-family-medium
+  outline: none
+  cursor: pointer
+  background: $white
+  box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
+
+  &[disabled]
+    opacity: .5 !important
+    pointer-events: none
+    touch-action: none
+
+  &:not(:last-child)
+    margin-right: 5px
+
+  &:hover, &.is-active
+    border-color: $border-button
+    color: $text-button
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.13)
+
+
+  &.is-xsmall
+    padding: 0 12px
+    font-size: 11px
+    height: 26px
+
+  &.is-small
+    padding: 7px 15px
+    font-size: 12px
+
+    i
+      font-size: 14px
+
+  &.is-large
+    padding: 10px 30px
+
+  &.is-red
+    color: $red
+    border-color: $red
+    background: rgba($red, .1)
+
+    &:hover, &.is-active
+      background: $red
+      color: $white
+
+  &.is-blue
+    color: $blue
+    border-color: $blue
+    background: rgba($blue, .1)
+
+    &:hover, &.is-active
+      background: $blue
+      color: $white
+
+  &.is-green
+    color: $green
+    border-color: $green
+    background: rgba($green, .1)
+
+    &:hover, &.is-active
+      background: $green
+      color: $white
+
+  &.is-orange
+    color: $orange
+    background: rgba($orange, .1)
+    border-color: $orange
+
+    &:hover
+      background: $orange
+      color: $white
+
+  i
+    margin-right: 7px
+
+  img
+    width: 16px
+    height: 16px
+    margin-right: 7px
+
+  &.is-filled
+    background-image: linear-gradient(-1deg, #F6F7F9 2%, #FFFFFF 100%)
+    border: 1px solid #D8DCE6
+    box-shadow: 0 1px 1px 0 rgba(22,29,37,0.05), inset 0 2px 0 0 rgba(255,255,255,0.05)
+
+    &.is-green
+      background: $green
+      color: $white
+      border: 1px solid #2D9C3C
+
+      &:hover
+        background-image: linear-gradient(0deg, #34AA44 2%, #38B249 100%)
+        border: 1px solid #2D9C3C
+        box-shadow: 0 1px 1px 0 rgba(19,31,21,0.10), inset 0 2px 0 0 rgba(255,255,255,0.06)
+
+    &.is-red
+      color: $white
+      background: $red
+
+      &:hover
+        background-image: linear-gradient(-180deg, #E73C1E 0%, #CF3014 100%)
+        box-shadow: 0 1px 1px 0 rgba(43,26,24,0.10), inset 0 2px 0 0 rgba(255,255,255,0.08)
+
+    &.is-blue
+      color: $white
+      background: $blue
+
+      &:hover
+        background-image: linear-gradient(-1deg, #1665D8 2%, #1F6FE5 98%)
+        box-shadow: 0 1px 1px 0 rgba(22,29,37,0.10)

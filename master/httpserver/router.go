@@ -19,7 +19,7 @@ type Router struct {
 func NewRouter() *Router {
 	router := &Router{httprouter.New()}
 	router.initWebsocket()
-	// router.initAPI()
+	router.initAPI()
 	router.initUI()
 
 	return router
