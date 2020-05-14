@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	_ "github.com/jkuri/abstruse/master/ui" // web ui
+	"github.com/jkuri/abstruse/master/websocket"
 	"github.com/jkuri/statik/fs"
 	"github.com/julienschmidt/httprouter"
 )
@@ -17,7 +18,7 @@ type Router struct {
 // NewRouter returns new instance of main HTTP router.
 func NewRouter() *Router {
 	router := &Router{httprouter.New()}
-	// router.initWebsocket()
+	router.initWebsocket()
 	// router.initAPI()
 	router.initUI()
 
@@ -31,4 +32,8 @@ func (r *Router) initUI() {
 	}
 
 	r.Router.NotFound = http.FileServer(&statikWrapper{statikFS})
+}
+
+func (r *Router) initWebsocket() {
+	r.Router.GET("/ws", websocket.UpstreamHandler("127.0.0.1:7100"))
 }

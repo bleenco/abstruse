@@ -12,10 +12,11 @@ import (
 
 // Config defines configuration for master application.
 type Config struct {
-	HTTP     httpserver.Config `json:"http"`
-	Etcd     etcdserver.Config `json:"etcd"`
-	GRPC     rpc.Config        `json:"grpc"`
-	LogLevel string            `json:"log_level"`
+	HTTP      httpserver.Config `json:"http"`
+	Etcd      etcdserver.Config `json:"etcd"`
+	GRPC      rpc.Config        `json:"grpc"`
+	LogLevel  string            `json:"log_level"`
+	JWTSecret string            `json:"jwt_secret"`
 }
 
 // ReadAndParseConfig reads and parses configuration from JSON file.

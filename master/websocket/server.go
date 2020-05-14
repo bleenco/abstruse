@@ -1,0 +1,111 @@
+package websocket
+
+import (
+	"net"
+	"time"
+
+	"github.com/gobwas/httphead"
+	"github.com/gobwas/ws"
+	"github.com/jkuri/abstruse/pkg/logger"
+	"github.com/jkuri/abstruse/pkg/security"
+)
+
+// Server contains options and methods for running zero-copy
+// websocket server on straight TCP connection. Use in a combination
+// of UpstreamHandler.
+type Server struct {
+	logger    *logger.Logger
+	addr      string
+	ioTimeout time.Duration
+	exit      chan struct{}
+	app       *App
+}
+
+// NewServer initializes and returns a new websocket server instance.
+func NewServer(addr string, ioTimeout time.Duration, logLevel string) *Server {
+	log := logger.NewLogger("websocket", logLevel)
+	app := NewApp(log)
+
+	return &Server{
+		log,
+		addr,
+		ioTimeout,
+		make(chan struct{}),
+		app,
+	}
+}
+
+// Run starts the websocket server
+func (s *Server) Run() error {
+	ln, err := net.Listen("tcp", s.addr)
+	if err != nil {
+		return err
+	}
+
+	s.logger.Infof("listening ws server on %s", ln.Addr().String())
+
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			if err != nil {
+				s.logger.Debugf("error accepting incoming websocket connection: %s", err.Error())
+				break
+			}
+			go s.handle(conn)
+		}
+	}()
+
+	<-s.exit
+	return nil
+}
+
+func (s *Server) handle(conn net.Conn) {
+	var id int
+	var email, fullname string
+	var err error
+
+	upgrader := ws.Upgrader{
+		OnHost: func(host []byte) error {
+			return nil
+		},
+		OnHeader: func(key, value []byte) error {
+			if string(key) != "Cookie" {
+				return nil
+			}
+			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
+				if string(key) == "abstruse-auth-token" && string(value) != "" {
+					id, email, fullname, _, err = security.GetUserDataFromJWT(string(value))
+					return true
+				}
+				return true
+			})
+			if ok {
+				return nil
+			}
+			return ws.RejectConnectionError(
+				ws.RejectionReason("authentication failed"),
+				ws.RejectionStatus(400),
+			)
+		},
+	}
+
+	if err != nil {
+		s.logger.Debugf("%s, websocket connection not upgraded", err.Error())
+		return
+	}
+
+	_, err = upgrader.Upgrade(conn)
+	if err != nil {
+		s.logger.Debugf("error upgrading websocket connection: %s", err.Error())
+	}
+
+	s.logger.Infof("established websocket connection: %s", nameConn(conn))
+
+	client := s.app.Register(conn, id, email, fullname)
+	s.app.InitClient(client)
+	s.app.Remove(client)
+}
+
+func nameConn(conn net.Conn) string {
+	return conn.LocalAddr().String() + " <> " + conn.RemoteAddr().String()
+}
