@@ -11,7 +11,7 @@ endif
 
 all: build
 
-build: grpc master worker
+build: build_ui statik grpc master worker
 
 master:
 	@CGO_ENABLED=0 go build -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-master cmd/master/main.go
@@ -21,6 +21,9 @@ worker:
 
 build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && yarn build; fi
+
+statik:
+	@if [ ! -r "master/ui/statik.go" ]; then statik -dest ./master -p ui -src ./web/abstruse/dist; fi
 
 install_dependencies:
 	@go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex
@@ -32,4 +35,4 @@ clean:
 grpc:
 	@protoc ./proto/abstruse.proto --go_out=plugins=grpc:.
 
-.PHONY: clean grpc build master worker build_ui install_dependencies
+.PHONY: clean grpc build master worker build_ui statik install_dependencies

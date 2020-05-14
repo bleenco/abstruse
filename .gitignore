@@ -2,3 +2,4 @@ build/
 proto/abstruse.pb.go
 go.sum
 vendor/
+master/ui
