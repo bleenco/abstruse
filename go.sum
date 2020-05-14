@@ -6,6 +6,9 @@ github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24
 github.com/beorn7/perks v1.0.0 h1:HWo1m869IqiPhD389kmkxeTalrjNbbJTC8LXupb+sl0=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
+github.com/calmh/luhn v1.1.0 h1:zCgaHTS/KnB5FhYGoayXgQPEQhmij3t2j8ATWCNVl7c=
+github.com/calmh/luhn v2.0.0+incompatible h1:xHkbAc8FBgMiGUaKsiYcwtf8xhSXVtRKA2NhY7hFCAc=
+github.com/calmh/luhn v2.0.0+incompatible/go.mod h1:70IGmMi0GKRs073gl/oH5/yiJnTt61h35YQhvo/k3Cc=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=

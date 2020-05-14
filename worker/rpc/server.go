@@ -62,7 +62,7 @@ func (s *Server) Listen() error {
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterApiServer(s.server, s)
 
-	s.log.Infof("gRPC server running on %s", s.addr)
+	s.log.Infof("gRPC server listening on %s", s.addr)
 
 	return s.server.Serve(listener)
 }

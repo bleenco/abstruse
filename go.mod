@@ -3,6 +3,7 @@ module github.com/jkuri/abstruse
 go 1.14
 
 require (
+	github.com/calmh/luhn v2.0.0+incompatible
 	github.com/coreos/etcd v0.0.0-00010101000000-000000000000 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect

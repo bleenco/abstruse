@@ -6,13 +6,14 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 )
 
+// Heartbeat gRPC stream.
 func (c *Client) Heartbeat(ctx context.Context) error {
 	stream, err := c.cli.Heartbeat(ctx)
 	if err != nil {
 		return err
 	}
 	defer stream.CloseSend()
-	c.logger.Infof("initialized heartbeat")
+	c.logger.Debugf("initialized heartbeat to worker %s %s", c.id, c.conn.Target())
 
 	for {
 		_, err := stream.Recv()

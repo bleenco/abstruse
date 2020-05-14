@@ -19,4 +19,8 @@ import "google/protobuf/empty.proto";
 service Api {
   rpc Heartbeat(stream google.protobuf.Empty)
       returns (stream google.protobuf.Empty) {}
+
+  rpc WorkerID(google.protobuf.Empty) returns (WorkerIDReply) {}
 }
+
+message WorkerIDReply { string id = 1; }
