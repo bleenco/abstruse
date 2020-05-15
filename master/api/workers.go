@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"path"
 
 	"github.com/jkuri/abstruse/master/rpc"
 	"github.com/julienschmidt/httprouter"
@@ -19,7 +20,7 @@ func GetWorkersHandler(res http.ResponseWriter, req *http.Request, _ httprouter.
 	var data []workersResp
 	workers := rpc.RPCApp.GetWorkers()
 	for addr, worker := range workers {
-		data = append(data, workersResp{addr, worker.GetHost(), worker.GetUsage()})
+		data = append(data, workersResp{path.Base(addr), worker.GetHost(), worker.GetUsage()})
 	}
 	resp, err := json.Marshal(&data)
 	if err != nil {
