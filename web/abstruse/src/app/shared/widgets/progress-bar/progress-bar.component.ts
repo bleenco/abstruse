@@ -17,7 +17,11 @@ export class ProgressBarComponent implements OnInit, OnChanges {
     red: 'is-red',
     green: 'is-green',
     yellow: 'is-yellow',
-    orange: 'is-orange'
+    orange: 'is-orange',
+    purple: 'is-purple',
+    indigo: 'is-indigo',
+    teal: 'is-teal',
+    pink: 'is-pink'
   };
 
   get percentage(): string {

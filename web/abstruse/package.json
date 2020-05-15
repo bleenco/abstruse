@@ -37,6 +37,7 @@
     "bulma": "^0.8.2",
     "codelyzer": "^5.1.2",
     "d3": "^5.16.0",
+    "date-fns": "^2.13.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "jwt-decode": "^2.2.0",

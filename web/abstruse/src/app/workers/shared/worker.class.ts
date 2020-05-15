@@ -1,3 +1,5 @@
+import { formatDistanceToNow, fromUnixTime } from 'date-fns';
+
 export class Worker {
   usage: WorkerUsage = new WorkerUsage();
 
@@ -18,6 +20,10 @@ export class Worker {
     public virtualizationRole: string,
     public hostID: string
   ) { }
+
+  getUptime(): string {
+    return formatDistanceToNow(fromUnixTime(this.bootTime));
+  }
 }
 
 export class WorkerUsage {

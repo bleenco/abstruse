@@ -1,5 +1,5 @@
 export interface ProgressBarSettings {
-  color?: 'red' | 'orange' | 'yellow' | 'green' | 'teal' | 'blue' | 'indigo' | 'purple' | 'pink'
+  color?: 'red' | 'orange' | 'yellow' | 'green' | 'teal' | 'blue' | 'indigo' | 'purple' | 'pink';
   transition?: boolean;
   transitionDuration?: number;
   width?: string;

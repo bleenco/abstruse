@@ -11,7 +11,7 @@
     </div>
   </div> -->
   <div class="column is-12">
-    <div class="table">
+    <div class="list">
       <!-- <div class="headers">
         <div class="columns">
           <div class="column is-1 justify-center">
@@ -35,10 +35,8 @@
           <div class="column is-2 justify-center"></div>
         </div>
       </div> -->
-      <div class="table-items">
-        <div *ngIf="workers.length">
-          <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
-        </div>
+      <div class="list-items" *ngIf="workers.length">
+        <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
         <div class="table-item" *ngIf="!workers.length">
           <div class="columns">
             <div class="column is-12 justify-center align-center">

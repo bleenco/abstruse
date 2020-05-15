@@ -9,101 +9,101 @@ form
   &.no-padding
     padding: 5px 0 0 0
 
-.field
-  display: inline-block
-  width: 100%
-  max-width: 100%
-  position: relative
-  padding-left: 20px
-  padding-right: 20px
+  .field
+    display: inline-block
+    width: 100%
+    max-width: 100%
+    position: relative
+    padding-left: 20px
+    padding-right: 20px
 
-  &:not(:last-child)
-    margin-bottom: 10px
+    &:not(:last-child)
+      margin-bottom: 10px
 
-  &.is-grouped
-    display: flex
-    justify-content: flex-start
+    &.is-grouped
+      display: flex
+      justify-content: flex-start
 
-    & > .control
-      flex-grow: 1
-      flex-shrink: 1
-
-      &:not(:last-child)
-        margin-bottom: 0
-        margin-right: 15px
-
-      &.is-expanded
+      & > .control
         flex-grow: 1
         flex-shrink: 1
 
-  .input-right-icon
-    position: absolute
-    right: 10px
-    top: 40px
-    cursor: pointer
-    color: $text-primary
-    font-size: 20px
+        &:not(:last-child)
+          margin-bottom: 0
+          margin-right: 15px
 
-    &:hover
-      color: $text-secondary
+        &.is-expanded
+          flex-grow: 1
+          flex-shrink: 1
 
-.label
-  display: block
-  color: $text-label
-  font-size: 12px
-  font-family: $font-family-medium
-  margin: 5px 0 5px 0
-  text-transform: uppercase
+    .input-right-icon
+      position: absolute
+      right: 10px
+      top: 40px
+      cursor: pointer
+      color: $text-primary
+      font-size: 20px
 
-.input
-  color: $text-input
-  font-size: 14px
-  height: 40px
-  text-indent: 14px
-  border: 1px solid $border-input
-  outline: none
-  display: flex
-  align-items: center
-  justify-content: center
-  line-height: 100%
-  margin: 0
-  padding: 0 30px 0 0
-  width: 100%
-  border-radius: 4px
+      &:hover
+        color: $text-secondary
 
-  &[disabled]
-    opacity: .5
+  .label
+    display: block
+    color: $text-label
+    font-size: 12px
+    font-family: $font-family-medium
+    margin: 5px 0 5px 0
+    text-transform: uppercase
 
-  &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
-    color: $text-primary
-    opacity: .5
+  .input
+    color: $text-input
     font-size: 14px
-
-  &:focus
-    border-color: $border-primary
-
-  &[type="number"]
-    -moz-appearance: textfield
-
-    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
-      -webkit-appearance: none
-
-  &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus
+    height: 40px
+    text-indent: 14px
     border: 1px solid $border-input
-    -webkit-text-fill-color: $text-input
-    -webkit-box-shadow: 0 0 0px 1000px $white inset
-    transition: background-color 5000s ease-in-out 0s
+    outline: none
+    display: flex
+    align-items: center
+    justify-content: center
+    line-height: 100%
+    margin: 0
+    padding: 0 30px 0 0
+    width: 100%
+    border-radius: 4px
 
-  &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
-    border-color: $green
-    background: $green-100
+    &[disabled]
+      opacity: .5
 
-    &::placeholder, &::-ms-input-placeholder
-      color: $green
+    &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
+      color: $text-primary
+      opacity: .5
+      font-size: 14px
 
-  &.ng-invalid:not(form):not(.ng-untouched)
-    border-color: $red
-    background: $red-100
+    &:focus
+      border-color: $border-primary
 
-    &::placeholder, &::-ms-input-placeholder
-      color: $red
+    &[type="number"]
+      -moz-appearance: textfield
+
+      &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+        -webkit-appearance: none
+
+    &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus
+      border: 1px solid $border-input
+      -webkit-text-fill-color: $text-input
+      -webkit-box-shadow: 0 0 0px 1000px $white inset
+      transition: background-color 5000s ease-in-out 0s
+
+    &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
+      border-color: $green
+      background: $green-100
+
+      &::placeholder, &::-ms-input-placeholder
+        color: $green
+
+    &.ng-invalid:not(form):not(.ng-untouched)
+      border-color: $red
+      background: $red-100
+
+      &::placeholder, &::-ms-input-placeholder
+        color: $red
