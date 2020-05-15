@@ -3,13 +3,12 @@ module github.com/jkuri/abstruse
 go 1.14
 
 require (
-	github.com/calmh/luhn v2.0.0+incompatible
-	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0
 	github.com/felixge/httpsnoop v1.0.1
-	github.com/go-sql-driver/mysql v1.5.0
+	github.com/go-ole/go-ole v1.2.4 // indirect
+	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.3

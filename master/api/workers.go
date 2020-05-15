@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 	"path"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type workersResp struct {
+type workerData struct {
 	Addr  string       `json:"addr"`
 	Host  rpc.HostInfo `json:"host"`
 	Usage []rpc.Usage  `json:"usage"`
@@ -17,16 +16,11 @@ type workersResp struct {
 
 // GetWorkersHandler => /api/workers
 func GetWorkersHandler(res http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	var data []workersResp
+	var data []workerData
 	workers := rpc.RPCApp.GetWorkers()
 	for addr, worker := range workers {
-		data = append(data, workersResp{path.Base(addr), worker.GetHost(), worker.GetUsage()})
-	}
-	resp, err := json.Marshal(&data)
-	if err != nil {
-		JSONResponse(res, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
-		return
+		data = append(data, workerData{path.Base(addr), worker.GetHost(), worker.GetUsage()})
 	}
 
-	JSONResponse(res, http.StatusOK, DataResponse{Data: string(resp)})
+	JSONResponse(res, http.StatusOK, Response{Data: data})
 }

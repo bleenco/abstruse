@@ -3,6 +3,7 @@ package rpc
 import (
 	"context"
 	"io/ioutil"
+	"strings"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jkuri/abstruse/pkg/id"
@@ -16,7 +17,7 @@ func (s *Server) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfoRep
 	if err != nil {
 		return nil, err
 	}
-	certid := id.New(cert).String()
+	certid := strings.ToUpper(id.New(cert)[0:6])
 	info, err := stats.GetHostStats()
 	if err != nil {
 		return nil, err
