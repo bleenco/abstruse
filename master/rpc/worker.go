@@ -6,37 +6,29 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jkuri/abstruse/pkg/security"
-
 	"github.com/jkuri/abstruse/pkg/logger"
+	"github.com/jkuri/abstruse/pkg/security"
 	pb "github.com/jkuri/abstruse/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
-// Config defines gRPC client configuration.
-type Config struct {
-	Cert string `json:"cert"`
-	Key  string `json:"key"`
+// Worker represent gRPC worker client.
+type Worker struct {
+	host  HostInfo
+	conn  *grpc.ClientConn
+	cli   pb.ApiClient
+	usage []Usage
+	log   *logger.Logger
 }
 
-// Client represent gRPC client.
-type Client struct {
-	Host   *HostInfo
-	Conn   *grpc.ClientConn
-	CLI    pb.ApiClient
-	Data   Data
-	config Config
-	logger *logger.Logger
-}
-
-// Data represents data channels.
-type Data struct {
-	Usage chan *Usage
+type workerData struct {
+	Host  HostInfo `json:"host"`
+	Usage []Usage  `json:"usage"`
 }
 
 // NewClient returns new instance of gRPC client.
-func NewClient(addr string, config Config, logLevel string) (*Client, error) {
+func newWorker(addr string, config Config, log *logger.Logger) (*Worker, error) {
 	if config.Cert == "" || config.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
 	}
@@ -44,7 +36,6 @@ func NewClient(addr string, config Config, logLevel string) (*Client, error) {
 		return nil, err
 	}
 
-	logger := logger.NewLogger("grpc", logLevel)
 	opts := []grpc.DialOption{}
 	certificate, err := tls.LoadX509KeyPair(config.Cert, config.Key)
 	if err != nil {
@@ -63,45 +54,49 @@ func NewClient(addr string, config Config, logLevel string) (*Client, error) {
 		return nil, err
 	}
 	cli := pb.NewApiClient(conn)
-	data := Data{
-		Usage: make(chan *Usage),
-	}
 
-	return &Client{
-		config: config,
-		logger: logger,
-		Conn:   conn,
-		CLI:    cli,
-		Data:   data,
+	return &Worker{
+		conn: conn,
+		cli:  cli,
+		log:  log,
 	}, nil
 }
 
-// Run connects to worker gRPC server.
-func (c *Client) Run() error {
+func (w *Worker) run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	info, err := c.HostInfo(ctx)
+	info, err := w.HostInfo(ctx)
 	if err != nil {
 		return err
 	}
-	c.Host = hostInfo(info)
-	c.logger.Infof("connected to worker %s %s", c.Host.CertID, c.Conn.Target())
+	w.host = hostInfo(info)
+	w.log.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
 
 	ch := make(chan error)
 
 	go func() {
-		if err := c.Heartbeat(context.Background()); err != nil {
+		if err := w.Heartbeat(context.Background()); err != nil {
 			ch <- err
 		}
 	}()
 
 	go func() {
-		if err := c.UsageStats(context.Background(), c.Data.Usage); err != nil {
+		if err := w.UsageStats(context.Background()); err != nil {
 			ch <- err
 		}
 	}()
 
 	err = <-ch
-	c.logger.Infof("lost connection to worker %s %s", c.Host.CertID, c.Conn.Target())
+	w.log.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
 	return err
+}
+
+// GetHost returns host info.
+func (w *Worker) GetHost() HostInfo {
+	return w.host
+}
+
+// GetUsage returns worker usage.
+func (w *Worker) GetUsage() []Usage {
+	return w.usage
 }

@@ -7,15 +7,10 @@ import { Worker } from '../shared/worker.class';
   styleUrls: ['./workers-list.component.sass']
 })
 export class WorkersListComponent implements OnInit {
-  workers: Worker[];
+  workers: Worker[] = [];
   fetchingWorkers: boolean;
 
   constructor() { }
 
-  ngOnInit(): void {
-    this.workers = [
-      { certid: '100', addr: 'localhost:3330' },
-      { certid: '200', addr: 'localhost:3331' }
-    ];
-  }
+  ngOnInit(): void { }
 }

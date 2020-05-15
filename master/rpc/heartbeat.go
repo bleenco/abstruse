@@ -7,13 +7,13 @@ import (
 )
 
 // Heartbeat gRPC stream.
-func (c *Client) Heartbeat(ctx context.Context) error {
-	stream, err := c.CLI.Heartbeat(ctx)
+func (w *Worker) Heartbeat(ctx context.Context) error {
+	stream, err := w.cli.Heartbeat(ctx)
 	if err != nil {
 		return err
 	}
 	defer stream.CloseSend()
-	c.logger.Debugf("initialized heartbeat to worker %s %s", c.Host.CertID, c.Conn.Target())
+	w.log.Debugf("initialized heartbeat to worker %s %s", w.host.CertID, w.conn.Target())
 
 	for {
 		_, err := stream.Recv()

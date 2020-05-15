@@ -26,13 +26,13 @@ type HostInfo struct {
 }
 
 // HostInfo returns worker host info.
-func (c *Client) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
-	info, err := c.CLI.HostInfo(ctx, &empty.Empty{})
+func (w *Worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
+	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
 	return info, err
 }
 
-func hostInfo(info *pb.HostInfoReply) *HostInfo {
-	return &HostInfo{
+func hostInfo(info *pb.HostInfoReply) HostInfo {
+	return HostInfo{
 		info.GetCertID(),
 		info.GetHostname(),
 		info.GetUptime(),

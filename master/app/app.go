@@ -4,13 +4,14 @@ import (
 	"context"
 	"time"
 
+	"github.com/jkuri/abstruse/master/rpc"
+
 	"github.com/jkuri/abstruse/master/db"
 
 	"github.com/jkuri/abstruse/master/websocket"
 
 	"github.com/jkuri/abstruse/master/etcdserver"
 	"github.com/jkuri/abstruse/master/httpserver"
-	"github.com/jkuri/abstruse/master/rpc"
 	"github.com/jkuri/abstruse/pkg/logger"
 	"github.com/jkuri/abstruse/pkg/security"
 	"go.etcd.io/etcd/clientv3"
@@ -21,7 +22,6 @@ type App struct {
 	http    *httpserver.Server
 	etcd    *etcdserver.EtcdServer
 	ws      *websocket.Server
-	workers map[string]*rpc.Client
 	config  Config
 	etcdcli *clientv3.Client
 	log     *logger.Logger
@@ -50,7 +50,6 @@ func NewApp(config Config) (*App, error) {
 		http:    httpsrv,
 		etcd:    etcd,
 		ws:      ws,
-		workers: make(map[string]*rpc.Client),
 		etcdcli: etcdcli,
 		config:  config,
 		log:     log,
@@ -73,12 +72,16 @@ func (app *App) Run() error {
 	}()
 
 	go func() {
-		if err := db.Connect(app.config.Database); err != nil {
+		if err := rpc.RunApp(app.config.GRPC, app.etcdcli, app.config.LogLevel); err != nil {
 			app.errch <- err
 		}
 	}()
 
-	go app.watchWorkers()
+	go func() {
+		if err := db.Connect(app.config.Database); err != nil {
+			app.errch <- err
+		}
+	}()
 
 	return <-app.errch
 }
