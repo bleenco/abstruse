@@ -18,10 +18,10 @@ export class WorkersModalComponent implements OnInit {
     yGrid: { min: 0, max: 100, tickNumber: 5, tickFormat: (v: number) => `${v}%`, tickPadding: 15 }
   };
   realtimeCpuChartOptions: RealtimeChartSettings = {
-    ...this.realtimeChartOptions, lines: [{ color: '#F6AB2F', areaColor: '#F6AB2F' }]
+    ...this.realtimeChartOptions, lines: [{ color: '#4299e1', areaColor: '#4299e1' }]
   };
   realtimeMemoryChartOptions: RealtimeChartSettings = {
-    ...this.realtimeChartOptions, lines: [{ color: '#22D171', areaColor: '#22D171' }]
+    ...this.realtimeChartOptions, lines: [{ color: '#f56565', areaColor: '#f56565' }]
   };
 
   constructor(
