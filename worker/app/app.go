@@ -46,37 +46,48 @@ func (app *App) Run() error {
 func (app *App) etcdConnLoop() {
 	log := logger.NewLogger("etcd", app.config.LogLevel)
 
-	conn := func() (<-chan *clientv3.LeaseKeepAliveResponse, error) {
-		kch, err := etcdutil.Register(app.config.ServerAddr, app.config.GRPC.ListenAddr, 5, log)
+	conn := func() (*clientv3.Client, <-chan *clientv3.LeaseKeepAliveResponse, error) {
+		cli, err := etcdutil.NewClient(app.config.ServerAddr)
 		if err != nil {
 			log.Infof("connection to abstruse etcd server %s failed, will retry...", app.config.ServerAddr)
-			return nil, err
+			return nil, nil, err
 		}
-		return kch, nil
+
+		kch, err := etcdutil.Register(cli, app.config.GRPC.ListenAddr, 5, log)
+		if err != nil {
+			return nil, nil, err
+		}
+		return cli, kch, nil
 	}
 
 retry:
 	dch := make(chan struct{})
 	ticker := backoff.NewTicker(backoff.NewExponentialBackOff())
 	for range ticker.C {
-		kch, err := conn()
+		cli, kch, err := conn()
 		if err != nil {
 			continue
 		}
-		ticker.Stop()
 		log.Infof("connected to abstruse etcd server %s", app.config.ServerAddr)
 
 		go func() {
 			for {
-				_, ok := <-kch
-				if !ok {
+				select {
+				case <-cli.Ctx().Done():
 					dch <- struct{}{}
 					log.Infof("lost connection to abstruse etcd server %s", app.config.ServerAddr)
 					return
+				case _, ok := <-kch:
+					if !ok {
+						dch <- struct{}{}
+						log.Infof("lost connection to abstruse etcd server %s", app.config.ServerAddr)
+						return
+					}
 				}
 			}
 		}()
 
+		ticker.Stop()
 		break
 	}
 

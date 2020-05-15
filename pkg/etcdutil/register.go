@@ -12,7 +12,7 @@ import (
 )
 
 // Register etcd service registration.
-func Register(target, addr string, ttl int64, log *logger.Logger) (<-chan *clientv3.LeaseKeepAliveResponse, error) {
+func Register(cli *clientv3.Client, addr string, ttl int64, log *logger.Logger) (<-chan *clientv3.LeaseKeepAliveResponse, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, err
@@ -20,11 +20,6 @@ func Register(target, addr string, ttl int64, log *logger.Logger) (<-chan *clien
 
 	serviceValue := fmt.Sprintf("%s:%s", host, port)
 	serviceKey := path.Join(ServicePrefix, WorkerService, serviceValue)
-
-	cli, err := NewClient(target)
-	if err != nil {
-		return nil, err
-	}
 
 	resp, err := cli.Grant(context.TODO(), ttl)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/jkuri/abstruse/master/etcdserver"
 	"github.com/jkuri/abstruse/pkg/etcdutil"
 	"github.com/jkuri/abstruse/pkg/logger"
 	"go.etcd.io/etcd/clientv3"
@@ -58,6 +59,23 @@ func (app *App) GetWorkers() map[string]*Worker {
 
 func (app *App) watchWorkers() error {
 	prefix := path.Join(etcdutil.ServicePrefix, etcdutil.WorkerService)
+
+	resp, err := app.etcdcli.Get(context.Background(), prefix, clientv3.WithPrefix())
+	if err != nil {
+		app.log.Errorf("%v", err)
+	} else {
+		for i := range resp.Kvs {
+			key, val := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value)
+			client, err := newWorker(val, app.config, app.log)
+			if err != nil {
+				app.log.Errorf("%v", err)
+			} else {
+				app.workers[key] = client
+				go app.initWorker(client)
+			}
+		}
+	}
+
 	rch := app.etcdcli.Watch(context.Background(), prefix, clientv3.WithPrefix())
 	for n := range rch {
 		for _, ev := range n.Events {
@@ -68,7 +86,7 @@ func (app *App) watchWorkers() error {
 					return err
 				}
 				app.workers[string(ev.Kv.Key)] = client
-				go app.initClient(client)
+				go app.initWorker(client)
 			case mvccpb.DELETE:
 				delete(app.workers, string(ev.Kv.Key))
 			}
@@ -77,8 +95,12 @@ func (app *App) watchWorkers() error {
 	return nil
 }
 
-func (app *App) initClient(client *Worker) {
-	if err := client.run(); err != nil {
+func (app *App) initWorker(worker *Worker) {
+	if err := worker.run(); err != nil {
+		// immediately remove worker from etcd.
+		etcdcli := etcdserver.ETCDServer.Client()
+		key := path.Join(etcdutil.ServicePrefix, etcdutil.WorkerService, worker.GetAddr())
+		etcdcli.Delete(context.Background(), key)
 		app.log.Errorf("%s", err.Error())
 	}
 }

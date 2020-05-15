@@ -15,6 +15,7 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
+	addr  string
 	host  HostInfo
 	conn  *grpc.ClientConn
 	cli   pb.ApiClient
@@ -56,6 +57,7 @@ func newWorker(addr string, config Config, log *logger.Logger) (*Worker, error) 
 	cli := pb.NewApiClient(conn)
 
 	return &Worker{
+		addr: addr,
 		conn: conn,
 		cli:  cli,
 		log:  log,
@@ -89,6 +91,11 @@ func (w *Worker) run() error {
 	err = <-ch
 	w.log.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
 	return err
+}
+
+// GetAddr returns remote address.
+func (w *Worker) GetAddr() string {
+	return w.addr
 }
 
 // GetHost returns host info.

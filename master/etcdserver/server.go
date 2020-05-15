@@ -13,6 +13,9 @@ import (
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
 )
 
+// ETCDServer global etcd server instance.
+var ETCDServer *EtcdServer
+
 // EtcdServer represents etcd embedded server.
 type EtcdServer struct {
 	server *embed.Etcd
@@ -63,7 +66,9 @@ func NewEtcdServer(ctx context.Context, config Config, logger *logger.Logger) (*
 	logger.Infof("started %q with endpoint %q", cfg.Name, curl.String())
 
 	cli := v3client.New(server.Server)
-	return &EtcdServer{server, cli, logger}, nil
+	srv := &EtcdServer{server, cli, logger}
+	ETCDServer = srv
+	return srv, nil
 }
 
 // Stop stops etcd embedded server.
