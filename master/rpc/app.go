@@ -79,6 +79,6 @@ func (app *App) watchWorkers() error {
 
 func (app *App) initClient(client *Worker) {
 	if err := client.run(); err != nil {
-		app.log.Errorf("failed connecting to worker %s", client.conn.Target())
+		app.log.Errorf("%s", err.Error())
 	}
 }

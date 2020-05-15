@@ -1,9 +1,11 @@
 package app
 
 import (
+	"github.com/cenkalti/backoff/v4"
 	"github.com/jkuri/abstruse/pkg/etcdutil"
 	"github.com/jkuri/abstruse/pkg/logger"
 	"github.com/jkuri/abstruse/worker/rpc"
+	"go.etcd.io/etcd/clientv3"
 )
 
 // App defines main worker application.
@@ -36,12 +38,50 @@ func (app *App) Run() error {
 		}
 	}()
 
-	go func() {
-		log := logger.NewLogger("etcd", app.config.LogLevel)
-		if err := etcdutil.Register(app.config.ServerAddr, app.config.GRPC.ListenAddr, 5, log); err != nil {
-			log.Errorf("%v", err)
-		}
-	}()
+	go app.etcdConnLoop()
 
 	return <-app.errch
+}
+
+func (app *App) etcdConnLoop() {
+	log := logger.NewLogger("etcd", app.config.LogLevel)
+
+	conn := func() (<-chan *clientv3.LeaseKeepAliveResponse, error) {
+		kch, err := etcdutil.Register(app.config.ServerAddr, app.config.GRPC.ListenAddr, 5, log)
+		if err != nil {
+			log.Infof("connection to abstruse etcd server %s failed, will retry...", app.config.ServerAddr)
+			return nil, err
+		}
+		return kch, nil
+	}
+
+retry:
+	dch := make(chan struct{})
+	ticker := backoff.NewTicker(backoff.NewExponentialBackOff())
+	for range ticker.C {
+		kch, err := conn()
+		if err != nil {
+			continue
+		}
+		ticker.Stop()
+		log.Infof("connected to abstruse etcd server %s", app.config.ServerAddr)
+
+		go func() {
+			for {
+				_, ok := <-kch
+				if !ok {
+					dch <- struct{}{}
+					log.Infof("lost connection to abstruse etcd server %s", app.config.ServerAddr)
+					return
+				}
+			}
+		}()
+
+		break
+	}
+
+	for {
+		<-dch
+		goto retry
+	}
 }
