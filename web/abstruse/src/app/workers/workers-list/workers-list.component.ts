@@ -28,8 +28,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
       switch (ev.type) {
         case '/subs/workers_usage': {
           const worker = this.workers.find(w => w.certID === ev.data.cert_id);
-          worker.usage.cpu = ev.data.cpu;
-          worker.usage.memory = ev.data.mem;
+          worker.updateUsage(ev.data);
           break;
         }
       }
@@ -50,7 +49,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
         }
 
         this.workers = resp.data.map((w: any) => {
-          const worker = new Worker(
+          return new Worker(
             w.host.cert_id,
             w.addr,
             w.host.hostname,
@@ -65,10 +64,9 @@ export class WorkersListComponent implements OnInit, OnDestroy {
             w.host.kernel_arch,
             w.host.virtualization_system,
             w.host.virtualization_role,
-            w.host.host_id
+            w.host.host_id,
+            w.usage
           );
-
-          return worker;
         });
       }, err => {
         console.error(err);
