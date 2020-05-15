@@ -1,7 +1,14 @@
 <div class="columns is-multiline">
-  <div class="column is-12 align-center">
-    <h1>Workers</h1>
-    <h4>Server nodes</h4>
+  <div class="column is-12">
+    <div class="main-heading">
+      <div class="main-heading-left">
+        <h1>Workers</h1>
+        <h2>Worker nodes</h2>
+      </div>
+      <div class="main-heading-right">
+
+      </div>
+    </div>
   </div>
   <!-- <div class="column is-12">
     <div class="notification is-orange">
@@ -10,32 +17,9 @@
       <p>No workers found. Please connect at least one worker in order to run builds.</p>
     </div>
   </div> -->
-  <div class="column is-12">
+  <div class="column is-12" *ngIf="workers.length && !fetchingWorkers">
     <div class="list">
-      <!-- <div class="headers">
-        <div class="columns">
-          <div class="column is-1 justify-center">
-            <span class="header-title">ID</span>
-          </div>
-          <div class="column is-3 justify-center">
-            <span class="header-title">IP</span>
-          </div>
-          <div class="column is-1 justify-center">
-            <span class="header-title">Capacity</span>
-          </div>
-          <div class="column is-1 justify-center">
-            <span class="header-title">CPU</span>
-          </div>
-          <div class="column is-1 justify-center">
-            <span class="header-title">Memory</span>
-          </div>
-          <div class="column is-3 justify-center">
-            <span class="header-title">Status</span>
-          </div>
-          <div class="column is-2 justify-center"></div>
-        </div>
-      </div> -->
-      <div class="list-items" *ngIf="workers.length">
+      <div class="list-items">
         <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
         <div class="table-item" *ngIf="!workers.length">
           <div class="columns">
@@ -46,6 +30,21 @@
               </span>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column is-12" *ngIf="!workers.length && !fetchingWorkers">
+    <div class="columns">
+      <div class="column is-8 is-offset-2">
+        <div class="notification">
+          <p>
+            <i class="fas fa-info"></i>
+            <span>
+              There are no workers currently online. In order to run jobs you need at least one worker node
+              connected.
+            </span>
+          </p>
         </div>
       </div>
     </div>

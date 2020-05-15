@@ -6,7 +6,7 @@
         <span class="text has-border">{{ worker?.certID }}</span>
       </div>
     </div>
-    <div class="column is-1">
+    <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Server</span>
         <span class="text">{{ worker?.addr }}</span>
@@ -23,16 +23,10 @@
         </span>
       </div>
     </div>
-    <div class="column is-1">
+    <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Kernel</span>
         <span class="text">{{ worker?.kernelArch }} {{ worker?.kernelVersion }}</span>
-      </div>
-    </div>
-    <div class="column is-2">
-      <div class="list-item-content">
-        <span class="label">Uptime</span>
-        <span class="text">{{ worker?.getUptime() }}</span>
       </div>
     </div>
     <div class="column is-1 justify-center">
@@ -47,7 +41,7 @@
       <div class="list-item-content">
         <span class="label">CPU</span>
         <span class="text">
-          <app-progress-bar [percent]="worker?.usage?.cpu" [options]="{ color: 'purple' }"></app-progress-bar>
+          <app-progress-bar [percent]="worker?.usage?.cpu" [options]="{ color: 'blue' }"></app-progress-bar>
         </span>
       </div>
     </div>
@@ -61,9 +55,9 @@
     </div>
     <div class="column is-2">
       <div class="list-item-content">
-        <button type="button" class="button is-small">
+        <button type="button" class="button">
           <i class="fas fa-chart-bar"></i>
-          <span>Show Usage</span>
+          <span>Usage</span>
         </button>
       </div>
     </div>
