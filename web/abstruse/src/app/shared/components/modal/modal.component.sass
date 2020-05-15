@@ -1,0 +1,59 @@
+@import 'colours'
+@import 'variables'
+
+.modal-overlay
+  position: fixed
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: rgba($black, .7)
+  z-index: 100
+  display: none
+  overflow-y: scroll
+
+  &.is-open
+    display: block
+
+  .modal-container
+    display: block
+    width: 800px
+    margin: 40px auto
+    background: $white
+    border: 1px solid $border-primary
+    border-radius: $border-radius
+
+    &.is-small
+      width: 500px
+
+    &.is-large
+      width: 1000px
+
+    ::ng-deep
+      .modal-header
+        padding: 0 30px
+        display: flex
+        align-items: center
+        border-bottom: 1px solid $border-primary
+        position: relative
+        height: 60px
+
+        .close-icon
+          position: absolute
+          right: 15px
+          top: 20px
+
+      .modal-footer
+        padding: 0 30px
+        display: flex
+        align-items: center
+        border-top: 1px solid $border-primary
+        height: 60px
+
+      .modal-body
+        padding: 10px 20px
+
+        h3
+          padding: 0 10px

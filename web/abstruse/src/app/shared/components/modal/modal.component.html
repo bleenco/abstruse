@@ -1,0 +1,8 @@
+<div class="modal-overlay" #UIModal>
+  <div class="modal-container" [ngClass]="{
+    'is-small': size === 'small',
+    'is-large': size === 'large'
+  }">
+    <ng-content></ng-content>
+  </div>
+</div>

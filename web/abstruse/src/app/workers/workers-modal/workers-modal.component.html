@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h1>{{ worker?.certID }}</h1>
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss('Cross click')">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<div class="modal-body">
+  <!-- <h3>CPU Usage</h3>
+  <div class="modal-realtime-chart">
+    <bleenco-realtime-chart [data]="cpu" [options]="realtimeCpuChartOptions"></bleenco-realtime-chart>
+  </div>
+  <h3>Memory Usage</h3>
+  <div class="modal-realtime-chart">
+    <bleenco-realtime-chart [data]="memory" [options]="realtimeMemoryChartOptions"></bleenco-realtime-chart>
+  </div>
+  <h3>Storage Usage</h3>
+  <div class="modal-realtime-chart">
+    <bleenco-realtime-chart [data]="storage" [options]="realtimeStorageChartOptions"></bleenco-realtime-chart>
+  </div> -->
+</div>
+<div class="modal-footer justify-end">
+  <button type="button" class="button" (click)="activeModal.close('Close click')">Close</button>
+</div>

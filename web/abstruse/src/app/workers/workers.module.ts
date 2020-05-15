@@ -5,18 +5,20 @@ import { WorkersComponent } from './workers.component';
 import { WorkersListComponent } from './workers-list/workers-list.component';
 import { WorkersListItemComponent } from './workers-list-item/workers-list-item.component';
 import { SharedModule } from '../shared/shared.module';
-import { WorkersService } from './shared/workers.service';
+import { WorkersModalComponent } from './workers-modal/workers-modal.component';
 
 @NgModule({
   declarations: [
     WorkersComponent,
     WorkersListComponent,
-    WorkersListItemComponent
+    WorkersListItemComponent,
+    WorkersModalComponent
   ],
   imports: [
     CommonModule,
     WorkersRoutingModule,
     SharedModule.forRoot()
-  ]
+  ],
+  entryComponents: [WorkersModalComponent]
 })
 export class WorkersModule { }

@@ -10,12 +10,14 @@ import { StatusService } from './providers/status.service';
 import { TimeService } from './providers/time.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
+import { ModalModule } from './components/modal/modal.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ModalModule
   ],
   declarations: [
     ProgressBarComponent
@@ -24,7 +26,8 @@ import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.compon
     CommonModule,
     FormsModule,
     HttpClientModule,
-    ProgressBarComponent
+    ProgressBarComponent,
+    ModalModule
   ]
 })
 export class SharedModule {
