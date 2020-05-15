@@ -2,8 +2,9 @@ package rpc
 
 import (
 	"context"
-	"encoding/json"
 	"time"
+
+	"github.com/jkuri/abstruse/master/websocket"
 
 	"github.com/jkuri/abstruse/pkg/utils"
 )
@@ -35,10 +36,13 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			Mem:       stats.GetMem(),
 			Timestamp: utils.ParseTime(stats.GetTimestamp()),
 		}
-		_, err = json.Marshal(&usage)
-		if err != nil {
-			return err
-		}
+
+		websocket.WSApp.Broadcast("/subs/workers_usage", map[string]interface{}{
+			"cert_id":   w.host.CertID,
+			"cpu":       usage.CPU,
+			"mem":       usage.Mem,
+			"timestamp": usage.Timestamp,
+		})
 
 		w.usage = append(w.usage, usage)
 		if len(w.usage) > 60 {

@@ -47,7 +47,7 @@
       <div class="list-item-content">
         <span class="label">CPU</span>
         <span class="text">
-          <app-progress-bar [percent]="'50'" [options]="{ color: 'purple' }"></app-progress-bar>
+          <app-progress-bar [percent]="worker?.usage?.cpu" [options]="{ color: 'purple' }"></app-progress-bar>
         </span>
       </div>
     </div>
@@ -55,7 +55,7 @@
       <div class="list-item-content">
         <span class="label">Memory</span>
         <span class="text">
-          <app-progress-bar [percent]="'50'" [options]="{ color: 'red' }"></app-progress-bar>
+          <app-progress-bar [percent]="worker?.usage?.memory" [options]="{ color: 'red' }"></app-progress-bar>
         </span>
       </div>
     </div>

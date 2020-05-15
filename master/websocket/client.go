@@ -22,6 +22,7 @@ type Client struct {
 	id    int
 	email string
 	name  string
+	subs  []string
 }
 
 // Receive reads next message from user's underlying connection.
@@ -98,4 +99,28 @@ func (c *Client) writeRaw(p []byte) error {
 	_, err := c.conn.Write(p)
 
 	return err
+}
+
+func (c *Client) subscribe(sub string) {
+	if !c.isSubscribed(sub) {
+		c.subs = append(c.subs, sub)
+	}
+}
+
+func (c *Client) unsubscribe(sub string) {
+	for i, s := range c.subs {
+		if s == sub {
+			c.subs = append(c.subs[:i], c.subs[i+1:]...)
+		}
+	}
+}
+
+func (c *Client) isSubscribed(data string) bool {
+	for _, s := range c.subs {
+		if s == data {
+			return true
+		}
+	}
+
+	return false
 }

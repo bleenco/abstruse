@@ -8,6 +8,9 @@ import (
 	"github.com/jkuri/abstruse/pkg/logger"
 )
 
+// WSApp exported web socket app.
+var WSApp *App
+
 // App contains logic of client interaction.
 type App struct {
 	mu      sync.RWMutex
@@ -17,9 +20,10 @@ type App struct {
 
 // NewApp inits new app instance and returns it.
 func NewApp(log *logger.Logger) *App {
-	return &App{
+	WSApp = &App{
 		Log: log,
 	}
+	return WSApp
 }
 
 // Register registers new connection as app Client.
@@ -55,47 +59,49 @@ func (app *App) Remove(client *Client) {
 }
 
 // Broadcast sends socket event to all subscribers.
-func (app *App) Broadcast(event string, data map[string]interface{}, checks map[string]interface{}) {
-	// var clients []*Client
+func (app *App) Broadcast(sub string, data map[string]interface{}) {
+	var clients []*Client
 
-	// for _, c := range app.Clients {
-	// 	for _, sub := range c.subs {
-	// 		if sub.Event == event && checkValidSubscription(sub.Data, checks, false) {
-	// 			clients = append(clients, c)
-	// 		}
-	// 	}
-	// }
+	for _, c := range app.Clients {
+		for _, s := range c.subs {
+			if s == sub {
+				clients = append(clients, c)
+			}
+		}
+	}
 
-	// for _, client := range clients {
-	// 	if err := client.Send(event, data); err != nil {
-	// 		app.Log.Debugf("error: %s\n", err.Error())
-	// 	}
-	// }
+	for _, client := range clients {
+		if err := client.Send(sub, data); err != nil {
+			app.Log.Debugf("error: %s\n", err.Error())
+		}
+	}
 }
 
 // InitClient initializes reading client input messages.
 func (app *App) InitClient(client *Client) {
 	for {
-		// msg, err := client.Receive()
-		// if err != nil {
-		// 	return
-		// }
+		msg, err := client.Receive()
+		if err != nil {
+			return
+		}
 
-		// if msg.Type == "subscribe" {
-		// 	var data map[string]interface{}
-		// 	if d, ok := msg.Data["data"].(map[string]interface{}); ok {
-		// 		data = d
-		// 	}
-		// 	client.subscribe(msg.Data["event"].(string), data)
-		// }
+		if msg.Type == "subscribe" {
+			var data string
+			if d, ok := msg.Data["sub"].(string); ok {
+				data = d
+			}
+			client.subscribe(data)
+			app.Log.Debugf("client %s subscribed to %s event", client.email, data)
+		}
 
-		// if msg.Type == "unsubscribe" {
-		// 	var data map[string]interface{}
-		// 	if d, ok := msg.Data["data"].(map[string]interface{}); ok {
-		// 		data = d
-		// 	}
-		// 	client.unsubscribe(msg.Data["event"].(string), data)
-		// }
+		if msg.Type == "unsubscribe" {
+			var data string
+			if d, ok := msg.Data["sub"].(string); ok {
+				data = d
+			}
+			client.unsubscribe(data)
+			app.Log.Debugf("client %s unsubscribed from %s event", client.email, data)
+		}
 	}
 }
 
