@@ -1,0 +1,30 @@
+<div class="line-chart-container">
+  <div class="line-chart"></div>
+
+  <div class="legend-container">
+    <div class="legend-item" *ngFor="let item of legend.items">
+      <div class="legend-item-icon">
+        <span class="legend-item-line" [style.background]="item.color">
+          <span class="legend-item-icon-marker" [style.border-color]="item.color"></span>
+        </span>
+      </div>
+      <span class="legend-text" [style.color]="item.color">{{ item.id }}</span>
+    </div>
+  </div>
+
+  <div class="tooltip-container" [class.is-visible]="tooltip.visible">
+    <div class="tooltip-top-title">
+      <span>{{ tooltip.title }}</span>
+    </div>
+    <div class="tooltip-content">
+      <div class="tooltip-item" *ngFor="let item of tooltip.items">
+        <div class="tooltip-marker">
+          <span class="tooltip-dot" [style.background]="'rgba(' + item.color + ', 1)'"
+            [style.border-color]="'rgba(' + item.color + ', 0.4)'"></span>
+          <span class="tooltip-id">{{ item.id }}</span>
+        </div>
+        <span class="tooltip-item-value">{{ item.value }}</span>
+      </div>
+    </div>
+  </div>
+</div>

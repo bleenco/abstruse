@@ -11,13 +11,20 @@ import { TimeService } from './providers/time.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
 import { ModalModule } from './components/modal/modal.module';
+import { ResizeService } from './providers/resize.service';
+import { LineChartModule } from './charts/line-chart/line-chart.module';
+import { PieChartModule } from './charts/pie-chart/pie-chart.module';
+import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     HttpClientModule,
-    ModalModule
+    ModalModule,
+    LineChartModule,
+    PieChartModule,
+    RealtimeChartModule
   ],
   declarations: [
     ProgressBarComponent
@@ -27,7 +34,10 @@ import { ModalModule } from './components/modal/modal.module';
     FormsModule,
     HttpClientModule,
     ProgressBarComponent,
-    ModalModule
+    ModalModule,
+    LineChartModule,
+    PieChartModule,
+    RealtimeChartModule
   ]
 })
 export class SharedModule {
@@ -40,7 +50,8 @@ export class SharedModule {
         AuthGuardService,
         StatusService,
         TimeService,
-        CookieService
+        CookieService,
+        ResizeService
       ]
     };
   }
