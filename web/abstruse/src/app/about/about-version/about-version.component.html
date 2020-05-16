@@ -1,0 +1,43 @@
+<p>about-version works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12 align-center">
+    <div class="main-heading">
+      <div class="main-heading-left">
+        <h1>About</h1>
+        <h2>Abstruse version and other info</h2>
+      </div>
+      <div class="main-heading-right">
+      </div>
+    </div>
+  </div>
+  <div class="column is-12">
+    <div class="list-item">
+      <div class="columns">
+        <div class="column is-2">
+          <div class="list-item-content">
+            <span class="label">API Version</span>
+            <span class="text">{{ version?.api }}</span>
+          </div>
+        </div>
+        <div class="column is-2">
+          <div class="list-item-content">
+            <span class="label">UI Version</span>
+            <span class="text">{{ version?.ui }}</span>
+          </div>
+        </div>
+        <div class="column is-5">
+          <div class="list-item-content">
+            <span class="label">Commit Hash</span>
+            <span class="text">{{ version?.commitHash }}</span>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="list-item-content">
+            <span class="label">Build Date</span>
+            <span class="text">{{ version?.buildDate | date:'medium' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

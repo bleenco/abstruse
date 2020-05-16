@@ -12,7 +12,7 @@ RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go
 RUN make grpc && make worker
 
 # stage 2 image
-FROM alpine
+FROM scratch
 
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /app/build/abstruse-worker /usr/bin/abstruse-worker
