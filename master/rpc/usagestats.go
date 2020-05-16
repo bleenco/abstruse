@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/jkuri/abstruse/master/websocket"
-
-	"github.com/jkuri/abstruse/pkg/utils"
 )
 
 // Usage represents worker usage stats.
@@ -34,7 +32,7 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			CertID:    w.host.CertID,
 			CPU:       stats.GetCpu(),
 			Mem:       stats.GetMem(),
-			Timestamp: utils.ParseTime(stats.GetTimestamp()),
+			Timestamp: time.Now(),
 		}
 
 		websocket.WSApp.Broadcast("/subs/workers_usage", map[string]interface{}{
@@ -46,6 +44,7 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 
 		w.usage = append(w.usage, usage)
 		if len(w.usage) > 60 {
+			// TODO save to db.
 			w.usage = w.usage[1:]
 		}
 	}

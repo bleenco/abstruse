@@ -4,6 +4,10 @@ import { Observable } from 'rxjs';
 import { JSONResponse } from '../../core/shared/shared.model';
 import { getAPIURL } from '../../core/shared/shared-functions';
 
+export const workerSubAddEvent = '/subs/workers_add';
+export const workerSubDeleteEvent = '/subs/workers_delete';
+export const workerSubUsageEvent = '/subs/workers_usage';
+
 @Injectable({
   providedIn: 'root'
 })

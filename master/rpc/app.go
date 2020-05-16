@@ -66,12 +66,12 @@ func (app *App) watchWorkers() error {
 	} else {
 		for i := range resp.Kvs {
 			key, val := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value)
-			client, err := newWorker(val, app.config, app.log)
+			worker, err := newWorker(val, app.config, app.log)
 			if err != nil {
 				app.log.Errorf("%v", err)
 			} else {
-				app.workers[key] = client
-				go app.initWorker(client)
+				app.workers[key] = worker
+				go app.initWorker(worker)
 			}
 		}
 	}
@@ -81,13 +81,14 @@ func (app *App) watchWorkers() error {
 		for _, ev := range n.Events {
 			switch ev.Type {
 			case mvccpb.PUT:
-				client, err := newWorker(string(ev.Kv.Value), app.config, app.log)
+				worker, err := newWorker(string(ev.Kv.Value), app.config, app.log)
 				if err != nil {
 					return err
 				}
-				app.workers[string(ev.Kv.Key)] = client
-				go app.initWorker(client)
+				app.workers[string(ev.Kv.Key)] = worker
+				go app.initWorker(worker)
 			case mvccpb.DELETE:
+				app.workers[string(ev.Kv.Key)].EmitDeleted()
 				delete(app.workers, string(ev.Kv.Key))
 			}
 		}

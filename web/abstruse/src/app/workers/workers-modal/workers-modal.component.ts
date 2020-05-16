@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Worker } from '../shared/worker.class';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { RealtimeChartSettings } from 'src/app/shared/charts/realtime-chart/realtime-chart.interface';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-workers-modal',

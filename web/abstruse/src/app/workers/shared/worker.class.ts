@@ -32,17 +32,22 @@ export class Worker {
   }
 
   private initUsage(): void {
-    this.cpu = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), 60 - i), value: u.cpu }))];
-    this.memory = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), 60 - i), value: u.mem }))];
-    this.currentCPU = this.cpu[0][this.cpu[0].length - 1].value;
-    this.currentMem = this.memory[0][this.memory[0].length - 1].value;
+    try {
+      this.cpu = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), 60 - i), value: u.cpu }))];
+      this.memory = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), 60 - i), value: u.mem }))];
+      this.currentCPU = this.cpu[0][this.cpu[0].length - 1].value;
+      this.currentMem = this.memory[0][this.memory[0].length - 1].value;
+    } catch {
+      this.currentCPU = 0;
+      this.currentMem = 0;
+    }
   }
 
   updateUsage(data: { cpu: number, mem: number }): void {
     this.cpu[0].push({ value: data.cpu, date: new Date() });
-    this.cpu[0].shift();
+    if (this.cpu[0].length > 60) { this.cpu[0].shift(); }
     this.memory[0].push({ value: data.mem, date: new Date() });
-    this.memory[0].shift();
+    if (this.memory[0].length > 60) { this.memory[0].shift(); }
     this.currentCPU = data.cpu;
     this.currentMem = data.mem;
   }

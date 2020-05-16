@@ -6,3 +6,4 @@
     "key": "/var/tmp/worker/key.pem"
   },
   "log_level": "debug"
+}

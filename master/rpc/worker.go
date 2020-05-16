@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jkuri/abstruse/master/websocket"
+
 	"github.com/jkuri/abstruse/pkg/logger"
 	"github.com/jkuri/abstruse/pkg/security"
 	pb "github.com/jkuri/abstruse/proto"
@@ -21,11 +23,6 @@ type Worker struct {
 	cli   pb.ApiClient
 	usage []Usage
 	log   *logger.Logger
-}
-
-type workerData struct {
-	Host  HostInfo `json:"host"`
-	Usage []Usage  `json:"usage"`
 }
 
 // NewClient returns new instance of gRPC client.
@@ -73,6 +70,7 @@ func (w *Worker) run() error {
 	}
 	w.host = hostInfo(info)
 	w.log.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
+	w.EmitData()
 
 	ch := make(chan error)
 
@@ -106,4 +104,21 @@ func (w *Worker) GetHost() HostInfo {
 // GetUsage returns worker usage.
 func (w *Worker) GetUsage() []Usage {
 	return w.usage
+}
+
+// EmitData broadcast newly created worker via websocket.
+func (w *Worker) EmitData() {
+	websocket.WSApp.Broadcast("/subs/workers_add", map[string]interface{}{
+		"addr":  w.GetAddr(),
+		"host":  w.GetHost(),
+		"usage": w.GetUsage(),
+	})
+}
+
+// EmitDeleted broadcast disconnected worker via websocket.
+func (w *Worker) EmitDeleted() {
+	websocket.WSApp.Broadcast("/subs/workers_delete", map[string]interface{}{
+		"addr": w.GetAddr(),
+		"host": w.GetHost(),
+	})
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Worker } from '../shared/worker.class';
-import { WorkersService } from '../shared/workers.service';
+import { WorkersService, workerSubUsageEvent, workerSubAddEvent, workerSubDeleteEvent } from '../shared/workers.service';
 import { DataService } from '../../shared/providers/data.service';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { Subscription } from 'rxjs';
@@ -23,10 +23,20 @@ export class WorkersListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchWorkers();
-    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: '/subs/workers_usage' } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubAddEvent } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubDeleteEvent } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubUsageEvent } });
     this.sub = this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
       switch (ev.type) {
-        case '/subs/workers_usage': {
+        case workerSubDeleteEvent: {
+          this.workers = this.workers.filter(w => w.certID !== ev.data.host.cert_id);
+          break;
+        }
+        case workerSubAddEvent: {
+          this.workers.push(this.newWorker(ev.data));
+          break;
+        }
+        case workerSubUsageEvent: {
           const worker = this.workers.find(w => w.certID === ev.data.cert_id);
           worker.updateUsage(ev.data);
           break;
@@ -36,7 +46,9 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: '/subs/workers_usage' } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubAddEvent } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubDeleteEvent } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubUsageEvent } });
     if (this.sub) { this.sub.unsubscribe(); }
   }
 
@@ -49,29 +61,33 @@ export class WorkersListComponent implements OnInit, OnDestroy {
         }
 
         this.workers = resp.data.map((w: any) => {
-          return new Worker(
-            w.host.cert_id,
-            w.addr,
-            w.host.hostname,
-            w.host.uptime,
-            w.host.boot_time,
-            w.host.procs,
-            w.host.os,
-            w.host.platform,
-            w.host.platform_family,
-            w.host.platform_version,
-            w.host.kernel_version,
-            w.host.kernel_arch,
-            w.host.virtualization_system,
-            w.host.virtualization_role,
-            w.host.host_id,
-            w.usage
-          );
+          return this.newWorker(w);
         });
       }, err => {
         console.error(err);
       }, () => {
         this.fetchingWorkers = false;
       });
+  }
+
+  private newWorker(w: any): Worker {
+    return new Worker(
+      w.host.cert_id,
+      w.addr,
+      w.host.hostname,
+      w.host.uptime,
+      w.host.boot_time,
+      w.host.procs,
+      w.host.os,
+      w.host.platform,
+      w.host.platform_family,
+      w.host.platform_version,
+      w.host.kernel_version,
+      w.host.kernel_arch,
+      w.host.virtualization_system,
+      w.host.virtualization_role,
+      w.host.host_id,
+      w.usage
+    );
   }
 }
