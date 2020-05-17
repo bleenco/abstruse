@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jkuri/abstruse/master/app"
+	"github.com/jkuri/abstruse/master/core"
 	"github.com/jkuri/abstruse/master/etcdserver"
 	"github.com/jkuri/abstruse/master/httpserver"
 	"github.com/jkuri/abstruse/master/rpc"
@@ -31,9 +31,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	cfg, err := app.ReadAndParseConfig(*configPath)
+	cfg, err := core.ReadAndParseConfig(*configPath)
 	if err != nil {
-		cfg = app.Config{
+		cfg = core.Config{
 			HTTP: httpserver.Config{
 				Host:      "0.0.0.0",
 				HTTPPort:  "80",
@@ -58,7 +58,7 @@ func main() {
 		}
 	}
 
-	app, err := app.NewApp(cfg)
+	app, err := core.NewApp(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,46 +67,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-// import (
-// 	"context"
-// 	"flag"
-// 	"strconv"
-// 	"time"
-
-// 	grpclb "github.com/jkuri/abstruse/pkg/grpclb"
-// 	pb "github.com/jkuri/abstruse/proto"
-// 	"github.com/sirupsen/logrus"
-// 	"google.golang.org/grpc"
-// 	"google.golang.org/grpc/balancer/roundrobin"
-// 	"google.golang.org/grpc/resolver"
-// )
-
-// var (
-// 	svc = flag.String("service", "abstruse_service", "service name")
-// 	reg = flag.String("reg", "http://localhost:2379", "register etcd address")
-// )
-
-// func main() {
-// 	flag.Parse()
-// 	r := grpclb.NewResolver(*reg, *svc)
-// 	resolver.Register(r)
-
-// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-// 	// https://github.com/grpc/grpc/blob/master/doc/naming.md
-// 	// The gRPC client library will use the specified scheme to pick the right resolver plugin and pass it the fully qualified name string.
-// 	conn, err := grpc.DialContext(ctx, r.Scheme()+"://authority/"+*svc, grpc.WithInsecure(), grpc.WithBalancerName(roundrobin.Name), grpc.WithBlock())
-// 	cancel()
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	ticker := time.NewTicker(1000 * time.Millisecond)
-// 	for t := range ticker.C {
-// 		client := pb.NewGreeterClient(conn)
-// 		resp, err := client.SayHello(context.Background(), &pb.HelloRequest{Name: "world " + strconv.Itoa(t.Second())})
-// 		if err == nil {
-// 			logrus.Infof("%v: Reply is %s\n", t, resp.Message)
-// 		}
-// 	}
-// }

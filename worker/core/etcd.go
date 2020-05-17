@@ -1,49 +1,13 @@
-package app
+package core
 
 import (
 	"github.com/cenkalti/backoff/v4"
 	"github.com/jkuri/abstruse/pkg/etcdutil"
 	"github.com/jkuri/abstruse/pkg/logger"
-	"github.com/jkuri/abstruse/worker/rpc"
 	"go.etcd.io/etcd/clientv3"
 )
 
-// App defines main worker application.
-type App struct {
-	Server *rpc.Server
-
-	config Config
-	errch  chan error
-}
-
-// NewApp returns main worker app instance.
-func NewApp(config Config) (*App, error) {
-	grpcServer, err := rpc.NewServer(config.GRPC, logger.NewLogger("grpc", config.LogLevel))
-	if err != nil {
-		return nil, err
-	}
-
-	return &App{
-		Server: grpcServer,
-		config: config,
-		errch:  make(chan error),
-	}, nil
-}
-
-// Run starts main worker app.
-func (app *App) Run() error {
-	go func() {
-		if err := app.Server.Listen(); err != nil {
-			app.errch <- err
-		}
-	}()
-
-	go app.etcdConnLoop()
-
-	return <-app.errch
-}
-
-func (app *App) etcdConnLoop() {
+func (app *App) connLoop() {
 	log := logger.NewLogger("etcd", app.config.LogLevel)
 
 	conn := func() (*clientv3.Client, <-chan *clientv3.LeaseKeepAliveResponse, error) {

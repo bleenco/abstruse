@@ -1,4 +1,4 @@
-package app
+package core
 
 import (
 	"encoding/json"
@@ -10,9 +10,10 @@ import (
 
 // Config defines configuration for worker app.
 type Config struct {
-	ServerAddr string     `json:"server_addr"`
-	GRPC       rpc.Config `json:"grpc"`
-	LogLevel   string     `json:"log_level"`
+	ServerAddr  string     `json:"server_addr"`
+	GRPC        rpc.Config `json:"grpc"`
+	Concurrency int        `json:"concurrency"`
+	LogLevel    string     `json:"log_level"`
 }
 
 // ReadAndParseConfig reads and parses configuration from JSON file.

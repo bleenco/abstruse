@@ -16,6 +16,7 @@ require (
 	github.com/golang/protobuf v1.4.1
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jkuri/statik v0.3.0
+	github.com/json-iterator/go v1.1.7
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/shirou/gopsutil v2.20.4+incompatible

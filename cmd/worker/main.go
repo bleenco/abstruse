@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jkuri/abstruse/worker/app"
+	"github.com/jkuri/abstruse/worker/core"
 )
 
 var (
@@ -15,12 +15,12 @@ var (
 func main() {
 	flag.Parse()
 
-	config, err := app.ReadAndParseConfig(*configPath)
+	config, err := core.ReadAndParseConfig(*configPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	app, err := app.NewApp(config)
+	app, err := core.NewApp(config)
 	if err != nil {
 		log.Fatal(err)
 	}

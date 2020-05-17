@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/jkuri/abstruse/master/websocket"
-
 	"github.com/jkuri/abstruse/pkg/logger"
 	"github.com/jkuri/abstruse/pkg/security"
 	pb "github.com/jkuri/abstruse/proto"

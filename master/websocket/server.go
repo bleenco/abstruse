@@ -42,7 +42,7 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	s.logger.Infof("listening ws server on %s", ln.Addr().String())
+	s.logger.Infof("ws listening on %s", ln.Addr().String())
 
 	go func() {
 		for {
