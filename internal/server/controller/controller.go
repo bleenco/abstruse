@@ -7,11 +7,17 @@ import (
 
 func CreateInitControllersFn(
 	uc *UserController,
+	vc *VersionController,
 ) http.InitControllers {
 	return func(r *http.Router) {
 		r.POST("/api/user/login", uc.Login)
 		r.GET("/api/user/:id", uc.Find)
+		r.GET("/api/version", vc.GetInfo)
 	}
 }
 
-var ProviderSet = wire.NewSet(NewUserController, CreateInitControllersFn)
+var ProviderSet = wire.NewSet(
+	NewUserController,
+	NewVersionController,
+	CreateInitControllersFn,
+)

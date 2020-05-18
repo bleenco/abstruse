@@ -18,13 +18,13 @@ type UserService interface {
 }
 
 type DefaultUserService struct {
-	logger     *zap.Logger
+	logger     *zap.SugaredLogger
 	repository repository.UserRepository
 }
 
 func NewUserService(logger *zap.Logger, repository repository.UserRepository) UserService {
 	return &DefaultUserService{
-		logger:     logger.With(zap.String("type", "UserService")),
+		logger:     logger.With(zap.String("type", "UserService")).Sugar(),
 		repository: repository,
 	}
 }

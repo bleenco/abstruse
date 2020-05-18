@@ -11,12 +11,12 @@ import (
 )
 
 type UserController struct {
-	logger  *zap.Logger
+	logger  *zap.SugaredLogger
 	service service.UserService
 }
 
 func NewUserController(logger *zap.Logger, service service.UserService) *UserController {
-	return &UserController{logger, service}
+	return &UserController{logger.Sugar(), service}
 }
 
 func (c *UserController) Find(resp http.ResponseWriter, req *http.Request, ps httprouter.Params) {

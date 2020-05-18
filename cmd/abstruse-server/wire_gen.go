@@ -58,7 +58,9 @@ func CreateApp(cfg string) (*server.App, error) {
 	userRepository := repository.NewDBUserRepository(logger, gormDB)
 	userService := service.NewUserService(logger, userRepository)
 	userController := controller.NewUserController(logger, userService)
-	initControllers := controller.CreateInitControllersFn(userController)
+	versionService := service.NewVersionService(logger)
+	versionController := controller.NewVersionController(logger, versionService)
+	initControllers := controller.CreateInitControllersFn(userController, versionController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
 	httpServer, err := http.NewServer(httpOptions, logger, router)
 	if err != nil {

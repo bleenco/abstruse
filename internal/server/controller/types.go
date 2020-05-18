@@ -1,8 +1,9 @@
 package controller
 
 import (
-	"encoding/json"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Response is interface flexible data response.
@@ -32,7 +33,7 @@ type ErrorResponse struct {
 func JSONResponse(res http.ResponseWriter, status int, data interface{}) {
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(status)
-	json.NewEncoder(res).Encode(data)
+	jsoniter.NewEncoder(res).Encode(data)
 }
 
 type loginForm struct {

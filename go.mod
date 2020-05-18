@@ -14,6 +14,7 @@ require (
 	github.com/google/wire v0.4.0
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jkuri/statik v0.3.0
+	github.com/json-iterator/go v1.1.7
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/ogier/pflag v0.0.1 // indirect
