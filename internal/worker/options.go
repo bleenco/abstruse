@@ -8,8 +8,9 @@ import (
 
 // Options is global config for worker app.
 type Options struct {
-	Etcd *etcd.Options
-	GRPC *grpc.Options
+	Etcd        *etcd.Options
+	GRPC        *grpc.Options
+	MaxCapacity int
 }
 
 // NewOptions returns worker app config.
