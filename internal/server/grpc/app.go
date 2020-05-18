@@ -5,6 +5,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/jkuri/abstruse/internal/pkg/etcd"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -24,19 +25,23 @@ type App struct {
 }
 
 // NewApp returns new instance of App.
-func NewApp(opts *Options, ws *websocket.App, client *clientv3.Client, logger *zap.Logger) (*App, error) {
+func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) {
 	app := &App{
-		config:  config,
+		opts:    opts,
 		workers: make(map[string]*Worker),
-		client:  client,
 		ws:      ws,
 		logger:  logger.With(zap.String("type", "grpc")).Sugar(),
 		errch:   make(chan error),
 	}
+
+	return app, nil
 }
 
 // Start starts gRPC application.
-func (app *App) Start() error {
+func (app *App) Start(client *clientv3.Client) error {
+	app.logger.Info("starting gRPC app")
+	app.client = client
+
 	go func() {
 		if err := app.watchWorkers(); err != nil {
 			app.errch <- err
@@ -52,17 +57,17 @@ func (app *App) GetWorkers() map[string]*Worker {
 }
 
 func (app *App) watchWorkers() error {
-	prefix := path.Join(etcdutil.ServicePrefix, etcdutil.WorkerService)
+	prefix := path.Join(etcd.ServicePrefix, etcd.WorkerService)
 
-	resp, err := app.etcdcli.Get(context.Background(), prefix, clientv3.WithPrefix())
+	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
-		app.log.Errorf("%v", err)
+		app.logger.Errorf("%v", err)
 	} else {
 		for i := range resp.Kvs {
 			key, val := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value)
-			worker, err := newWorker(val, app.config, app.log)
+			worker, err := newWorker(val, app.opts, app.ws, app.logger)
 			if err != nil {
-				app.log.Errorf("%v", err)
+				app.logger.Errorf("%v", err)
 			} else {
 				app.workers[key] = worker
 				go app.initWorker(worker)
@@ -70,12 +75,12 @@ func (app *App) watchWorkers() error {
 		}
 	}
 
-	rch := app.etcdcli.Watch(context.Background(), prefix, clientv3.WithPrefix())
+	rch := app.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
 	for n := range rch {
 		for _, ev := range n.Events {
 			switch ev.Type {
 			case mvccpb.PUT:
-				worker, err := newWorker(string(ev.Kv.Value), app.config, app.log)
+				worker, err := newWorker(string(ev.Kv.Value), app.opts, app.ws, app.logger)
 				if err != nil {
 					return err
 				}
@@ -93,9 +98,9 @@ func (app *App) watchWorkers() error {
 func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
 		// immediately remove worker from etcd.
-		etcdcli := etcdserver.ETCDServer.Client()
-		key := path.Join(etcdutil.ServicePrefix, etcdutil.WorkerService, worker.GetAddr())
-		etcdcli.Delete(context.Background(), key)
-		app.log.Errorf("%s", err.Error())
+		// client := etcdserver.ETCDServer.Client()
+		// key := path.Join(etcd.ServicePrefix, etcd.WorkerService, worker.GetAddr())
+		// client.Delete(context.Background(), key)
+		app.logger.Errorf("%s", err.Error())
 	}
 }

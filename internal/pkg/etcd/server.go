@@ -76,3 +76,8 @@ func (s *Server) Start() error {
 	s.cli = v3client.New(s.server.Server)
 	return nil
 }
+
+// Cllient returns etcd client.
+func (s *Server) Client() *clientv3.Client {
+	return s.cli
+}

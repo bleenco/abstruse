@@ -33,12 +33,12 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			Timestamp: time.Now(),
 		}
 
-		// websocket.WSApp.Broadcast("/subs/workers_usage", map[string]interface{}{
-		// 	"cert_id":   w.host.CertID,
-		// 	"cpu":       usage.CPU,
-		// 	"mem":       usage.Mem,
-		// 	"timestamp": usage.Timestamp,
-		// })
+		w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
+			"cert_id":   w.host.CertID,
+			"cpu":       usage.CPU,
+			"mem":       usage.Mem,
+			"timestamp": usage.Timestamp,
+		})
 
 		w.usage = append(w.usage, usage)
 		if len(w.usage) > 60 {

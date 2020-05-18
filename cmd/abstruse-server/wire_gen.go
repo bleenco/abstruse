@@ -78,11 +78,7 @@ func CreateApp(cfg string) (*server.App, error) {
 		return nil, err
 	}
 	app := websocket.NewApp(logger)
-	client, err := grpc.NewClient(cfg)
-	if err != nil {
-		return nil, err
-	}
-	grpcApp, err := grpc.NewApp(grpcOptions, app, client, logger)
+	grpcApp, err := grpc.NewApp(grpcOptions, app, logger)
 	if err != nil {
 		return nil, err
 	}

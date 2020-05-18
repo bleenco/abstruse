@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/etcd"
 	"github.com/jkuri/abstruse/internal/pkg/http"
+	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.uber.org/zap"
 )
@@ -56,13 +56,10 @@ func (app *App) Start() error {
 		if err := app.etcdServer.Start(); err != nil {
 			errch <- err
 		}
-	}()
-
-	go func() {
-		if err := app.grpcApp.Start(); err != nil {
+		if err := app.grpcApp.Start(app.etcdServer.Client()); err != nil {
 			errch <- err
 		}
-	}
+	}()
 
 	return <-errch
 }

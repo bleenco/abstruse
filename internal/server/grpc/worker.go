@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jkuri/abstruse/internal/pkg/certgen"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
@@ -24,16 +25,16 @@ type Worker struct {
 	logger *zap.SugaredLogger
 }
 
-func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.Logger) (*Worker, error) {
-	log := logger.With(zap.String("worker", addr)).Sugar()
+func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
+	logger = logger.With(zap.String("worker", addr))
 	if opts.Cert == "" || opts.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
 	}
-	if err := security.CheckAndGenerateCert(opts.Cert, otps.Key); err != nil {
+	if err := certgen.CheckAndGenerateCert(opts.Cert, opts.Key); err != nil {
 		return nil, err
 	}
 
-	opts := []grpc.DialOption{}
+	grpcOpts := []grpc.DialOption{}
 	certificate, err := tls.LoadX509KeyPair(opts.Cert, opts.Key)
 	if err != nil {
 		return nil, err
@@ -44,20 +45,20 @@ func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.Logger
 		InsecureSkipVerify: true,
 	})
 
-	opts = append(opts, grpc.WithTransportCredentials(creds))
+	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(creds))
 
-	conn, err := grpc.Dial(addr, opts...)
+	conn, err := grpc.Dial(addr, grpcOpts...)
 	if err != nil {
 		return nil, err
 	}
 	cli := pb.NewApiClient(conn)
 
 	return &Worker{
-		addr: addr,
-		conn: conn,
-		cli:  cli,
-		ws:   ws,
-		log:  log,
+		addr:   addr,
+		conn:   conn,
+		cli:    cli,
+		ws:     ws,
+		logger: logger,
 	}, nil
 }
 
@@ -69,7 +70,7 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.log.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
+	w.logger.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
 	w.EmitData()
 
 	ch := make(chan error)
@@ -87,7 +88,7 @@ func (w *Worker) run() error {
 	}()
 
 	err = <-ch
-	w.log.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
+	w.logger.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
 	return err
 }
 
@@ -108,17 +109,17 @@ func (w *Worker) GetUsage() []Usage {
 
 // EmitData broadcast newly created worker via websocket.
 func (w *Worker) EmitData() {
-	// websocket.WSApp.Broadcast("/subs/workers_add", map[string]interface{}{
-	// 	"addr":  w.GetAddr(),
-	// 	"host":  w.GetHost(),
-	// 	"usage": w.GetUsage(),
-	// })
+	w.ws.Broadcast("/subs/workers_add", map[string]interface{}{
+		"addr":  w.GetAddr(),
+		"host":  w.GetHost(),
+		"usage": w.GetUsage(),
+	})
 }
 
 // EmitDeleted broadcast disconnected worker via websocket.
 func (w *Worker) EmitDeleted() {
-	// websocket.WSApp.Broadcast("/subs/workers_delete", map[string]interface{}{
-	// 	"addr": w.GetAddr(),
-	// 	"host": w.GetHost(),
-	// })
+	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
+		"addr": w.GetAddr(),
+		"host": w.GetHost(),
+	})
 }
