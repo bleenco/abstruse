@@ -1,5 +1,6 @@
 http:
   addr: 0.0.0.0:80
+  tlsaddr: 0.0.0.0:443
   cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
   key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 websocket:
