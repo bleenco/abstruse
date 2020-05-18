@@ -71,7 +71,6 @@ func (app *App) watchWorkers() error {
 				app.logger.Errorf("%v", err)
 			} else {
 				app.workers[key] = worker
-				// go app.initWorker(worker)
 			}
 		}
 	}

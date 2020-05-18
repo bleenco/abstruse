@@ -1,2 +1,3 @@
-worker1: ./build/abstruse-worker --config ./docs/config/worker.json
-worker2: ./build/abstruse-worker --config ./docs/config/worker2.json
+worker1: ./build/abstruse-worker --config ./docs/configs/worker.yaml
+worker2: ./build/abstruse-worker --config ./docs/configs/worker2.yaml
+worker3: ./build/abstruse-worker --config ./docs/configs/worker3.yaml

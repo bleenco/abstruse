@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// App defines remote worker's etcd service.
 type App struct {
 	opts       *Options
 	client     *clientv3.Client
@@ -16,6 +17,7 @@ type App struct {
 	donech     chan struct{}
 }
 
+// NewApp returns new instance of App.
 func NewApp(opts *Options, logger *zap.Logger, grpcServer *grpc.Server) *App {
 	log := logger.With(zap.String("type", "etcd-app")).Sugar()
 	return &App{
@@ -26,40 +28,37 @@ func NewApp(opts *Options, logger *zap.Logger, grpcServer *grpc.Server) *App {
 	}
 }
 
+// Start starts etcd service.
 func (app *App) Start() error {
 	app.logger.Infof("starting etcd app")
+	errch := make(chan error)
+
 connect:
 	client, err := NewClient(app.opts.ServerAddr)
 	if err != nil {
 		app.logger.Errorf(
-			"connection to abstruse etcd server on %s failed, retrying...",
+			"%s %v, reconnecting...",
 			app.opts.ServerAddr,
+			err,
 		)
 		time.Sleep(time.Second * 5)
 		goto connect
 	}
 
-	kch, err := register(client, app.grpcServer.Addr(), 5)
-	if err != nil {
-		app.logger.Errorf("failed to register on abstruse etcd server, retrying...")
-		time.Sleep(time.Second * 5)
+	reg := newRegisterService(client, app.grpcServer.Addr(), 5, app.logger)
+
+	go func() {
+		for {
+			err := <-errch
+			app.logger.Errorf("%v, reconnecting...", err)
+			reg.stop()
+		}
+	}()
+
+	if err := reg.register(); err != nil {
+		errch <- err
 		goto connect
 	}
 
-	app.logger.Infof("connection to abstruse etcd server successful")
-	for {
-		select {
-		case <-client.Ctx().Done():
-			app.logger.Errorf("lost connection to abstruse etcd server %s, reconnecting...", app.opts.ServerAddr)
-			goto connect
-		case _, ok := <-kch:
-			if !ok {
-				app.logger.Errorf("lost connection to abstruse etcd server %s, reconnecting...", app.opts.ServerAddr)
-				goto connect
-			}
-		case <-app.donech:
-			unregister(client, app.grpcServer.Addr())
-			return nil
-		}
-	}
+	return nil
 }
