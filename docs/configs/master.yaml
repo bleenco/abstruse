@@ -5,6 +5,9 @@ http:
   key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 websocket:
   addr: 127.0.0.1:7100
+grpcclient:
+  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
+  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 db:
   client: mysql
   hostname: localhost

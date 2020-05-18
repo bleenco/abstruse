@@ -16,6 +16,7 @@ import (
 	"github.com/jkuri/abstruse/internal/server/controller"
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
+	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -72,10 +73,23 @@ func CreateApp(cfg string) (*server.App, error) {
 	}
 	etcdServer := etcd.NewServer(etcdOptions, logger)
 	websocketServer := websocket.NewServer(websocketOptions, logger)
-	app := server.NewApp(options, logger, httpServer, etcdServer, websocketServer)
-	return app, nil
+	grpcOptions, err := grpc.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	app := websocket.NewApp(logger)
+	client, err := grpc.NewClient(cfg)
+	if err != nil {
+		return nil, err
+	}
+	grpcApp, err := grpc.NewApp(grpcOptions, app, client, logger)
+	if err != nil {
+		return nil, err
+	}
+	serverApp := server.NewApp(options, logger, httpServer, etcdServer, websocketServer, grpcApp)
+	return serverApp, nil
 }
 
 // wire.go:
 
-var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, http.ProviderSet, etcd.ProviderSet, server.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet)
+var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, http.ProviderSet, etcd.ProviderSet, server.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet, grpc.ProviderSet)

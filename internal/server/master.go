@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/etcd"
@@ -16,6 +17,7 @@ type App struct {
 	httpServer *http.Server
 	wsServer   *websocket.Server
 	etcdServer *etcd.Server
+	grpcApp    *grpc.App
 }
 
 // NewApp returns new instance of App
@@ -25,8 +27,9 @@ func NewApp(
 	httpServer *http.Server,
 	etcdServer *etcd.Server,
 	wsServer *websocket.Server,
+	grpcApp *grpc.App,
 ) *App {
-	return &App{opts, logger, httpServer, wsServer, etcdServer}
+	return &App{opts, logger, httpServer, wsServer, etcdServer, grpcApp}
 }
 
 // Start starts master application.
@@ -40,23 +43,26 @@ func (app *App) Start() error {
 	go func() {
 		if err := app.httpServer.Start(); err != nil {
 			errch <- err
-			return
 		}
 	}()
 
 	go func() {
 		if err := app.wsServer.Start(); err != nil {
 			errch <- err
-			return
 		}
 	}()
 
 	go func() {
 		if err := app.etcdServer.Start(); err != nil {
 			errch <- err
-			return
 		}
 	}()
+
+	go func() {
+		if err := app.grpcApp.Start(); err != nil {
+			errch <- err
+		}
+	}
 
 	return <-errch
 }

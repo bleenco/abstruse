@@ -6,18 +6,20 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/server/db"
+	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"github.com/spf13/viper"
 )
 
 // Options are global config for the server app.
 type Options struct {
-	HTTP      *http.Options
-	Websocket *websocket.Options
-	DB        *db.Options
-	Etcd      *etcd.Options
-	Auth      *auth.Options
-	Log       *log.Options
+	HTTP       *http.Options
+	Websocket  *websocket.Options
+	GRPCClient *grpc.Options
+	DB         *db.Options
+	Etcd       *etcd.Options
+	Auth       *auth.Options
+	Log        *log.Options
 }
 
 // NewOptions returns server app config.

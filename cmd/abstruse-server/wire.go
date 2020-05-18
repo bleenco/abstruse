@@ -13,6 +13,7 @@ import (
 	"github.com/jkuri/abstruse/internal/server/controller"
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
+	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -29,6 +30,7 @@ var providerSet = wire.NewSet(
 	controller.ProviderSet,
 	service.ProviderSet,
 	websocket.ProviderSet,
+	grpc.ProviderSet,
 )
 
 func CreateApp(cfg string) (*server.App, error) {
