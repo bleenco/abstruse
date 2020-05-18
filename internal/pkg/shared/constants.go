@@ -1,6 +1,4 @@
-package etcd
-
-import "github.com/google/wire"
+package shared
 
 const (
 	// ServicePrefix is etcd global prefix.
@@ -10,6 +8,3 @@ const (
 	// QueueService etcd queue service prefix.
 	QueueService = "queue"
 )
-
-// ProviderSet export.
-var ProviderSet = wire.NewSet(NewOptions, NewServer)

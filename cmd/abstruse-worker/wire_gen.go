@@ -10,6 +10,7 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/worker"
+	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/grpc"
 )
 
@@ -46,4 +47,4 @@ func CreateApp(cfg string) (*worker.App, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, grpc.ProviderSet, worker.ProviderSet)
+var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, grpc.ProviderSet, worker.ProviderSet, etcd.ProviderSet)

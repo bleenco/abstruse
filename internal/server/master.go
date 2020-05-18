@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
-	"github.com/jkuri/abstruse/internal/pkg/etcd"
 	"github.com/jkuri/abstruse/internal/pkg/http"
+	"github.com/jkuri/abstruse/internal/server/etcd"
 	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.uber.org/zap"

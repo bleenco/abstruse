@@ -6,6 +6,7 @@ import (
 	"net"
 	"path"
 
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
 )
 
@@ -17,7 +18,7 @@ func Register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.Le
 	}
 
 	serviceValue := fmt.Sprintf("%s:%s", host, port)
-	serviceKey := path.Join(ServicePrefix, WorkerService, serviceValue)
+	serviceKey := path.Join(shared.ServicePrefix, shared.WorkerService, serviceValue)
 
 	resp, err := cli.Grant(context.TODO(), ttl)
 	if err != nil {
@@ -25,12 +26,12 @@ func Register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.Le
 	}
 
 	if _, err := cli.Put(context.TODO(), serviceKey, serviceValue, clientv3.WithLease(resp.ID)); err != nil {
-		return nil, fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", WorkerService, err.Error())
+		return nil, fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", shared.WorkerService, err.Error())
 	}
 
 	kch, err := cli.KeepAlive(context.TODO(), resp.ID)
 	if err != nil {
-		return nil, fmt.Errorf("grpclb: refresh service '%s' with ttl to clientv3 failed: %s", WorkerService, err.Error())
+		return nil, fmt.Errorf("grpclb: refresh service '%s' with ttl to clientv3 failed: %s", shared.WorkerService, err.Error())
 	}
 
 	return kch, nil

@@ -2,7 +2,7 @@ package worker
 
 import (
 	"github.com/cenkalti/backoff/v4"
-	"github.com/jkuri/abstruse/internal/pkg/etcd"
+	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 )

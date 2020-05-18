@@ -5,7 +5,7 @@ import (
 	"path"
 	"sync"
 
-	"github.com/jkuri/abstruse/internal/pkg/etcd"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -57,7 +57,7 @@ func (app *App) GetWorkers() map[string]*Worker {
 }
 
 func (app *App) watchWorkers() error {
-	prefix := path.Join(etcd.ServicePrefix, etcd.WorkerService)
+	prefix := path.Join(shared.ServicePrefix, shared.WorkerService)
 
 	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
@@ -99,7 +99,7 @@ func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
 		// immediately remove worker from etcd.
 		// client := etcdserver.ETCDServer.Client()
-		// key := path.Join(etcd.ServicePrefix, etcd.WorkerService, worker.GetAddr())
+		// key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.GetAddr())
 		// client.Delete(context.Background(), key)
 		app.logger.Errorf("%s", err.Error())
 	}
