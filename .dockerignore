@@ -3,4 +3,5 @@ web/abstruse/dist
 build/
 go.sum
 vendor/
-internal/master/ui
+internal/server/ui
+proto/api.pb.go
