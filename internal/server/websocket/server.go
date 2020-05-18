@@ -22,9 +22,8 @@ type Server struct {
 }
 
 // NewServer initializes and returns a new websocket server instance.
-func NewServer(opts *Options, logger *zap.Logger) *Server {
+func NewServer(opts *Options, app *App, logger *zap.Logger) *Server {
 	log := logger.With(zap.String("type", "websocket")).Sugar()
-	app := NewApp(logger)
 
 	return &Server{
 		opts,
@@ -102,7 +101,7 @@ func (s *Server) handle(conn net.Conn) {
 	s.logger.Infof("established websocket connection: %s", nameConn(conn))
 	client := s.app.Register(conn, id, email, fullname)
 	s.app.InitClient(client)
-	s.app.Remove(client)
+	// s.app.Remove(client)
 }
 
 func nameConn(conn net.Conn) string {

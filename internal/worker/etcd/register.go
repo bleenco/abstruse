@@ -7,17 +7,18 @@ import (
 	"path"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
+	"github.com/jkuri/abstruse/internal/pkg/util"
 	"go.etcd.io/etcd/clientv3"
 )
 
 // Register etcd service registration.
 func Register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.LeaseKeepAliveResponse, error) {
-	host, port, err := net.SplitHostPort(addr)
+	_, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, err
 	}
 
-	serviceValue := fmt.Sprintf("%s:%s", host, port)
+	serviceValue := fmt.Sprintf("%s:%s", util.GetLocalIP4(), port)
 	serviceKey := path.Join(shared.ServicePrefix, shared.WorkerService, serviceValue)
 
 	resp, err := cli.Grant(context.TODO(), ttl)

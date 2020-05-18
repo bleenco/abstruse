@@ -3,12 +3,14 @@ module github.com/jkuri/abstruse
 go 1.14
 
 require (
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/coreos/etcd v3.3.20+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/felixge/httpsnoop v1.0.1
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.3
@@ -28,6 +30,7 @@ require (
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
+	golang.org/x/sys v0.0.0-20200515095857-1151b9dac4a9 // indirect
 	google.golang.org/appengine v1.6.1
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.23.0

@@ -61,7 +61,18 @@ func CreateApp(cfg string) (*server.App, error) {
 	userController := controller.NewUserController(logger, userService)
 	versionService := service.NewVersionService(logger)
 	versionController := controller.NewVersionController(logger, versionService)
-	initControllers := controller.CreateInitControllersFn(userController, versionController)
+	grpcOptions, err := grpc.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	app := websocket.NewApp(logger)
+	grpcApp, err := grpc.NewApp(grpcOptions, app, logger)
+	if err != nil {
+		return nil, err
+	}
+	workerService := service.NewWorkerService(logger, grpcApp)
+	workerController := controller.NewWorkerController(logger, workerService)
+	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
 	httpServer, err := http.NewServer(httpOptions, logger, router)
 	if err != nil {
@@ -72,16 +83,7 @@ func CreateApp(cfg string) (*server.App, error) {
 		return nil, err
 	}
 	etcdServer := etcd.NewServer(etcdOptions, logger)
-	websocketServer := websocket.NewServer(websocketOptions, logger)
-	grpcOptions, err := grpc.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	app := websocket.NewApp(logger)
-	grpcApp, err := grpc.NewApp(grpcOptions, app, logger)
-	if err != nil {
-		return nil, err
-	}
+	websocketServer := websocket.NewServer(websocketOptions, app, logger)
 	serverApp := server.NewApp(options, logger, httpServer, etcdServer, websocketServer, grpcApp)
 	return serverApp, nil
 }
