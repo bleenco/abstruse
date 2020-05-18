@@ -21,6 +21,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mitchellh/go-homedir v1.0.0
 	github.com/ogier/pflag v0.0.1 // indirect
+	github.com/shirou/gopsutil v2.20.4+incompatible
 	github.com/spf13/viper v1.7.0
 	go.etcd.io/etcd v3.3.20+incompatible
 	go.uber.org/zap v1.15.0
