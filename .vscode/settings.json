@@ -1,0 +1,15 @@
+{
+  "go.lintTool": "revive",
+  "go.lintFlags": [
+    "--config=~/.golint_revive_config.toml"
+  ],
+  "protoc": {
+    "path": "protoc",
+    "compile_on_save": true,
+    "options": [
+      "--proto_path=proto/",
+      "--proto_path=${workspaceRoot}/proto",
+      "--go_out=plugins=grpc:./proto/"
+    ]
+  }
+}

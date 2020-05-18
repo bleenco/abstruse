@@ -3,4 +3,4 @@ web/abstruse/dist
 build/
 go.sum
 vendor/
-master/ui
+internal/master/ui

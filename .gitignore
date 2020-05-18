@@ -1,5 +1,3 @@
 build/
-proto/abstruse.pb.go
-go.sum
-vendor/
-master/ui
+internal/master/ui
+proto/api.pb.go

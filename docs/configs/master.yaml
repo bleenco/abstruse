@@ -1,0 +1,31 @@
+http:
+  addr: 0.0.0.0:80
+  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
+  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
+websocket:
+  addr: 127.0.0.1:7100
+db:
+  client: mysql
+  hostname: localhost
+  port: 3306
+  user: root
+  password: xx2n5
+  database: abstruse_dev
+  charset: utf8
+etcd:
+  name: abstruse
+  host: 0.0.0.0
+  clientPort: 2379
+  peerPort: 2380
+  dataDir: /var/tmp/abstruse-master
+  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
+  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
+auth:
+  jwtsecret: sfd919bUYxQ
+log:
+  level: debug
+  stdout: true
+  filename: /tmp/abstruse-master.log
+  maxSize: 500
+  maxBackups: 3
+  maxAge: 3

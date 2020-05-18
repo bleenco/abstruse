@@ -1,0 +1,70 @@
+package server
+
+import (
+	"github.com/google/wire"
+	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/pkg/etcd"
+	"github.com/jkuri/abstruse/internal/pkg/http"
+	"github.com/jkuri/abstruse/internal/server/websocket"
+	"go.uber.org/zap"
+)
+
+// App master application.
+type App struct {
+	opts       *Options
+	logger     *zap.Logger
+	httpServer *http.Server
+	wsServer   *websocket.Server
+	etcdServer *etcd.Server
+}
+
+// NewApp returns new instance of App
+func NewApp(
+	opts *Options,
+	logger *zap.Logger,
+	httpServer *http.Server,
+	etcdServer *etcd.Server,
+	wsServer *websocket.Server,
+) *App {
+	return &App{opts, logger, httpServer, wsServer, etcdServer}
+}
+
+// Start starts master application.
+func (app *App) Start() error {
+	errch := make(chan error)
+
+	if err := app.init(); err != nil {
+		errch <- err
+	}
+
+	go func() {
+		if err := app.httpServer.Start(); err != nil {
+			errch <- err
+			return
+		}
+	}()
+
+	go func() {
+		if err := app.wsServer.Start(); err != nil {
+			errch <- err
+			return
+		}
+	}()
+
+	go func() {
+		if err := app.etcdServer.Start(); err != nil {
+			errch <- err
+			return
+		}
+	}()
+
+	return <-errch
+}
+
+func (app *App) init() error {
+	err := auth.InitAuth(app.opts.Auth)
+	return err
+}
+
+// ProviderSet export.
+var ProviderSet = wire.NewSet(NewApp, NewOptions)
