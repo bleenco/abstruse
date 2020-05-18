@@ -6,6 +6,8 @@ require (
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/coreos/etcd v3.3.20+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.3

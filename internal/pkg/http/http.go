@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dustin/go-humanize"
+	"github.com/felixge/httpsnoop"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -54,7 +56,18 @@ func (s *Server) Start() error {
 	errch := make(chan error)
 
 	s.httpServer.Addr = s.opts.Addr
-	s.httpServer.Handler = s.router
+	s.httpServer.Handler = http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		m := httpsnoop.CaptureMetrics(s.router, res, req)
+		s.logger.Debugf(
+			"%s %s (code=%d dt=%s written=%s remote=%s)",
+			req.Method,
+			req.URL,
+			m.Code,
+			m.Duration,
+			humanize.Bytes(uint64(m.Written)),
+			req.RemoteAddr,
+		)
+	})
 	s.logger.Infof("starting http server on %s", s.opts.Addr)
 
 	go func() {
