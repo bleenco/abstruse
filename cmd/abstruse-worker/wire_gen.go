@@ -41,8 +41,13 @@ func CreateApp(cfg string) (*worker.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	app := worker.NewApp(options, logger, server)
-	return app, nil
+	etcdOptions, err := etcd.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	app := etcd.NewApp(etcdOptions, logger, server)
+	workerApp := worker.NewApp(options, logger, server, app)
+	return workerApp, nil
 }
 
 // wire.go:

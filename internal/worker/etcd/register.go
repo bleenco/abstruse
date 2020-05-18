@@ -12,13 +12,8 @@ import (
 )
 
 // Register etcd service registration.
-func Register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.LeaseKeepAliveResponse, error) {
-	_, port, err := net.SplitHostPort(addr)
-	if err != nil {
-		return nil, err
-	}
-
-	serviceValue := fmt.Sprintf("%s:%s", util.GetLocalIP4(), port)
+func register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.LeaseKeepAliveResponse, error) {
+	serviceValue := getAddress(addr)
 	serviceKey := path.Join(shared.ServicePrefix, shared.WorkerService, serviceValue)
 
 	resp, err := cli.Grant(context.TODO(), ttl)
@@ -36,4 +31,20 @@ func Register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.Le
 	}
 
 	return kch, nil
+}
+
+func unregister(cli *clientv3.Client, addr string) {
+	if cli != nil {
+		serviceValue := getAddress(addr)
+		serviceKey := path.Join(shared.ServicePrefix, shared.WorkerService, serviceValue)
+		cli.Delete(context.Background(), serviceKey)
+	}
+}
+
+func getAddress(addr string) string {
+	_, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr
+	}
+	return fmt.Sprintf("%s:%s", util.GetLocalIP4(), port)
 }

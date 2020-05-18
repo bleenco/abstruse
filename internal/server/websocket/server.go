@@ -101,7 +101,7 @@ func (s *Server) handle(conn net.Conn) {
 	s.logger.Infof("established websocket connection: %s", nameConn(conn))
 	client := s.app.Register(conn, id, email, fullname)
 	s.app.InitClient(client)
-	// s.app.Remove(client)
+	s.app.Remove(client)
 }
 
 func nameConn(conn net.Conn) string {

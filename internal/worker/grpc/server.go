@@ -65,3 +65,8 @@ func (s *Server) Start() error {
 
 	return s.server.Serve(listener)
 }
+
+// Addr returns server's listen address.
+func (s *Server) Addr() string {
+	return s.opts.Addr
+}

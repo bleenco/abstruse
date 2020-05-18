@@ -2,6 +2,7 @@ package worker
 
 import (
 	"github.com/google/wire"
+	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/grpc"
 	"go.uber.org/zap"
 )
@@ -11,13 +12,19 @@ type App struct {
 	opts       *Options
 	logger     *zap.SugaredLogger
 	grpcServer *grpc.Server
+	etcdApp    *etcd.App
 	errch      chan error
 }
 
 // NewApp returns new intsanceof App.
-func NewApp(opts *Options, logger *zap.Logger, grpcServer *grpc.Server) *App {
+func NewApp(
+	opts *Options,
+	logger *zap.Logger,
+	grpcServer *grpc.Server,
+	etcdApp *etcd.App,
+) *App {
 	log := logger.With(zap.String("type", "app")).Sugar()
-	return &App{opts, log, grpcServer, make(chan error)}
+	return &App{opts, log, grpcServer, etcdApp, make(chan error)}
 }
 
 // Start starts worker application.
@@ -28,7 +35,11 @@ func (app *App) Start() error {
 			app.errch <- err
 		}
 	}()
-	go app.connLoop(app.logger)
+	go func() {
+		if err := app.etcdApp.Start(); err != nil {
+			app.errch <- err
+		}
+	}()
 
 	return <-app.errch
 }
