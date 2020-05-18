@@ -9,6 +9,7 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"go.etcd.io/etcd/clientv3"
+	recipe "go.etcd.io/etcd/contrib/recipes"
 )
 
 // Register etcd service registration.
@@ -21,9 +22,19 @@ func register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.Le
 		return nil, fmt.Errorf("grpclb: create clientv3 lease failed: %v", err)
 	}
 
-	if _, err := cli.Put(context.TODO(), serviceKey, serviceValue, clientv3.WithLease(resp.ID)); err != nil {
-		return nil, fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", shared.WorkerService, err.Error())
+	_, err = putNewKV(cli.KV, serviceKey, serviceValue, resp.ID)
+	if err != nil && err == recipe.ErrKeyExists {
+		uerr := unregister(cli, addr)
+		if uerr == nil {
+			return register(cli, addr, ttl)
+		} else {
+			return nil, fmt.Errorf("could not unregister")
+		}
 	}
+
+	// if _, err := cli.Put(context.TODO(), serviceKey, serviceValue, clientv3.WithLease(resp.ID)); err != nil {
+	// 	return nil, fmt.Errorf("grpclb: set service '%s' with ttl to clientv3 failed: %s", shared.WorkerService, err.Error())
+	// }
 
 	kch, err := cli.KeepAlive(context.TODO(), resp.ID)
 	if err != nil {
@@ -33,12 +44,14 @@ func register(cli *clientv3.Client, addr string, ttl int64) (<-chan *clientv3.Le
 	return kch, nil
 }
 
-func unregister(cli *clientv3.Client, addr string) {
+func unregister(cli *clientv3.Client, addr string) error {
 	if cli != nil {
 		serviceValue := getAddress(addr)
 		serviceKey := path.Join(shared.ServicePrefix, shared.WorkerService, serviceValue)
-		cli.Delete(context.Background(), serviceKey)
+		_, err := cli.Delete(context.Background(), serviceKey)
+		return err
 	}
+	return fmt.Errorf("invalid client connection")
 }
 
 func getAddress(addr string) string {

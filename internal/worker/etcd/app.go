@@ -39,7 +39,6 @@ connect:
 		goto connect
 	}
 
-	unregister(client, app.grpcServer.Addr())
 	kch, err := register(client, app.grpcServer.Addr(), 5)
 	if err != nil {
 		app.logger.Errorf("failed to register on abstruse etcd server, retrying...")

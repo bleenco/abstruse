@@ -65,6 +65,8 @@ func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.Sugare
 func (w *Worker) run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+	defer w.conn.Close()
+
 	info, err := w.HostInfo(ctx)
 	if err != nil {
 		return err

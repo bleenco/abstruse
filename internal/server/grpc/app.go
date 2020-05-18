@@ -57,6 +57,7 @@ func (app *App) GetWorkers() map[string]*Worker {
 }
 
 func (app *App) watchWorkers() error {
+	defer app.client.Close()
 	prefix := path.Join(shared.ServicePrefix, shared.WorkerService)
 
 	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
@@ -70,7 +71,7 @@ func (app *App) watchWorkers() error {
 				app.logger.Errorf("%v", err)
 			} else {
 				app.workers[key] = worker
-				go app.initWorker(worker)
+				// go app.initWorker(worker)
 			}
 		}
 	}
