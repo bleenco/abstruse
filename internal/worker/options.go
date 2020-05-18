@@ -7,7 +7,8 @@ import (
 
 // Options is global config for worker app.
 type Options struct {
-	GRPC *grpc.Options
+	ServerAddr string
+	GRPC       *grpc.Options
 }
 
 // NewOptions returns worker app config.

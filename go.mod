@@ -3,6 +3,7 @@ module github.com/jkuri/abstruse
 go 1.14
 
 require (
+	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/coreos/etcd v3.3.20+incompatible // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -27,6 +28,7 @@ require (
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
+	google.golang.org/appengine v1.6.1
 	google.golang.org/grpc v1.29.1
 	google.golang.org/protobuf v1.23.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

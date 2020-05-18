@@ -28,6 +28,7 @@ func (app *App) Start() error {
 			app.errch <- err
 		}
 	}()
+	go app.connLoop(app.logger)
 
 	return <-app.errch
 }
