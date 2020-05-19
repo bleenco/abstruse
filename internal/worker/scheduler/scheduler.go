@@ -66,14 +66,14 @@ init:
 func (s *Scheduler) UpdateCapacity(current int) error {
 check:
 	if !s.init {
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 1)
 		goto check
 	}
 	s.Current = current
 	value := s.toJSON()
 	client := s.etcd.Client()
 	_, err := client.Put(context.TODO(), s.keyPrefix, value)
-	if err != nil {
+	if err == nil {
 		if s.Current < s.Max {
 			s.availableCh <- s.Max - s.Current
 		}

@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"path"
 	"time"
 
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
 	"go.etcd.io/etcd/etcdserver/api/v3client"
@@ -74,10 +76,18 @@ func (s *Server) Start() error {
 	s.logger.Infof("started etcd server %s on %s", cfg.Name, curl.String())
 
 	s.cli = v3client.New(s.server.Server)
+	s.cleanup()
 	return nil
 }
 
 // Cllient returns etcd client.
 func (s *Server) Client() *clientv3.Client {
 	return s.cli
+}
+
+func (s *Server) cleanup() {
+	capacityPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity)
+	workersPrefix := path.Join(shared.ServicePrefix, shared.WorkerService)
+	s.cli.Delete(context.Background(), capacityPrefix, clientv3.WithFromKey())
+	s.cli.Delete(context.Background(), workersPrefix, clientv3.WithFromKey())
 }

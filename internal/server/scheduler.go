@@ -5,11 +5,9 @@ import (
 	"path"
 	"time"
 
-	jsoniter "github.com/json-iterator/go"
-	"go.etcd.io/etcd/clientv3"
-
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/grpc"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type capacity struct {
@@ -35,7 +33,6 @@ func (app *App) scheduleJobs() {
 				app.logger.Debugf("job %d received processing status: %+v", id, status)
 			}
 		}()
-		time.Sleep(300 * time.Millisecond)
 	}
 }
 
@@ -57,18 +54,19 @@ find:
 			electedWorker = w
 		}
 	}
-	if electedWorker.w == nil {
+	if electedWorker.w == nil || electedWorker.free == 0 {
 		time.Sleep(time.Second)
 		goto find
 	}
-	app.logger.Debugf("elected worker %s", electedWorker.w.GetHost().CertID)
+	app.logger.Debugf("elected worker %s %d", electedWorker.w.GetHost().CertID, electedWorker.free)
 	return electedWorker.w
 }
 
 func (app *App) getWorkerAvailability(w *grpc.Worker) int {
 	keyPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity, w.GetCertID())
 	client := app.etcdServer.Client()
-	resp, err := client.Get(context.TODO(), keyPrefix, clientv3.WithLastRev()...)
+	defer client.Close()
+	resp, err := client.Get(context.Background(), keyPrefix)
 	if err != nil || len(resp.Kvs) < 1 {
 		return 0
 	}
