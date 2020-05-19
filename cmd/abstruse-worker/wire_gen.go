@@ -38,21 +38,21 @@ func CreateApp(cfg string) (*worker.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	server, err := grpc.NewServer(grpcOptions, logger)
-	if err != nil {
-		return nil, err
-	}
 	etcdOptions, err := etcd.NewOptions(viper)
 	if err != nil {
 		return nil, err
 	}
-	app := etcd.NewApp(etcdOptions, logger, server)
+	app := etcd.NewApp(etcdOptions, logger)
 	schedulerOptions, err := scheduler.NewOptions(viper)
 	if err != nil {
 		return nil, err
 	}
-	schedulerScheduler := scheduler.NewScheduler(schedulerOptions, logger, app, server)
-	workerApp := worker.NewApp(options, logger, server, app, schedulerScheduler)
+	schedulerScheduler := scheduler.NewScheduler(schedulerOptions, logger, app)
+	server, err := grpc.NewServer(grpcOptions, logger, app, schedulerScheduler)
+	if err != nil {
+		return nil, err
+	}
+	workerApp := worker.NewApp(options, logger, server, app)
 	return workerApp, nil
 }
 

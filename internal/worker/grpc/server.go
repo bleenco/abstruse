@@ -4,8 +4,12 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/jkuri/abstruse/internal/pkg/certgen"
+	"github.com/jkuri/abstruse/internal/pkg/id"
+	"github.com/jkuri/abstruse/internal/worker/etcd"
+	"github.com/jkuri/abstruse/internal/worker/scheduler"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -14,13 +18,16 @@ import (
 
 // Server defines gRPC server.
 type Server struct {
-	opts   *Options
-	logger *zap.SugaredLogger
-	server *grpc.Server
+	certid    string
+	opts      *Options
+	logger    *zap.SugaredLogger
+	server    *grpc.Server
+	etcd      *etcd.App
+	scheduler *scheduler.Scheduler
 }
 
 // NewServer returns new instance of gRPC server.
-func NewServer(opts *Options, logger *zap.Logger) (*Server, error) {
+func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App, scheduler *scheduler.Scheduler) (*Server, error) {
 	log := logger.With(zap.String("type", "grpc")).Sugar()
 	if opts.Addr == "" {
 		return nil, fmt.Errorf("listen address must be specified")
@@ -31,10 +38,14 @@ func NewServer(opts *Options, logger *zap.Logger) (*Server, error) {
 	if err := certgen.CheckAndGenerateCert(opts.Cert, opts.Key); err != nil {
 		return nil, err
 	}
+	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", opts.Cert, opts.Addr)))[0:6])
 
 	return &Server{
-		opts:   opts,
-		logger: log,
+		certid:    id,
+		opts:      opts,
+		logger:    log,
+		etcd:      etcd,
+		scheduler: scheduler,
 	}, nil
 }
 
@@ -62,6 +73,7 @@ func (s *Server) Start() error {
 	pb.RegisterApiServer(s.server, s)
 
 	s.logger.Infof("gRPC server listening on %s", s.opts.Addr)
+	go s.scheduler.Init(s.certid)
 
 	return s.server.Serve(listener)
 }
@@ -69,6 +81,11 @@ func (s *Server) Start() error {
 // Addr returns server's listen address.
 func (s *Server) Addr() string {
 	return s.opts.Addr
+}
+
+// ID returns certid.
+func (s *Server) ID() string {
+	return s.certid
 }
 
 // GetOptions returns gRPC server config.

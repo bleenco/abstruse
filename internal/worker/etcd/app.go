@@ -1,45 +1,37 @@
 package etcd
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/id"
-	"github.com/jkuri/abstruse/internal/worker/grpc"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 )
 
 // App defines remote worker's etcd service.
 type App struct {
-	id         string
-	opts       *Options
-	client     *clientv3.Client
-	grpcServer *grpc.Server
-	logger     *zap.SugaredLogger
-	donech     chan struct{}
-	connected  bool
+	id        string
+	opts      *Options
+	client    *clientv3.Client
+	logger    *zap.SugaredLogger
+	donech    chan struct{}
+	connected bool
 }
 
 // NewApp returns new instance of App.
-func NewApp(opts *Options, logger *zap.Logger, grpcServer *grpc.Server) *App {
+func NewApp(opts *Options, logger *zap.Logger) *App {
 	log := logger.With(zap.String("type", "etcd-app")).Sugar()
-	grpcOpts := grpcServer.GetOptions()
-	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", grpcOpts.Cert, grpcOpts.Addr)))[0:6])
 	return &App{
-		id:         id,
-		opts:       opts,
-		grpcServer: grpcServer,
-		logger:     log,
-		donech:     make(chan struct{}),
-		connected:  false,
+		opts:      opts,
+		logger:    log,
+		donech:    make(chan struct{}),
+		connected: false,
 	}
 }
 
 // Start starts etcd service.
-func (app *App) Start() error {
+func (app *App) Start(certid, grpcAddr string) error {
 	app.logger.Infof("starting etcd app")
+	app.id = certid
 	errch := make(chan error)
 
 connect:
@@ -55,7 +47,7 @@ connect:
 	}
 	app.client = client
 	app.connected = true
-	reg := newRegisterService(client, app.grpcServer.Addr(), 5, app.logger)
+	reg := newRegisterService(client, grpcAddr, 5, app.logger)
 
 	go func() {
 		for {

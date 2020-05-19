@@ -7,11 +7,10 @@ import (
 	"path"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"go.etcd.io/etcd/clientv3"
+	"go.uber.org/zap"
 )
 
 type regService struct {

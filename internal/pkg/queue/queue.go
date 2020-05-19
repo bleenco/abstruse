@@ -3,9 +3,8 @@ package queue
 import (
 	"path"
 
-	jsoniter "github.com/json-iterator/go"
-
 	"github.com/jkuri/abstruse/internal/pkg/shared"
+	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
 	recipe "go.etcd.io/etcd/contrib/recipes"
 	"go.uber.org/zap"
@@ -28,17 +27,19 @@ func NewQueue(client *clientv3.Client, logger *zap.Logger) *Queue {
 }
 
 // Enqueue shortcut.
-func (q *Queue) Enqueue(t Task) error {
-	return q.pq.Enqueue(t.GetData(), shared.DefaultQueuePriority)
+func (q *Queue) Enqueue(i *Item) error {
+	q.logger.Debugf("adding job %d to queue", i.ID)
+	return q.pq.Enqueue(i.Data, shared.DefaultQueuePriority)
 }
 
 // Dequeue shortcut.
-func (q *Queue) Dequeue() (*Task, error) {
+func (q *Queue) Dequeue() (*Item, error) {
 	data, err := q.pq.Dequeue()
-	var t *Task
-	err = jsoniter.Unmarshal([]byte(data), t)
+	var i *Item
+	err = jsoniter.Unmarshal([]byte(data), i)
 	if err != nil {
 		return nil, err
 	}
-	return t, nil
+	q.logger.Debugf("got job %d from queue", i.ID)
+	return i, nil
 }

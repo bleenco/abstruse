@@ -1,13 +1,14 @@
 package scheduler
 
 import (
+	"context"
 	"path"
+	"time"
 
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/etcdutil"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
-	"github.com/jkuri/abstruse/internal/worker/grpc"
 	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
@@ -16,34 +17,36 @@ import (
 // Scheduler service maintains and updates status of worker and its
 // occupancy with job tasks.
 type Scheduler struct {
-	opts      *Options
-	etcd      *etcd.App
-	grpc      *grpc.Server
-	logger    *zap.SugaredLogger
-	keyPrefix string
-	rkv       *etcdutil.RemoteKV
-	Current   int `json:"current"`
-	Max       int `json:"max"`
+	opts        *Options
+	logger      *zap.SugaredLogger
+	etcd        *etcd.App
+	keyPrefix   string
+	rkv         *etcdutil.RemoteKV
+	Current     int `json:"current"`
+	Max         int `json:"max"`
+	availableCh chan int
+	init        bool
 }
 
 // NewScheduler returns new instance of a Scheduler.
-func NewScheduler(opts *Options, logger *zap.Logger, etcd *etcd.App, grpc *grpc.Server) *Scheduler {
+func NewScheduler(opts *Options, logger *zap.Logger, etcd *etcd.App) *Scheduler {
 	return &Scheduler{
-		opts:      opts,
-		etcd:      etcd,
-		grpc:      grpc,
-		logger:    logger.With(zap.String("type", "scheduler")).Sugar(),
-		keyPrefix: path.Join(shared.ServicePrefix, shared.WorkerCapacity, etcd.ID()),
-		Current:   0,
-		Max:       opts.Max,
+		opts:        opts,
+		etcd:        etcd,
+		logger:      logger.With(zap.String("type", "scheduler")).Sugar(),
+		Current:     0,
+		Max:         opts.Max,
+		availableCh: make(chan int),
+		init:        false,
 	}
 }
 
 // Init initializes info on etcd server.
-func (s *Scheduler) Init() {
+func (s *Scheduler) Init(certid string) {
 	client := s.etcd.Client()
-	value := s.toJSON()
+	s.keyPrefix = path.Join(shared.ServicePrefix, shared.WorkerCapacity, certid)
 init:
+	value := s.toJSON()
 	rkv, err := etcdutil.NewRemoteKV(
 		client.KV,
 		s.keyPrefix,
@@ -55,19 +58,37 @@ init:
 		rkv.Delete()
 		goto init
 	}
+	s.init = true
 	s.logger.Infof("scheduler initialized")
 }
 
 // UpdateCapacity updates capacity on etcd server.
 func (s *Scheduler) UpdateCapacity(current int) error {
+check:
+	if !s.init {
+		time.Sleep(time.Second)
+		goto check
+	}
 	s.Current = current
 	value := s.toJSON()
-	return s.rkv.Put(value)
+	client := s.etcd.Client()
+	_, err := client.Put(context.TODO(), s.keyPrefix, value)
+	if err != nil {
+		if s.Current < s.Max {
+			s.availableCh <- s.Max - s.Current
+		}
+	}
+	return err
 }
 
 func (s *Scheduler) toJSON() string {
 	value, _ := jsoniter.MarshalToString(s)
 	return value
+}
+
+// WaitOnAvailable waits that current capacity is lower than max.
+func (s *Scheduler) WaitOnAvailable() {
+	<-s.availableCh
 }
 
 // ProviderSet exports for wire.
