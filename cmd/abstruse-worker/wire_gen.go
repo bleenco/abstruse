@@ -12,6 +12,7 @@ import (
 	"github.com/jkuri/abstruse/internal/worker"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/grpc"
+	"github.com/jkuri/abstruse/internal/worker/scheduler"
 )
 
 // Injectors from wire.go:
@@ -46,10 +47,15 @@ func CreateApp(cfg string) (*worker.App, error) {
 		return nil, err
 	}
 	app := etcd.NewApp(etcdOptions, logger, server)
-	workerApp := worker.NewApp(options, logger, server, app)
+	schedulerOptions, err := scheduler.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	schedulerScheduler := scheduler.NewScheduler(schedulerOptions, logger, app, server)
+	workerApp := worker.NewApp(options, logger, server, app, schedulerScheduler)
 	return workerApp, nil
 }
 
 // wire.go:
 
-var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, grpc.ProviderSet, worker.ProviderSet, etcd.ProviderSet)
+var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, grpc.ProviderSet, worker.ProviderSet, etcd.ProviderSet, scheduler.ProviderSet)

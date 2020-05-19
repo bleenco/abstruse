@@ -8,9 +8,36 @@ import "google/protobuf/timestamp.proto";
 service Api {
   rpc Heartbeat(stream google.protobuf.Empty)
       returns (stream google.protobuf.Empty) {}
+
   rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
+
   rpc UsageStats(stream google.protobuf.Empty)
       returns (stream UsageStatsReply) {}
+
+  rpc JobProcess(JobTask) returns (JobStatus) {}
+}
+
+message JobTask {
+  enum JobTaskCode {
+    Stop = 0;
+    Start = 1;
+    Restart = 2;
+  }
+  uint64 id = 1;
+  string url = 2;
+  string credentials = 3;
+  JobTaskCode code = 4;
+}
+
+message JobStatus {
+  enum JobStatusCode {
+    Stopped = 0;
+    Running = 1;
+    Failing = 2;
+    Passing = 3;
+  }
+  uint64 id = 1;
+  JobStatusCode code = 2;
 }
 
 message HostInfoReply {

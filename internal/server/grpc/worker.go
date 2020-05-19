@@ -17,12 +17,14 @@ import (
 // Worker represent gRPC worker client.
 type Worker struct {
 	addr   string
+	certid *string
 	host   HostInfo
 	conn   *grpc.ClientConn
 	cli    pb.ApiClient
 	ws     *websocket.App
 	usage  []Usage
 	logger *zap.SugaredLogger
+	ready  bool
 }
 
 func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
@@ -59,6 +61,7 @@ func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.Sugare
 		cli:    cli,
 		ws:     ws,
 		logger: logger,
+		ready:  false,
 	}, nil
 }
 
@@ -72,6 +75,8 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
+	w.certid = &w.host.CertID
+	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
 	w.EmitData()
 
@@ -90,6 +95,7 @@ func (w *Worker) run() error {
 	}()
 
 	err = <-ch
+	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
 	return err
 }
@@ -97,6 +103,11 @@ func (w *Worker) run() error {
 // GetAddr returns remote address.
 func (w *Worker) GetAddr() string {
 	return w.addr
+}
+
+// GetCertID returns workers cert identification.
+func (w *Worker) GetCertID() string {
+	return *w.certid
 }
 
 // GetHost returns host info.
@@ -107,6 +118,11 @@ func (w *Worker) GetHost() HostInfo {
 // GetUsage returns worker usage.
 func (w *Worker) GetUsage() []Usage {
 	return w.usage
+}
+
+// IsReady returns if worker is ready to process jobs.
+func (w *Worker) IsReady() bool {
+	return w.ready
 }
 
 // EmitData broadcast newly created worker via websocket.

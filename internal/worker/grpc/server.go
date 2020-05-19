@@ -70,3 +70,8 @@ func (s *Server) Start() error {
 func (s *Server) Addr() string {
 	return s.opts.Addr
 }
+
+// GetOptions returns gRPC server config.
+func (s *Server) GetOptions() *Options {
+	return s.opts
+}

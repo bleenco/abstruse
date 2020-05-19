@@ -13,7 +13,7 @@ import (
 // App master application.
 type App struct {
 	opts       *Options
-	logger     *zap.Logger
+	logger     *zap.SugaredLogger
 	httpServer *http.Server
 	wsServer   *websocket.Server
 	etcdServer *etcd.Server
@@ -29,7 +29,8 @@ func NewApp(
 	wsServer *websocket.Server,
 	grpcApp *grpc.App,
 ) *App {
-	return &App{opts, logger, httpServer, wsServer, etcdServer, grpcApp}
+	log := logger.With(zap.String("type", "app")).Sugar()
+	return &App{opts, log, httpServer, wsServer, etcdServer, grpcApp}
 }
 
 // Start starts master application.
@@ -60,6 +61,8 @@ func (app *App) Start() error {
 			errch <- err
 		}
 	}()
+
+	go app.scheduleJobs()
 
 	return <-errch
 }
