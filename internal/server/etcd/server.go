@@ -80,14 +80,21 @@ func (s *Server) Start() error {
 	return nil
 }
 
-// Cllient returns etcd client.
+// Client returns etcd client.
 func (s *Server) Client() *clientv3.Client {
+wait:
+	if s.cli == nil {
+		time.Sleep(time.Second)
+		goto wait
+	}
 	return s.cli
 }
 
 func (s *Server) cleanup() {
 	capacityPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity)
 	workersPrefix := path.Join(shared.ServicePrefix, shared.WorkerService)
+	capacityLock := path.Join(shared.WorkerCapacityLock)
 	s.cli.Delete(context.Background(), capacityPrefix, clientv3.WithFromKey())
 	s.cli.Delete(context.Background(), workersPrefix, clientv3.WithFromKey())
+	s.cli.Delete(context.Background(), capacityLock, clientv3.WithFromKey())
 }

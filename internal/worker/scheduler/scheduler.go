@@ -74,9 +74,7 @@ check:
 	client := s.etcd.Client()
 	_, err := client.Put(context.TODO(), s.keyPrefix, value)
 	if err == nil {
-		if s.Current < s.Max {
-			s.availableCh <- s.Max - s.Current
-		}
+		return nil
 	}
 	return err
 }

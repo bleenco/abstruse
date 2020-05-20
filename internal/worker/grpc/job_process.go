@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	pb "github.com/jkuri/abstruse/proto"
@@ -13,7 +12,6 @@ func (s *Server) JobProcess(ctx context.Context, in *pb.JobTask) (*pb.JobStatus,
 	// if s.scheduler.Current >= s.scheduler.Max {
 	// 	s.scheduler.WaitOnAvailable()
 	// }
-	fmt.Printf("current: %d max: %d\n", s.scheduler.Current, s.scheduler.Max)
 	if err := s.scheduler.UpdateCapacity(s.scheduler.Current + 1); err != nil {
 		s.logger.Errorf("%+v", err)
 	}

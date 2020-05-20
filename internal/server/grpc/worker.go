@@ -17,7 +17,7 @@ import (
 // Worker represent gRPC worker client.
 type Worker struct {
 	addr   string
-	certid *string
+	certid string
 	host   HostInfo
 	conn   *grpc.ClientConn
 	cli    pb.ApiClient
@@ -75,7 +75,7 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.certid = &w.host.CertID
+	w.certid = w.host.CertID
 	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
 	w.EmitData()
@@ -107,7 +107,7 @@ func (w *Worker) GetAddr() string {
 
 // GetCertID returns workers cert identification.
 func (w *Worker) GetCertID() string {
-	return *w.certid
+	return w.certid
 }
 
 // GetHost returns host info.

@@ -2,12 +2,17 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"path"
 	"time"
+
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/grpc"
 	jsoniter "github.com/json-iterator/go"
+	recipe "go.etcd.io/etcd/contrib/recipes"
 )
 
 type capacity struct {
@@ -21,9 +26,13 @@ type worker struct {
 }
 
 func (app *App) scheduleJobs() {
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 50; i++ {
 		id := uint64(i) + 1
-		worker := app.getMostAvailableWorker()
+		worker, err := app.waitForWorker()
+		if err != nil {
+			app.logger.Errorf("%v", err)
+			continue
+		}
 		app.logger.Debugf("sending job %d to worker %s", id, worker.GetHost().CertID)
 		go func() {
 			status, err := worker.StartJob(context.TODO(), id)
@@ -36,6 +45,30 @@ func (app *App) scheduleJobs() {
 	}
 }
 
+func (app *App) waitForWorker() (*grpc.Worker, error) {
+	keyPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity)
+	client := app.etcdServer.Client()
+	wch := client.Watch(context.Background(), keyPrefix, clientv3.WithPrefix())
+	for wresp := range wch {
+		for _, ev := range wresp.Events {
+			if ev.Type == mvccpb.PUT {
+				var c capacity
+				if jerr := jsoniter.Unmarshal(ev.Kv.Value, &c); jerr == nil {
+					if c.Max-c.Current > 0 {
+						for _, w := range app.grpcApp.GetWorkers() {
+							if w.IsReady() {
+								return w, nil
+							}
+							fmt.Printf("not ready %s\n", w.GetCertID())
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil, fmt.Errorf("worker not found")
+}
+
 func (app *App) getMostAvailableWorker() *grpc.Worker {
 find:
 	electedWorker := &worker{w: nil, free: 0}
@@ -46,7 +79,6 @@ find:
 		}
 	}
 	if len(workers) == 0 {
-		time.Sleep(time.Second)
 		goto find
 	}
 	for _, w := range workers {
@@ -54,8 +86,8 @@ find:
 			electedWorker = w
 		}
 	}
-	if electedWorker.w == nil || electedWorker.free == 0 {
-		time.Sleep(time.Second)
+	if electedWorker.w == nil || electedWorker.free <= 0 {
+		time.Sleep(time.Second * 5)
 		goto find
 	}
 	app.logger.Debugf("elected worker %s %d", electedWorker.w.GetHost().CertID, electedWorker.free)
@@ -64,16 +96,24 @@ find:
 
 func (app *App) getWorkerAvailability(w *grpc.Worker) int {
 	keyPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity, w.GetCertID())
+	keyLock := path.Join(shared.WorkerCapacityLock)
 	client := app.etcdServer.Client()
-	defer client.Close()
-	resp, err := client.Get(context.Background(), keyPrefix)
-	if err != nil || len(resp.Kvs) < 1 {
-		return 0
+	barrier := recipe.NewBarrier(client, keyLock)
+
+	if err := barrier.Wait(); err == nil {
+		if herr := barrier.Hold(); herr == nil {
+			resp, gerr := client.Get(context.TODO(), keyPrefix)
+			if gerr != nil || len(resp.Kvs) < 1 {
+				return 0
+			}
+			var c capacity
+			if jerr := jsoniter.Unmarshal(resp.Kvs[0].Value, &c); jerr == nil {
+				if rerr := barrier.Release(); rerr == nil {
+					return c.Max - c.Current
+				}
+			}
+			return 0
+		}
 	}
-	var c capacity
-	err = jsoniter.Unmarshal(resp.Kvs[0].Value, &c)
-	if err != nil {
-		return 0
-	}
-	return c.Max - c.Current
+	return 0
 }
