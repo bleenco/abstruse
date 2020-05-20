@@ -97,7 +97,6 @@ func (app *App) watchWorkers() error {
 
 func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
-		// immediately remove worker from etcd.
 		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.GetAddr())
 		app.client.Delete(context.Background(), key)
 		app.logger.Errorf("%s", err.Error())

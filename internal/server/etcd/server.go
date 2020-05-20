@@ -21,6 +21,7 @@ type Server struct {
 	logger *zap.SugaredLogger
 	server *embed.Etcd
 	cli    *clientv3.Client
+	ready  chan bool
 }
 
 // NewServer returns new etcd server instance.
@@ -28,6 +29,7 @@ func NewServer(opts *Options, logger *zap.Logger) *Server {
 	return &Server{
 		opts:   opts,
 		logger: logger.With(zap.String("type", "etcd")).Sugar(),
+		ready:  make(chan bool),
 	}
 }
 
@@ -77,15 +79,14 @@ func (s *Server) Start() error {
 
 	s.cli = v3client.New(s.server.Server)
 	s.cleanup()
+	s.ready <- true
 	return nil
 }
 
 // Client returns etcd client.
 func (s *Server) Client() *clientv3.Client {
-wait:
 	if s.cli == nil {
-		time.Sleep(time.Second)
-		goto wait
+		<-s.ready
 	}
 	return s.cli
 }

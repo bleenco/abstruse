@@ -1,17 +1,23 @@
 <div class="modal-header">
-  <h1>Worker Node {{ worker?.certID }}</h1>
+  <h2>{{ worker?.certID }} {{ worker?.addr }}</h2>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss('Cross click')">
     <i class="fas fa-times"></i>
   </span>
 </div>
 <div class="modal-body">
-  <h2>CPU Usage</h2>
-  <div class="modal-realtime-chart">
-    <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
-  </div>
-  <h2>Memory Usage</h2>
-  <div class="modal-realtime-chart">
-    <app-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></app-realtime-chart>
+  <div class="columns is-multiline">
+    <div class="column is-6">
+      <h3>CPU Usage</h3>
+      <div class="modal-realtime-chart">
+        <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
+      </div>
+    </div>
+    <div class="column is-6">
+      <h3>Memory Usage</h3>
+      <div class="modal-realtime-chart">
+        <app-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></app-realtime-chart>
+      </div>
+    </div>
   </div>
   <!-- <h3>Storage Usage</h3>
   <div class="modal-realtime-chart">

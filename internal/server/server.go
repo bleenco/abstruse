@@ -59,14 +59,19 @@ func (app *App) Start() error {
 		if err := app.etcdServer.Start(); err != nil {
 			errch <- err
 		}
-		client := app.etcdServer.Client()
+	}()
+
+	client := app.etcdServer.Client()
+
+	go func() {
 		if err := app.grpcApp.Start(client); err != nil {
 			errch <- err
 		}
-		app.queue = queue.NewQueue(client, app.logger.Desugar())
 	}()
 
-	go app.scheduleJobs()
+	app.queue = queue.NewQueue(client, app.logger.Desugar())
+
+	// go app.scheduleJobs()
 
 	return <-errch
 }

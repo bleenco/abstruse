@@ -1,6 +1,6 @@
 <div class="list-item">
   <div class="columns">
-    <div class="column is-1">
+    <div class="column is-2">
       <div class="list-item-content">
         <span class="label">ID</span>
         <span class="text has-border">{{ worker?.certID }}</span>
@@ -31,17 +31,9 @@
     </div>
     <div class="column is-1 justify-center">
       <div class="list-item-content">
-        <span class="label">Capacity</span>
-        <span class="text">
-          <app-progress-bar [percent]="'50'" [options]="{ color: 'green' }"></app-progress-bar>
-        </span>
-      </div>
-    </div>
-    <div class="column is-1 justify-center">
-      <div class="list-item-content">
         <span class="label">CPU</span>
         <span class="text">
-          <app-progress-bar [percent]="worker?.currentCPU" [options]="{ color: 'blue' }"></app-progress-bar>
+          <app-progress-bar [percent]="worker?.currentCPU" [options]="{ color: 'green' }"></app-progress-bar>
         </span>
       </div>
     </div>
@@ -49,7 +41,7 @@
       <div class="list-item-content">
         <span class="label">Memory</span>
         <span class="text">
-          <app-progress-bar [percent]="worker?.currentMem" [options]="{ color: 'red' }"></app-progress-bar>
+          <app-progress-bar [percent]="worker?.currentMem" [options]="{ color: 'green' }"></app-progress-bar>
         </span>
       </div>
     </div>
