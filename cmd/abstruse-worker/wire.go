@@ -9,7 +9,6 @@ import (
 	"github.com/jkuri/abstruse/internal/worker"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/grpc"
-	"github.com/jkuri/abstruse/internal/worker/scheduler"
 )
 
 var providerSet = wire.NewSet(
@@ -18,7 +17,6 @@ var providerSet = wire.NewSet(
 	grpc.ProviderSet,
 	worker.ProviderSet,
 	etcd.ProviderSet,
-	scheduler.ProviderSet,
 )
 
 func CreateApp(cfg string) (*worker.App, error) {

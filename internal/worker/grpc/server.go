@@ -10,7 +10,6 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/id"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
-	"github.com/jkuri/abstruse/internal/worker/scheduler"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -19,17 +18,16 @@ import (
 
 // Server defines gRPC server.
 type Server struct {
-	id        string
-	addr      string
-	opts      *Options
-	logger    *zap.SugaredLogger
-	server    *grpc.Server
-	etcd      *etcd.App
-	scheduler *scheduler.Scheduler
+	id     string
+	addr   string
+	opts   *Options
+	logger *zap.SugaredLogger
+	server *grpc.Server
+	etcd   *etcd.App
 }
 
 // NewServer returns new instance of gRPC server.
-func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App, scheduler *scheduler.Scheduler) (*Server, error) {
+func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App) (*Server, error) {
 	log := logger.With(zap.String("type", "grpc")).Sugar()
 	if opts.Addr == "" {
 		return nil, fmt.Errorf("listen address must be specified")
@@ -47,12 +45,11 @@ func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App, scheduler *sch
 	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", cert, opts.Addr)))[0:6])
 
 	return &Server{
-		id:        id,
-		addr:      opts.Addr,
-		opts:      opts,
-		logger:    log,
-		etcd:      etcd,
-		scheduler: scheduler,
+		id:     id,
+		addr:   opts.Addr,
+		opts:   opts,
+		logger: log,
+		etcd:   etcd,
 	}, nil
 }
 
