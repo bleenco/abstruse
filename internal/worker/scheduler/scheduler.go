@@ -42,9 +42,9 @@ func NewScheduler(opts *Options, logger *zap.Logger, etcd *etcd.App) *Scheduler 
 }
 
 // Init initializes info on etcd server.
-func (s *Scheduler) Init(certid string) {
+func (s *Scheduler) Init(id string) {
 	client := s.etcd.Client()
-	s.keyPrefix = path.Join(shared.ServicePrefix, shared.WorkerCapacity, certid)
+	s.keyPrefix = path.Join(shared.ServicePrefix, shared.WorkerCapacity, id)
 init:
 	value := s.toJSON()
 	rkv, err := etcdutil.NewRemoteKV(

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/jkuri/abstruse/internal/pkg/certgen"
+	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/id"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/scheduler"
@@ -39,7 +40,11 @@ func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App, scheduler *sch
 	if err := certgen.CheckAndGenerateCert(opts.Cert, opts.Key); err != nil {
 		return nil, err
 	}
-	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", opts.Cert, opts.Addr)))[0:6])
+	cert, err := fs.ReadFile(opts.Cert)
+	if err != nil {
+		return nil, fmt.Errorf("could not read certificate file")
+	}
+	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", cert, opts.Addr)))[0:6])
 
 	return &Server{
 		id:        id,
