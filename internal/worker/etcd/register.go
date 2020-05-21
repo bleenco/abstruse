@@ -88,5 +88,6 @@ func getAddress(addr string) string {
 	if err != nil {
 		return addr
 	}
-	return fmt.Sprintf("%s:%s", util.GetLocalIP4(), port)
+	ip, _ := util.GetExternalIP()
+	return fmt.Sprintf("%s:%s", ip, port)
 }
