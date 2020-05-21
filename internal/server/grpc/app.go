@@ -87,7 +87,7 @@ func (app *App) schedulerLoop() error {
 		w := app.getWorker()
 		go func() {
 			status, _ := w.StartJob(context.TODO(), job.ID)
-			fmt.Printf("%+v\n", status)
+			fmt.Printf("%s: %+v\n", status, w.GetID())
 			select {
 			case app.ready <- struct{}{}:
 			default:
@@ -100,8 +100,9 @@ func (app *App) getWorker() *Worker {
 loop:
 	var w *Worker
 	for _, worker := range app.workers {
-		stats, err := worker.Concurrency(context.Background())
+		stats, err := worker.Concurrency(context.TODO())
 		if err != nil {
+			app.logger.Errorf("worker concurrency issue: %v", err)
 			continue
 		}
 		free := stats.GetMax() - stats.GetCurrent()

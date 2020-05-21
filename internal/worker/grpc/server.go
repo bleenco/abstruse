@@ -80,7 +80,6 @@ func (s *Server) Start() error {
 	pb.RegisterApiServer(s.server, s)
 
 	s.logger.Infof("gRPC server listening on %s", s.opts.Addr)
-	go s.scheduler.Init(s.id)
 
 	return s.server.Serve(listener)
 }

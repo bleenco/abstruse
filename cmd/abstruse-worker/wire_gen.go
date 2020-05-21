@@ -47,7 +47,7 @@ func CreateApp(cfg string) (*worker.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	schedulerScheduler := scheduler.NewScheduler(schedulerOptions, logger, app)
+	schedulerScheduler := scheduler.NewScheduler(schedulerOptions, logger)
 	server, err := grpc.NewServer(grpcOptions, logger, app, schedulerScheduler)
 	if err != nil {
 		return nil, err
