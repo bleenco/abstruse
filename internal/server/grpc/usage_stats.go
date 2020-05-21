@@ -7,7 +7,8 @@ import (
 
 // Usage represents worker usage stats.
 type Usage struct {
-	CertID    string    `json:"-"`
+	ID        string    `json:"id"`
+	Addr      string    `json:"addr"`
 	CPU       int32     `json:"cpu"`
 	Mem       int32     `json:"mem"`
 	Timestamp time.Time `json:"timestamp"`
@@ -27,14 +28,16 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			return err
 		}
 		usage := Usage{
-			CertID:    w.host.CertID,
+			ID:        w.id,
+			Addr:      w.addr,
 			CPU:       stats.GetCpu(),
 			Mem:       stats.GetMem(),
 			Timestamp: time.Now(),
 		}
 
 		w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
-			"cert_id":   w.host.CertID,
+			"id":        w.id,
+			"addr":      w.addr,
 			"cpu":       usage.CPU,
 			"mem":       usage.Mem,
 			"timestamp": usage.Timestamp,

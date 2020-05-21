@@ -9,7 +9,8 @@ import (
 
 // HostInfo holds host information about worker.
 type HostInfo struct {
-	CertID               string `json:"cert_id"`
+	ID                   string `json:"id"`
+	Addr                 string `json:"addr"`
 	Hostname             string `json:"hostname"`
 	Uptime               uint64 `json:"uptime"`
 	BootTime             uint64 `json:"boot_time"`
@@ -33,7 +34,8 @@ func (w *Worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
 
 func hostInfo(info *pb.HostInfoReply) HostInfo {
 	return HostInfo{
-		info.GetCertID(),
+		info.GetId(),
+		info.GetAddr(),
 		info.GetHostname(),
 		info.GetUptime(),
 		info.GetBootTime(),

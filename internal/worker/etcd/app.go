@@ -29,9 +29,9 @@ func NewApp(opts *Options, logger *zap.Logger) *App {
 }
 
 // Start starts etcd service.
-func (app *App) Start(certid, grpcAddr string) error {
+func (app *App) Start(id, grpcAddr string) error {
 	app.logger.Infof("starting etcd app")
-	app.id = certid
+	app.id = id
 	errch := make(chan error)
 
 connect:
@@ -47,7 +47,7 @@ connect:
 	}
 	app.client = client
 	app.connected = true
-	reg := newRegisterService(client, grpcAddr, 5, app.logger)
+	reg := newRegisterService(client, grpcAddr, app.id, 5, app.logger)
 
 	go func() {
 		for {

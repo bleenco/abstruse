@@ -16,8 +16,8 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
+	id      string
 	addr    string
-	certid  string
 	host    HostInfo
 	conn    *grpc.ClientConn
 	cli     pb.ApiClient
@@ -29,7 +29,7 @@ type Worker struct {
 	ready   bool
 }
 
-func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
+func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
 	logger = logger.With(zap.String("worker", addr))
 	if opts.Cert == "" || opts.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
@@ -58,6 +58,7 @@ func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.Sugare
 	cli := pb.NewApiClient(conn)
 
 	return &Worker{
+		id:     id,
 		addr:   addr,
 		conn:   conn,
 		cli:    cli,
@@ -77,9 +78,8 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.certid = w.host.CertID
 	w.ready = true
-	w.logger.Infof("connected to worker %s %s", w.host.CertID, w.conn.Target())
+	w.logger.Infof("connected to worker %s %s", w.id, w.addr)
 	w.EmitData()
 
 	ch := make(chan error)
@@ -98,7 +98,7 @@ func (w *Worker) run() error {
 
 	err = <-ch
 	w.ready = false
-	w.logger.Infof("closed connection to worker %s %s", w.host.CertID, w.conn.Target())
+	w.logger.Infof("closed connection to worker %s %s", w.id, w.addr)
 	return err
 }
 
@@ -107,9 +107,9 @@ func (w *Worker) GetAddr() string {
 	return w.addr
 }
 
-// GetCertID returns workers cert identification.
-func (w *Worker) GetCertID() string {
-	return w.certid
+// GetID returns workers cert identification.
+func (w *Worker) GetID() string {
+	return w.id
 }
 
 // GetHost returns host info.
@@ -130,6 +130,7 @@ func (w *Worker) IsReady() bool {
 // EmitData broadcast newly created worker via websocket.
 func (w *Worker) EmitData() {
 	w.ws.Broadcast("/subs/workers_add", map[string]interface{}{
+		"id":    w.GetID(),
 		"addr":  w.GetAddr(),
 		"host":  w.GetHost(),
 		"usage": w.GetUsage(),
@@ -139,6 +140,7 @@ func (w *Worker) EmitData() {
 // EmitDeleted broadcast disconnected worker via websocket.
 func (w *Worker) EmitDeleted() {
 	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
+		"id":   w.GetID(),
 		"addr": w.GetAddr(),
 		"host": w.GetHost(),
 	})

@@ -7,7 +7,7 @@ export class Worker {
   memory: { date?: Date, value: number }[][] = [[]];
 
   constructor(
-    public certID: string,
+    public id: string,
     public addr: string,
     public hostname: string,
     public uptime: number,

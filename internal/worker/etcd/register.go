@@ -23,9 +23,9 @@ type regService struct {
 	stopch  chan error
 }
 
-func newRegisterService(client *clientv3.Client, addr string, ttl int64, logger *zap.SugaredLogger) *regService {
+func newRegisterService(client *clientv3.Client, addr, id string, ttl int64, logger *zap.SugaredLogger) *regService {
 	val := getAddress(addr)
-	key := path.Join(shared.ServicePrefix, shared.WorkerService, val)
+	key := path.Join(shared.ServicePrefix, shared.WorkerService, id)
 	return &regService{
 		key:    key,
 		val:    val,
@@ -52,7 +52,7 @@ func (rs *regService) register() error {
 		case _, ok := <-ch:
 			if !ok {
 				rs.revoke()
-				return fmt.Errorf("keep-alive channel closed")
+				return fmt.Errorf("lost connection")
 			}
 		}
 	}

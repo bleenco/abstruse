@@ -37,8 +37,8 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		certid, grpcAddr := app.grpcServer.ID(), app.opts.GRPC.Addr
-		if err := app.etcdApp.Start(certid, grpcAddr); err != nil {
+		id, grpcAddr := app.grpcServer.ID(), app.opts.GRPC.Addr
+		if err := app.etcdApp.Start(id, grpcAddr); err != nil {
 			app.errch <- err
 		}
 	}()

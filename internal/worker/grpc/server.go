@@ -18,7 +18,8 @@ import (
 
 // Server defines gRPC server.
 type Server struct {
-	certid    string
+	id        string
+	addr      string
 	opts      *Options
 	logger    *zap.SugaredLogger
 	server    *grpc.Server
@@ -41,7 +42,8 @@ func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App, scheduler *sch
 	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", opts.Cert, opts.Addr)))[0:6])
 
 	return &Server{
-		certid:    id,
+		id:        id,
+		addr:      opts.Addr,
 		opts:      opts,
 		logger:    log,
 		etcd:      etcd,
@@ -73,7 +75,7 @@ func (s *Server) Start() error {
 	pb.RegisterApiServer(s.server, s)
 
 	s.logger.Infof("gRPC server listening on %s", s.opts.Addr)
-	go s.scheduler.Init(s.certid)
+	go s.scheduler.Init(s.id)
 
 	return s.server.Serve(listener)
 }
@@ -83,9 +85,9 @@ func (s *Server) Addr() string {
 	return s.opts.Addr
 }
 
-// ID returns certid.
+// ID returns id.
 func (s *Server) ID() string {
-	return s.certid
+	return s.id
 }
 
 // GetOptions returns gRPC server config.

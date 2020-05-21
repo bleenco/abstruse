@@ -48,20 +48,21 @@ message ConcurrencyStatus {
 }
 
 message HostInfoReply {
-  string certID = 1;
-  string hostname = 2;
-  uint64 uptime = 3;
-  uint64 bootTime = 4;
-  uint64 procs = 5;
-  string os = 6;
-  string platform = 7;
-  string platformFamily = 8;
-  string platformVersion = 9;
-  string kernelVersion = 10;
-  string kernelArch = 11;
-  string virtualizationSystem = 12;
-  string virtualizationRole = 13;
-  string hostID = 14;
+  string id = 1;
+  string addr = 2;
+  string hostname = 3;
+  uint64 uptime = 4;
+  uint64 bootTime = 5;
+  uint64 procs = 6;
+  string os = 7;
+  string platform = 8;
+  string platformFamily = 9;
+  string platformVersion = 10;
+  string kernelVersion = 11;
+  string kernelArch = 12;
+  string virtualizationSystem = 13;
+  string virtualizationRole = 14;
+  string hostID = 15;
 }
 
 message UsageStatsReply {

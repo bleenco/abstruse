@@ -16,7 +16,8 @@ func (s *Server) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfoRep
 	}
 
 	return &pb.HostInfoReply{
-		CertID:               s.certid,
+		Id:                   s.id,
+		Addr:                 s.addr,
 		Hostname:             info.Hostname,
 		Uptime:               info.Uptime,
 		BootTime:             info.BootTime,

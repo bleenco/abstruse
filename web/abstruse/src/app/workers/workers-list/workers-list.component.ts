@@ -29,7 +29,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     this.sub = this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
       switch (ev.type) {
         case workerSubDeleteEvent: {
-          this.workers = this.workers.filter(w => w.certID !== ev.data.host.cert_id);
+          this.workers = this.workers.filter(w => w.id !== ev.data.host.id);
           break;
         }
         case workerSubAddEvent: {
@@ -37,7 +37,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
           break;
         }
         case workerSubUsageEvent: {
-          const worker = this.workers.find(w => w.certID === ev.data.cert_id);
+          const worker = this.workers.find(w => w.id === ev.data.id);
           worker.updateUsage(ev.data);
           break;
         }
@@ -72,7 +72,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
 
   private newWorker(w: any): Worker {
     return new Worker(
-      w.host.cert_id,
+      w.id,
       w.addr,
       w.host.hostname,
       w.host.uptime,
