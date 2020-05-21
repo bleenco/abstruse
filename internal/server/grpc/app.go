@@ -56,6 +56,7 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
+	go app.watchCapacity()
 	go app.schedulerLoop()
 
 	return <-app.errch
@@ -68,9 +69,11 @@ func (app *App) GetWorkers() map[string]*Worker {
 
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	job := &scheduler.Job{ID: 1, URL: "https://github.com/jkuri/abstruse"}
-	if err := app.scheduler.Schedule(job, 1000); err != nil {
-		return false
+	for i := 0; i < 100; i++ {
+		job := &scheduler.Job{ID: uint64(i), URL: "https://github.com/jkuri/abstruse"}
+		if err := app.scheduler.Schedule(job, 1000); err != nil {
+			return false
+		}
 	}
 	return true
 }
@@ -85,6 +88,10 @@ func (app *App) schedulerLoop() error {
 		go func() {
 			status, _ := w.StartJob(context.TODO(), job.ID)
 			fmt.Printf("%+v\n", status)
+			select {
+			case app.ready <- struct{}{}:
+			default:
+			}
 		}()
 	}
 }
@@ -129,6 +136,7 @@ func (app *App) watchWorkers() error {
 				app.logger.Errorf("%v", err)
 			} else {
 				app.workers[key] = worker
+				go app.initWorker(worker)
 			}
 		}
 	}
@@ -153,6 +161,22 @@ func (app *App) watchWorkers() error {
 	return nil
 }
 
+func (app *App) watchCapacity() error {
+	prefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity)
+	rch := app.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
+	for n := range rch {
+		for _, ev := range n.Events {
+			if ev.Type == mvccpb.PUT {
+				select {
+				case app.ready <- struct{}{}:
+				default:
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func (app *App) initWorker(worker *Worker) {
 	select {
 	case app.ready <- struct{}{}:
@@ -161,7 +185,6 @@ func (app *App) initWorker(worker *Worker) {
 
 	if err := worker.run(); err != nil {
 		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.GetAddr())
-		app.client.Delete(context.Background(), key)
-		app.logger.Errorf("%s", err.Error())
+		app.client.Delete(context.TODO(), key)
 	}
 }

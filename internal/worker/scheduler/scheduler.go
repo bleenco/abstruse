@@ -1,9 +1,8 @@
 package scheduler
 
 import (
-	"context"
 	"path"
-	"time"
+	"sync"
 
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/etcdutil"
@@ -17,6 +16,7 @@ import (
 // Scheduler service maintains and updates status of worker and its
 // occupancy with job tasks.
 type Scheduler struct {
+	mu          sync.Mutex
 	opts        *Options
 	logger      *zap.SugaredLogger
 	etcd        *etcd.App
@@ -63,20 +63,10 @@ init:
 }
 
 // UpdateCapacity updates capacity on etcd server.
-func (s *Scheduler) UpdateCapacity(current int) error {
-check:
-	if !s.init {
-		time.Sleep(time.Second * 1)
-		goto check
-	}
+func (s *Scheduler) UpdateCapacity(current int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.Current = current
-	value := s.toJSON()
-	client := s.etcd.Client()
-	_, err := client.Put(context.TODO(), s.keyPrefix, value)
-	if err == nil {
-		return nil
-	}
-	return err
 }
 
 func (s *Scheduler) toJSON() string {
