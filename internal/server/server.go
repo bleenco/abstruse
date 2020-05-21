@@ -4,7 +4,6 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/http"
-	"github.com/jkuri/abstruse/internal/pkg/queue"
 	"github.com/jkuri/abstruse/internal/server/etcd"
 	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
@@ -19,7 +18,6 @@ type App struct {
 	wsServer   *websocket.Server
 	etcdServer *etcd.Server
 	grpcApp    *grpc.App
-	queue      *queue.Queue
 }
 
 // NewApp returns new instance of App
@@ -32,7 +30,7 @@ func NewApp(
 	grpcApp *grpc.App,
 ) *App {
 	log := logger.With(zap.String("type", "app")).Sugar()
-	return &App{opts, log, httpServer, wsServer, etcdServer, grpcApp, nil}
+	return &App{opts, log, httpServer, wsServer, etcdServer, grpcApp}
 }
 
 // Start starts master application.
@@ -68,8 +66,6 @@ func (app *App) Start() error {
 			errch <- err
 		}
 	}()
-
-	app.queue = queue.NewQueue(client, app.logger.Desugar())
 
 	// go app.scheduleJobs()
 

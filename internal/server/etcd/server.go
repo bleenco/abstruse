@@ -94,8 +94,6 @@ func (s *Server) Client() *clientv3.Client {
 func (s *Server) cleanup() {
 	capacityPrefix := path.Join(shared.ServicePrefix, shared.WorkerCapacity)
 	workersPrefix := path.Join(shared.ServicePrefix, shared.WorkerService)
-	capacityLock := path.Join(shared.WorkerCapacityLock)
 	s.cli.Delete(context.Background(), capacityPrefix, clientv3.WithFromKey())
 	s.cli.Delete(context.Background(), workersPrefix, clientv3.WithFromKey())
-	s.cli.Delete(context.Background(), capacityLock, clientv3.WithFromKey())
 }

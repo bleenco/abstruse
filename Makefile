@@ -38,6 +38,9 @@ clean:
 dev:
 	@reflex -sr '\.go$$' -R '^web/' -R '^internal/server/ui' -R '^internal/worker/' -- sh -c 'make server && ./build/abstruse-server'
 
+dev_worker:
+	@reflex -sr '\.go$$' -R '^web/' -R '^internal/server' -- sh -c 'make worker && ./build/abstruse-worker'
+
 protoc:
 	@protoc ./proto/api.proto --go_out=plugins=grpc:./proto/
 

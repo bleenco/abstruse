@@ -72,7 +72,9 @@ func CreateApp(cfg string) (*server.App, error) {
 	}
 	workerService := service.NewWorkerService(logger, grpcApp)
 	workerController := controller.NewWorkerController(logger, workerService)
-	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController)
+	buildService := service.NewBuildService(logger, grpcApp)
+	buildController := controller.NewBuildController(logger, buildService)
+	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
 	httpServer, err := http.NewServer(httpOptions, logger, router)
 	if err != nil {

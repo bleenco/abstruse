@@ -16,15 +16,17 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
-	addr   string
-	certid string
-	host   HostInfo
-	conn   *grpc.ClientConn
-	cli    pb.ApiClient
-	ws     *websocket.App
-	usage  []Usage
-	logger *zap.SugaredLogger
-	ready  bool
+	addr    string
+	certid  string
+	host    HostInfo
+	conn    *grpc.ClientConn
+	cli     pb.ApiClient
+	ws      *websocket.App
+	usage   []Usage
+	logger  *zap.SugaredLogger
+	max     uint64
+	current uint64
+	ready   bool
 }
 
 func newWorker(addr string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {

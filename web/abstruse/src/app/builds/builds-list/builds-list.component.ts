@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { BuildsService } from '../shared/builds.service';
+import { JSONResponse } from 'src/app/core/shared/shared.model';
 
 @Component({
   selector: 'app-builds-list',
@@ -7,9 +9,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BuildsListComponent implements OnInit {
 
-  constructor() { }
+  constructor(public buildsService: BuildsService) { }
 
   ngOnInit(): void {
   }
 
+  startJob(): void {
+    this.buildsService.startJob()
+      .subscribe((resp: JSONResponse) => {
+        console.log(resp);
+      }, err => {
+        console.error(err);
+      }, () => {
+        console.log('done');
+      });
+  }
 }
