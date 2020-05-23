@@ -6,7 +6,6 @@ import (
 
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/pkg/logutil"
-	"go.etcd.io/etcd/pkg/transport"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -15,16 +14,16 @@ import (
 func NewClient(target, username, password, cert, key string) (*clientv3.Client, error) {
 	lcfg := logutil.DefaultZapLoggerConfig
 	lcfg.Level = zap.NewAtomicLevelAt(zap.ErrorLevel)
-	tlsInfo := transport.TLSInfo{
-		CertFile:       cert,
-		KeyFile:        key,
-		ClientCertAuth: true,
-	}
-	tlsConfig, err := tlsInfo.ClientConfig()
-	if err != nil {
-		return nil, err
-	}
-	tlsConfig.InsecureSkipVerify = true
+	// tlsInfo := transport.TLSInfo{
+	// 	CertFile:       cert,
+	// 	KeyFile:        key,
+	// 	ClientCertAuth: true,
+	// }
+	// tlsConfig, err := tlsInfo.ClientConfig()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// tlsConfig.InsecureSkipVerify = true
 
 	return clientv3.New(clientv3.Config{
 		Endpoints:   strings.Split(target, ","),
@@ -35,7 +34,7 @@ func NewClient(target, username, password, cert, key string) (*clientv3.Client, 
 		LogConfig: &lcfg,
 		Username:  username,
 		Password:  password,
-		TLS:       tlsConfig,
+		// TLS:       tlsConfig,
 	})
 }
 

@@ -11,6 +11,8 @@ type Options struct {
 	DataDir    string
 	Cert       string
 	Key        string
+	Username   string
+	Password   string
 }
 
 // NewOptions returns configuration for etcd server.
