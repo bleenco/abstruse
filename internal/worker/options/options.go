@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Options etcd config.
+// Options is worker configuration.
 type Options struct {
 	Cert string
 	Key  string
