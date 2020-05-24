@@ -91,12 +91,14 @@ func (app *App) watchWorkers() error {
 			switch ev.Type {
 			case mvccpb.PUT:
 				id, addr := path.Base(string(ev.Kv.Key)), string(ev.Kv.Value)
-				worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
-				if err != nil {
-					return err
+				if _, ok := app.workers[id]; !ok {
+					worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
+					if err != nil {
+						return err
+					}
+					app.workers[id] = worker
+					go app.initWorker(worker)
 				}
-				app.workers[id] = worker
-				go app.initWorker(worker)
 			case mvccpb.DELETE:
 				id := path.Base(string(ev.Kv.Key))
 				app.workers[id].EmitDeleted()

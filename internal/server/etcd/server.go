@@ -3,18 +3,16 @@ package etcd
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/url"
 	"path"
-	"strings"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/etcdutil"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
 	"go.etcd.io/etcd/etcdserver/api/v3client"
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
+	"go.etcd.io/etcd/pkg/transport"
 	"go.uber.org/zap"
 )
 
@@ -47,10 +45,10 @@ func (s *Server) Start() error {
 	cfg.Name = s.opts.Name
 	cfg.Dir = s.opts.DataDir
 	cfg.LogLevel = "error"
-	curl := url.URL{Scheme: "http", Host: fmt.Sprintf("%s:%d", s.opts.Host, s.opts.ClientPort)}
+	curl := url.URL{Scheme: "https", Host: fmt.Sprintf("%s:%d", s.opts.Host, s.opts.ClientPort)}
 	cfg.ACUrls, cfg.LCUrls = []url.URL{curl}, []url.URL{curl}
 
-	purl := url.URL{Scheme: "http", Host: fmt.Sprintf("%s:%d", s.opts.Host, s.opts.PeerPort)}
+	purl := url.URL{Scheme: "https", Host: fmt.Sprintf("%s:%d", s.opts.Host, s.opts.PeerPort)}
 	cfg.APUrls, cfg.LPUrls = []url.URL{purl}, []url.URL{purl}
 
 	cfg.InitialCluster = fmt.Sprintf("%s=%s", cfg.Name, cfg.APUrls[0].String())
@@ -58,18 +56,16 @@ func (s *Server) Start() error {
 	cfg.AutoCompactionMode = v3compactor.ModePeriodic
 	cfg.AutoCompactionRetention = "1h" // every hour
 
-	cfg.ClientAutoTLS = true
-	cfg.PeerAutoTLS = true
+	// cfg.ClientAutoTLS = true
+	// cfg.PeerAutoTLS = true
 
-	// tlsInfo := transport.TLSInfo{
-	// 	CertFile:            s.opts.Cert,
-	// 	KeyFile:             s.opts.Key,
-	// 	ClientCertAuth:      true,
-	// 	InsecureSkipVerify:  true,
-	// 	SkipClientSANVerify: true,
-	// }
-	// cfg.ClientTLSInfo = tlsInfo
-	// cfg.PeerTLSInfo = tlsInfo
+	tlsInfo := transport.TLSInfo{
+		CertFile:           s.opts.Cert,
+		KeyFile:            s.opts.Key,
+		InsecureSkipVerify: true,
+	}
+	cfg.ClientTLSInfo = tlsInfo
+	cfg.PeerTLSInfo = tlsInfo
 
 	s.logger.Infof("starting etcd server %s on %s", cfg.Name, curl.String())
 	s.server, err = embed.StartEtcd(cfg)
@@ -127,35 +123,35 @@ func (s *Server) cleanup() {
 }
 
 // this is required since s.Client.Auth make etcd embed server crash.
-func (s *Server) authEnable() error {
-	target := net.JoinHostPort(s.opts.Host, fmt.Sprintf("%d", s.opts.ClientPort))
-	client, err := etcdutil.NewClient(target, s.opts.Username, s.opts.Password, s.opts.Cert, s.opts.Key)
-	if err != nil {
-		return err
-	}
-	_, err = client.RoleAdd(context.TODO(), s.opts.Username)
-	if err != nil {
-		if strings.HasSuffix(err.Error(), "role name already exists") {
-			goto enable
-		}
-		return err
-	}
-	if _, err = client.UserAdd(context.TODO(), s.opts.Username, s.opts.Password); err != nil {
-		return err
-	}
-	if _, err = client.UserGrantRole(context.TODO(), s.opts.Username, s.opts.Username); err != nil {
-		return err
-	}
-enable:
-	resp, err := client.AuthStatus(context.TODO())
-	if err != nil {
-		return err
-	}
-	if !resp.Enabled {
-		_, err = client.AuthEnable(context.TODO())
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+// func (s *Server) authEnable() error {
+// 	target := net.JoinHostPort(s.opts.Host, fmt.Sprintf("%d", s.opts.ClientPort))
+// 	client, err := etcdutil.NewClient(target, s.opts.Username, s.opts.Password, s.opts.Cert, s.opts.Key)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = client.RoleAdd(context.TODO(), s.opts.Username)
+// 	if err != nil {
+// 		if strings.HasSuffix(err.Error(), "role name already exists") {
+// 			goto enable
+// 		}
+// 		return err
+// 	}
+// 	if _, err = client.UserAdd(context.TODO(), s.opts.Username, s.opts.Password); err != nil {
+// 		return err
+// 	}
+// 	if _, err = client.UserGrantRole(context.TODO(), s.opts.Username, s.opts.Username); err != nil {
+// 		return err
+// 	}
+// enable:
+// 	resp, err := client.AuthStatus(context.TODO())
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if !resp.Enabled {
+// 		_, err = client.AuthEnable(context.TODO())
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }

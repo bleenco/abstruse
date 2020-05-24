@@ -1,4 +1,4 @@
-package etcd
+package etcdutil
 
 import (
 	"context"
@@ -13,7 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
-type regService struct {
+// RegService worker register service.
+type RegService struct {
 	key     string
 	val     string
 	client  *clientv3.Client
@@ -23,20 +24,22 @@ type regService struct {
 	stopch  chan error
 }
 
-func newRegisterService(client *clientv3.Client, addr, id string, ttl int64, logger *zap.SugaredLogger) *regService {
+// NewRegisterService returns new RegService instance.
+func NewRegisterService(client *clientv3.Client, id, addr string, ttl int64, logger *zap.Logger) *RegService {
 	val := getAddress(addr)
 	key := path.Join(shared.ServicePrefix, shared.WorkerService, id)
-	return &regService{
+	return &RegService{
 		key:    key,
 		val:    val,
 		client: client,
 		ttl:    ttl,
-		logger: logger,
+		logger: logger.With(zap.String("type", "register")).Sugar(),
 		stopch: make(chan error),
 	}
 }
 
-func (rs *regService) register() error {
+// Register tries to register worker service on remote etcd server.
+func (rs *RegService) Register() error {
 	ch, err := rs.keepAlive()
 	if err != nil {
 		return err
@@ -58,11 +61,12 @@ func (rs *regService) register() error {
 	}
 }
 
-func (rs *regService) stop() {
+// Stop deregister from remote worker etcd service.
+func (rs *RegService) Stop() {
 	rs.stopch <- nil
 }
 
-func (rs *regService) keepAlive() (<-chan *clientv3.LeaseKeepAliveResponse, error) {
+func (rs *RegService) keepAlive() (<-chan *clientv3.LeaseKeepAliveResponse, error) {
 	resp, err := rs.client.Grant(context.TODO(), rs.ttl)
 	if err != nil {
 		return nil, err
@@ -76,7 +80,7 @@ func (rs *regService) keepAlive() (<-chan *clientv3.LeaseKeepAliveResponse, erro
 	return rs.client.KeepAlive(context.TODO(), resp.ID)
 }
 
-func (rs *regService) revoke() error {
+func (rs *RegService) revoke() error {
 	ctx, cancel := context.WithTimeout(context.TODO(), time.Second)
 	defer cancel()
 	_, err := rs.client.Revoke(ctx, rs.leaseid)

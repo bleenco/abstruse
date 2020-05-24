@@ -9,15 +9,13 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/log"
-	"github.com/jkuri/abstruse/internal/worker"
-	"github.com/jkuri/abstruse/internal/worker/etcd"
-	"github.com/jkuri/abstruse/internal/worker/grpc"
+	"github.com/jkuri/abstruse/internal/worker/app"
 	"github.com/jkuri/abstruse/internal/worker/options"
 )
 
 // Injectors from wire.go:
 
-func CreateApp(cfg string) (*worker.App, error) {
+func CreateApp(cfg string) (*app.App, error) {
 	viper, err := config.NewConfig(cfg)
 	if err != nil {
 		return nil, err
@@ -34,15 +32,13 @@ func CreateApp(cfg string) (*worker.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	app := etcd.NewApp(optionsOptions, logger)
-	server, err := grpc.NewServer(optionsOptions, logger, app)
+	appApp, err := app.NewApp(optionsOptions, logger)
 	if err != nil {
 		return nil, err
 	}
-	workerApp := worker.NewApp(optionsOptions, logger, server, app)
-	return workerApp, nil
+	return appApp, nil
 }
 
 // wire.go:
 
-var providerSet = wire.NewSet(options.ProviderSet, log.ProviderSet, config.ProviderSet, grpc.ProviderSet, worker.ProviderSet, etcd.ProviderSet)
+var providerSet = wire.NewSet(options.ProviderSet, log.ProviderSet, config.ProviderSet, app.ProviderSet)

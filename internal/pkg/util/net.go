@@ -1,9 +1,9 @@
 package util
 
 import (
+	"fmt"
 	"net"
 	"strings"
-	"fmt"
 )
 
 // GetAvailablePort returns a port at random
@@ -15,6 +15,7 @@ func GetAvailablePort() int {
 	return port
 }
 
+// GetExternalIP gets external ip.
 func GetExternalIP() (string, error) {
 	ifaces, err := net.Interfaces()
 	if err != nil {
@@ -52,8 +53,8 @@ func GetExternalIP() (string, error) {
 	return "", fmt.Errorf("are you connected to the network?")
 }
 
-// GetLocalIP4 gets local ip address.
-func GetLocalIP4() (ip string) {
+// GetLocalIP gets local ip address.
+func GetLocalIP() (ip string) {
 	interfaces, err := net.Interfaces()
 	net.InterfaceAddrs()
 	if err != nil {
@@ -103,12 +104,26 @@ func GetLocalIP4() (ip string) {
 	return
 }
 
+// GetListenAddress function
+func GetListenAddress(addr string) string {
+	var ip string
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr
+	}
+	if host == "" || host == "0.0.0.0" {
+		ip, _ = GetExternalIP()
+	} else {
+		ip = GetLocalIP()
+	}
+	return fmt.Sprintf("%s:%s", ip, port)
+}
+
 func isIntranetIpv4(ip string) bool {
 	if strings.HasPrefix(ip, "192.168.") ||
 		strings.HasPrefix(ip, "169.254.") ||
 		strings.HasPrefix(ip, "172.") ||
-		strings.HasPrefix(ip, "10.30.") ||
-		strings.HasPrefix(ip, "10.31.") {
+		strings.HasPrefix(ip, "10.") {
 		return true
 	}
 	return false
