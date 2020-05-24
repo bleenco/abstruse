@@ -92,7 +92,7 @@ func (q *queue) find(id uint64) (*job.Job, error) {
 func (c *concurrency) increment() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.Max == c.Current+1 {
+	if c.Max < c.Current+1 {
 		return fmt.Errorf("tried to exceed max concurrency limit")
 	}
 	c.Current++

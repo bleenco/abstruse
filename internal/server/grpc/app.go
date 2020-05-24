@@ -54,11 +54,11 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
-	go func() {
-		if err := app.watchConcurrency(); err != nil {
-			app.errch <- err
-		}
-	}()
+	// go func() {
+	// 	if err := app.watchConcurrency(); err != nil {
+	// 		app.errch <- err
+	// 	}
+	// }()
 
 	go func() {
 		if err := app.Scheduler.Start(app.client); err != nil {
@@ -74,13 +74,19 @@ func (app *App) GetWorkers() map[string]*Worker {
 	return app.workers
 }
 
+var i = 1
+
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	j := &job.Job{ID: 1, Priority: 1000}
+	// for i := 1; i <= 10; i++ {
+	// 	go func(i int) {
+	i++
+	j := &job.Job{ID: uint64(i), Priority: 1000}
 	if err := app.Scheduler.Schedule(j); err != nil {
 		app.logger.Errorf("%v", err)
-		return false
 	}
+	// 	}(i)
+	// }
 	return true
 }
 
@@ -88,6 +94,7 @@ func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
 		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
 		app.client.Delete(context.TODO(), key)
+		worker.EmitDeleted()
 		delete(app.workers, worker.ID)
 	}
 }

@@ -53,17 +53,29 @@ func (s *Scheduler) Start(client *clientv3.Client) error {
 		if err := jsoniter.UnmarshalFromString(json, &j); err != nil {
 			return err
 		}
+		s.logger.Debugf("waiting for worker...")
 		worker := s.findWorker()
 		s.logger.Debugf("sending job %d to worker %s", j.ID, worker.ID)
 
-		go func(j *job.Job) {
-			status, err := worker.StartJob(context.TODO(), j)
+		go func(j *job.Job, w *Worker) {
+			w.c.mu.Lock()
+			w.c.Free--
+			w.c.Current++
+			w.c.mu.Unlock()
+
+			status, err := w.StartJob(context.TODO(), j)
 			if err != nil {
 				s.logger.Debugf("job %d errored with %v", j.ID, err)
 			} else {
 				s.logger.Debugf("job %d done with %v", j.ID, status)
 			}
-		}(j)
+
+			w.c.mu.Lock()
+			w.c.Free++
+			w.c.Current++
+			w.c.mu.Unlock()
+			s.rpc.WorkerReady <- w
+		}(j, worker)
 	}
 }
 
@@ -77,12 +89,12 @@ func (s *Scheduler) Schedule(j *job.Job) error {
 
 func (s *Scheduler) findWorker() *Worker {
 	var w *Worker
-	for _, worker := range s.rpc.GetWorkers() {
-		if w == nil || worker.Concurrency.Free > w.Concurrency.Free {
+	for _, worker := range s.rpc.workers {
+		if w == nil || (w != nil && worker.c.Free > w.c.Free) {
 			w = worker
 		}
 	}
-	if w == nil {
+	if w == nil || w.c.Free < 1 || w.c.Current >= w.c.Max {
 		w = <-s.rpc.WorkerReady
 	}
 	return w

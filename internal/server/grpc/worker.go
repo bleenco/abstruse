@@ -17,22 +17,22 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
-	mu          sync.Mutex
-	ID          string
-	addr        string
-	host        HostInfo
-	conn        *grpc.ClientConn
-	cli         pb.ApiClient
-	ws          *websocket.App
-	usage       []Usage
-	logger      *zap.SugaredLogger
-	Concurrency Concurrency
-	ready       bool
-	readych     chan bool
+	mu      sync.Mutex
+	ID      string
+	addr    string
+	host    HostInfo
+	conn    *grpc.ClientConn
+	cli     pb.ApiClient
+	ws      *websocket.App
+	usage   []Usage
+	logger  *zap.SugaredLogger
+	c       *concurrency
+	readych chan bool
 }
 
 // Concurrency info about remote worker concurrency status.
-type Concurrency struct {
+type concurrency struct {
+	mu      sync.Mutex
 	Max     int `json:"max"`
 	Current int `json:"current"`
 	Free    int `json:"free"`
@@ -67,19 +67,19 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 	cli := pb.NewApiClient(conn)
 
 	return &Worker{
-		ID:          id,
-		addr:        addr,
-		conn:        conn,
-		cli:         cli,
-		ws:          ws,
-		logger:      logger,
-		Concurrency: Concurrency{Max: 0, Current: 0, Free: 0},
-		readych:     make(chan bool),
+		ID:      id,
+		addr:    addr,
+		conn:    conn,
+		cli:     cli,
+		ws:      ws,
+		logger:  logger,
+		c:       &concurrency{Max: 2, Current: 0, Free: 2},
+		readych: make(chan bool, 1),
 	}, nil
 }
 
 func (w *Worker) run() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	defer w.conn.Close()
 
@@ -89,8 +89,6 @@ func (w *Worker) run() error {
 	}
 	w.host = hostInfo(info)
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
-	w.ready = true
-	w.readych <- true
 	w.EmitData()
 
 	ch := make(chan error)
@@ -109,17 +107,7 @@ func (w *Worker) run() error {
 
 	err = <-ch
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
-	w.ready = false
 	return err
-}
-
-func (w *Worker) updateConcurrency(c Concurrency) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	w.Concurrency = c
-	if c.Free > 0 {
-		w.readych <- true
-	}
 }
 
 // GetAddr returns remote address.
