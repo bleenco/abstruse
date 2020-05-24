@@ -17,16 +17,25 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
-	mu     sync.Mutex
-	id     string
-	addr   string
-	host   HostInfo
-	conn   *grpc.ClientConn
-	cli    pb.ApiClient
-	ws     *websocket.App
-	usage  []Usage
-	logger *zap.SugaredLogger
-	ready  bool
+	mu          sync.Mutex
+	ID          string
+	addr        string
+	host        HostInfo
+	conn        *grpc.ClientConn
+	cli         pb.ApiClient
+	ws          *websocket.App
+	usage       []Usage
+	logger      *zap.SugaredLogger
+	Concurrency Concurrency
+	ready       bool
+	readych     chan bool
+}
+
+// Concurrency info about remote worker concurrency status.
+type Concurrency struct {
+	Max     int `json:"max"`
+	Current int `json:"current"`
+	Free    int `json:"free"`
 }
 
 func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
@@ -58,13 +67,14 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 	cli := pb.NewApiClient(conn)
 
 	return &Worker{
-		id:     id,
-		addr:   addr,
-		conn:   conn,
-		cli:    cli,
-		ws:     ws,
-		logger: logger,
-		ready:  false,
+		ID:          id,
+		addr:        addr,
+		conn:        conn,
+		cli:         cli,
+		ws:          ws,
+		logger:      logger,
+		Concurrency: Concurrency{Max: 0, Current: 0, Free: 0},
+		readych:     make(chan bool),
 	}, nil
 }
 
@@ -78,8 +88,9 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
+	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.ready = true
-	w.logger.Infof("connected to worker %s %s", w.id, w.addr)
+	w.readych <- true
 	w.EmitData()
 
 	ch := make(chan error)
@@ -97,19 +108,23 @@ func (w *Worker) run() error {
 	}()
 
 	err = <-ch
+	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	w.ready = false
-	w.logger.Infof("closed connection to worker %s %s", w.id, w.addr)
 	return err
+}
+
+func (w *Worker) updateConcurrency(c Concurrency) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.Concurrency = c
+	if c.Free > 0 {
+		w.readych <- true
+	}
 }
 
 // GetAddr returns remote address.
 func (w *Worker) GetAddr() string {
 	return w.addr
-}
-
-// GetID returns workers cert identification.
-func (w *Worker) GetID() string {
-	return w.id
 }
 
 // GetHost returns host info.
@@ -122,15 +137,10 @@ func (w *Worker) GetUsage() []Usage {
 	return w.usage
 }
 
-// IsReady returns if worker is ready to process jobs.
-func (w *Worker) IsReady() bool {
-	return w.ready
-}
-
 // EmitData broadcast newly created worker via websocket.
 func (w *Worker) EmitData() {
 	w.ws.Broadcast("/subs/workers_add", map[string]interface{}{
-		"id":    w.GetID(),
+		"id":    w.ID,
 		"addr":  w.GetAddr(),
 		"host":  w.GetHost(),
 		"usage": w.GetUsage(),
@@ -140,7 +150,7 @@ func (w *Worker) EmitData() {
 // EmitDeleted broadcast disconnected worker via websocket.
 func (w *Worker) EmitDeleted() {
 	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
-		"id":   w.GetID(),
+		"id":   w.ID,
 		"addr": w.GetAddr(),
 		"host": w.GetHost(),
 	})

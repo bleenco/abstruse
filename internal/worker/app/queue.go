@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"path"
-	"strconv"
 	"sync"
 
 	"github.com/jkuri/abstruse/internal/pkg/job"
@@ -18,7 +17,7 @@ type queue struct {
 	key    string
 	client *clientv3.Client
 	ctx    context.Context
-	jobs   map[string]*job.Job
+	jobs   map[uint64]*job.Job
 	c      concurrency
 }
 
@@ -31,11 +30,12 @@ type concurrency struct {
 	Free    int `json:"free"`
 }
 
-func newQueue(client *clientv3.Client, id string, max int) *queue {
-	return &queue{
+func newQueue(client *clientv3.Client, id string, max int) queue {
+	return queue{
 		key:    path.Join(shared.ServicePrefix, "jobs", "running", id),
 		client: client,
 		ctx:    context.TODO(),
+		jobs:   make(map[uint64]*job.Job),
 		c: concurrency{
 			key:     path.Join(shared.ServicePrefix, "concurrency", id),
 			client:  client,
@@ -54,8 +54,8 @@ func (q *queue) add(j *job.Job) error {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	key := path.Join(q.key, j.Key())
-	q.jobs[j.Key()] = j
-	_, err := q.client.Put(context.TODO(), key, j.Value(), clientv3.WithLastRev()...)
+	q.jobs[j.ID] = j
+	_, err := q.client.Put(context.TODO(), key, j.Value())
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (q *queue) delete(j *job.Job) error {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 	key := path.Join(q.key, j.Key())
-	delete(q.jobs, j.Key())
+	delete(q.jobs, j.ID)
 	_, err := q.client.Delete(context.TODO(), key)
 	if err != nil {
 		return err
@@ -83,8 +83,7 @@ func (q *queue) delete(j *job.Job) error {
 func (q *queue) find(id uint64) (*job.Job, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
-	key := strconv.Itoa(int(id))
-	if j, ok := q.jobs[key]; ok {
+	if j, ok := q.jobs[id]; ok {
 		return j, nil
 	}
 	return nil, fmt.Errorf("job %d not found", id)
@@ -128,6 +127,6 @@ func (c *concurrency) value() string {
 }
 
 func (c *concurrency) save() error {
-	_, err := c.client.Put(context.TODO(), c.key, c.value(), clientv3.WithLastRev()...)
+	_, err := c.client.Put(context.TODO(), c.key, c.value())
 	return err
 }

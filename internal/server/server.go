@@ -60,8 +60,7 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		client := app.etcdServer.Client()
-		if err := app.grpcApp.Start(client); err != nil {
+		if err := app.grpcApp.Start(app.etcdServer.Client()); err != nil {
 			errch <- err
 		}
 	}()

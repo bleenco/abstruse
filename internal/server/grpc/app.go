@@ -5,10 +5,10 @@ import (
 	"path"
 	"sync"
 
+	"github.com/jkuri/abstruse/internal/pkg/job"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
 )
 
@@ -17,26 +17,28 @@ var capacityKeyPrefix = path.Join(shared.ServicePrefix, shared.WorkerCapacity)
 // App represent main gRPC application and holds data
 // for established worker connections.
 type App struct {
-	mu      sync.RWMutex
-	opts    *Options
-	workers map[string]*Worker
-	client  *clientv3.Client
-	ws      *websocket.App
-	logger  *zap.SugaredLogger
-	ready   chan struct{}
-	errch   chan error
+	mu          sync.RWMutex
+	opts        *Options
+	workers     map[string]*Worker
+	client      *clientv3.Client
+	ws          *websocket.App
+	logger      *zap.SugaredLogger
+	Scheduler   *Scheduler
+	WorkerReady chan *Worker
+	errch       chan error
 }
 
 // NewApp returns new instance of App.
 func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) {
 	app := &App{
-		opts:    opts,
-		workers: make(map[string]*Worker),
-		ws:      ws,
-		logger:  logger.With(zap.String("type", "grpc")).Sugar(),
-		ready:   make(chan struct{}),
-		errch:   make(chan error),
+		opts:        opts,
+		workers:     make(map[string]*Worker),
+		ws:          ws,
+		logger:      logger.With(zap.String("type", "grpc")).Sugar(),
+		WorkerReady: make(chan *Worker),
+		errch:       make(chan error),
 	}
+	app.Scheduler = NewScheduler(context.Background(), logger, app)
 
 	return app, nil
 }
@@ -52,6 +54,18 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
+	go func() {
+		if err := app.watchConcurrency(); err != nil {
+			app.errch <- err
+		}
+	}()
+
+	go func() {
+		if err := app.Scheduler.Start(app.client); err != nil {
+			app.errch <- err
+		}
+	}()
+
 	return <-app.errch
 }
 
@@ -62,56 +76,18 @@ func (app *App) GetWorkers() map[string]*Worker {
 
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	return true
-}
-
-func (app *App) watchWorkers() error {
-	defer app.client.Close()
-	prefix := path.Join(shared.ServicePrefix, shared.WorkerService)
-
-	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
-	if err != nil {
+	j := &job.Job{ID: 1, Priority: 1000}
+	if err := app.Scheduler.Schedule(j); err != nil {
 		app.logger.Errorf("%v", err)
-	} else {
-		for i := range resp.Kvs {
-			id, addr := path.Base(string(resp.Kvs[i].Key)), string(resp.Kvs[i].Value)
-			worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
-			if err != nil {
-				app.logger.Errorf("%v", err)
-			} else {
-				app.workers[id] = worker
-				go app.initWorker(worker)
-			}
-		}
+		return false
 	}
-
-	rch := app.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
-	for n := range rch {
-		for _, ev := range n.Events {
-			switch ev.Type {
-			case mvccpb.PUT:
-				id, addr := path.Base(string(ev.Kv.Key)), string(ev.Kv.Value)
-				if _, ok := app.workers[id]; !ok {
-					worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
-					if err != nil {
-						return err
-					}
-					app.workers[id] = worker
-					go app.initWorker(worker)
-				}
-			case mvccpb.DELETE:
-				id := path.Base(string(ev.Kv.Key))
-				app.workers[id].EmitDeleted()
-				delete(app.workers, id)
-			}
-		}
-	}
-	return nil
+	return true
 }
 
 func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
-		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.GetID())
+		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
 		app.client.Delete(context.TODO(), key)
+		delete(app.workers, worker.ID)
 	}
 }

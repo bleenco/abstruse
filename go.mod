@@ -14,11 +14,21 @@ require (
 	github.com/gobwas/ws v1.0.3
 	github.com/golang/protobuf v1.4.2
 	github.com/google/wire v0.4.0
+	github.com/hashicorp/cronexpr v1.1.0 // indirect
+	github.com/hashicorp/go-hclog v0.13.0 // indirect
+	github.com/hashicorp/go-memdb v1.2.1 // indirect
+	github.com/hashicorp/go-plugin v1.3.0 // indirect
+	github.com/hashicorp/go-version v1.2.0 // indirect
+	github.com/hashicorp/nomad v0.11.2
+	github.com/hashicorp/raft v1.1.2 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/jkuri/statik v0.3.0
 	github.com/json-iterator/go v1.1.7
 	github.com/julienschmidt/httprouter v1.2.0
+	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/mitchellh/hashstructure v1.0.0 // indirect
+	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/shirou/gopsutil v2.20.4+incompatible
 	github.com/spf13/viper v1.7.0
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200425165423-262c93980547

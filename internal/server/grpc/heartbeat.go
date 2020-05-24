@@ -13,7 +13,7 @@ func (w *Worker) Heartbeat(ctx context.Context) error {
 		return err
 	}
 	defer stream.CloseSend()
-	w.logger.Debugf("initialized heartbeat to worker %s %s", w.id, w.addr)
+	w.logger.Debugf("initialized heartbeat to worker %s %s", w.ID, w.addr)
 
 	for {
 		_, err := stream.Recv()

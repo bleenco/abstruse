@@ -28,7 +28,7 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			return err
 		}
 		usage := Usage{
-			ID:        w.id,
+			ID:        w.ID,
 			Addr:      w.addr,
 			CPU:       stats.GetCpu(),
 			Mem:       stats.GetMem(),
@@ -36,7 +36,7 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 		}
 
 		w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
-			"id":        w.id,
+			"id":        w.ID,
 			"addr":      w.addr,
 			"cpu":       usage.CPU,
 			"mem":       usage.Mem,
