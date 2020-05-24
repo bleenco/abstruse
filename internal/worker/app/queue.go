@@ -47,7 +47,8 @@ func newQueue(client *clientv3.Client, id string, max int) queue {
 }
 
 func (q *queue) init() error {
-	return q.c.save()
+	// return q.c.save()
+	return nil
 }
 
 func (q *queue) add(j *job.Job) error {
@@ -97,11 +98,11 @@ func (c *concurrency) increment() error {
 	}
 	c.Current++
 	c.Free--
-	if err := c.save(); err != nil {
-		c.Current--
-		c.Free++
-		return err
-	}
+	// if err := c.save(); err != nil {
+	// 	c.Current--
+	// 	c.Free++
+	// 	return err
+	// }
 	return nil
 }
 
@@ -113,11 +114,11 @@ func (c *concurrency) decrement() error {
 	}
 	c.Current--
 	c.Free++
-	if err := c.save(); err != nil {
-		c.Current++
-		c.Free--
-		return err
-	}
+	// if err := c.save(); err != nil {
+	// 	c.Current++
+	// 	c.Free--
+	// 	return err
+	// }
 	return nil
 }
 

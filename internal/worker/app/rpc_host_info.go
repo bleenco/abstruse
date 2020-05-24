@@ -31,5 +31,6 @@ func (app *App) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfoRepl
 		VirtualizationSystem: info.VirtualizationRole,
 		VirtualizationRole:   info.VirtualizationRole,
 		HostID:               info.HostID,
+		MaxConcurrency:       uint64(app.opts.Scheduler.MaxConcurrency),
 	}, nil
 }

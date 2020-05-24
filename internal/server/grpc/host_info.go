@@ -24,6 +24,7 @@ type HostInfo struct {
 	VirtualizationSystem string `json:"virtualization_system"`
 	VirtualizationRole   string `json:"virtualization_role"`
 	HostID               string `json:"host_id"`
+	MaxConcurrency       uint64 `json:"max_concurrency"`
 }
 
 // HostInfo returns worker host info.
@@ -49,5 +50,6 @@ func hostInfo(info *pb.HostInfoReply) HostInfo {
 		info.GetVirtualizationSystem(),
 		info.GetVirtualizationSystem(),
 		info.GetHostname(),
+		info.GetMaxConcurrency(),
 	}
 }

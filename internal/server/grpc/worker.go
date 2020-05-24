@@ -73,7 +73,7 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 		cli:     cli,
 		ws:      ws,
 		logger:  logger,
-		c:       &concurrency{Max: 2, Current: 0, Free: 2},
+		c:       &concurrency{Max: 2, Current: 0, Free: 0},
 		readych: make(chan bool, 1),
 	}, nil
 }
@@ -88,6 +88,8 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
+	w.c.Max = int(w.host.MaxConcurrency)
+	w.c.Free = int(w.host.MaxConcurrency)
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
 
