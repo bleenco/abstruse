@@ -1,4 +1,4 @@
-package grpc
+package app
 
 import (
 	"time"
@@ -9,7 +9,7 @@ import (
 )
 
 // UsageStats implements abstruse.api.UsageStats rpc.
-func (s *Server) UsageStats(stream pb.Api_UsageStatsServer) error {
+func (app *App) UsageStats(stream pb.Api_UsageStatsServer) error {
 	errch := make(chan error)
 	go func() {
 		for {

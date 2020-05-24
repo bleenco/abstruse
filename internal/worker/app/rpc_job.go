@@ -1,4 +1,4 @@
-package grpc
+package app
 
 import (
 	"context"
@@ -7,6 +7,6 @@ import (
 )
 
 // JobProcess executes job task and returns status.
-func (s *Server) JobProcess(ctx context.Context, in *pb.JobTask) (*pb.JobStatus, error) {
+func (app *App) JobProcess(ctx context.Context, in *pb.JobTask) (*pb.JobStatus, error) {
 	return &pb.JobStatus{Id: in.GetId(), Code: pb.JobStatus_Running}, nil
 }

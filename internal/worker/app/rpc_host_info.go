@@ -1,4 +1,4 @@
-package grpc
+package app
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 )
 
 // HostInfo returns worker host information.
-func (s *Server) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfoReply, error) {
+func (app *App) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfoReply, error) {
 	info, err := stats.GetHostStats()
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.HostInfoReply{
-		Id:                   s.id,
-		Addr:                 s.addr,
+		Id:                   app.id,
+		Addr:                 app.addr,
 		Hostname:             info.Hostname,
 		Uptime:               info.Uptime,
 		BootTime:             info.BootTime,

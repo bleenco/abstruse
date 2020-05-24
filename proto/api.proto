@@ -15,8 +15,6 @@ service Api {
       returns (stream UsageStatsReply) {}
 
   rpc JobProcess(JobTask) returns (JobStatus) {}
-
-  rpc Concurrency(google.protobuf.Empty) returns (ConcurrencyStatus) {}
 }
 
 message JobTask {
@@ -40,11 +38,6 @@ message JobStatus {
   }
   uint64 id = 1;
   JobStatusCode code = 2;
-}
-
-message ConcurrencyStatus {
-  uint64 current = 1;
-  uint64 max = 2;
 }
 
 message HostInfoReply {
