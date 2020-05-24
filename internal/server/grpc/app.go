@@ -23,6 +23,7 @@ type App struct {
 	client  *clientv3.Client
 	ws      *websocket.App
 	logger  *zap.SugaredLogger
+	ready   chan struct{}
 	errch   chan error
 }
 
@@ -33,6 +34,7 @@ func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) 
 		workers: make(map[string]*Worker),
 		ws:      ws,
 		logger:  logger.With(zap.String("type", "grpc")).Sugar(),
+		ready:   make(chan struct{}),
 		errch:   make(chan error),
 	}
 

@@ -4,12 +4,13 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
 	"github.com/jkuri/abstruse/internal/worker/grpc"
+	"github.com/jkuri/abstruse/internal/worker/options"
 	"go.uber.org/zap"
 )
 
 // App worker application.
 type App struct {
-	opts       *Options
+	opts       *options.Options
 	logger     *zap.SugaredLogger
 	grpcServer *grpc.Server
 	etcdApp    *etcd.App
@@ -18,7 +19,7 @@ type App struct {
 
 // NewApp returns new intsanceof App.
 func NewApp(
-	opts *Options,
+	opts *options.Options,
 	logger *zap.Logger,
 	grpcServer *grpc.Server,
 	etcdApp *etcd.App,
@@ -37,7 +38,7 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		id, grpcAddr := app.grpcServer.ID(), app.opts.GRPC.Addr
+		id, grpcAddr := app.grpcServer.ID(), app.opts.GRPC.ListenAddr
 		if err := app.etcdApp.Start(id, grpcAddr); err != nil {
 			app.errch <- err
 		}
@@ -46,5 +47,5 @@ func (app *App) Start() error {
 	return <-app.errch
 }
 
-// ProviderSet wire export.
-var ProviderSet = wire.NewSet(NewApp, NewOptions)
+// ProviderSet exports for wire dependency injection.
+var ProviderSet = wire.NewSet(NewApp)

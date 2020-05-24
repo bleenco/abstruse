@@ -10,6 +10,7 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/id"
 	"github.com/jkuri/abstruse/internal/worker/etcd"
+	"github.com/jkuri/abstruse/internal/worker/options"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -20,16 +21,16 @@ import (
 type Server struct {
 	id     string
 	addr   string
-	opts   *Options
+	opts   *options.Options
 	logger *zap.SugaredLogger
 	server *grpc.Server
 	etcd   *etcd.App
 }
 
 // NewServer returns new instance of gRPC server.
-func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App) (*Server, error) {
+func NewServer(opts *options.Options, logger *zap.Logger, etcd *etcd.App) (*Server, error) {
 	log := logger.With(zap.String("type", "grpc")).Sugar()
-	if opts.Addr == "" {
+	if opts.GRPC.ListenAddr == "" {
 		return nil, fmt.Errorf("listen address must be specified")
 	}
 	if opts.Cert == "" || opts.Key == "" {
@@ -42,11 +43,11 @@ func NewServer(opts *Options, logger *zap.Logger, etcd *etcd.App) (*Server, erro
 	if err != nil {
 		return nil, fmt.Errorf("could not read certificate file")
 	}
-	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", cert, opts.Addr)))[0:6])
+	id := strings.ToUpper(id.New([]byte(fmt.Sprintf("%s-%s", cert, opts.GRPC.ListenAddr)))[0:6])
 
 	return &Server{
 		id:     id,
-		addr:   opts.Addr,
+		addr:   opts.GRPC.ListenAddr,
 		opts:   opts,
 		logger: log,
 		etcd:   etcd,
@@ -62,7 +63,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	listener, err := net.Listen("tcp", s.opts.Addr)
+	listener, err := net.Listen("tcp", s.opts.GRPC.ListenAddr)
 	if err != nil {
 		return err
 	}
@@ -76,22 +77,17 @@ func (s *Server) Start() error {
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterApiServer(s.server, s)
 
-	s.logger.Infof("gRPC server listening on %s", s.opts.Addr)
+	s.logger.Infof("gRPC server listening on %s", s.opts.GRPC.ListenAddr)
 
 	return s.server.Serve(listener)
 }
 
 // Addr returns server's listen address.
 func (s *Server) Addr() string {
-	return s.opts.Addr
+	return s.opts.GRPC.ListenAddr
 }
 
 // ID returns id.
 func (s *Server) ID() string {
 	return s.id
-}
-
-// GetOptions returns gRPC server config.
-func (s *Server) GetOptions() *Options {
-	return s.opts
 }

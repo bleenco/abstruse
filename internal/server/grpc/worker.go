@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/certgen"
@@ -16,6 +17,7 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
+	mu      sync.Mutex
 	id      string
 	addr    string
 	host    HostInfo
@@ -27,6 +29,12 @@ type Worker struct {
 	max     uint64
 	current uint64
 	ready   bool
+}
+
+type concurrency struct {
+	Max     int `json:"max"`
+	Current int `json:"current"`
+	Free    int `json:"free"`
 }
 
 func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {

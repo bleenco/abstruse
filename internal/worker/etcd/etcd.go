@@ -4,5 +4,5 @@ import (
 	"github.com/google/wire"
 )
 
-// ProviderSet wire exports.
-var ProviderSet = wire.NewSet(NewClient, NewApp, NewOptions)
+// ProviderSet exports for wire dependency injection.
+var ProviderSet = wire.NewSet(NewClient, NewApp)
