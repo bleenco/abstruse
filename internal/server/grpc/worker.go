@@ -17,24 +17,16 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
-	mu      sync.Mutex
-	id      string
-	addr    string
-	host    HostInfo
-	conn    *grpc.ClientConn
-	cli     pb.ApiClient
-	ws      *websocket.App
-	usage   []Usage
-	logger  *zap.SugaredLogger
-	max     uint64
-	current uint64
-	ready   bool
-}
-
-type concurrency struct {
-	Max     int `json:"max"`
-	Current int `json:"current"`
-	Free    int `json:"free"`
+	mu     sync.Mutex
+	id     string
+	addr   string
+	host   HostInfo
+	conn   *grpc.ClientConn
+	cli    pb.ApiClient
+	ws     *websocket.App
+	usage  []Usage
+	logger *zap.SugaredLogger
+	ready  bool
 }
 
 func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {

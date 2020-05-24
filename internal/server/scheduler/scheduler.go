@@ -5,6 +5,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/jkuri/abstruse/internal/pkg/job"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/grpc"
 	jsoniter "github.com/json-iterator/go"
@@ -57,7 +58,7 @@ func (s *Scheduler) Start() error {
 		if err != nil {
 			return err
 		}
-		var j *Job
+		var j *job.Job
 		if err := jsoniter.UnmarshalFromString(json, j); err != nil {
 			return err
 		}
@@ -66,7 +67,7 @@ func (s *Scheduler) Start() error {
 }
 
 // Schedule adds job to queue.
-func (s *Scheduler) Schedule(j *Job) error {
+func (s *Scheduler) Schedule(j *job.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.logger.Debugf("scheduling job %d with priority %d", j.ID, j.Priority)

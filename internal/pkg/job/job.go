@@ -1,4 +1,4 @@
-package scheduler
+package job
 
 import (
 	"strconv"
@@ -12,15 +12,13 @@ type Job struct {
 	Priority uint16 `json:"priority"`
 }
 
-func (j *Job) value() string {
+// Value returns JSON string.
+func (j *Job) Value() string {
 	value, _ := jsoniter.MarshalToString(j)
 	return value
 }
 
-func (j *Job) key() string {
+// Key returns key in string format.
+func (j *Job) Key() string {
 	return strconv.FormatUint(j.ID, 10)
-}
-
-func (j *Job) priority() uint16 {
-	return j.Priority
 }
