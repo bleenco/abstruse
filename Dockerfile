@@ -31,4 +31,4 @@ COPY --from=build /app/docs/configs/server.yaml /server.yaml
 
 ENTRYPOINT [ "/usr/bin/abstruse-server" ]
 
-EXPOSE 80 443 2379 2380 3330
+EXPOSE 80 443 2379 2380
