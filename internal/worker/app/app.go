@@ -18,6 +18,7 @@ type App struct {
 	logger *zap.SugaredLogger
 	server *grpc.Server
 	client *clientv3.Client
+	queue  *queue
 	errch  chan error
 }
 
@@ -28,19 +29,20 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return &App{
+	app := &App{
 		id:     id,
 		addr:   addr,
 		opts:   opts,
 		logger: logger.Sugar(),
 		errch:  make(chan error),
-	}, nil
+	}
+	return app, nil
 }
 
 // Start starts worker application.
 func (app *App) Start() error {
 	app.logger.Info("starting worker...")
+	ready := make(chan bool)
 
 	go func() {
 		if err := app.startServer(); err != nil {
@@ -49,7 +51,15 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		if err := app.connect(); err != nil {
+		if err := app.connect(ready); err != nil {
+			app.errch <- err
+		}
+	}()
+
+	go func() {
+		<-ready
+		app.queue = newQueue(app.client, app.id, app.opts.Scheduler.MaxConcurrency)
+		if err := app.queue.init(); err != nil {
 			app.errch <- err
 		}
 	}()

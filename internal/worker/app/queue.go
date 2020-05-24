@@ -46,6 +46,10 @@ func newQueue(client *clientv3.Client, id string, max int) *queue {
 	}
 }
 
+func (q *queue) init() error {
+	return q.c.save()
+}
+
 func (q *queue) add(j *job.Job) error {
 	q.mu.Lock()
 	defer q.mu.Unlock()

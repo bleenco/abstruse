@@ -35,6 +35,7 @@ message JobStatus {
     Running = 1;
     Failing = 2;
     Passing = 3;
+    Errored = 4;
   }
   uint64 id = 1;
   JobStatusCode code = 2;

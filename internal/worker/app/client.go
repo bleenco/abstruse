@@ -8,7 +8,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-func (app *App) connect() error {
+func (app *App) connect(ready chan<- bool) error {
 	c := func() error {
 		var err error
 		if app.client, err = app.getClient(); err != nil {
@@ -22,6 +22,7 @@ func (app *App) connect() error {
 		if err := rs.Register(); err != nil {
 			return err
 		}
+		ready <- true
 		return nil
 	}
 	err := backoff.Retry(c, backoff.NewConstantBackOff(5*time.Second))
