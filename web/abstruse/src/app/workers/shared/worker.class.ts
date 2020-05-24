@@ -5,6 +5,10 @@ export class Worker {
   currentMem: number;
   cpu: { date?: Date, value: number }[][] = [[]];
   memory: { date?: Date, value: number }[][] = [[]];
+  jobsMax: number;
+  jobsCurrent: number;
+  jobsFree: number;
+  jobsPercent: number;
 
   constructor(
     public id: string,
@@ -22,7 +26,14 @@ export class Worker {
     public virtualizationSystem: string,
     public virtualizationRole: string,
     public hostID: string,
-    public usage: { cpu: number, mem: number, timestamp: Date }[]
+    public usage: {
+      cpu: number,
+      mem: number,
+      jobsMax: number,
+      jobsCurrent: number,
+      jobsFree: number,
+      timestamp: Date
+    }[]
   ) {
     this.initUsage();
   }
@@ -35,20 +46,32 @@ export class Worker {
     try {
       this.cpu = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), this.usage.length - i), value: u.cpu }))];
       this.memory = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), this.usage.length - i), value: u.mem }))];
-      this.currentCPU = this.cpu[0][this.cpu[0].length - 1].value;
-      this.currentMem = this.memory[0][this.memory[0].length - 1].value;
+      this.currentCPU = this.usage[this.usage.length - 1].cpu;
+      this.currentMem = this.usage[this.usage.length - 1].mem;
+      this.jobsMax = this.usage[this.usage.length - 1].jobsMax;
+      this.jobsCurrent = this.usage[this.usage.length - 1].jobsCurrent;
+      this.jobsFree = this.usage[this.usage.length - 1].jobsFree;
+      this.jobsPercent = Math.round(this.jobsCurrent / this.jobsMax * 100);
     } catch {
       this.currentCPU = 0;
       this.currentMem = 0;
+      this.jobsMax = 0;
+      this.jobsCurrent = 0;
+      this.jobsFree = 0;
+      this.jobsPercent = 0;
     }
   }
 
-  updateUsage(data: { cpu: number, mem: number }): void {
+  updateUsage(data: { cpu: number, mem: number, jobsMax: number, jobsCurrent: number, jobsFree: number }): void {
     this.cpu[0].push({ value: data.cpu, date: new Date() });
     if (this.cpu[0].length > 60) { this.cpu[0].shift(); }
     this.memory[0].push({ value: data.mem, date: new Date() });
     if (this.memory[0].length > 60) { this.memory[0].shift(); }
     this.currentCPU = data.cpu;
     this.currentMem = data.mem;
+    this.jobsMax = data.jobsMax;
+    this.jobsCurrent = data.jobsCurrent;
+    this.jobsFree = data.jobsFree;
+    this.jobsPercent = Math.round((this.jobsMax - this.jobsFree) / this.jobsMax * 100);
   }
 }

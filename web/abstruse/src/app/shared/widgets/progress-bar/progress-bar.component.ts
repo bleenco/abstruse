@@ -8,6 +8,7 @@ import { ProgressBarSettings, defaultProgressBarSettings } from './progress-bar.
 })
 export class ProgressBarComponent implements OnInit, OnChanges {
   @Input() percent = 0;
+  @Input() placeholder = '';
   @Input() options: ProgressBarSettings;
 
   container: HTMLElement;
@@ -26,6 +27,10 @@ export class ProgressBarComponent implements OnInit, OnChanges {
 
   get percentage(): string {
     return `${this.percent}%`;
+  }
+
+  get text(): string {
+    return this.placeholder;
   }
 
   constructor(
