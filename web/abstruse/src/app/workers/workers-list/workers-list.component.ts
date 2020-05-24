@@ -14,7 +14,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
 export class WorkersListComponent implements OnInit, OnDestroy {
   workers: Worker[] = [];
   fetchingWorkers: boolean;
-  sub: Subscription;
+  sub: Subscription = new Subscription();
 
   constructor(
     public workersService: WorkersService,
@@ -22,34 +22,38 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.fetchWorkers();
-    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubAddEvent } });
-    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubDeleteEvent } });
-    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubUsageEvent } });
-    this.sub = this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
-      switch (ev.type) {
-        case workerSubDeleteEvent: {
-          this.workers = this.workers.filter(w => w.id !== ev.data.host.id);
-          break;
+    this.sub.add(
+      this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
+        switch (ev.type) {
+          case workerSubDeleteEvent: {
+            this.workers = this.workers.filter(w => w.id !== ev.data.host.id);
+            break;
+          }
+          case workerSubAddEvent: {
+            this.workers.push(this.newWorker(ev.data));
+            break;
+          }
+          case workerSubUsageEvent: {
+            const worker = this.workers.find(w => w.id === ev.data.id);
+            worker.updateUsage(ev.data);
+            break;
+          }
         }
-        case workerSubAddEvent: {
-          this.workers.push(this.newWorker(ev.data));
-          break;
+      }));
+    this.sub.add(
+      this.dataService.connected.subscribe((status: boolean) => {
+        if (status) {
+          this.fetchWorkers();
+          this.subscribe();
+        } else {
+          this.workers = [];
         }
-        case workerSubUsageEvent: {
-          const worker = this.workers.find(w => w.id === ev.data.id);
-          worker.updateUsage(ev.data);
-          break;
-        }
-      }
-    });
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubAddEvent } });
-    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubDeleteEvent } });
-    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubUsageEvent } });
-    if (this.sub) { this.sub.unsubscribe(); }
+    this.unsubscribe();
   }
 
   private fetchWorkers(): void {
@@ -68,6 +72,19 @@ export class WorkersListComponent implements OnInit, OnDestroy {
       }, () => {
         this.fetchingWorkers = false;
       });
+  }
+
+  private subscribe(): void {
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubAddEvent } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubDeleteEvent } });
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: workerSubUsageEvent } });
+  }
+
+  private unsubscribe(): void {
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubAddEvent } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubDeleteEvent } });
+    this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubUsageEvent } });
+    if (this.sub) { this.sub.unsubscribe(); }
   }
 
   private newWorker(w: any): Worker {

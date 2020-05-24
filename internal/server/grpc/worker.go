@@ -32,10 +32,9 @@ type Worker struct {
 
 // Concurrency info about remote worker concurrency status.
 type concurrency struct {
-	mu      sync.Mutex
+	mu      sync.RWMutex
 	Max     int `json:"max"`
-	Current int `json:"current"`
-	Free    int `json:"free"`
+	Running int `json:"running"`
 }
 
 func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
@@ -73,7 +72,7 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 		cli:     cli,
 		ws:      ws,
 		logger:  logger,
-		c:       &concurrency{Max: 2, Current: 0, Free: 0},
+		c:       &concurrency{Max: 0, Running: 0},
 		readych: make(chan bool, 1),
 	}, nil
 }
@@ -89,7 +88,6 @@ func (w *Worker) run() error {
 	}
 	w.host = hostInfo(info)
 	w.c.Max = int(w.host.MaxConcurrency)
-	w.c.Free = int(w.host.MaxConcurrency)
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
 

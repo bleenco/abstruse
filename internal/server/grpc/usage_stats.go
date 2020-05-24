@@ -11,9 +11,8 @@ type Usage struct {
 	Addr        string    `json:"addr"`
 	CPU         int32     `json:"cpu"`
 	Mem         int32     `json:"mem"`
-	JobsMax     int32     `json:"jobsMax"`
-	JobsCurrent int32     `json:"jobsCurrent"`
-	JobsFree    int32     `json:"jobsFree"`
+	JobsMax     int32     `json:"jobs_max"`
+	JobsRunning int32     `json:"jobs_running"`
 	Timestamp   time.Time `json:"timestamp"`
 }
 
@@ -36,20 +35,18 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			CPU:         stats.GetCpu(),
 			Mem:         stats.GetMem(),
 			JobsMax:     int32(w.c.Max),
-			JobsCurrent: int32(w.c.Current),
-			JobsFree:    int32(w.c.Free),
+			JobsRunning: int32(w.c.Running),
 			Timestamp:   time.Now(),
 		}
 
 		w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
-			"id":          w.ID,
-			"addr":        w.addr,
-			"cpu":         usage.CPU,
-			"mem":         usage.Mem,
-			"jobsMax":     w.c.Max,
-			"jobsCurrent": w.c.Current,
-			"jobsFree":    w.c.Free,
-			"timestamp":   usage.Timestamp,
+			"id":           w.ID,
+			"addr":         w.addr,
+			"cpu":          usage.CPU,
+			"mem":          usage.Mem,
+			"jobs_max":     usage.JobsMax,
+			"jobs_running": usage.JobsRunning,
+			"timestamp":    usage.Timestamp,
 		})
 
 		w.usage = append(w.usage, usage)

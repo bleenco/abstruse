@@ -1,12 +1,12 @@
 <div class="list-item">
   <div class="columns">
-    <div class="column is-2">
+    <div class="column is-1">
       <div class="list-item-content">
         <span class="label">ID</span>
         <span class="text has-border">{{ worker?.id }}</span>
       </div>
     </div>
-    <div class="column is-1">
+    <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Server</span>
         <span class="text">{{ worker?.addr }}</span>
@@ -34,8 +34,7 @@
         <span class="label">Jobs</span>
         <span class="text">
           <app-progress-bar [percent]="worker?.jobsPercent"
-            [placeholder]="(worker?.jobsMax - worker?.jobsFree) + ' / ' + worker?.jobsMax"
-            [options]="{ color: 'green' }">
+            [placeholder]="worker?.jobsRunning + ' / ' + worker?.jobsMax" [options]="{ color: 'green' }">
           </app-progress-bar>
         </span>
       </div>
