@@ -54,12 +54,6 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
-	// go func() {
-	// 	if err := app.watchConcurrency(); err != nil {
-	// 		app.errch <- err
-	// 	}
-	// }()
-
 	go func() {
 		if err := app.Scheduler.Start(app.client); err != nil {
 			app.errch <- err
@@ -78,15 +72,15 @@ var i = 1
 
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	// for i := 1; i <= 10; i++ {
-	// 	go func(i int) {
-	i++
-	j := &job.Job{ID: uint64(i), Priority: 1000}
-	if err := app.Scheduler.Schedule(j); err != nil {
-		app.logger.Errorf("%v", err)
+	for i := 1; i <= 100; i++ {
+		go func(i int) {
+			// i++
+			j := &job.Job{ID: uint64(i), Priority: 1000}
+			if err := app.Scheduler.Schedule(j); err != nil {
+				app.logger.Errorf("%v", err)
+			}
+		}(i)
 	}
-	// 	}(i)
-	// }
 	return true
 }
 
