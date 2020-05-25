@@ -18,7 +18,7 @@ func (app *App) watchWorkers() error {
 	} else {
 		for i := range resp.Kvs {
 			id, addr := path.Base(string(resp.Kvs[i].Key)), string(resp.Kvs[i].Value)
-			worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
+			worker, err := newWorker(addr, id, app.opts, app.ws, app.logger, app)
 			if err != nil {
 				app.logger.Errorf("%v", err)
 			} else {
@@ -35,7 +35,7 @@ func (app *App) watchWorkers() error {
 			case mvccpb.PUT:
 				id, addr := path.Base(string(ev.Kv.Key)), string(ev.Kv.Value)
 				if _, ok := app.workers[id]; !ok {
-					worker, err := newWorker(addr, id, app.opts, app.ws, app.logger)
+					worker, err := newWorker(addr, id, app.opts, app.ws, app.logger, app)
 					if err != nil {
 						return err
 					}

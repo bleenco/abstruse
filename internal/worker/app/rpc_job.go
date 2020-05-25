@@ -4,19 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/job"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	pb "github.com/jkuri/abstruse/proto"
 )
 
 // JobProcess executes job task and returns status.
 func (app *App) JobProcess(ctx context.Context, in *pb.JobTask) (*pb.JobStatus, error) {
-	job := &job.Job{ID: in.GetId(), Priority: 1000}
-	if err := app.queue.add(job); err != nil {
-		return &pb.JobStatus{Id: in.GetId(), Code: pb.JobStatus_Errored}, err
-	}
-	time.Sleep(time.Second * 3)
-	if err := app.queue.delete(job); err != nil {
-		return &pb.JobStatus{Id: in.GetId(), Code: pb.JobStatus_Errored}, err
-	}
+	job := &shared.Job{ID: uint(in.GetId()), Priority: 1000, Task: in}
+	app.queue.add(job)
+	time.Sleep(3 * time.Second)
 	return &pb.JobStatus{Id: in.GetId(), Code: pb.JobStatus_Running}, nil
 }

@@ -5,7 +5,6 @@ import (
 	"path"
 	"sync"
 
-	"github.com/jkuri/abstruse/internal/pkg/job"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
@@ -38,7 +37,7 @@ func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) 
 		WorkerReady: make(chan *Worker),
 		errch:       make(chan error),
 	}
-	app.Scheduler = NewScheduler(context.Background(), logger, app)
+	app.Scheduler = NewScheduler(app, logger)
 
 	return app, nil
 }
@@ -72,13 +71,11 @@ var i = 1
 
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	for i := 1; i <= 100; i++ {
+	for i := 1; i <= 20; i++ {
 		go func(i int) {
 			// i++
-			j := &job.Job{ID: uint64(i), Priority: 1000}
-			if err := app.Scheduler.Schedule(j); err != nil {
-				app.logger.Errorf("%v", err)
-			}
+			j := &shared.Job{ID: uint(i), Priority: 1000}
+			app.Scheduler.ScheduleJob(j)
 		}(i)
 	}
 	return true
@@ -91,4 +88,17 @@ func (app *App) initWorker(worker *Worker) {
 		worker.EmitDeleted()
 		delete(app.workers, worker.ID)
 	}
+}
+
+func (app *App) getWorkersCapacityData() (int32, int32) {
+	app.mu.Lock()
+	defer app.mu.Unlock()
+	var max, running int32
+	for _, worker := range app.workers {
+		if worker.ready {
+			max += worker.Max
+			running += worker.Running
+		}
+	}
+	return max, running
 }

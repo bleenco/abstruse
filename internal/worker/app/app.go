@@ -18,7 +18,7 @@ type App struct {
 	logger *zap.SugaredLogger
 	server *grpc.Server
 	client *clientv3.Client
-	queue  queue
+	queue  *Queue
 	ready  chan bool
 	errch  chan error
 }
@@ -38,6 +38,7 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 		ready:  make(chan bool),
 		errch:  make(chan error),
 	}
+	app.queue = NewQueue(opts.Scheduler.MaxConcurrency, app, logger)
 	return app, nil
 }
 
@@ -57,15 +58,7 @@ func (app *App) Start() error {
 		}
 	}()
 
-	go func() {
-		if app.client == nil {
-			<-app.ready
-		}
-		app.queue = newQueue(app.client, app.id, app.opts.Scheduler.MaxConcurrency)
-		if err := app.queue.init(); err != nil {
-			app.errch <- err
-		}
-	}()
+	go app.queue.Start()
 
 	return <-app.errch
 }

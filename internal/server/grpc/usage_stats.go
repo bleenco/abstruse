@@ -34,8 +34,8 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			Addr:        w.addr,
 			CPU:         stats.GetCpu(),
 			Mem:         stats.GetMem(),
-			JobsMax:     int32(w.c.Max),
-			JobsRunning: int32(w.c.Running),
+			JobsMax:     int32(w.Max),
+			JobsRunning: int32(w.Running),
 			Timestamp:   time.Now(),
 		}
 

@@ -26,18 +26,14 @@ type Worker struct {
 	ws      *websocket.App
 	usage   []Usage
 	logger  *zap.SugaredLogger
-	c       *concurrency
+	Max     int32
+	Running int32
+	ready   bool
 	readych chan bool
+	app     *App
 }
 
-// Concurrency info about remote worker concurrency status.
-type concurrency struct {
-	mu      sync.RWMutex
-	Max     int `json:"max"`
-	Running int `json:"running"`
-}
-
-func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger) (*Worker, error) {
+func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*Worker, error) {
 	logger = logger.With(zap.String("worker", addr))
 	if opts.Cert == "" || opts.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
@@ -72,7 +68,9 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 		cli:     cli,
 		ws:      ws,
 		logger:  logger,
-		c:       &concurrency{Max: 0, Running: 0},
+		app:     app,
+		Max:     0,
+		Running: 0,
 		readych: make(chan bool, 1),
 	}, nil
 }
@@ -87,7 +85,8 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.c.Max = int(w.host.MaxConcurrency)
+	w.Max = int32(w.host.MaxConcurrency)
+	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
 
@@ -105,7 +104,14 @@ func (w *Worker) run() error {
 		}
 	}()
 
+	go func() {
+		if err := w.WorkerCapacityStatus(context.Background()); err != nil {
+			ch <- err
+		}
+	}()
+
 	err = <-ch
+	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	return err
 }

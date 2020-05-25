@@ -15,6 +15,9 @@ service Api {
       returns (stream UsageStatsReply) {}
 
   rpc JobProcess(JobTask) returns (JobStatus) {}
+
+  rpc WorkerCapacityStatus(google.protobuf.Empty)
+      returns (stream WorkerCapacity) {}
 }
 
 message JobTask {
@@ -24,9 +27,12 @@ message JobTask {
     Restart = 2;
   }
   uint64 id = 1;
-  string url = 2;
-  string credentials = 3;
-  JobTaskCode code = 4;
+  JobTaskCode code = 2;
+  repeated string commands = 3;
+  string image = 4;
+  repeated string env = 5;
+  string url = 6;
+  string credentials = 7;
 }
 
 message JobStatus {
@@ -64,4 +70,9 @@ message UsageStatsReply {
   int32 cpu = 1;
   int32 mem = 2;
   google.protobuf.Timestamp timestamp = 3;
+}
+
+message WorkerCapacity {
+  int32 Max = 1;
+  int32 Running = 2;
 }

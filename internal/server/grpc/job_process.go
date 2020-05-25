@@ -3,14 +3,14 @@ package grpc
 import (
 	"context"
 
-	"github.com/jkuri/abstruse/internal/pkg/job"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	pb "github.com/jkuri/abstruse/proto"
 )
 
 // StartJob sends job task to start job.
-func (w *Worker) StartJob(ctx context.Context, j *job.Job) (*pb.JobStatus, error) {
+func (w *Worker) StartJob(ctx context.Context, j *shared.Job) (*pb.JobStatus, error) {
 	job := &pb.JobTask{
-		Id:          j.ID,
+		Id:          uint64(j.ID),
 		Url:         "https://github.com/jkuri/d3-bundle",
 		Credentials: "",
 		Code:        pb.JobTask_Start,

@@ -10,17 +10,22 @@ import (
 
 func (app *App) connect() error {
 	c := func() error {
+		app.logger.Debugf("connecting to abstruse etcd server %s...", app.opts.Etcd.Addr)
 		var err error
 		if app.client, err = app.getClient(); err != nil {
 			app.logger.Errorf(
-				"could not connect to abstruse etcd server %s (%s), retrying...",
+				"could not connect to abstruse server %s (%s), retrying...",
 				app.opts.Etcd.Addr, err.Error(),
 			)
 			return err
 		}
-		app.ready <- true
+		select {
+		case app.ready <- true:
+		default:
+		}
 		rs := etcdutil.NewRegisterService(app.client, app.id, app.addr, 5, app.logger.Desugar())
 		if err := rs.Register(); err != nil {
+			app.logger.Errorf("error registering service on abstruse server")
 			return err
 		}
 		return nil

@@ -2,132 +2,118 @@ package app
 
 import (
 	"context"
-	"fmt"
-	"path"
 	"sync"
+	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/job"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
-	jsoniter "github.com/json-iterator/go"
-	"go.etcd.io/etcd/clientv3"
+	pb "github.com/jkuri/abstruse/proto"
+	"go.uber.org/zap"
 )
 
-type queue struct {
-	mu     sync.Mutex
-	key    string
-	client *clientv3.Client
-	ctx    context.Context
-	jobs   map[uint64]*job.Job
-	c      concurrency
+// Queue of concurrently running jobs with ability to limit parallelization.
+type Queue struct {
+	Max     int
+	Running int
+
+	mu         sync.RWMutex
+	current    chan struct{}
+	jobch      chan *shared.Job
+	jobs       map[uint]*shared.Job
+	wg         sync.WaitGroup
+	quit       chan struct{}
+	capacitych chan *pb.WorkerCapacity
+	logger     *zap.SugaredLogger
+	app        *App
 }
 
-type concurrency struct {
-	mu      sync.Mutex
-	key     string
-	client  *clientv3.Client
-	Max     int `json:"max"`
-	Current int `json:"current"`
-	Free    int `json:"free"`
-}
+// NewQueue returns new instance of Queue.
+func NewQueue(concurrency int, app *App, logger *zap.Logger) *Queue {
+	if concurrency <= 0 {
+		concurrency = 1
+	}
 
-func newQueue(client *clientv3.Client, id string, max int) queue {
-	return queue{
-		key:    path.Join(shared.ServicePrefix, "jobs", "running", id),
-		client: client,
-		ctx:    context.TODO(),
-		jobs:   make(map[uint64]*job.Job),
-		c: concurrency{
-			key:     path.Join(shared.ServicePrefix, "concurrency", id),
-			client:  client,
-			Max:     max,
-			Current: 0,
-			Free:    max,
-		},
+	return &Queue{
+		Max:        concurrency,
+		Running:    0,
+		current:    make(chan struct{}, concurrency),
+		jobch:      make(chan *shared.Job),
+		jobs:       make(map[uint]*shared.Job),
+		wg:         sync.WaitGroup{},
+		quit:       make(chan struct{}),
+		capacitych: make(chan *pb.WorkerCapacity),
+		logger:     logger.With(zap.String("type", "queue")).Sugar(),
+		app:        app,
 	}
 }
 
-func (q *queue) init() error {
-	// return q.c.save()
+// Start starts the queue.
+func (q *Queue) Start() {
+	q.logger.Infof("starting worker main job queue")
+	q.emitCapacityData()
+
+loop:
+	for {
+		select {
+		case job := <-q.jobch:
+			go q.process(job)
+		case <-q.quit:
+			break loop
+		}
+	}
+
+	q.wait()
+}
+
+// Stop stops the queue.
+func (q *Queue) Stop() {
+	go func() {
+		close(q.quit)
+	}()
+}
+
+func (q *Queue) process(job *shared.Job) {
+	if job.Task.Code == pb.JobTask_Start {
+		defer q.done()
+		q.add(job)
+		q.logger.Infof("starting job task: %d", job.ID)
+		time.Sleep(3 * time.Second)
+	} else if job.Task.Code == pb.JobTask_Stop {
+
+	} else if job.Task.Code == pb.JobTask_Restart {
+
+	}
+}
+
+func (q *Queue) add(job *shared.Job) error {
+	ctx := context.Background()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case q.current <- struct{}{}:
+		break
+	}
+
+	q.Running++
+	q.wg.Add(1)
+	q.jobs[job.ID] = job
+	q.jobch <- job
+	q.emitCapacityData()
 	return nil
 }
 
-func (q *queue) add(j *job.Job) error {
+func (q *Queue) done() {
+	<-q.current
+	q.wg.Done()
+	q.Running--
+	q.emitCapacityData()
+}
+
+func (q *Queue) wait() {
+	q.wg.Wait()
+}
+
+func (q *Queue) emitCapacityData() {
 	q.mu.Lock()
 	defer q.mu.Unlock()
-	key := path.Join(q.key, j.Key())
-	q.jobs[j.ID] = j
-	_, err := q.client.Put(context.TODO(), key, j.Value())
-	if err != nil {
-		return err
-	}
-	if err := q.c.increment(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (q *queue) delete(j *job.Job) error {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-	key := path.Join(q.key, j.Key())
-	delete(q.jobs, j.ID)
-	_, err := q.client.Delete(context.TODO(), key)
-	if err != nil {
-		return err
-	}
-	if err := q.c.decrement(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (q *queue) find(id uint64) (*job.Job, error) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-	if j, ok := q.jobs[id]; ok {
-		return j, nil
-	}
-	return nil, fmt.Errorf("job %d not found", id)
-}
-
-func (c *concurrency) increment() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if c.Max < c.Current+1 {
-		return fmt.Errorf("tried to exceed max concurrency limit")
-	}
-	c.Current++
-	c.Free--
-	// if err := c.save(); err != nil {
-	// 	c.Current--
-	// 	c.Free++
-	// 	return err
-	// }
-	return nil
-}
-
-func (c *concurrency) decrement() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if c.Current-1 < 0 || c.Free+1 > c.Max {
-		return fmt.Errorf("tried to set current with negative value")
-	}
-	c.Current--
-	c.Free++
-	// if err := c.save(); err != nil {
-	// 	c.Current++
-	// 	c.Free--
-	// 	return err
-	// }
-	return nil
-}
-
-func (c *concurrency) value() string {
-	value, _ := jsoniter.MarshalToString(c)
-	return value
-}
-
-func (c *concurrency) save() error {
-	_, err := c.client.Put(context.TODO(), c.key, c.value())
-	return err
+	q.capacitych <- &pb.WorkerCapacity{Max: int32(q.Max), Running: int32(q.Running)}
 }
