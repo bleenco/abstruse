@@ -54,7 +54,6 @@ func (s *Scheduler) Start(client *clientv3.Client) error {
 	s.logger.Infof("starting main scheduler")
 	s.client = client
 	s.queue = recipe.NewPriorityQueue(client, queueNS)
-
 	go s.runQueue()
 
 loop:
@@ -112,15 +111,14 @@ func (s *Scheduler) SetSize(max, running int32) {
 }
 
 func (s *Scheduler) startJob(job *shared.Job) {
-	s.add()
 	worker := s.findWorker()
 	s.logger.Debugf("sending job %d to worker %s", job.ID, worker.ID)
-	status, err := worker.StartJob(context.Background(), job)
+	_, err := worker.StartJob(context.Background(), job)
 	if err != nil {
 		s.logger.Errorf("error processing job %d: %v", job.ID, err)
-	} else {
-		s.logger.Infof("job %d done with status: %v", status)
 	}
+	job.EndTime = time.Now()
+	s.FinishJob(job)
 }
 
 func (s *Scheduler) runQueue() {
@@ -129,6 +127,7 @@ func (s *Scheduler) runQueue() {
 		if err != nil {
 			s.logger.Errorf("error getting job from queue: %v", err)
 		} else {
+			s.add()
 			s.workch <- job
 		}
 	}
@@ -154,18 +153,14 @@ func (s *Scheduler) dequeue() (*shared.Job, error) {
 	return &j, nil
 }
 
-func (s *Scheduler) add() error {
-	ctx := context.Background()
+func (s *Scheduler) add() {
 	select {
-	case <-ctx.Done():
-		return ctx.Err()
 	case s.current.In() <- struct{}{}:
-		break
+	default:
 	}
 
 	s.wg.Add(1)
 	s.Running++
-	return nil
 }
 
 func (s *Scheduler) done() {

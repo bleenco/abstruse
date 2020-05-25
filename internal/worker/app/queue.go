@@ -1,9 +1,7 @@
 package app
 
 import (
-	"context"
 	"sync"
-	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	pb "github.com/jkuri/abstruse/proto"
@@ -31,7 +29,6 @@ func NewQueue(concurrency int, app *App, logger *zap.Logger) *Queue {
 	if concurrency <= 0 {
 		concurrency = 1
 	}
-
 	return &Queue{
 		Max:        concurrency,
 		Running:    0,
@@ -50,7 +47,6 @@ func NewQueue(concurrency int, app *App, logger *zap.Logger) *Queue {
 func (q *Queue) Start() {
 	q.logger.Infof("starting worker main job queue")
 	q.emitCapacityData()
-
 loop:
 	for {
 		select {
@@ -60,7 +56,6 @@ loop:
 			break loop
 		}
 	}
-
 	q.wait()
 }
 
@@ -73,10 +68,8 @@ func (q *Queue) Stop() {
 
 func (q *Queue) process(job *shared.Job) {
 	if job.Task.Code == pb.JobTask_Start {
-		defer q.done()
-		q.add(job)
+		defer q.done(job)
 		q.logger.Infof("starting job task: %d", job.ID)
-		time.Sleep(3 * time.Second)
 	} else if job.Task.Code == pb.JobTask_Stop {
 
 	} else if job.Task.Code == pb.JobTask_Restart {
@@ -84,13 +77,10 @@ func (q *Queue) process(job *shared.Job) {
 	}
 }
 
-func (q *Queue) add(job *shared.Job) error {
-	ctx := context.Background()
+func (q *Queue) add(job *shared.Job) {
 	select {
-	case <-ctx.Done():
-		return ctx.Err()
 	case q.current <- struct{}{}:
-		break
+	default:
 	}
 
 	q.Running++
@@ -98,13 +88,13 @@ func (q *Queue) add(job *shared.Job) error {
 	q.jobs[job.ID] = job
 	q.jobch <- job
 	q.emitCapacityData()
-	return nil
 }
 
-func (q *Queue) done() {
+func (q *Queue) done(job *shared.Job) {
 	<-q.current
 	q.wg.Done()
 	q.Running--
+	delete(q.jobs, job.ID)
 	q.emitCapacityData()
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"path"
 	"sync"
+	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
@@ -74,7 +75,7 @@ func (app *App) StartJob() bool {
 	for i := 1; i <= 20; i++ {
 		go func(i int) {
 			// i++
-			j := &shared.Job{ID: uint(i), Priority: 1000}
+			j := &shared.Job{ID: uint(i), Priority: 1000, StartTime: time.Now()}
 			app.Scheduler.ScheduleJob(j)
 		}(i)
 	}
