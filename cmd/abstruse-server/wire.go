@@ -8,6 +8,7 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
+	"github.com/jkuri/abstruse/internal/server"
 	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/controller"
 	"github.com/jkuri/abstruse/internal/server/db"
@@ -29,9 +30,9 @@ var providerSet = wire.NewSet(
 	controller.ProviderSet,
 	service.ProviderSet,
 	websocket.ProviderSet,
-	grpc.ProviderSet,
+	server.ProviderSet,
 )
 
-func CreateApp(cfg string) (*app.App, error) {
+func CreateApp(cfg string) (*server.App, error) {
 	panic(wire.Build(providerSet))
 }

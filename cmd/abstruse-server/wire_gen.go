@@ -12,11 +12,11 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/server"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/controller"
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -61,18 +61,18 @@ func CreateApp(cfg string) (*server.App, error) {
 	userController := controller.NewUserController(logger, userService)
 	versionService := service.NewVersionService(logger)
 	versionController := controller.NewVersionController(logger, versionService)
-	grpcOptions, err := grpc.NewOptions(viper)
+	appOptions, err := app.NewOptions(viper)
 	if err != nil {
 		return nil, err
 	}
-	app := websocket.NewApp(logger)
-	grpcApp, err := grpc.NewApp(grpcOptions, app, logger)
+	websocketApp := websocket.NewApp(logger)
+	appApp, err := app.NewApp(appOptions, websocketApp, logger)
 	if err != nil {
 		return nil, err
 	}
-	workerService := service.NewWorkerService(logger, grpcApp)
+	workerService := service.NewWorkerService(logger, appApp)
 	workerController := controller.NewWorkerController(logger, workerService)
-	buildService := service.NewBuildService(logger, grpcApp)
+	buildService := service.NewBuildService(logger, appApp)
 	buildController := controller.NewBuildController(logger, buildService)
 	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
@@ -85,11 +85,11 @@ func CreateApp(cfg string) (*server.App, error) {
 		return nil, err
 	}
 	etcdServer := etcd.NewServer(etcdOptions, logger)
-	websocketServer := websocket.NewServer(websocketOptions, app, logger)
-	serverApp := server.NewApp(options, logger, httpServer, etcdServer, websocketServer, grpcApp)
+	websocketServer := websocket.NewServer(websocketOptions, websocketApp, logger)
+	serverApp := server.NewApp(options, logger, httpServer, etcdServer, websocketServer, appApp)
 	return serverApp, nil
 }
 
 // wire.go:
 
-var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, http.ProviderSet, etcd.ProviderSet, server.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet, grpc.ProviderSet)
+var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, http.ProviderSet, etcd.ProviderSet, app.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet, server.ProviderSet)

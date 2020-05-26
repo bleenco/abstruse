@@ -43,7 +43,7 @@ func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) 
 
 // Start starts gRPC application.
 func (app *App) Start(client *clientv3.Client) error {
-	app.logger.Info("starting gRPC app")
+	app.logger.Info("starting app")
 	app.client = client
 
 	go func() {
@@ -62,11 +62,9 @@ func (app *App) GetWorkers() map[string]*Worker {
 	return app.workers
 }
 
-var i = 1
-
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	for i := 1; i <= 20; i++ {
+	for i := 1; i <= 100; i++ {
 		go func(i int) {
 			// i++
 			job := &pb.JobTask{Id: uint64(i), Priority: 1000}
