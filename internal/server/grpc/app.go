@@ -4,15 +4,13 @@ import (
 	"context"
 	"path"
 	"sync"
-	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
+	pb "github.com/jkuri/abstruse/proto"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 )
-
-var capacityKeyPrefix = path.Join(shared.ServicePrefix, shared.WorkerCapacity)
 
 // App represent main gRPC application and holds data
 // for established worker connections.
@@ -54,11 +52,7 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
-	go func() {
-		if err := app.Scheduler.Start(app.client); err != nil {
-			app.errch <- err
-		}
-	}()
+	go app.Scheduler.Start(app.client)
 
 	return <-app.errch
 }
@@ -75,8 +69,8 @@ func (app *App) StartJob() bool {
 	for i := 1; i <= 20; i++ {
 		go func(i int) {
 			// i++
-			j := &shared.Job{ID: uint(i), Priority: 1000, StartTime: time.Now()}
-			app.Scheduler.ScheduleJob(j)
+			job := &pb.JobTask{Id: uint64(i), Priority: 1000}
+			app.Scheduler.scheduleJobTask(job)
 		}(i)
 	}
 	return true
@@ -91,15 +85,13 @@ func (app *App) initWorker(worker *Worker) {
 	}
 }
 
-func (app *App) getWorkersCapacityData() (int32, int32) {
+func (app *App) getCapacity() (int32, int32) {
+	var max, running int32
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	var max, running int32
-	for _, worker := range app.workers {
-		if worker.ready {
-			max += worker.Max
-			running += worker.Running
-		}
+	for _, w := range app.workers {
+		max += w.Max
+		running += w.Running
 	}
 	return max, running
 }

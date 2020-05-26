@@ -5,19 +5,12 @@ option go_package = ".;api";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-service Api {
-  rpc Heartbeat(stream google.protobuf.Empty)
-      returns (stream google.protobuf.Empty) {}
-
+service API {
   rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
-
   rpc UsageStats(stream google.protobuf.Empty)
       returns (stream UsageStatsReply) {}
-
-  rpc JobProcess(JobTask) returns (JobStatus) {}
-
-  rpc WorkerCapacityStatus(google.protobuf.Empty)
-      returns (stream WorkerCapacity) {}
+  rpc JobProcess(JobTask) returns (stream JobStatus) {}
+  rpc Capacity(stream google.protobuf.Empty) returns (stream CapacityInfo) {}
 }
 
 message JobTask {
@@ -27,24 +20,29 @@ message JobTask {
     Restart = 2;
   }
   uint64 id = 1;
-  JobTaskCode code = 2;
-  repeated string commands = 3;
-  string image = 4;
-  repeated string env = 5;
-  string url = 6;
-  string credentials = 7;
+  uint64 build_id = 2;
+  JobTaskCode code = 3;
+  repeated string commands = 4;
+  string image = 5;
+  repeated string env = 6;
+  string url = 7;
+  string credentials = 8;
+  uint32 priority = 9;
+  google.protobuf.Timestamp start_time = 10;
+  google.protobuf.Timestamp finish_time = 11;
 }
 
 message JobStatus {
   enum JobStatusCode {
-    Stopped = 0;
+    Streaming = 0;
     Running = 1;
     Failing = 2;
     Passing = 3;
-    Errored = 4;
   }
   uint64 id = 1;
-  JobStatusCode code = 2;
+  uint64 build_id = 2;
+  bytes content = 3;
+  JobStatusCode code = 4;
 }
 
 message HostInfoReply {
@@ -72,7 +70,7 @@ message UsageStatsReply {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-message WorkerCapacity {
-  int32 Max = 1;
-  int32 Running = 2;
+message CapacityInfo {
+  uint32 max = 1;
+  uint32 running = 2;
 }

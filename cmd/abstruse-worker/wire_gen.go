@@ -32,10 +32,7 @@ func CreateApp(cfg string) (*app.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	appApp, err := app.NewApp(optionsOptions, logger)
-	if err != nil {
-		return nil, err
-	}
+	appApp := app.NewApp(optionsOptions, logger)
 	return appApp, nil
 }
 

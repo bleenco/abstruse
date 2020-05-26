@@ -19,15 +19,15 @@ import (
 type Worker struct {
 	mu      sync.Mutex
 	ID      string
+	Max     int32
+	Running int32
 	addr    string
 	host    HostInfo
 	conn    *grpc.ClientConn
-	cli     pb.ApiClient
+	cli     pb.APIClient
 	ws      *websocket.App
 	usage   []Usage
 	logger  *zap.SugaredLogger
-	Max     int32
-	Running int32
 	ready   bool
 	readych chan bool
 	app     *App
@@ -59,7 +59,7 @@ func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.Su
 	if err != nil {
 		return nil, err
 	}
-	cli := pb.NewApiClient(conn)
+	cli := pb.NewAPIClient(conn)
 
 	return &Worker{
 		ID:      id,
@@ -93,19 +93,13 @@ func (w *Worker) run() error {
 	ch := make(chan error)
 
 	go func() {
-		if err := w.Heartbeat(context.Background()); err != nil {
-			ch <- err
-		}
-	}()
-
-	go func() {
 		if err := w.UsageStats(context.Background()); err != nil {
 			ch <- err
 		}
 	}()
 
 	go func() {
-		if err := w.WorkerCapacityStatus(context.Background()); err != nil {
+		if err := w.Capacity(context.Background()); err != nil {
 			ch <- err
 		}
 	}()

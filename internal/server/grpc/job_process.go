@@ -2,22 +2,28 @@ package grpc
 
 import (
 	"context"
+	"io"
 
-	"github.com/jkuri/abstruse/internal/pkg/shared"
 	pb "github.com/jkuri/abstruse/proto"
 )
 
-// StartJob sends job task to start job.
-func (w *Worker) StartJob(ctx context.Context, j *shared.Job) (*pb.JobStatus, error) {
-	job := &pb.JobTask{
-		Id:          uint64(j.ID),
-		Url:         "https://github.com/jkuri/d3-bundle",
-		Credentials: "",
-		Code:        pb.JobTask_Start,
-	}
-	status, err := w.cli.JobProcess(ctx, job)
+// JobProcess gRPC
+func (w *Worker) JobProcess(j *pb.JobTask) error {
+	stream, err := w.cli.JobProcess(context.Background(), j)
 	if err != nil {
-		w.logger.Debugf("job %d status: %+v", j.ID, status)
+		return err
 	}
-	return status, err
+	defer stream.CloseSend()
+	for {
+		data, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return nil
+			}
+			return err
+		}
+		if data.GetCode() == pb.JobStatus_Passing {
+			w.logger.Debugf("%+v", data)
+		}
+	}
 }

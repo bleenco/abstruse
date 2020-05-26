@@ -5,9 +5,6 @@ const (
 	ServicePrefix = "abstruse"
 	// WorkerService is etcd worker service prefix.
 	WorkerService = "workers"
-	// WorkerCapacity is an etcd prefix that stores
-	// info about job capacity for separate worker.
-	WorkerCapacity = "capacity"
 	// QueueService etcd queue service prefix.
 	QueueService = "queue"
 	// DefaultQueuePriority global.

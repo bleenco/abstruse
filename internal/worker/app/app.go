@@ -7,47 +7,41 @@ import (
 	"github.com/jkuri/abstruse/internal/worker/options"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 )
 
-// App worker application.
+// App represents main worker application.
 type App struct {
-	id     string // worker id generated based on certificate and listen addrress
-	addr   string // grpc listen address
-	opts   *options.Options
-	logger *zap.SugaredLogger
-	server *grpc.Server
-	client *clientv3.Client
-	queue  *Queue
-	ready  chan bool
-	errch  chan error
+	opts      *options.Options
+	id        string
+	addr      string
+	api       *APIServer
+	scheduler *scheduler
+	client    *clientv3.Client
+	logger    *zap.Logger
+	errch     chan error
 }
 
-// NewApp returns new intsanceof App.
-func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
-	addr := util.GetListenAddress(opts.GRPC.ListenAddr)
-	id, err := id.GenerateID(opts)
-	if err != nil {
-		return nil, err
-	}
+// NewApp returns new instance of an App.
+func NewApp(opts *options.Options, logger *zap.Logger) *App {
+	id, _ := id.GenerateID(opts)
 	app := &App{
-		id:     id,
-		addr:   addr,
 		opts:   opts,
-		logger: logger.Sugar(),
-		ready:  make(chan bool),
+		addr:   util.GetListenAddress(opts.GRPC.ListenAddr),
+		id:     id,
+		logger: logger,
 		errch:  make(chan error),
 	}
-	app.queue = NewQueue(opts.Scheduler.MaxConcurrency, app, logger)
-	return app, nil
+	app.api = NewAPIServer(app)
+	app.scheduler = newScheduler(int32(opts.Scheduler.MaxConcurrency), app, logger)
+	return app
 }
 
 // Start starts worker application.
 func (app *App) Start() error {
-	app.logger.Info("starting worker...")
+	app.logger.Sugar().Infof("starting worker...")
 
 	go func() {
-		if err := app.startServer(); err != nil {
+		if err := app.api.Start(); err != nil {
 			app.errch <- err
 		}
 	}()
@@ -58,7 +52,7 @@ func (app *App) Start() error {
 		}
 	}()
 
-	go app.queue.Start()
+	go app.scheduler.run()
 
 	return <-app.errch
 }

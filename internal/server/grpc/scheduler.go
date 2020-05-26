@@ -1,188 +1,154 @@
 package grpc
 
 import (
-	"context"
+	"fmt"
 	"path"
 	"sync"
-	"time"
+
+	"github.com/golang/protobuf/ptypes"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 
 	"github.com/eapache/channels"
-	"github.com/jkuri/abstruse/internal/pkg/shared"
+	pb "github.com/jkuri/abstruse/proto"
 	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
 	recipe "go.etcd.io/etcd/contrib/recipes"
 	"go.uber.org/zap"
 )
 
-var (
-	queueNS = path.Join(shared.ServicePrefix, "jobs", "queue")
-)
+var queueNS = path.Join(shared.ServicePrefix, shared.QueueService)
 
 // Scheduler is main job/task queue and scheduler.
 type Scheduler struct {
-	mu         sync.RWMutex
-	Max        int32
-	Running    int32
-	current    *channels.ResizableChannel
-	wg         sync.WaitGroup
-	workch     chan *shared.Job
-	schedulech chan *shared.Job
-	quit       chan struct{}
-	queue      *recipe.PriorityQueue
-	jobs       map[uint]*shared.Job
-	logger     *zap.SugaredLogger
-	app        *App
-	client     *clientv3.Client
+	mu          sync.Mutex
+	max         int32
+	running     int32
+	concurrency *channels.ResizableChannel
+	jobch       chan *pb.JobTask
+	queuech     chan *pb.JobTask
+	processes   map[uint64]*pb.JobTask
+	queue       *recipe.PriorityQueue
+	donech      chan bool
+	app         *App
+	logger      *zap.SugaredLogger
 }
 
 // NewScheduler returns new instance of Scheduler.
 func NewScheduler(app *App, logger *zap.Logger) *Scheduler {
 	return &Scheduler{
-		current:    channels.NewResizableChannel(),
-		workch:     make(chan *shared.Job),
-		schedulech: make(chan *shared.Job),
-		wg:         sync.WaitGroup{},
-		jobs:       make(map[uint]*shared.Job),
-		logger:     logger.With(zap.String("type", "scheduler")).Sugar(),
-		app:        app,
-		quit:       make(chan struct{}),
+		concurrency: channels.NewResizableChannel(),
+		jobch:       make(chan *pb.JobTask),
+		queuech:     make(chan *pb.JobTask),
+		processes:   make(map[uint64]*pb.JobTask),
+		donech:      make(chan bool),
+		app:         app,
+		logger:      logger.With(zap.String("type", "scheduler")).Sugar(),
 	}
 }
 
 // Start starts the scheduler.
-func (s *Scheduler) Start(client *clientv3.Client) error {
-	s.logger.Infof("starting main scheduler")
-	s.client = client
+func (s *Scheduler) Start(client *clientv3.Client) {
+	s.logger.Infof("starting main scheduler loop")
 	s.queue = recipe.NewPriorityQueue(client, queueNS)
-	go s.runQueue()
 
-loop:
+	go func() {
+		for {
+			if data, err := s.queue.Dequeue(); err == nil {
+				var job *pb.JobTask
+				if perr := jsoniter.UnmarshalFromString(data, &job); perr == nil {
+					s.jobch <- job
+				}
+			}
+		}
+	}()
+
 	for {
 		select {
-		case job := <-s.schedulech:
-			go s.enqueue(job)
-		case job := <-s.workch:
-			go s.startJob(job)
-		case <-s.quit:
-			break loop
+		case job := <-s.queuech:
+			go func(job *pb.JobTask) {
+				if data, err := jsoniter.MarshalToString(job); err == nil {
+					s.queue.Enqueue(data, uint16(job.Priority))
+				}
+			}(job)
+		case job := <-s.jobch:
+			go func(job *pb.JobTask) {
+				s.add()
+				defer s.done()
+				if jerr := s.startJobTask(job); jerr == nil {
+					s.finishJobTask(job)
+				}
+			}(job)
+		case <-s.donech:
+			return
 		}
 	}
+}
 
-	s.wg.Wait()
+func (s *Scheduler) stop() {
+	go func() { s.donech <- true }()
+}
+
+func (s *Scheduler) setSize(max, running int32) {
+	s.max, s.running = max, running
+	s.concurrency.Resize(channels.BufferCap(max))
+	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
+}
+
+func (s *Scheduler) scheduleJobTask(job *pb.JobTask) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logger.Infof("scheduling job task %d", job.Id)
+	s.processes[job.Id] = job
+	s.queuech <- job
+}
+
+func (s *Scheduler) startJobTask(job *pb.JobTask) error {
+	worker := s.getWorker()
+	if worker != nil {
+		job.StartTime = ptypes.TimestampNow()
+		if err := worker.JobProcess(job); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("worker not found")
+	}
 	return nil
 }
 
-// Stop stops the scheduler.
-func (s *Scheduler) Stop() {
-	go func() {
-		close(s.quit)
-	}()
-}
-
-// ScheduleJob schedules new job task.
-func (s *Scheduler) ScheduleJob(job *shared.Job) {
-	s.logger.Debugf("scheduling job task %d", job.ID)
+func (s *Scheduler) finishJobTask(job *pb.JobTask) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.jobs[job.ID] = job
-	s.schedulech <- job
-}
-
-// FinishJob decreases size of used job tasks in scheduler.
-func (s *Scheduler) FinishJob(job *shared.Job) {
-	defer s.done()
-	timeDiff := time.Time{}.Add(job.EndTime.Sub(job.StartTime)).Format("15:04:05")
-	s.logger.Debugf("job %d done with status %s [time: %s]", job.ID, job.Status, timeDiff)
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	delete(s.jobs, job.ID)
-}
-
-// SetSize sets max concurrency of a sheduler.
-func (s *Scheduler) SetSize(max, running int32) {
-	s.mu.Lock()
-	s.Running = running
-	s.Max = max
-	s.mu.Unlock()
-	if max > 0 {
-		s.current.Resize(channels.BufferCap(int(max)))
-	}
-	s.logger.Debugf("capacity: [%d / %d]", s.Running, s.Max)
-}
-
-func (s *Scheduler) startJob(job *shared.Job) {
-	worker := s.findWorker()
-	s.logger.Debugf("sending job %d to worker %s", job.ID, worker.ID)
-	_, err := worker.StartJob(context.Background(), job)
-	if err != nil {
-		s.logger.Errorf("error processing job %d: %v", job.ID, err)
-	}
-	job.EndTime = time.Now()
-	s.FinishJob(job)
-}
-
-func (s *Scheduler) runQueue() {
-	for {
-		job, err := s.dequeue()
-		if err != nil {
-			s.logger.Errorf("error getting job from queue: %v", err)
-		} else {
-			s.add()
-			s.workch <- job
-		}
-	}
-}
-
-func (s *Scheduler) enqueue(job *shared.Job) {
-	data := job.String()
-	if err := s.queue.Enqueue(data, job.Priority); err != nil {
-		s.logger.Errorf("could not put job %d into the queue", job.ID)
-	}
-}
-
-func (s *Scheduler) dequeue() (*shared.Job, error) {
-	var j shared.Job
-	data, err := s.queue.Dequeue()
-	if err != nil {
-		return &j, err
-	}
-	if err := jsoniter.UnmarshalFromString(data, &j); err != nil {
-		s.logger.Errorf("could not unmarshal data")
-		return &j, err
-	}
-	return &j, nil
+	delete(s.processes, job.Id)
 }
 
 func (s *Scheduler) add() {
 	select {
-	case s.current.In() <- struct{}{}:
-	default:
+	case s.concurrency.In() <- struct{}{}:
+		break
 	}
-
-	s.wg.Add(1)
-	s.Running++
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.running++
 }
 
 func (s *Scheduler) done() {
-	<-s.current.Out()
-	s.wg.Done()
-	s.Running--
+	<-s.concurrency.Out()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.running--
 }
 
-func (s *Scheduler) findWorker() *Worker {
+func (s *Scheduler) getWorker() *Worker {
 	var w *Worker
 	var max int32
-
-	for _, worker := range s.app.GetWorkers() {
+	s.app.mu.Lock()
+	defer s.app.mu.Unlock()
+	for _, worker := range s.app.workers {
 		diff := worker.Max - worker.Running
 		if diff > max {
 			max = diff
 			w = worker
 		}
 	}
-	if w == nil {
-		w = <-s.app.WorkerReady
-	}
-
 	return w
 }
