@@ -4,9 +4,9 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"github.com/spf13/viper"
 )
@@ -15,7 +15,7 @@ import (
 type Options struct {
 	HTTP       *http.Options
 	Websocket  *websocket.Options
-	GRPCClient *grpc.Options
+	GRPCClient *app.Options
 	DB         *db.Options
 	Etcd       *etcd.Options
 	Auth       *auth.Options

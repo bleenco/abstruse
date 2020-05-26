@@ -16,7 +16,7 @@ import (
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/grpc"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )

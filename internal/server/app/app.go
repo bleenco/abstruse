@@ -1,4 +1,4 @@
-package grpc
+package app
 
 import (
 	"context"
@@ -32,7 +32,7 @@ func NewApp(opts *Options, ws *websocket.App, logger *zap.Logger) (*App, error) 
 		opts:        opts,
 		workers:     make(map[string]*Worker),
 		ws:          ws,
-		logger:      logger.With(zap.String("type", "grpc")).Sugar(),
+		logger:      logger.With(zap.String("type", "app")).Sugar(),
 		WorkerReady: make(chan *Worker),
 		errch:       make(chan error),
 	}

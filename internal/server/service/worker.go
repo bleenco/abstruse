@@ -1,38 +1,43 @@
 package service
 
 import (
-	"github.com/jkuri/abstruse/internal/server/grpc"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"go.uber.org/zap"
 )
 
+// WorkerService comment
 type WorkerService interface {
-	GetWorkers() []workerData
+	GetWorkers() []WorkerData
 }
 
+// DefaultWorkerService comment
 type DefaultWorkerService struct {
-	logger  *zap.SugaredLogger
-	grpcApp *grpc.App
+	logger *zap.SugaredLogger
+	app    *app.App
 }
 
-type workerData struct {
-	ID    string        `json:"id"`
-	Addr  string        `json:"addr"`
-	Host  grpc.HostInfo `json:"host"`
-	Usage []grpc.Usage  `json:"usage"`
+// WorkerData struct
+type WorkerData struct {
+	ID    string       `json:"id"`
+	Addr  string       `json:"addr"`
+	Host  app.HostInfo `json:"host"`
+	Usage []app.Usage  `json:"usage"`
 }
 
-func NewWorkerService(logger *zap.Logger, grpcApp *grpc.App) WorkerService {
+// NewWorkerService returns new intsance of worker service.
+func NewWorkerService(logger *zap.Logger, app *app.App) WorkerService {
 	return &DefaultWorkerService{
-		logger:  logger.With(zap.String("type", "WorkerService")).Sugar(),
-		grpcApp: grpcApp,
+		logger: logger.With(zap.String("type", "WorkerService")).Sugar(),
+		app:    app,
 	}
 }
 
-func (s *DefaultWorkerService) GetWorkers() []workerData {
-	var data []workerData
-	workers := s.grpcApp.GetWorkers()
+// GetWorkers comment.
+func (s *DefaultWorkerService) GetWorkers() []WorkerData {
+	var data []WorkerData
+	workers := s.app.GetWorkers()
 	for id, worker := range workers {
-		data = append(data, workerData{id, worker.GetAddr(), worker.GetHost(), worker.GetUsage()})
+		data = append(data, WorkerData{id, worker.GetAddr(), worker.GetHost(), worker.GetUsage()})
 	}
 	return data
 }

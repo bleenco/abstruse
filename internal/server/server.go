@@ -4,8 +4,8 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/http"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ type App struct {
 	httpServer *http.Server
 	wsServer   *websocket.Server
 	etcdServer *etcd.Server
-	grpcApp    *grpc.App
+	app        *app.App
 }
 
 // NewApp returns new instance of App
@@ -27,10 +27,10 @@ func NewApp(
 	httpServer *http.Server,
 	etcdServer *etcd.Server,
 	wsServer *websocket.Server,
-	grpcApp *grpc.App,
+	app *app.App,
 ) *App {
 	log := logger.With(zap.String("type", "app")).Sugar()
-	return &App{opts, log, httpServer, wsServer, etcdServer, grpcApp}
+	return &App{opts, log, httpServer, wsServer, etcdServer, app}
 }
 
 // Start starts master application.
@@ -60,7 +60,7 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		if err := app.grpcApp.Start(app.etcdServer.Client()); err != nil {
+		if err := app.app.Start(app.etcdServer.Client()); err != nil {
 			errch <- err
 		}
 	}()

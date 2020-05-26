@@ -8,12 +8,11 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
-	"github.com/jkuri/abstruse/internal/server"
+	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/controller"
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/grpc"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -23,7 +22,7 @@ var providerSet = wire.NewSet(
 	config.ProviderSet,
 	http.ProviderSet,
 	etcd.ProviderSet,
-	server.ProviderSet,
+	app.ProviderSet,
 	db.ProviderSet,
 	repository.ProviderSet,
 	auth.ProviderSet,
@@ -33,6 +32,6 @@ var providerSet = wire.NewSet(
 	grpc.ProviderSet,
 )
 
-func CreateApp(cfg string) (*server.App, error) {
+func CreateApp(cfg string) (*app.App, error) {
 	panic(wire.Build(providerSet))
 }

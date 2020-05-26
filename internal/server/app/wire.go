@@ -1,4 +1,4 @@
-package grpc
+package app
 
 import "github.com/google/wire"
 
