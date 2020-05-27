@@ -9,9 +9,10 @@ import (
 )
 
 // JobProcess gRPC
-func (w *Worker) JobProcess(j *pb.JobTask) error {
-	stream, err := w.cli.JobProcess(context.Background(), j)
+func (w *Worker) JobProcess(job *pb.JobTask) error {
+	stream, err := w.cli.JobProcess(context.Background(), job)
 	if err != nil {
+		w.logger.Errorf("error: %v", err)
 		return err
 	}
 	defer stream.CloseSend()

@@ -2,16 +2,16 @@ package docker
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/fatih/color"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 )
 
 // RunContainer runs container.
-func RunContainer(name string, commands [][]string, logch chan<- []byte) error {
+func RunContainer(name, image string, commands [][]string, logch chan<- []byte) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -19,10 +19,19 @@ func RunContainer(name string, commands [][]string, logch chan<- []byte) error {
 	}
 	defer close(logch)
 
-	resp, err := createContainer(cli, name, "ubuntu:20.04", []string{"/bin/bash"})
+	resp, err := createContainer(cli, name, image, []string{"/bin/bash"})
 	if err != nil {
 		return err
 	}
+	if !isContainerRunning(cli, resp.ID) {
+		if err := startContainer(cli, resp.ID); err != nil {
+			resp, err = createContainer(cli, name, image, []string{"/bin/sh"})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
 
 	exitCode := 0
 	containerID := resp.ID
@@ -60,18 +69,9 @@ func RunContainer(name string, commands [][]string, logch chan<- []byte) error {
 		}
 	}
 
-	var exitMessage string
-	switch exitCode {
-	case 0:
-		green := color.New(color.FgGreen).SprintfFunc()
-		exitMessage = green("\n\nExit code: %d\n", exitCode)
-	default:
-		red := color.New(color.FgGreen).SprintfFunc()
-		exitMessage = red("\n\nExit code: %d\n", exitCode)
-	}
-	logch <- []byte(exitMessage)
+	logch <- []byte(genExitMessage(exitCode))
 
-	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
+	return nil
 }
 
 // Exec executes specified command inside Docker container.
@@ -119,6 +119,12 @@ func startContainer(cli *client.Client, id string) error {
 
 // CreateContainer creates new Docker container.
 func createContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
+	if id, exists := containerExists(cli, name); exists {
+		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
+			return container.ContainerCreateCreatedBody{}, err
+		}
+	}
+
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image: image,
 		Cmd:   cmd,
@@ -134,6 +140,20 @@ func isContainerRunning(cli *client.Client, id string) bool {
 	}
 
 	return util.Include(containers, id)
+}
+
+// containerExists finds container by name and if exists returns id.
+func containerExists(cli *client.Client, name string) (string, bool) {
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
+	if err != nil {
+		return "", false
+	}
+	for _, container := range containers {
+		if util.Include(container.Names, fmt.Sprintf("/%s", name)) {
+			return container.ID, true
+		}
+	}
+	return "", false
 }
 
 // ListRunningContainers returns list of running containers.

@@ -67,7 +67,12 @@ func (app *App) StartJob() bool {
 	for i := 1; i <= 5; i++ {
 		go func(i int) {
 			// i++
-			job := &pb.JobTask{Id: uint64(i), Priority: 1000}
+			job := &pb.JobTask{
+				Id:       uint64(i),
+				Priority: 1000,
+				Image:    "ubuntu:20.04",
+				Commands: []string{"ps aux", "ls -alh", "uptime", "echo hello"},
+			}
 			app.Scheduler.scheduleJobTask(job)
 		}(i)
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/jkuri/abstruse/internal/worker/docker"
@@ -151,7 +152,11 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 	go func() {
 		logch := make(chan []byte)
 		name := fmt.Sprintf("abstruse-job-%d", in.GetId())
-		commands := [][]string{{"ps", "aux"}, {"ls", "-lh"}, {"uptime"}}
+		image := in.GetImage()
+		var commands [][]string
+		for _, c := range in.GetCommands() {
+			commands = append(commands, strings.Split(c, " "))
+		}
 
 		go func() {
 			for log := range logch {
@@ -170,7 +175,8 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 			}
 		}()
 
-		if err := docker.RunContainer(name, commands, logch); err != nil {
+		if err := docker.RunContainer(name, image, commands, logch); err != nil {
+			s.logger.Errorf("%v", err)
 			errch <- err
 		} else {
 			jobStatus := &pb.JobStatus{
