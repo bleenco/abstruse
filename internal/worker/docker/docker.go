@@ -1,114 +1,81 @@
 package docker
 
 import (
-	"bufio"
 	"context"
-	"fmt"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
+	"github.com/fatih/color"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 )
 
 // RunContainer runs container.
-func RunContainer(name string) error {
+func RunContainer(name string, commands [][]string, logch chan<- []byte) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
+	defer close(logch)
 
-	resp, err := cli.ContainerCreate(ctx, &container.Config{
-		Image: "ubuntu:20.04",
-		Cmd:   []string{"echo", "hello world"},
-		// Cmd: []string{"git", "clone", "https://github.com/jkuri/d3-bundle", "--depth", "1"},
-		// Cmd: []string{"sh"},
-		Tty: true,
-	}, nil, nil, name)
+	resp, err := createContainer(cli, name, "ubuntu:20.04", []string{"/bin/bash"})
 	if err != nil {
 		return err
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		return err
-	}
+	exitCode := 0
+	containerID := resp.ID
 
-	go func() {
-		reader, err := cli.ContainerLogs(ctx, resp.ID, types.ContainerLogsOptions{
-			ShowStdout: true,
-			ShowStderr: true,
-			Follow:     true,
-			Timestamps: false,
-		})
+	for _, command := range commands {
+		if !isContainerRunning(cli, containerID) {
+			if err := startContainer(cli, containerID); err != nil {
+				return err
+			}
+		}
+
+		conn, execID, err := exec(cli, containerID, command)
 		if err != nil {
-			return
+			return err
 		}
-		defer reader.Close()
 
-		scanner := bufio.NewScanner(reader)
-		for scanner.Scan() {
-			fmt.Println(scanner.Text())
+		for {
+			buf := make([]byte, 4096)
+			n, err := conn.Reader.Read(buf)
+			if err != nil {
+				conn.Close()
+				break
+			}
+			logch <- buf[:n]
 		}
-	}()
 
-	code, err := cli.ContainerWait(ctx, resp.ID)
-	if err != nil {
-		return err
+		inspect, err := cli.ContainerExecInspect(ctx, execID)
+		if err != nil {
+			return err
+		}
+		exitCode = inspect.ExitCode
+
+		if exitCode != 0 {
+			break
+		}
 	}
 
-	fmt.Println(code)
+	var exitMessage string
+	switch exitCode {
+	case 0:
+		green := color.New(color.FgGreen).SprintfFunc()
+		exitMessage = green("\n\nExit code: %d\n", exitCode)
+	default:
+		red := color.New(color.FgGreen).SprintfFunc()
+		exitMessage = red("\n\nExit code: %d\n", exitCode)
+	}
+	logch <- []byte(exitMessage)
 
 	return cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
 }
 
-// func TestContainer(name string) error {
-// 	cli, err := GetClient()
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	commands := [][]string{
-// 		[]string{"git", "clone", "https://github.com/jkuri/d3-bundle", "--depth", "1"},
-// 		[]string{"ls", "-alh"},
-// 	}
-
-// 	resp, err := CreateContainer(cli, name, "test-worker", []string{"/bin/sh"})
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	containerID := resp.ID
-
-// 	for _, command := range commands {
-// 		if !IsContainerRunning(cli, containerID) {
-// 			if err := StartContainer(cli, containerID); err != nil {
-// 				return err
-// 			}
-// 		}
-
-// 		conn, execID, err := Exec(cli, containerID, command)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		if _, err := grpc.Client.StreamContainerOutput(context.Background(), conn, containerID); err != nil {
-// 			return err
-// 		}
-
-// 		inspect, err := cli.ContainerExecInspect(context.Background(), execID)
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		fmt.Printf("Exit code: %d\n", inspect.ExitCode)
-// 	}
-
-// 	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
-// }
-
 // Exec executes specified command inside Docker container.
-func Exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, string, error) {
+func exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, string, error) {
 	var conn types.HijackedResponse
 
 	ctx := context.Background()
@@ -136,22 +103,22 @@ func Exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, 
 }
 
 // RemoveContainer removes Docker container.
-func RemoveContainer(cli *client.Client, id string, force bool) error {
+func removeContainer(cli *client.Client, id string, force bool) error {
 	return cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: force})
 }
 
 // WaitContainer waits container to finish running and return exit status code.
-func WaitContainer(cli *client.Client, id string) (int64, error) {
+func waitContainer(cli *client.Client, id string) (int64, error) {
 	return cli.ContainerWait(context.Background(), id)
 }
 
 // StartContainer starts Docker container.
-func StartContainer(cli *client.Client, id string) error {
+func startContainer(cli *client.Client, id string) error {
 	return cli.ContainerStart(context.Background(), id, types.ContainerStartOptions{})
 }
 
 // CreateContainer creates new Docker container.
-func CreateContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image: image,
 		Cmd:   cmd,
@@ -160,7 +127,7 @@ func CreateContainer(cli *client.Client, name, image string, cmd []string) (cont
 }
 
 // IsContainerRunning returns true if container is running.
-func IsContainerRunning(cli *client.Client, id string) bool {
+func isContainerRunning(cli *client.Client, id string) bool {
 	containers, err := ListRunningContainers(cli)
 	if err != nil {
 		return false
@@ -179,7 +146,7 @@ func ListRunningContainers(cli *client.Client) ([]string, error) {
 	}
 
 	for _, container := range containers {
-		data, err := InspectContainer(cli, container.ID)
+		data, err := inspectContainer(cli, container.ID)
 		if err != nil {
 			return names, nil
 		}
@@ -193,11 +160,6 @@ func ListRunningContainers(cli *client.Client) ([]string, error) {
 }
 
 // InspectContainer returns information about container.
-func InspectContainer(cli *client.Client, id string) (types.ContainerJSON, error) {
+func inspectContainer(cli *client.Client, id string) (types.ContainerJSON, error) {
 	return cli.ContainerInspect(context.Background(), id)
-}
-
-// GetClient init new Docker client and returns it.
-func GetClient() (*client.Client, error) {
-	return client.NewEnvClient()
 }

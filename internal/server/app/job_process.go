@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	pb "github.com/jkuri/abstruse/proto"
@@ -22,6 +23,10 @@ func (w *Worker) JobProcess(j *pb.JobTask) error {
 			}
 			return err
 		}
+		if data.GetCode() == pb.JobStatus_Streaming {
+			fmt.Printf("%s", string(data.GetContent()))
+		}
+
 		if data.GetCode() == pb.JobStatus_Passing {
 			w.logger.Debugf("%+v", data)
 		}

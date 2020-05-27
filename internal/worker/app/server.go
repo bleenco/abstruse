@@ -148,21 +148,43 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 	defer s.app.scheduler.done()
 
 	// testing.
-	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
-	if err := docker.RunContainer(name); err != nil {
-		errch <- err
-	} else {
-		jobStatus := &pb.JobStatus{
-			Id:      in.GetId(),
-			Content: []byte("job done."),
-			Code:    pb.JobStatus_Passing,
-		}
-		if err := stream.Send(jobStatus); err != nil && err != io.EOF {
+	go func() {
+		logch := make(chan []byte)
+		name := fmt.Sprintf("abstruse-job-%d", in.GetId())
+		commands := [][]string{{"ps", "aux"}, {"ls", "-lh"}, {"uptime"}}
+
+		go func() {
+			for log := range logch {
+				jobStatus := &pb.JobStatus{
+					Id:      in.GetId(),
+					Content: log,
+					Code:    pb.JobStatus_Streaming,
+				}
+				if err := stream.Send(jobStatus); err != nil {
+					if err == io.EOF {
+						errch <- nil
+					} else {
+						errch <- err
+					}
+				}
+			}
+		}()
+
+		if err := docker.RunContainer(name, commands, logch); err != nil {
 			errch <- err
 		} else {
-			errch <- nil
+			jobStatus := &pb.JobStatus{
+				Id:      in.GetId(),
+				Content: []byte("job done."),
+				Code:    pb.JobStatus_Passing,
+			}
+			if err := stream.Send(jobStatus); err != nil && err != io.EOF {
+				errch <- err
+			} else {
+				errch <- nil
+			}
 		}
-	}
+	}()
 
 	// go func() {
 	// 	for i := 0; i < 5; i++ {
