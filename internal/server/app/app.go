@@ -64,13 +64,13 @@ func (app *App) GetWorkers() map[string]*Worker {
 
 // StartJob temp func.
 func (app *App) StartJob() bool {
-	for i := 1; i <= 100; i++ {
-		go func(i int) {
-			// i++
-			job := &pb.JobTask{Id: uint64(i), Priority: 1000}
-			app.Scheduler.scheduleJobTask(job)
-		}(i)
-	}
+	// for i := 1; i <= 100; i++ {
+	i := 1
+	go func(i int) {
+		job := &pb.JobTask{Id: uint64(i), Priority: 1000}
+		app.Scheduler.scheduleJobTask(job)
+	}(i)
+	// }
 	return true
 }
 

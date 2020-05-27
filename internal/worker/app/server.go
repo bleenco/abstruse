@@ -3,9 +3,12 @@ package app
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"io"
 	"net"
 	"time"
+
+	"github.com/jkuri/abstruse/internal/worker/docker"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -144,19 +147,11 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 	s.app.scheduler.add()
 	defer s.app.scheduler.done()
 
-	go func() {
-		for i := 0; i < 5; i++ {
-			jobStatus := &pb.JobStatus{
-				Id:      in.GetId(),
-				Content: []byte("job running."),
-				Code:    pb.JobStatus_Running,
-			}
-			if err := stream.Send(jobStatus); err != nil {
-				errch <- err
-			}
-			time.Sleep(1 * time.Second)
-		}
-
+	// testing.
+	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
+	if err := docker.RunContainer(name); err != nil {
+		errch <- err
+	} else {
 		jobStatus := &pb.JobStatus{
 			Id:      in.GetId(),
 			Content: []byte("job done."),
@@ -167,7 +162,32 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 		} else {
 			errch <- nil
 		}
-	}()
+	}
+
+	// go func() {
+	// 	for i := 0; i < 5; i++ {
+	// 		jobStatus := &pb.JobStatus{
+	// 			Id:      in.GetId(),
+	// 			Content: []byte("job running."),
+	// 			Code:    pb.JobStatus_Running,
+	// 		}
+	// 		if err := stream.Send(jobStatus); err != nil {
+	// 			errch <- err
+	// 		}
+	// 		time.Sleep(1 * time.Second)
+	// 	}
+
+	// 	jobStatus := &pb.JobStatus{
+	// 		Id:      in.GetId(),
+	// 		Content: []byte("job done."),
+	// 		Code:    pb.JobStatus_Passing,
+	// 	}
+	// 	if err := stream.Send(jobStatus); err != nil && err != io.EOF {
+	// 		errch <- err
+	// 	} else {
+	// 		errch <- nil
+	// 	}
+	// }()
 
 	return <-errch
 }
