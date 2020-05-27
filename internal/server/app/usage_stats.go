@@ -39,20 +39,13 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			Timestamp:   time.Now(),
 		}
 
-		w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
-			"id":           w.ID,
-			"addr":         w.addr,
-			"cpu":          usage.CPU,
-			"mem":          usage.Mem,
-			"jobs_max":     usage.JobsMax,
-			"jobs_running": usage.JobsRunning,
-			"timestamp":    usage.Timestamp,
-		})
-
+		w.mu.Lock()
 		w.usage = append(w.usage, usage)
 		if len(w.usage) > 60 {
 			// TODO save to db.
 			w.usage = w.usage[1:]
 		}
+		w.EmitUsage()
+		w.mu.Unlock()
 	}
 }

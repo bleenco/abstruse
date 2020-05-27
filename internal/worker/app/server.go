@@ -148,7 +148,6 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 	s.app.scheduler.add()
 	defer s.app.scheduler.done()
 
-	// testing.
 	go func() {
 		logch := make(chan []byte)
 		name := fmt.Sprintf("abstruse-job-%d", in.GetId())
@@ -180,9 +179,8 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 			errch <- err
 		} else {
 			jobStatus := &pb.JobStatus{
-				Id:      in.GetId(),
-				Content: []byte("job done."),
-				Code:    pb.JobStatus_Passing,
+				Id:   in.GetId(),
+				Code: pb.JobStatus_Passing,
 			}
 			if err := stream.Send(jobStatus); err != nil && err != io.EOF {
 				errch <- err
@@ -191,31 +189,6 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 			}
 		}
 	}()
-
-	// go func() {
-	// 	for i := 0; i < 5; i++ {
-	// 		jobStatus := &pb.JobStatus{
-	// 			Id:      in.GetId(),
-	// 			Content: []byte("job running."),
-	// 			Code:    pb.JobStatus_Running,
-	// 		}
-	// 		if err := stream.Send(jobStatus); err != nil {
-	// 			errch <- err
-	// 		}
-	// 		time.Sleep(1 * time.Second)
-	// 	}
-
-	// 	jobStatus := &pb.JobStatus{
-	// 		Id:      in.GetId(),
-	// 		Content: []byte("job done."),
-	// 		Code:    pb.JobStatus_Passing,
-	// 	}
-	// 	if err := stream.Send(jobStatus); err != nil && err != io.EOF {
-	// 		errch <- err
-	// 	} else {
-	// 		errch <- nil
-	// 	}
-	// }()
 
 	return <-errch
 }

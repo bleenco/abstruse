@@ -140,6 +140,22 @@ func (w *Worker) EmitDeleted() {
 	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
 		"id":   w.ID,
 		"addr": w.GetAddr(),
-		"host": w.GetHost(),
+	})
+}
+
+// EmitUsage broadcast workers usage info.
+func (w *Worker) EmitUsage() {
+	if len(w.usage) < 1 {
+		return
+	}
+	usage := w.usage[len(w.usage)-1]
+	w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
+		"id":           w.ID,
+		"addr":         w.addr,
+		"cpu":          usage.CPU,
+		"mem":          usage.Mem,
+		"jobs_max":     w.Max,
+		"jobs_running": w.Running,
+		"timestamp":    time.Now(),
 	})
 }

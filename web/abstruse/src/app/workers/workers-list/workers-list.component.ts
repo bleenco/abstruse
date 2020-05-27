@@ -24,12 +24,14 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub.add(
       this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
+        console.log(ev);
         switch (ev.type) {
           case workerSubDeleteEvent: {
-            this.workers = this.workers.filter(w => w.id !== ev.data.host.id);
+            this.workers = this.workers.filter(w => w.id !== ev.data.id);
             break;
           }
           case workerSubAddEvent: {
+            this.workers = this.workers.filter(w => w.id !== ev.data.id);
             this.workers.push(this.newWorker(ev.data));
             break;
           }

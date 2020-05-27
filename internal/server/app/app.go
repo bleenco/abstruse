@@ -86,8 +86,6 @@ func (app *App) initWorker(worker *Worker) {
 	if err := worker.run(); err != nil {
 		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
 		app.client.Delete(context.TODO(), key)
-		worker.EmitDeleted()
-		delete(app.workers, worker.ID)
 	}
 }
 

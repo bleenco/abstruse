@@ -111,7 +111,11 @@ func (s *Scheduler) ScheduleJobTask(job *Job) {
 // channel if necessary.
 func (s *Scheduler) SetSize(max, running int32) {
 	s.max, s.running = max, running
-	s.concurrency.Resize(channels.BufferCap(max))
+	if max > 0 {
+		s.concurrency.Resize(channels.BufferCap(max))
+	} else {
+		s.concurrency = channels.NewResizableChannel()
+	}
 	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 }
 
