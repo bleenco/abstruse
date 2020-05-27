@@ -29,15 +29,14 @@ message JobTask {
   string credentials = 8;
   uint32 priority = 9;
   google.protobuf.Timestamp start_time = 10;
-  google.protobuf.Timestamp finish_time = 11;
+  google.protobuf.Timestamp end_time = 11;
 }
 
 message JobStatus {
   enum JobStatusCode {
-    Streaming = 0;
-    Running = 1;
-    Failing = 2;
-    Passing = 3;
+    Running = 0;
+    Failing = 1;
+    Passing = 2;
   }
   uint64 id = 1;
   uint64 build_id = 2;

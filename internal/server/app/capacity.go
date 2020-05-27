@@ -17,6 +17,6 @@ func (w *Worker) Capacity(ctx context.Context) error {
 			return err
 		}
 		w.Max, w.Running = int32(data.GetMax()), int32(data.GetRunning())
-		w.app.Scheduler.setSize(w.app.getCapacity())
+		w.app.Scheduler.SetSize(w.app.getCapacity())
 	}
 }

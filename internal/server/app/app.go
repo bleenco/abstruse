@@ -66,14 +66,17 @@ func (app *App) GetWorkers() map[string]*Worker {
 func (app *App) StartJob() bool {
 	for i := 1; i <= 5; i++ {
 		go func(i int) {
-			// i++
-			job := &pb.JobTask{
-				Id:       uint64(i),
-				Priority: 1000,
-				Image:    "ubuntu:20.04",
-				Commands: []string{"ps aux", "ls -alh", "uptime", "echo hello"},
+			job := &Job{
+				ID:      uint64(i),
+				BuildID: 1,
+				Task: &pb.JobTask{
+					Id:       uint64(i),
+					Priority: 1000,
+					Image:    "ubuntu:20.04",
+					Commands: []string{"ps aux", "ls -alh", "uptime", "echo hello"},
+				},
 			}
-			app.Scheduler.scheduleJobTask(job)
+			app.Scheduler.ScheduleJobTask(job)
 		}(i)
 	}
 	return true

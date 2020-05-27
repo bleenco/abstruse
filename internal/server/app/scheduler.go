@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"path"
 	"sync"
-
-	"github.com/golang/protobuf/ptypes"
-	"github.com/jkuri/abstruse/internal/pkg/shared"
+	"time"
 
 	"github.com/eapache/channels"
+	"github.com/golang/protobuf/ptypes"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	pb "github.com/jkuri/abstruse/proto"
 	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
@@ -24,22 +24,31 @@ type Scheduler struct {
 	max         int32
 	running     int32
 	concurrency *channels.ResizableChannel
-	jobch       chan *pb.JobTask
-	queuech     chan *pb.JobTask
-	processes   map[uint64]*pb.JobTask
+	jobch       chan *Job
+	queuech     chan *Job
+	processes   map[uint64]*Job
 	queue       *recipe.PriorityQueue
 	donech      chan bool
 	app         *App
 	logger      *zap.SugaredLogger
 }
 
+// Job defines job/task.
+type Job struct {
+	ID       uint64      `json:"id"`
+	BuildID  uint64      `json:"build_id"`
+	WorkerID string      `json:"worker_id"`
+	Log      []string    `json:"log"`
+	Task     *pb.JobTask `json:"task"`
+}
+
 // NewScheduler returns new instance of Scheduler.
 func NewScheduler(app *App, logger *zap.Logger) *Scheduler {
 	return &Scheduler{
 		concurrency: channels.NewResizableChannel(),
-		jobch:       make(chan *pb.JobTask),
-		queuech:     make(chan *pb.JobTask),
-		processes:   make(map[uint64]*pb.JobTask),
+		jobch:       make(chan *Job),
+		queuech:     make(chan *Job),
+		processes:   make(map[uint64]*Job),
 		donech:      make(chan bool),
 		app:         app,
 		logger:      logger.With(zap.String("type", "scheduler")).Sugar(),
@@ -54,7 +63,7 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 	go func() {
 		for {
 			if data, err := s.queue.Dequeue(); err == nil {
-				var job *pb.JobTask
+				var job *Job
 				if perr := jsoniter.UnmarshalFromString(data, &job); perr == nil {
 					s.jobch <- job
 				}
@@ -65,13 +74,13 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 	for {
 		select {
 		case job := <-s.queuech:
-			go func(job *pb.JobTask) {
+			go func(job *Job) {
 				if data, err := jsoniter.MarshalToString(job); err == nil {
-					s.queue.Enqueue(data, uint16(job.Priority))
+					s.queue.Enqueue(data, uint16(job.Task.Priority))
 				}
 			}(job)
 		case job := <-s.jobch:
-			go func(job *pb.JobTask) {
+			go func(job *Job) {
 				s.add()
 				defer s.done()
 				if jerr := s.startJobTask(job); jerr == nil {
@@ -84,28 +93,34 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 	}
 }
 
-func (s *Scheduler) stop() {
+// Stop stops the scheduler.
+func (s *Scheduler) Stop() {
 	go func() { s.donech <- true }()
 }
 
-func (s *Scheduler) setSize(max, running int32) {
+// ScheduleJobTask schedules new job task.
+func (s *Scheduler) ScheduleJobTask(job *Job) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.logger.Infof("scheduling job task %d", job.ID)
+	s.processes[job.ID] = job
+	s.queuech <- job
+}
+
+// SetSize sets max and running variables and resizes concurrency
+// channel if necessary.
+func (s *Scheduler) SetSize(max, running int32) {
 	s.max, s.running = max, running
 	s.concurrency.Resize(channels.BufferCap(max))
 	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 }
 
-func (s *Scheduler) scheduleJobTask(job *pb.JobTask) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.logger.Infof("scheduling job task %d", job.Id)
-	s.processes[job.Id] = job
-	s.queuech <- job
-}
-
-func (s *Scheduler) startJobTask(job *pb.JobTask) error {
+func (s *Scheduler) startJobTask(job *Job) error {
 	worker := s.getWorker()
 	if worker != nil {
-		job.StartTime = ptypes.TimestampNow()
+		job.Task.StartTime = ptypes.TimestampNow()
+		job.WorkerID = worker.ID
+		defer func() { job.Task.EndTime = ptypes.TimestampNow() }()
 		if err := worker.JobProcess(job); err != nil {
 			return err
 		}
@@ -115,10 +130,14 @@ func (s *Scheduler) startJobTask(job *pb.JobTask) error {
 	return nil
 }
 
-func (s *Scheduler) finishJobTask(job *pb.JobTask) {
+func (s *Scheduler) finishJobTask(job *Job) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	delete(s.processes, job.Id)
+	start, _ := ptypes.Timestamp(job.Task.StartTime)
+	end, _ := ptypes.Timestamp(job.Task.EndTime)
+	timeDiff := time.Time{}.Add(end.Sub(start)).Format("15:04:05")
+	s.logger.Debugf("done job task %d [time: %s]", job.ID, timeDiff)
+	delete(s.processes, job.ID)
 }
 
 func (s *Scheduler) add() {

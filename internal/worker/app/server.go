@@ -163,7 +163,7 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 				jobStatus := &pb.JobStatus{
 					Id:      in.GetId(),
 					Content: log,
-					Code:    pb.JobStatus_Streaming,
+					Code:    pb.JobStatus_Running,
 				}
 				if err := stream.Send(jobStatus); err != nil {
 					if err == io.EOF {
