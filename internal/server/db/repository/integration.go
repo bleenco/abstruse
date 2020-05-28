@@ -10,7 +10,7 @@ import (
 
 // IntegrationRepository interface
 type IntegrationRepository interface {
-	Find(UserID uint) ([]*model.Integration, error)
+	Find(UserID uint) ([]model.Integration, error)
 	Create(data IntegrationData) (*model.Integration, error)
 }
 
@@ -40,9 +40,9 @@ func NewDBIntegrationRepository(logger *zap.Logger, db *gorm.DB) IntegrationRepo
 }
 
 // Find returns integration based by user_id.
-func (r *DBIntegrationRepository) Find(UserID uint) ([]*model.Integration, error) {
-	var integrations []*model.Integration
-	err := r.db.Where("user_id = ?", UserID).Find(integrations).Error
+func (r *DBIntegrationRepository) Find(UserID uint) ([]model.Integration, error) {
+	var integrations []model.Integration
+	err := r.db.Where("user_id = ?", UserID).Find(&integrations).Error
 	return integrations, err
 }
 

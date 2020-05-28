@@ -18,9 +18,9 @@ func CreateInitControllersFn(
 		r.POST("/api/user/login", uc.Login)
 		r.GET("/api/user/:id", uc.Find)
 		r.GET("/api/version", mc.AuthorizationMiddleware(vc.GetInfo))
-		r.GET("/api/worker", mc.AuthorizationMiddleware(wc.GetWorkers))
+		r.GET("/api/workers", mc.AuthorizationMiddleware(wc.GetWorkers))
 		r.POST("/api/build/start", mc.AuthorizationMiddleware(bc.StartJob))
-		r.POST("/api/provider", mc.AuthorizationMiddleware(ic.New))
+		r.GET("/api/integrations", mc.AuthorizationMiddleware(ic.Find))
 	}
 }
 

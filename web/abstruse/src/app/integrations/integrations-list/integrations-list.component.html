@@ -1,0 +1,30 @@
+<div class="columns is-multiline">
+
+  <div class="column is-12">
+    <div class="main-heading">
+      <div class="main-heading-left">
+        <h1>Integrations</h1>
+        <h2>Provider Integrations</h2>
+      </div>
+      <div class="main-heading-right">
+        <button class="button" type="button" (click)="openIntegrationModal()">Add Integration</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12" *ngIf="!fetching && !integrations.length">
+    <div class="columns">
+      <div class="column is-8 is-offset-2">
+        <div class="notification">
+          <p>
+            <i class="fas fa-info"></i>
+            <span>
+              No personal provider integrations found.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

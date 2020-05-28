@@ -16,7 +16,7 @@ export class WorkersService {
   constructor(public http: HttpClient) { }
 
   fetchWorkers(): Observable<JSONResponse> {
-    const url = getAPIURL() + '/worker';
+    const url = getAPIURL() + '/workers';
     return this.http.get<JSONResponse>(url);
   }
 }
