@@ -8,7 +8,7 @@ import (
 
 // IntegrationService interface
 type IntegrationService interface {
-	Find(ID, UserID uint) (*model.Integration, error)
+	Find(UserID uint) ([]*model.Integration, error)
 	Create(data repository.IntegrationData) (*model.Integration, error)
 }
 
@@ -27,8 +27,8 @@ func NewIntegrationService(logger *zap.Logger, repository repository.Integration
 }
 
 // Find method.
-func (s *DefaultIntegrationService) Find(ID, UserID uint) (*model.Integration, error) {
-	return s.repository.Find(ID, UserID)
+func (s *DefaultIntegrationService) Find(UserID uint) ([]*model.Integration, error) {
+	return s.repository.Find(UserID)
 }
 
 // Create method
