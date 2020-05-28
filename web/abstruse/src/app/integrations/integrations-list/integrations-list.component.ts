@@ -25,7 +25,7 @@ export class IntegrationsListComponent implements OnInit {
   }
 
   openIntegrationModal(index?: number): void {
-    const modalRef = this.modalService.open(IntegrationsModalComponent);
+    const modalRef = this.modalService.open(IntegrationsModalComponent, { size: 'small' });
     if (index) {
       modalRef.componentInstance.integration = this.integrations[index];
     }
@@ -39,7 +39,7 @@ export class IntegrationsListComponent implements OnInit {
       .pipe(filter(resp => resp.data && resp.data.length))
       .subscribe((resp: JSONResponse) => {
         this.integrations = resp.data.map((i: any) => {
-          return new Integration(i.id, i.proider, i.url, i.api_url);
+          return new Integration(i.id, i.provider, i.url, i.api_url, new Date(i.created_at), new Date(i.updated_at));
         });
       }, err => {
         console.error(err);

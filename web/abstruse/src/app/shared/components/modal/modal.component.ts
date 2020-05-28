@@ -29,7 +29,7 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('UIModal', { read: ElementRef, static: false }) elementRef: ElementRef;
 
   @Input() backdrop: boolean | 'white' = true;
-  @Input() backdropOpacity = .8;
+  @Input() backdropOpacity = .7;
   @Input() keyboard = true;
   @Input() size: 'small' | 'large';
 

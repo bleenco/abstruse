@@ -9,6 +9,12 @@ import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 })
 export class IntegrationsModalComponent implements OnInit {
   integration: Integration;
+  providers = [
+    { value: 'github', placeholder: 'GitHub' },
+    { value: 'gitlab', placeholder: 'GitLab' },
+    { value: 'bitbucket', placeholder: 'Bitbucket' },
+    { value: 'gitea', placeholder: 'Gitea' }
+  ];
 
   constructor(
     public activeModal: ActiveModal

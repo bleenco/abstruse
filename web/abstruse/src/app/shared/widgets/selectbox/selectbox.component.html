@@ -1,0 +1,16 @@
+<div class="selectbox-container" (click)="toggle()">
+  <span class="selectbox-value">
+    <i [class]="customIcon" *ngIf="customIcon"></i>
+    <span>{{ placeholder }}</span>
+    <i class="fas fa-chevron-down"></i>
+  </span>
+  <div class="selectbox-options-container" *ngIf="isOpened">
+    <div class="selectbox-options">
+      <div class="selectbox-option" *ngFor="let val of values; let i = index" (click)="value = val.value"
+        [class.is-active]="values[i].value === innerValue">
+        <span>{{ val.placeholder }}</span>
+        <i class="fas fa-check check-icon" *ngIf="values[i].value === innerValue"></i>
+      </div>
+    </div>
+  </div>
+</div>

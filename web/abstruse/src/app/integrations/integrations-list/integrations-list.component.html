@@ -12,6 +12,14 @@
     </div>
   </div>
 
+  <div class="column is-12" *ngIf="integrations.length && !fetching">
+    <div class="list">
+      <div class="list-items">
+        <app-integrations-list-item [integration]="i" *ngFor="let i of integrations"></app-integrations-list-item>
+      </div>
+    </div>
+  </div>
+
   <div class="column is-12" *ngIf="!fetching && !integrations.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">

@@ -6,7 +6,54 @@
 </div>
 <div class="modal-body">
   <div class="columns is-multiline">
-
+    <div class="column is-12">
+      <form>
+        <div class="columns">
+          <div class="column is-12">
+            <div class="field">
+              <label class="label">Provider</label>
+              <app-selectbox [values]="providers"></app-selectbox>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">URL</label>
+              <input type="text" name="url" class="input" required autocomplete="off">
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">API URL</label>
+              <input type="text" name="api_url" class="input" required autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">Username</label>
+              <input type="text" name="username" class="input" required autocomplete="off">
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="field">
+              <label class="label">Password</label>
+              <input type="password" name="password" class="input" required autocomplete="off">
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-12">
+            <div class="field">
+              <label class="label">Access Token</label>
+              <input type="text" name="access_token" class="input" autocomplete="off">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 <div class="modal-footer justify-end">

@@ -15,6 +15,7 @@ import { ResizeService } from './providers/resize.service';
 import { LineChartModule } from './charts/line-chart/line-chart.module';
 import { PieChartModule } from './charts/pie-chart/pie-chart.module';
 import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.module';
+import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 
 @NgModule({
   imports: [
@@ -24,10 +25,11 @@ import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.modu
     ModalModule,
     LineChartModule,
     PieChartModule,
-    RealtimeChartModule
+    RealtimeChartModule,
   ],
   declarations: [
-    ProgressBarComponent
+    ProgressBarComponent,
+    SelectboxComponent
   ],
   exports: [
     CommonModule,
@@ -37,7 +39,8 @@ import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.modu
     ModalModule,
     LineChartModule,
     PieChartModule,
-    RealtimeChartModule
+    RealtimeChartModule,
+    SelectboxComponent
   ]
 })
 export class SharedModule {
