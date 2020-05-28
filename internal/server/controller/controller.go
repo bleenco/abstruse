@@ -12,6 +12,7 @@ func CreateInitControllersFn(
 	wc *WorkerController,
 	bc *BuildController,
 	ic *IntegrationController,
+	rc *RepositoryController,
 	mc *MiddlewareController,
 ) http.InitControllers {
 	return func(r *http.Router) {
@@ -21,6 +22,9 @@ func CreateInitControllersFn(
 		r.GET("/api/workers", mc.AuthorizationMiddleware(wc.GetWorkers))
 		r.POST("/api/build/start", mc.AuthorizationMiddleware(bc.StartJob))
 		r.GET("/api/integrations", mc.AuthorizationMiddleware(ic.Find))
+
+		r.GET("/api/repos", mc.AuthorizationMiddleware(rc.List))
+		r.GET("/api/repos/:id", mc.AuthorizationMiddleware(rc.Find))
 	}
 }
 
@@ -32,5 +36,6 @@ var ProviderSet = wire.NewSet(
 	NewBuildController,
 	NewMiddlewareController,
 	NewIntegrationController,
+	NewRepositoryController,
 	CreateInitControllersFn,
 )

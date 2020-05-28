@@ -45,6 +45,7 @@ func NewDatabase(opts *Options) (*gorm.DB, error) {
 	conn.AutoMigrate(
 		model.User{},
 		model.Integration{},
+		model.Repository{},
 	)
 
 	return conn, err

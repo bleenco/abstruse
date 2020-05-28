@@ -77,8 +77,11 @@ func CreateApp(cfg string) (*server.App, error) {
 	integrationRepository := repository.NewDBIntegrationRepository(logger, gormDB)
 	integrationService := service.NewIntegrationService(logger, integrationRepository)
 	integrationController := controller.NewIntegrationController(logger, integrationService)
+	repoRepository := repository.NewDBRepoRepository(gormDB)
+	repositoryService := service.NewRepositoryService(repoRepository)
+	repositoryController := controller.NewRepositoryController(repositoryService)
 	middlewareController := controller.NewMiddlewareController(logger, userService)
-	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, integrationController, middlewareController)
+	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, integrationController, repositoryController, middlewareController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
 	httpServer, err := http.NewServer(httpOptions, logger, router)
 	if err != nil {
