@@ -11,13 +11,24 @@ import (
 // IntegrationRepository interface
 type IntegrationRepository interface {
 	Find(ID, UserID uint) (*model.Integration, error)
-	Create(Provider, URL, APIURL, Username, Password, AccessToken string, UserID uint) (*model.Integration, error)
+	Create(data IntegrationData) (*model.Integration, error)
 }
 
 // DBIntegrationRepository struct
 type DBIntegrationRepository struct {
 	logger *zap.Logger
 	db     *gorm.DB
+}
+
+// IntegrationData struct
+type IntegrationData struct {
+	Provider    string `json:"provider"`
+	URL         string `json:"url"`
+	APIURL      string `json:"api_url"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	AccessToken string `json:"access_token"`
+	UserID      uint   `json:"user_id"`
 }
 
 // NewDBIntegrationRepository returns new DBIntegrationRepository intsance.
@@ -38,17 +49,15 @@ func (r *DBIntegrationRepository) Find(ID, UserID uint) (*model.Integration, err
 }
 
 // Create creates new integration.
-func (r *DBIntegrationRepository) Create(
-	Provider, URL, APIURL, Username, Password, AccessToken string, UserID uint,
-) (*model.Integration, error) {
+func (r *DBIntegrationRepository) Create(data IntegrationData) (*model.Integration, error) {
 	integration := &model.Integration{
-		Provider:    Provider,
-		URL:         URL,
-		APIURL:      APIURL,
-		Username:    Username,
-		Password:    Password,
-		AccessToken: AccessToken,
-		UserID:      UserID,
+		Provider:    data.Provider,
+		URL:         data.URL,
+		APIURL:      data.APIURL,
+		Username:    data.Username,
+		Password:    data.Password,
+		AccessToken: data.AccessToken,
+		UserID:      data.UserID,
 	}
 	integration.CreatedAt = time.Now()
 	integration.UpdatedAt = time.Now()

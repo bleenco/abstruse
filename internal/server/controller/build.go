@@ -8,15 +8,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// BuildController struct
 type BuildController struct {
 	logger  *zap.SugaredLogger
 	service service.BuildService
 }
 
+// NewBuildController returns new BuildController
 func NewBuildController(logger *zap.Logger, s service.BuildService) *BuildController {
 	return &BuildController{logger.Sugar(), s}
 }
 
+// StartJob temporary function to test builds.
 func (c *BuildController) StartJob(
 	resp http.ResponseWriter,
 	req *http.Request,

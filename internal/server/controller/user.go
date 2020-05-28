@@ -10,15 +10,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// UserController struct
 type UserController struct {
 	logger  *zap.SugaredLogger
 	service service.UserService
 }
 
+// NewUserController returns new instance of UserController.
 func NewUserController(logger *zap.Logger, service service.UserService) *UserController {
 	return &UserController{logger.Sugar(), service}
 }
 
+// Find method
 func (c *UserController) Find(resp http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	id, err := strconv.ParseUint(ps.ByName("id"), 10, 64)
 	if err != nil {
@@ -33,6 +36,7 @@ func (c *UserController) Find(resp http.ResponseWriter, req *http.Request, ps ht
 	JSONResponse(resp, http.StatusOK, user)
 }
 
+// Login method
 func (c *UserController) Login(resp http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	var form loginForm
 	decoder := json.NewDecoder(req.Body)

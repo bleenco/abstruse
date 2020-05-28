@@ -9,7 +9,7 @@ import (
 // IntegrationService interface
 type IntegrationService interface {
 	Find(ID, UserID uint) (*model.Integration, error)
-	Create(Provider, URL, APIURL, Username, Password, AccessToken string, UserID uint) (*model.Integration, error)
+	Create(data repository.IntegrationData) (*model.Integration, error)
 }
 
 // DefaultIntegrationService struct
@@ -32,6 +32,6 @@ func (s *DefaultIntegrationService) Find(ID, UserID uint) (*model.Integration, e
 }
 
 // Create method
-func (s *DefaultIntegrationService) Create(Provider, URL, APIURL, Username, Password, AccessToken string, UserID uint) (*model.Integration, error) {
-	return s.repository.Create(Provider, URL, APIURL, Username, Password, AccessToken, UserID)
+func (s *DefaultIntegrationService) Create(data repository.IntegrationData) (*model.Integration, error) {
+	return s.repository.Create(data)
 }

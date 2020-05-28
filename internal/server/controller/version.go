@@ -8,15 +8,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// VersionController struct
 type VersionController struct {
 	logger  *zap.SugaredLogger
 	service service.VersionService
 }
 
+// NewVersionController returns new instance of VersionController.
 func NewVersionController(logger *zap.Logger, service service.VersionService) *VersionController {
 	return &VersionController{logger.Sugar(), service}
 }
 
+// GetInfo method
 func (c *VersionController) GetInfo(
 	resp http.ResponseWriter,
 	req *http.Request,

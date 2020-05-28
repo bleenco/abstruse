@@ -3,28 +3,24 @@ package controller
 import (
 	"net/http"
 
+	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/service"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/julienschmidt/httprouter"
 	"go.uber.org/zap"
 )
 
 // IntegrationController struct
 type IntegrationController struct {
-	logger  *zap.SugaredLogger
-	service service.IntegrationService
-}
-
-type integrationForm struct {
-	Provider    string `json:"provider"`
-	URL         string `json:"url"`
-	APIURL      string `json:"api_url"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	AccessToken string `json:"access_token"`
+	logger *zap.SugaredLogger
+	s      service.IntegrationService
 }
 
 // NewIntegrationController func
-func NewIntegrationController(logger *zap.Logger, s service.IntegrationService) *IntegrationController {
+func NewIntegrationController(
+	logger *zap.Logger, s service.IntegrationService,
+) *IntegrationController {
 	return &IntegrationController{logger.Sugar(), s}
 }
 
@@ -32,5 +28,23 @@ func NewIntegrationController(logger *zap.Logger, s service.IntegrationService) 
 func (c *IntegrationController) New(
 	resp http.ResponseWriter, req *http.Request, params httprouter.Params,
 ) {
-
+	token := req.Header.Get("Authorization")
+	userID, err := auth.GetUserIDFromJWT(token)
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	var form repository.IntegrationData
+	decoder := jsoniter.NewDecoder(req.Body)
+	if err := decoder.Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	form.UserID = uint(userID)
+	if _, err := c.s.Create(form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, BoolResponse{Data: true})
 }
