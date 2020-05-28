@@ -49,6 +49,7 @@ func (r *DBUserRepository) FindByEmail(email string) (*model.User, error) {
 	return user, nil
 }
 
+// Login func
 func (r *DBUserRepository) Login(email, password string) (string, error) {
 	user, err := r.FindByEmail(email)
 	if err != nil {

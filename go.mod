@@ -28,8 +28,11 @@ require (
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/shirou/gopsutil v2.20.4+incompatible
 	github.com/spf13/viper v1.7.0
+	github.com/uber/jaeger-client-go v2.23.1+incompatible
+	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
 	go.etcd.io/etcd v0.5.0-alpha.5.0.20200425165423-262c93980547
 	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
