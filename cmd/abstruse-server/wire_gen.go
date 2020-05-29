@@ -72,8 +72,9 @@ func CreateApp(cfg string) (*server.App, error) {
 	}
 	workerService := service.NewWorkerService(logger, appApp)
 	workerController := controller.NewWorkerController(logger, workerService)
-	buildService := service.NewBuildService(logger, appApp)
-	buildController := controller.NewBuildController(logger, buildService)
+	buildRepository := repository.NewDBBuildRepository(gormDB)
+	buildService := service.NewBuildService(buildRepository, appApp)
+	buildController := controller.NewBuildController(buildService)
 	repoRepository := repository.NewDBRepoRepository(gormDB)
 	repositoryService := service.NewRepositoryService(repoRepository)
 	repositoryController := controller.NewRepositoryController(repositoryService)
