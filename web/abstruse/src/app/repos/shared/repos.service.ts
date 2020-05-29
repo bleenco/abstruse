@@ -24,4 +24,12 @@ export class ReposService {
         map(data => data.map((d: any) => generateRepoModel(d)))
       );
   }
+
+  find(repoId: number): Observable<Repo> {
+    const url = `${getAPIURL()}/repos/${repoId}`;
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        map(resp => generateRepoModel(resp.data))
+      );
+  }
 }

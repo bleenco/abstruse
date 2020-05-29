@@ -1,4 +1,6 @@
 $list-item-height: 80px
+$list-item-slim-height: 70px
+$list-item-slim-label-height: 22px
 
 .list
   display: block
@@ -92,3 +94,142 @@ $list-item-height: 80px
             display: block
             width: 16px
             height: 16px
+
+
+.list-item-slim
+  width: 100%
+  height: $list-item-slim-height
+  outline: none
+  border-bottom: 1px solid $border-default
+  border-left: 2px solid transparent
+
+  &.is-bordered
+    border: 1px solid $border-default
+    margin-bottom: 10px
+    padding-left: 10px
+    padding-right: 10px
+
+  &:hover:not(.no-hover-effect)
+    cursor: pointer
+    background: $background-light
+
+    &.is-bordered
+      box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
+
+  .columns
+    display: flex
+    align-items: center
+    height: $list-item-slim-height
+
+    .data-column
+
+      .heading-text, .data-text, .info-text, .data-with-label
+        +ellipsis
+        display: block
+        line-height: 20px
+        text-align: center
+
+      .heading-text
+        font-size: 12px
+        color: $text-primary
+
+      .info-text
+        font-size: 15px
+        font-family: $font-family-regular
+        color: $text-button
+
+        i
+          margin-right: 10px
+          color: $text-button
+
+        .committer-avatar
+          width: 25px
+          height: 25px
+          margin-right: 10px
+          display: inline-block
+
+        .repo-name
+          font-size: 15px
+          font-family: $font-family-medium
+
+        .small-text
+          font-size: 13px
+
+      .data-with-label
+
+        .data-label, .data-info
+          display: block
+
+        .data-label
+          margin-bottom: 3px
+          font-family: $font-family-medium
+          color: $text-label
+          text-transform: uppercase
+          font-size: 12px
+
+      .data-text
+        font-size: 14px
+        font-family: $font-family-regular
+        height: 25px
+
+        &.is-title
+          font-size: 12px
+          font-family: $font-family-bold
+          color: $text-label
+          text-transform: uppercase
+          height: $list-item-slim-label-height
+
+        &.is-number
+          +unselectable
+          display: flex
+          align-items: center
+          justify-content: center
+          border: 1px solid $border-default
+          border-radius: 4px
+          line-height: 22px
+          width: 150px
+          height: 40px
+          font-size: 13px
+          background: $white
+          font-family: $font-family-medium
+
+        &.is-light
+          color: $text-button
+          font-family: $font-family-regular
+
+        .data-label
+          font-family: $font-family-medium
+          color: $text-label
+
+        i, img
+          width: 20px
+          height: 20px
+          display: block
+          margin: 0 auto
+          font-size: 20px
+
+        img
+          width: 30px
+          height: 30px
+          border: 1px solid $border-secondary
+          border-radius: 4px
+          margin-bottom: 3px
+
+        i
+
+          &.is-yellow
+            color: $yellow
+
+          &.is-green
+            color: $green
+
+          &.is-red
+            color: $red
+
+    .svg-column
+      display: flex
+      align-items: center
+      justify-content: center
+
+      svg
+        height: 20px
