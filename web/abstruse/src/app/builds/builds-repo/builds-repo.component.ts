@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ReposService } from 'src/app/repos/shared/repos.service';
 import { BuildsService } from '../shared/builds.service';
 import { Build } from '../shared/build.model';
-import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-builds-repo',
@@ -54,7 +53,6 @@ export class BuildsRepoComponent implements OnInit {
     }
 
     this.buildsService.findByRepoID(this.repoid, this.limit, this.offset)
-      .pipe(delay(3000))
       .subscribe((resp: Build[]) => {
         this.builds = this.builds.concat(resp);
         if (resp.length === this.limit) {
