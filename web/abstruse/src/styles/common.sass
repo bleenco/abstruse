@@ -231,3 +231,6 @@ i
   &.is-xxlarge
     font-size: 32px
 
+@each $name, $color in $colors
+  .is-#{$name}
+    color: $color

@@ -9,24 +9,24 @@ import (
 
 // ProviderRepository interface.
 type ProviderRepository interface {
-	List(UserID uint) ([]model.Provider, error)
+	List(userID uint) ([]model.Provider, error)
 	Create(data ProviderForm) (*model.Provider, error)
 	Update(data ProviderForm) (*model.Provider, error)
-	Find(ProviderID, UserID uint) (*model.Provider, error)
-}
-
-// ProviderForm create data.
-type ProviderForm struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	URL         string `json:"url"`
-	AccessToken string `json:"accessToken"`
-	UserID      uint   `json:"userId"`
+	Find(providerID, userID uint) (*model.Provider, error)
 }
 
 type (
-	// Repository scm result.
-	Repository struct {
+	// ProviderForm create data.
+	ProviderForm struct {
+		ID          uint   `json:"id"`
+		Name        string `json:"name"`
+		URL         string `json:"url"`
+		AccessToken string `json:"accessToken"`
+		UserID      uint   `json:"userId"`
+	}
+
+	// SCMRepository scm result.
+	SCMRepository struct {
 		ID         string      `json:"id"`
 		Namespace  string      `json:"namespace"`
 		Name       string      `json:"name"`
@@ -59,9 +59,9 @@ func NewDBProviderRepository(db *gorm.DB) ProviderRepository {
 }
 
 // List returns list of providers for specified user.
-func (r *DBProviderRepository) List(UserID uint) ([]model.Provider, error) {
+func (r *DBProviderRepository) List(userID uint) ([]model.Provider, error) {
 	var providers []model.Provider
-	err := r.db.Where("user_id = ?", UserID).Find(&providers).Error
+	err := r.db.Where("user_id = ?", userID).Find(&providers).Error
 	return providers, err
 }
 
@@ -94,8 +94,8 @@ func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error
 }
 
 // Find provider by id.
-func (r *DBProviderRepository) Find(ProviderID, UserID uint) (*model.Provider, error) {
+func (r *DBProviderRepository) Find(providerID, userID uint) (*model.Provider, error) {
 	provider := &model.Provider{}
-	err := r.db.Where("id = ? AND user_id = ?", ProviderID, UserID).First(provider).Error
+	err := r.db.Where("id = ? AND user_id = ?", providerID, userID).First(provider).Error
 	return provider, err
 }

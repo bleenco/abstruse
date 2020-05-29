@@ -16,8 +16,8 @@
       <div class="list-item-content">
         <span class="label">Private</span>
         <span class="text">
-          <i class="fas fa-check-circle" *ngIf="repo?.isPrivate"></i>
-          <i class="fas fa-times-circle" *ngIf="!repo?.isPrivate"></i>
+          <i class="fas fa-check" *ngIf="repo?.isPrivate"></i>
+          <i class="fas fa-times" *ngIf="!repo?.isPrivate"></i>
         </span>
       </div>
     </div>
@@ -35,7 +35,10 @@
     </div>
     <div class="column is-2">
       <div class="list-item-content">
-        <button type="button" class="button">
+        <span class="text" *ngIf="repo?.isImported">
+          <i class="fa fa-check is-green"></i>
+        </span>
+        <button type="button" class="button" (click)="import()" *ngIf="!repo?.isImported">
           <span>Import</span>
         </button>
       </div>

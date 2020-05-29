@@ -1,4 +1,6 @@
 export class ProviderRepo {
+  isImported: boolean;
+
   constructor(
     public id?: string,
     public namespace?: string,

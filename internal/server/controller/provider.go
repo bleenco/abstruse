@@ -13,12 +13,13 @@ import (
 
 // ProviderController struct
 type ProviderController struct {
-	service service.ProviderService
+	service     service.ProviderService
+	repoService service.RepositoryService
 }
 
 // NewProviderController returns new instance of ProviderController.
-func NewProviderController(service service.ProviderService) *ProviderController {
-	return &ProviderController{service}
+func NewProviderController(service service.ProviderService, repoService service.RepositoryService) *ProviderController {
+	return &ProviderController{service, repoService}
 }
 
 // List controller => GET /api/providers
@@ -124,4 +125,33 @@ func (c *ProviderController) ReposFind(resp http.ResponseWriter, req *http.Reque
 		return
 	}
 	JSONResponse(resp, http.StatusOK, Response{Data: data})
+}
+
+// ReposImport controller => PUT /api/providers/:id/repos/import
+func (c *ProviderController) ReposImport(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	token := req.Header.Get("Authorization")
+	userID, err := auth.GetUserIDFromJWT(token)
+	if err != nil {
+		JSONResponse(resp, http.StatusUnauthorized, ErrorResponse{Data: err.Error()})
+		return
+	}
+	providerID, _ := strconv.Atoi(params.ByName("id"))
+	provider, err := c.service.Find(uint(providerID), userID)
+	if err != nil {
+		JSONResponse(resp, http.StatusNotFound, ErrorResponse{Data: err.Error()})
+		return
+	}
+	var form repository.SCMRepository
+	decoder := jsoniter.NewDecoder(req.Body)
+	if err := decoder.Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	repo, err := c.repoService.Create(form, provider)
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{Data: repo})
 }

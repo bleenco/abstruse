@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { getAPIURL } from 'src/app/core/shared/shared-functions';
 import { Provider } from './provider.class';
 import { map, filter } from 'rxjs/operators';
 import { ProviderRepo, ProviderRepoPermission } from './repo.class';
+import { ReposService } from 'src/app/repos/shared/repos.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ import { ProviderRepo, ProviderRepoPermission } from './repo.class';
 export class ProvidersService {
 
   constructor(
-    public http: HttpClient
+    private http: HttpClient,
+    private reposService: ReposService
   ) { }
 
   list(): Observable<Provider[]> {
@@ -45,12 +47,29 @@ export class ProvidersService {
     return this.http.post<JSONResponse>(url, provider);
   }
 
+  import(providerId: number, repo: ProviderRepo): Observable<JSONResponse> {
+    const url = `${getAPIURL()}/providers/${providerId}/repos/import`;
+    return this.http.put<JSONResponse>(url, repo);
+  }
+
   listRepos(providerId: number, page = 1, size = 30): Observable<ProviderRepo[]> {
+    return combineLatest([this.listProviderRepos(providerId, page, size), this.reposService.list()])
+      .pipe(
+        map(resp => resp[0].map(repo => {
+          if (resp[1].find(x => x.providerId === providerId && String(x.uid) === String(repo.id))) {
+            repo.isImported = true;
+          }
+          return repo;
+        }))
+      );
+  }
+
+  listProviderRepos(providerId: number, page = 1, size = 30): Observable<ProviderRepo[]> {
     const url = `${getAPIURL()}/providers/${providerId}/repos/${page}/${size}`;
     return this.http.get<JSONResponse>(url)
       .pipe(
-        filter(resp => resp.data && resp.data.length),
-        map(resp => resp.data.map((r: any) => {
+        map(resp => resp.data && resp.data.length ? resp.data : []),
+        map(data => data.map((r: any) => {
           return new ProviderRepo(
             r.id,
             r.namespace,
@@ -61,7 +80,7 @@ export class ProvidersService {
               r.permission.admin
             ),
             r.branch,
-            r.private,
+            Boolean(r.private),
             r.clone,
             r.clone_ssh,
             r.link,

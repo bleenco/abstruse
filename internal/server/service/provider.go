@@ -14,8 +14,9 @@ type ProviderService interface {
 	List(UserID uint) ([]model.Provider, error)
 	Create(data repository.ProviderForm) (*model.Provider, error)
 	Update(data repository.ProviderForm) (*model.Provider, error)
-	ReposList(providerID, userID uint, page, size int) ([]repository.Repository, error)
-	ReposFind(providerID, userID uint, keyword string) (repository.Repository, error)
+	Find(providerID, userID uint) (*model.Provider, error)
+	ReposList(providerID, userID uint, page, size int) ([]repository.SCMRepository, error)
+	ReposFind(providerID, userID uint, keyword string) (repository.SCMRepository, error)
 }
 
 // DefaultProviderService struct
@@ -43,9 +44,14 @@ func (s *DefaultProviderService) Update(data repository.ProviderForm) (*model.Pr
 	return s.repo.Update(data)
 }
 
+// Find method.
+func (s *DefaultProviderService) Find(providerID, userID uint) (*model.Provider, error) {
+	return s.repo.Find(providerID, userID)
+}
+
 // ReposList lists available repositories.
-func (s *DefaultProviderService) ReposList(providerID, userID uint, page, size int) ([]repository.Repository, error) {
-	var repos []repository.Repository
+func (s *DefaultProviderService) ReposList(providerID, userID uint, page, size int) ([]repository.SCMRepository, error) {
+	var repos []repository.SCMRepository
 	provider, err := s.repo.Find(providerID, userID)
 	if err != nil {
 		return repos, err
@@ -65,8 +71,8 @@ func (s *DefaultProviderService) ReposList(providerID, userID uint, page, size i
 }
 
 // ReposFind finds repository by search term.
-func (s *DefaultProviderService) ReposFind(providerID, userID uint, keyword string) (repository.Repository, error) {
-	var r repository.Repository
+func (s *DefaultProviderService) ReposFind(providerID, userID uint, keyword string) (repository.SCMRepository, error) {
+	var r repository.SCMRepository
 	provider, err := s.repo.Find(providerID, userID)
 	if err != nil {
 		return r, err
@@ -79,13 +85,13 @@ func (s *DefaultProviderService) ReposFind(providerID, userID uint, keyword stri
 	return convertRepo(repo), err
 }
 
-func convertRepo(repo *goscm.Repository) repository.Repository {
+func convertRepo(repo *goscm.Repository) repository.SCMRepository {
 	perm := &repository.Permission{
 		Pull:  repo.Perm.Pull,
 		Push:  repo.Perm.Push,
 		Admin: repo.Perm.Admin,
 	}
-	return repository.Repository{
+	return repository.SCMRepository{
 		ID:         repo.ID,
 		Namespace:  repo.Namespace,
 		Name:       repo.Name,

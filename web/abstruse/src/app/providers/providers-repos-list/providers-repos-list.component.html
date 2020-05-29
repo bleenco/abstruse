@@ -21,7 +21,8 @@
   <div class="column is-12" *ngIf="repos.length && !fetching">
     <div class="list">
       <div class="list-items">
-        <app-providers-repos-list-item [repo]="r" *ngFor="let r of repos"></app-providers-repos-list-item>
+        <app-providers-repos-list-item [repo]="r" [providerId]="providerId" *ngFor="let r of repos">
+        </app-providers-repos-list-item>
       </div>
     </div>
   </div>
