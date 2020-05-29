@@ -9,7 +9,7 @@
     </div>
     <div class="column is-1 data-column">
       <div class="info-text align-center">
-        <img [src]="build?.committer_avatar" class="committer-avatar">
+        <img [src]="build?.committerAvatar" class="committer-avatar">
       </div>
     </div>
     <div class="column is-2 data-column">
@@ -27,7 +27,7 @@
     <div class="column is-2 data-column">
       <div class="info-text has-text-left align-center">
         <i class="far fa-calendar-alt"></i>
-        <span class="small-text">{{ build?.created_at_words | async }}</span>
+        <span class="small-text">{{ build?.createdAtWords | async }}</span>
       </div>
     </div>
     <div class="column is-1 data-column">
@@ -43,7 +43,7 @@
       </span>
     </div>
     <div class="column is-1 data-column">
-      <span class="data-text">{{ build?.running_time | async }}</span>
+      <span class="data-text">{{ build?.runningTime | async }}</span>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
       <button type="button" class="button is-small" [disabled]="build?.processing">

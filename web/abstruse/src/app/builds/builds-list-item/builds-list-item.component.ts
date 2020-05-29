@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Build } from '../shared/build.model';
 
 @Component({
@@ -7,7 +7,7 @@ import { Build } from '../shared/build.model';
   styleUrls: ['./builds-list-item.component.sass']
 })
 export class BuildsListItemComponent implements OnInit {
-  build: Build;
+  @Input() build: Build;
 
   constructor() { }
 

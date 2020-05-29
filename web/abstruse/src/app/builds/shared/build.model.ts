@@ -1,48 +1,48 @@
 import { Repo, generateRepoModel } from 'src/app/repos/shared/repo.model';
-import { distanceInWordsToNow, format, differenceInMilliseconds } from 'date-fns';
+import { formatDistanceToNow, format, differenceInMilliseconds } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
 import { TimeService } from 'src/app/shared/providers/time.service';
 
 export class Build {
   private time: TimeService;
-  public running_time: BehaviorSubject<string>;
-  public created_at_words: BehaviorSubject<string>;
-  public build_status: BehaviorSubject<string>;
+  public runningTime: BehaviorSubject<string>;
+  public createdAtWords: BehaviorSubject<string>;
+  public buildStatus: BehaviorSubject<string>;
   public status: string;
   public processing: boolean;
 
   constructor(
     public id: number,
     public commit: string,
-    public commit_message: string,
+    public commitMessage: string,
     public branch: string,
     public pr: number,
-    public pr_title: string,
+    public prTitle: string,
     public config: string,
-    public created_at: Date,
-    public updated_at: Date,
-    public start_time: Date,
-    public end_time: Date,
+    public createdAt: Date,
+    public updatedAt: Date,
+    public startTime: Date,
+    public endTime: Date,
     public repository: Repo,
-    public author_avatar: string,
-    public author_name: string,
-    public author_email: string,
-    public committer_avatar: string,
-    public committer_name: string,
-    public committer_email: string,
+    public authorAvatar: string,
+    public authorName: string,
+    public authorEmail: string,
+    public committerAvatar: string,
+    public committerName: string,
+    public committerEmail: string,
     public jobs: Job[]
   ) {
     this.time = new TimeService();
     this.status = this.getBuildStatus();
-    this.build_status = new BehaviorSubject<string>(this.status);
-    this.running_time = new BehaviorSubject<string>(this.getTimeRunning());
-    this.created_at_words = new BehaviorSubject<string>(distanceInWordsToNow(this.created_at) + ' ago');
+    this.buildStatus = new BehaviorSubject<string>(this.status);
+    this.runningTime = new BehaviorSubject<string>(this.getTimeRunning());
+    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt) + ' ago');
 
     this.time.getCurrentTime().subscribe((time: Date) => {
       this.status = this.getBuildStatus();
-      this.build_status.next(this.status);
-      this.running_time.next(this.getTimeRunning());
-      this.created_at_words.next(distanceInWordsToNow(this.created_at) + ' ago');
+      this.buildStatus.next(this.status);
+      this.runningTime.next(this.getTimeRunning());
+      this.createdAtWords.next(formatDistanceToNow(this.createdAt) + ' ago');
     });
   }
 
@@ -51,7 +51,7 @@ export class Build {
   }
 
   getCreatedAtFormatted(): string {
-    return format(this.created_at, 'Do MMMM YYYY [at] HH:mm');
+    return format(this.createdAt, 'Do MMMM YYYY [at] HH:mm');
   }
 
   private getBuildStatus(): string {
@@ -75,15 +75,15 @@ export class Build {
       return '00:00';
     }
 
-    if (!this.start_time) {
-      this.start_time = new Date(Math.min(...this.jobs.map(job => job.start_time.getTime())));
+    if (!this.startTime) {
+      this.startTime = new Date(Math.min(...this.jobs.map(job => job.startTime.getTime())));
     }
 
-    if (!this.end_time && this.jobs.every(job => job.end_time)) {
-      this.end_time = new Date();
+    if (!this.endTime && this.jobs.every(job => job.endTime)) {
+      this.endTime = new Date();
     }
 
-    const millis = differenceInMilliseconds(this.end_time ? this.end_time : new Date(), this.start_time);
+    const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
     return format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
@@ -91,7 +91,7 @@ export class Build {
 
 export class Job {
   private time: TimeService;
-  public running_time: BehaviorSubject<string>;
+  public runningTime: BehaviorSubject<string>;
   public processing: boolean;
 
   constructor(
@@ -101,27 +101,27 @@ export class Job {
     public image: string,
     public status: string,
     public log: string,
-    public start_time: Date,
-    public end_time: Date,
-    public created_at: Date,
-    public updated_at: Date,
-    public build_id: number,
+    public startTime: Date,
+    public endTime: Date,
+    public createdAt: Date,
+    public updatedAt: Date,
+    public buildId: number,
     public build: Build
   ) {
     this.time = new TimeService();
-    this.running_time = new BehaviorSubject<string>(this.getTimeRunning().time);
+    this.runningTime = new BehaviorSubject<string>(this.getTimeRunning().time);
 
     this.time.getCurrentTime().subscribe((time: Date) => {
-      this.running_time.next(this.getTimeRunning().time);
+      this.runningTime.next(this.getTimeRunning().time);
     });
   }
 
   getTimeRunning(): { millis: number, time: string } {
-    if (!this.start_time) {
+    if (!this.startTime) {
       return { millis: 0, time: '00:00' };
     }
 
-    const millis = differenceInMilliseconds(this.end_time ? this.end_time : new Date(), this.start_time);
+    const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
     return { millis, time: format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss') };
   }
 }
@@ -130,7 +130,7 @@ export function generateBuildModel(data: any): Build {
   return new Build(
     Number(data.id),
     data.commit,
-    data.commit_message,
+    data.commitMessage,
     data.branch,
     Number(data.pr),
     data.pr_message,

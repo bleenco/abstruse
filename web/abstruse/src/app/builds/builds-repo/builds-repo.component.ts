@@ -3,6 +3,8 @@ import { Repo } from 'src/app/repos/shared/repo.model';
 import { ActivatedRoute } from '@angular/router';
 import { ReposService } from 'src/app/repos/shared/repos.service';
 import { BuildsService } from '../shared/builds.service';
+import { buildsData } from '../shared/builds';
+import { Build } from '../shared/build.model';
 
 @Component({
   selector: 'app-builds-repo',
@@ -13,6 +15,7 @@ export class BuildsRepoComponent implements OnInit {
   repoid: number;
   repo: Repo;
   fetching: boolean;
+  builds: any[] = buildsData.data;
 
   constructor(
     private activatedRoute: ActivatedRoute,

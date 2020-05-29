@@ -46,6 +46,8 @@ func NewDatabase(opts *Options) (*gorm.DB, error) {
 		model.User{},
 		model.Repository{},
 		model.Provider{},
+		model.Build{},
+		model.Job{},
 	)
 
 	return conn, err

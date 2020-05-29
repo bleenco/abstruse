@@ -17,27 +17,27 @@
     <app-spinner class="is-large"></app-spinner>
   </div>
 
-  <!-- <div class="column is-12" *ngIf="repos.length && !fetching">
+  <div class="column is-12" *ngIf="builds.length && !fetching">
     <div class="list">
       <div class="list-items">
-        <app-repos-list-item [repo]="r" *ngFor="let r of repos"></app-repos-list-item>
+        <app-builds-list-item [build]="b" *ngFor="let b of builds"></app-builds-list-item>
       </div>
     </div>
   </div>
 
-  <div class="column is-12" *ngIf="!fetching && !repos.length">
+  <div class="column is-12" *ngIf="!fetching && !builds.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">
         <div class="notification">
           <p>
             <i class="fas fa-info"></i>
             <span>
-              No imported repositories found.
+              No builds for repository found.
             </span>
           </p>
         </div>
       </div>
     </div>
-  </div> -->
+  </div>
 
 </div>
