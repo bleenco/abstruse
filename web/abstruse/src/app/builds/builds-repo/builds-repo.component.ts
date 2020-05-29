@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ReposService } from 'src/app/repos/shared/repos.service';
 import { BuildsService } from '../shared/builds.service';
 import { Build } from '../shared/build.model';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-builds-repo',
@@ -14,6 +15,7 @@ export class BuildsRepoComponent implements OnInit {
   repoid: number;
   repo: Repo;
   fetching: boolean;
+  fetchingBuilds: boolean;
   fetchingMore: boolean;
   hideMoreButton: boolean;
   builds: Build[] = [];
@@ -46,12 +48,13 @@ export class BuildsRepoComponent implements OnInit {
 
   findBuilds(): void {
     if (this.offset === 0) {
-      this.fetching = true;
+      this.fetchingBuilds = true;
     } else {
       this.fetchingMore = true;
     }
 
     this.buildsService.findByRepoID(this.repoid, this.limit, this.offset)
+      .pipe(delay(3000))
       .subscribe((resp: Build[]) => {
         this.builds = this.builds.concat(resp);
         if (resp.length === this.limit) {
@@ -62,7 +65,7 @@ export class BuildsRepoComponent implements OnInit {
       }, err => {
         console.error(err);
       }, () => {
-        this.fetching = false;
+        this.fetchingBuilds = false;
         this.fetchingMore = false;
       });
   }
