@@ -13,7 +13,7 @@
                 Invalid username and password combination.
               </p>
             </div>
-            <form class="login-form" #loginForm="ngForm" (ngSubmit)="doLogin()">
+            <form class="login-form has-padding" #loginForm="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
                 <input #usernameField type="text" name="username" class="input" [(ngModel)]="login.email" required
