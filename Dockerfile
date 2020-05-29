@@ -27,7 +27,7 @@ FROM scratch
 
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /app/build/abstruse-server /usr/bin/abstruse-server
-COPY --from=build /app/docs/configs/server.yaml /server.yaml
+COPY --from=build /app/config/server.yaml /server.yaml
 
 ENTRYPOINT [ "/usr/bin/abstruse-server" ]
 
