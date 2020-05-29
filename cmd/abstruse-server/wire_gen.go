@@ -80,8 +80,11 @@ func CreateApp(cfg string) (*server.App, error) {
 	repoRepository := repository.NewDBRepoRepository(gormDB)
 	repositoryService := service.NewRepositoryService(repoRepository)
 	repositoryController := controller.NewRepositoryController(repositoryService)
+	providerRepository := repository.NewDBProviderRepository(gormDB)
+	providerService := service.NewProviderService(providerRepository)
+	providerController := controller.NewProviderController(providerService)
 	middlewareController := controller.NewMiddlewareController(logger, userService)
-	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, integrationController, repositoryController, middlewareController)
+	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, integrationController, repositoryController, providerController, middlewareController)
 	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
 	httpServer, err := http.NewServer(httpOptions, logger, router)
 	if err != nil {

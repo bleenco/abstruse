@@ -11,6 +11,7 @@ require (
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/drone/go-scm v1.7.0
 	github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4
 	github.com/eapache/channels v1.1.0
 	github.com/eapache/queue v1.1.0 // indirect
@@ -27,6 +28,7 @@ require (
 	github.com/json-iterator/go v1.1.7
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/shirou/gopsutil v2.20.4+incompatible
 	github.com/spf13/viper v1.7.0

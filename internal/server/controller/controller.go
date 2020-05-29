@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/http"
 )
 
@@ -13,6 +12,7 @@ func CreateInitControllersFn(
 	bc *BuildController,
 	ic *IntegrationController,
 	rc *RepositoryController,
+	pc *ProviderController,
 	mc *MiddlewareController,
 ) http.InitControllers {
 	return func(r *http.Router) {
@@ -23,19 +23,11 @@ func CreateInitControllersFn(
 		r.POST("/api/build/start", mc.AuthorizationMiddleware(bc.StartJob))
 		r.GET("/api/integrations", mc.AuthorizationMiddleware(ic.Find))
 
+		r.GET("/api/providers", mc.AuthorizationMiddleware(pc.List))
+		r.PUT("/api/providers", mc.AuthorizationMiddleware(pc.Create))
+		r.POST("/api/providers", mc.AuthorizationMiddleware(pc.Update))
+
 		r.GET("/api/repos", mc.AuthorizationMiddleware(rc.List))
 		r.GET("/api/repos/:id", mc.AuthorizationMiddleware(rc.Find))
 	}
 }
-
-// ProviderSet exports for wire dependency injection.
-var ProviderSet = wire.NewSet(
-	NewUserController,
-	NewVersionController,
-	NewWorkerController,
-	NewBuildController,
-	NewMiddlewareController,
-	NewIntegrationController,
-	NewRepositoryController,
-	CreateInitControllersFn,
-)

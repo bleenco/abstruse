@@ -1,0 +1,44 @@
+<div class="list-item">
+  <div class="columns">
+    <div class="column is-1">
+      <div class="list-item-content" [ngSwitch]="provider?.name">
+        <i class="fab fa-github icon-large" *ngSwitchCase="'github'"></i>
+        <i class="fab fa-gitlab icon-large" *ngSwitchCase="'gitlab'"></i>
+        <i class="fab fa-bitbucket icon-large" *ngSwitchCase="'bitbucket'"></i>
+        <img class="icon-large" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'">
+        <img class="icon-large" src="/assets/images/icons/gogs.png" *ngSwitchCase="'gogs'">
+        <i class="fab fa-git icon-large" *ngSwitchDefault></i>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Provider</span>
+        <span class="text">{{ provider?.getName }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content">
+        <span class="label">Created At</span>
+        <span class="text">{{ provider?.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content">
+        <span class="label">Updated At</span>
+        <span class="text">{{ provider?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content is-row">
+        <button type="button" class="button" (click)="openProviderModal()">
+          <i class="fas fa-chart-bar"></i>
+          <span>Edit</span>
+        </button>
+        <button type="button" class="button">
+          <i class="fas fa-chart-bar"></i>
+          <span>Import</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

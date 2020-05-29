@@ -2,9 +2,11 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"path"
 	"sync"
 
+	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	pb "github.com/jkuri/abstruse/proto"
@@ -54,12 +56,34 @@ func (app *App) Start(client *clientv3.Client) error {
 
 	go app.Scheduler.Start(app.client)
 
+	// go func() {
+	// 	if err := testscm(); err != nil {
+	// 		app.logger.Errorf("%v", err)
+	// 	}
+	// }()
+
 	return <-app.errch
 }
 
 // GetWorkers returns online workers.
 func (app *App) GetWorkers() map[string]*Worker {
 	return app.workers
+}
+
+// SCM test func.
+func testscm() error {
+	scm, err := scm.NewSCM(context.Background(), "gitea", "http://localhost:3000", "e1f56000295a404c34b683b7549559730106de09")
+	if err != nil {
+		return err
+	}
+	repos, err := scm.ListRepos(1, 30)
+	if err != nil {
+		return err
+	}
+	for _, repo := range repos {
+		fmt.Printf("%+v\n", repo)
+	}
+	return nil
 }
 
 // StartJob temp func.

@@ -2,6 +2,7 @@
 @import 'typography'
 
 form
+  margin-bottom: 10px
 
   &.has-padding
     padding: 10px 20px 15px 20px
@@ -92,16 +93,16 @@ form
       -webkit-box-shadow: 0 0 0px 1000px $white inset
       transition: background-color 5000s ease-in-out 0s
 
-    &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
-      border-color: $green
-      background: $green-100
+    // &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
+    //   border-color: $green
+    //   background: $green-100
 
-      &::placeholder, &::-ms-input-placeholder
-        color: $green
+    //   &::placeholder, &::-ms-input-placeholder
+    //     color: $green
 
-    &.ng-invalid:not(form):not(.ng-untouched)
-      border-color: $red
-      background: $red-100
+    // &.ng-invalid:not(form):not(.ng-untouched)
+    //   border-color: $red
+    //   background: $red-100
 
-      &::placeholder, &::-ms-input-placeholder
-        color: $red
+    //   &::placeholder, &::-ms-input-placeholder
+    //     color: $red

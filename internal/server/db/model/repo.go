@@ -3,6 +3,9 @@ package model
 // Repository defines `repositories` db table.
 type Repository struct {
 	ID            uint   `gorm:"primary_key;auto_increment;not null" json:"id"`
+	Provider      string `gorm:"not null" json:"provider"`
+	ProviderID    string `gorm:"not null" json:"provider_id"`
+	Namespace     string `gorm:"not null" json:"namespace"`
 	Name          string `gorm:"not null;varchar(255)" json:"name"`
 	FullName      string `gorm:"not null;varchar(255)" json:"full_name"`
 	Private       bool   `json:"private"`

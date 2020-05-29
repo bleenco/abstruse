@@ -40,8 +40,8 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'integrations',
-    loadChildren: () => import('./integrations/integrations.module').then(m => m.IntegrationsModule),
+    path: 'providers',
+    loadChildren: () => import('./providers/providers.module').then(m => m.ProvidersModule),
     canActivate: [AuthGuardService]
   },
   {
