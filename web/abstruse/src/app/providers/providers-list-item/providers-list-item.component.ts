@@ -19,7 +19,7 @@ export class ProvidersListItemComponent implements OnInit {
 
   openProviderModal(): void {
     const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'small' });
-    modalRef.componentInstance.provider = Object.create(this.provider);
+    modalRef.componentInstance.provider = new Provider(this.provider.id, this.provider.name, this.provider.url);
     modalRef.result
       .then(result => console.log(result), reason => console.log(reason));
   }

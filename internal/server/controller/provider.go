@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/jkuri/abstruse/internal/pkg/auth"
@@ -75,6 +76,7 @@ func (c *ProviderController) Update(resp http.ResponseWriter, req *http.Request,
 	}
 	defer req.Body.Close()
 	form.UserID = uint(userID)
+	fmt.Printf("%+v\n", form)
 	if _, err := c.service.Update(form); err != nil {
 		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
 		return

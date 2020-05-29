@@ -10,7 +10,6 @@ func CreateInitControllersFn(
 	vc *VersionController,
 	wc *WorkerController,
 	bc *BuildController,
-	ic *IntegrationController,
 	rc *RepositoryController,
 	pc *ProviderController,
 	mc *MiddlewareController,
@@ -21,7 +20,6 @@ func CreateInitControllersFn(
 		r.GET("/api/version", mc.AuthorizationMiddleware(vc.GetInfo))
 		r.GET("/api/workers", mc.AuthorizationMiddleware(wc.GetWorkers))
 		r.POST("/api/build/start", mc.AuthorizationMiddleware(bc.StartJob))
-		r.GET("/api/integrations", mc.AuthorizationMiddleware(ic.Find))
 
 		r.GET("/api/providers", mc.AuthorizationMiddleware(pc.List))
 		r.PUT("/api/providers", mc.AuthorizationMiddleware(pc.Create))

@@ -1,6 +1,6 @@
 <div class="modal-header">
   <h2>Provider</h2>
-  <span class="icon close-icon is-action" (click)="activeModal.dismiss('Cross click')">
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)">
     <i class="fas fa-times"></i>
   </span>
 </div>
@@ -40,10 +40,6 @@
 <div class="modal-footer space-between">
   <div class="align-center"></div>
   <div class="align-center">
-    <button type="button" class="button" [disabled]="checking || !providerForm.valid">
-      <app-spinner class="is-small" *ngIf="checking"></app-spinner>
-      <span>Check Authentication</span>
-    </button>
     <button type="button" class="button" (click)="save()" [disabled]="!providerForm.valid">Save</button>
   </div>
 </div>

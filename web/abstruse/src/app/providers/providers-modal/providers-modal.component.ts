@@ -9,7 +9,7 @@ import { ProvidersService } from '../shared/providers.service';
   styleUrls: ['./providers-modal.component.sass']
 })
 export class ProvidersModalComponent implements OnInit {
-  provider: Provider = new Provider();
+  provider: Provider;
   providerList = [
     { value: 'github', placeholder: 'GitHub' },
     { value: 'gitlab', placeholder: 'GitLab' },
@@ -52,10 +52,6 @@ export class ProvidersModalComponent implements OnInit {
           this.activeModal.close(true);
         });
     }
-  }
-
-  check(): void {
-
   }
 
   updateProviderURL(): void {
