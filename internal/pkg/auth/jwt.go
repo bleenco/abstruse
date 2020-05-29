@@ -42,8 +42,8 @@ func GenerateJWT(user UserJWT) (string, error) {
 }
 
 // GetUserIDFromJWT returns users ID from token.
-func GetUserIDFromJWT(tokenString string) (int, error) {
-	var userID int
+func GetUserIDFromJWT(tokenString string) (uint, error) {
+	var userID uint
 	if tokenString == "" {
 		return userID, errors.New("invalid token")
 	}
@@ -57,11 +57,11 @@ func GetUserIDFromJWT(tokenString string) (int, error) {
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		userID, _ = strconv.Atoi(claims["id"].(string))
-		return userID, nil
+		id, _ := strconv.Atoi(claims["id"].(string))
+		return uint(id), nil
 	}
 
-	return userID, nil
+	return userID, fmt.Errorf("user id not found")
 }
 
 // GetUserDataFromJWT returns users data included in token.

@@ -1,0 +1,44 @@
+<div class="list-item">
+  <div class="columns">
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">ID</span>
+        <span class="text has-border">{{ repo.id }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content">
+        <span class="label">Name</span>
+        <span class="text">{{ repo?.fullName }}</span>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="list-item-content">
+        <span class="label">Private</span>
+        <span class="text">
+          <i class="fas fa-check-circle" *ngIf="repo?.isPrivate"></i>
+          <i class="fas fa-times-circle" *ngIf="!repo?.isPrivate"></i>
+        </span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Created At</span>
+        <span class="text">{{ repo?.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Updated At</span>
+        <span class="text">{{ repo?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <button type="button" class="button">
+          <span>Import</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,13 +6,17 @@ import { ProvidersListComponent } from './providers-list/providers-list.componen
 import { SharedModule } from '../shared/shared.module';
 import { ProvidersModalComponent } from './providers-modal/providers-modal.component';
 import { ProvidersListItemComponent } from './providers-list-item/providers-list-item.component';
+import { ProvidersReposListComponent } from './providers-repos-list/providers-repos-list.component';
+import { ProvidersReposListItemComponent } from './providers-repos-list-item/providers-repos-list-item.component';
 
 
 @NgModule({
   declarations: [
     ProvidersListComponent,
     ProvidersModalComponent,
-    ProvidersListItemComponent
+    ProvidersListItemComponent,
+    ProvidersReposListComponent,
+    ProvidersReposListItemComponent
   ],
   imports: [
     CommonModule,

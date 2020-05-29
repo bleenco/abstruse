@@ -46,63 +46,75 @@ form
       &:hover
         color: $text-secondary
 
-  .label
-    display: block
-    color: $text-label
-    font-size: 12px
-    font-family: $font-family-medium
-    margin: 5px 0 5px 0
-    text-transform: uppercase
+.label
+  display: block
+  color: $text-label
+  font-size: 12px
+  font-family: $font-family-medium
+  margin: 5px 0 5px 0
+  text-transform: uppercase
 
-  .input
-    color: $text-input
-    font-size: 14px
-    height: $input-height
-    text-indent: 14px
-    border: 1px solid $border-input
-    outline: none
-    display: flex
-    align-items: center
-    justify-content: center
-    line-height: 100%
-    margin: 0
-    padding: 0 30px 0 0
-    width: 100%
-    border-radius: 4px
+.input
+  color: $text-input
+  font-size: 14px
+  height: $input-height
+  text-indent: 14px
+  border: 1px solid $border-input
+  outline: none
+  display: flex
+  align-items: center
+  justify-content: center
+  line-height: 100%
+  margin: 0
+  padding: 0 30px 0 0
+  width: 100%
+  border-radius: 4px
 
-    &[disabled]
-      opacity: .5
+  &.search-box
+    min-width: 200px
+    border: 1px solid transparent
+    font-weight: $weight-medium
+
+    &:focus
+      border: 1px solid transparent
 
     &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
       color: $text-primary
-      opacity: .5
-      font-size: 14px
+      opacity: 1
 
-    &:focus
-      border-color: $border-primary
+  &[disabled]
+    opacity: .5
 
-    &[type="number"]
-      -moz-appearance: textfield
+  &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
+    color: $text-primary
+    opacity: .5
+    font-size: 14px
 
-      &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
-        -webkit-appearance: none
+  &:focus
+    border-color: $border-primary
 
-    &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus
-      border: 1px solid $border-input
-      -webkit-text-fill-color: $text-input
-      -webkit-box-shadow: 0 0 0px 1000px $white inset
-      transition: background-color 5000s ease-in-out 0s
+  &[type="number"]
+    -moz-appearance: textfield
 
-    // &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
-    //   border-color: $green
-    //   background: $green-100
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      -webkit-appearance: none
 
-    //   &::placeholder, &::-ms-input-placeholder
-    //     color: $green
+  &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus
+    border: 1px solid $border-input
+    -webkit-text-fill-color: $text-input
+    -webkit-box-shadow: 0 0 0px 1000px $white inset
+    transition: background-color 5000s ease-in-out 0s
 
-    // &.ng-invalid:not(form):not(.ng-untouched)
-    //   border-color: $red
-    //   background: $red-100
+  // &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
+  //   border-color: $green
+  //   background: $green-100
 
-    //   &::placeholder, &::-ms-input-placeholder
-    //     color: $red
+  //   &::placeholder, &::-ms-input-placeholder
+  //     color: $green
+
+  // &.ng-invalid:not(form):not(.ng-untouched)
+  //   border-color: $red
+  //   background: $red-100
+
+  //   &::placeholder, &::-ms-input-placeholder
+  //     color: $red

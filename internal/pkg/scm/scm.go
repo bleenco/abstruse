@@ -2,6 +2,7 @@ package scm
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/drone/go-scm/scm"
@@ -34,27 +35,9 @@ const (
 	StateError
 )
 
-// Provider defines scm provider.
-type Provider string
-
-const (
-	// ProviderGithub github provider.
-	ProviderGithub Provider = "github"
-	// ProviderBitbucket bitbucket provider.
-	ProviderBitbucket Provider = "bitbucket"
-	// ProviderGitlab gitlab provider.
-	ProviderGitlab Provider = "gitlab"
-	// ProviderGitea gitea provider.
-	ProviderGitea Provider = "gitea"
-	// ProviderGogs gogs provider.
-	ProviderGogs Provider = "gogs"
-	// ProviderStash stash provider.
-	ProviderStash Provider = "stash"
-)
-
 // SCM represents source code management instance.
 type SCM struct {
-	provider Provider
+	provider string
 	url      string
 	repo     string
 	token    string
@@ -63,7 +46,7 @@ type SCM struct {
 }
 
 // NewSCM returns new instance of SCM.
-func NewSCM(ctx context.Context, provider Provider, url, token string) (*SCM, error) {
+func NewSCM(ctx context.Context, provider string, url, token string) (*SCM, error) {
 	scm := &SCM{provider: provider, url: url, token: token, ctx: ctx}
 	if err := scm.init(); err != nil {
 		return nil, err
@@ -73,18 +56,20 @@ func NewSCM(ctx context.Context, provider Provider, url, token string) (*SCM, er
 
 func (s *SCM) init() (err error) {
 	switch s.provider {
-	case ProviderGithub:
+	case "github":
 		s.client, err = github.New(s.url)
-	case ProviderBitbucket:
+	case "bitbucket":
 		s.client, err = bitbucket.New(s.url)
-	case ProviderGitea:
+	case "gitea":
 		s.client, err = gitea.New(s.url)
-	case ProviderGitlab:
+	case "gitlab":
 		s.client, err = gitlab.New(s.url)
-	case ProviderGogs:
+	case "gogs":
 		s.client, err = gogs.New(s.url)
-	case ProviderStash:
+	case "stash":
 		s.client, err = stash.New(s.url)
+	default:
+		return fmt.Errorf("unknown provider")
 	}
 	if err != nil {
 		return err

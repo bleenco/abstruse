@@ -12,6 +12,7 @@ type ProviderRepository interface {
 	List(UserID uint) ([]model.Provider, error)
 	Create(data ProviderForm) (*model.Provider, error)
 	Update(data ProviderForm) (*model.Provider, error)
+	Find(ProviderID, UserID uint) (*model.Provider, error)
 }
 
 // ProviderForm create data.
@@ -22,6 +23,30 @@ type ProviderForm struct {
 	AccessToken string `json:"accessToken"`
 	UserID      uint   `json:"userId"`
 }
+
+type (
+	// Repository scm result.
+	Repository struct {
+		ID         string      `json:"id"`
+		Namespace  string      `json:"namespace"`
+		Name       string      `json:"name"`
+		Permission *Permission `json:"permission"`
+		Branch     string      `json:"branch"`
+		Private    bool        `json:"private"`
+		Clone      string      `json:"clone"`
+		CloneSSH   string      `json:"close_ssh"`
+		Link       string      `json:"link"`
+		Created    time.Time   `json:"created"`
+		Updated    time.Time   `json:"updated"`
+	}
+
+	// Permission scm result.
+	Permission struct {
+		Pull  bool `json:"pull"`
+		Push  bool `json:"push"`
+		Admin bool `json:"admin"`
+	}
+)
 
 // DBProviderRepository struct.
 type DBProviderRepository struct {
@@ -65,5 +90,12 @@ func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error
 	if err != nil {
 		return nil, err
 	}
+	return provider, err
+}
+
+// Find provider by id.
+func (r *DBProviderRepository) Find(ProviderID, UserID uint) (*model.Provider, error) {
+	provider := &model.Provider{}
+	err := r.db.Where("id = ? AND user_id = ?", ProviderID, UserID).First(provider).Error
 	return provider, err
 }
