@@ -95,7 +95,7 @@ export class ProvidersService {
     const url = `${getAPIURL()}/providers/${providerId}/repos`;
     return this.http.post<JSONResponse>(url, { keyword })
       .pipe(
-        filter(resp => resp.data),
+        filter(resp => resp && resp.data),
         map(resp => {
           return new ProviderRepo(
             resp.data.id,

@@ -18,6 +18,12 @@ $list-item-height: 80px
       height: auto
       padding: 10px
 
+    &.is-link
+
+      &:hover
+        cursor: pointer
+        background: $background-light
+
     .columns
 
       .column
@@ -45,7 +51,7 @@ $list-item-height: 80px
 
           .label
             text-transform: uppercase
-            font-weight: $weight-medium
+            font-weight: $weight-semibold
             font-size: 12px
             color: $text-primary
             margin-bottom: 2px
@@ -55,7 +61,6 @@ $list-item-height: 80px
             color: $text-secondary
             font-size: 14px
             width: 100%
-            font-family: $font-family-regular
             padding: 5px 8px
 
             &.has-border
@@ -63,7 +68,8 @@ $list-item-height: 80px
               border-radius: 4px
               width: auto
               padding: 5px 15px
-              font-family: $font-family-medium
+              font-weight: $weight-semibold
+              background: $white
 
             i
               font-size: 20px
@@ -74,3 +80,15 @@ $list-item-height: 80px
             display: block
             width: 26px
             height: 26px
+
+          .icon-medium
+            font-size: 20px
+            display: block
+            width: 20px
+            height: 20px
+
+          .icon-small
+            font-size: 16px !important
+            display: block
+            width: 16px
+            height: 16px

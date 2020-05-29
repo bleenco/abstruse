@@ -1,1 +1,43 @@
-<p>repos-list works!</p>
+<div class="columns is-multiline">
+
+  <div class="column is-12">
+    <div class="main-heading">
+      <div class="main-heading-left">
+        <h1>Repositories</h1>
+        <h2>Git repositories</h2>
+      </div>
+      <div class="main-heading-right">
+        <!-- <button class="button" type="button">Add Provider</button> -->
+        <!-- <app-selectbox></app-selectbox> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12 justify-center" *ngIf="fetching">
+    <app-spinner class="is-large"></app-spinner>
+  </div>
+
+  <div class="column is-12" *ngIf="repos.length && !fetching">
+    <div class="list">
+      <div class="list-items">
+        <app-repos-list-item [repo]="r" *ngFor="let r of repos"></app-repos-list-item>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12" *ngIf="!fetching && !repos.length">
+    <div class="columns">
+      <div class="column is-8 is-offset-2">
+        <div class="notification">
+          <p>
+            <i class="fas fa-info"></i>
+            <span>
+              No imported repositories found.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

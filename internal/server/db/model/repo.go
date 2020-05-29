@@ -6,18 +6,14 @@ import "time"
 type Repository struct {
 	ID            uint   `gorm:"primary_key;auto_increment;not null" json:"id"`
 	UID           string `gorm:"not null" json:"uid"`
-	ProviderName  string `gorm:"not null" json:"provider"`
+	ProviderName  string `gorm:"not null" json:"provider_name"`
 	Namespace     string `gorm:"not null" json:"namespace"`
 	Name          string `gorm:"not null;varchar(255)" json:"name"`
 	FullName      string `gorm:"not null;varchar(255)" json:"full_name"`
 	Private       bool   `json:"private"`
-	HTMLURL       string `json:"html_url"`
-	Description   string `json:"description"`
 	Fork          bool   `json:"fork"`
 	URL           string `json:"url"`
 	GitURL        string `json:"git_url"`
-	Homepage      string `json:"homepage"`
-	Language      string `json:"language"`
 	DefaultBranch string `json:"default_branch"`
 	Visibility    string `json:"visibility"`
 	TimestampModel

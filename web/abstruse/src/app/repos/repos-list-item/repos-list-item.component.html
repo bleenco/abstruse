@@ -1,0 +1,55 @@
+<div class="list-item is-link">
+  <div class="columns">
+    <div class="column is-1">
+      <div class="list-item-content">
+        <span class="label">ID</span>
+        <span class="text has-border">{{ repo?.id }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content">
+        <span class="label">Repository</span>
+        <span class="text">{{ repo?.fullName }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Default Branch</span>
+        <span class="text">{{ repo?.defaultBranch }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Public</span>
+        <span class="text">
+          <i class="fas fa-check icon-small" *ngIf="!repo?.isPrivate"></i>
+          <i class="fas fa-times icon-small" *ngIf="repo?.isPrivate"></i>
+        </span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content" [ngSwitch]="repo?.providerName">
+        <span class="label">Provider</span>
+        <span class="text">
+          <i class="fab fa-github icon-medium" *ngSwitchCase="'github'"></i>
+          <i class="fab fa-gitlab icon-medium" *ngSwitchCase="'gitlab'"></i>
+          <i class="fab fa-bitbucket icon-medium" *ngSwitchCase="'bitbucket'"></i>
+          <img class="icon-medium" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'">
+          <img class="icon-medium" src="/assets/images/icons/gogs.png" *ngSwitchCase="'gogs'">
+          <i class="fab fa-git icon-medium" *ngSwitchDefault></i>
+        </span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Status</span>
+        <span class="text">
+          <span class="tag is-green is-medium">
+            <i class="fas fa-check"></i>
+            Passing
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

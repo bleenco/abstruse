@@ -64,6 +64,7 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
       .subscribe(repo => {
         this.repos = [repo];
       }, err => {
+        console.error(err);
         this.repos = [];
       }, () => {
         this.fetching = false;
