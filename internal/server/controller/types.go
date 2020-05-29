@@ -40,3 +40,7 @@ type loginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type searchForm struct {
+	Keyword string `json:"keyword"`
+}

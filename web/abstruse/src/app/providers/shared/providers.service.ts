@@ -71,4 +71,31 @@ export class ProvidersService {
         }))
       );
   }
+
+  reposFind(providerId: number, keyword: string): Observable<ProviderRepo> {
+    const url = `${getAPIURL()}/providers/${providerId}/repos`;
+    return this.http.post<JSONResponse>(url, { keyword })
+      .pipe(
+        filter(resp => resp.data),
+        map(resp => {
+          return new ProviderRepo(
+            resp.data.id,
+            resp.data.namespace,
+            resp.data.name,
+            new ProviderRepoPermission(
+              resp.data.permission.pull,
+              resp.data.permission.push,
+              resp.data.permission.admin
+            ),
+            resp.data.branch,
+            resp.data.private,
+            resp.data.clone,
+            resp.data.clone_ssh,
+            resp.data.link,
+            new Date(resp.data.created),
+            new Date(resp.data.updated)
+          );
+        })
+      );
+  }
 }

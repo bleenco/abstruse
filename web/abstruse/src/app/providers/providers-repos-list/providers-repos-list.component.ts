@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProviderRepo } from '../shared/repo.class';
 import { ProvidersService } from '../shared/providers.service';
-import { Subscription, fromEvent, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-providers-repos-list',
@@ -29,11 +29,12 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
 
     this.searchSub = this.searchInput
       .pipe(
+        filter(keyword => keyword.length > 1),
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe((term: string) => {
-        console.log(term);
+      .subscribe((keyword: string) => {
+        this.findRepos(keyword);
       });
   }
 
@@ -49,9 +50,21 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
     this.fetching = true;
     this.providersService.listRepos(this.providerId)
       .subscribe(repos => {
-        this.repos = repos;
+        this.repos = this.repos.concat(repos);
       }, err => {
         console.error(err);
+      }, () => {
+        this.fetching = false;
+      });
+  }
+
+  findRepos(keyword: string): void {
+    this.fetching = true;
+    this.providersService.reposFind(this.providerId, keyword)
+      .subscribe(repo => {
+        this.repos = [repo];
+      }, err => {
+        this.repos = [];
       }, () => {
         this.fetching = false;
       });

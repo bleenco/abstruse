@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -77,7 +76,6 @@ func (c *ProviderController) Update(resp http.ResponseWriter, req *http.Request,
 	}
 	defer req.Body.Close()
 	form.UserID = uint(userID)
-	fmt.Printf("%+v\n", form)
 	if _, err := c.service.Update(form); err != nil {
 		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
 		return
@@ -99,6 +97,30 @@ func (c *ProviderController) ReposList(resp http.ResponseWriter, req *http.Reque
 	data, err := c.service.ReposList(uint(providerID), userID, page, size)
 	if err != nil {
 		JSONResponse(resp, http.StatusUnauthorized, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{Data: data})
+}
+
+// ReposFind controller => POST /api/providers/:id/repos
+func (c *ProviderController) ReposFind(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	token := req.Header.Get("Authorization")
+	userID, err := auth.GetUserIDFromJWT(token)
+	if err != nil {
+		JSONResponse(resp, http.StatusUnauthorized, ErrorResponse{Data: err.Error()})
+		return
+	}
+	providerID, _ := strconv.Atoi(params.ByName("id"))
+	var form searchForm
+	decoder := jsoniter.NewDecoder(req.Body)
+	if err := decoder.Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	data, err := c.service.ReposFind(uint(providerID), userID, form.Keyword)
+	if err != nil {
+		JSONResponse(resp, http.StatusNotFound, ErrorResponse{Data: err.Error()})
 		return
 	}
 	JSONResponse(resp, http.StatusOK, Response{Data: data})
