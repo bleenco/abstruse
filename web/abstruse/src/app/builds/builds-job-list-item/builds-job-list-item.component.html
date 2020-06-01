@@ -20,15 +20,13 @@
       </div>
     </div>
     <div class="column is-1 data-column">
-      <span class="status-item is-medium"
+      <span class="tag is-medium"
         [ngClass]="{ 'is-grey': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
-        <div class="status-title">
-          <i class="fas fa-check" *ngIf="job?.status === 'passing'"></i>
-          <i class="fas fa-times" *ngIf="job?.status === 'failing'"></i>
-          <i class="fas fa-clock" *ngIf="job?.status === 'queued'"></i>
-          <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="job?.status === 'running'" />
-          <span>{{ job?.status }}</span>
-        </div>
+        <i class="fas fa-check" *ngIf="job?.status === 'passing'"></i>
+        <i class="fas fa-times" *ngIf="job?.status === 'failing'"></i>
+        <i class="fas fa-clock" *ngIf="job?.status === 'queued'"></i>
+        <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="job?.status === 'running'" />
+        <span>{{ job?.status }}</span>
       </span>
     </div>
     <div class="column is-1 data-column">

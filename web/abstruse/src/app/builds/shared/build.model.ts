@@ -130,7 +130,7 @@ export function generateBuildModel(data: any): Build {
   return new Build(
     Number(data.id),
     data.commit,
-    data.commitMessage,
+    data.commit_message,
     data.branch,
     Number(data.pr),
     data.pr_message,
