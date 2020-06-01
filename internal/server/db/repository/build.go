@@ -9,6 +9,7 @@ import (
 type BuildRepository interface {
 	Find(id uint) (model.Build, error)
 	FindAll(id uint) (model.Build, error)
+	FindBuilds(limit, offset int) ([]model.Build, error)
 	FindByRepoID(repoID uint, limit, offset int) ([]model.Build, error)
 }
 
@@ -34,6 +35,13 @@ func (r *DBBuildRepository) FindAll(id uint) (model.Build, error) {
 	build := model.Build{}
 	err := r.db.Preload("Jobs").Preload("Repository").Find(&build, id).Error
 	return build, err
+}
+
+// FindBuilds returns builds by user id with preloaded jobs and repo data.
+func (r *DBBuildRepository) FindBuilds(limit, offset int) ([]model.Build, error) {
+	var builds []model.Build
+	err := r.db.Preload(("Jobs")).Preload("Repository").Order("created_at desc").Limit(limit).Offset(offset).Find(&builds).Error
+	return builds, err
 }
 
 // FindByRepoID returns builds by repo id with preloaded jobs and repo data.

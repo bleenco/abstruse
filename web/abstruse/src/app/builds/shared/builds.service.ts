@@ -13,6 +13,14 @@ export class BuildsService {
 
   constructor(public http: HttpClient) { }
 
+  findBuilds(limit = 5, offset = 0): Observable<Build[]> {
+    const url = `${getAPIURL()}/builds/all/${limit}/${offset}`;
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        map((resp: JSONResponse) => resp.data.map(generateBuildModel))
+      );
+  }
+
   find(buildID: number): Observable<Build> {
     const url = `${getAPIURL()}/builds/info/${buildID}`;
     return this.http.get<JSONResponse>(url)

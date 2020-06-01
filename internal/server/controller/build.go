@@ -53,6 +53,26 @@ func (c *BuildController) FindAll(resp http.ResponseWriter, req *http.Request, p
 	JSONResponse(resp, http.StatusOK, Response{data})
 }
 
+// FindBuilds handler => GET /api/builds/all/:limit/:offset
+func (c *BuildController) FindBuilds(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	limit, err := strconv.Atoi(params.ByName("limit"))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+		return
+	}
+	offset, err := strconv.Atoi(params.ByName("offset"))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+		return
+	}
+	data, err := c.service.FindBuilds(limit, offset)
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{data})
+}
+
 // FindByRepoID handler => GET /api/builds/repo/:id/:limit/:offset
 func (c BuildController) FindByRepoID(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	repoID, err := strconv.Atoi(params.ByName("id"))

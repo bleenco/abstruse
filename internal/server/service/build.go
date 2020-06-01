@@ -11,6 +11,7 @@ type BuildService interface {
 	StartJob() bool
 	Find(id uint) (model.Build, error)
 	FindAll(id uint) (model.Build, error)
+	FindBuilds(limit, offset int) ([]model.Build, error)
 	FindByRepoID(repoID uint, limit, offset int) ([]model.Build, error)
 }
 
@@ -38,6 +39,11 @@ func (s *DefaultBuildService) Find(id uint) (model.Build, error) {
 // FindAll finds build by id with preloaded jobs and repository data.
 func (s *DefaultBuildService) FindAll(id uint) (model.Build, error) {
 	return s.repo.FindAll(id)
+}
+
+// FindBuilds finds builds with preloaded jobs and repo data.
+func (s *DefaultBuildService) FindBuilds(limit, offset int) ([]model.Build, error) {
+	return s.repo.FindBuilds(limit, offset)
 }
 
 // FindByRepoID finds builds by repo id with preloaded jobs and repo data.

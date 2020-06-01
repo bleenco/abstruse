@@ -20,6 +20,7 @@ func CreateInitControllersFn(
 		r.GET("/api/version", mc.AuthorizationMiddleware(vc.GetInfo))
 		r.GET("/api/workers", mc.AuthorizationMiddleware(wc.GetWorkers))
 
+		r.GET("/api/builds/all/:limit/:offset", mc.AuthorizationMiddleware(bc.FindBuilds))
 		r.GET("/api/builds/info/:id", mc.AuthorizationMiddleware(bc.Find))
 		r.GET("/api/builds/info/:id/all", mc.AuthorizationMiddleware(bc.FindAll))
 		r.GET("/api/builds/repo/:id/:limit/:offset", mc.AuthorizationMiddleware(bc.FindByRepoID))
