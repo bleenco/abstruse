@@ -9,6 +9,9 @@ import { BuildsComponent } from './builds.component';
 import { SharedModule } from '../shared/shared.module';
 import { BuildsService } from './shared/builds.service';
 import { BuildsListItemComponent } from './builds-list-item/builds-list-item.component';
+import { BuildsRepoHistoryComponent } from './builds-repo-history/builds-repo-history.component';
+import { BuildsInfoContainerComponent } from './builds-info-container/builds-info-container.component';
+import { BuildsJobListItemComponent } from './builds-job-list-item/builds-job-list-item.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +20,10 @@ import { BuildsListItemComponent } from './builds-list-item/builds-list-item.com
     BuildsRepoComponent,
     BuildsDetailsComponent,
     BuildsJobDetailsComponent,
-    BuildsListItemComponent
+    BuildsListItemComponent,
+    BuildsRepoHistoryComponent,
+    BuildsInfoContainerComponent,
+    BuildsJobListItemComponent
   ],
   imports: [
     CommonModule,

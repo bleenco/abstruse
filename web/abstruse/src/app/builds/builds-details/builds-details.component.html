@@ -1,1 +1,11 @@
-<p>builds-details works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12" *ngIf="!build">
+    <app-spinner></app-spinner>
+  </div>
+  <div class="column is-12" *ngIf="build">
+    <app-builds-info-container [build]="build"></app-builds-info-container>
+  </div>
+  <div class="column is-12" *ngIf="build">
+    <app-builds-job-list-item [build]="build" [job]="job" *ngFor="let job of build?.jobs"></app-builds-job-list-item>
+  </div>
+</div>

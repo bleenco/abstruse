@@ -1,0 +1,49 @@
+<div class="list-item-slim" [routerLink]="['/builds', build?.repository?.id, job?.buildId, job?.id]">
+  <div class="columns is-marginless is-paddingless">
+    <div class="column is-2 data-column">
+      <div class="data-text has-text-left is-light align-center">
+        <span class="status-line"
+          [ngClass]="{ 'is-queued': job?.status === 'queued', 'is-passing': job?.status === 'passing', 'is-failing': job?.status === 'failing', 'is-running': job?.status === 'running' }"></span>
+        <span>#{{ job?.buildId }}.{{ job?.id }}</span>
+      </div>
+    </div>
+    <div class="column is-3 data-column">
+      <div class="info-text has-text-left">
+        <i class="fas fa-code"></i>
+        <span>{{ job?.env }}</span>
+      </div>
+    </div>
+    <div class="column is-3 data-column">
+      <div class="info-text has-text-left">
+        <i class="fab fa-docker"></i>
+        <span>{{ job?.image }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column">
+      <span class="status-item is-medium"
+        [ngClass]="{ 'is-grey': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
+        <div class="status-title">
+          <i class="fas fa-check" *ngIf="job?.status === 'passing'"></i>
+          <i class="fas fa-times" *ngIf="job?.status === 'failing'"></i>
+          <i class="fas fa-clock" *ngIf="job?.status === 'queued'"></i>
+          <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="job?.status === 'running'" />
+          <span>{{ job?.status }}</span>
+        </div>
+      </span>
+    </div>
+    <div class="column is-1 data-column">
+      <span class="data-text">{{ job?.runningTime | async }}</span>
+    </div>
+    <div class="column is-2 data-column justify-center" appStopPropagation>
+      <button type="button" class="button is-small" [disabled]="job?.processing">
+        <i class="fas fa-sync-alt"></i>
+        <span>Restart</span>
+      </button>
+      <button type="button" class="button is-small"
+        [disabled]="job?.status != 'running' || job?.status != 'queued' || job?.processing">
+        <i class="fas fa-hand-paper"></i>
+        <span>Stop</span>
+      </button>
+    </div>
+  </div>
+</div>

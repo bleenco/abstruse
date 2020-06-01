@@ -1,0 +1,54 @@
+import { Component, OnInit } from '@angular/core';
+import { Repo } from 'src/app/repos/shared/repo.model';
+import { Build } from '../shared/build.model';
+import { ActivatedRoute } from '@angular/router';
+import { ReposService } from 'src/app/repos/shared/repos.service';
+import { BuildsService } from '../shared/builds.service';
+
+@Component({
+  selector: 'app-builds-repo-history',
+  templateUrl: './builds-repo-history.component.html',
+  styleUrls: ['./builds-repo-history.component.sass']
+})
+export class BuildsRepoHistoryComponent implements OnInit {
+  repoid: number;
+  fetchingBuilds: boolean;
+  fetchingMore: boolean;
+  hideMoreButton: boolean;
+  builds: Build[] = [];
+  limit = 5;
+  offset = 0;
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private buildsService: BuildsService
+  ) { }
+
+  ngOnInit(): void {
+    this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
+    this.findBuilds();
+  }
+
+  findBuilds(): void {
+    if (this.offset === 0) {
+      this.fetchingBuilds = true;
+    } else {
+      this.fetchingMore = true;
+    }
+
+    this.buildsService.findByRepoID(this.repoid, this.limit, this.offset)
+      .subscribe((resp: Build[]) => {
+        this.builds = this.builds.concat(resp);
+        if (resp.length === this.limit) {
+          this.offset += resp.length;
+        } else {
+          this.hideMoreButton = true;
+        }
+      }, err => {
+        console.error(err);
+      }, () => {
+        this.fetchingBuilds = false;
+        this.fetchingMore = false;
+      });
+  }
+}

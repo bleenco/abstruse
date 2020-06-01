@@ -1,5 +1,4 @@
 <div class="columns is-multiline">
-
   <div class="column is-12">
     <div class="main-heading">
       <div class="main-heading-left">
@@ -12,37 +11,6 @@
       </div>
     </div>
   </div>
-
-  <div class="column is-12 justify-center" *ngIf="fetching || fetchingBuilds">
-    <app-spinner class="is-large"></app-spinner>
-  </div>
-
-  <div class="column is-12" *ngIf="builds.length && !fetching && !fetchingBuilds">
-    <app-builds-list-item [build]="b" *ngFor="let b of builds"></app-builds-list-item>
-
-    <div class="more-button-container align-center justify-center mtb10" *ngIf="!hideMoreButton">
-      <button type="button" class="button" (click)="findBuilds()">
-        <!-- <img src="/assets/images/icons/loader-bars-dark.svg" class="mr0" *ngIf="fetchingMore"> -->
-        <app-spinner class="mr0" *ngIf="fetchingMore"></app-spinner>
-        <i class="fas fa-ellipsis-v" *ngIf="!fetchingMore"></i>
-        <span *ngIf="!fetchingMore">Load More</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="column is-12" *ngIf="!fetching && !fetchingBuilds && !builds.length">
-    <div class="columns">
-      <div class="column is-8 is-offset-2">
-        <div class="notification">
-          <p>
-            <i class="fas fa-info"></i>
-            <span>
-              No builds for repository found.
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
+
+<router-outlet></router-outlet>
