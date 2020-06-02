@@ -9,10 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/worker/docker"
-
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/jkuri/abstruse/internal/worker/docker"
 	"github.com/jkuri/abstruse/internal/worker/stats"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"

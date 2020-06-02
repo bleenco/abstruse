@@ -7,7 +7,7 @@ import (
 
 // RepositoryService interface
 type RepositoryService interface {
-	Find(id uint) (*model.Repository, error)
+	Find(id, userID uint) (*model.Repository, error)
 	List(userID uint) ([]model.Repository, error)
 	Create(data repository.SCMRepository, provider *model.Provider) (*model.Repository, error)
 }
@@ -23,8 +23,8 @@ func NewRepositoryService(repository repository.RepoRepository) RepositoryServic
 }
 
 // Find method.
-func (s *DefaultRepositoryService) Find(id uint) (*model.Repository, error) {
-	return s.repository.Find(id)
+func (s *DefaultRepositoryService) Find(id, userID uint) (*model.Repository, error) {
+	return s.repository.Find(id, userID)
 }
 
 // List method.

@@ -40,5 +40,6 @@ require (
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	google.golang.org/grpc v1.29.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/yaml.v2 v2.2.8
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )

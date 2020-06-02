@@ -93,3 +93,15 @@ func (s *SCM) FindRepo(name string) (*scm.Repository, error) {
 	repo, _, err := s.client.Repositories.Find(s.ctx, name)
 	return repo, err
 }
+
+// FindCommit finds commit.
+func (s *SCM) FindCommit(repo, ref string) (*scm.Commit, error) {
+	commit, _, err := s.client.Git.FindCommit(s.ctx, repo, ref)
+	return commit, err
+}
+
+// FindContent finds content of a repository file.
+func (s *SCM) FindContent(repo, ref, path string) (*scm.Content, error) {
+	content, _, err := s.client.Contents.Find(s.ctx, repo, path, ref)
+	return content, err
+}

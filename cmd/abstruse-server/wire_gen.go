@@ -66,16 +66,17 @@ func CreateApp(cfg string) (*server.App, error) {
 		return nil, err
 	}
 	websocketApp := websocket.NewApp(logger)
-	appApp, err := app.NewApp(appOptions, websocketApp, logger)
+	repoRepository := repository.NewDBRepoRepository(gormDB)
+	jobRepository := repository.NewDBJobRepository(gormDB)
+	buildRepository := repository.NewDBBuildRepository(gormDB)
+	appApp, err := app.NewApp(appOptions, websocketApp, repoRepository, jobRepository, buildRepository, logger)
 	if err != nil {
 		return nil, err
 	}
 	workerService := service.NewWorkerService(logger, appApp)
 	workerController := controller.NewWorkerController(logger, workerService)
-	buildRepository := repository.NewDBBuildRepository(gormDB)
 	buildService := service.NewBuildService(buildRepository, appApp)
 	buildController := controller.NewBuildController(buildService)
-	repoRepository := repository.NewDBRepoRepository(gormDB)
 	repositoryService := service.NewRepositoryService(repoRepository)
 	repositoryController := controller.NewRepositoryController(repositoryService)
 	providerRepository := repository.NewDBProviderRepository(gormDB)

@@ -114,7 +114,7 @@ func (s *Scheduler) SetSize(max, running int32) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.max, s.running = max, running
-	s.logger.Debugf("capacity: [%d / %d]\n", s.running, s.max)
+	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 	if s.max > s.running {
 		select {
 		case s.readych <- struct{}{}:

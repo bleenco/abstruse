@@ -11,6 +11,7 @@ type BuildRepository interface {
 	FindAll(id uint) (model.Build, error)
 	FindBuilds(limit, offset int) ([]model.Build, error)
 	FindByRepoID(repoID uint, limit, offset int) ([]model.Build, error)
+	Create(data model.Build) (model.Build, error)
 }
 
 // DBBuildRepository struct.
@@ -49,4 +50,10 @@ func (r *DBBuildRepository) FindByRepoID(repoID uint, limit, offset int) ([]mode
 	var builds []model.Build
 	err := r.db.Preload("Jobs").Preload("Repository").Where("repository_id = ?", repoID).Order("created_at desc").Limit(limit).Offset(offset).Find(&builds).Error
 	return builds, err
+}
+
+// Create inserts new build and returns inserted item.
+func (r *DBBuildRepository) Create(data model.Build) (model.Build, error) {
+	err := r.db.Create(&data).Error
+	return data, err
 }

@@ -8,4 +8,5 @@ var ProviderSet = wire.NewSet(
 	NewDBRepoRepository,
 	NewDBProviderRepository,
 	NewDBBuildRepository,
+	NewDBJobRepository,
 )

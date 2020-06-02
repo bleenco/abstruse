@@ -65,8 +65,6 @@ func (app *App) Start() error {
 		}
 	}()
 
-	// go app.scheduleJobs()
-
 	return <-errch
 }
 

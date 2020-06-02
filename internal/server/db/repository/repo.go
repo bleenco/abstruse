@@ -9,7 +9,7 @@ import (
 
 // RepoRepository interface.
 type RepoRepository interface {
-	Find(ID uint) (*model.Repository, error)
+	Find(id, userID uint) (*model.Repository, error)
 	List(UserID uint) ([]model.Repository, error)
 	Create(data SCMRepository, provider *model.Provider) (*model.Repository, error)
 }
@@ -25,9 +25,9 @@ func NewDBRepoRepository(db *gorm.DB) RepoRepository {
 }
 
 // Find returns repo by id.
-func (r *DBRepoRepository) Find(ID uint) (*model.Repository, error) {
+func (r *DBRepoRepository) Find(id, userID uint) (*model.Repository, error) {
 	repo := &model.Repository{}
-	if err := r.db.Model(repo).Where("id = ?", ID).First(repo).Error; err != nil {
+	if err := r.db.Model(repo).Where("id = ? AND user_id = ?", id, userID).Preload("Provider").First(repo).Error; err != nil {
 		return nil, err
 	}
 	return repo, nil
