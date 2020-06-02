@@ -18,7 +18,7 @@ COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
-RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/cespare/reflex github.com/google/wire/cmd/...
+RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go@v1.3 github.com/cespare/reflex github.com/google/wire/cmd/...
 
 RUN make protoc && make statik && make wire && make server
 
