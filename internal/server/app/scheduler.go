@@ -28,6 +28,7 @@ type Scheduler struct {
 	queuech     chan *Job
 	processes   map[uint64]*Job
 	queue       *recipe.PriorityQueue
+	readych     chan struct{}
 	donech      chan bool
 	app         *App
 	logger      *zap.SugaredLogger
@@ -45,13 +46,13 @@ type Job struct {
 // NewScheduler returns new instance of Scheduler.
 func NewScheduler(app *App, logger *zap.Logger) *Scheduler {
 	return &Scheduler{
-		concurrency: channels.NewResizableChannel(),
-		jobch:       make(chan *Job),
-		queuech:     make(chan *Job),
-		processes:   make(map[uint64]*Job),
-		donech:      make(chan bool),
-		app:         app,
-		logger:      logger.With(zap.String("type", "scheduler")).Sugar(),
+		jobch:     make(chan *Job),
+		queuech:   make(chan *Job),
+		processes: make(map[uint64]*Job),
+		readych:   make(chan struct{}, 1),
+		donech:    make(chan bool),
+		app:       app,
+		logger:    logger.With(zap.String("type", "scheduler")).Sugar(),
 	}
 }
 
@@ -63,6 +64,7 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 	go func() {
 		for {
 			if data, err := s.queue.Dequeue(); err == nil {
+				s.add()
 				var job *Job
 				if perr := jsoniter.UnmarshalFromString(data, &job); perr == nil {
 					s.jobch <- job
@@ -81,7 +83,6 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 			}(job)
 		case job := <-s.jobch:
 			go func(job *Job) {
-				s.add()
 				defer s.done()
 				if jerr := s.startJobTask(job); jerr == nil {
 					s.finishJobTask(job)
@@ -110,13 +111,17 @@ func (s *Scheduler) ScheduleJobTask(job *Job) {
 // SetSize sets max and running variables and resizes concurrency
 // channel if necessary.
 func (s *Scheduler) SetSize(max, running int32) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.max, s.running = max, running
-	if max > 0 {
-		s.concurrency.Resize(channels.BufferCap(max))
-	} else {
-		s.concurrency = channels.NewResizableChannel()
+	s.logger.Debugf("capacity: [%d / %d]\n", s.running, s.max)
+	if s.max > s.running {
+		select {
+		case s.readych <- struct{}{}:
+		default:
+			break
+		}
 	}
-	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 }
 
 func (s *Scheduler) startJobTask(job *Job) error {
@@ -145,20 +150,21 @@ func (s *Scheduler) finishJobTask(job *Job) {
 }
 
 func (s *Scheduler) add() {
-	select {
-	case s.concurrency.In() <- struct{}{}:
-		break
-	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.running++
 }
 
 func (s *Scheduler) done() {
-	<-s.concurrency.Out()
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.running--
+	if s.max == s.running {
+		select {
+		case s.readych <- struct{}{}:
+			s.running--
+			break
+		}
+	}
 }
 
 func (s *Scheduler) getWorker() *Worker {

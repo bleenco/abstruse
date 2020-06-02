@@ -3,8 +3,9 @@ module github.com/jkuri/abstruse
 go 1.14
 
 require (
+	github.com/Microsoft/go-winio v0.4.14 // indirect
+	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/cenkalti/backoff/v4 v4.0.2
-	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
@@ -16,6 +17,7 @@ require (
 	github.com/eapache/queue v1.1.0 // indirect
 	github.com/fatih/color v1.9.0
 	github.com/felixge/httpsnoop v1.0.1
+	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
 	github.com/gobwas/ws v1.0.3
@@ -27,9 +29,8 @@ require (
 	github.com/jkuri/statik v0.3.0
 	github.com/json-iterator/go v1.1.9
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/ogier/pflag v0.0.1 // indirect
+	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/shirou/gopsutil v2.20.5+incompatible
 	github.com/spf13/viper v1.7.0
