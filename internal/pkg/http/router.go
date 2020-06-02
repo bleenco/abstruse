@@ -14,6 +14,7 @@ type Router struct {
 	*httprouter.Router
 }
 
+// InitControllers func
 type InitControllers func(r *Router)
 
 // NewRouter returns new instance of router.

@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/certgen"
-	"golang.org/x/net/http2"
-
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
 	"github.com/google/wire"
+	"github.com/jkuri/abstruse/internal/pkg/certgen"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"golang.org/x/net/http2"
 )
 
 // Options defines configuration for http server.
