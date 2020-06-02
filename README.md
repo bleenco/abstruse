@@ -4,7 +4,9 @@
 
 # Status
 
-This project is a work in progress.
+This project is a work in progress, if you have time to contribute you are very welcome.
+
+Please check [Makefile](Makefile) in order to build up the project.
 
 # Preview
 
