@@ -13,17 +13,19 @@ type BuildService interface {
 	FindAll(id uint) (model.Build, error)
 	FindBuilds(limit, offset int) ([]model.Build, error)
 	FindByRepoID(repoID uint, limit, offset int) ([]model.Build, error)
+	FindJob(id uint) (*model.Job, error)
 }
 
 // DefaultBuildService comment
 type DefaultBuildService struct {
-	repo repository.BuildRepository
-	app  *app.App
+	repo    repository.BuildRepository
+	jobRepo repository.JobRepository
+	app     *app.App
 }
 
 // NewBuildService returns new instance of BuildService
-func NewBuildService(repo repository.BuildRepository, app *app.App) BuildService {
-	return &DefaultBuildService{repo, app}
+func NewBuildService(repo repository.BuildRepository, jobRepo repository.JobRepository, app *app.App) BuildService {
+	return &DefaultBuildService{repo, jobRepo, app}
 }
 
 // TriggerBuild triggers build for repository.
@@ -52,4 +54,9 @@ func (s *DefaultBuildService) FindBuilds(limit, offset int) ([]model.Build, erro
 // FindByRepoID finds builds by repo id with preloaded jobs and repo data.
 func (s *DefaultBuildService) FindByRepoID(repoID uint, limit, offset int) ([]model.Build, error) {
 	return s.repo.FindByRepoID(repoID, limit, offset)
+}
+
+// FindJob finds job by id.
+func (s *DefaultBuildService) FindJob(id uint) (*model.Job, error) {
+	return s.jobRepo.Find(id)
 }

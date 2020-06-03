@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { getAPIURL } from 'src/app/core/shared/shared-functions';
-import { Build, generateBuildModel } from './build.model';
+import { Build, generateBuildModel, Job, generateJobModel } from './build.model';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -42,6 +42,14 @@ export class BuildsService {
     return this.http.get<JSONResponse>(url)
       .pipe(
         map((resp: JSONResponse) => resp.data.map(generateBuildModel))
+      );
+  }
+
+  findJob(jobID: number): Observable<Job> {
+    const url = `${getAPIURL()}/builds/jobs/${jobID}`;
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        map((resp: JSONResponse) => generateJobModel(resp.data))
       );
   }
 

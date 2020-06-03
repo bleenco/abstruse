@@ -17,6 +17,7 @@ import { PieChartModule } from './charts/pie-chart/pie-chart.module';
 import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.module';
 import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 import { SpinnerComponent } from './widgets/spinner/spinner.component';
+import { TerminalComponent } from './widgets/terminal/terminal.component';
 
 @NgModule({
   imports: [
@@ -26,12 +27,13 @@ import { SpinnerComponent } from './widgets/spinner/spinner.component';
     ModalModule,
     LineChartModule,
     PieChartModule,
-    RealtimeChartModule,
+    RealtimeChartModule
   ],
   declarations: [
     ProgressBarComponent,
     SelectboxComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    TerminalComponent
   ],
   exports: [
     CommonModule,
@@ -43,7 +45,8 @@ import { SpinnerComponent } from './widgets/spinner/spinner.component';
     PieChartModule,
     RealtimeChartModule,
     SelectboxComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    TerminalComponent
   ]
 })
 export class SharedModule {

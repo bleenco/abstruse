@@ -1,1 +1,17 @@
-<p>builds-job-details works!</p>
+<div class="columns is-multiline">
+
+  <div class="column is-12" *ngIf="!job && fetching">
+    <app-spinner class="is-large"></app-spinner>
+  </div>
+
+  <div class="column is-12" *ngIf="job && !fetching">
+    <app-builds-info-container [job]="job"></app-builds-info-container>
+  </div>
+
+  <div class="column is-12" *ngIf="job && !fetching">
+    <div class="console-output">
+      <app-terminal [data]="job?.log"></app-terminal>
+    </div>
+  </div>
+
+</div>

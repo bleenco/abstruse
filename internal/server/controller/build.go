@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/server/db/model"
 	"github.com/jkuri/abstruse/internal/server/service"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/julienschmidt/httprouter"
@@ -120,4 +121,36 @@ func (c BuildController) FindByRepoID(resp http.ResponseWriter, req *http.Reques
 		return
 	}
 	JSONResponse(resp, http.StatusOK, Response{data})
+}
+
+// FindJob handler => GET /api/builds/jobs/:id
+func (c BuildController) FindJob(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	jobID, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+		return
+	}
+	data, err := c.service.FindJob(uint(jobID))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+		return
+	}
+	type jobResponse struct {
+		model.Job
+		Log string `json:"log"`
+	}
+	job := &jobResponse{}
+	job.ID = data.ID
+	job.Commands = data.Commands
+	job.Image = data.Image
+	job.Env = data.Env
+	job.StartTime = data.StartTime
+	job.EndTime = data.EndTime
+	job.Status = data.Status
+	job.Log = data.Log
+	job.BuildID = data.BuildID
+	job.CreatedAt = data.CreatedAt
+	job.UpdatedAt = data.UpdatedAt
+
+	JSONResponse(resp, http.StatusOK, Response{job})
 }
