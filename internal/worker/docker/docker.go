@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -18,7 +19,7 @@ import (
 var mountFolder string
 
 func init() {
-	dir, err := ioutil.TempDir("/tmp", "abstruse-dir-")
+	dir, err := ioutil.TempDir("/tmp", "abstruse-dir")
 	if err != nil {
 		panic(err)
 	}
@@ -44,7 +45,7 @@ func init() {
 }
 
 // RunContainer runs container.
-func RunContainer(name, image string, commands [][]string, env []string, logch chan<- []byte) error {
+func RunContainer(name, image string, commands [][]string, env []string, dir string, logch chan<- []byte) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -52,13 +53,13 @@ func RunContainer(name, image string, commands [][]string, env []string, logch c
 	}
 	defer close(logch)
 
-	resp, err := createContainer(cli, name, image, []string{"/bin/bash"}, env)
+	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env)
 	if err != nil {
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
-			resp, err = createContainer(cli, name, image, []string{"/bin/sh"}, env)
+			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env)
 			if err != nil {
 				return err
 			}
@@ -75,6 +76,7 @@ func RunContainer(name, image string, commands [][]string, env []string, logch c
 				return err
 			}
 		}
+		logch <- []byte("===> " + strings.Join(command, " ") + "\n")
 		command = append([]string{"abstruse-pty"}, command...)
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
@@ -100,7 +102,10 @@ func RunContainer(name, image string, commands [][]string, env []string, logch c
 	}
 
 	logch <- []byte(genExitMessage(exitCode))
-	return nil
+	if exitCode == 0 {
+		return nil
+	}
+	return fmt.Errorf("errored: %d", exitCode)
 }
 
 // Exec executes specified command inside Docker container.
@@ -148,7 +153,7 @@ func startContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func createContainer(cli *client.Client, name, image string, cmd []string, env []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string) (container.ContainerCreateCreatedBody, error) {
 	if id, exists := containerExists(cli, name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
 			return container.ContainerCreateCreatedBody{}, err
@@ -157,6 +162,7 @@ func createContainer(cli *client.Client, name, image string, cmd []string, env [
 
 	mounts := []mount.Mount{
 		{Type: mount.TypeBind, Source: path.Join(mountFolder, "abstruse-pty"), Target: "/bin/abstruse-pty"},
+		{Type: mount.TypeBind, Source: path.Join(dir), Target: "/build"},
 		{Type: mount.TypeBind, Source: "/var/run/docker.sock", Target: "/var/run/docker.sock"},
 	}
 

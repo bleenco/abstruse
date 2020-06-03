@@ -5,12 +5,16 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
+	"os"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/worker/docker"
 	"github.com/jkuri/abstruse/internal/worker/stats"
 	pb "github.com/jkuri/abstruse/proto"
@@ -174,9 +178,38 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 			}
 		}()
 
-		if err := docker.RunContainer(name, image, commands, env, logch); err != nil {
+		// TODO: separate func
+		dir, err := ioutil.TempDir("/tmp", "abstruse-build")
+		if err != nil {
+			panic(err)
+		}
+		defer os.RemoveAll(dir)
+		scm, err := scm.NewSCM(context.Background(), in.GetProvider(), in.GetUrl(), in.GetCredentials())
+		if err != nil {
+			panic(err)
+		}
+		contents, err := scm.ListContent(in.GetRepo(), in.GetCommitSHA(), "/")
+		if err != nil {
+			panic(err)
+		}
+		for _, content := range contents {
+			filePath := path.Join(dir, content.Path)
+			if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
+				panic(err)
+			}
+		}
+
+		if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
+			jobStatus := &pb.JobStatus{
+				Id:   in.GetId(),
+				Code: pb.JobStatus_Failing,
+			}
+			if serr := stream.Send(jobStatus); serr != nil && serr != io.EOF {
+				errch <- serr
+			} else {
+				errch <- err
+			}
 			s.logger.Errorf("%v", err)
-			errch <- err
 		} else {
 			jobStatus := &pb.JobStatus{
 				Id:   in.GetId(),

@@ -105,3 +105,22 @@ func (s *SCM) FindContent(repo, ref, path string) (*scm.Content, error) {
 	content, _, err := s.client.Contents.Find(s.ctx, repo, path, ref)
 	return content, err
 }
+
+// ListContent returns a list of contents in a repo directory by path.
+func (s *SCM) ListContent(repo, ref, path string) ([]*scm.Content, error) {
+	contents, _, err := s.client.Contents.List(s.ctx, repo, path, ref, scm.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	var content []*scm.Content
+	for _, c := range contents {
+		if c.Kind == scm.ContentKindFile {
+			scmcontent, err := s.FindContent(repo, ref, c.Path)
+			if err != nil {
+				return nil, err
+			}
+			content = append(content, scmcontent)
+		}
+	}
+	return content, nil
+}

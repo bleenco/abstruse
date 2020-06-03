@@ -27,9 +27,12 @@ message JobTask {
   repeated string env = 6;
   string url = 7;
   string credentials = 8;
-  uint32 priority = 9;
-  google.protobuf.Timestamp start_time = 10;
-  google.protobuf.Timestamp end_time = 11;
+  string provider = 9;
+  string commitSHA = 10;
+  string repo = 11;
+  uint32 priority = 12;
+  google.protobuf.Timestamp start_time = 13;
+  google.protobuf.Timestamp end_time = 14;
 }
 
 message JobStatus {

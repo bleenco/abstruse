@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 
+	"github.com/golang/protobuf/ptypes"
 	pb "github.com/jkuri/abstruse/proto"
 )
 
@@ -26,11 +27,20 @@ func (w *Worker) JobProcess(job *Job) error {
 
 		switch code := data.GetCode(); code {
 		case pb.JobStatus_Passing:
-			w.logger.Debugf("job passing: %+v", data)
+			job.Status = "passing"
+			job.Task.EndTime = ptypes.TimestampNow()
+			if err := w.app.saveJob(job); err != nil {
+				return err
+			}
+			w.logger.Debugf("job %d passing: %+v", job.ID, data)
 		case pb.JobStatus_Failing:
-			w.logger.Debugf("job failed: %+v", data)
+			job.Status = "failing"
+			job.Task.EndTime = ptypes.TimestampNow()
+			if err := w.app.saveJob(job); err != nil {
+				return err
+			}
+			w.logger.Debugf("job %d failed: %+v", job.ID, data)
 		case pb.JobStatus_Running:
-			// fmt.Printf("%s\n", string(data.GetContent()))
 			job.Log = append(job.Log, string(data.GetContent()))
 		}
 	}

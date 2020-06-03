@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/server/db/model"
 	"github.com/jkuri/abstruse/internal/server/parser"
@@ -13,7 +14,7 @@ import (
 
 // StartJob temp func.
 func (app *App) StartJob() error {
-	repoID, userID, ref := 1, 1, "8e1c6452d4"
+	repoID, userID, ref := 1, 1, "fc17be7670"
 
 	repo, err := app.repoRepository.Find(uint(repoID), uint(userID))
 	if err != nil {
@@ -27,7 +28,6 @@ func (app *App) StartJob() error {
 	if err != nil {
 		return err
 	}
-	// fmt.Printf("%+v\n", commit)
 	content, err := scm.FindContent(repo.FullName, commit.Sha, ".abstruse.yml")
 	if err != nil {
 		return err
@@ -40,7 +40,6 @@ func (app *App) StartJob() error {
 	if err != nil {
 		return err
 	}
-	// fmt.Printf("%v %v\n", config.Commands, config.Env)
 
 	buildModel := model.Build{
 		Branch:          "master",
@@ -61,21 +60,27 @@ func (app *App) StartJob() error {
 	if err != nil {
 		return err
 	}
-	jobModel := model.Job{
-		Image:    config.Parsed.Image,
-		Commands: string(commandsJSON),
-		Env:      strings.Join(config.Env, " "),
-		BuildID:  build.ID,
-	}
-	job, err := app.jobRepository.Create(jobModel)
-	if err != nil {
-		return err
+
+	for _, env := range config.Env {
+		jobModel := model.Job{
+			Image:    config.Parsed.Image,
+			Commands: string(commandsJSON),
+			Env:      env,
+			BuildID:  build.ID,
+		}
+		job, err := app.jobRepository.Create(jobModel)
+		if err != nil {
+			return err
+		}
+		if err := app.scheduleJob(job, repo.Provider, commit.Sha, repo.FullName); err != nil {
+			return err
+		}
 	}
 
-	return app.scheduleJob(job)
+	return nil
 }
 
-func (app *App) scheduleJob(job model.Job) error {
+func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, repo string) error {
 	errch := make(chan error)
 
 	go func() {
@@ -87,12 +92,17 @@ func (app *App) scheduleJob(job model.Job) error {
 			ID:      uint64(job.ID),
 			BuildID: uint64(job.BuildID),
 			Task: &pb.JobTask{
-				Id:       uint64(job.ID),
-				BuildId:  uint64(job.BuildID),
-				Priority: 1000,
-				Image:    "ubuntu_nvm",
-				Commands: commands,
-				Env:      strings.Split(job.Env, " "),
+				Id:          uint64(job.ID),
+				BuildId:     uint64(job.BuildID),
+				Priority:    1000,
+				Image:       job.Image,
+				Commands:    commands,
+				Env:         strings.Split(job.Env, " "),
+				Provider:    provider.Name,
+				Url:         provider.URL,
+				Credentials: provider.AccessToken,
+				CommitSHA:   commitSHA,
+				Repo:        repo,
 			},
 		}
 		app.Scheduler.ScheduleJobTask(j)
@@ -100,4 +110,19 @@ func (app *App) scheduleJob(job model.Job) error {
 	}()
 
 	return <-errch
+}
+
+func (app *App) saveJob(job *Job) error {
+	start, _ := ptypes.Timestamp(job.Task.StartTime)
+	end, _ := ptypes.Timestamp(job.Task.EndTime)
+	j := model.Job{
+		ID:        uint(job.ID),
+		BuildID:   uint(job.BuildID),
+		Log:       strings.Join(job.Log, ""),
+		Status:    job.Status,
+		StartTime: &start,
+		EndTime:   &end,
+	}
+	j, err := app.jobRepository.Update(j)
+	return err
 }

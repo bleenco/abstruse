@@ -40,6 +40,7 @@ type Job struct {
 	BuildID  uint64      `json:"build_id"`
 	WorkerID string      `json:"worker_id"`
 	Log      []string    `json:"log"`
+	Status   string      `json:"status"`
 	Task     *pb.JobTask `json:"task"`
 }
 
@@ -84,9 +85,8 @@ func (s *Scheduler) Start(client *clientv3.Client) {
 		case job := <-s.jobch:
 			go func(job *Job) {
 				defer s.done()
-				if jerr := s.startJobTask(job); jerr == nil {
-					s.finishJobTask(job)
-				}
+				s.startJobTask(job)
+				s.finishJobTask(job)
 			}(job)
 		case <-s.donech:
 			return
@@ -127,9 +127,9 @@ func (s *Scheduler) SetSize(max, running int32) {
 func (s *Scheduler) startJobTask(job *Job) error {
 	worker := s.getWorker()
 	if worker != nil {
+		job.Status = "running"
 		job.Task.StartTime = ptypes.TimestampNow()
 		job.WorkerID = worker.ID
-		defer func() { job.Task.EndTime = ptypes.TimestampNow() }()
 		if err := worker.JobProcess(job); err != nil {
 			return err
 		}

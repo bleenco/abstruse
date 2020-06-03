@@ -8,6 +8,7 @@ import (
 // JobRepository interface.
 type JobRepository interface {
 	Create(data model.Job) (model.Job, error)
+	Update(data model.Job) (model.Job, error)
 }
 
 // DBJobRepository struct
@@ -23,5 +24,11 @@ func NewDBJobRepository(db *gorm.DB) JobRepository {
 // Create inserts new job and returns inserted item.
 func (r *DBJobRepository) Create(data model.Job) (model.Job, error) {
 	err := r.db.Create(&data).Error
+	return data, err
+}
+
+// Update updates job data and returns updated model.
+func (r *DBJobRepository) Update(data model.Job) (model.Job, error) {
+	err := r.db.Model(&data).Updates(data).Error
 	return data, err
 }

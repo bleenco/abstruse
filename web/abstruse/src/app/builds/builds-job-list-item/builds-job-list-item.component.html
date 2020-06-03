@@ -24,7 +24,7 @@
         [ngClass]="{ 'is-grey': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
         <i class="fas fa-check" *ngIf="job?.status === 'passing'"></i>
         <i class="fas fa-times" *ngIf="job?.status === 'failing'"></i>
-        <i class="fas fa-clock" *ngIf="job?.status === 'queued'"></i>
+        <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
         <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="job?.status === 'running'" />
         <span>{{ job?.status }}</span>
       </span>
