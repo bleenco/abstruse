@@ -6,8 +6,10 @@
         <h2>{{ repo?.namespace }} / {{ repo?.name }}</h2>
       </div>
       <div class="main-heading-right">
-        <!-- <button class="button" type="button">Add Provider</button> -->
-        <!-- <app-selectbox></app-selectbox> -->
+        <button type="button" class="button" (click)="triggerBuild()" [disabled]="trigger">
+          <i class="fas fa-hammer"></i>
+          <span>Trigger Build</span>
+        </button>
       </div>
     </div>
   </div>

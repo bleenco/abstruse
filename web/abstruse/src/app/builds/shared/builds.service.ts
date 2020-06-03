@@ -45,8 +45,8 @@ export class BuildsService {
       );
   }
 
-  startJob(): Observable<JSONResponse> {
-    const url = getAPIURL() + '/build/start';
-    return this.http.post<JSONResponse>(url, {});
+  triggerBuild(repoID: number): Observable<JSONResponse> {
+    const url = `${getAPIURL()}/builds/trigger`;
+    return this.http.post<JSONResponse>(url, { id: String(repoID) });
   }
 }

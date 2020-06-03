@@ -8,7 +8,7 @@ import (
 
 // BuildService interface
 type BuildService interface {
-	StartJob() bool
+	TriggerBuild(repoID, userID uint) bool
 	Find(id uint) (model.Build, error)
 	FindAll(id uint) (model.Build, error)
 	FindBuilds(limit, offset int) ([]model.Build, error)
@@ -26,9 +26,9 @@ func NewBuildService(repo repository.BuildRepository, app *app.App) BuildService
 	return &DefaultBuildService{repo, app}
 }
 
-// StartJob starts some random jobs
-func (s *DefaultBuildService) StartJob() bool {
-	if err := s.app.StartJob(); err != nil {
+// TriggerBuild triggers build for repository.
+func (s *DefaultBuildService) TriggerBuild(repoID, userID uint) bool {
+	if err := s.app.TriggerBuild(repoID, userID); err != nil {
 		return false
 	}
 	return true

@@ -12,11 +12,9 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-// StartJob temp func.
-func (app *App) StartJob() error {
-	repoID, userID, ref := 1, 1, "fc17be7670"
-
-	repo, err := app.repoRepository.Find(uint(repoID), uint(userID))
+// TriggerBuild temp func.
+func (app *App) TriggerBuild(repoID, userID uint) error {
+	repo, err := app.repoRepository.Find(repoID, userID)
 	if err != nil {
 		return err
 	}
@@ -24,7 +22,7 @@ func (app *App) StartJob() error {
 	if err != nil {
 		return err
 	}
-	commit, err := scm.FindCommit(repo.FullName, ref)
+	commit, err := scm.LastCommit(repo.FullName, repo.DefaultBranch)
 	if err != nil {
 		return err
 	}
@@ -42,7 +40,7 @@ func (app *App) StartJob() error {
 	}
 
 	buildModel := model.Build{
-		Branch:          "master",
+		Branch:          repo.DefaultBranch,
 		Commit:          commit.Sha,
 		CommitMessage:   commit.Message,
 		Config:          string(content.Data),

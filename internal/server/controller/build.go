@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/server/service"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -18,9 +20,31 @@ func NewBuildController(service service.BuildService) *BuildController {
 	return &BuildController{service}
 }
 
-// StartJob temporary function to test builds.
-func (c *BuildController) StartJob(resp http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	JSONResponse(resp, http.StatusOK, Response{Data: c.service.StartJob()})
+type triggerForm struct {
+	ID string `json:"id"`
+}
+
+// TriggerBuild triggers build for repository
+func (c *BuildController) TriggerBuild(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	token := req.Header.Get("Authorization")
+	userID, err := auth.GetUserIDFromJWT(token)
+	if err != nil {
+		JSONResponse(resp, http.StatusUnauthorized, ErrorResponse{Data: err.Error()})
+		return
+	}
+	var form triggerForm
+	decoder := jsoniter.NewDecoder(req.Body)
+	if err := decoder.Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	repoID, err := strconv.Atoi(form.ID)
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{Data: c.service.TriggerBuild(uint(repoID), uint(userID))})
 }
 
 // Find handler => GET /api/builds/:id

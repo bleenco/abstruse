@@ -23,11 +23,6 @@ export class BuildsHistoryComponent implements OnInit {
     this.findBuilds();
   }
 
-  tempStartJobs(): void {
-    this.buildsService.startJob()
-      .subscribe(resp => console.log(resp));
-  }
-
   findBuilds(): void {
     if (this.offset === 0) {
       this.fetchingBuilds = true;

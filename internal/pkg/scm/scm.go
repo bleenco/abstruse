@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/bitbucket"
@@ -13,6 +14,7 @@ import (
 	"github.com/drone/go-scm/scm/driver/gogs"
 	"github.com/drone/go-scm/scm/driver/stash"
 	"github.com/drone/go-scm/scm/transport"
+	jsoniter "github.com/json-iterator/go"
 )
 
 // State defines build state.
@@ -94,6 +96,41 @@ func (s *SCM) FindRepo(name string) (*scm.Repository, error) {
 	return repo, err
 }
 
+// ListCommits returns list of commits.
+func (s *SCM) ListCommits(repo, branch string) ([]*scm.Commit, error) {
+	if s.provider != "gitea" {
+		commits, _, err := s.client.Git.ListCommits(s.ctx, repo, scm.CommitListOptions{Ref: branch})
+		return commits, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/commits?sha=%s", repo, branch)
+	out := []*commitInfo{}
+	res, err := s.client.Do(s.ctx, &scm.Request{Method: "GET", Path: path})
+	if err != nil {
+		return nil, err
+	}
+	if err := jsoniter.NewDecoder(res.Body).Decode(&out); err != nil {
+		return nil, err
+	}
+	var commits []*scm.Commit
+	for _, o := range out {
+		commits = append(commits, convertCommitInfo(o))
+	}
+	return commits, nil
+}
+
+// LastCommit returns last commit.
+func (s *SCM) LastCommit(repo, branch string) (*scm.Commit, error) {
+	commits, err := s.ListCommits(repo, branch)
+	if err != nil {
+		return nil, err
+	}
+	if len(commits) > 0 {
+		return commits[0], nil
+	} else {
+		return nil, fmt.Errorf("not found")
+	}
+}
+
 // FindCommit finds commit.
 func (s *SCM) FindCommit(repo, ref string) (*scm.Commit, error) {
 	commit, _, err := s.client.Git.FindCommit(s.ctx, repo, ref)
@@ -124,3 +161,78 @@ func (s *SCM) ListContent(repo, ref, path string) ([]*scm.Content, error) {
 	}
 	return content, nil
 }
+
+func convertCommitInfo(src *commitInfo) *scm.Commit {
+	return &scm.Commit{
+		Sha:       src.Commit.Tree.Sha,
+		Link:      src.Commit.URL,
+		Message:   src.Commit.Message,
+		Author:    convertUserSignature(src.Author),
+		Committer: convertUserSignature(src.Committer),
+	}
+}
+
+func convertUserSignature(src user) scm.Signature {
+	return scm.Signature{
+		Login:  userLogin(&src),
+		Email:  src.Email,
+		Name:   src.Fullname,
+		Avatar: src.Avatar,
+	}
+}
+
+func userLogin(src *user) string {
+	if src.Username != "" {
+		return src.Username
+	}
+	return src.Login
+}
+
+type (
+	// gitea branch object.
+	branch struct {
+		Name   string `json:"name"`
+		Commit commit `json:"commit"`
+	}
+
+	// gitea commit object.
+	commit struct {
+		Message   string     `json:"message"`
+		Tree      commitTree `json:"tree"`
+		URL       string     `json:"url"`
+		Author    signature  `json:"author"`
+		Committer signature  `json:"committer"`
+		Timestamp time.Time  `json:"timestamp"`
+	}
+
+	// gitea commitTree object.
+	commitTree struct {
+		Sha string `json:"sha"`
+		URL string `json:"url"`
+	}
+
+	// gitea commit info object.
+	commitInfo struct {
+		Sha       string `json:"sha"`
+		URL       string `json:"url"`
+		Commit    commit `json:"commit"`
+		Author    user   `json:"author"`
+		Committer user   `json:"committer"`
+	}
+
+	// gitea signature object.
+	signature struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	}
+
+	user struct {
+		ID       int    `json:"id"`
+		Login    string `json:"login"`
+		Username string `json:"username"`
+		Fullname string `json:"full_name"`
+		Email    string `json:"email"`
+		Avatar   string `json:"avatar_url"`
+	}
+)
