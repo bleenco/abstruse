@@ -10,3 +10,8 @@ func genExitMessage(code int) string {
 	red := color.New(color.FgRed).SprintfFunc()
 	return red("\nExit code: %d", code)
 }
+
+func yellow(str string) string {
+	y := color.New(color.FgYellow).SprintfFunc()
+	return y(str)
+}

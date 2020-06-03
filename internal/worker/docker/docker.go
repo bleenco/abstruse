@@ -76,7 +76,8 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 				return err
 			}
 		}
-		logch <- []byte("===> " + strings.Join(command, " ") + "\n")
+		str := yellow("\r==> " + strings.Join(command, " ") + "\n\r")
+		logch <- []byte(str)
 		command = append([]string{"abstruse-pty"}, command...)
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
