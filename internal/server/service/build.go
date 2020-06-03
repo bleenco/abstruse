@@ -28,7 +28,10 @@ func NewBuildService(repo repository.BuildRepository, app *app.App) BuildService
 
 // StartJob starts some random jobs
 func (s *DefaultBuildService) StartJob() bool {
-	return s.app.StartJob()
+	if err := s.app.StartJob(); err != nil {
+		return false
+	}
+	return true
 }
 
 // Find finds build by id.

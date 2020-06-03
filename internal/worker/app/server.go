@@ -151,6 +151,7 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 		logch := make(chan []byte)
 		name := fmt.Sprintf("abstruse-job-%d", in.GetId())
 		image := in.GetImage()
+		env := in.GetEnv()
 		var commands [][]string
 		for _, c := range in.GetCommands() {
 			commands = append(commands, strings.Split(c, " "))
@@ -173,7 +174,7 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 			}
 		}()
 
-		if err := docker.RunContainer(name, image, commands, logch); err != nil {
+		if err := docker.RunContainer(name, image, commands, env, logch); err != nil {
 			s.logger.Errorf("%v", err)
 			errch <- err
 		} else {

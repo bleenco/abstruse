@@ -3,15 +3,48 @@ package docker
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
+	"path"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
 	"github.com/jkuri/abstruse/internal/pkg/util"
+	_ "github.com/jkuri/abstruse/internal/worker/data" // Compressed static files.
+	"github.com/jkuri/statik/fs"
 )
 
+var mountFolder string
+
+func init() {
+	dir, err := ioutil.TempDir("/tmp", "abstruse-dir-")
+	if err != nil {
+		panic(err)
+	}
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+	files, err := statikFS.Readdir("/")
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		fileData, err := statikFS.Readfile(path.Join(file))
+		if err != nil {
+			panic(err)
+		}
+		filePath := path.Join(dir, file)
+		if err := ioutil.WriteFile(filePath, fileData, 0777); err != nil {
+			panic(err)
+		}
+	}
+	mountFolder = dir
+}
+
 // RunContainer runs container.
-func RunContainer(name, image string, commands [][]string, logch chan<- []byte) error {
+func RunContainer(name, image string, commands [][]string, env []string, logch chan<- []byte) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -19,13 +52,13 @@ func RunContainer(name, image string, commands [][]string, logch chan<- []byte) 
 	}
 	defer close(logch)
 
-	resp, err := createContainer(cli, name, image, []string{"/bin/bash"})
+	resp, err := createContainer(cli, name, image, []string{"/bin/bash"}, env)
 	if err != nil {
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
-			resp, err = createContainer(cli, name, image, []string{"/bin/sh"})
+			resp, err = createContainer(cli, name, image, []string{"/bin/sh"}, env)
 			if err != nil {
 				return err
 			}
@@ -42,12 +75,11 @@ func RunContainer(name, image string, commands [][]string, logch chan<- []byte) 
 				return err
 			}
 		}
-
-		conn, execID, err := exec(cli, containerID, command)
+		command = append([]string{"abstruse-pty"}, command...)
+		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
 			return err
 		}
-
 		for {
 			buf := make([]byte, 4096)
 			n, err := conn.Reader.Read(buf)
@@ -57,25 +89,22 @@ func RunContainer(name, image string, commands [][]string, logch chan<- []byte) 
 			}
 			logch <- buf[:n]
 		}
-
 		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
 			return err
 		}
 		exitCode = inspect.ExitCode
-
 		if exitCode != 0 {
 			break
 		}
 	}
 
 	logch <- []byte(genExitMessage(exitCode))
-
 	return nil
 }
 
 // Exec executes specified command inside Docker container.
-func exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, string, error) {
+func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedResponse, string, error) {
 	var conn types.HijackedResponse
 
 	ctx := context.Background()
@@ -84,6 +113,7 @@ func exec(cli *client.Client, id string, cmd []string) (types.HijackedResponse, 
 		AttachStdin:  false,
 		AttachStdout: true,
 		Cmd:          cmd,
+		Env:          env,
 		Tty:          true,
 		Detach:       false,
 	})
@@ -118,18 +148,27 @@ func startContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func createContainer(cli *client.Client, name, image string, cmd []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image string, cmd []string, env []string) (container.ContainerCreateCreatedBody, error) {
 	if id, exists := containerExists(cli, name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
 			return container.ContainerCreateCreatedBody{}, err
 		}
 	}
 
+	mounts := []mount.Mount{
+		{Type: mount.TypeBind, Source: path.Join(mountFolder, "abstruse-pty"), Target: "/bin/abstruse-pty"},
+		{Type: mount.TypeBind, Source: "/var/run/docker.sock", Target: "/var/run/docker.sock"},
+	}
+
 	return cli.ContainerCreate(context.Background(), &container.Config{
-		Image: image,
-		Cmd:   cmd,
-		Tty:   true,
-	}, nil, nil, name)
+		Image:      image,
+		Cmd:        cmd,
+		Tty:        true,
+		Env:        env,
+		WorkingDir: "/build",
+	}, &container.HostConfig{
+		Mounts: mounts,
+	}, nil, name)
 }
 
 // IsContainerRunning returns true if container is running.

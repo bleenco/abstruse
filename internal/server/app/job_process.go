@@ -23,15 +23,15 @@ func (w *Worker) JobProcess(job *Job) error {
 			}
 			return err
 		}
-		if data.GetCode() == pb.JobStatus_Running {
-			job.Log = append(job.Log, string(data.GetContent()))
-		}
 
 		switch code := data.GetCode(); code {
 		case pb.JobStatus_Passing:
 			w.logger.Debugf("job passing: %+v", data)
 		case pb.JobStatus_Failing:
 			w.logger.Debugf("job failed: %+v", data)
+		case pb.JobStatus_Running:
+			// fmt.Printf("%s\n", string(data.GetContent()))
+			job.Log = append(job.Log, string(data.GetContent()))
 		}
 	}
 }
