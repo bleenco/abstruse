@@ -23,3 +23,15 @@
         font-family: $font-family-regular
         color: $gray-500
         text-transform: none
+        margin-right: 15px
+        padding-right: 15px
+
+        &:not(:last-child)
+          border-right: 1px solid $border-default
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            color: $green
+            cursor: pointer

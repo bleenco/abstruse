@@ -151,6 +151,7 @@ func (c BuildController) FindJob(resp http.ResponseWriter, req *http.Request, pa
 	job.BuildID = data.BuildID
 	job.CreatedAt = data.CreatedAt
 	job.UpdatedAt = data.UpdatedAt
+	job.Build = data.Build
 
 	JSONResponse(resp, http.StatusOK, Response{job})
 }

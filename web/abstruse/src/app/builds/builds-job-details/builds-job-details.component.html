@@ -5,7 +5,7 @@
   </div>
 
   <div class="column is-12" *ngIf="job && !fetching">
-    <app-builds-info-container [job]="job"></app-builds-info-container>
+    <app-builds-info-container [build]="job?.build" [job]="job"></app-builds-info-container>
   </div>
 
   <div class="column is-12" *ngIf="job && !fetching">

@@ -37,7 +37,7 @@ func (r *DBJobRepository) Update(data model.Job) (model.Job, error) {
 // Find finds job by id.
 func (r *DBJobRepository) Find(id uint) (*model.Job, error) {
 	job := &model.Job{}
-	if err := r.db.Model(job).Where("id = ?", id).Preload("Build").First(job).Error; err != nil {
+	if err := r.db.Model(job).Where("id = ?", id).Preload("Build.Repository").First(job).Error; err != nil {
 		return nil, err
 	}
 	return job, nil
