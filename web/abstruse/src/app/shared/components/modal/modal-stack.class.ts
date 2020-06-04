@@ -21,6 +21,7 @@ export class ModalStack {
   private modalRefs: ModalRef[] = [];
   private windowComponents: ComponentRef<ModalComponent>[] = [];
   private windowComponentChanged = new Subject();
+  private modalOptions = ['backdrop', 'backdropOpacity', 'beforeDismiss', 'container', 'injector', 'keyboard', 'scrollable', 'size'];
 
   constructor(
     @Inject(DOCUMENT) private document: any,
@@ -58,6 +59,8 @@ export class ModalStack {
 
     activeModal.close = (result?: any) => { modalRef.close(result); };
     activeModal.dismiss = (result?: any) => { modalRef.dismiss(result); };
+
+    this.applyOptions(windowComponentRef.instance, options);
 
     return modalRef;
   }
@@ -142,6 +145,14 @@ export class ModalStack {
     };
     this.modalRefs.push(modalRef);
     modalRef.result.then(unregisterModalRef, unregisterModalRef);
+  }
+
+  private applyOptions(modalInstance: ModalComponent, options: ModalOptions): void {
+    this.modalOptions.forEach((option: string) => {
+      if (options[option]) {
+        modalInstance[option] = options[option];
+      }
+    });
   }
 
   private registerWindowComponent(windowComponent: ComponentRef<ModalComponent>): void {

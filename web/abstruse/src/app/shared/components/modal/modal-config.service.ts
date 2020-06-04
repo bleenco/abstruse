@@ -8,7 +8,7 @@ export interface ModalOptions {
   injector?: Injector;
   keyboard?: boolean;
   scrollable?: boolean;
-  size?: 'small' | 'large';
+  size?: 'small' | 'large' | 'medium';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,5 +20,5 @@ export class ModalConfig implements Required<ModalOptions> {
   injector: Injector;
   keyboard = true;
   scrollable: boolean;
-  size: 'small' | 'large';
+  size: 'small' | 'large' | 'medium';
 }

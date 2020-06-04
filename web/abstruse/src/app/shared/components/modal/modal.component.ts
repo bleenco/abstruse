@@ -29,9 +29,9 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('UIModal', { read: ElementRef, static: false }) elementRef: ElementRef;
 
   @Input() backdrop: boolean | 'white' = true;
-  @Input() backdropOpacity = .7;
+  @Input() backdropOpacity = .5;
   @Input() keyboard = true;
-  @Input() size: 'small' | 'large';
+  @Input() size: 'small' | 'large' | 'medium';
 
   @Output() dismissEvent = new EventEmitter();
 
