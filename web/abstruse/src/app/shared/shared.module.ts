@@ -18,6 +18,8 @@ import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.modu
 import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 import { SpinnerComponent } from './widgets/spinner/spinner.component';
 import { TerminalComponent } from './widgets/terminal/terminal.component';
+import { StopPropagationDirective } from './directives/stop-propagation.directive';
+import { TooltipDirective } from './directives/tooltip.directive';
 
 @NgModule({
   imports: [
@@ -33,7 +35,9 @@ import { TerminalComponent } from './widgets/terminal/terminal.component';
     ProgressBarComponent,
     SelectboxComponent,
     SpinnerComponent,
-    TerminalComponent
+    TerminalComponent,
+    StopPropagationDirective,
+    TooltipDirective
   ],
   exports: [
     CommonModule,
@@ -46,7 +50,9 @@ import { TerminalComponent } from './widgets/terminal/terminal.component';
     RealtimeChartModule,
     SelectboxComponent,
     SpinnerComponent,
-    TerminalComponent
+    TerminalComponent,
+    StopPropagationDirective,
+    TooltipDirective
   ]
 })
 export class SharedModule {
