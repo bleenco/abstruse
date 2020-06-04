@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
@@ -53,6 +54,7 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 		CommitterEmail:  commit.Committer.Email,
 		CommitterAvatar: commit.Committer.Avatar,
 		RepositoryID:    repo.ID,
+		StartTime:       func(t time.Time) *time.Time { return &t }(time.Now()),
 	}
 	build, err := app.buildRepository.Create(buildModel)
 	if err != nil {
@@ -73,6 +75,10 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 		if err := app.scheduleJob(job, repo.Provider, commit.Sha, repo.FullName); err != nil {
 			return err
 		}
+	}
+
+	if err := app.broadcastNewBuild(build.ID); err != nil {
+		return err
 	}
 
 	return nil
@@ -122,5 +128,29 @@ func (app *App) saveJob(job *Job) error {
 		EndTime:   &end,
 	}
 	j, err := app.jobRepository.Update(j)
+	if err != nil {
+		return err
+	}
+
+	build, err := app.buildRepository.FindAll(j.BuildID)
+	if err != nil {
+		return err
+	}
+	if build.EndTime == nil {
+		alldone := true
+		for _, j := range build.Jobs {
+			if j.EndTime == nil {
+				alldone = false
+				break
+			}
+		}
+		if alldone {
+			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+			if _, err := app.buildRepository.Update(build); err != nil {
+				return err
+			}
+		}
+	}
+
 	return err
 }

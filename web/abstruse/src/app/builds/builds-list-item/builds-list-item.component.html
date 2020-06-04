@@ -36,7 +36,9 @@
         <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
-        <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="build?.status === 'running'" />
+        <i *ngIf="build?.status === 'running'">
+          <app-spinner class="is-small is-yellow"></app-spinner>
+        </i>
         <span>{{ build?.status }}</span>
       </span>
     </div>

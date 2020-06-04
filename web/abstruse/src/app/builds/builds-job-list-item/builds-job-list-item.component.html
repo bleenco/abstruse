@@ -25,7 +25,9 @@
         <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
-        <img src="/assets/images/icons/loader-bars-yellow.svg" *ngIf="job?.status === 'running'" />
+        <i *ngIf="job?.status === 'running'">
+          <app-spinner class="is-small is-yellow"></app-spinner>
+        </i>
         <span>{{ job?.status }}</span>
       </span>
     </div>

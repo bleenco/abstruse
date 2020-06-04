@@ -127,7 +127,7 @@ func (s *Scheduler) SetSize(max, running int32) {
 func (s *Scheduler) startJobTask(job *Job) error {
 	worker := s.getWorker()
 	if worker != nil {
-		job.Status = "running"
+		job.Status = "queued"
 		job.Task.StartTime = ptypes.TimestampNow()
 		job.WorkerID = worker.ID
 		if err := worker.JobProcess(job); err != nil {

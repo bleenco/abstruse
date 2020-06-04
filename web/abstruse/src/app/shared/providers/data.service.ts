@@ -11,6 +11,7 @@ export class DataService {
   socketInput: EventEmitter<SocketEvent>;
   socketOutput: Observable<any>;
   connected: EventEmitter<boolean> = new EventEmitter<boolean>();
+  subEvents: string[] = [];
 
   constructor(public socketService: SocketService) {
     this.socketInput = new EventEmitter<SocketEvent>();
@@ -24,5 +25,20 @@ export class DataService {
         }
       });
     this.socketInput.subscribe((e: SocketEvent) => this.socketService.emit(e));
+  }
+
+  subscribeToEvent(event: string): void {
+    this.socketInput.emit({ type: 'subscribe', data: { sub: event } });
+    this.subEvents.push(event);
+  }
+
+  unsubscribeFromEvent(event: string): void {
+    this.socketInput.emit({ type: 'unsubscribe', data: { sub: event } });
+    this.subEvents = this.subEvents.filter(ev => ev !== event);
+  }
+
+  unsubscribeAll(): void {
+    this.subEvents.forEach(ev => this.unsubscribeFromEvent(ev));
+    this.subEvents = [];
   }
 }

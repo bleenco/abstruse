@@ -2,9 +2,12 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"path"
 
 	"github.com/golang/protobuf/ptypes"
+	"github.com/jkuri/abstruse/internal/pkg/util"
 	pb "github.com/jkuri/abstruse/proto"
 )
 
@@ -16,6 +19,7 @@ func (w *Worker) JobProcess(job *Job) error {
 		return err
 	}
 	defer stream.CloseSend()
+	w.broadcastJobStatus(job)
 	for {
 		data, err := stream.Recv()
 		if err != nil {
@@ -32,6 +36,7 @@ func (w *Worker) JobProcess(job *Job) error {
 			if err := w.app.saveJob(job); err != nil {
 				return err
 			}
+			w.broadcastJobStatus(job)
 			w.logger.Debugf("job %d passing: %+v", job.ID, data)
 		case pb.JobStatus_Failing:
 			job.Status = "failing"
@@ -39,9 +44,31 @@ func (w *Worker) JobProcess(job *Job) error {
 			if err := w.app.saveJob(job); err != nil {
 				return err
 			}
+			w.broadcastJobStatus(job)
 			w.logger.Debugf("job %d failed: %+v", job.ID, data)
 		case pb.JobStatus_Running:
+			if job.Status != "running" {
+				job.Status = "running"
+				if err := w.app.saveJob(job); err != nil {
+					return err
+				}
+				w.broadcastJobStatus(job)
+			}
 			job.Log = append(job.Log, string(data.GetContent()))
 		}
 	}
+}
+
+func (w *Worker) broadcastJobStatus(job *Job) {
+	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.ID))
+	start, _ := ptypes.Timestamp(job.Task.StartTime)
+	end, _ := ptypes.Timestamp(job.Task.EndTime)
+	event := map[string]interface{}{
+		"build_id":   job.BuildID,
+		"job_id":     job.ID,
+		"status":     job.Status,
+		"start_time": util.FormatTime(start),
+		"end_time":   util.FormatTime(end),
+	}
+	w.ws.Broadcast(sub, event)
 }
