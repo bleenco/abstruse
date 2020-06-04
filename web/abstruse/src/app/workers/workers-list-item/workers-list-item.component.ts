@@ -19,7 +19,7 @@ export class WorkersListItemComponent implements OnInit {
   }
 
   openWorkerModal(): void {
-    const modalRef = this.modalService.open(WorkersModalComponent);
+    const modalRef = this.modalService.open(WorkersModalComponent, { size: 'large' });
     modalRef.componentInstance.worker = this.worker;
     modalRef.result
       .then(result => console.log(result), reason => console.log(reason));

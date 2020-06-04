@@ -60,7 +60,9 @@ export class Worker {
 
   updateUsage(data: { cpu: number, mem: number, jobs_max: number, jobs_running: number }): void {
     this.cpu[0].push({ value: data.cpu, date: new Date() });
+    this.cpu[0].shift();
     this.memory[0].push({ value: data.mem, date: new Date() });
+    this.memory[0].shift();
     this.currentCPU = data.cpu;
     this.currentMem = data.mem;
     this.jobsMax = data.jobs_max;
