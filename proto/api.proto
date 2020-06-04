@@ -40,6 +40,7 @@ message JobStatus {
     Running = 0;
     Failing = 1;
     Passing = 2;
+    Streaming = 3;
   }
   uint64 id = 1;
   uint64 build_id = 2;

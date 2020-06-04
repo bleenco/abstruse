@@ -30,6 +30,13 @@ func (w *Worker) JobProcess(job *Job) error {
 		}
 
 		switch code := data.GetCode(); code {
+		case pb.JobStatus_Running:
+			job.Status = "running"
+			job.Task.StartTime = ptypes.TimestampNow()
+			if err := w.app.saveJob(job); err != nil {
+				return err
+			}
+			w.broadcastJobStatus(job)
 		case pb.JobStatus_Passing:
 			job.Status = "passing"
 			job.Task.EndTime = ptypes.TimestampNow()
@@ -46,14 +53,7 @@ func (w *Worker) JobProcess(job *Job) error {
 			}
 			w.broadcastJobStatus(job)
 			w.logger.Debugf("job %d failed: %+v", job.ID, data)
-		case pb.JobStatus_Running:
-			if job.Status != "running" {
-				job.Status = "running"
-				if err := w.app.saveJob(job); err != nil {
-					return err
-				}
-				w.broadcastJobStatus(job)
-			}
+		case pb.JobStatus_Streaming:
 			job.Log = append(job.Log, string(data.GetContent()))
 		}
 	}
@@ -61,14 +61,16 @@ func (w *Worker) JobProcess(job *Job) error {
 
 func (w *Worker) broadcastJobStatus(job *Job) {
 	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.ID))
-	start, _ := ptypes.Timestamp(job.Task.StartTime)
-	end, _ := ptypes.Timestamp(job.Task.EndTime)
 	event := map[string]interface{}{
-		"build_id":   job.BuildID,
-		"job_id":     job.ID,
-		"status":     job.Status,
-		"start_time": util.FormatTime(start),
-		"end_time":   util.FormatTime(end),
+		"build_id": job.BuildID,
+		"job_id":   job.ID,
+		"status":   job.Status,
+	}
+	if start, err := ptypes.Timestamp(job.Task.StartTime); err == nil {
+		event["start_time"] = util.FormatTime(start)
+	}
+	if end, err := ptypes.Timestamp(job.Task.EndTime); err == nil {
+		event["end_time"] = util.FormatTime(end)
 	}
 	w.ws.Broadcast(sub, event)
 }

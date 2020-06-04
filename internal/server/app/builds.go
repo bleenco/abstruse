@@ -117,21 +117,22 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 }
 
 func (app *App) saveJob(job *Job) error {
-	start, _ := ptypes.Timestamp(job.Task.StartTime)
-	end, _ := ptypes.Timestamp(job.Task.EndTime)
 	j := model.Job{
-		ID:        uint(job.ID),
-		BuildID:   uint(job.BuildID),
-		Log:       strings.Join(job.Log, ""),
-		Status:    job.Status,
-		StartTime: &start,
-		EndTime:   &end,
+		ID:      uint(job.ID),
+		BuildID: uint(job.BuildID),
+		Log:     strings.Join(job.Log, ""),
+		Status:  job.Status,
+	}
+	if start, err := ptypes.Timestamp(job.Task.StartTime); err == nil {
+		j.StartTime = &start
+	}
+	if end, err := ptypes.Timestamp(job.Task.EndTime); err == nil {
+		j.EndTime = &end
 	}
 	j, err := app.jobRepository.Update(j)
 	if err != nil {
 		return err
 	}
-
 	build, err := app.buildRepository.FindAll(j.BuildID)
 	if err != nil {
 		return err

@@ -92,8 +92,8 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    job.startTime = new Date(ev.data.start_time) || null;
-    job.endTime = new Date(ev.data.end_time) || null;
+    job.startTime = ev.data.start_time ? new Date(ev.data.start_time) : null;
+    job.endTime = ev.data.end_time ? new Date(ev.data.end_time) : null;
     job.status = ev.data.status;
   }
 }
