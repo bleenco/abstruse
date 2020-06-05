@@ -96,6 +96,6 @@ func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error
 // Find provider by id.
 func (r *DBProviderRepository) Find(providerID, userID uint) (*model.Provider, error) {
 	provider := &model.Provider{}
-	err := r.db.Where("id = ? AND user_id = ?", providerID, userID).First(provider).Error
+	err := r.db.Preload("User").Where("id = ? AND user_id = ?", providerID, userID).First(provider).Error
 	return provider, err
 }

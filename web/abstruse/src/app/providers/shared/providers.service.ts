@@ -7,6 +7,7 @@ import { Provider } from './provider.class';
 import { map, filter } from 'rxjs/operators';
 import { ProviderRepo, ProviderRepoPermission } from './repo.class';
 import { ReposService } from 'src/app/repos/shared/repos.service';
+import { User } from 'src/app/teams/shared/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,34 @@ export class ProvidersService {
             new Date(p.updated_at)
           );
         }))
+      );
+  }
+
+  find(providerID: number): Observable<Provider> {
+    const url = `${getAPIURL()}/providers/${providerID}`;
+    return this.http.get<JSONResponse>(url)
+      .pipe(
+        map(resp => {
+          const u = resp.data.user;
+          return new Provider(
+            resp.data.id,
+            resp.data.name,
+            resp.data.url,
+            resp.data.access_token,
+            resp.data.user_id,
+            new Date(resp.data.created_at),
+            new Date(resp.data.updated_at),
+            new User(
+              u.id,
+              u.email,
+              u.fullname,
+              u.avatar,
+              Boolean(u.admin),
+              new Date(u.created_at),
+              new Date(u.updated_at)
+            )
+          );
+        })
       );
   }
 

@@ -3,28 +3,57 @@
   <div class="column is-12">
     <div class="main-heading">
       <div class="main-heading-left">
-        <h1 [routerLink]="['/providers']">Providers</h1>
-        <h2>Repositories</h2>
+        <h1>Providers</h1>
+        <h2 class="is-link" [routerLink]="['/providers']">Provider Integrations</h2>
+        <h2 class="is-link is-active" [ngSwitch]="provider?.name">
+          <i class="fab fa-github icon-large" *ngSwitchCase="'github'"></i>
+          <i class="fab fa-gitlab icon-large" *ngSwitchCase="'gitlab'"></i>
+          <i class="fab fa-bitbucket icon-large" *ngSwitchCase="'bitbucket'"></i>
+          <img class="icon-large" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'">
+          <img class="icon-large" src="/assets/images/icons/gogs.png" *ngSwitchCase="'gogs'">
+          <i class="fab fa-git icon-large" *ngSwitchDefault></i>
+          <span>{{ provider?.getName }} Repositories</span>
+        </h2>
       </div>
       <div class="main-heading-right">
-        <i class="fas fa-search"></i>
-        <input type="text" class="input search-box" placeholder="Search repositories..." [(ngModel)]="search"
-          (ngModelChange)="onSearchInputChange($event)">
+        <div class="search-container">
+          <i class="fas fa-search"></i>
+          <input type="text" class="input search-box" placeholder="Search repositories..." [(ngModel)]="search"
+            (ngModelChange)="onSearchInputChange($event)">
+        </div>
+        <div class="nav-items justify-center">
+          <button type="button" class="button is-small" (click)="prev()" [disabled]="page === 1">
+            <i class="fas fa-caret-left"></i>
+          </button>
+          <button type="button" class="button is-small" (click)="next()" [disabled]="repos?.length < size">
+            <i class="fas fa-caret-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-12">
+    <div class="list">
+      <div class="list-heading" *ngIf="repos.length">
+        <div class="columns is-marginless is-paddingless">
+          <div class="column is-1"><span class="text justify-center">ID</span></div>
+          <div class="column is-4"><span class="text">Name</span></div>
+          <div class="column is-1"><span class="text justify-center">Public</span></div>
+          <div class="column is-2"><span class="text">Created At</span></div>
+          <div class="column is-2"><span class="text">Updated At</span></div>
+          <div class="column is-2"><span class="text justify-center">Imported</span></div>
+        </div>
+      </div>
+      <div class="list-items" *ngIf="repos.length && !fetching">
+        <app-providers-repos-list-item [repo]="r" [providerId]="providerId" *ngFor="let r of repos">
+        </app-providers-repos-list-item>
       </div>
     </div>
   </div>
 
   <div class="column is-12 justify-center" *ngIf="fetching">
     <app-spinner class="is-large"></app-spinner>
-  </div>
-
-  <div class="column is-12" *ngIf="repos.length && !fetching">
-    <div class="list">
-      <div class="list-items">
-        <app-providers-repos-list-item [repo]="r" [providerId]="providerId" *ngFor="let r of repos">
-        </app-providers-repos-list-item>
-      </div>
-    </div>
   </div>
 
   <div class="column is-12" *ngIf="!fetching && !repos.length">

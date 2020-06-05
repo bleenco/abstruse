@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { CookieService } from 'ngx-cookie-service';
 import { TokenInterceptorProvider } from './interceptors/token.interceptor';
-import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
+import { HttpErrorInterceptorProvider } from './interceptors/http-error.interceptor';
 import { AuthGuardService } from './providers/auth-guard.service';
 import { StatusService } from './providers/status.service';
 import { TimeService } from './providers/time.service';
@@ -61,7 +61,7 @@ export class SharedModule {
       ngModule: SharedModule,
       providers: [
         TokenInterceptorProvider,
-        HttpErrorInterceptor,
+        HttpErrorInterceptorProvider,
         AuthGuardService,
         StatusService,
         TimeService,

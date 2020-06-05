@@ -30,6 +30,7 @@ func CreateInitControllersFn(
 		r.GET("/api/providers", mc.AuthorizationMiddleware(pc.List))
 		r.PUT("/api/providers", mc.AuthorizationMiddleware(pc.Create))
 		r.POST("/api/providers", mc.AuthorizationMiddleware(pc.Update))
+		r.GET("/api/providers/:id", mc.AuthorizationMiddleware(pc.Find))
 		r.GET("/api/providers/:id/repos/:page/:size", mc.AuthorizationMiddleware(pc.ReposList))
 		r.POST("/api/providers/:id/repos", mc.AuthorizationMiddleware(pc.ReposFind))
 		r.PUT("/api/providers/:id/repos/import", mc.AuthorizationMiddleware(pc.ReposImport))

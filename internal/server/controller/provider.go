@@ -38,6 +38,27 @@ func (c *ProviderController) List(resp http.ResponseWriter, req *http.Request, _
 	JSONResponse(resp, http.StatusOK, Response{Data: data})
 }
 
+// Find controller => GET /api/providers/:id
+func (c ProviderController) Find(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	token := req.Header.Get("Authorization")
+	userID, err := auth.GetUserIDFromJWT(token)
+	if err != nil {
+		JSONResponse(resp, http.StatusUnauthorized, ErrorResponse{Data: err.Error()})
+		return
+	}
+	providerID, err := strconv.Atoi(params.ByName("id"))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	data, err := c.service.Find(uint(providerID), uint(userID))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{data})
+}
+
 // Create controller => PUT /api/providers
 func (c *ProviderController) Create(resp http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	token := req.Header.Get("Authorization")

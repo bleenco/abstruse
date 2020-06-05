@@ -1,6 +1,7 @@
 $list-item-height: 80px
 $list-item-slim-height: 70px
 $list-item-slim-label-height: 22px
+$list-heading-height: 50px
 
 .list
   display: block
@@ -96,6 +97,30 @@ $list-item-slim-label-height: 22px
             height: 16px
 
 
+.list-heading
+  width: 100%
+  height: $list-heading-height
+  outline: none
+  border-bottom: 1px solid $border-default
+  border-left: 2px solid transparent
+
+  .columns
+    display: flex
+    align-items: center
+    height: $list-heading-height
+
+    .column
+
+      .text
+        font-size: 12px
+        color: $gray-500
+        text-transform: uppercase
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        padding: 0 10px
+        font-weight: $weight-semibold
+
 .list-item-slim
   width: 100%
   height: $list-item-slim-height
@@ -135,7 +160,6 @@ $list-item-slim-label-height: 22px
 
       .info-text
         font-size: 15px
-        font-family: $font-family-regular
         color: $text-button
 
         i
@@ -150,7 +174,7 @@ $list-item-slim-label-height: 22px
 
         .repo-name
           font-size: 15px
-          font-family: $font-family-medium
+          font-weight: $weight-medium
 
         .small-text
           font-size: 13px
@@ -169,8 +193,13 @@ $list-item-slim-label-height: 22px
 
       .data-text
         font-size: 14px
-        font-family: $font-family-regular
-        height: 25px
+        font-weight: $weight-medium
+        height: $list-item-slim-height
+        display: flex
+        align-items: center
+        justify-content: flex-start
+        padding: 0 10px
+        color: $text-primary
 
         &.is-title
           font-size: 12px
@@ -181,13 +210,11 @@ $list-item-slim-label-height: 22px
 
         &.is-number
           +unselectable
-          display: flex
+          display: inline-flex
           align-items: center
           justify-content: center
           border: 1px solid $border-default
           border-radius: 4px
-          line-height: 22px
-          width: 150px
           height: 40px
           font-size: 13px
           background: $white
@@ -216,6 +243,10 @@ $list-item-slim-label-height: 22px
           margin-bottom: 3px
 
         i
+
+          &.icon-small
+            font-size: 14px
+            padding-top: 4px
 
           &.is-yellow
             color: $yellow

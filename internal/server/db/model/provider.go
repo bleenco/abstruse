@@ -6,7 +6,7 @@ type Provider struct {
 	Name        string `gorm:"not null" json:"name"`
 	URL         string `gorm:"not null" json:"url"`
 	AccessToken string `gorm:"not null" json:"-"`
-	UserID      uint   `gorm:"not null" json:"-"`
-	User        User   `json:"-"`
+	UserID      uint   `gorm:"not null" json:"user_id"`
+	User        User   `json:"user"`
 	TimestampModel
 }

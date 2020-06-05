@@ -1,3 +1,5 @@
+import { User } from 'src/app/teams/shared/user.model';
+
 export class Provider {
   constructor(
     public id?: number,
@@ -6,7 +8,8 @@ export class Provider {
     public accessToken?: string,
     public userId?: number,
     public createdAt?: Date,
-    public updatedAt?: Date
+    public updatedAt?: Date,
+    public user?: User
   ) { }
 
   get getName(): string {

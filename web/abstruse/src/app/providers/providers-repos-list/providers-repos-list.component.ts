@@ -4,6 +4,7 @@ import { ProviderRepo } from '../shared/repo.class';
 import { ProvidersService } from '../shared/providers.service';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { Provider } from '../shared/provider.class';
 
 @Component({
   selector: 'app-providers-repos-list',
@@ -15,8 +16,12 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
   searchInput: Subject<string> = new Subject<string>();
   providerId: number;
   fetching: boolean;
+  fetchingProvider: boolean;
   repos: ProviderRepo[] = [];
+  provider: Provider;
   searchSub: Subscription = new Subscription();
+  page = 1;
+  size = 30;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,6 +30,7 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.providerId = Number(this.route.snapshot.paramMap.get('id'));
+    this.findProvider();
     this.listRepos();
 
     this.searchSub = this.searchInput
@@ -39,6 +45,10 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
   }
 
   onSearchInputChange(term: string): void {
+    if (this.search.length < 1) {
+      this.page = 1;
+      this.listRepos();
+    }
     this.searchInput.next(term);
   }
 
@@ -48,14 +58,25 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
 
   listRepos(): void {
     this.fetching = true;
-    this.providersService.listRepos(this.providerId)
+    this.providersService.listRepos(this.providerId, this.page, this.size)
       .subscribe(repos => {
-        this.repos = this.repos.concat(repos);
+        this.repos = repos;
       }, err => {
+        this.fetching = false;
         console.error(err);
       }, () => {
         this.fetching = false;
       });
+  }
+
+  prev(): void {
+    this.page--;
+    this.listRepos();
+  }
+
+  next(): void {
+    this.page++;
+    this.listRepos();
   }
 
   findRepos(keyword: string): void {
@@ -64,10 +85,24 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
       .subscribe(repo => {
         this.repos = [repo];
       }, err => {
+        this.fetching = false;
         console.error(err);
         this.repos = [];
       }, () => {
         this.fetching = false;
+      });
+  }
+
+  findProvider(): void {
+    this.fetchingProvider = true;
+    this.providersService.find(this.providerId)
+      .subscribe(provider => {
+        this.provider = provider;
+      }, err => {
+        this.fetchingProvider = false;
+        console.error(err);
+      }, () => {
+        this.fetchingProvider = false;
       });
   }
 }
