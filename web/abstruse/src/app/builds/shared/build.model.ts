@@ -71,7 +71,7 @@ export class Build {
   }
 
   getTimeRunning(): string {
-    if (!this.jobs || !this.jobs.length) {
+    if (!this.jobs || !this.jobs.length || this.jobs.every(job => !job.startTime)) {
       return '00:00';
     }
 

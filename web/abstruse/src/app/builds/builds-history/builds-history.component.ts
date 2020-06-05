@@ -49,9 +49,11 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
         } else {
           this.hideMoreButton = true;
         }
-        this.buildsService.subscribeToJobEvents(resp.reduce((acc, curr) => acc.concat(curr.jobs.map(j => j.id)), []));
+        this.buildsService.subscribeToJobEvents(resp.map(b => b.id));
       }, err => {
         console.error(err);
+        this.fetchingBuilds = false;
+        this.fetchingMore = false;
       }, () => {
         this.fetchingBuilds = false;
         this.fetchingMore = false;
@@ -65,7 +67,7 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
         this.buildsService.buildsEvents()
           .subscribe(build => {
             this.builds.unshift(build);
-            this.buildsService.subscribeToJobEvents(build.jobs.map(j => j.id));
+            this.buildsService.subscribeToJobEvents([build.id]);
           })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));

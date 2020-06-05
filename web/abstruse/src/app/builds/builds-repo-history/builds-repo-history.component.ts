@@ -55,7 +55,7 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
         } else {
           this.hideMoreButton = true;
         }
-        this.buildsService.subscribeToJobEvents(resp.reduce((acc, curr) => acc.concat(curr.jobs.map(j => j.id)), []));
+        this.buildsService.subscribeToJobEvents(resp.map(b => b.id));
       }, err => {
         console.error(err);
       }, () => {
@@ -71,7 +71,7 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
         this.buildsService.buildsEvents(this.repoid)
           .subscribe(build => {
             this.builds.unshift(build);
-            this.buildsService.subscribeToJobEvents(build.jobs.map(j => j.id));
+            this.buildsService.subscribeToJobEvents([build.id]);
           })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));

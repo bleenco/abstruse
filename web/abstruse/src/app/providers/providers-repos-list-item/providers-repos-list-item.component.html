@@ -1,7 +1,7 @@
 <div class="list-item-slim no-hover-effect">
   <div class="columns is-marginless is-paddingless">
-    <div class="column is-1 data-column">
-      <span class="data-text is-number">{{ repo.id }}</span>
+    <div class="column is-2 data-column">
+      <span class="data-text">{{ repo.id }}</span>
     </div>
     <div class="column is-4 data-column">
       <span class="data-text">{{ repo?.fullName }}</span>
@@ -18,7 +18,7 @@
     <div class="column is-2 data-column">
       <span class="data-text">{{ repo?.updatedAt | date:'medium' }}</span>
     </div>
-    <div class="column is-2 data-column">
+    <div class="column is-1 data-column">
       <div class="data-text justify-center">
         <i class="fas fa-check-circle is-green" *ngIf="repo?.isImported"></i>
         <button type="button" class="button" (click)="import()" *ngIf="!repo?.isImported">

@@ -110,6 +110,8 @@ $list-heading-height: 50px
     height: $list-heading-height
 
     .column
+      margin: 0
+      padding: 0
 
       .text
         font-size: 12px
@@ -147,6 +149,8 @@ $list-heading-height: 50px
     height: $list-item-slim-height
 
     .data-column
+      padding-left: 0
+      padding-right: 0
 
       .heading-text, .data-text, .info-text, .data-with-label
         +ellipsis
@@ -200,6 +204,9 @@ $list-heading-height: 50px
         justify-content: flex-start
         padding: 0 10px
         color: $text-primary
+
+        &.no-padding
+          padding: 0
 
         &.is-title
           font-size: 12px
@@ -256,6 +263,26 @@ $list-heading-height: 50px
 
           &.is-red
             color: $red
+
+      .status-line
+        width: 3px
+        height: 25px
+        background: transparent
+        display: inline-block
+        margin-right: 15px
+
+        &.is-queued
+          background: $gray
+
+        &.is-passing
+          background: $green
+
+        &.is-failing
+          background: $red
+
+        &.is-running
+          background: $yellow
+
 
     .svg-column
       display: flex

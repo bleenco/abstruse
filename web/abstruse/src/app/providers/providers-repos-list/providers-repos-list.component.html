@@ -37,12 +37,12 @@
     <div class="list">
       <div class="list-heading" *ngIf="repos.length">
         <div class="columns is-marginless is-paddingless">
-          <div class="column is-1"><span class="text justify-center">ID</span></div>
+          <div class="column is-2"><span class="text">ID</span></div>
           <div class="column is-4"><span class="text">Name</span></div>
           <div class="column is-1"><span class="text justify-center">Public</span></div>
           <div class="column is-2"><span class="text">Created At</span></div>
           <div class="column is-2"><span class="text">Updated At</span></div>
-          <div class="column is-2"><span class="text justify-center">Imported</span></div>
+          <div class="column is-1"><span class="text justify-center">Imported</span></div>
         </div>
       </div>
       <div class="list-items" *ngIf="repos.length && !fetching">

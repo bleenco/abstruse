@@ -60,7 +60,7 @@ func (w *Worker) JobProcess(job *Job) error {
 }
 
 func (w *Worker) broadcastJobStatus(job *Job) {
-	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.ID))
+	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.BuildID))
 	event := map[string]interface{}{
 		"build_id": job.BuildID,
 		"job_id":   job.ID,

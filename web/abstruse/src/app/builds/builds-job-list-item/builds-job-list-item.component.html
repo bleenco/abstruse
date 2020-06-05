@@ -1,19 +1,19 @@
 <div class="list-item-slim" [routerLink]="['/builds', build?.repository?.id, job?.buildId, job?.id]">
   <div class="columns is-marginless is-paddingless">
     <div class="column is-2 data-column">
-      <div class="data-text has-text-left is-light align-center">
+      <div class="data-text has-text-left is-light align-center no-padding">
         <span class="status-line"
           [ngClass]="{ 'is-queued': job?.status === 'queued', 'is-passing': job?.status === 'passing', 'is-failing': job?.status === 'failing', 'is-running': job?.status === 'running' }"></span>
         <span>#{{ job?.buildId }}.{{ job?.id }}</span>
       </div>
     </div>
-    <div class="column is-3 data-column">
+    <div class="column is-4 data-column">
       <div class="info-text has-text-left">
         <i class="fas fa-code"></i>
         <span>{{ job?.env }}</span>
       </div>
     </div>
-    <div class="column is-3 data-column">
+    <div class="column is-2 data-column">
       <div class="info-text has-text-left">
         <i class="fab fa-docker"></i>
         <span>{{ job?.image }}</span>
@@ -21,7 +21,7 @@
     </div>
     <div class="column is-1 data-column">
       <span class="tag is-medium"
-        [ngClass]="{ 'is-grey': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
+        [ngClass]="{ 'is-gray': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
         <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
@@ -32,7 +32,7 @@
       </span>
     </div>
     <div class="column is-1 data-column">
-      <span class="data-text">{{ job?.runningTime | async }}</span>
+      <span class="data-text justify-center">{{ job?.runningTime | async }}</span>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
       <button type="button" class="button is-small" [disabled]="job?.processing">

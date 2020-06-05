@@ -85,7 +85,7 @@ export class BuildsService {
     this.dataService.subscribeToEvent(buildsSubEvent);
   }
 
-  subscribeToJobEvents(jobs: number[]): void {
-    jobs.forEach(id => this.dataService.subscribeToEvent(`${buildsSubJobEvent}${id}`));
+  subscribeToJobEvents(builds: number[]): void {
+    builds.forEach(buildID => this.dataService.subscribeToEvent(`${buildsSubJobEvent}${buildID}`));
   }
 }
