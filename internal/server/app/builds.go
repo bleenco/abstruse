@@ -138,45 +138,6 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 	return <-errch
 }
 
-// func (app *App) saveJob(job *Job) error {
-// 	j := model.Job{
-// 		ID:      job.ID,
-// 		BuildID: job.BuildID,
-// 		Log:     strings.Join(job.Log, ""),
-// 		Status:  job.Status,
-// 	}
-// 	if start, err := ptypes.Timestamp(job.Task.StartTime); err == nil {
-// 		j.StartTime = &start
-// 	}
-// 	if end, err := ptypes.Timestamp(job.Task.EndTime); err == nil {
-// 		j.EndTime = &end
-// 	}
-// 	j, err := app.jobRepository.Update(j)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	build, err := app.buildRepository.FindAll(j.BuildID)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if build.EndTime == nil {
-// 		alldone := true
-// 		for _, j := range build.Jobs {
-// 			if j.EndTime == nil {
-// 				alldone = false
-// 				break
-// 			}
-// 		}
-// 		if alldone {
-// 			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
-// 			if _, err := app.buildRepository.Update(build); err != nil {
-// 				return err
-// 			}
-// 		}
-// 	}
-// 	return err
-// }
-
 func (app *App) updateBuildTime(buildID uint) error {
 	build, err := app.buildRepository.FindAll(buildID)
 	if err != nil {
