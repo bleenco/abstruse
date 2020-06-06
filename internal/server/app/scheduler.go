@@ -20,8 +20,6 @@ import (
 type scheduler struct {
 	mu      sync.Mutex
 	m       map[string]*concurrency.Mutex
-	ctx     context.Context
-	cancel  context.CancelFunc
 	client  *clientv3.Client
 	session *concurrency.Session
 	queue   *recipe.PriorityQueue
@@ -32,15 +30,11 @@ type scheduler struct {
 }
 
 func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	session, err := concurrency.NewSession(client, concurrency.WithContext(ctx))
+	session, err := concurrency.NewSession(client)
 	if err != nil {
 		return nil, err
 	}
 	return &scheduler{
-		ctx:     ctx,
-		cancel:  cancel,
 		client:  client,
 		session: session,
 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
@@ -57,6 +51,7 @@ func (s *scheduler) run() error {
 	donech := s.watchDoneEvents()
 	wch, wdch := s.watchWorkers()
 	queuech := s.dequeue()
+	defer s.session.Close()
 
 	go func() {
 		for {
@@ -166,13 +161,11 @@ func (s *scheduler) dequeue() <-chan shared.Job {
 
 	go func() {
 		for {
-			select {
-			case <-s.readych:
-				if data, err := s.queue.Dequeue(); err == nil {
-					job := &shared.Job{}
-					if job, err := job.Unmarshal(data); err == nil {
-						ch <- job
-					}
+			<-s.readych
+			if data, err := s.queue.Dequeue(); err == nil {
+				job := &shared.Job{}
+				if job, err := job.Unmarshal(data); err == nil {
+					ch <- job
 				}
 			}
 		}
@@ -284,10 +277,10 @@ begin:
 				continue
 			}
 			if mu, ok := s.m[id]; ok {
-				if err := mu.TryLock(context.TODO()); err == concurrency.ErrLocked {
+				if err := mu.TryLock(context.Background()); err != nil {
 					goto check
 				}
-				defer mu.Unlock(context.TODO())
+				defer mu.Unlock(context.Background())
 				if free > max {
 					max = free
 					worker = id
@@ -368,4 +361,11 @@ func (s *scheduler) broadcastJobStatus(job shared.Job) {
 		event["end_time"] = util.FormatTime(*job.EndTime)
 	}
 	s.app.ws.Broadcast(sub, event)
+}
+
+// TODO: remove?
+func (s *scheduler) ready() {
+	if len(s.readych) == 1 {
+		<-s.readych
+	}
 }

@@ -7,7 +7,7 @@ etcd:
 grpc:
   listenaddr: 0.0.0.0:3330
 scheduler:
-  maxconcurrency: 5
+  maxconcurrency: 2
 log:
   level: debug
   stdout: true

@@ -15,8 +15,6 @@ import (
 )
 
 type scheduler struct {
-	ctx     context.Context
-	cancel  context.CancelFunc
 	id      string
 	max     int
 	session *concurrency.Session
@@ -42,17 +40,13 @@ func (s *scheduler) run() error {
 	jobch := s.watchPending()
 	stopch := s.watchStop()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	session, err := concurrency.NewSession(s.app.client, concurrency.WithContext(ctx))
+	session, err := concurrency.NewSession(s.app.client)
 	if err != nil {
 		return err
 	}
 	s.session = session
-	s.ctx = ctx
-	s.cancel = cancel
-	defer s.session.Close()
 	s.mu = concurrency.NewMutex(s.session, path.Join(shared.WorkersCapacityLock, s.id))
+	defer s.session.Close()
 
 	if err := s.saveCapacity(s.max); err != nil {
 		errch <- err
@@ -174,16 +168,21 @@ func (s *scheduler) deleteStop(job shared.Job) error {
 }
 
 func (s *scheduler) increaseCapacity() error {
-	err := s.mu.Lock(context.TODO())
-	if err != nil {
-		s.logger.Errorf("could not lock")
-	} else {
-		defer func() {
-			if err := s.mu.Unlock(context.TODO()); err != nil {
-				s.logger.Errorf("could not unlock")
-			}
-		}()
+	// err := s.mu.Lock(context.TODO())
+	// if err != nil {
+	// 	s.logger.Errorf("could not lock")
+	// } else {
+	// 	defer func() {
+	// 		if err := s.mu.Unlock(context.TODO()); err != nil {
+	// 			s.logger.Errorf("could not unlock")
+	// 		}
+	// 	}()
+	// }
+try:
+	if err := s.mu.TryLock(context.Background()); err != nil {
+		goto try
 	}
+	defer s.mu.Unlock(context.Background())
 	capacity, err := s.getCapacity()
 	if err != nil {
 		s.logger.Errorf("error fetching capacity: %v", err)
@@ -202,16 +201,21 @@ func (s *scheduler) increaseCapacity() error {
 }
 
 func (s *scheduler) decreaseCapacity() error {
-	err := s.mu.Lock(context.TODO())
-	if err != nil {
-		s.logger.Errorf("could not lock")
-	} else {
-		defer func() {
-			if err := s.mu.Unlock(context.TODO()); err != nil {
-				s.logger.Errorf("could not unlock")
-			}
-		}()
+	// err := s.mu.Lock(context.TODO())
+	// if err != nil {
+	// 	s.logger.Errorf("could not lock")
+	// } else {
+	// 	defer func() {
+	// 		if err := s.mu.Unlock(context.TODO()); err != nil {
+	// 			s.logger.Errorf("could not unlock")
+	// 		}
+	// 	}()
+	// }
+try:
+	if err := s.mu.TryLock(context.Background()); err != nil {
+		goto try
 	}
+	defer s.mu.Unlock(context.Background())
 	capacity, err := s.getCapacity()
 	if err != nil {
 		s.logger.Errorf("error fetching capacity: %v", err)
