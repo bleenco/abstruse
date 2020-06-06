@@ -108,12 +108,14 @@ func (s *scheduler) scheduleJob(job shared.Job) error {
 }
 
 func (s *scheduler) stopJob(id uint) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	if job, ok := s.pending[id]; ok {
 		s.logger.Debugf("stopping job %d...", job.ID)
 		job.Status = shared.StatusFailing
 		return s.put(shared.StopPrefix, job)
+	}
+	if job, err := s.deleteFromQueue(id); err == nil {
+		job.Status = shared.StatusFailing
+		return s.doneJob(job)
 	}
 	return nil
 }
@@ -308,6 +310,26 @@ func (s *scheduler) listJobs(prefix string) ([]shared.Job, error) {
 		jobs = append(jobs, job)
 	}
 	return jobs, nil
+}
+
+func (s *scheduler) deleteFromQueue(id uint) (shared.Job, error) {
+	job := shared.Job{}
+	resp, err := s.client.Get(context.Background(), shared.QueuePrefix, clientv3.WithPrefix())
+	if err != nil {
+		return job, err
+	}
+	for i := range resp.Kvs {
+		job := shared.Job{}
+		job, err := job.Unmarshal(string(resp.Kvs[i].Value))
+		if err != nil {
+			return job, err
+		}
+		if job.ID == id {
+			_, err := s.client.Delete(context.Background(), string(resp.Kvs[i].Key))
+			return job, err
+		}
+	}
+	return job, fmt.Errorf("not found")
 }
 
 func (s *scheduler) delete(prefix string, job shared.Job) error {
