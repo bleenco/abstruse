@@ -18,22 +18,31 @@ type App struct {
 	scheduler *scheduler
 	client    *clientv3.Client
 	logger    *zap.Logger
+	ready     chan struct{}
 	errch     chan error
 }
 
 // NewApp returns new instance of an App.
-func NewApp(opts *options.Options, logger *zap.Logger) *App {
-	id, _ := id.GenerateID(opts)
+func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
+	id, err := id.GenerateID(opts)
+	if err != nil {
+		return nil, err
+	}
 	app := &App{
 		opts:   opts,
 		addr:   util.GetListenAddress(opts.GRPC.ListenAddr),
 		id:     id,
 		logger: logger,
 		errch:  make(chan error),
+		ready:  make(chan struct{}, 1),
 	}
 	app.api = NewAPIServer(app)
-	app.scheduler = newScheduler(int32(opts.Scheduler.MaxConcurrency), app, logger)
-	return app
+	scheduler, err := newScheduler(id, opts.Scheduler.MaxConcurrency, logger, app)
+	if err != nil {
+		return nil, err
+	}
+	app.scheduler = scheduler
+	return app, nil
 }
 
 // Start starts worker application.
@@ -52,7 +61,14 @@ func (app *App) Start() error {
 		}
 	}()
 
-	go app.scheduler.run()
+	go func() {
+		for {
+			<-app.ready
+			if err := app.scheduler.run(); err != nil {
+				app.errch <- err
+			}
+		}
+	}()
 
 	return <-app.errch
 }

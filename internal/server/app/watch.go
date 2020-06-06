@@ -48,7 +48,7 @@ func (app *App) watchWorkers() error {
 					worker.EmitDeleted()
 					delete(app.workers, id)
 				}
-				app.Scheduler.SetSize(app.getCapacity())
+				// app.Scheduler.SetSize(app.getCapacity())
 			}
 		}
 	}

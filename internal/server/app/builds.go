@@ -2,14 +2,12 @@ package app
 
 import (
 	"context"
-	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/db/model"
 	"github.com/jkuri/abstruse/internal/server/parser"
-	pb "github.com/jkuri/abstruse/proto"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -86,13 +84,13 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 
 // StopBuild stops the build and related jobs.
 func (app *App) StopBuild(buildID uint) error {
-	build, err := app.buildRepository.FindAll(buildID)
-	if err != nil {
-		return err
-	}
-	for _, job := range build.Jobs {
-		go app.Scheduler.StopJob(job.ID)
-	}
+	// build, err := app.buildRepository.FindAll(buildID)
+	// if err != nil {
+	// 	return err
+	// }
+	// for _, job := range build.Jobs {
+	// 	go app.Scheduler.StopJob(job.ID)
+	// }
 	return nil
 }
 
@@ -108,7 +106,7 @@ func (app *App) RestartBuild(buildID uint) error {
 		return err
 	}
 	for _, job := range build.Jobs {
-		app.Scheduler.StopJob(job.ID)
+		// app.Scheduler.StopJob(job.ID)
 		if err := app.scheduleJob(*job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
 			return err
 		}
@@ -120,69 +118,61 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 	errch := make(chan error)
 
 	go func() {
-		var commands []string
-		if err := jsoniter.UnmarshalFromString(job.Commands, &commands); err != nil {
-			errch <- err
+		j := shared.Job{
+			ID:            job.ID,
+			BuildID:       job.BuildID,
+			Commands:      job.Commands,
+			Image:         job.Image,
+			Env:           job.Env,
+			ProviderName:  provider.Name,
+			ProviderURL:   provider.URL,
+			ProviderToken: provider.AccessToken,
+			CommitSHA:     commitSHA,
+			RepoName:      repo,
+			Priority:      uint16(1000),
+			Status:        shared.StatusUnknown,
 		}
-		j := &Job{
-			ID:      job.ID,
-			BuildID: job.BuildID,
-			Task: &pb.JobTask{
-				Id:          uint64(job.ID),
-				BuildId:     uint64(job.BuildID),
-				Priority:    1000,
-				Image:       job.Image,
-				Commands:    commands,
-				Env:         strings.Split(job.Env, " "),
-				Provider:    provider.Name,
-				Url:         provider.URL,
-				Credentials: provider.AccessToken,
-				CommitSHA:   commitSHA,
-				Repo:        repo,
-			},
-		}
-		app.Scheduler.ScheduleJobTask(j)
-		errch <- nil
+		errch <- app.scheduler.scheduleJob(j)
 	}()
 
 	return <-errch
 }
 
-func (app *App) saveJob(job *Job) error {
-	j := model.Job{
-		ID:      job.ID,
-		BuildID: job.BuildID,
-		Log:     strings.Join(job.Log, ""),
-		Status:  job.Status,
-	}
-	if start, err := ptypes.Timestamp(job.Task.StartTime); err == nil {
-		j.StartTime = &start
-	}
-	if end, err := ptypes.Timestamp(job.Task.EndTime); err == nil {
-		j.EndTime = &end
-	}
-	j, err := app.jobRepository.Update(j)
-	if err != nil {
-		return err
-	}
-	build, err := app.buildRepository.FindAll(j.BuildID)
-	if err != nil {
-		return err
-	}
-	if build.EndTime == nil {
-		alldone := true
-		for _, j := range build.Jobs {
-			if j.EndTime == nil {
-				alldone = false
-				break
-			}
-		}
-		if alldone {
-			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
-			if _, err := app.buildRepository.Update(build); err != nil {
-				return err
-			}
-		}
-	}
-	return err
-}
+// func (app *App) saveJob(job *Job) error {
+// 	j := model.Job{
+// 		ID:      job.ID,
+// 		BuildID: job.BuildID,
+// 		Log:     strings.Join(job.Log, ""),
+// 		Status:  job.Status,
+// 	}
+// 	if start, err := ptypes.Timestamp(job.Task.StartTime); err == nil {
+// 		j.StartTime = &start
+// 	}
+// 	if end, err := ptypes.Timestamp(job.Task.EndTime); err == nil {
+// 		j.EndTime = &end
+// 	}
+// 	j, err := app.jobRepository.Update(j)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	build, err := app.buildRepository.FindAll(j.BuildID)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if build.EndTime == nil {
+// 		alldone := true
+// 		for _, j := range build.Jobs {
+// 			if j.EndTime == nil {
+// 				alldone = false
+// 				break
+// 			}
+// 		}
+// 		if alldone {
+// 			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+// 			if _, err := app.buildRepository.Update(build); err != nil {
+// 				return err
+// 			}
+// 		}
+// 	}
+// 	return err
+// }

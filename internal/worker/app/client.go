@@ -19,6 +19,7 @@ func (app *App) connect() error {
 			)
 			return err
 		}
+		app.ready <- struct{}{}
 		rs := etcdutil.NewRegisterService(app.client, app.id, app.addr, 5, app.logger)
 		if err := rs.Register(); err != nil {
 			app.logger.Sugar().Errorf("error registering service on abstruse server")

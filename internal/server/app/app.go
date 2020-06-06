@@ -21,7 +21,7 @@ type App struct {
 	client    *clientv3.Client
 	ws        *websocket.App
 	logger    *zap.SugaredLogger
-	Scheduler *Scheduler
+	scheduler *scheduler
 	errch     chan error
 
 	buildRepository repository.BuildRepository
@@ -48,7 +48,6 @@ func NewApp(
 		logger:          logger.With(zap.String("type", "app")).Sugar(),
 		errch:           make(chan error),
 	}
-	app.Scheduler = NewScheduler(app, logger)
 
 	return app, nil
 }
@@ -64,7 +63,17 @@ func (app *App) Start(client *clientv3.Client) error {
 		}
 	}()
 
-	go app.Scheduler.Start(app.client)
+	go func() {
+		scheduler, err := newScheduler(app.client, app.logger.Desugar(), app)
+		if err != nil {
+			app.errch <- err
+		} else {
+			app.scheduler = scheduler
+			if err := app.scheduler.run(); err != nil {
+				app.errch <- err
+			}
+		}
+	}()
 
 	return <-app.errch
 }

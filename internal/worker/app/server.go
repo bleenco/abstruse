@@ -5,16 +5,11 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
-	"os"
-	"path"
-	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/worker/docker"
 	"github.com/jkuri/abstruse/internal/worker/stats"
 	pb "github.com/jkuri/abstruse/proto"
@@ -146,92 +141,93 @@ func (s *APIServer) Capacity(stream pb.API_CapacityServer) error {
 
 // JobProcess gRPC method.
 func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) error {
-	errch := make(chan error)
+	// errch := make(chan error)
 
-	s.app.scheduler.add()
-	defer s.app.scheduler.done()
+	// s.app.scheduler.add()
+	// defer s.app.scheduler.done()
 
-	jobStatus := &pb.JobStatus{
-		Id:   in.GetId(),
-		Code: pb.JobStatus_Running,
-	}
-	if err := stream.Send(jobStatus); err != nil {
-		errch <- err
-	}
+	// jobStatus := &pb.JobStatus{
+	// 	Id:   in.GetId(),
+	// 	Code: pb.JobStatus_Running,
+	// }
+	// if err := stream.Send(jobStatus); err != nil {
+	// 	errch <- err
+	// }
 
-	go func() {
-		logch := make(chan []byte)
-		name := fmt.Sprintf("abstruse-job-%d", in.GetId())
-		image := in.GetImage()
-		env := in.GetEnv()
-		var commands [][]string
-		for _, c := range in.GetCommands() {
-			commands = append(commands, strings.Split(c, " "))
-		}
+	// go func() {
+	// 	logch := make(chan []byte)
+	// 	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
+	// 	image := in.GetImage()
+	// 	env := in.GetEnv()
+	// 	var commands [][]string
+	// 	for _, c := range in.GetCommands() {
+	// 		commands = append(commands, strings.Split(c, " "))
+	// 	}
 
-		go func() {
-			for log := range logch {
-				jobStatus := &pb.JobStatus{
-					Id:      in.GetId(),
-					Content: log,
-					Code:    pb.JobStatus_Streaming,
-				}
-				if err := stream.Send(jobStatus); err != nil {
-					if err == io.EOF {
-						errch <- nil
-					} else {
-						errch <- err
-					}
-				}
-			}
-		}()
+	// 	go func() {
+	// 		for log := range logch {
+	// 			jobStatus := &pb.JobStatus{
+	// 				Id:      in.GetId(),
+	// 				Content: log,
+	// 				Code:    pb.JobStatus_Streaming,
+	// 			}
+	// 			if err := stream.Send(jobStatus); err != nil {
+	// 				if err == io.EOF {
+	// 					errch <- nil
+	// 				} else {
+	// 					errch <- err
+	// 				}
+	// 			}
+	// 		}
+	// 	}()
 
-		// TODO: separate func
-		dir, err := ioutil.TempDir("/tmp", "abstruse-build")
-		if err != nil {
-			panic(err)
-		}
-		defer os.RemoveAll(dir)
-		scm, err := scm.NewSCM(context.Background(), in.GetProvider(), in.GetUrl(), in.GetCredentials())
-		if err != nil {
-			panic(err)
-		}
-		contents, err := scm.ListContent(in.GetRepo(), in.GetCommitSHA(), "/")
-		if err != nil {
-			panic(err)
-		}
-		for _, content := range contents {
-			filePath := path.Join(dir, content.Path)
-			if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
-				panic(err)
-			}
-		}
+	// 	// TODO: separate func
+	// 	dir, err := ioutil.TempDir("/tmp", "abstruse-build")
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	defer os.RemoveAll(dir)
+	// 	scm, err := scm.NewSCM(context.Background(), in.GetProvider(), in.GetUrl(), in.GetCredentials())
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	contents, err := scm.ListContent(in.GetRepo(), in.GetCommitSHA(), "/")
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	for _, content := range contents {
+	// 		filePath := path.Join(dir, content.Path)
+	// 		if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
+	// 			panic(err)
+	// 		}
+	// 	}
 
-		if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
-			jobStatus := &pb.JobStatus{
-				Id:   in.GetId(),
-				Code: pb.JobStatus_Failing,
-			}
-			if serr := stream.Send(jobStatus); serr != nil && serr != io.EOF {
-				errch <- serr
-			} else {
-				errch <- err
-			}
-			s.logger.Errorf("%v", err)
-		} else {
-			jobStatus := &pb.JobStatus{
-				Id:   in.GetId(),
-				Code: pb.JobStatus_Passing,
-			}
-			if err := stream.Send(jobStatus); err != nil && err != io.EOF {
-				errch <- err
-			} else {
-				errch <- nil
-			}
-		}
-	}()
+	// 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
+	// 		jobStatus := &pb.JobStatus{
+	// 			Id:   in.GetId(),
+	// 			Code: pb.JobStatus_Failing,
+	// 		}
+	// 		if serr := stream.Send(jobStatus); serr != nil && serr != io.EOF {
+	// 			errch <- serr
+	// 		} else {
+	// 			errch <- err
+	// 		}
+	// 		s.logger.Errorf("%v", err)
+	// 	} else {
+	// 		jobStatus := &pb.JobStatus{
+	// 			Id:   in.GetId(),
+	// 			Code: pb.JobStatus_Passing,
+	// 		}
+	// 		if err := stream.Send(jobStatus); err != nil && err != io.EOF {
+	// 			errch <- err
+	// 		} else {
+	// 			errch <- nil
+	// 		}
+	// 	}
+	// }()
 
-	return <-errch
+	// return <-errch
+	return nil
 }
 
 // StopJobProcess gRPC method.
