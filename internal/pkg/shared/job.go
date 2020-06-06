@@ -24,21 +24,22 @@ const (
 
 // Job defines build job/task stored in etcd.
 type Job struct {
-	ID            uint      `json:"id"`
-	BuildID       uint      `json:"build_id"`
-	Commands      string    `json:"commands"`
-	Image         string    `json:"image"`
-	Env           string    `json:"env"`
-	ProviderName  string    `json:"provider_name"`
-	ProviderURL   string    `json:"provider_url"`
-	ProviderToken string    `json:"provider_token"`
-	CommitSHA     string    `json:"commit_sha"`
-	RepoName      string    `json:"repository_name"`
-	Priority      uint16    `json:"priority"`
-	Status        Status    `json:"status"`
-	WorkerID      string    `json:"worker_id"`
-	StartTime     time.Time `json:"start_time"`
-	EndTime       time.Time `json:"end_time"`
+	ID            uint       `json:"id"`
+	BuildID       uint       `json:"build_id"`
+	Commands      string     `json:"commands"`
+	Image         string     `json:"image"`
+	Env           string     `json:"env"`
+	ProviderName  string     `json:"provider_name"`
+	ProviderURL   string     `json:"provider_url"`
+	ProviderToken string     `json:"provider_token"`
+	CommitSHA     string     `json:"commit_sha"`
+	RepoName      string     `json:"repository_name"`
+	Priority      uint16     `json:"priority"`
+	Status        Status     `json:"status"`
+	WorkerID      string     `json:"worker_id"`
+	Log           []string   `json:"-"`
+	StartTime     *time.Time `json:"start_time"`
+	EndTime       *time.Time `json:"end_time"`
 }
 
 // Marshal encodes to JSON string format.

@@ -176,3 +176,26 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 // 	}
 // 	return err
 // }
+
+func (app *App) updateBuildTime(buildID uint) error {
+	build, err := app.buildRepository.FindAll(buildID)
+	if err != nil {
+		return err
+	}
+	if build.EndTime == nil {
+		alldone := true
+		for _, j := range build.Jobs {
+			if j.EndTime == nil {
+				alldone = false
+				break
+			}
+		}
+		if alldone {
+			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+			if _, err := app.buildRepository.Update(build); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}

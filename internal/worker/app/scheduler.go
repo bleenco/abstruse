@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"strconv"
+	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
@@ -121,12 +122,17 @@ func (s *scheduler) run() error {
 			if err := s.saveCapacity(capacity); err == nil {
 				s.logger.Infof("starting job %d...", job.ID)
 				go func(job shared.Job) {
+					job.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
 					if err := s.app.startJob(job); err != nil {
 						job.Status = shared.StatusFailing
 						s.logger.Errorf("job %d failed: %v", job.ID, err)
 					} else {
 						job.Status = shared.StatusPassing
 						s.logger.Infof("job %d passing", job.ID)
+					}
+					job.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+					if err = s.putDone(job); err != nil {
+						s.logger.Errorf("error saving job as done: %v", err)
 					}
 					capacity, err := s.getCapacity()
 					if err != nil {
@@ -136,13 +142,10 @@ func (s *scheduler) run() error {
 						s.logger.Errorf("capacity cannot be greater than concurrency")
 					} else {
 						capacity = capacity + 1
-						if err := s.saveCapacity(capacity); err == nil {
-							if err = s.putDone(job); err != nil {
-								s.logger.Errorf("error saving job as done: %v", err)
-							}
+						if err := s.saveCapacity(capacity); err != nil {
+							s.logger.Errorf("error saving capacity: %v\n", err)
 						}
 					}
-
 				}(job)
 			}
 		}
