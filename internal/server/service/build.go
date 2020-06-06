@@ -9,6 +9,8 @@ import (
 // BuildService interface
 type BuildService interface {
 	TriggerBuild(repoID, userID uint) bool
+	StopBuild(id uint) bool
+	RestartBuild(id uint) bool
 	Find(id uint) (model.Build, error)
 	FindAll(id uint) (model.Build, error)
 	FindBuilds(limit, offset int) ([]model.Build, error)
@@ -31,6 +33,22 @@ func NewBuildService(repo repository.BuildRepository, jobRepo repository.JobRepo
 // TriggerBuild triggers build for repository.
 func (s *DefaultBuildService) TriggerBuild(repoID, userID uint) bool {
 	if err := s.app.TriggerBuild(repoID, userID); err != nil {
+		return false
+	}
+	return true
+}
+
+// StopBuild stops the build and related jobs.
+func (s *DefaultBuildService) StopBuild(id uint) bool {
+	if err := s.app.StopBuild(id); err != nil {
+		return false
+	}
+	return true
+}
+
+// RestartBuild restarts the build.
+func (s *DefaultBuildService) RestartBuild(id uint) bool {
+	if err := s.app.RestartBuild(id); err != nil {
 		return false
 	}
 	return true

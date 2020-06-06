@@ -26,7 +26,7 @@ type Scheduler struct {
 	concurrency *channels.ResizableChannel
 	jobch       chan *Job
 	queuech     chan *Job
-	processes   map[uint64]*Job
+	jobs        map[uint]*Job
 	queue       *recipe.PriorityQueue
 	readych     chan struct{}
 	donech      chan bool
@@ -36,8 +36,8 @@ type Scheduler struct {
 
 // Job defines job/task.
 type Job struct {
-	ID       uint64      `json:"id"`
-	BuildID  uint64      `json:"build_id"`
+	ID       uint        `json:"id"`
+	BuildID  uint        `json:"build_id"`
 	WorkerID string      `json:"worker_id"`
 	Log      []string    `json:"log"`
 	Status   string      `json:"status"`
@@ -47,13 +47,13 @@ type Job struct {
 // NewScheduler returns new instance of Scheduler.
 func NewScheduler(app *App, logger *zap.Logger) *Scheduler {
 	return &Scheduler{
-		jobch:     make(chan *Job),
-		queuech:   make(chan *Job),
-		processes: make(map[uint64]*Job),
-		readych:   make(chan struct{}, 1),
-		donech:    make(chan bool),
-		app:       app,
-		logger:    logger.With(zap.String("type", "scheduler")).Sugar(),
+		jobch:   make(chan *Job),
+		queuech: make(chan *Job),
+		jobs:    make(map[uint]*Job),
+		readych: make(chan struct{}, 1),
+		donech:  make(chan bool),
+		app:     app,
+		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
 	}
 }
 
@@ -104,8 +104,24 @@ func (s *Scheduler) ScheduleJobTask(job *Job) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.logger.Infof("scheduling job task %d", job.ID)
-	s.processes[job.ID] = job
+	s.jobs[job.ID] = job
 	s.queuech <- job
+}
+
+// StopJob stops the job if already running on remove from queue if not started yet.
+func (s *Scheduler) StopJob(id uint) {
+	s.logger.Infof("stopping job task %d", id)
+	if job, ok := s.jobs[id]; ok {
+		if job.WorkerID != "" {
+			if worker, ok := s.app.workers[job.WorkerID]; ok {
+				if err := worker.StopJobProcess(job); err != nil {
+					s.logger.Errorf("error stopping job: %v", err)
+				}
+			}
+		} else {
+			// TODO: remove from queue
+		}
+	}
 }
 
 // SetSize sets max and running variables and resizes concurrency
@@ -127,8 +143,11 @@ func (s *Scheduler) SetSize(max, running int32) {
 func (s *Scheduler) startJobTask(job *Job) error {
 	worker := s.getWorker()
 	if worker != nil {
+		job.Task.StartTime = ptypes.TimestampNow()
 		job.Status = "queued"
-		job.WorkerID = worker.ID
+		if _, ok := s.jobs[job.ID]; ok {
+			s.jobs[job.ID].WorkerID = worker.ID
+		}
 		if err := s.app.saveJob(job); err != nil {
 			return err
 		}
@@ -148,7 +167,7 @@ func (s *Scheduler) finishJobTask(job *Job) {
 	end, _ := ptypes.Timestamp(job.Task.EndTime)
 	timeDiff := time.Time{}.Add(end.Sub(start)).Format("15:04:05")
 	s.logger.Debugf("done job task %d [time: %s]", job.ID, timeDiff)
-	delete(s.processes, job.ID)
+	delete(s.jobs, job.ID)
 }
 
 func (s *Scheduler) add() {

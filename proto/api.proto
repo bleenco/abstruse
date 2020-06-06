@@ -10,6 +10,7 @@ service API {
   rpc UsageStats(stream google.protobuf.Empty)
       returns (stream UsageStatsReply) {}
   rpc JobProcess(JobTask) returns (stream JobStatus) {}
+  rpc StopJobProcess(JobTask) returns (google.protobuf.Empty) {}
   rpc Capacity(stream google.protobuf.Empty) returns (stream CapacityInfo) {}
 }
 
@@ -17,7 +18,6 @@ message JobTask {
   enum JobTaskCode {
     Stop = 0;
     Start = 1;
-    Restart = 2;
   }
   uint64 id = 1;
   uint64 build_id = 2;

@@ -84,6 +84,38 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 	return nil
 }
 
+// StopBuild stops the build and related jobs.
+func (app *App) StopBuild(buildID uint) error {
+	build, err := app.buildRepository.FindAll(buildID)
+	if err != nil {
+		return err
+	}
+	for _, job := range build.Jobs {
+		go app.Scheduler.StopJob(job.ID)
+	}
+	return nil
+}
+
+// RestartBuild stops the current build related jobs if any, then start them again.
+func (app *App) RestartBuild(buildID uint) error {
+	build, err := app.buildRepository.FindAll(buildID)
+	if err != nil {
+		return err
+	}
+	build.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	build.EndTime = nil
+	if build, err = app.buildRepository.Update(build); err != nil {
+		return err
+	}
+	for _, job := range build.Jobs {
+		app.Scheduler.StopJob(job.ID)
+		if err := app.scheduleJob(*job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, repo string) error {
 	errch := make(chan error)
 
@@ -93,8 +125,8 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 			errch <- err
 		}
 		j := &Job{
-			ID:      uint64(job.ID),
-			BuildID: uint64(job.BuildID),
+			ID:      job.ID,
+			BuildID: job.BuildID,
 			Task: &pb.JobTask{
 				Id:          uint64(job.ID),
 				BuildId:     uint64(job.BuildID),
@@ -118,8 +150,8 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 
 func (app *App) saveJob(job *Job) error {
 	j := model.Job{
-		ID:      uint(job.ID),
-		BuildID: uint(job.BuildID),
+		ID:      job.ID,
+		BuildID: job.BuildID,
 		Log:     strings.Join(job.Log, ""),
 		Status:  job.Status,
 	}
@@ -152,6 +184,5 @@ func (app *App) saveJob(job *Job) error {
 			}
 		}
 	}
-
 	return err
 }

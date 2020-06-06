@@ -109,6 +109,19 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 	return fmt.Errorf("errored: %d", exitCode)
 }
 
+// StopContainer stops the container.
+func StopContainer(name string) error {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+	containerID, err := findContainer(cli, name)
+	if err != nil {
+		return err
+	}
+	return cli.ContainerRemove(context.Background(), containerID, types.ContainerRemoveOptions{Force: true})
+}
+
 // Exec executes specified command inside Docker container.
 func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedResponse, string, error) {
 	var conn types.HijackedResponse
@@ -180,7 +193,7 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 
 // IsContainerRunning returns true if container is running.
 func isContainerRunning(cli *client.Client, id string) bool {
-	containers, err := ListRunningContainers(cli)
+	containers, err := listRunningContainers(cli)
 	if err != nil {
 		return false
 	}
@@ -202,8 +215,24 @@ func containerExists(cli *client.Client, name string) (string, bool) {
 	return "", false
 }
 
+func findContainer(cli *client.Client, name string) (string, error) {
+	name = fmt.Sprintf("/%s", name)
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	if err != nil {
+		return "", err
+	}
+	for _, container := range containers {
+		for _, n := range container.Names {
+			if n == name {
+				return container.ID, nil
+			}
+		}
+	}
+	return "", fmt.Errorf("container %s not found", name)
+}
+
 // ListRunningContainers returns list of running containers.
-func ListRunningContainers(cli *client.Client) ([]string, error) {
+func listRunningContainers(cli *client.Client) ([]string, error) {
 	var names []string
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})

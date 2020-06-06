@@ -25,6 +25,8 @@ func CreateInitControllersFn(
 		r.GET("/api/builds/info/:id/all", mc.AuthorizationMiddleware(bc.FindAll))
 		r.GET("/api/builds/repo/:id/:limit/:offset", mc.AuthorizationMiddleware(bc.FindByRepoID))
 		r.POST("/api/builds/trigger", mc.AuthorizationMiddleware(bc.TriggerBuild))
+		r.POST("/api/builds/stop", mc.AuthorizationMiddleware(bc.StopBuild))
+		r.POST("/api/builds/restart", mc.AuthorizationMiddleware(bc.RestartBuild))
 		r.GET("/api/builds/jobs/:id", mc.AuthorizationMiddleware(bc.FindJob))
 
 		r.GET("/api/providers", mc.AuthorizationMiddleware(pc.List))

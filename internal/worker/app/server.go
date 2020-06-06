@@ -233,3 +233,11 @@ func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) e
 
 	return <-errch
 }
+
+// StopJobProcess gRPC method.
+func (s *APIServer) StopJobProcess(ctx context.Context, in *pb.JobTask) (*empty.Empty, error) {
+	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
+	s.logger.Debugf("stopping job %d...", in.GetId())
+	err := docker.StopContainer(name)
+	return &empty.Empty{}, err
+}

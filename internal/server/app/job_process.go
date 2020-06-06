@@ -59,6 +59,15 @@ func (w *Worker) JobProcess(job *Job) error {
 	}
 }
 
+// StopJobProcess gRPC.
+func (w *Worker) StopJobProcess(job *Job) error {
+	if job == nil {
+		return nil
+	}
+	_, err := w.cli.StopJobProcess(context.TODO(), job.Task)
+	return err
+}
+
 func (w *Worker) broadcastJobStatus(job *Job) {
 	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.BuildID))
 	event := map[string]interface{}{

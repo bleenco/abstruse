@@ -63,6 +63,16 @@ export class BuildsService {
     return this.http.post<JSONResponse>(url, { id: String(repoID) });
   }
 
+  stopBuild(buildID: number): Observable<JSONResponse> {
+    const url = `${getAPIURL()}/builds/stop`;
+    return this.http.post<JSONResponse>(url, { build_id: buildID });
+  }
+
+  restartBuild(buildID: number): Observable<JSONResponse> {
+    const url = `${getAPIURL()}/builds/restart`;
+    return this.http.post<JSONResponse>(url, { build_id: buildID });
+  }
+
   buildsEvents(repoID?: number): Observable<Build> {
     return this.dataService.socketOutput
       .pipe(

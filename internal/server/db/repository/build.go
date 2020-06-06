@@ -35,7 +35,7 @@ func (r *DBBuildRepository) Find(id uint) (model.Build, error) {
 // FindAll returns build with preloaded jobs and repository data.
 func (r *DBBuildRepository) FindAll(id uint) (model.Build, error) {
 	build := model.Build{}
-	err := r.db.Preload("Jobs").Preload("Repository").Find(&build, id).Error
+	err := r.db.Preload("Jobs").Preload("Repository.Provider").Find(&build, id).Error
 	return build, err
 }
 

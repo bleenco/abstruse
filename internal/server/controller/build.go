@@ -48,6 +48,34 @@ func (c *BuildController) TriggerBuild(resp http.ResponseWriter, req *http.Reque
 	JSONResponse(resp, http.StatusOK, Response{Data: c.service.TriggerBuild(uint(repoID), uint(userID))})
 }
 
+// StopBuild stops the build and related jobs => POST /api/builds/stop/:id
+func (c *BuildController) StopBuild(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	type stopBuildForm struct {
+		BuildID uint `json:"build_id"`
+	}
+	var form stopBuildForm
+	if err := jsoniter.NewDecoder(req.Body).Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.StopBuild(uint(form.BuildID))})
+}
+
+// RestartBuild restarts build.
+func (c *BuildController) RestartBuild(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	type restartBuildForm struct {
+		BuildID uint `json:"build_id"`
+	}
+	var form restartBuildForm
+	if err := jsoniter.NewDecoder(req.Body).Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.RestartBuild(uint(form.BuildID))})
+}
+
 // Find handler => GET /api/builds/:id
 func (c *BuildController) Find(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	buildID, err := strconv.Atoi(params.ByName("id"))
