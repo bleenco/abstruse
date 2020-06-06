@@ -61,3 +61,7 @@ func (app *App) startJob(job shared.Job) error {
 	}
 	return nil
 }
+
+func (app *App) stopJob(name string) error {
+	return docker.StopContainer(name)
+}

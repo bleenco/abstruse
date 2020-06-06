@@ -40,7 +40,7 @@ func (s *DefaultBuildService) TriggerBuild(repoID, userID uint) bool {
 
 // StopBuild stops the build and related jobs.
 func (s *DefaultBuildService) StopBuild(id uint) bool {
-	if err := s.app.StopBuild(id); err != nil {
+	if _, err := s.app.StopBuild(id); err != nil {
 		return false
 	}
 	return true

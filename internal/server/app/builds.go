@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/scm"
@@ -83,20 +84,29 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 }
 
 // StopBuild stops the build and related jobs.
-func (app *App) StopBuild(buildID uint) error {
-	// build, err := app.buildRepository.FindAll(buildID)
-	// if err != nil {
-	// 	return err
-	// }
-	// for _, job := range build.Jobs {
-	// 	go app.Scheduler.StopJob(job.ID)
-	// }
-	return nil
+func (app *App) StopBuild(buildID uint) (model.Build, error) {
+	build, err := app.buildRepository.FindAll(buildID)
+	if err != nil {
+		return build, err
+	}
+	var wg sync.WaitGroup
+	wg.Add(len(build.Jobs))
+	for _, job := range build.Jobs {
+		go func(job *model.Job) {
+			if err := app.scheduler.stopJob(job.ID); err != nil {
+				app.logger.Errorf("error stopping job %d: %v", job.ID, err)
+			}
+			wg.Done()
+		}(job)
+	}
+	wg.Wait()
+	build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	return app.buildRepository.Update(build)
 }
 
 // RestartBuild stops the current build related jobs if any, then start them again.
 func (app *App) RestartBuild(buildID uint) error {
-	build, err := app.buildRepository.FindAll(buildID)
+	build, err := app.StopBuild(buildID)
 	if err != nil {
 		return err
 	}
@@ -105,37 +115,36 @@ func (app *App) RestartBuild(buildID uint) error {
 	if build, err = app.buildRepository.Update(build); err != nil {
 		return err
 	}
+	var wg sync.WaitGroup
+	wg.Add(len(build.Jobs))
 	for _, job := range build.Jobs {
-		// app.Scheduler.StopJob(job.ID)
-		if err := app.scheduleJob(*job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
-			return err
-		}
+		go func(job *model.Job) {
+			if err := app.scheduleJob(*job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
+				app.logger.Debugf("error scheduling job %d: %v", job.ID, err)
+			}
+			wg.Done()
+		}(job)
 	}
+	wg.Wait()
 	return nil
 }
 
 func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, repo string) error {
-	errch := make(chan error)
-
-	go func() {
-		j := shared.Job{
-			ID:            job.ID,
-			BuildID:       job.BuildID,
-			Commands:      job.Commands,
-			Image:         job.Image,
-			Env:           job.Env,
-			ProviderName:  provider.Name,
-			ProviderURL:   provider.URL,
-			ProviderToken: provider.AccessToken,
-			CommitSHA:     commitSHA,
-			RepoName:      repo,
-			Priority:      uint16(1000),
-			Status:        shared.StatusUnknown,
-		}
-		errch <- app.scheduler.scheduleJob(j)
-	}()
-
-	return <-errch
+	j := shared.Job{
+		ID:            job.ID,
+		BuildID:       job.BuildID,
+		Commands:      job.Commands,
+		Image:         job.Image,
+		Env:           job.Env,
+		ProviderName:  provider.Name,
+		ProviderURL:   provider.URL,
+		ProviderToken: provider.AccessToken,
+		CommitSHA:     commitSHA,
+		RepoName:      repo,
+		Priority:      uint16(1000),
+		Status:        shared.StatusUnknown,
+	}
+	return app.scheduler.scheduleJob(j)
 }
 
 func (app *App) updateBuildTime(buildID uint) error {

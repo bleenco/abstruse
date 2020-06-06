@@ -8,7 +8,7 @@ const (
 	// WorkersCapacity etcd workers capacity prefix.
 	WorkersCapacity = "/abstruse/workers/capacity"
 	// WorkersCapacityLock etcd workers capacity lock prefix.
-	WorkersCapacityLock = "/abstruse/workers/capacity-lock"
+	WorkersCapacityLock = "/abstruse/scheduler/lock"
 	// QueuePrefix etcd queue service prefix.
 	QueuePrefix = "/abstruse/scheduler/queue"
 	// PendingPrefix etcd jobs service prefix.
