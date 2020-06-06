@@ -40,7 +40,9 @@ func (s *scheduler) run() error {
 	jobch := s.watchPending()
 	stopch := s.watchStop()
 
-	session, err := concurrency.NewSession(s.app.client)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	session, err := concurrency.NewSession(s.app.client, concurrency.WithContext(ctx))
 	if err != nil {
 		return err
 	}
@@ -132,7 +134,7 @@ func (s *scheduler) startJob(job shared.Job) error {
 		s.logger.Errorf("error saving job as done: %v", err)
 		return err
 	}
-	return s.increaseCapacity()
+	return nil
 }
 
 func (s *scheduler) stopJob(job shared.Job) error {
@@ -148,7 +150,7 @@ func (s *scheduler) stopJob(job shared.Job) error {
 	if err := s.putDone(job); err != nil {
 		return err
 	}
-	return s.increaseCapacity()
+	return nil
 }
 
 func (s *scheduler) putDone(job shared.Job) error {
@@ -157,8 +159,10 @@ func (s *scheduler) putDone(job shared.Job) error {
 	if err != nil {
 		return err
 	}
-	_, err = s.app.client.Put(context.Background(), key, val)
-	return err
+	if _, err = s.app.client.Put(context.Background(), key, val); err != nil {
+		return err
+	}
+	return s.increaseCapacity()
 }
 
 func (s *scheduler) deleteStop(job shared.Job) error {
@@ -168,21 +172,6 @@ func (s *scheduler) deleteStop(job shared.Job) error {
 }
 
 func (s *scheduler) increaseCapacity() error {
-	// err := s.mu.Lock(context.TODO())
-	// if err != nil {
-	// 	s.logger.Errorf("could not lock")
-	// } else {
-	// 	defer func() {
-	// 		if err := s.mu.Unlock(context.TODO()); err != nil {
-	// 			s.logger.Errorf("could not unlock")
-	// 		}
-	// 	}()
-	// }
-try:
-	if err := s.mu.TryLock(context.Background()); err != nil {
-		goto try
-	}
-	defer s.mu.Unlock(context.Background())
 	capacity, err := s.getCapacity()
 	if err != nil {
 		s.logger.Errorf("error fetching capacity: %v", err)
@@ -201,21 +190,6 @@ try:
 }
 
 func (s *scheduler) decreaseCapacity() error {
-	// err := s.mu.Lock(context.TODO())
-	// if err != nil {
-	// 	s.logger.Errorf("could not lock")
-	// } else {
-	// 	defer func() {
-	// 		if err := s.mu.Unlock(context.TODO()); err != nil {
-	// 			s.logger.Errorf("could not unlock")
-	// 		}
-	// 	}()
-	// }
-try:
-	if err := s.mu.TryLock(context.Background()); err != nil {
-		goto try
-	}
-	defer s.mu.Unlock(context.Background())
 	capacity, err := s.getCapacity()
 	if err != nil {
 		s.logger.Errorf("error fetching capacity: %v", err)
@@ -235,6 +209,13 @@ try:
 }
 
 func (s *scheduler) saveCapacity(capacity int) error {
+lock:
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	if err := s.mu.Lock(ctx); err != nil {
+		goto lock
+	}
+	defer s.mu.Unlock(ctx)
 	key := path.Join(shared.WorkersCapacity, s.id)
 	val := fmt.Sprintf("%d", capacity)
 	_, err := s.app.client.Put(context.Background(), key, val)
@@ -247,5 +228,8 @@ func (s *scheduler) getCapacity() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return strconv.Atoi(string(resp.Kvs[0].Value))
+	if len(resp.Kvs) > 0 {
+		return strconv.Atoi(string(resp.Kvs[0].Value))
+	}
+	return 0, nil
 }

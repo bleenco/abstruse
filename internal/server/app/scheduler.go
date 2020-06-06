@@ -30,7 +30,9 @@ type scheduler struct {
 }
 
 func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
-	session, err := concurrency.NewSession(client)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	session, err := concurrency.NewSession(client, concurrency.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +135,7 @@ func (s *scheduler) doneJob(job shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.pending, job.ID)
+	// s.ready()
 	return nil
 }
 
@@ -161,7 +164,7 @@ func (s *scheduler) dequeue() <-chan shared.Job {
 
 	go func() {
 		for {
-			<-s.readych
+			s.ready()
 			if data, err := s.queue.Dequeue(); err == nil {
 				job := &shared.Job{}
 				if job, err := job.Unmarshal(data); err == nil {
@@ -229,12 +232,6 @@ func (s *scheduler) watchWorkers() (<-chan string, <-chan string) {
 			if len(resp.Kvs) > 0 {
 				putch <- s.findWorker()
 			}
-			// 	if free, err := strconv.Atoi(string(resp.Kvs[i].Value)); err == nil {
-			// 		if free > 0 {
-			// 			putch <- workerID
-			// 		}
-			// 	}
-			// }
 		}
 
 		wch := s.client.Watch(context.Background(), shared.WorkersCapacity, clientv3.WithPrefix())
@@ -246,11 +243,6 @@ func (s *scheduler) watchWorkers() (<-chan string, <-chan string) {
 					if _, ok := s.m[workerID]; !ok {
 						s.m[workerID] = concurrency.NewMutex(s.session, path.Join(shared.WorkersCapacityLock, workerID))
 					}
-					// if free, err := strconv.Atoi(string(ev.Kv.Value)); err == nil {
-					// 	if free > 0 {
-					// 		putch <- workerID
-					// 	}
-					// }
 					putch <- s.findWorker()
 				case mvccpb.DELETE:
 					delch <- path.Base(string(ev.Kv.Key))
@@ -270,17 +262,21 @@ begin:
 		goto begin
 	} else {
 		for i := range resp.Kvs {
-		check:
 			id := path.Base(string(resp.Kvs[i].Key))
 			free, err := strconv.Atoi(string(resp.Kvs[i].Value))
 			if err != nil {
 				continue
 			}
-			if mu, ok := s.m[id]; ok {
-				if err := mu.TryLock(context.Background()); err != nil {
-					goto check
+			if _, ok := s.m[id]; ok {
+			lock:
+				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+				defer cancel()
+				if mu, ok := s.m[id]; ok {
+					if err := mu.TryLock(ctx); err == concurrency.ErrLocked {
+						goto lock
+					}
+					defer mu.Unlock(ctx)
 				}
-				defer mu.Unlock(context.Background())
 				if free > max {
 					max = free
 					worker = id
