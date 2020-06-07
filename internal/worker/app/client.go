@@ -10,7 +10,7 @@ import (
 
 func (app *App) connect() error {
 	c := func() error {
-		app.logger.Sugar().Infof("connecting to abstruse etcd server %s...", ":2379")
+		app.logger.Sugar().Infof("connecting to abstruse etcd server %s...", app.opts.Etcd.Addr)
 		var err error
 		if app.client, err = app.getClient(); err != nil {
 			app.logger.Sugar().Errorf(
