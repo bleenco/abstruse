@@ -33,16 +33,20 @@ services:
     networks:
       net:
         ipv4_address: 172.100.0.20
-  # abstruse_worker:
-  #   image: abstruse-worker
-  #   container_name: abstruse-worker
-  #   restart: always
-  #   volumes:
-  #     - /Users/jan/Dev/data/abstruse-worker:/abstruse-worker
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   networks:
-  #     net:
-  #       ipv4_address: 172.20.0.30
+  abstruse_worker:
+    image: abstruse/abstruse-worker
+    container_name: abstruse-worker
+    restart: always
+    volumes:
+      - "./data/abstruse-worker:/abstruse-worker"
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ABSTRUSE_ETCD_ADDR:172.100.0.20
+      - ABSTRUSE_ETCD_USERNAME=abstruse
+      - ABSTRUSE_ETCD_PASSWORD=abstruse
+    networks:
+      net:
+        ipv4_address: 172.100.0.100
 
 networks:
   net:

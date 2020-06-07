@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 
@@ -19,7 +20,7 @@ import (
 var mountFolder string
 
 func init() {
-	dir, err := ioutil.TempDir("/tmp", "abstruse-dir")
+	dir, err := ioutil.TempDir(os.TempDir(), "abstruse")
 	if err != nil {
 		panic(err)
 	}
