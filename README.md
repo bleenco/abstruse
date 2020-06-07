@@ -8,6 +8,25 @@ This project is a work in progress, if you have time to contribute you are very 
 
 Please check [Makefile](Makefile) in order to build up the project.
 
+# Quick Start
+
+For a quick preview you can run:
+
+```sh
+git clone https://github.com/jkuri/abstruse2
+make compose
+```
+
+then login on `http://localhost` with username `john@example.com` and `johndoe` as password.
+
+To build docker images from master branch you can run
+
+```sh
+make docker && make compose
+```
+
+This starts `abstruse-server` with one `abstruse-worker` for testing purposes.
+
 # Preview
 
 ![Screenshot 2020-06-04 at 11 19 26](https://user-images.githubusercontent.com/1796022/83739004-4f3c3c00-a655-11ea-94e3-3fc3f3bc0a42.png)
