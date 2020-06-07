@@ -2,3 +2,4 @@ build/
 internal/server/ui/
 internal/worker/data/
 proto/api.pb.go
+.DS_Store

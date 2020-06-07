@@ -19,7 +19,6 @@
 @import 'button'
 @import 'hero'
 @import 'main'
-@import 'table'
 @import 'list'
 @import 'card'
 @import 'notification'
@@ -28,8 +27,11 @@
 html, body
   background: $background
   color: $gray-900
-  font-family: $font-family-regular
+  font-family: $font-family
   -webkit-font-smoothing: antialiased
   -webkit-tap-highlight-color: transparent
   font-size: 14px
   line-height: 18px
+
+  .no-scroll
+    overflow: hidden

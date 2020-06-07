@@ -32,7 +32,7 @@ export class ModalStack {
       .pipe(filter(() => !!this.windowComponents.length))
       .subscribe(() => {
         const activeWindowComponent = this.windowComponents[this.windowComponents.length - 1];
-        // this.setHidden(activeWindowComponent);
+        this.setHidden(activeWindowComponent);
         this.setOpened(activeWindowComponent);
       });
   }
@@ -53,6 +53,7 @@ export class ModalStack {
     const windowComponentRef: ComponentRef<ModalComponent> =
       this.attachWindowComponent(moduleComponentFactoryResolver, containerEl, contentRef);
     const modalRef: ModalRef = new ModalRef(windowComponentRef, contentRef, options.beforeDismiss);
+    const body = this.document.querySelector('body');
 
     this.registerModalRef(modalRef);
     this.registerWindowComponent(windowComponentRef);
@@ -61,6 +62,7 @@ export class ModalStack {
     activeModal.dismiss = (result?: any) => { modalRef.dismiss(result); };
 
     this.applyOptions(windowComponentRef.instance, options);
+    body.classList.add('no-scroll');
 
     return modalRef;
   }

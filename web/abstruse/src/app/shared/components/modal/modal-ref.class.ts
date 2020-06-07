@@ -10,6 +10,7 @@ export class ActiveModal {
 export class ModalRef<T = any> {
   private resolve: (result?: any) => void;
   private reject: (reason?: any) => void;
+  private body: HTMLBodyElement;
 
   get componentInstance(): T extends new (...args: any[]) => any ? InstanceType<T> : undefined {
     if (this.contentRef && this.contentRef.componentRef) {
@@ -27,6 +28,7 @@ export class ModalRef<T = any> {
     this.windowComponentRef.instance.dismissEvent.subscribe((reason: any) => this.dismiss(reason));
     this.result = new Promise((resolve, reject) => [this.resolve, this.reject] = [resolve, reject]);
     this.result.then(null, () => { });
+    this.body = document.querySelector('body');
   }
 
   close(result?: any): void {
@@ -36,6 +38,7 @@ export class ModalRef<T = any> {
 
     this.resolve(result);
     this.removeModalElements();
+    this.enableBodyScroll();
   }
 
   dismiss(reason?: any): void {
@@ -43,6 +46,7 @@ export class ModalRef<T = any> {
       return;
     }
 
+    this.enableBodyScroll();
     if (!this.beforeDismiss) {
       this.doDismiss(reason);
     } else {
@@ -53,6 +57,10 @@ export class ModalRef<T = any> {
         this.doDismiss(reason);
       }
     }
+  }
+
+  private enableBodyScroll(): void {
+    this.body.classList.remove('no-scroll');
   }
 
   private doDismiss(reason?: any): void {

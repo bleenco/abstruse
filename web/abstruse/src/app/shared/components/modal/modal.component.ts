@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  ViewEncapsulation,
   Output,
   EventEmitter,
   Input,
@@ -9,10 +8,12 @@ import {
   NgZone,
   OnDestroy,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
+  Inject
 } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
+import { DOCUMENT } from '@angular/common';
 
 export enum ModalDismissReasons {
   BACKDROP_CLICK,
@@ -36,13 +37,14 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
   @Output() dismissEvent = new EventEmitter();
 
   constructor(
+    @Inject(DOCUMENT) private document: HTMLDocument,
     private ngZone: NgZone
   ) { }
 
   ngOnInit() { }
 
   ngAfterViewInit() {
-    fromEvent<KeyboardEvent>(this.elementRef.nativeElement, 'keydown')
+    fromEvent<KeyboardEvent>(this.document, 'keydown')
       .pipe(
         takeUntil(this.dismissEvent),
         filter((e: KeyboardEvent) => e.key === 'Escape' && this.keyboard)
