@@ -2,11 +2,13 @@ package websocket
 
 import (
 	"net"
+	"net/http"
 	"time"
 
 	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/pkg/version"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"go.uber.org/zap"
 )
@@ -64,6 +66,10 @@ func (s *Server) handle(conn net.Conn) {
 	var email, fullname string
 	var err error
 
+	header := ws.HandshakeHeaderHTTP(http.Header{
+		"X-Abstruse-Version": []string{version.APIVersion},
+	})
+
 	upgrader := ws.Upgrader{
 		OnHost: func(host []byte) error {
 			return nil
@@ -75,17 +81,19 @@ func (s *Server) handle(conn net.Conn) {
 			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
 				if string(key) == "abstruse-auth-token" && string(value) != "" {
 					id, email, fullname, _, err = auth.GetUserDataFromJWT(string(value))
-					return true
 				}
-				return false
+				return true
 			})
-			if ok {
+			if ok && err == nil {
 				return nil
 			}
 			return ws.RejectConnectionError(
 				ws.RejectionReason("authentication failed"),
 				ws.RejectionStatus(400),
 			)
+		},
+		OnBeforeUpgrade: func() (ws.HandshakeHeader, error) {
+			return header, nil
 		},
 	}
 
@@ -96,7 +104,8 @@ func (s *Server) handle(conn net.Conn) {
 
 	_, err = upgrader.Upgrade(conn)
 	if err != nil {
-		s.logger.Errorf("error upgrading websocket connection: %s", err.Error())
+		s.logger.Errorf("error upgrading websocket connection %s: %s", nameConn(conn), err.Error())
+		return
 	}
 
 	client := s.app.Register(conn, id, email, fullname)

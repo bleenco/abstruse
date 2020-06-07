@@ -18,7 +18,7 @@ type App struct {
 // NewApp inits new app instance and returns it.
 func NewApp(logger *zap.Logger) *App {
 	return &App{
-		logger: logger.With(zap.String("type", "wsapp")).Sugar(),
+		logger: logger.With(zap.String("type", "websocket")).Sugar(),
 	}
 }
 

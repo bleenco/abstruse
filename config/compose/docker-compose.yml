@@ -24,7 +24,7 @@ services:
       - 2379:2379
     environment:
       - ABSTRUSE_ADMIN_EMAIL=john@example.com
-      - ABSTRUSE_ADMIN_NAME="John Doe"
+      - ABSTRUSE_ADMIN_NAME=John Doe
       - ABSTRUSE_ADMIN_PASSWORD=johndoe
       - ABSTRUSE_DB_HOSTNAME=172.100.0.10
       - ABSTRUSE_DB_NAME=abstruse
