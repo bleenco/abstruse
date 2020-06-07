@@ -2,19 +2,16 @@ package config
 
 import (
 	"github.com/google/wire"
+	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/spf13/viper"
 )
 
 // NewConfig inits viper.
 func NewConfig(path string) (*viper.Viper, error) {
 	v := viper.New()
-	v.AddConfigPath("/etc/abstruse")
-	v.AddConfigPath("$HOME/abstruse")
-	v.AddConfigPath(".")
-	v.SetConfigFile(path)
 
-	if err := v.ReadInConfig(); err != nil {
-		return nil, err
+	if fs.Exists(path) {
+		v.SetConfigFile(path)
 	}
 
 	return v, nil

@@ -8,7 +8,6 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
 	"github.com/google/wire"
-	"github.com/jkuri/abstruse/internal/pkg/certgen"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -52,17 +51,13 @@ func (s *Server) Start() error {
 		}()
 	}
 
-	if s.opts.HTTP.TLSAddr != "" && s.opts.Cert != "" && s.opts.Key != "" {
+	if s.opts.HTTP.TLSAddr != "" {
 		go func() {
-			if err := certgen.CheckAndGenerateCert(s.opts.Cert, s.opts.Key); err != nil {
-				errch <- err
-			}
-
 			s.httpsServer.Addr = s.opts.HTTP.TLSAddr
 			s.httpsServer.Handler = getHandler(s.router, s.tlslogger)
 			http2.ConfigureServer(s.httpsServer, nil)
 			s.tlslogger.Infof("starting https server on https://%s", s.opts.HTTP.TLSAddr)
-			if err := s.httpsServer.ListenAndServeTLS(s.opts.Cert, s.opts.Key); err != nil {
+			if err := s.httpsServer.ListenAndServeTLS(s.opts.TLS.Cert, s.opts.TLS.Key); err != nil {
 				errch <- err
 			}
 		}()

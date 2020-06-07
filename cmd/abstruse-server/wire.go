@@ -5,7 +5,6 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
-	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/server"
 	"github.com/jkuri/abstruse/internal/server/app"
@@ -21,7 +20,6 @@ import (
 
 var providerSet = wire.NewSet(
 	log.ProviderSet,
-	config.ProviderSet,
 	options.ProviderSet,
 	http.ProviderSet,
 	etcd.ProviderSet,

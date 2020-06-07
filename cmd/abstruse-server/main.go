@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	configFile  = flag.String("config", "config/server.yaml", "path to config file")
+	configFile  = flag.String("config", "server.yaml", "relative path to config file")
 	versionFlag = flag.Bool("version", false, "version")
 )
 

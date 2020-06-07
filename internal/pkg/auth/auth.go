@@ -13,10 +13,12 @@ var (
 	JWTSecret []byte
 )
 
+// Options is configuration for auth.
 type Options struct {
 	JWTSecret string
 }
 
+// NewOptions returns new Options instance.
 func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
 	opts := &Options{}
 	if err := v.UnmarshalKey("auth", opts); err != nil {
@@ -25,6 +27,7 @@ func NewOptions(v *viper.Viper, logger *zap.Logger) (*Options, error) {
 	return opts, nil
 }
 
+// InitAuth initializes authentication with JWT secret.
 func InitAuth(opts *Options) error {
 	JWTSecret = []byte(opts.JWTSecret)
 	if string(JWTSecret) != "" {
@@ -33,4 +36,5 @@ func InitAuth(opts *Options) error {
 	return fmt.Errorf("jwt secret should not be empty")
 }
 
+// ProviderSet exports for wire dep injection.
 var ProviderSet = wire.NewSet(NewOptions, InitAuth)

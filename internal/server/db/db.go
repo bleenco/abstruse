@@ -43,8 +43,8 @@ func check(opts *options.Options) error {
 		return fmt.Errorf("mysql: could not establish a connection")
 	}
 
-	if _, err := conn.Exec("USE " + opts.DB.Database); err != nil {
-		if _, err := conn.Exec(fmt.Sprintf("%s %s", "CREATE DATABASE IF NOT EXISTS", opts.DB.Database)); err != nil {
+	if _, err := conn.Exec("USE " + opts.DB.Name); err != nil {
+		if _, err := conn.Exec(fmt.Sprintf("%s %s", "CREATE DATABASE IF NOT EXISTS", opts.DB.Name)); err != nil {
 			return fmt.Errorf("mysql: could not create database: %s", err.Error())
 		}
 	}
@@ -64,7 +64,7 @@ func connStr(opts *options.Options, useDb bool) string {
 	port := strconv.Itoa(opts.DB.Port)
 
 	if useDb {
-		return fmt.Sprintf("%stcp([%s]:%s)/%s?charset=%s&parseTime=true&loc=Local", cred, opts.DB.Hostname, port, opts.DB.Database, opts.DB.Charset)
+		return fmt.Sprintf("%stcp([%s]:%s)/%s?charset=%s&parseTime=true&loc=Local", cred, opts.DB.Hostname, port, opts.DB.Name, opts.DB.Charset)
 	}
 
 	return fmt.Sprintf("%stcp([%s]:%s)/", cred, opts.DB.Hostname, port)

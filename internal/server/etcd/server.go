@@ -62,8 +62,8 @@ func (s *Server) Start() error {
 	// cfg.PeerAutoTLS = true
 
 	tlsInfo := transport.TLSInfo{
-		CertFile:           s.opts.Cert,
-		KeyFile:            s.opts.Key,
+		CertFile:           s.opts.TLS.Cert,
+		KeyFile:            s.opts.TLS.Key,
 		InsecureSkipVerify: true,
 	}
 	cfg.ClientTLSInfo = tlsInfo
