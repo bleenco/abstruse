@@ -49,7 +49,6 @@ func (app *App) Remove(client *Client) {
 	for i, c := range app.Clients {
 		if c == client {
 			app.Clients = append(app.Clients[:i], app.Clients[i+1:]...)
-			app.logger.Debugf("ws user disconnected: %s", client.c.RemoteAddr().String())
 		}
 	}
 }
@@ -74,11 +73,11 @@ func (app *App) Broadcast(sub string, data map[string]interface{}) {
 }
 
 // InitClient initializes reading client input messages.
-func (app *App) InitClient(client *Client) {
+func (app *App) InitClient(client *Client) error {
 	for {
 		msg, err := client.Receive()
 		if err != nil {
-			return
+			return err
 		}
 
 		if msg.Type == "subscribe" {
@@ -87,7 +86,6 @@ func (app *App) InitClient(client *Client) {
 				data = d
 			}
 			client.subscribe(data)
-			app.logger.Debugf("client %s subscribed to %s event", client.email, data)
 		}
 
 		if msg.Type == "unsubscribe" {
@@ -96,7 +94,6 @@ func (app *App) InitClient(client *Client) {
 				data = d
 			}
 			client.unsubscribe(data)
-			app.logger.Debugf("client %s unsubscribed from %s event", client.email, data)
 		}
 	}
 }

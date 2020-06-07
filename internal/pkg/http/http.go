@@ -65,7 +65,7 @@ func (s *Server) Start() error {
 	if s.opts.Addr != "" {
 		s.httpServer.Addr = s.opts.Addr
 		s.httpServer.Handler = getHandler(s.router, s.logger)
-		s.logger.Infof("starting http server on %s", s.opts.Addr)
+		s.logger.Infof("starting http server on http://%s", s.opts.Addr)
 
 		go func() {
 			if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -83,7 +83,7 @@ func (s *Server) Start() error {
 			s.httpsServer.Addr = s.opts.TLSAddr
 			s.httpsServer.Handler = getHandler(s.router, s.tlslogger)
 			http2.ConfigureServer(s.httpsServer, nil)
-			s.tlslogger.Infof("starting https server on %s", s.opts.TLSAddr)
+			s.tlslogger.Infof("starting https server on https://%s", s.opts.TLSAddr)
 			if err := s.httpsServer.ListenAndServeTLS(s.opts.Cert, s.opts.Key); err != nil {
 				errch <- err
 			}

@@ -54,7 +54,6 @@ func NewApp(
 
 // Start starts gRPC application.
 func (app *App) Start(client *clientv3.Client) error {
-	app.logger.Debugf("starting app")
 	app.client = client
 
 	go func() {

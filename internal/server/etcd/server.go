@@ -67,7 +67,6 @@ func (s *Server) Start() error {
 	cfg.ClientTLSInfo = tlsInfo
 	cfg.PeerTLSInfo = tlsInfo
 
-	s.logger.Infof("starting etcd server %s on %s", cfg.Name, curl.String())
 	s.server, err = embed.StartEtcd(cfg)
 	if err != nil {
 		return err

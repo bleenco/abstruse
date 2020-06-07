@@ -41,13 +41,13 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	s.logger.Infof("ws listening on %s", ln.Addr().String())
+	// s.logger.Infof("ws listening on %s", ln.Addr().String())
 
 	go func() {
 		for {
 			conn, err := ln.Accept()
 			if err != nil {
-				s.logger.Debugf("error accepting incoming websocket connection: %s", err.Error())
+				s.logger.Errorf("error accepting incoming websocket connection: %s", err.Error())
 				break
 			}
 			go s.handle(conn)
@@ -76,7 +76,7 @@ func (s *Server) handle(conn net.Conn) {
 					id, email, fullname, _, err = auth.GetUserDataFromJWT(string(value))
 					return true
 				}
-				return true
+				return false
 			})
 			if ok {
 				return nil
@@ -89,19 +89,19 @@ func (s *Server) handle(conn net.Conn) {
 	}
 
 	if err != nil {
-		s.logger.Debugf("%s, websocket connection not upgraded", err.Error())
+		s.logger.Errorf("%s, websocket connection not upgraded", err.Error())
 		return
 	}
 
 	_, err = upgrader.Upgrade(conn)
 	if err != nil {
-		s.logger.Debugf("error upgrading websocket connection: %s", err.Error())
+		s.logger.Errorf("error upgrading websocket connection: %s", err.Error())
 	}
 
-	s.logger.Infof("established websocket connection: %s", nameConn(conn))
 	client := s.app.Register(conn, id, email, fullname)
-	s.app.InitClient(client)
-	s.app.Remove(client)
+	if err := s.app.InitClient(client); err != nil {
+		s.app.Remove(client)
+	}
 }
 
 func nameConn(conn net.Conn) string {
