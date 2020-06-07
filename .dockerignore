@@ -6,4 +6,4 @@ vendor/
 internal/server/ui
 internal/worker/data
 proto/api.pb.go
-data/
+config/

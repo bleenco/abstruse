@@ -43,7 +43,7 @@ func NewAPIServer(app *App) *APIServer {
 func (s *APIServer) Start() error {
 	var err error
 	grpcOpts := []grpc.ServerOption{}
-	certificate, err := tls.LoadX509KeyPair(s.app.opts.Cert, s.app.opts.Key)
+	certificate, err := tls.LoadX509KeyPair(s.app.opts.TLS.Cert, s.app.opts.TLS.Key)
 	if err != nil {
 		return err
 	}

@@ -39,8 +39,8 @@ func (app *App) getClient() (*clientv3.Client, error) {
 	if app.opts.Etcd.Username != "" && app.opts.Etcd.Password != "" {
 		config.Username, config.Password = app.opts.Etcd.Username, app.opts.Etcd.Password
 	}
-	if app.opts.Cert != "" && app.opts.Key != "" {
-		config.Cert, config.Key = app.opts.Cert, app.opts.Key
+	if app.opts.TLS.Cert != "" && app.opts.TLS.Key != "" {
+		config.Cert, config.Key = app.opts.TLS.Cert, app.opts.TLS.Key
 	}
 
 	return etcdutil.NewClient(config)

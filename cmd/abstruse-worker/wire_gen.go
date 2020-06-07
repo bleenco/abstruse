@@ -7,7 +7,6 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/jkuri/abstruse/internal/pkg/config"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/worker/app"
 	"github.com/jkuri/abstruse/internal/worker/options"
@@ -16,7 +15,7 @@ import (
 // Injectors from wire.go:
 
 func CreateApp(cfg string) (*app.App, error) {
-	viper, err := config.NewConfig(cfg)
+	viper, err := options.NewConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -41,4 +40,4 @@ func CreateApp(cfg string) (*app.App, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(options.ProviderSet, log.ProviderSet, config.ProviderSet, app.ProviderSet)
+var providerSet = wire.NewSet(options.ProviderSet, log.ProviderSet, app.ProviderSet)

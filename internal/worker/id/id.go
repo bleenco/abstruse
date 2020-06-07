@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jkuri/abstruse/internal/pkg/certgen"
 	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"github.com/jkuri/abstruse/internal/worker/options"
@@ -15,13 +14,7 @@ import (
 func GenerateID(opts *options.Options) (string, error) {
 	var id string
 	addr := util.GetListenAddress(opts.GRPC.ListenAddr)
-	if opts.Cert == "" || opts.Key == "" {
-		return id, fmt.Errorf("cert and key must be specified")
-	}
-	if err := certgen.CheckAndGenerateCert(opts.Cert, opts.Key); err != nil {
-		return id, err
-	}
-	cert, err := fs.ReadFile(opts.Cert)
+	cert, err := fs.ReadFile(opts.TLS.Cert)
 	if err != nil {
 		return id, fmt.Errorf("could not read certificate file")
 	}
