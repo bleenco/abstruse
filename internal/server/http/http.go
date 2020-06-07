@@ -9,22 +9,14 @@ import (
 	"github.com/felixge/httpsnoop"
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/certgen"
-	"github.com/spf13/viper"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 )
 
-// Options defines configuration for http server.
-type Options struct {
-	Addr    string
-	TLSAddr string
-	Cert    string
-	Key     string
-}
-
 // Server represents HTTP server.
 type Server struct {
-	opts        *Options
+	opts        *options.Options
 	logger      *zap.SugaredLogger
 	tlslogger   *zap.SugaredLogger
 	router      *Router
@@ -32,22 +24,8 @@ type Server struct {
 	httpsServer *http.Server
 }
 
-// NewOptions returns configuration fro HTTP server.
-func NewOptions(v *viper.Viper) (*Options, error) {
-	var (
-		err error
-		o   = new(Options)
-	)
-
-	if err = v.UnmarshalKey("http", o); err != nil {
-		return nil, err
-	}
-
-	return o, err
-}
-
 // NewServer returns new HTTP server instance.
-func NewServer(opts *Options, logger *zap.Logger, router *Router) (*Server, error) {
+func NewServer(opts *options.Options, logger *zap.Logger, router *Router) (*Server, error) {
 	return &Server{
 		opts:        opts,
 		router:      router,
@@ -62,10 +40,10 @@ func NewServer(opts *Options, logger *zap.Logger, router *Router) (*Server, erro
 func (s *Server) Start() error {
 	errch := make(chan error)
 
-	if s.opts.Addr != "" {
-		s.httpServer.Addr = s.opts.Addr
+	if s.opts.HTTP.Addr != "" {
+		s.httpServer.Addr = s.opts.HTTP.Addr
 		s.httpServer.Handler = getHandler(s.router, s.logger)
-		s.logger.Infof("starting http server on http://%s", s.opts.Addr)
+		s.logger.Infof("starting http server on http://%s", s.opts.HTTP.Addr)
 
 		go func() {
 			if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -74,16 +52,16 @@ func (s *Server) Start() error {
 		}()
 	}
 
-	if s.opts.TLSAddr != "" && s.opts.Cert != "" && s.opts.Key != "" {
+	if s.opts.HTTP.TLSAddr != "" && s.opts.Cert != "" && s.opts.Key != "" {
 		go func() {
 			if err := certgen.CheckAndGenerateCert(s.opts.Cert, s.opts.Key); err != nil {
 				errch <- err
 			}
 
-			s.httpsServer.Addr = s.opts.TLSAddr
+			s.httpsServer.Addr = s.opts.HTTP.TLSAddr
 			s.httpsServer.Handler = getHandler(s.router, s.tlslogger)
 			http2.ConfigureServer(s.httpsServer, nil)
-			s.tlslogger.Infof("starting https server on https://%s", s.opts.TLSAddr)
+			s.tlslogger.Infof("starting https server on https://%s", s.opts.HTTP.TLSAddr)
 			if err := s.httpsServer.ListenAndServeTLS(s.opts.Cert, s.opts.Key); err != nil {
 				errch <- err
 			}
@@ -122,4 +100,4 @@ func getHandler(router *Router, logger *zap.SugaredLogger) http.Handler {
 }
 
 // ProviderSet export.
-var ProviderSet = wire.NewSet(NewServer, NewOptions, NewRouter)
+var ProviderSet = wire.NewSet(NewServer, NewRouter)

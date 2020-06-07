@@ -1,13 +1,10 @@
+cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
+key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 http:
   addr: 0.0.0.0:80
   tlsaddr: 0.0.0.0:443
-  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
-  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 websocket:
   addr: 127.0.0.1:7100
-grpcclient:
-  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
-  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 db:
   client: mysql
   hostname: localhost
@@ -21,9 +18,7 @@ etcd:
   host: 0.0.0.0
   clientPort: 2379
   peerPort: 2380
-  dataDir: /var/tmp/abstruse-master
-  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
-  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
+  dataDir: /var/tmp/abstruse-server
   username: root
   password: abstruse
 auth:

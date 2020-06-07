@@ -7,6 +7,7 @@ import (
 	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"go.uber.org/zap"
 )
 
@@ -14,7 +15,7 @@ import (
 // websocket server on straight TCP connection. Use in a combination
 // of UpstreamHandler.
 type Server struct {
-	opts      *Options
+	opts      *options.Options
 	logger    *zap.SugaredLogger
 	ioTimeout time.Duration
 	exit      chan struct{}
@@ -22,7 +23,7 @@ type Server struct {
 }
 
 // NewServer initializes and returns a new websocket server instance.
-func NewServer(opts *Options, app *App, logger *zap.Logger) *Server {
+func NewServer(opts *options.Options, app *App, logger *zap.Logger) *Server {
 	log := logger.With(zap.String("type", "websocket")).Sugar()
 
 	return &Server{
@@ -36,7 +37,7 @@ func NewServer(opts *Options, app *App, logger *zap.Logger) *Server {
 
 // Start starts the websocket server
 func (s *Server) Start() error {
-	ln, err := net.Listen("tcp", s.opts.Addr)
+	ln, err := net.Listen("tcp", s.opts.Websocket.Addr)
 	if err != nil {
 		return err
 	}

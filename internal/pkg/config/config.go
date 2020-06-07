@@ -8,6 +8,8 @@ import (
 // NewConfig inits viper.
 func NewConfig(path string) (*viper.Viper, error) {
 	v := viper.New()
+	v.AddConfigPath("/etc/abstruse")
+	v.AddConfigPath("$HOME/abstruse")
 	v.AddConfigPath(".")
 	v.SetConfigFile(path)
 

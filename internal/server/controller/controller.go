@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/jkuri/abstruse/internal/pkg/http"
+	"github.com/jkuri/abstruse/internal/server/http"
 )
 
 // CreateInitControllersFn func

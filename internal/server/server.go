@@ -3,16 +3,17 @@ package server
 import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
-	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/server/app"
 	"github.com/jkuri/abstruse/internal/server/etcd"
+	"github.com/jkuri/abstruse/internal/server/http"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.uber.org/zap"
 )
 
 // App master application.
 type App struct {
-	opts       *Options
+	opts       *options.Options
 	logger     *zap.SugaredLogger
 	httpServer *http.Server
 	wsServer   *websocket.Server
@@ -21,14 +22,7 @@ type App struct {
 }
 
 // NewApp returns new instance of App
-func NewApp(
-	opts *Options,
-	logger *zap.Logger,
-	httpServer *http.Server,
-	etcdServer *etcd.Server,
-	wsServer *websocket.Server,
-	app *app.App,
-) *App {
+func NewApp(opts *options.Options, logger *zap.Logger, httpServer *http.Server, etcdServer *etcd.Server, wsServer *websocket.Server, app *app.App) *App {
 	log := logger.With(zap.String("type", "app")).Sugar()
 	return &App{opts, log, httpServer, wsServer, etcdServer, app}
 }
@@ -74,4 +68,4 @@ func (app *App) init() error {
 }
 
 // ProviderSet export.
-var ProviderSet = wire.NewSet(NewApp, NewOptions)
+var ProviderSet = wire.NewSet(NewApp)

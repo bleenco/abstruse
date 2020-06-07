@@ -9,7 +9,6 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/config"
-	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/server"
 	"github.com/jkuri/abstruse/internal/server/app"
@@ -17,6 +16,8 @@ import (
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/etcd"
+	"github.com/jkuri/abstruse/internal/server/http"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -28,7 +29,7 @@ func CreateApp(cfg string) (*server.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	options, err := server.NewOptions(viper)
+	optionsOptions, err := options.NewOptions(viper)
 	if err != nil {
 		return nil, err
 	}
@@ -40,19 +41,7 @@ func CreateApp(cfg string) (*server.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	httpOptions, err := http.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	websocketOptions, err := websocket.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	dbOptions, err := db.NewOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
-	gormDB, err := db.NewDatabase(dbOptions)
+	gormDB, err := db.NewDatabase(optionsOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -84,21 +73,17 @@ func CreateApp(cfg string) (*server.App, error) {
 	providerController := controller.NewProviderController(providerService, repositoryService)
 	middlewareController := controller.NewMiddlewareController(logger, userService)
 	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, repositoryController, providerController, middlewareController)
-	router := http.NewRouter(httpOptions, websocketOptions, initControllers)
-	httpServer, err := http.NewServer(httpOptions, logger, router)
+	router := http.NewRouter(optionsOptions, initControllers)
+	httpServer, err := http.NewServer(optionsOptions, logger, router)
 	if err != nil {
 		return nil, err
 	}
-	etcdOptions, err := etcd.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
-	etcdServer := etcd.NewServer(etcdOptions, logger)
-	websocketServer := websocket.NewServer(websocketOptions, websocketApp, logger)
-	serverApp := server.NewApp(options, logger, httpServer, etcdServer, websocketServer, appApp)
+	etcdServer := etcd.NewServer(optionsOptions, logger)
+	websocketServer := websocket.NewServer(optionsOptions, websocketApp, logger)
+	serverApp := server.NewApp(optionsOptions, logger, httpServer, etcdServer, websocketServer, appApp)
 	return serverApp, nil
 }
 
 // wire.go:
 
-var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, http.ProviderSet, etcd.ProviderSet, app.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet, server.ProviderSet)
+var providerSet = wire.NewSet(log.ProviderSet, config.ProviderSet, options.ProviderSet, http.ProviderSet, etcd.ProviderSet, app.ProviderSet, db.ProviderSet, repository.ProviderSet, auth.ProviderSet, controller.ProviderSet, service.ProviderSet, websocket.ProviderSet, server.ProviderSet)

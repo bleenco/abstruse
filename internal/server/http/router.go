@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/jkuri/abstruse/internal/server/options"
 	_ "github.com/jkuri/abstruse/internal/server/ui" // web ui
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"github.com/jkuri/statik/fs"
@@ -10,17 +11,18 @@ import (
 // Router represents main HTTP router.
 type Router struct {
 	*httprouter.Router
+	opts *options.Options
 }
 
 // InitControllers func
 type InitControllers func(r *Router)
 
 // NewRouter returns new instance of router.
-func NewRouter(opts *Options, wsOpts *websocket.Options, init InitControllers) *Router {
-	r := &Router{httprouter.New()}
+func NewRouter(opts *options.Options, init InitControllers) *Router {
+	r := &Router{httprouter.New(), opts}
 	init(r)
 	r.initUI()
-	r.initWS(wsOpts)
+	r.initWS()
 
 	return r
 }
@@ -30,6 +32,6 @@ func (r *Router) initUI() {
 	r.Router.NotFound = fileServer(statikFS)
 }
 
-func (r *Router) initWS(opts *websocket.Options) {
-	r.Router.GET("/ws", websocket.UpstreamHandler(opts.Addr))
+func (r *Router) initWS() {
+	r.Router.GET("/ws", websocket.UpstreamHandler(r.opts.Websocket.Addr))
 }

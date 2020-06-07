@@ -6,7 +6,6 @@ import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/config"
-	"github.com/jkuri/abstruse/internal/pkg/http"
 	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/jkuri/abstruse/internal/server"
 	"github.com/jkuri/abstruse/internal/server/app"
@@ -14,6 +13,8 @@ import (
 	"github.com/jkuri/abstruse/internal/server/db"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/etcd"
+	"github.com/jkuri/abstruse/internal/server/http"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/service"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 )
@@ -21,6 +22,7 @@ import (
 var providerSet = wire.NewSet(
 	log.ProviderSet,
 	config.ProviderSet,
+	options.ProviderSet,
 	http.ProviderSet,
 	etcd.ProviderSet,
 	app.ProviderSet,
