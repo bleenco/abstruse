@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jkuri/abstruse/internal/pkg/certgen"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
@@ -33,17 +33,14 @@ type Worker struct {
 	app     *App
 }
 
-func newWorker(addr, id string, opts *Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*Worker, error) {
+func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*Worker, error) {
 	logger = logger.With(zap.String("worker", addr))
-	if opts.Cert == "" || opts.Key == "" {
+	if opts.TLS.Cert == "" || opts.TLS.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
-	}
-	if err := certgen.CheckAndGenerateCert(opts.Cert, opts.Key); err != nil {
-		return nil, err
 	}
 
 	grpcOpts := []grpc.DialOption{}
-	certificate, err := tls.LoadX509KeyPair(opts.Cert, opts.Key)
+	certificate, err := tls.LoadX509KeyPair(opts.TLS.Cert, opts.TLS.Key)
 	if err != nil {
 		return nil, err
 	}

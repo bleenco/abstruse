@@ -7,6 +7,7 @@ import (
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
+	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
@@ -16,7 +17,7 @@ import (
 // for established worker connections.
 type App struct {
 	mu        sync.RWMutex
-	opts      *Options
+	opts      *options.Options
 	workers   map[string]*Worker
 	client    *clientv3.Client
 	ws        *websocket.App
@@ -30,14 +31,7 @@ type App struct {
 }
 
 // NewApp returns new instance of App.
-func NewApp(
-	opts *Options,
-	ws *websocket.App,
-	rr repository.RepoRepository,
-	jr repository.JobRepository,
-	br repository.BuildRepository,
-	logger *zap.Logger,
-) (*App, error) {
+func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, logger *zap.Logger) (*App, error) {
 	app := &App{
 		opts:            opts,
 		workers:         make(map[string]*Worker),

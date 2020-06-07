@@ -22,6 +22,7 @@ type Client struct {
 	id    int
 	email string
 	name  string
+	admin bool
 	subs  []string
 }
 

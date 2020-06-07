@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 
@@ -15,6 +14,7 @@ type UserJWT struct {
 	Email    string `json:"email"`
 	Fullname string `json:"fullname"`
 	Avatar   string `json:"avatar"`
+	Admin    bool   `json:"admin"`
 }
 
 // HashPassword generates encrypted password from password string
@@ -36,6 +36,7 @@ func GenerateJWT(user UserJWT) (string, error) {
 		"email":    user.Email,
 		"fullname": user.Fullname,
 		"avatar":   user.Avatar,
+		"admin":    user.Admin,
 	})
 
 	return token.SignedString(JWTSecret)
@@ -45,19 +46,25 @@ func GenerateJWT(user UserJWT) (string, error) {
 func GetUserIDFromJWT(tokenString string) (uint, error) {
 	var userID uint
 	if tokenString == "" {
-		return userID, errors.New("invalid token")
+		return userID, fmt.Errorf("invalid token")
 	}
 
-	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return JWTSecret, nil
 	})
+	if err != nil {
+		return userID, err
+	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		id, _ := strconv.Atoi(claims["id"].(string))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		id, err := strconv.Atoi(claims["id"].(string))
+		if err != nil {
+			return userID, err
+		}
 		return uint(id), nil
 	}
 
@@ -65,25 +72,31 @@ func GetUserIDFromJWT(tokenString string) (uint, error) {
 }
 
 // GetUserDataFromJWT returns users data included in token.
-func GetUserDataFromJWT(tokenString string) (int, string, string, string, error) {
+func GetUserDataFromJWT(tokenString string) (int, string, string, string, bool, error) {
 	if tokenString == "" {
-		return 0, "", "", "", errors.New("invalid token")
+		return 0, "", "", "", false, fmt.Errorf("invalid token")
 	}
 
-	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return JWTSecret, nil
 	})
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		userID, _ := strconv.Atoi(claims["id"].(string))
-		return userID, claims["email"].(string), claims["fullname"].(string), claims["avatar"].(string), nil
+	if err != nil {
+		return 0, "", "", "", false, fmt.Errorf("invalid token")
 	}
 
-	return 0, "", "", "", errors.New("invalid token")
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		userID, err := strconv.Atoi(claims["id"].(string))
+		if err != nil {
+			return 0, "", "", "", false, fmt.Errorf("could not parse user id")
+		}
+		return userID, claims["email"].(string), claims["fullname"].(string), claims["avatar"].(string), claims["admin"].(bool), nil
+	}
+
+	return 0, "", "", "", false, fmt.Errorf("invalid token")
 }
 
 // GetWorkerIdentifierByJWT return workers identifier by token string.
@@ -91,7 +104,7 @@ func GetWorkerIdentifierByJWT(token string) (string, error) {
 	var identifier string
 
 	if token == "" {
-		return identifier, errors.New("invalid token")
+		return identifier, fmt.Errorf("invalid token")
 	}
 
 	t, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
@@ -105,7 +118,7 @@ func GetWorkerIdentifierByJWT(token string) (string, error) {
 		return identifier, err
 	}
 
-	if claims, ok := t.Claims.(jwt.MapClaims); ok {
+	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
 		identifier = claims["identifier"].(string)
 	}
 

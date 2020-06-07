@@ -49,15 +49,11 @@ func CreateApp(cfg string) (*server.App, error) {
 	userController := controller.NewUserController(logger, userService)
 	versionService := service.NewVersionService(logger)
 	versionController := controller.NewVersionController(logger, versionService)
-	appOptions, err := app.NewOptions(viper)
-	if err != nil {
-		return nil, err
-	}
 	websocketApp := websocket.NewApp(logger)
 	repoRepository := repository.NewDBRepoRepository(gormDB)
 	jobRepository := repository.NewDBJobRepository(gormDB)
 	buildRepository := repository.NewDBBuildRepository(gormDB)
-	appApp, err := app.NewApp(appOptions, websocketApp, repoRepository, jobRepository, buildRepository, logger)
+	appApp, err := app.NewApp(optionsOptions, websocketApp, repoRepository, jobRepository, buildRepository, logger)
 	if err != nil {
 		return nil, err
 	}

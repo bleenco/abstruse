@@ -64,6 +64,7 @@ func (s *Server) Start() error {
 func (s *Server) handle(conn net.Conn) {
 	var id int
 	var email, fullname string
+	var admin bool
 	var err error
 
 	header := ws.HandshakeHeaderHTTP(http.Header{
@@ -80,7 +81,7 @@ func (s *Server) handle(conn net.Conn) {
 			}
 			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
 				if string(key) == "abstruse-auth-token" && string(value) != "" {
-					id, email, fullname, _, err = auth.GetUserDataFromJWT(string(value))
+					id, email, fullname, _, admin, err = auth.GetUserDataFromJWT(string(value))
 				}
 				return true
 			})
@@ -108,7 +109,7 @@ func (s *Server) handle(conn net.Conn) {
 		return
 	}
 
-	client := s.app.Register(conn, id, email, fullname)
+	client := s.app.Register(conn, id, email, fullname, admin)
 	if err := s.app.InitClient(client); err != nil {
 		s.app.Remove(client)
 	}

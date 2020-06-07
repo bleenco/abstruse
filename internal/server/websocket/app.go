@@ -23,13 +23,14 @@ func NewApp(logger *zap.Logger) *App {
 }
 
 // Register registers new connection as app Client.
-func (app *App) Register(conn net.Conn, id int, email, name string) *Client {
+func (app *App) Register(conn net.Conn, id int, email, name string, admin bool) *Client {
 	client := &Client{
 		conn:  conn,
 		c:     conn,
 		id:    id,
 		email: email,
 		name:  name,
+		admin: admin,
 	}
 
 	app.mu.Lock()
