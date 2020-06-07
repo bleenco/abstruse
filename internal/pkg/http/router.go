@@ -1,8 +1,6 @@
 package http
 
 import (
-	"net/http"
-
 	_ "github.com/jkuri/abstruse/internal/server/ui" // web ui
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"github.com/jkuri/statik/fs"
@@ -29,7 +27,7 @@ func NewRouter(opts *Options, wsOpts *websocket.Options, init InitControllers) *
 
 func (r *Router) initUI() {
 	statikFS, _ := fs.New()
-	r.Router.NotFound = http.FileServer(&statikWrapper{statikFS})
+	r.Router.NotFound = fileServer(statikFS)
 }
 
 func (r *Router) initWS(opts *websocket.Options) {
