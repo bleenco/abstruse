@@ -3,11 +3,14 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/google/wire"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql" // mysql driver.
+	"github.com/jkuri/abstruse/internal/pkg/auth"
+	"github.com/jkuri/abstruse/internal/pkg/util"
 	"github.com/jkuri/abstruse/internal/server/db/model"
 	"github.com/jkuri/abstruse/internal/server/options"
 )
@@ -28,6 +31,9 @@ func NewDatabase(opts *options.Options) (*gorm.DB, error) {
 		model.Build{},
 		model.Job{},
 	)
+	if err := createAdmin(conn); err != nil {
+		return nil, err
+	}
 
 	return conn, err
 }
@@ -68,6 +74,21 @@ func connStr(opts *options.Options, useDb bool) string {
 	}
 
 	return fmt.Sprintf("%stcp([%s]:%s)/", cred, opts.DB.Hostname, port)
+}
+
+func createAdmin(db *gorm.DB) error {
+	email, passwd, name := os.Getenv("ABSTRUSE_ADMIN_EMAIL"), os.Getenv("ABSTRUSE_ADMIN_PASSWORD"), os.Getenv("ABSTRUSE_ADMIN_NAME")
+	if email != "" && passwd != "" {
+		pass, err := auth.HashPassword(passwd)
+		if err != nil {
+			return err
+		}
+		avatar := fmt.Sprintf("/assets/images/avatars/avatar_%d.svg", util.RandomInt(1, 30))
+		user := &model.User{Email: email, Password: pass, Fullname: name, Avatar: avatar, Admin: true}
+		return db.FirstOrCreate(user).Error
+
+	}
+	return nil
 }
 
 // ProviderSet export.

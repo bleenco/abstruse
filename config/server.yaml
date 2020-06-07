@@ -1,5 +1,6 @@
-cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
-key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
+tls:
+  cert: /Users/jan/Dev/certs/_wildcard.jan.local.pem
+  key: /Users/jan/Dev/certs/_wildcard.jan.local-key.pem
 
 http:
   addr: 0.0.0.0:80
@@ -12,17 +13,17 @@ db:
   client: mysql
   hostname: localhost
   port: 3306
-  user: root
-  password: xx2n5
+  user: abstruse
+  password: abstruse
   name: abstruse_dev
   charset: utf8
 
 etcd:
   name: abstruse
   host: 0.0.0.0
-  clientPort: 2379
-  peerPort: 2380
-  dataDir: /var/tmp/abstruse-server
+  clientport: 2379
+  peerport: 2380
+  datadir: /var/tmp/abstruse-server
   username: root
   password: abstruse
 

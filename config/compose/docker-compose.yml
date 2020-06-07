@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysqldb
+    restart: always
+    volumes:
+      - "./data/mysql:/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=abstruse
+    networks:
+      net:
+        ipv4_address: 172.100.0.10
+  abstruse_server:
+    image: abstruse/abstruse-server
+    container_name: abstruse-server
+    restart: always
+    volumes:
+      - "./data/abstruse:/abstruse"
+    ports:
+      - 80:80
+      - 443:443
+      - 2379:2379
+    environment:
+      - ABSTRUSE_ADMIN_EMAIL=john@example.com
+      - ABSTRUSE_ADMIN_NAME="John Doe"
+      - ABSTRUSE_ADMIN_PASSWORD=johndoe
+      - ABSTRUSE_DB_HOSTNAME=172.100.0.10
+      - ABSTRUSE_DB_NAME=abstruse
+      - ABSTRUSE_DB_USERNAME=root
+      - ABSTRUSE_DB_PASSWORD=abstruse
+    networks:
+      net:
+        ipv4_address: 172.100.0.20
+  # abstruse_worker:
+  #   image: abstruse-worker
+  #   container_name: abstruse-worker
+  #   restart: always
+  #   volumes:
+  #     - /Users/jan/Dev/data/abstruse-worker:/abstruse-worker
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     net:
+  #       ipv4_address: 172.20.0.30
+
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.100.0.0/16

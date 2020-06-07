@@ -50,4 +50,19 @@ dev_worker:
 protoc:
 	@protoc ./proto/api.proto --go_out=plugins=grpc:./proto/
 
-.PHONY: clean grpc build server worker build_ui build_pty statik statik_worker wire install_dependencies
+docker_server:
+	@docker build --rm --compress -t abstruse/abstruse-server -f Dockerfile .
+
+docker_worker:
+	@docker build --rm --compress -t abstruse/abstruse-worker -f Dockerfile.worker .
+
+docker_push:
+	@docker push abstruse/abstruse-server
+	@docker push abstruse/abstruse-worker
+
+compose:
+	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose/data up -d
+
+docker: docker_server docker_worker
+
+.PHONY: clean grpc build server worker build_ui build_pty statik statik_worker wire install_dependencies docker_server docker_worker docker docker_push compose
