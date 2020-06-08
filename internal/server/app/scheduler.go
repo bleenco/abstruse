@@ -17,8 +17,8 @@ import (
 	"go.uber.org/zap"
 )
 
-type jobChannel chan shared.Job
-type jobQueue chan chan shared.Job
+type jobChannel chan *shared.Job
+type jobQueue chan chan *shared.Job
 
 type scheduler struct {
 	mu      sync.Mutex
@@ -28,7 +28,9 @@ type scheduler struct {
 	app     *App
 	client  *clientv3.Client
 	logger  *zap.SugaredLogger
-	ready   chan struct{}
+	readych chan struct{}
+	wch     chan string
+	wdch    chan string
 	max     int
 	running int
 	pending map[uint]*shared.Job
@@ -42,121 +44,89 @@ func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) *schedu
 		app:     app,
 		client:  client,
 		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
-		ready:   make(chan struct{}),
+		readych: make(chan struct{}),
+		wch:     make(chan string),
+		wdch:    make(chan string),
 		pending: make(map[uint]*shared.Job),
 	}
 }
 
 func (s *scheduler) run() error {
-	wch, wdch := s.watchWorkers()
 	donech := s.watchDoneEvents()
-	queuech := s.dequeue()
+	// queuech := s.dequeue()
+	errch := make(chan error)
 
-	for {
-		select {
-		case job := <-s.workch:
-			jobch := <-s.workerq
-			jobch <- job
-		case job := <-donech:
-			go s.doneJob(job)
-		case wid := <-wch:
-			if worker, ok := s.app.workers[wid]; ok {
-				worker.start(s.workerq)
+	go func() {
+		for {
+			select {
+			case job := <-donech:
+				go func(job *shared.Job) {
+					if err := s.doneJob(job); err != nil {
+						errch <- err
+					}
+				}(job)
 			}
-		case wid := <-wdch:
-			if worker, ok := s.app.workers[wid]; ok {
-				worker.stop()
-			}
-		case job := <-queuech:
-			s.logger.Debugf("%+v", job)
-			// go s.startJob(job)
 		}
-	}
+	}()
+
+	go func() {
+		for {
+			select {
+			case job := <-s.workch:
+				s.logger.Debugf("da")
+				jobch := <-s.workerq
+				s.logger.Debugf("da")
+				jobch <- job
+				s.logger.Debugf("da")
+			case job := <-s.dequeue():
+				s.logger.Debugf("da %v", job)
+			}
+
+			// loop:
+			// 	worker := <-s.wch
+			// 	s.logger.Debugf("worker %s ready", worker)
+			// 	select {
+			// 	case s.readych <- struct{}{}:
+			// 	default:
+			// 	}
+			// 	select {
+			// 	case job := <-queuech:
+			// 		go func(job *shared.Job, worker string) {
+			// 			if err := s.startJob(job, worker); err != nil {
+			// 				errch <- err
+			// 			}
+			// 		}(job, worker)
+			// 	case wid := <-s.wdch:
+			// 		if worker == wid {
+			// 			goto loop
+			// 		}
+			// 	}
+		}
+	}()
+
+	// for {
+	// 	select {
+	// 	case job := <-s.workch:
+	// 		jobch := <-s.workerq
+	// 		jobch <- job
+	// 	case job := <-donech:
+	// 		go s.doneJob(job)
+	// 	case wid := <-wch:
+	// 		s.logger.Debugf("starting worker %s...", wid)
+	// 		if worker, ok := s.app.workers[wid]; ok {
+	// 			worker.start(s.workerq)
+	// 		}
+	// 	case wid := <-wdch:
+	// 		if worker, ok := s.app.workers[wid]; ok {
+	// 			worker.stop()
+	// 		}
+	// 	case job := <-queuech:
+	// 		s.logger.Debugf("%+v", job)
+	// 		// go s.startJob(job)
+	// 	}
+	// }
+	return <-errch
 }
-
-// func (s *scheduler) scheduleJob(job shared.Job) {
-// 	s.workch <- job
-// }
-
-// type scheduler struct {
-// 	mu           sync.Mutex
-// 	m            map[string]*concurrency.Mutex
-// 	client       *clientv3.Client
-// 	session      *concurrency.Session
-// 	queue        *recipe.PriorityQueue
-// 	logger       *zap.SugaredLogger
-// 	pending      map[uint]shared.Job
-// 	app          *App
-// 	readych      chan struct{}
-// 	max, running int
-// 	wdch         chan string
-// }
-
-// func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-// 	defer cancel()
-// 	session, err := concurrency.NewSession(client, concurrency.WithContext(ctx))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &scheduler{
-// 		client:  client,
-// 		session: session,
-// 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
-// 		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
-// 		pending: make(map[uint]shared.Job),
-// 		m:       make(map[string]*concurrency.Mutex),
-// 		app:     app,
-// 		readych: make(chan struct{}, 1),
-// 		wdch:    make(chan string),
-// 	}, nil
-// }
-
-// func (s *scheduler) run() error {
-// 	errch := make(chan error)
-// 	donech := s.watchDoneEvents()
-// 	wch, wdch := s.watchWorkers()
-// 	queuech := s.dequeue()
-// 	defer s.session.Close()
-
-// 	go func() {
-// 		for {
-// 			select {
-// 			case job := <-donech:
-// 				go func(job shared.Job) {
-// 					if err := s.doneJob(job); err != nil {
-// 						errch <- err
-// 					}
-// 				}(job)
-// 			}
-// 		}
-// 	}()
-
-// 	go func() {
-// 		for {
-// 		loop:
-// 			worker := <-wch
-// 			select {
-// 			case s.readych <- struct{}{}:
-// 			default:
-// 			}
-// 			select {
-// 			case job := <-queuech:
-// 				go func(job shared.Job, worker string) {
-// 					if err := s.startJob(job, worker); err != nil {
-// 						errch <- err
-// 					}
-// 				}(job, worker)
-// 			case wid := <-wdch:
-// 				if worker == wid {
-// 					goto loop
-// 				}
-// 			}
-// 		}
-// 	}()
-
-// 	return <-errch
-// }
 
 func (s *scheduler) scheduleJob(job *shared.Job) error {
 	s.logger.Infof("scheduling job %d with priority %d", job.ID, job.Priority)
@@ -241,7 +211,7 @@ func (s *scheduler) dequeue() <-chan *shared.Job {
 
 	go func() {
 		for {
-			<-s.ready
+			<-s.readych
 			if data, err := s.queue.Dequeue(); err == nil {
 				job := &shared.Job{}
 				if job, err := job.Unmarshal(data); err == nil {
@@ -291,54 +261,6 @@ func (s *scheduler) watchDoneEvents() <-chan *shared.Job {
 
 	return donech
 }
-
-func (s *scheduler) watchWorkers() (<-chan string, <-chan string) {
-	putch, delch := make(chan string), make(chan string)
-
-	go func() {
-		resp, err := s.client.Get(context.Background(), shared.WorkersCapacity, clientv3.WithPrefix())
-		if err != nil {
-			s.logger.Errorf("error getting workers info: %v", err)
-		} else {
-			for i := range resp.Kvs {
-				workerID := path.Base(string(resp.Kvs[i].Key))
-				putch <- workerID
-			}
-
-			wch := s.client.Watch(context.Background(), shared.WorkersCapacity, clientv3.WithPrefix())
-			for n := range wch {
-				for _, ev := range n.Events {
-					switch ev.Type {
-					case mvccpb.PUT:
-						workerID := path.Base(string(ev.Kv.Key))
-						putch <- workerID
-					case mvccpb.DELETE:
-						delch <- path.Base(string(ev.Kv.Key))
-					}
-				}
-			}
-		}
-	}()
-
-	return putch, delch
-}
-
-// func (s *scheduler) listJobs(prefix string) ([]shared.Job, error) {
-// 	var jobs []shared.Job
-// 	resp, err := s.client.Get(context.Background(), prefix, clientv3.WithPrefix())
-// 	if err != nil {
-// 		return jobs, err
-// 	}
-// 	for i := range resp.Kvs {
-// 		job := shared.Job{}
-// 		job, err := job.Unmarshal(string(resp.Kvs[i].Value))
-// 		if err != nil {
-// 			return jobs, err
-// 		}
-// 		jobs = append(jobs, job)
-// 	}
-// 	return jobs, nil
-// }
 
 func (s *scheduler) deleteFromQueue(id uint) (*shared.Job, error) {
 	job := &shared.Job{}

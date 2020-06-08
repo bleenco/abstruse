@@ -133,16 +133,23 @@ func (w *Worker) run() error {
 		}
 	}()
 
+	go func() {
+		if err := w.start(w.app.scheduler.workerq); err != nil {
+			ch <- err
+		}
+	}()
+
 	err = <-ch
 	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	return err
 }
 
-func (w *Worker) start(queue jobQueue) {
+func (w *Worker) start(queue jobQueue) error {
 	w.queue = queue
 	w.jobch = make(jobChannel)
 	w.quit = make(chan struct{})
+	errch := make(chan error)
 
 	go func() {
 		for {
@@ -152,10 +159,12 @@ func (w *Worker) start(queue jobQueue) {
 				w.logger.Debugf("job: %+v", job)
 			case <-w.quit:
 				close(w.jobch)
-				return
+				errch <- nil
 			}
 		}
 	}()
+
+	return <-errch
 }
 
 func (w *Worker) stop() {
