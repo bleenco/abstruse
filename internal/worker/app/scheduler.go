@@ -128,10 +128,11 @@ func (s *scheduler) startJob(job *shared.Job) error {
 func (s *scheduler) stopJob(job *shared.Job) error {
 	name := fmt.Sprintf("abstruse-job-%d", job.ID)
 	s.logger.Debugf("stopping container %s...", name)
-	s.app.stopJob(name)
-	if err := s.deleteStop(job); err != nil {
-		s.logger.Debugf("could not mark job %s as stopped: %v", err)
-		return err
+	if err := s.app.stopJob(name); err == nil {
+		if err := s.deleteStop(job); err != nil {
+			s.logger.Debugf("could not mark job %s as stopped: %v", err)
+			return err
+		}
 	}
 	// job.Status = shared.StatusFailing
 	// job.EndTime = util.TimeNow()
