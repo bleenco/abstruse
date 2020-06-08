@@ -47,6 +47,7 @@ func (s *scheduler) run() error {
 			case job := <-stopch:
 				s.logger.Infof("received job %d stop command, trying to stop...", job.ID)
 				go s.stopJob(job)
+			case <-s.app.ready:
 			}
 		}
 	}()

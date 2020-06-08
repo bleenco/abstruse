@@ -22,9 +22,10 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.fetchWorkers();
+    this.subscribe();
     this.sub.add(
       this.dataService.socketOutput.subscribe((ev: SocketEvent) => {
-        console.log(ev);
         switch (ev.type) {
           case workerSubDeleteEvent: {
             this.workers = this.workers.filter(w => w.id !== ev.data.id);
@@ -42,16 +43,6 @@ export class WorkersListComponent implements OnInit, OnDestroy {
           }
         }
       }));
-    this.sub.add(
-      this.dataService.connected.subscribe((status: boolean) => {
-        if (status) {
-          this.fetchWorkers();
-          this.subscribe();
-        } else {
-          this.workers = [];
-        }
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -65,12 +56,11 @@ export class WorkersListComponent implements OnInit, OnDestroy {
         if (!resp || !resp.data || !resp.data.length) {
           return;
         }
-
-        this.workers = resp.data.map((w: any) => {
-          return this.newWorker(w);
-        });
+        this.workers = resp.data.map((w: any) => this.newWorker(w));
       }, err => {
         console.error(err);
+        this.workers = [];
+        this.fetchingWorkers = false;
       }, () => {
         this.fetchingWorkers = false;
       });

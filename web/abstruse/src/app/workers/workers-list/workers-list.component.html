@@ -11,6 +11,10 @@
     </div>
   </div>
 
+  <div class="column is-12" *ngIf="fetchingWorkers">
+    <app-spinner class="is-large"></app-spinner>
+  </div>
+
   <div class="column is-12" *ngIf="workers.length && !fetchingWorkers">
     <div class="list">
       <div class="list-items">
