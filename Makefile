@@ -63,6 +63,9 @@ docker_push:
 compose:
 	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose/data up -d
 
+compose_down:
+	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose/data down
+
 docker: docker_server docker_worker
 
-.PHONY: clean grpc build server worker build_ui build_pty statik statik_worker wire install_dependencies docker_server docker_worker docker docker_push compose
+.PHONY: clean grpc build server worker build_ui build_pty statik statik_worker wire install_dependencies docker_server docker_worker docker docker_push compose compose_down

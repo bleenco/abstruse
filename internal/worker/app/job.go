@@ -29,7 +29,7 @@ func (app *App) startJob(job *shared.Job) error {
 		commands = append(commands, strings.Split(c, " "))
 	}
 
-	dir, err := ioutil.TempDir("/tmp", "abstrusebuild")
+	dir, err := ioutil.TempDir(os.TempDir(), "abstruse-build-")
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ func (app *App) startJob(job *shared.Job) error {
 		panic(err)
 	}
 	for _, content := range contents {
-		filePath := path.Join(dir, content.Path)
+		filePath := path.Clean(path.Join(dir, content.Path))
 		if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
 			panic(err)
 		}

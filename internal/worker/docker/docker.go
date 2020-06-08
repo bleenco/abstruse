@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 
@@ -19,7 +20,7 @@ import (
 var mountFolder string
 
 func init() {
-	dir, err := ioutil.TempDir("/tmp", "abstruse")
+	dir, err := ioutil.TempDir(os.TempDir(), "abstruse")
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +37,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
-		filePath := path.Join(dir, file)
+		filePath := path.Clean(path.Join(dir, file))
 		if err := ioutil.WriteFile(filePath, fileData, 0777); err != nil {
 			panic(err)
 		}
