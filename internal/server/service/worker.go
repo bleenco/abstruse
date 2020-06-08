@@ -35,8 +35,7 @@ func NewWorkerService(logger *zap.Logger, app *app.App) WorkerService {
 // GetWorkers comment.
 func (s *DefaultWorkerService) GetWorkers() []WorkerData {
 	var data []WorkerData
-	workers := s.app.GetWorkers()
-	for id, worker := range workers {
+	for id, worker := range s.app.Workers {
 		data = append(data, WorkerData{id, worker.GetAddr(), worker.GetHost(), worker.GetUsage()})
 	}
 	return data

@@ -16,8 +16,8 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-// Worker represent gRPC worker client.
-type Worker struct {
+// worker represent gRPC worker client.
+type worker struct {
 	ID      string
 	mu      sync.Mutex
 	max     int32
@@ -64,7 +64,7 @@ type Usage struct {
 	Timestamp   time.Time `json:"timestamp"`
 }
 
-func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*Worker, error) {
+func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*worker, error) {
 	logger = logger.With(zap.String("worker", addr))
 	if opts.TLS.Cert == "" || opts.TLS.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
@@ -89,7 +89,7 @@ func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger
 	}
 	cli := pb.NewAPIClient(conn)
 
-	return &Worker{
+	return &worker{
 		ID:     id,
 		addr:   addr,
 		conn:   conn,
@@ -100,7 +100,7 @@ func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger
 	}, nil
 }
 
-func (w *Worker) run() error {
+func (w *worker) run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	defer w.conn.Close()
@@ -114,6 +114,7 @@ func (w *Worker) run() error {
 	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
+	w.app.scheduler.addWorker(w.ID)
 
 	ch := make(chan error)
 
@@ -136,22 +137,22 @@ func (w *Worker) run() error {
 }
 
 // GetAddr returns remote address.
-func (w *Worker) GetAddr() string {
+func (w *worker) GetAddr() string {
 	return w.addr
 }
 
 // GetHost returns host info.
-func (w *Worker) GetHost() HostInfo {
+func (w *worker) GetHost() HostInfo {
 	return w.host
 }
 
 // GetUsage returns worker usage.
-func (w *Worker) GetUsage() []Usage {
+func (w *worker) GetUsage() []Usage {
 	return w.usage
 }
 
 // EmitData broadcast newly created worker via websocket.
-func (w *Worker) EmitData() {
+func (w *worker) EmitData() {
 	w.ws.Broadcast("/subs/workers_add", map[string]interface{}{
 		"id":    w.ID,
 		"addr":  w.GetAddr(),
@@ -161,7 +162,7 @@ func (w *Worker) EmitData() {
 }
 
 // EmitDeleted broadcast disconnected worker via websocket.
-func (w *Worker) EmitDeleted() {
+func (w *worker) EmitDeleted() {
 	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
 		"id":   w.ID,
 		"addr": w.GetAddr(),
@@ -169,7 +170,7 @@ func (w *Worker) EmitDeleted() {
 }
 
 // EmitUsage broadcast workers usage info.
-func (w *Worker) EmitUsage() {
+func (w *worker) EmitUsage() {
 	if len(w.usage) < 1 {
 		return
 	}
@@ -186,7 +187,7 @@ func (w *Worker) EmitUsage() {
 }
 
 // Capacity gRPC
-func (w *Worker) Capacity(ctx context.Context) error {
+func (w *worker) Capacity(ctx context.Context) error {
 	stream, err := w.cli.Capacity(ctx)
 	if err != nil {
 		return err
@@ -206,7 +207,7 @@ func (w *Worker) Capacity(ctx context.Context) error {
 }
 
 // HostInfo returns worker host info.
-func (w *Worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
+func (w *worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
 	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
 	return info, err
 }
@@ -233,7 +234,7 @@ func hostInfo(info *pb.HostInfoReply) HostInfo {
 }
 
 // UsageStats gRPC stream.
-func (w *Worker) UsageStats(ctx context.Context) error {
+func (w *worker) UsageStats(ctx context.Context) error {
 	stream, err := w.cli.UsageStats(ctx)
 	if err != nil {
 		return err

@@ -6,7 +6,6 @@ import (
 	"path"
 	"strings"
 	"sync"
-	"sync/atomic"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
@@ -16,6 +15,12 @@ import (
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
 )
+
+// JobChannel channel to receive single unit of work.
+type JobChannel chan *shared.Job
+
+// JobQueue shared between all workers
+type JobQueue chan chan *shared.Job
 
 type scheduler struct {
 	mu      sync.Mutex
@@ -29,104 +34,141 @@ type scheduler struct {
 	max     int32
 	running int32
 	pending map[uint]*shared.Job
+
+	Workers  map[string]*Worker
+	WorkChan JobChannel // client submits job to this channel
+	Queue    JobQueue   // this is the shared JobPool between the workers
+	Quit     chan struct{}
+}
+
+// Worker is a single processor.
+type Worker struct {
+	ID      string        // id of the worker
+	JobChan JobChannel    // a channel to receive single unit of work
+	Queue   JobQueue      // shared between all workers
+	Quit    chan struct{} // a channel to quit working
+	App     *App          // App instance
+}
+
+// NewWorker returns new instance of *Worker
+func NewWorker(id string, JobChan JobChannel, Queue JobQueue, Quit chan struct{}, App *App) *Worker {
+	return &Worker{id, JobChan, Queue, Quit, App}
+}
+
+// Start worker process loop.
+func (w *Worker) Start() {
+	w.App.logger.Debugf("starting worker %s...", w.ID)
+	go func() {
+		for {
+			// when available, put the JobChan again on the JobPool
+			// and wait to receive a job.
+			w.Queue <- w.JobChan
+			select {
+			case job := <-w.JobChan:
+				// start job!
+				w.App.scheduler.logger.Debugf("worker %s received job %d", w.ID, job.ID)
+				if err := w.App.scheduler.startJob(job, w.ID); err != nil {
+					if err := w.App.scheduler.doneJob(job); err != nil {
+						w.App.logger.Debugf("error setting job %d as done: %v", job.ID, err)
+					}
+				}
+			case <-w.Quit:
+				// a signal on this channel means someone triggers
+				// a shutdown on this worker
+				close(w.JobChan)
+				return
+			}
+		}
+	}()
+}
+
+// Stop workers process loop.
+func (w *Worker) Stop() {
+	close(w.Quit)
 }
 
 func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) *scheduler {
 	return &scheduler{
-		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
-		app:     app,
-		client:  client,
-		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
-		readych: make(chan struct{}),
-		wch:     make(chan string),
-		wdch:    make(chan string),
-		pending: make(map[uint]*shared.Job),
+		queue:    recipe.NewPriorityQueue(client, shared.QueuePrefix),
+		app:      app,
+		client:   client,
+		logger:   logger.With(zap.String("type", "scheduler")).Sugar(),
+		readych:  make(chan struct{}),
+		wch:      make(chan string),
+		wdch:     make(chan string),
+		pending:  make(map[uint]*shared.Job),
+		WorkChan: make(JobChannel),
+		Queue:    make(JobQueue),
+		Workers:  make(map[string]*Worker),
+		Quit:     make(chan struct{}),
 	}
 }
 
+// run listens to a job submitted on WorkChan and relays
+// it to the WorkPool. The WorkPool is shared between
+// the workers.
 func (s *scheduler) run() error {
 	donech := s.watchDoneEvents()
-	queuech := s.dequeue()
-	errch := make(chan error)
 
 	go func() {
 		for {
-			select {
-			case job := <-donech:
-				go func(job *shared.Job) {
-					if err := s.doneJob(job); err != nil {
-						errch <- err
-					}
-				}(job)
-			}
+			job := <-donech // listen to done events from etcd.
+			go func() {
+				if err := s.doneJob(job); err != nil {
+					s.logger.Errorf("error setting job %d as done: %v", job.ID, err)
+				}
+			}()
 		}
 	}()
 
-	go func() {
-		for {
-		loop:
-			select {
-			case worker := <-s.wch:
-				s.logger.Debugf("worker %s ready", worker)
-				select {
-				case s.readych <- struct{}{}:
-				default:
-				}
-				select {
-				case job := <-queuech:
-					go func() {
-						err := s.startJob(job, worker)
-						if err != nil {
-							s.logger.Errorf("error starting job %d: %v", job.ID, err)
-						}
-					}()
-				case wid := <-s.wdch:
-					if worker == wid {
-						goto loop
-					}
-				}
-			}
-		}
-	}()
+	for {
+		select {
+		case job := <-s.WorkChan: // listen to any submitted job on the WotkChan
+			// wait for a worker to submit JobChan to Queue
+			// note that this Queue is shared among all workers.
+			// Whenever there is an avilable JobChan on Queue pull it.
+			jobChan := <-s.Queue
 
-	// for {
-	// 	select {
-	// 	case job := <-s.workch:
-	// 		jobch := <-s.workerq
-	// 		jobch <- job
-	// 	case job := <-donech:
-	// 		go s.doneJob(job)
-	// 	case wid := <-wch:
-	// 		s.logger.Debugf("starting worker %s...", wid)
-	// 		if worker, ok := s.app.workers[wid]; ok {
-	// 			worker.start(s.workerq)
-	// 		}
-	// 	case wid := <-wdch:
-	// 		if worker, ok := s.app.workers[wid]; ok {
-	// 			worker.stop()
-	// 		}
-	// 	case job := <-queuech:
-	// 		s.logger.Debugf("%+v", job)
-	// 		// go s.startJob(job)
-	// 	}
-	// }
-	return <-errch
+			// Once a jobChan is available, send the submitted Job on this JobChan.
+			jobChan <- job
+		case <-s.Quit:
+			close(s.WorkChan)
+			close(s.Queue)
+			return nil
+		}
+	}
+}
+
+// stop stops the main scheduler loop and quits the scheduler.
+func (s *scheduler) stop() {
+	close(s.Quit)
+}
+
+func (s *scheduler) addWorker(id string) {
+	worker := NewWorker(id, make(JobChannel), s.Queue, make(chan struct{}), s.app)
+	worker.Start()
+	s.Workers[id] = worker
 }
 
 func (s *scheduler) scheduleJob(job *shared.Job) error {
-	s.logger.Infof("scheduling job %d with priority %d", job.ID, job.Priority)
-	job.Status = shared.StatusQueued
-	job.StartTime = nil
-	job.EndTime = nil
-	if err := s.save(job); err != nil {
-		return err
-	}
-	data, err := job.Marshal()
-	if err != nil {
-		return err
-	}
-	return s.queue.Enqueue(data, uint16(job.Priority))
+	s.WorkChan <- job
+	return nil
 }
+
+// func (s *scheduler) scheduleJob(job *shared.Job) error {
+// 	s.logger.Infof("scheduling job %d with priority %d", job.ID, job.Priority)
+// 	job.Status = shared.StatusQueued
+// 	job.StartTime = nil
+// 	job.EndTime = nil
+// 	if err := s.save(job); err != nil {
+// 		return err
+// 	}
+// 	data, err := job.Marshal()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return s.queue.Enqueue(data, uint16(job.Priority))
+// }
 
 func (s *scheduler) stopJob(id uint) error {
 	s.logger.Debugf("stopping job %d...", id)
@@ -168,10 +210,12 @@ func (s *scheduler) doneJob(job *shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.pending, job.ID)
-	if worker, ok := s.app.workers[job.WorkerID]; ok {
-		atomic.AddInt32(&worker.running, -1)
+	if worker, ok := s.app.Workers[job.WorkerID]; ok {
+		worker.mu.Lock()
+		defer worker.mu.Unlock()
+		worker.running--
+		s.setSize(s.app.getCapacity())
 	}
-	go s.nextWorker()
 	return nil
 }
 
@@ -192,7 +236,6 @@ func (s *scheduler) startJob(job *shared.Job, worker string) error {
 		s.logger.Errorf("error saving job %d to pending: %v", job.ID, err)
 		return err
 	}
-	go s.nextWorker()
 	return nil
 }
 
@@ -290,18 +333,25 @@ func (s *scheduler) put(prefix string, job *shared.Job) error {
 }
 
 func (s *scheduler) nextWorker() error {
+	s.app.mu.Lock()
+	defer s.app.mu.Unlock()
 	var max int32
-	var w *Worker
-	for _, wr := range s.app.workers {
+	var w *worker
+	for _, wr := range s.app.Workers {
+		wr.mu.Lock()
 		diff := wr.max - wr.running
 		if max < diff {
 			max = diff
 			w = wr
 		}
+		wr.mu.Unlock()
 	}
 	if w != nil && max > 0 {
 		s.wch <- w.ID
-		atomic.AddInt32(&w.running, 1)
+		w.mu.Lock()
+		w.running++
+		w.mu.Unlock()
+		s.setSize(s.app.getCapacity())
 		return s.nextWorker()
 	}
 	return fmt.Errorf("worker not found")

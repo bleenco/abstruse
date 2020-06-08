@@ -133,11 +133,11 @@ func (s *scheduler) stopJob(job *shared.Job) error {
 		s.logger.Debugf("could not mark job %s as stopped: %v", err)
 		return err
 	}
-	job.Status = shared.StatusFailing
-	job.EndTime = util.TimeNow()
-	if err := s.putDone(job); err != nil {
-		return err
-	}
+	// job.Status = shared.StatusFailing
+	// job.EndTime = util.TimeNow()
+	// if err := s.putDone(job); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

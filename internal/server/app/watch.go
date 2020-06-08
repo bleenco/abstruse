@@ -22,7 +22,7 @@ func (app *App) watchWorkers() error {
 			if err != nil {
 				app.logger.Errorf("%v", err)
 			} else {
-				app.workers[id] = worker
+				app.Workers[id] = worker
 				go app.initWorker(worker)
 			}
 		}
@@ -34,12 +34,12 @@ func (app *App) watchWorkers() error {
 			switch ev.Type {
 			case mvccpb.PUT:
 				id, addr := path.Base(string(ev.Kv.Key)), string(ev.Kv.Value)
-				if _, ok := app.workers[id]; !ok {
+				if _, ok := app.Workers[id]; !ok {
 					worker, err := newWorker(addr, id, app.opts, app.ws, app.logger, app)
 					if err != nil {
 						return err
 					}
-					app.workers[id] = worker
+					app.Workers[id] = worker
 					go app.initWorker(worker)
 					go func(workerID string) {
 						app.scheduler.wch <- workerID
@@ -47,9 +47,9 @@ func (app *App) watchWorkers() error {
 				}
 			case mvccpb.DELETE:
 				id := path.Base(string(ev.Kv.Key))
-				if worker, ok := app.workers[id]; ok {
+				if worker, ok := app.Workers[id]; ok {
 					worker.EmitDeleted()
-					delete(app.workers, id)
+					delete(app.Workers, id)
 					go func(workerID string) {
 						app.scheduler.wdch <- workerID
 					}(id)
@@ -61,7 +61,7 @@ func (app *App) watchWorkers() error {
 	return nil
 }
 
-func (app *App) initWorker(worker *Worker) {
+func (app *App) initWorker(worker *worker) {
 	if err := worker.run(); err != nil {
 		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
 		app.client.Delete(context.TODO(), key)

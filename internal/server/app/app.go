@@ -15,7 +15,7 @@ import (
 type App struct {
 	mu        sync.RWMutex
 	opts      *options.Options
-	workers   map[string]*Worker
+	Workers   map[string]*worker
 	client    *clientv3.Client
 	ws        *websocket.App
 	logger    *zap.SugaredLogger
@@ -31,7 +31,7 @@ type App struct {
 func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, logger *zap.Logger) (*App, error) {
 	app := &App{
 		opts:            opts,
-		workers:         make(map[string]*Worker),
+		Workers:         make(map[string]*worker),
 		ws:              ws,
 		buildRepository: br,
 		jobRepository:   jr,
@@ -63,16 +63,11 @@ func (app *App) Start(client *clientv3.Client) error {
 	return <-app.errch
 }
 
-// GetWorkers returns online workers.
-func (app *App) GetWorkers() map[string]*Worker {
-	return app.workers
-}
-
 func (app *App) getCapacity() (int32, int32) {
 	var max, running int32
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	for _, w := range app.workers {
+	for _, w := range app.Workers {
 		max += w.max
 		running += w.running
 	}
