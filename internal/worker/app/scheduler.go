@@ -4,23 +4,21 @@ import (
 	"context"
 	"fmt"
 	"path"
-	"strconv"
+	"sync"
 	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/concurrency"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
 )
 
 type scheduler struct {
-	id      string
-	max     int
-	session *concurrency.Session
-	mu      *concurrency.Mutex
-	logger  *zap.SugaredLogger
-	app     *App
+	id           string
+	mu           sync.Mutex
+	logger       *zap.SugaredLogger
+	app          *App
+	max, running int
 }
 
 func newScheduler(id string, max int, logger *zap.Logger, app *App) (*scheduler, error) {
@@ -39,20 +37,6 @@ func (s *scheduler) run() error {
 	errch := make(chan error)
 	jobch := s.watchPending()
 	stopch := s.watchStop()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	session, err := concurrency.NewSession(s.app.client, concurrency.WithContext(ctx))
-	if err != nil {
-		return err
-	}
-	s.session = session
-	s.mu = concurrency.NewMutex(s.session, path.Join(shared.WorkersCapacityLock, s.id))
-	defer s.session.Close()
-
-	if err := s.saveCapacity(s.max); err != nil {
-		errch <- err
-	}
 
 	go func() {
 		for {
@@ -117,7 +101,10 @@ func (s *scheduler) watchStop() <-chan shared.Job {
 }
 
 func (s *scheduler) startJob(job shared.Job) error {
-	if err := s.decreaseCapacity(); err != nil {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.running++
+	if err := s.app.emitCapacityInfo(); err != nil {
 		return err
 	}
 	s.logger.Infof("starting job %d...", job.ID)
@@ -154,6 +141,8 @@ func (s *scheduler) stopJob(job shared.Job) error {
 }
 
 func (s *scheduler) putDone(job shared.Job) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	key := path.Join(shared.DonePrefix, fmt.Sprintf("%d", job.ID))
 	val, err := job.Marshal()
 	if err != nil {
@@ -162,74 +151,15 @@ func (s *scheduler) putDone(job shared.Job) error {
 	if _, err = s.app.client.Put(context.Background(), key, val); err != nil {
 		return err
 	}
-	return s.increaseCapacity()
+	s.running--
+	if err := s.app.emitCapacityInfo(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *scheduler) deleteStop(job shared.Job) error {
 	key := path.Join(shared.StopPrefix, fmt.Sprintf("%d", job.ID))
 	_, err := s.app.client.Delete(context.Background(), key)
 	return err
-}
-
-func (s *scheduler) increaseCapacity() error {
-	capacity, err := s.getCapacity()
-	if err != nil {
-		s.logger.Errorf("error fetching capacity: %v", err)
-		return err
-	}
-	if capacity+1 > s.max {
-		s.logger.Errorf("capacity cannot be greater than concurrency")
-		return fmt.Errorf("capacity too high")
-	}
-	capacity = capacity + 1
-	if err := s.saveCapacity(capacity); err != nil {
-		s.logger.Errorf("could not save capacity: %v", err)
-		return err
-	}
-	return nil
-}
-
-func (s *scheduler) decreaseCapacity() error {
-	capacity, err := s.getCapacity()
-	if err != nil {
-		s.logger.Errorf("error fetching capacity: %v", err)
-		return err
-	}
-	if capacity > 0 {
-		capacity = capacity - 1
-	} else {
-		s.logger.Errorf("capacity is full, cannot work")
-		return err
-	}
-	if err := s.saveCapacity(capacity); err != nil {
-		s.logger.Errorf("could not save capacity: %v", err)
-		return err
-	}
-	return nil
-}
-
-func (s *scheduler) saveCapacity(capacity int) error {
-lock:
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	if err := s.mu.Lock(ctx); err != nil {
-		goto lock
-	}
-	defer s.mu.Unlock(ctx)
-	key := path.Join(shared.WorkersCapacity, s.id)
-	val := fmt.Sprintf("%d", capacity)
-	_, err := s.app.client.Put(context.Background(), key, val)
-	return err
-}
-
-func (s *scheduler) getCapacity() (int, error) {
-	key := path.Join(shared.WorkersCapacity, s.id)
-	resp, err := s.app.client.Get(context.Background(), key, clientv3.WithLastRev()...)
-	if err != nil {
-		return 0, err
-	}
-	if len(resp.Kvs) > 0 {
-		return strconv.Atoi(string(resp.Kvs[0].Value))
-	}
-	return 0, nil
 }

@@ -1,11 +1,8 @@
 package app
 
 import (
-	"context"
-	"path"
 	"sync"
 
-	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/websocket"
@@ -76,15 +73,8 @@ func (app *App) GetWorkers() map[string]*Worker {
 	return app.workers
 }
 
-func (app *App) initWorker(worker *Worker) {
-	if err := worker.run(); err != nil {
-		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
-		app.client.Delete(context.TODO(), key)
-	}
-}
-
-func (app *App) getCapacity() (int32, int32) {
-	var max, running int32
+func (app *App) getCapacity() (int, int) {
+	var max, running int
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	for _, w := range app.workers {

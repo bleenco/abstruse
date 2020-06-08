@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	pb "github.com/jkuri/abstruse/proto"
@@ -19,8 +20,8 @@ import (
 type Worker struct {
 	mu      sync.Mutex
 	ID      string
-	Max     int32
-	Running int32
+	Max     int
+	Running int
 	addr    string
 	host    HostInfo
 	conn    *grpc.ClientConn
@@ -31,6 +32,37 @@ type Worker struct {
 	ready   bool
 	readych chan bool
 	app     *App
+}
+
+// HostInfo holds host information about worker.
+type HostInfo struct {
+	ID                   string `json:"id"`
+	Addr                 string `json:"addr"`
+	Hostname             string `json:"hostname"`
+	Uptime               uint64 `json:"uptime"`
+	BootTime             uint64 `json:"boot_time"`
+	Procs                uint64 `json:"procs"`
+	Os                   string `json:"os"`
+	Platform             string `json:"platform"`
+	PlatformFamily       string `json:"platform_family"`
+	PlatformVersion      string `json:"platform_version"`
+	KernelVersion        string `json:"kernel_version"`
+	KernelArch           string `json:"kernel_arch"`
+	VirtualizationSystem string `json:"virtualization_system"`
+	VirtualizationRole   string `json:"virtualization_role"`
+	HostID               string `json:"host_id"`
+	MaxConcurrency       uint64 `json:"max_concurrency"`
+}
+
+// Usage represents worker usage stats.
+type Usage struct {
+	ID          string    `json:"id"`
+	Addr        string    `json:"addr"`
+	CPU         int32     `json:"cpu"`
+	Mem         int32     `json:"mem"`
+	JobsMax     int32     `json:"jobs_max"`
+	JobsRunning int32     `json:"jobs_running"`
+	Timestamp   time.Time `json:"timestamp"`
 }
 
 func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*Worker, error) {
@@ -82,7 +114,7 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.Max = int32(w.host.MaxConcurrency)
+	w.Max = int(w.host.MaxConcurrency)
 	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
@@ -155,4 +187,85 @@ func (w *Worker) EmitUsage() {
 		"jobs_running": w.Running,
 		"timestamp":    time.Now(),
 	})
+}
+
+// Capacity gRPC
+func (w *Worker) Capacity(ctx context.Context) error {
+	stream, err := w.cli.Capacity(ctx)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+	for {
+		data, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+		w.mu.Lock()
+		w.Max, w.Running = int(data.GetMax()), int(data.GetRunning())
+		w.mu.Unlock()
+		w.app.scheduler.setSize(w.app.getCapacity())
+		w.EmitUsage()
+	}
+}
+
+// HostInfo returns worker host info.
+func (w *Worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
+	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
+	return info, err
+}
+
+func hostInfo(info *pb.HostInfoReply) HostInfo {
+	return HostInfo{
+		info.GetId(),
+		info.GetAddr(),
+		info.GetHostname(),
+		info.GetUptime(),
+		info.GetBootTime(),
+		info.GetProcs(),
+		info.GetOs(),
+		info.GetPlatform(),
+		info.GetPlatformFamily(),
+		info.GetPlatformVersion(),
+		info.GetKernelVersion(),
+		info.GetKernelArch(),
+		info.GetVirtualizationSystem(),
+		info.GetVirtualizationSystem(),
+		info.GetHostname(),
+		info.GetMaxConcurrency(),
+	}
+}
+
+// UsageStats gRPC stream.
+func (w *Worker) UsageStats(ctx context.Context) error {
+	stream, err := w.cli.UsageStats(ctx)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+
+	for {
+		stats, err := stream.Recv()
+		if err != nil {
+			return err
+		}
+		usage := Usage{
+			ID:          w.ID,
+			Addr:        w.addr,
+			CPU:         stats.GetCpu(),
+			Mem:         stats.GetMem(),
+			JobsMax:     int32(w.Max),
+			JobsRunning: int32(w.Running),
+			Timestamp:   time.Now(),
+		}
+
+		w.mu.Lock()
+		w.usage = append(w.usage, usage)
+		if len(w.usage) > 60 {
+			// TODO save to db.
+			w.usage = w.usage[1:]
+		}
+		w.EmitUsage()
+		w.mu.Unlock()
+	}
 }

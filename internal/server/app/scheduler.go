@@ -18,15 +18,17 @@ import (
 )
 
 type scheduler struct {
-	mu      sync.Mutex
-	m       map[string]*concurrency.Mutex
-	client  *clientv3.Client
-	session *concurrency.Session
-	queue   *recipe.PriorityQueue
-	logger  *zap.SugaredLogger
-	pending map[uint]shared.Job
-	app     *App
-	readych chan struct{}
+	mu           sync.Mutex
+	m            map[string]*concurrency.Mutex
+	client       *clientv3.Client
+	session      *concurrency.Session
+	queue        *recipe.PriorityQueue
+	logger       *zap.SugaredLogger
+	pending      map[uint]shared.Job
+	app          *App
+	readych      chan struct{}
+	max, running int
+	wdch         chan string
 }
 
 func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
@@ -45,6 +47,7 @@ func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*sched
 		m:       make(map[string]*concurrency.Mutex),
 		app:     app,
 		readych: make(chan struct{}, 1),
+		wdch:    make(chan string),
 	}, nil
 }
 
@@ -118,6 +121,13 @@ func (s *scheduler) stopJob(id uint) error {
 		return s.doneJob(job)
 	}
 	return nil
+}
+
+func (s *scheduler) setSize(max, running int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.max, s.running = max, running
+	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 }
 
 func (s *scheduler) doneJob(job shared.Job) error {

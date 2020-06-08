@@ -120,6 +120,7 @@ func (s *Server) Client() *clientv3.Client {
 func (s *Server) cleanup() {
 	workersPrefix := path.Join(shared.ServicePrefix, shared.WorkerService)
 	s.cli.Delete(context.TODO(), workersPrefix, clientv3.WithFromKey())
+	s.cli.Delete(context.TODO(), shared.WorkersCapacity, clientv3.WithFromKey())
 }
 
 // this is required since s.Client.Auth make etcd embed server crash.

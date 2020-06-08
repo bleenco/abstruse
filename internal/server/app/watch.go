@@ -47,10 +47,18 @@ func (app *App) watchWorkers() error {
 				if worker, ok := app.workers[id]; ok {
 					worker.EmitDeleted()
 					delete(app.workers, id)
+					app.scheduler.wdch <- id
 				}
-				// app.Scheduler.SetSize(app.getCapacity())
+				app.scheduler.setSize(app.getCapacity())
 			}
 		}
 	}
 	return nil
+}
+
+func (app *App) initWorker(worker *Worker) {
+	if err := worker.run(); err != nil {
+		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID)
+		app.client.Delete(context.TODO(), key)
+	}
 }

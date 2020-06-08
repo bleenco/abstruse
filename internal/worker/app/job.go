@@ -29,7 +29,7 @@ func (app *App) startJob(job shared.Job) error {
 		commands = append(commands, strings.Split(c, " "))
 	}
 
-	dir, err := ioutil.TempDir(os.TempDir(), "abstrusebuild")
+	dir, err := ioutil.TempDir("/tmp", "abstrusebuild")
 	if err != nil {
 		panic(err)
 	}
