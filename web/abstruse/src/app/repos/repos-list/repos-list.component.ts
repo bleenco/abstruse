@@ -26,6 +26,8 @@ export class ReposListComponent implements OnInit {
         this.repos = resp;
       }, err => {
         console.log(err);
+        this.repos = [];
+        this.fetching = false;
       }, () => {
         this.fetching = false;
       });

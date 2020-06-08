@@ -35,6 +35,8 @@ export class ProvidersListComponent implements OnInit {
       this.providers = resp;
     }, err => {
       console.error(err);
+      this.providers = [];
+      this.fetching = false;
     }, () => {
       this.fetching = false;
     });

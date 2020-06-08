@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -20,7 +21,13 @@ import (
 var mountFolder string
 
 func init() {
-	dir, err := ioutil.TempDir(os.TempDir(), "abstruse")
+	var tmp string
+	if runtime.GOOS != "darwin" {
+		tmp = os.TempDir()
+	} else {
+		tmp = "/tmp"
+	}
+	dir, err := ioutil.TempDir(tmp, "abstruse")
 	if err != nil {
 		panic(err)
 	}
