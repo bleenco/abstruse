@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 	"sync"
-	"time"
+	"sync/atomic"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
@@ -17,13 +17,8 @@ import (
 	"go.uber.org/zap"
 )
 
-type jobChannel chan *shared.Job
-type jobQueue chan chan *shared.Job
-
 type scheduler struct {
 	mu      sync.Mutex
-	workch  jobChannel
-	workerq jobQueue
 	queue   *recipe.PriorityQueue
 	app     *App
 	client  *clientv3.Client
@@ -31,15 +26,13 @@ type scheduler struct {
 	readych chan struct{}
 	wch     chan string
 	wdch    chan string
-	max     int
-	running int
+	max     int32
+	running int32
 	pending map[uint]*shared.Job
 }
 
 func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) *scheduler {
 	return &scheduler{
-		workch:  make(jobChannel),
-		workerq: make(jobQueue),
 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
 		app:     app,
 		client:  client,
@@ -53,7 +46,7 @@ func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) *schedu
 
 func (s *scheduler) run() error {
 	donech := s.watchDoneEvents()
-	// queuech := s.dequeue()
+	queuech := s.dequeue()
 	errch := make(chan error)
 
 	go func() {
@@ -71,36 +64,28 @@ func (s *scheduler) run() error {
 
 	go func() {
 		for {
+		loop:
 			select {
-			case job := <-s.workch:
-				s.logger.Debugf("da")
-				jobch := <-s.workerq
-				s.logger.Debugf("da")
-				jobch <- job
-				s.logger.Debugf("da")
-			case job := <-s.dequeue():
-				s.logger.Debugf("da %v", job)
+			case worker := <-s.wch:
+				s.logger.Debugf("worker %s ready", worker)
+				select {
+				case s.readych <- struct{}{}:
+				default:
+				}
+				select {
+				case job := <-queuech:
+					go func() {
+						err := s.startJob(job, worker)
+						if err != nil {
+							s.logger.Errorf("error starting job %d: %v", job.ID, err)
+						}
+					}()
+				case wid := <-s.wdch:
+					if worker == wid {
+						goto loop
+					}
+				}
 			}
-
-			// loop:
-			// 	worker := <-s.wch
-			// 	s.logger.Debugf("worker %s ready", worker)
-			// 	select {
-			// 	case s.readych <- struct{}{}:
-			// 	default:
-			// 	}
-			// 	select {
-			// 	case job := <-queuech:
-			// 		go func(job *shared.Job, worker string) {
-			// 			if err := s.startJob(job, worker); err != nil {
-			// 				errch <- err
-			// 			}
-			// 		}(job, worker)
-			// 	case wid := <-s.wdch:
-			// 		if worker == wid {
-			// 			goto loop
-			// 		}
-			// 	}
 		}
 	}()
 
@@ -159,7 +144,7 @@ func (s *scheduler) stopJob(id uint) error {
 	return nil
 }
 
-func (s *scheduler) setSize(max, running int) {
+func (s *scheduler) setSize(max, running int32) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.max, s.running = max, running
@@ -183,6 +168,10 @@ func (s *scheduler) doneJob(job *shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.pending, job.ID)
+	if worker, ok := s.app.workers[job.WorkerID]; ok {
+		atomic.AddInt32(&worker.running, -1)
+	}
+	go s.nextWorker()
 	return nil
 }
 
@@ -194,7 +183,7 @@ func (s *scheduler) startJob(job *shared.Job, worker string) error {
 	s.pending[job.ID] = job
 	// TODO: move this to worker?
 	job.Status = shared.StatusRunning
-	job.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	job.StartTime = util.TimeNow()
 	if err := s.save(job); err != nil {
 		s.logger.Errorf("error saving job %d to db: %v", job.ID, err)
 		return err
@@ -203,6 +192,7 @@ func (s *scheduler) startJob(job *shared.Job, worker string) error {
 		s.logger.Errorf("error saving job %d to pending: %v", job.ID, err)
 		return err
 	}
+	go s.nextWorker()
 	return nil
 }
 
@@ -217,6 +207,7 @@ func (s *scheduler) dequeue() <-chan *shared.Job {
 				if job, err := job.Unmarshal(data); err == nil {
 					ch <- job
 				}
+				go s.nextWorker()
 			}
 		}
 	}()
@@ -296,6 +287,24 @@ func (s *scheduler) put(prefix string, job *shared.Job) error {
 	}
 	_, err = s.client.Put(context.Background(), key, val)
 	return err
+}
+
+func (s *scheduler) nextWorker() error {
+	var max int32
+	var w *Worker
+	for _, wr := range s.app.workers {
+		diff := wr.max - wr.running
+		if max < diff {
+			max = diff
+			w = wr
+		}
+	}
+	if w != nil && max > 0 {
+		s.wch <- w.ID
+		atomic.AddInt32(&w.running, 1)
+		return s.nextWorker()
+	}
+	return fmt.Errorf("worker not found")
 }
 
 func (s *scheduler) save(job *shared.Job) error {

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"path"
 	"sync"
-	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
+	"github.com/jkuri/abstruse/internal/pkg/util"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
@@ -103,13 +103,13 @@ func (s *scheduler) watchStop() <-chan *shared.Job {
 
 func (s *scheduler) startJob(job *shared.Job) error {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	s.running++
-	if err := s.app.emitCapacityInfo(); err != nil {
-		return err
-	}
+	s.mu.Unlock()
+	// if err := s.app.emitCapacityInfo(); err != nil {
+	// 	return err
+	// }
 	s.logger.Infof("starting job %d...", job.ID)
-	job.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	job.StartTime = util.TimeNow()
 	if err := s.app.startJob(job); err != nil {
 		job.Status = shared.StatusFailing
 		s.logger.Errorf("job %d failed: %v", job.ID, err)
@@ -117,7 +117,7 @@ func (s *scheduler) startJob(job *shared.Job) error {
 		job.Status = shared.StatusPassing
 		s.logger.Infof("job %d passing", job.ID)
 	}
-	job.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	job.EndTime = util.TimeNow()
 	if err := s.putDone(job); err != nil {
 		s.logger.Errorf("error saving job as done: %v", err)
 		return err
@@ -134,7 +134,7 @@ func (s *scheduler) stopJob(job *shared.Job) error {
 		return err
 	}
 	job.Status = shared.StatusFailing
-	job.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	job.EndTime = util.TimeNow()
 	if err := s.putDone(job); err != nil {
 		return err
 	}
@@ -153,9 +153,9 @@ func (s *scheduler) putDone(job *shared.Job) error {
 		return err
 	}
 	s.running--
-	if err := s.app.emitCapacityInfo(); err != nil {
-		return err
-	}
+	// if err := s.app.emitCapacityInfo(); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

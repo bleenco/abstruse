@@ -20,8 +20,8 @@ import (
 type Worker struct {
 	ID      string
 	mu      sync.Mutex
-	max     int
-	running int
+	max     int32
+	running int32
 	addr    string
 	host    HostInfo
 	conn    *grpc.ClientConn
@@ -31,10 +31,6 @@ type Worker struct {
 	logger  *zap.SugaredLogger
 	ready   bool
 	app     *App
-
-	jobch jobChannel
-	queue jobQueue
-	quit  chan struct{}
 }
 
 // HostInfo holds host information about worker.
@@ -114,7 +110,7 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.max = int(w.host.MaxConcurrency)
+	w.max = int32(w.host.MaxConcurrency)
 	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
@@ -133,42 +129,10 @@ func (w *Worker) run() error {
 		}
 	}()
 
-	go func() {
-		if err := w.start(w.app.scheduler.workerq); err != nil {
-			ch <- err
-		}
-	}()
-
 	err = <-ch
 	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	return err
-}
-
-func (w *Worker) start(queue jobQueue) error {
-	w.queue = queue
-	w.jobch = make(jobChannel)
-	w.quit = make(chan struct{})
-	errch := make(chan error)
-
-	go func() {
-		for {
-			w.queue <- w.jobch
-			select {
-			case job := <-w.jobch:
-				w.logger.Debugf("job: %+v", job)
-			case <-w.quit:
-				close(w.jobch)
-				errch <- nil
-			}
-		}
-	}()
-
-	return <-errch
-}
-
-func (w *Worker) stop() {
-	close(w.quit)
 }
 
 // GetAddr returns remote address.
@@ -234,7 +198,7 @@ func (w *Worker) Capacity(ctx context.Context) error {
 			return err
 		}
 		w.mu.Lock()
-		w.max, w.running = int(data.GetMax()), int(data.GetRunning())
+		w.max, w.running = int32(data.GetMax()), int32(data.GetRunning())
 		w.mu.Unlock()
 		w.app.scheduler.setSize(w.app.getCapacity())
 		w.EmitUsage()

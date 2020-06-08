@@ -68,8 +68,8 @@ func (app *App) GetWorkers() map[string]*Worker {
 	return app.workers
 }
 
-func (app *App) getCapacity() (int, int) {
-	var max, running int
+func (app *App) getCapacity() (int32, int32) {
+	var max, running int32
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	for _, w := range app.workers {

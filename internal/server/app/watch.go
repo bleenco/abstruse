@@ -41,12 +41,18 @@ func (app *App) watchWorkers() error {
 					}
 					app.workers[id] = worker
 					go app.initWorker(worker)
+					go func(workerID string) {
+						app.scheduler.wch <- workerID
+					}(id)
 				}
 			case mvccpb.DELETE:
 				id := path.Base(string(ev.Kv.Key))
 				if worker, ok := app.workers[id]; ok {
 					worker.EmitDeleted()
 					delete(app.workers, id)
+					go func(workerID string) {
+						app.scheduler.wdch <- workerID
+					}(id)
 				}
 				app.scheduler.setSize(app.getCapacity())
 			}
