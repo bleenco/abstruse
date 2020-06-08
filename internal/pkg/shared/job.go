@@ -48,9 +48,9 @@ func (j *Job) Marshal() (string, error) {
 }
 
 // Unmarshal parses data string to struct.
-func (j *Job) Unmarshal(data string) (Job, error) {
+func (j *Job) Unmarshal(data string) (*Job, error) {
 	err := jsoniter.UnmarshalFromString(data, &j)
-	return *j, err
+	return j, err
 }
 
 // GetStatus returns status in string format.

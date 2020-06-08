@@ -47,7 +47,6 @@ func (app *App) watchWorkers() error {
 				if worker, ok := app.workers[id]; ok {
 					worker.EmitDeleted()
 					delete(app.workers, id)
-					app.scheduler.wdch <- id
 				}
 				app.scheduler.setSize(app.getCapacity())
 			}

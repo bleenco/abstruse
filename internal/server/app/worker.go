@@ -18,10 +18,10 @@ import (
 
 // Worker represent gRPC worker client.
 type Worker struct {
-	mu      sync.Mutex
 	ID      string
-	Max     int
-	Running int
+	mu      sync.Mutex
+	max     int
+	running int
 	addr    string
 	host    HostInfo
 	conn    *grpc.ClientConn
@@ -30,8 +30,11 @@ type Worker struct {
 	usage   []Usage
 	logger  *zap.SugaredLogger
 	ready   bool
-	readych chan bool
 	app     *App
+
+	jobch jobChannel
+	queue jobQueue
+	quit  chan struct{}
 }
 
 // HostInfo holds host information about worker.
@@ -91,16 +94,13 @@ func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger
 	cli := pb.NewAPIClient(conn)
 
 	return &Worker{
-		ID:      id,
-		addr:    addr,
-		conn:    conn,
-		cli:     cli,
-		ws:      ws,
-		logger:  logger,
-		app:     app,
-		Max:     0,
-		Running: 0,
-		readych: make(chan bool, 1),
+		ID:     id,
+		addr:   addr,
+		conn:   conn,
+		cli:    cli,
+		ws:     ws,
+		logger: logger,
+		app:    app,
 	}, nil
 }
 
@@ -114,7 +114,7 @@ func (w *Worker) run() error {
 		return err
 	}
 	w.host = hostInfo(info)
-	w.Max = int(w.host.MaxConcurrency)
+	w.max = int(w.host.MaxConcurrency)
 	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
@@ -137,6 +137,29 @@ func (w *Worker) run() error {
 	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	return err
+}
+
+func (w *Worker) start(queue jobQueue) {
+	w.queue = queue
+	w.jobch = make(jobChannel)
+	w.quit = make(chan struct{})
+
+	go func() {
+		for {
+			w.queue <- w.jobch
+			select {
+			case job := <-w.jobch:
+				w.logger.Debugf("job: %+v", job)
+			case <-w.quit:
+				close(w.jobch)
+				return
+			}
+		}
+	}()
+}
+
+func (w *Worker) stop() {
+	close(w.quit)
 }
 
 // GetAddr returns remote address.
@@ -183,8 +206,8 @@ func (w *Worker) EmitUsage() {
 		"addr":         w.addr,
 		"cpu":          usage.CPU,
 		"mem":          usage.Mem,
-		"jobs_max":     w.Max,
-		"jobs_running": w.Running,
+		"jobs_max":     w.max,
+		"jobs_running": w.running,
 		"timestamp":    time.Now(),
 	})
 }
@@ -202,7 +225,7 @@ func (w *Worker) Capacity(ctx context.Context) error {
 			return err
 		}
 		w.mu.Lock()
-		w.Max, w.Running = int(data.GetMax()), int(data.GetRunning())
+		w.max, w.running = int(data.GetMax()), int(data.GetRunning())
 		w.mu.Unlock()
 		w.app.scheduler.setSize(w.app.getCapacity())
 		w.EmitUsage()
@@ -254,8 +277,8 @@ func (w *Worker) UsageStats(ctx context.Context) error {
 			Addr:        w.addr,
 			CPU:         stats.GetCpu(),
 			Mem:         stats.GetMem(),
-			JobsMax:     int32(w.Max),
-			JobsRunning: int32(w.Running),
+			JobsMax:     int32(w.max),
+			JobsRunning: int32(w.running),
 			Timestamp:   time.Now(),
 		}
 

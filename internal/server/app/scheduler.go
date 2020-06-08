@@ -4,102 +4,165 @@ import (
 	"context"
 	"fmt"
 	"path"
-	"strconv"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
+	"github.com/jkuri/abstruse/internal/server/db/model"
 	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/concurrency"
 	recipe "go.etcd.io/etcd/contrib/recipes"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
 )
 
+type jobChannel chan shared.Job
+type jobQueue chan chan shared.Job
+
 type scheduler struct {
-	mu           sync.Mutex
-	m            map[string]*concurrency.Mutex
-	client       *clientv3.Client
-	session      *concurrency.Session
-	queue        *recipe.PriorityQueue
-	logger       *zap.SugaredLogger
-	pending      map[uint]shared.Job
-	app          *App
-	readych      chan struct{}
-	max, running int
-	wdch         chan string
+	mu      sync.Mutex
+	workch  jobChannel
+	workerq jobQueue
+	queue   *recipe.PriorityQueue
+	app     *App
+	client  *clientv3.Client
+	logger  *zap.SugaredLogger
+	ready   chan struct{}
+	max     int
+	running int
+	pending map[uint]*shared.Job
 }
 
-func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	session, err := concurrency.NewSession(client, concurrency.WithContext(ctx))
-	if err != nil {
-		return nil, err
-	}
+func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) *scheduler {
 	return &scheduler{
-		client:  client,
-		session: session,
+		workch:  make(jobChannel),
+		workerq: make(jobQueue),
 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
-		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
-		pending: make(map[uint]shared.Job),
-		m:       make(map[string]*concurrency.Mutex),
 		app:     app,
-		readych: make(chan struct{}, 1),
-		wdch:    make(chan string),
-	}, nil
+		client:  client,
+		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
+		ready:   make(chan struct{}),
+		pending: make(map[uint]*shared.Job),
+	}
 }
 
 func (s *scheduler) run() error {
-	errch := make(chan error)
-	donech := s.watchDoneEvents()
 	wch, wdch := s.watchWorkers()
+	donech := s.watchDoneEvents()
 	queuech := s.dequeue()
-	defer s.session.Close()
 
-	go func() {
-		for {
-			select {
-			case job := <-donech:
-				go func(job shared.Job) {
-					if err := s.doneJob(job); err != nil {
-						errch <- err
-					}
-				}(job)
+	for {
+		select {
+		case job := <-s.workch:
+			jobch := <-s.workerq
+			jobch <- job
+		case job := <-donech:
+			go s.doneJob(job)
+		case wid := <-wch:
+			if worker, ok := s.app.workers[wid]; ok {
+				worker.start(s.workerq)
 			}
+		case wid := <-wdch:
+			if worker, ok := s.app.workers[wid]; ok {
+				worker.stop()
+			}
+		case job := <-queuech:
+			s.logger.Debugf("%+v", job)
+			// go s.startJob(job)
 		}
-	}()
-
-	go func() {
-		for {
-		loop:
-			worker := <-wch
-			select {
-			case s.readych <- struct{}{}:
-			default:
-			}
-			select {
-			case job := <-queuech:
-				go func(job shared.Job, worker string) {
-					if err := s.startJob(job, worker); err != nil {
-						errch <- err
-					}
-				}(job, worker)
-			case wid := <-wdch:
-				if worker == wid {
-					goto loop
-				}
-			}
-		}
-	}()
-
-	return <-errch
+	}
 }
 
-func (s *scheduler) scheduleJob(job shared.Job) error {
+// func (s *scheduler) scheduleJob(job shared.Job) {
+// 	s.workch <- job
+// }
+
+// type scheduler struct {
+// 	mu           sync.Mutex
+// 	m            map[string]*concurrency.Mutex
+// 	client       *clientv3.Client
+// 	session      *concurrency.Session
+// 	queue        *recipe.PriorityQueue
+// 	logger       *zap.SugaredLogger
+// 	pending      map[uint]shared.Job
+// 	app          *App
+// 	readych      chan struct{}
+// 	max, running int
+// 	wdch         chan string
+// }
+
+// func newScheduler(client *clientv3.Client, logger *zap.Logger, app *App) (*scheduler, error) {
+// 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+// 	defer cancel()
+// 	session, err := concurrency.NewSession(client, concurrency.WithContext(ctx))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &scheduler{
+// 		client:  client,
+// 		session: session,
+// 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
+// 		logger:  logger.With(zap.String("type", "scheduler")).Sugar(),
+// 		pending: make(map[uint]shared.Job),
+// 		m:       make(map[string]*concurrency.Mutex),
+// 		app:     app,
+// 		readych: make(chan struct{}, 1),
+// 		wdch:    make(chan string),
+// 	}, nil
+// }
+
+// func (s *scheduler) run() error {
+// 	errch := make(chan error)
+// 	donech := s.watchDoneEvents()
+// 	wch, wdch := s.watchWorkers()
+// 	queuech := s.dequeue()
+// 	defer s.session.Close()
+
+// 	go func() {
+// 		for {
+// 			select {
+// 			case job := <-donech:
+// 				go func(job shared.Job) {
+// 					if err := s.doneJob(job); err != nil {
+// 						errch <- err
+// 					}
+// 				}(job)
+// 			}
+// 		}
+// 	}()
+
+// 	go func() {
+// 		for {
+// 		loop:
+// 			worker := <-wch
+// 			select {
+// 			case s.readych <- struct{}{}:
+// 			default:
+// 			}
+// 			select {
+// 			case job := <-queuech:
+// 				go func(job shared.Job, worker string) {
+// 					if err := s.startJob(job, worker); err != nil {
+// 						errch <- err
+// 					}
+// 				}(job, worker)
+// 			case wid := <-wdch:
+// 				if worker == wid {
+// 					goto loop
+// 				}
+// 			}
+// 		}
+// 	}()
+
+// 	return <-errch
+// }
+
+func (s *scheduler) scheduleJob(job *shared.Job) error {
 	s.logger.Infof("scheduling job %d with priority %d", job.ID, job.Priority)
 	job.Status = shared.StatusQueued
+	job.StartTime = nil
+	job.EndTime = nil
 	if err := s.save(job); err != nil {
 		return err
 	}
@@ -111,12 +174,15 @@ func (s *scheduler) scheduleJob(job shared.Job) error {
 }
 
 func (s *scheduler) stopJob(id uint) error {
+	s.logger.Debugf("stopping job %d...", id)
 	if job, ok := s.pending[id]; ok {
-		s.logger.Debugf("stopping job %d...", job.ID)
+		job.EndTime = util.TimeNow()
 		job.Status = shared.StatusFailing
 		return s.put(shared.StopPrefix, job)
 	}
 	if job, err := s.deleteFromQueue(id); err == nil {
+		job.StartTime = util.TimeNow()
+		job.EndTime = util.TimeNow()
 		job.Status = shared.StatusFailing
 		return s.doneJob(job)
 	}
@@ -130,7 +196,7 @@ func (s *scheduler) setSize(max, running int) {
 	s.logger.Debugf("capacity: [%d / %d]", s.running, s.max)
 }
 
-func (s *scheduler) doneJob(job shared.Job) error {
+func (s *scheduler) doneJob(job *shared.Job) error {
 	s.logger.Infof("job %d done with status: %s", job.ID, job.GetStatus())
 	if err := s.save(job); err != nil {
 		s.logger.Errorf("error saving job to db %d: %v", job.ID, err)
@@ -147,11 +213,10 @@ func (s *scheduler) doneJob(job shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.pending, job.ID)
-	// s.ready()
 	return nil
 }
 
-func (s *scheduler) startJob(job shared.Job, worker string) error {
+func (s *scheduler) startJob(job *shared.Job, worker string) error {
 	s.logger.Debugf("job %d enqueued, sending job to worker %s", job.ID, worker)
 	job.WorkerID = worker
 	s.mu.Lock()
@@ -171,12 +236,12 @@ func (s *scheduler) startJob(job shared.Job, worker string) error {
 	return nil
 }
 
-func (s *scheduler) dequeue() <-chan shared.Job {
-	ch := make(chan shared.Job)
+func (s *scheduler) dequeue() <-chan *shared.Job {
+	ch := make(chan *shared.Job)
 
 	go func() {
 		for {
-			s.ready()
+			<-s.ready
 			if data, err := s.queue.Dequeue(); err == nil {
 				job := &shared.Job{}
 				if job, err := job.Unmarshal(data); err == nil {
@@ -189,8 +254,8 @@ func (s *scheduler) dequeue() <-chan shared.Job {
 	return ch
 }
 
-func (s *scheduler) watchDoneEvents() <-chan shared.Job {
-	donech := make(chan shared.Job)
+func (s *scheduler) watchDoneEvents() <-chan *shared.Job {
+	donech := make(chan *shared.Job)
 
 	go func() {
 		resp, err := s.client.Get(context.Background(), shared.DonePrefix, clientv3.WithPrefix())
@@ -198,7 +263,7 @@ func (s *scheduler) watchDoneEvents() <-chan shared.Job {
 			s.logger.Errorf("error getting done jobs: %v", err)
 		} else {
 			for i := range resp.Kvs {
-				job := shared.Job{}
+				job := &shared.Job{}
 				job, err := job.Unmarshal(string(resp.Kvs[i].Value))
 				if err != nil {
 					s.logger.Errorf("error unmarshaling done job: %v", err)
@@ -213,7 +278,7 @@ func (s *scheduler) watchDoneEvents() <-chan shared.Job {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					job := shared.Job{}
+					job := &shared.Job{}
 					job, err := job.Unmarshal(string(ev.Kv.Value))
 					if err != nil {
 						s.logger.Errorf("%v", err)
@@ -237,27 +302,19 @@ func (s *scheduler) watchWorkers() (<-chan string, <-chan string) {
 		} else {
 			for i := range resp.Kvs {
 				workerID := path.Base(string(resp.Kvs[i].Key))
-				if _, ok := s.m[workerID]; !ok {
-					s.m[workerID] = concurrency.NewMutex(s.session, path.Join(shared.WorkersCapacityLock, workerID))
-				}
+				putch <- workerID
 			}
-			if len(resp.Kvs) > 0 {
-				putch <- s.findWorker()
-			}
-		}
 
-		wch := s.client.Watch(context.Background(), shared.WorkersCapacity, clientv3.WithPrefix())
-		for n := range wch {
-			for _, ev := range n.Events {
-				switch ev.Type {
-				case mvccpb.PUT:
-					workerID := path.Base(string(ev.Kv.Key))
-					if _, ok := s.m[workerID]; !ok {
-						s.m[workerID] = concurrency.NewMutex(s.session, path.Join(shared.WorkersCapacityLock, workerID))
+			wch := s.client.Watch(context.Background(), shared.WorkersCapacity, clientv3.WithPrefix())
+			for n := range wch {
+				for _, ev := range n.Events {
+					switch ev.Type {
+					case mvccpb.PUT:
+						workerID := path.Base(string(ev.Kv.Key))
+						putch <- workerID
+					case mvccpb.DELETE:
+						delch <- path.Base(string(ev.Kv.Key))
 					}
-					putch <- s.findWorker()
-				case mvccpb.DELETE:
-					delch <- path.Base(string(ev.Kv.Key))
 				}
 			}
 		}
@@ -266,70 +323,31 @@ func (s *scheduler) watchWorkers() (<-chan string, <-chan string) {
 	return putch, delch
 }
 
-func (s *scheduler) findWorker() string {
-begin:
-	max, worker := 0, ""
-	resp, err := s.client.Get(context.Background(), path.Join(shared.WorkersCapacity), clientv3.WithPrefix())
-	if err != nil {
-		goto begin
-	} else {
-		for i := range resp.Kvs {
-			id := path.Base(string(resp.Kvs[i].Key))
-			free, err := strconv.Atoi(string(resp.Kvs[i].Value))
-			if err != nil {
-				continue
-			}
-			if _, ok := s.m[id]; ok {
-			lock:
-				ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-				defer cancel()
-				if mu, ok := s.m[id]; ok {
-					if err := mu.TryLock(ctx); err == concurrency.ErrLocked {
-						goto lock
-					}
-					defer mu.Unlock(ctx)
-				}
-				if free > max {
-					max = free
-					worker = id
-				}
-			} else {
-				continue
-			}
-		}
-		if worker != "" && max > 0 {
-			s.logger.Debugf("found worker %s with free capacity %d", worker, max)
-			return worker
-		}
-		goto begin
-	}
-}
+// func (s *scheduler) listJobs(prefix string) ([]shared.Job, error) {
+// 	var jobs []shared.Job
+// 	resp, err := s.client.Get(context.Background(), prefix, clientv3.WithPrefix())
+// 	if err != nil {
+// 		return jobs, err
+// 	}
+// 	for i := range resp.Kvs {
+// 		job := shared.Job{}
+// 		job, err := job.Unmarshal(string(resp.Kvs[i].Value))
+// 		if err != nil {
+// 			return jobs, err
+// 		}
+// 		jobs = append(jobs, job)
+// 	}
+// 	return jobs, nil
+// }
 
-func (s *scheduler) listJobs(prefix string) ([]shared.Job, error) {
-	var jobs []shared.Job
-	resp, err := s.client.Get(context.Background(), prefix, clientv3.WithPrefix())
-	if err != nil {
-		return jobs, err
-	}
-	for i := range resp.Kvs {
-		job := shared.Job{}
-		job, err := job.Unmarshal(string(resp.Kvs[i].Value))
-		if err != nil {
-			return jobs, err
-		}
-		jobs = append(jobs, job)
-	}
-	return jobs, nil
-}
-
-func (s *scheduler) deleteFromQueue(id uint) (shared.Job, error) {
-	job := shared.Job{}
+func (s *scheduler) deleteFromQueue(id uint) (*shared.Job, error) {
+	job := &shared.Job{}
 	resp, err := s.client.Get(context.Background(), shared.QueuePrefix, clientv3.WithPrefix())
 	if err != nil {
 		return job, err
 	}
 	for i := range resp.Kvs {
-		job := shared.Job{}
+		job := &shared.Job{}
 		job, err := job.Unmarshal(string(resp.Kvs[i].Value))
 		if err != nil {
 			return job, err
@@ -342,13 +360,13 @@ func (s *scheduler) deleteFromQueue(id uint) (shared.Job, error) {
 	return job, fmt.Errorf("not found")
 }
 
-func (s *scheduler) delete(prefix string, job shared.Job) error {
+func (s *scheduler) delete(prefix string, job *shared.Job) error {
 	key := path.Join(prefix, fmt.Sprintf("%d", job.ID))
 	_, err := s.client.Delete(context.Background(), key)
 	return err
 }
 
-func (s *scheduler) put(prefix string, job shared.Job) error {
+func (s *scheduler) put(prefix string, job *shared.Job) error {
 	key := path.Join(prefix, fmt.Sprintf("%d", job.ID))
 	val, err := job.Marshal()
 	if err != nil {
@@ -358,24 +376,23 @@ func (s *scheduler) put(prefix string, job shared.Job) error {
 	return err
 }
 
-func (s *scheduler) save(job shared.Job) error {
-	jobModel, err := s.app.jobRepository.Find(job.ID)
+func (s *scheduler) save(job *shared.Job) error {
+	jobModel := &model.Job{
+		ID:        job.ID,
+		Status:    job.GetStatus(),
+		StartTime: job.StartTime,
+		EndTime:   job.EndTime,
+		Log:       strings.Join(job.Log, ""),
+	}
+	_, err := s.app.jobRepository.Update(jobModel)
 	if err != nil {
 		return err
 	}
-	jobModel.Status = job.GetStatus()
-	if job.StartTime != nil {
-		jobModel.StartTime = job.StartTime
-	}
-	if job.EndTime != nil {
-		jobModel.EndTime = job.EndTime
-	}
-	_, err = s.app.jobRepository.Update(*jobModel)
 	go s.broadcastJobStatus(job)
 	return s.app.updateBuildTime(job.BuildID)
 }
 
-func (s *scheduler) broadcastJobStatus(job shared.Job) {
+func (s *scheduler) broadcastJobStatus(job *shared.Job) {
 	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.BuildID))
 	event := map[string]interface{}{
 		"build_id": job.BuildID,
@@ -389,11 +406,4 @@ func (s *scheduler) broadcastJobStatus(job shared.Job) {
 		event["end_time"] = util.FormatTime(*job.EndTime)
 	}
 	s.app.ws.Broadcast(sub, event)
-}
-
-// TODO: remove?
-func (s *scheduler) ready() {
-	if len(s.readych) == 1 {
-		<-s.readych
-	}
 }

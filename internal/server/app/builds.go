@@ -61,7 +61,7 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 	}
 
 	for _, env := range config.Env {
-		jobModel := model.Job{
+		jobModel := &model.Job{
 			Image:    config.Parsed.Image,
 			Commands: string(commandsJSON),
 			Env:      env,
@@ -100,8 +100,7 @@ func (app *App) StopBuild(buildID uint) (model.Build, error) {
 		}(job)
 	}
 	wg.Wait()
-	build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
-	return app.buildRepository.Update(build)
+	return build, err
 }
 
 // RestartBuild stops the current build related jobs if any, then start them again.
@@ -110,7 +109,7 @@ func (app *App) RestartBuild(buildID uint) error {
 	if err != nil {
 		return err
 	}
-	build.StartTime = func(t time.Time) *time.Time { return &t }(time.Now())
+	build.StartTime = nil
 	build.EndTime = nil
 	if build, err = app.buildRepository.Update(build); err != nil {
 		return err
@@ -119,7 +118,7 @@ func (app *App) RestartBuild(buildID uint) error {
 	wg.Add(len(build.Jobs))
 	for _, job := range build.Jobs {
 		go func(job *model.Job) {
-			if err := app.scheduleJob(*job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
+			if err := app.scheduleJob(job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
 				app.logger.Debugf("error scheduling job %d: %v", job.ID, err)
 			}
 			wg.Done()
@@ -129,8 +128,8 @@ func (app *App) RestartBuild(buildID uint) error {
 	return nil
 }
 
-func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, repo string) error {
-	j := shared.Job{
+func (app *App) scheduleJob(job *model.Job, provider model.Provider, commitSHA, repo string) error {
+	j := &shared.Job{
 		ID:            job.ID,
 		BuildID:       job.BuildID,
 		Commands:      job.Commands,
@@ -144,7 +143,8 @@ func (app *App) scheduleJob(job model.Job, provider model.Provider, commitSHA, r
 		Priority:      uint16(1000),
 		Status:        shared.StatusUnknown,
 	}
-	return app.scheduler.scheduleJob(j)
+	app.scheduler.scheduleJob(j)
+	return nil
 }
 
 func (app *App) updateBuildTime(buildID uint) error {
@@ -152,19 +152,27 @@ func (app *App) updateBuildTime(buildID uint) error {
 	if err != nil {
 		return err
 	}
-	if build.EndTime == nil {
-		alldone := true
-		for _, j := range build.Jobs {
-			if j.EndTime == nil {
-				alldone = false
-				break
+	alldone := true
+	var startTime *time.Time
+	var endTime *time.Time
+	for _, j := range build.Jobs {
+		if j.EndTime == nil {
+			alldone = false
+			break
+		} else {
+			if endTime == nil || j.EndTime.After(*endTime) {
+				endTime = j.EndTime
 			}
 		}
-		if alldone {
-			build.EndTime = func(t time.Time) *time.Time { return &t }(time.Now())
-			if _, err := app.buildRepository.Update(build); err != nil {
-				return err
-			}
+		if startTime == nil || j.StartTime.Before(*startTime) {
+			startTime = j.StartTime
+		}
+	}
+	if alldone {
+		build.StartTime = startTime
+		build.EndTime = endTime
+		if _, err := app.buildRepository.Update(build); err != nil {
+			return err
 		}
 	}
 	return nil

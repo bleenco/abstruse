@@ -21,3 +21,8 @@ func ParseTime(str string) time.Time {
 	}
 	return t
 }
+
+// TimeNow returns current datetime.
+func TimeNow() *time.Time {
+	return func(t time.Time) *time.Time { return &t }(time.Now())
+}

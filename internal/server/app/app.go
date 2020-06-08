@@ -54,14 +54,9 @@ func (app *App) Start(client *clientv3.Client) error {
 	}()
 
 	go func() {
-		scheduler, err := newScheduler(app.client, app.logger.Desugar(), app)
-		if err != nil {
+		app.scheduler = newScheduler(app.client, app.logger.Desugar(), app)
+		if err := app.scheduler.run(); err != nil {
 			app.errch <- err
-		} else {
-			app.scheduler = scheduler
-			if err := app.scheduler.run(); err != nil {
-				app.errch <- err
-			}
 		}
 	}()
 
@@ -78,8 +73,8 @@ func (app *App) getCapacity() (int, int) {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	for _, w := range app.workers {
-		max += w.Max
-		running += w.Running
+		max += w.max
+		running += w.running
 	}
 	return max, running
 }

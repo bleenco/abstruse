@@ -14,7 +14,7 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-func (app *App) startJob(job shared.Job) error {
+func (app *App) startJob(job *shared.Job) error {
 	logch := make(chan []byte)
 
 	name := fmt.Sprintf("abstruse-job-%d", job.ID)

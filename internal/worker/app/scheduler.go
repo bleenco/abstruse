@@ -54,8 +54,8 @@ func (s *scheduler) run() error {
 	return <-errch
 }
 
-func (s *scheduler) watchPending() <-chan shared.Job {
-	jobch := make(chan shared.Job)
+func (s *scheduler) watchPending() <-chan *shared.Job {
+	jobch := make(chan *shared.Job)
 
 	go func() {
 		wch := s.app.client.Watch(context.Background(), shared.PendingPrefix, clientv3.WithPrefix())
@@ -63,7 +63,7 @@ func (s *scheduler) watchPending() <-chan shared.Job {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					var job shared.Job
+					job := &shared.Job{}
 					if job, err := job.Unmarshal(string(ev.Kv.Value)); err == nil {
 						if job.WorkerID == s.id {
 							jobch <- job
@@ -77,8 +77,8 @@ func (s *scheduler) watchPending() <-chan shared.Job {
 	return jobch
 }
 
-func (s *scheduler) watchStop() <-chan shared.Job {
-	jobch := make(chan shared.Job)
+func (s *scheduler) watchStop() <-chan *shared.Job {
+	jobch := make(chan *shared.Job)
 
 	go func() {
 		wch := s.app.client.Watch(context.Background(), shared.StopPrefix, clientv3.WithPrefix())
@@ -86,7 +86,7 @@ func (s *scheduler) watchStop() <-chan shared.Job {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					var job shared.Job
+					job := shared.Job{}
 					if job, err := job.Unmarshal(string(ev.Kv.Value)); err == nil {
 						if job.WorkerID == s.id {
 							jobch <- job
@@ -100,7 +100,7 @@ func (s *scheduler) watchStop() <-chan shared.Job {
 	return jobch
 }
 
-func (s *scheduler) startJob(job shared.Job) error {
+func (s *scheduler) startJob(job *shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.running++
@@ -124,7 +124,7 @@ func (s *scheduler) startJob(job shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) stopJob(job shared.Job) error {
+func (s *scheduler) stopJob(job *shared.Job) error {
 	name := fmt.Sprintf("abstruse-job-%d", job.ID)
 	s.logger.Debugf("stopping container %s...", name)
 	s.app.stopJob(name)
@@ -140,7 +140,7 @@ func (s *scheduler) stopJob(job shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) putDone(job shared.Job) error {
+func (s *scheduler) putDone(job *shared.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	key := path.Join(shared.DonePrefix, fmt.Sprintf("%d", job.ID))
@@ -158,7 +158,7 @@ func (s *scheduler) putDone(job shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) deleteStop(job shared.Job) error {
+func (s *scheduler) deleteStop(job *shared.Job) error {
 	key := path.Join(shared.StopPrefix, fmt.Sprintf("%d", job.ID))
 	_, err := s.app.client.Delete(context.Background(), key)
 	return err

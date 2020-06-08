@@ -61,6 +61,6 @@ func (r *DBBuildRepository) Create(data model.Build) (model.Build, error) {
 
 // Update updates build.
 func (r *DBBuildRepository) Update(data model.Build) (model.Build, error) {
-	err := r.db.Model(&data).Updates(data).Error
+	err := r.db.Model(&data).Updates(map[string]interface{}{"start_time": data.StartTime, "end_time": data.EndTime}).Error
 	return data, err
 }
