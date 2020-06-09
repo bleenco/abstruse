@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../shared/providers/auth.service';
 import { Login } from './login.model';
+import { NgForm, NgModel } from '@angular/forms';
+import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -8,7 +11,9 @@ import { Login } from './login.model';
   styleUrls: ['./login.component.sass']
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('usernameField', { static: false }) usernameField: ElementRef;
+  @ViewChild('username', { static: false }) username: NgModel;
+  @ViewChild('password', { static: false }) password: NgModel;
+  @ViewChild('form', { read: NgForm }) form: NgForm;
 
   login: Login;
   loading: boolean;
@@ -18,6 +23,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.resetLogin();
+    of({}).pipe(delay(50)).subscribe(() => this.updateForm());
   }
 
   doLogin(): void {
@@ -27,13 +33,21 @@ export class LoginComponent implements OnInit {
       if (!resp.data) {
         this.credentialsError = true;
         this.resetLogin();
-        setTimeout(() => this.usernameField.nativeElement.focus());
       } else {
         this.authService.login(resp.data);
       }
 
       this.loading = false;
+    }, () => {
+      this.credentialsError = true;
+      this.loading = false;
+    }, () => {
+      this.loading = false;
     });
+  }
+
+  private updateForm(): void {
+    this.form.resetForm();
   }
 
   private resetLogin(): void {

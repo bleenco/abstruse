@@ -7,25 +7,25 @@
             <div class="login-logo-container justify-center align-center">
               <img src="/assets/images/abstruse-text-black.svg">
             </div>
-            <div class="message is-red" *ngIf="credentialsError && !loading">
+            <div class="notification is-medium has-margin" *ngIf="credentialsError && !loading">
               <p>
-                <i class="fas fa-times"></i>
+                <i class="fas fa-lock"></i>
                 Invalid username and password combination.
               </p>
             </div>
-            <form class="login-form has-padding" #loginForm="ngForm" (ngSubmit)="doLogin()">
+            <form class="login-form has-padding" #form="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
-                <input #usernameField type="text" name="username" class="input" [(ngModel)]="login.email" required
-                  [disabled]="loading">
+                <input ngControl="username" type="text" name="username" class="input" [(ngModel)]="login.email"
+                  #username="ngModel" required [disabled]="loading">
               </span>
               <span class="field">
                 <label class="label">Password</label>
-                <input type="password" name="password" class="input" [(ngModel)]="login.password" required
-                  [disabled]="loading">
+                <input type="password" name="password" class="input" [(ngModel)]="login.password" #password="ngModel"
+                  required [disabled]="loading">
               </span>
-              <div class="align-center justify-center">
-                <button type="submit" class="button" [disabled]="!loginForm.valid">
+              <div class=" align-center justify-center">
+                <button type="submit" class="button" [disabled]="!form.valid">
                   <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
                   <span *ngIf="loading">Logging in...</span>
                   <span *ngIf="!loading">Login</span>

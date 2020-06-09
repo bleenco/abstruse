@@ -4,6 +4,15 @@
   border: 1px solid $border-default
   border-radius: 4px
 
+  &.is-medium
+    padding: 15px
+
+  &.has-margin
+    margin: 0 15px
+
+  &.no-border
+    border: 1px solid transparent
+
   p
     display: flex
     align-items: center
@@ -13,3 +22,13 @@
   i
     font-size: 20px
     margin-right: 25px
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      color: $color
+      background: rgba($color, .2)
+      border-color: $color
+
+      i, p
+        color: $color
+
