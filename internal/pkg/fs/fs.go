@@ -3,6 +3,7 @@ package fs
 import (
 	"io/ioutil"
 	"os"
+	"runtime"
 
 	homedir "github.com/mitchellh/go-homedir"
 )
@@ -39,4 +40,15 @@ func DeleteFile(filePath string) error {
 func ReadFile(filePath string) (string, error) {
 	contents, err := ioutil.ReadFile(filePath)
 	return string(contents), err
+}
+
+// TempDir returns path to temporary directory
+func TempDir() (string, error) {
+	var tmp string
+	if runtime.GOOS != "darwin" {
+		tmp = os.TempDir()
+	} else {
+		tmp = "/tmp"
+	}
+	return ioutil.TempDir(tmp, "abstruse")
 }

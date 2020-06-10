@@ -4,34 +4,27 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path"
-	"runtime"
 	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
+	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	_ "github.com/jkuri/abstruse/internal/worker/data" // Compressed static files.
-	"github.com/jkuri/statik/fs"
+	sfs "github.com/jkuri/statik/fs"
 )
 
 var mountFolder string
 
 func init() {
-	var tmp string
-	if runtime.GOOS != "darwin" {
-		tmp = os.TempDir()
-	} else {
-		tmp = "/tmp"
-	}
-	dir, err := ioutil.TempDir(tmp, "abstruse")
+	dir, err := fs.TempDir()
 	if err != nil {
 		panic(err)
 	}
-	statikFS, err := fs.New()
+	statikFS, err := sfs.New()
 	if err != nil {
 		panic(err)
 	}
@@ -45,11 +38,10 @@ func init() {
 			panic(err)
 		}
 		filePath := path.Clean(path.Join(dir, file))
-		if err := ioutil.WriteFile(filePath, fileData, 0777); err != nil {
+		if err := ioutil.WriteFile(filePath, fileData, 0765); err != nil {
 			panic(err)
 		}
 	}
-	mountFolder = dir
 }
 
 // RunContainer runs container.
@@ -86,7 +78,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		}
 		str := yellow("\r==> " + strings.Join(command, " ") + "\n\r")
 		logch <- []byte(str)
-		command = append([]string{"abstruse-pty"}, command...)
+		command = append([]string{"/bin/abstruse-pty"}, command...)
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
 			return err

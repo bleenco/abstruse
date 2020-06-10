@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"runtime"
 	"strings"
 
+	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/worker/docker"
@@ -30,13 +30,7 @@ func (app *App) startJob(job *shared.Job) error {
 		commands = append(commands, strings.Split(c, " "))
 	}
 
-	var tmp string
-	if runtime.GOOS != "darwin" {
-		tmp = os.TempDir()
-	} else {
-		tmp = "/tmp"
-	}
-	dir, err := ioutil.TempDir(tmp, "abstruse-build-")
+	dir, err := fs.TempDir()
 	if err != nil {
 		panic(err)
 	}
