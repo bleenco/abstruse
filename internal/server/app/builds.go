@@ -168,8 +168,13 @@ func (app *App) updateBuildTime(buildID uint) error {
 			startTime = j.StartTime
 		}
 	}
-	if alldone {
+	if startTime != nil {
 		build.StartTime = startTime
+		if _, err := app.buildRepository.Update(build); err != nil {
+			return err
+		}
+	}
+	if alldone {
 		build.EndTime = endTime
 		if _, err := app.buildRepository.Update(build); err != nil {
 			return err

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"path"
 	"sync"
-	"time"
 
 	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
+	"github.com/jkuri/abstruse/internal/pkg/util"
 	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -111,7 +111,7 @@ func (s *scheduler) startJob(job core.Job) error {
 	// 	return err
 	// }
 	s.logger.Infof("starting job %d...", job.ID)
-	job.StartTime = time.Now()
+	job.StartTime = util.TimeNow()
 	if err := s.app.startJob(job); err != nil {
 		job.Status = core.StatusFailing
 		s.logger.Errorf("job %d failed: %v", job.ID, err)
@@ -119,7 +119,7 @@ func (s *scheduler) startJob(job core.Job) error {
 		job.Status = core.StatusPassing
 		s.logger.Infof("job %d passing", job.ID)
 	}
-	job.EndTime = time.Now()
+	job.EndTime = util.TimeNow()
 	if err := s.deletePending(job); err != nil {
 		s.logger.Errorf("error delete from pending %d", job.ID)
 		return err
@@ -140,11 +140,11 @@ func (s *scheduler) stopJob(job core.Job) error {
 			return err
 		}
 	}
-	// job.Status = core.StatusFailing
-	// job.EndTime = util.TimeNow()
-	// if err := s.putDone(job); err != nil {
-	// 	return err
-	// }
+	job.Status = core.StatusFailing
+	job.EndTime = util.TimeNow()
+	if err := s.putDone(job); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -56,7 +56,7 @@ func (app *App) Start(client *clientv3.Client) error {
 	}()
 
 	go func() {
-		app.scheduler = NewScheduler(app.client, app.log)
+		app.scheduler = NewScheduler(app.client, app)
 		if err := app.scheduler.Start(); err != nil {
 			app.errch <- err
 		}

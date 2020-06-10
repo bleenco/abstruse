@@ -4,17 +4,14 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"path"
 	"sync"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jkuri/abstruse/internal/core"
-	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/options"
 	pb "github.com/jkuri/abstruse/proto"
-	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -105,20 +102,6 @@ func (w *Worker) Run() error {
 	err = <-ch
 	w.logger.Infof("closed connection to worker %s %s", w.id, w.addr)
 	return err
-}
-
-// StartJob starts job on this worker.
-func (w *Worker) StartJob(job core.Job) error {
-	w.logger.Debugf("starting job %d...", job.ID)
-	data, err := jsoniter.MarshalToString(&job)
-	if err != nil {
-		return err
-	}
-	_, err = w.app.client.Put(context.Background(), path.Join(shared.PendingPrefix, fmt.Sprintf("%d", job.ID)), data)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // SetCapacity sets current capacity.

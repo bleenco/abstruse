@@ -20,23 +20,23 @@ const (
 
 // Job defines task for execution.
 type Job struct {
-	ID            uint      `json:"id"`
-	BuildID       uint      `json:"build_id"`
-	Name          string    `json:"name"`
-	Commands      string    `json:"commands"`
-	Image         string    `json:"image"`
-	Env           string    `json:"env"`
-	ProviderName  string    `json:"provider_name"`
-	ProviderURL   string    `json:"provider_url"`
-	ProviderToken string    `json:"provider_token"`
-	CommitSHA     string    `json:"commit_sha"`
-	RepoName      string    `json:"repository_name"`
-	Priority      uint16    `json:"priority"`
-	Status        JobStatus `json:"status"`
-	WorkerID      string    `json:"worker_id"`
-	Log           []string  `json:"-"`
-	StartTime     time.Time `json:"start_time"`
-	EndTime       time.Time `json:"end_time"`
+	ID            uint       `json:"id"`
+	BuildID       uint       `json:"build_id"`
+	Name          string     `json:"name"`
+	Commands      string     `json:"commands"`
+	Image         string     `json:"image"`
+	Env           string     `json:"env"`
+	ProviderName  string     `json:"provider_name"`
+	ProviderURL   string     `json:"provider_url"`
+	ProviderToken string     `json:"provider_token"`
+	CommitSHA     string     `json:"commit_sha"`
+	RepoName      string     `json:"repository_name"`
+	Priority      uint16     `json:"priority"`
+	Status        JobStatus  `json:"status"`
+	WorkerID      string     `json:"worker_id"`
+	Log           []string   `json:"-"`
+	StartTime     *time.Time `json:"start_time"`
+	EndTime       *time.Time `json:"end_time"`
 }
 
 // GetStatus returns status in string format.
