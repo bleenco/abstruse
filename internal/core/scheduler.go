@@ -18,4 +18,10 @@ type Scheduler interface {
 
 	// Cancel cancels scheduled or pending job.
 	Cancel(uint) error
+
+	// AddWorker adds worker to workers list.
+	// AddWorker(Worker)
+
+	// DeleteWorker removes worker from workers list.
+	DeleteWorker(string)
 }

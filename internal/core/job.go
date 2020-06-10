@@ -22,7 +22,6 @@ const (
 type Job struct {
 	ID            uint      `json:"id"`
 	BuildID       uint      `json:"build_id"`
-	RepoID        uint      `json:"repo_id"`
 	Name          string    `json:"name"`
 	Commands      string    `json:"commands"`
 	Image         string    `json:"image"`

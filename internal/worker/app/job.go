@@ -8,14 +8,14 @@ import (
 	"path"
 	"strings"
 
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
-	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/worker/docker"
 	jsoniter "github.com/json-iterator/go"
 )
 
-func (app *App) startJob(job *shared.Job) error {
+func (app *App) startJob(job core.Job) error {
 	logch := make(chan []byte)
 
 	name := fmt.Sprintf("abstruse-job-%d", job.ID)

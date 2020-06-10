@@ -4,26 +4,29 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"path"
 	"sync"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jkuri/abstruse/internal/core"
+	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/options"
 	pb "github.com/jkuri/abstruse/proto"
+	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
 
-// worker represent gRPC worker client.
-type worker struct {
+// Worker represent gRPC worker client.
+type Worker struct {
 	mu sync.Mutex
 
 	id      string
-	max     int32
-	running int32
+	max     int
+	running int
 	addr    string
 	host    core.HostInfo
 	usage   []core.Usage
@@ -34,7 +37,7 @@ type worker struct {
 	app    *App
 }
 
-func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger, app *App) (core.Worker, error) {
+func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger, app *App) (*Worker, error) {
 	logger = logger.With(zap.String("worker", addr))
 	if opts.TLS.Cert == "" || opts.TLS.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
@@ -59,7 +62,7 @@ func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger
 	}
 	cli := pb.NewAPIClient(conn)
 
-	return worker{
+	return &Worker{
 		id:     id,
 		addr:   addr,
 		conn:   conn,
@@ -69,11 +72,13 @@ func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger
 	}, nil
 }
 
-func (w worker) ID() string {
+// ID returns workers id.
+func (w *Worker) ID() string {
 	return w.id
 }
 
-func (w worker) Run() error {
+// Run starts the worker.
+func (w *Worker) Run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	defer w.conn.Close()
@@ -83,11 +88,11 @@ func (w worker) Run() error {
 		return err
 	}
 	w.host = host
-	w.max = int32(w.host.MaxConcurrency)
-	w.logger.Infof("connected to worker %s %s", w.id, w.addr)
+	w.max = int(w.host.MaxConcurrency)
+	w.logger.Infof("connected to worker %s %s with capacity %d", w.id, w.addr, w.max)
 	w.emitData()
 	w.app.workers[w.id] = w
-	// w.app.scheduler.addWorker(w.ID)
+	w.app.scheduler.AddWorker(w)
 
 	ch := make(chan error)
 
@@ -102,33 +107,51 @@ func (w worker) Run() error {
 	return err
 }
 
-func (w worker) StartJob(job core.Job) error {
+// StartJob starts job on this worker.
+func (w *Worker) StartJob(job core.Job) error {
+	w.logger.Debugf("starting job %d...", job.ID)
+	data, err := jsoniter.MarshalToString(&job)
+	if err != nil {
+		return err
+	}
+	_, err = w.app.client.Put(context.Background(), path.Join(shared.PendingPrefix, fmt.Sprintf("%d", job.ID)), data)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (w worker) Capacity() int {
+// SetCapacity sets current capacity.
+func (w *Worker) SetCapacity(n int) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.running = n
+}
+
+// Capacity returns current capacity.
+func (w *Worker) Capacity() int {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	return int(w.max - w.running)
 }
 
-// GetAddr returns remote address.
-func (w worker) Addr() string {
+// Addr returns remote address.
+func (w *Worker) Addr() string {
 	return w.addr
 }
 
-// GetHost returns host info.
-func (w worker) Host() core.HostInfo {
+// Host returns host info.
+func (w *Worker) Host() core.HostInfo {
 	return w.host
 }
 
-// GetUsage returns worker usage.
-func (w worker) Usage() []core.Usage {
+// Usage returns worker usage.
+func (w *Worker) Usage() []core.Usage {
 	return w.usage
 }
 
 // usageStats gRPC stream.
-func (w worker) usageStats(ctx context.Context) error {
+func (w *Worker) usageStats(ctx context.Context) error {
 	stream, err := w.cli.UsageStats(ctx)
 	if err != nil {
 		return err
@@ -164,7 +187,7 @@ func (w worker) usageStats(ctx context.Context) error {
 }
 
 // hostInfo returns remote workers systme information.
-func (w *worker) hostInfo(ctx context.Context) (core.HostInfo, error) {
+func (w *Worker) hostInfo(ctx context.Context) (core.HostInfo, error) {
 	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
 	return core.HostInfo{
 		info.GetId(),
@@ -187,7 +210,7 @@ func (w *worker) hostInfo(ctx context.Context) (core.HostInfo, error) {
 }
 
 // emitData broadcast newly created worker via websocket.
-func (w worker) emitData() {
+func (w *Worker) emitData() {
 	w.app.ws.Broadcast("/subs/workers_add", map[string]interface{}{
 		"id":    w.id,
 		"addr":  w.Addr(),
@@ -197,7 +220,7 @@ func (w worker) emitData() {
 }
 
 // emitUsage broadcast workers usage info.
-func (w worker) emitUsage() {
+func (w *Worker) emitUsage() {
 	if len(w.usage) < 1 {
 		return
 	}

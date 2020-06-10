@@ -24,6 +24,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	mountFolder = dir
 	statikFS, err := sfs.New()
 	if err != nil {
 		panic(err)

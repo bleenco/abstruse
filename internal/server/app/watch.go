@@ -4,7 +4,6 @@ import (
 	"context"
 	"path"
 
-	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
@@ -49,7 +48,10 @@ func (app *App) watchWorkers() error {
 					app.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
 						"id": worker.ID(),
 					})
+					app.mu.Lock()
 					delete(app.workers, id)
+					app.mu.Unlock()
+					app.scheduler.DeleteWorker(id)
 				}
 			}
 		}
@@ -57,9 +59,9 @@ func (app *App) watchWorkers() error {
 	return nil
 }
 
-func (app *App) initWorker(worker core.Worker) {
-	if err := worker.Run(); err != nil {
-		key := path.Join(shared.ServicePrefix, shared.WorkerService, worker.ID())
+func (app *App) initWorker(w *Worker) {
+	if err := w.Run(); err != nil {
+		key := path.Join(shared.ServicePrefix, shared.WorkerService, w.id)
 		app.client.Delete(context.TODO(), key)
 	}
 }

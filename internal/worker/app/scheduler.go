@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"path"
 	"sync"
+	"time"
 
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
-	"github.com/jkuri/abstruse/internal/pkg/util"
+	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
@@ -55,8 +57,8 @@ func (s *scheduler) run() error {
 	return <-errch
 }
 
-func (s *scheduler) watchPending() <-chan *shared.Job {
-	jobch := make(chan *shared.Job)
+func (s *scheduler) watchPending() <-chan core.Job {
+	jobch := make(chan core.Job)
 
 	go func() {
 		wch := s.app.client.Watch(context.Background(), shared.PendingPrefix, clientv3.WithPrefix())
@@ -64,8 +66,8 @@ func (s *scheduler) watchPending() <-chan *shared.Job {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					job := &shared.Job{}
-					if job, err := job.Unmarshal(string(ev.Kv.Value)); err == nil {
+					job := core.Job{}
+					if err := jsoniter.UnmarshalFromString(string(ev.Kv.Value), &job); err == nil {
 						if job.WorkerID == s.id {
 							jobch <- job
 						}
@@ -78,8 +80,8 @@ func (s *scheduler) watchPending() <-chan *shared.Job {
 	return jobch
 }
 
-func (s *scheduler) watchStop() <-chan *shared.Job {
-	jobch := make(chan *shared.Job)
+func (s *scheduler) watchStop() <-chan core.Job {
+	jobch := make(chan core.Job)
 
 	go func() {
 		wch := s.app.client.Watch(context.Background(), shared.StopPrefix, clientv3.WithPrefix())
@@ -87,8 +89,8 @@ func (s *scheduler) watchStop() <-chan *shared.Job {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					job := shared.Job{}
-					if job, err := job.Unmarshal(string(ev.Kv.Value)); err == nil {
+					job := core.Job{}
+					if err := jsoniter.UnmarshalFromString(string(ev.Kv.Value), &job); err == nil {
 						if job.WorkerID == s.id {
 							jobch <- job
 						}
@@ -101,7 +103,7 @@ func (s *scheduler) watchStop() <-chan *shared.Job {
 	return jobch
 }
 
-func (s *scheduler) startJob(job *shared.Job) error {
+func (s *scheduler) startJob(job core.Job) error {
 	s.mu.Lock()
 	s.running++
 	s.mu.Unlock()
@@ -109,15 +111,19 @@ func (s *scheduler) startJob(job *shared.Job) error {
 	// 	return err
 	// }
 	s.logger.Infof("starting job %d...", job.ID)
-	job.StartTime = util.TimeNow()
+	job.StartTime = time.Now()
 	if err := s.app.startJob(job); err != nil {
-		job.Status = shared.StatusFailing
+		job.Status = core.StatusFailing
 		s.logger.Errorf("job %d failed: %v", job.ID, err)
 	} else {
-		job.Status = shared.StatusPassing
+		job.Status = core.StatusPassing
 		s.logger.Infof("job %d passing", job.ID)
 	}
-	job.EndTime = util.TimeNow()
+	job.EndTime = time.Now()
+	if err := s.deletePending(job); err != nil {
+		s.logger.Errorf("error delete from pending %d", job.ID)
+		return err
+	}
 	if err := s.putDone(job); err != nil {
 		s.logger.Errorf("error saving job as done: %v", err)
 		return err
@@ -125,7 +131,7 @@ func (s *scheduler) startJob(job *shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) stopJob(job *shared.Job) error {
+func (s *scheduler) stopJob(job core.Job) error {
 	name := fmt.Sprintf("abstruse-job-%d", job.ID)
 	s.logger.Debugf("stopping container %s...", name)
 	if err := s.app.stopJob(name); err == nil {
@@ -134,7 +140,7 @@ func (s *scheduler) stopJob(job *shared.Job) error {
 			return err
 		}
 	}
-	// job.Status = shared.StatusFailing
+	// job.Status = core.StatusFailing
 	// job.EndTime = util.TimeNow()
 	// if err := s.putDone(job); err != nil {
 	// 	return err
@@ -142,11 +148,19 @@ func (s *scheduler) stopJob(job *shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) putDone(job *shared.Job) error {
+func (s *scheduler) deletePending(job core.Job) error {
+	key := path.Join(shared.PendingPrefix, fmt.Sprintf("%d", job.ID))
+	if _, err := s.app.client.Delete(context.Background(), key); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *scheduler) putDone(job core.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	key := path.Join(shared.DonePrefix, fmt.Sprintf("%d", job.ID))
-	val, err := job.Marshal()
+	val, err := jsoniter.MarshalToString(&job)
 	if err != nil {
 		return err
 	}
@@ -160,7 +174,7 @@ func (s *scheduler) putDone(job *shared.Job) error {
 	return nil
 }
 
-func (s *scheduler) deleteStop(job *shared.Job) error {
+func (s *scheduler) deleteStop(job core.Job) error {
 	key := path.Join(shared.StopPrefix, fmt.Sprintf("%d", job.ID))
 	_, err := s.app.client.Delete(context.Background(), key)
 	return err

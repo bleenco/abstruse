@@ -3,10 +3,8 @@ package app
 import (
 	"sync"
 
-	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/options"
-	"github.com/jkuri/abstruse/internal/server/scheduler/pqueue"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
@@ -17,12 +15,12 @@ import (
 type App struct {
 	mu        sync.RWMutex
 	opts      *options.Options
-	workers   map[string]core.Worker
+	workers   map[string]*Worker
 	client    *clientv3.Client
 	ws        *websocket.App
 	log       *zap.Logger
 	logger    *zap.SugaredLogger
-	scheduler core.Scheduler
+	scheduler Scheduler
 	errch     chan error
 
 	buildRepository repository.BuildRepository
@@ -34,7 +32,7 @@ type App struct {
 func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, log *zap.Logger) (*App, error) {
 	app := &App{
 		opts:            opts,
-		workers:         make(map[string]core.Worker),
+		workers:         make(map[string]*Worker),
 		ws:              ws,
 		buildRepository: br,
 		jobRepository:   jr,
@@ -58,7 +56,7 @@ func (app *App) Start(client *clientv3.Client) error {
 	}()
 
 	go func() {
-		app.scheduler = pqueue.NewPriorityQueue(app.client, app.log)
+		app.scheduler = NewScheduler(app.client, app.log)
 		if err := app.scheduler.Start(); err != nil {
 			app.errch <- err
 		}
@@ -68,7 +66,7 @@ func (app *App) Start(client *clientv3.Client) error {
 }
 
 // GetWorkers returns workers list.
-func (app *App) GetWorkers() map[string]core.Worker {
+func (app *App) GetWorkers() map[string]*Worker {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	return app.workers

@@ -3,29 +3,32 @@ package core
 import "time"
 
 // Worker represents remote worker instance.
-type Worker interface {
-	// ID returns workers id.
-	ID() string
+// type Worker interface {
+// 	// ID returns workers id.
+// 	ID() string
 
-	// Run starts the worker.
-	Run() error
+// 	// Run starts the worker.
+// 	Run() error
 
-	// StartJob schedules job execution on this worker.
-	StartJob(Job) error
+// 	// StartJob schedules job execution on this worker.
+// 	StartJob(Job) error
 
-	// Capacity returns worker free slots for
-	// job execution.
-	Capacity() int
+// 	// SetCapacity sets worker current capacity.
+// 	SetCapacity(int)
 
-	// GetAddr returns remote worker server address.
-	Addr() string
+// 	// Capacity returns worker free slots for
+// 	// job execution.
+// 	Capacity() int
 
-	// GetHost returns workers host information.
-	Host() HostInfo
+// 	// GetAddr returns remote worker server address.
+// 	Addr() string
 
-	// GetUsage returns worker usage statistics.
-	Usage() []Usage
-}
+// 	// GetHost returns workers host information.
+// 	Host() HostInfo
+
+// 	// GetUsage returns worker usage statistics.
+// 	Usage() []Usage
+// }
 
 // HostInfo holds host information about worker.
 type HostInfo struct {
