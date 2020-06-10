@@ -12,16 +12,17 @@ export class WorkersModalComponent implements OnInit {
   @Input() worker: Worker;
 
   realtimeChartOptions: RealtimeChartSettings = {
-    height: 200,
+    height: 180,
     margin: { top: 10, right: 0, bottom: 25, left: 30 },
-    xGrid: { tickPadding: 10, tickNumber: 4 },
-    yGrid: { min: 0, max: 100, tickNumber: 5, tickFormat: (v: number) => `${v}%`, tickPadding: 15 }
+    xGrid: { tickPadding: 10, tickNumber: 12, opacity: 0 },
+    yGrid: { min: 0, max: 100, tickNumber: 5, tickFormat: (v: number) => `${v}%`, tickPadding: 15 },
+    timeSlots: 120
   };
   realtimeCpuChartOptions: RealtimeChartSettings = {
-    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78' }]
+    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: .45 }]
   };
   realtimeMemoryChartOptions: RealtimeChartSettings = {
-    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78' }]
+    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: .45 }]
   };
 
   constructor(

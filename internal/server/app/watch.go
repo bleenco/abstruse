@@ -45,8 +45,10 @@ func (app *App) watchWorkers() error {
 				}
 			case mvccpb.DELETE:
 				id := path.Base(string(ev.Kv.Key))
-				if _, ok := app.workers[id]; ok {
-					// worker.EmitDeleted()
+				if worker, ok := app.workers[id]; ok {
+					app.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
+						"id": worker.ID(),
+					})
 					delete(app.workers, id)
 				}
 			}

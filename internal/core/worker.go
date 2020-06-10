@@ -18,13 +18,13 @@ type Worker interface {
 	Capacity() int
 
 	// GetAddr returns remote worker server address.
-	GetAddr() string
+	Addr() string
 
 	// GetHost returns workers host information.
-	GetHost() HostInfo
+	Host() HostInfo
 
 	// GetUsage returns worker usage statistics.
-	GetUsage() []Usage
+	Usage() []Usage
 }
 
 // HostInfo holds host information about worker.

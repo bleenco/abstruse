@@ -70,7 +70,6 @@ export class RealtimeChartComponent implements OnInit, OnChanges, OnDestroy {
     this.updateData();
 
     this.initChart();
-    this.displayLoadingOverlay();
     this.inited = false;
   }
 
@@ -107,14 +106,11 @@ export class RealtimeChartComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private updateData(): void {
-    const now = new Date();
-    const from = now.getTime() - (this.duration * this.options.timeSlots);
-
     this.dataValues = (this.data || [])
       .map(data => {
-        data = data.filter(d => d.date.getTime() > from);
-
+        const now = new Date();
         const last = data[data.length - 1] || { date: now, value: -1 };
+
         const nb = Math.round((now.getTime() - last.date.getTime()) / 1000);
         data = [
           ...data,
