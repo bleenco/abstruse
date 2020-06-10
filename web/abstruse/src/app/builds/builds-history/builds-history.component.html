@@ -20,7 +20,8 @@
 
     <div class="more-button-container align-center justify-center mtb10" *ngIf="!hideMoreButton">
       <button type="button" class="button" (click)="findBuilds()">
-        <app-spinner class="mr0" *ngIf="fetchingMore"></app-spinner>
+        <app-spinner class="is-small" *ngIf="fetchingMore"></app-spinner>
+        <span *ngIf="fetchingMore">Loading...</span>
         <i class="fas fa-ellipsis-v" *ngIf="!fetchingMore"></i>
         <span *ngIf="!fetchingMore">Load More</span>
       </button>
