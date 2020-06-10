@@ -28,6 +28,7 @@ type Scheduler struct {
 	workers map[string]*Worker
 	wdelch  <-chan string
 	jobch   <-chan core.Job
+	pending map[uint]core.Job
 	logger  *zap.SugaredLogger
 	app     *App
 	ctx     context.Context
@@ -40,6 +41,7 @@ func NewScheduler(client *clientv3.Client, app *App) Scheduler {
 		client:  client,
 		queue:   recipe.NewPriorityQueue(client, shared.QueuePrefix),
 		workers: make(map[string]*Worker),
+		pending: make(map[uint]core.Job),
 		logger:  app.log.With(zap.String("type", "scheduler")).Sugar(),
 		app:     app,
 		ctx:     context.Background(),
@@ -103,6 +105,51 @@ func (s Scheduler) Resume() error {
 	return nil
 }
 
+// Cancel stops job if pending or removes from queue.
+func (s Scheduler) Cancel(id uint) error {
+	resp, err := s.client.Get(context.TODO(), shared.QueuePrefix, clientv3.WithPrefix())
+	if err != nil {
+		return err
+	}
+	for i := range resp.Kvs {
+		key, val, job := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value), core.Job{}
+		if err := jsoniter.UnmarshalFromString(val, &job); err == nil {
+			if job.ID == id {
+				s.logger.Debugf("removing job %d from queue...", job.ID)
+				if _, err := s.client.Delete(context.TODO(), key); err != nil {
+					return err
+				}
+				job.StartTime = util.TimeNow()
+				job.EndTime = util.TimeNow()
+				job.Status = core.StatusFailing
+				if err := s.save(job); err != nil {
+					return err
+				}
+				return nil
+			}
+		} else {
+			s.logger.Errorf("error unmarshaling job: %v", err)
+		}
+	}
+	s.mu.Lock()
+	if job, ok := s.pending[id]; ok {
+		s.logger.Debugf("stopping job %d...", id)
+		job.EndTime = util.TimeNow()
+		job.Status = core.StatusFailing
+		key := path.Join(shared.StopPrefix, fmt.Sprintf("%d", job.ID))
+		val, err := jsoniter.MarshalToString(&job)
+		if err != nil {
+			return err
+		}
+		if _, err := s.client.Put(context.TODO(), key, val); err != nil {
+			return err
+		}
+		return nil
+	}
+	s.mu.Unlock()
+	return nil
+}
+
 // AddWorker adds worker to schedulers worker list.
 func (s Scheduler) AddWorker(w *Worker) {
 	s.mu.Lock()
@@ -117,11 +164,6 @@ func (s Scheduler) DeleteWorker(id string) {
 	defer s.mu.Unlock()
 	delete(s.workers, id)
 	s.logger.Debugf("worker %s deleted from scheduler list", id)
-}
-
-// Cancel stops job if pending or removes from queue.
-func (s Scheduler) Cancel(id uint) error {
-	return nil
 }
 
 func (s Scheduler) process() error {
@@ -155,7 +197,6 @@ func (s Scheduler) process() error {
 		worker.running++
 		worker.mu.Unlock()
 		worker.emitUsage()
-		s.logger.Debugf("worker %s capacity: %d", worker.id, worker.Capacity())
 		job.WorkerID = worker.id
 		s.logger.Debugf("job %d enqueued, sending to worker %s...", job.ID, job.WorkerID)
 		if err := s.startJob(job); err != nil {
@@ -179,6 +220,9 @@ func (s Scheduler) startJob(job core.Job) error {
 	if err != nil {
 		return err
 	}
+	s.mu.Lock()
+	s.pending[job.ID] = job
+	s.mu.Unlock()
 	job.Status = core.StatusRunning
 	job.StartTime = util.TimeNow()
 	if err := s.save(job); err != nil {
@@ -210,26 +254,27 @@ func (s Scheduler) dequeue() <-chan core.Job {
 }
 
 func (s Scheduler) watchDone() {
-	go func() {
-		resp, err := s.client.Get(context.Background(), shared.DonePrefix, clientv3.WithPrefix())
-		if err != nil {
-			s.logger.Errorf("%v", err)
-		} else {
-			for i := range resp.Kvs {
-				key, val, job := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value), core.Job{}
-				if err := jsoniter.UnmarshalFromString(val, &job); err == nil {
-					if _, err := s.client.Delete(context.Background(), key); err == nil {
-						s.logger.Debugf("job %d done with status: %s", job.ID, job.GetStatus())
-						s.next()
-					} else {
-						s.logger.Errorf("error deleting job %d from done", job.ID)
-					}
+	resp, err := s.client.Get(context.Background(), shared.DonePrefix, clientv3.WithPrefix())
+	if err != nil {
+		s.logger.Errorf("%v", err)
+	} else {
+		for i := range resp.Kvs {
+			key, val, job := string(resp.Kvs[i].Key), string(resp.Kvs[i].Value), core.Job{}
+			if err := jsoniter.UnmarshalFromString(val, &job); err == nil {
+				if _, err := s.client.Delete(context.Background(), key); err == nil {
+					s.logger.Debugf("job %d done with status: %s", job.ID, job.GetStatus())
+					s.mu.Lock()
+					delete(s.pending, job.ID)
+					s.mu.Unlock()
+					s.next()
 				} else {
-					s.logger.Errorf("error unmarshaling job: %v", err)
+					s.logger.Errorf("error deleting job %d from done", job.ID)
 				}
+			} else {
+				s.logger.Errorf("error unmarshaling job: %v", err)
 			}
 		}
-	}()
+	}
 
 	go func() {
 		wch := s.client.Watch(context.Background(), shared.DonePrefix, clientv3.WithPrefix())
@@ -240,14 +285,15 @@ func (s Scheduler) watchDone() {
 					key := string(ev.Kv.Key)
 					job := core.Job{}
 					if err := jsoniter.UnmarshalFromString(string(ev.Kv.Value), &job); err == nil {
-						worker := s.workers[job.WorkerID]
-						worker.mu.Lock()
-						worker.running--
-						worker.mu.Unlock()
-						worker.emitUsage()
 						if _, err := s.client.Delete(context.Background(), key); err == nil {
 							if err := s.save(job); err == nil {
 								s.logger.Debugf("job %d done with status: %s", job.ID, job.GetStatus())
+								s.mu.Lock()
+								delete(s.pending, job.ID)
+								worker := s.workers[job.WorkerID]
+								worker.running--
+								worker.emitUsage()
+								s.mu.Unlock()
 								s.next()
 							} else {
 								s.logger.Errorf("error saving job %d to db", job.ID)

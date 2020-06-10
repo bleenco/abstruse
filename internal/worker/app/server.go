@@ -127,7 +127,6 @@ func (s *APIServer) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfo
 // Capacity returns stream of current worker capacity info.
 func (s *APIServer) Capacity(stream pb.API_CapacityServer) error {
 	s.capacity = stream
-	// s.app.emitCapacityInfo()
 
 	for {
 		_, err := stream.Recv()

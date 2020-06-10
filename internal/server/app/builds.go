@@ -164,7 +164,7 @@ func (app *App) updateBuildTime(buildID uint) error {
 				endTime = j.EndTime
 			}
 		}
-		if startTime == nil || j.StartTime.Before(*startTime) {
+		if startTime == nil || (j.StartTime != nil && j.StartTime.Before(*startTime)) {
 			startTime = j.StartTime
 		}
 	}

@@ -107,9 +107,6 @@ func (s *scheduler) startJob(job core.Job) error {
 	s.mu.Lock()
 	s.running++
 	s.mu.Unlock()
-	// if err := s.app.emitCapacityInfo(); err != nil {
-	// 	return err
-	// }
 	s.logger.Infof("starting job %d...", job.ID)
 	job.StartTime = util.TimeNow()
 	if err := s.app.startJob(job); err != nil {
@@ -140,11 +137,11 @@ func (s *scheduler) stopJob(job core.Job) error {
 			return err
 		}
 	}
-	job.Status = core.StatusFailing
-	job.EndTime = util.TimeNow()
-	if err := s.putDone(job); err != nil {
-		return err
-	}
+	// job.Status = core.StatusFailing
+	// job.EndTime = util.TimeNow()
+	// if err := s.putDone(job); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
@@ -168,9 +165,6 @@ func (s *scheduler) putDone(job core.Job) error {
 		return err
 	}
 	s.running--
-	// if err := s.app.emitCapacityInfo(); err != nil {
-	// 	return err
-	// }
 	return nil
 }
 
