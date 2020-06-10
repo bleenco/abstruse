@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/server/options"
-	"github.com/jkuri/abstruse/internal/server/websocket"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -18,53 +18,20 @@ import (
 
 // worker represent gRPC worker client.
 type worker struct {
-	ID      string
+	id      string
 	mu      sync.Mutex
 	max     int32
 	running int32
 	addr    string
-	host    HostInfo
+	host    core.HostInfo
+	usage   []core.Usage
 	conn    *grpc.ClientConn
 	cli     pb.APIClient
-	ws      *websocket.App
-	usage   []Usage
 	logger  *zap.SugaredLogger
-	ready   bool
 	app     *App
 }
 
-// HostInfo holds host information about worker.
-type HostInfo struct {
-	ID                   string `json:"id"`
-	Addr                 string `json:"addr"`
-	Hostname             string `json:"hostname"`
-	Uptime               uint64 `json:"uptime"`
-	BootTime             uint64 `json:"boot_time"`
-	Procs                uint64 `json:"procs"`
-	Os                   string `json:"os"`
-	Platform             string `json:"platform"`
-	PlatformFamily       string `json:"platform_family"`
-	PlatformVersion      string `json:"platform_version"`
-	KernelVersion        string `json:"kernel_version"`
-	KernelArch           string `json:"kernel_arch"`
-	VirtualizationSystem string `json:"virtualization_system"`
-	VirtualizationRole   string `json:"virtualization_role"`
-	HostID               string `json:"host_id"`
-	MaxConcurrency       uint64 `json:"max_concurrency"`
-}
-
-// Usage represents worker usage stats.
-type Usage struct {
-	ID          string    `json:"id"`
-	Addr        string    `json:"addr"`
-	CPU         int32     `json:"cpu"`
-	Mem         int32     `json:"mem"`
-	JobsMax     int32     `json:"jobs_max"`
-	JobsRunning int32     `json:"jobs_running"`
-	Timestamp   time.Time `json:"timestamp"`
-}
-
-func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger *zap.SugaredLogger, app *App) (*worker, error) {
+func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger, app *App) (core.Worker, error) {
 	logger = logger.With(zap.String("worker", addr))
 	if opts.TLS.Cert == "" || opts.TLS.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
@@ -89,18 +56,21 @@ func newWorker(addr, id string, opts *options.Options, ws *websocket.App, logger
 	}
 	cli := pb.NewAPIClient(conn)
 
-	return &worker{
-		ID:     id,
+	return worker{
+		id:     id,
 		addr:   addr,
 		conn:   conn,
 		cli:    cli,
-		ws:     ws,
 		logger: logger,
 		app:    app,
 	}, nil
 }
 
-func (w *worker) run() error {
+func (w worker) ID() string {
+	return w.id
+}
+
+func (w worker) Run() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	defer w.conn.Close()
@@ -111,10 +81,9 @@ func (w *worker) run() error {
 	}
 	w.host = hostInfo(info)
 	w.max = int32(w.host.MaxConcurrency)
-	w.ready = true
 	w.logger.Infof("connected to worker %s %s", w.ID, w.addr)
 	w.EmitData()
-	w.app.scheduler.addWorker(w.ID)
+	// w.app.scheduler.addWorker(w.ID)
 
 	ch := make(chan error)
 
@@ -124,87 +93,40 @@ func (w *worker) run() error {
 		}
 	}()
 
-	go func() {
-		if err := w.Capacity(context.Background()); err != nil {
-			ch <- err
-		}
-	}()
-
 	err = <-ch
-	w.ready = false
 	w.logger.Infof("closed connection to worker %s %s", w.ID, w.addr)
 	return err
 }
 
-// GetAddr returns remote address.
-func (w *worker) GetAddr() string {
-	return w.addr
+func (w worker) StartJob(job core.Job) error {
+	return nil
 }
 
-// GetHost returns host info.
-func (w *worker) GetHost() HostInfo {
-	return w.host
-}
-
-// GetUsage returns worker usage.
-func (w *worker) GetUsage() []Usage {
-	return w.usage
-}
-
-// EmitData broadcast newly created worker via websocket.
-func (w *worker) EmitData() {
-	w.ws.Broadcast("/subs/workers_add", map[string]interface{}{
-		"id":    w.ID,
-		"addr":  w.GetAddr(),
-		"host":  w.GetHost(),
-		"usage": w.GetUsage(),
-	})
-}
-
-// EmitDeleted broadcast disconnected worker via websocket.
-func (w *worker) EmitDeleted() {
-	w.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
-		"id":   w.ID,
-		"addr": w.GetAddr(),
-	})
-}
-
-// EmitUsage broadcast workers usage info.
-func (w *worker) EmitUsage() {
-	if len(w.usage) < 1 {
-		return
-	}
-	usage := w.usage[len(w.usage)-1]
-	w.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
-		"id":           w.ID,
-		"addr":         w.addr,
-		"cpu":          usage.CPU,
-		"mem":          usage.Mem,
-		"jobs_max":     w.max,
-		"jobs_running": w.running,
-		"timestamp":    time.Now(),
-	})
+func (w worker) Capacity() int {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return int(w.max - w.running)
 }
 
 // Capacity gRPC
-func (w *worker) Capacity(ctx context.Context) error {
-	stream, err := w.cli.Capacity(ctx)
-	if err != nil {
-		return err
-	}
-	defer stream.CloseSend()
-	for {
-		data, err := stream.Recv()
-		if err != nil {
-			return err
-		}
-		w.mu.Lock()
-		w.max, w.running = int32(data.GetMax()), int32(data.GetRunning())
-		w.mu.Unlock()
-		w.app.scheduler.setSize(w.app.getCapacity())
-		w.EmitUsage()
-	}
-}
+// func (w *worker) Capacity(ctx context.Context) error {
+// 	stream, err := w.cli.Capacity(ctx)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer stream.CloseSend()
+// 	for {
+// 		data, err := stream.Recv()
+// 		if err != nil {
+// 			return err
+// 		}
+// 		w.mu.Lock()
+// 		w.max, w.running = int32(data.GetMax()), int32(data.GetRunning())
+// 		w.mu.Unlock()
+// 		w.app.scheduler.setSize(w.app.getCapacity())
+// 		w.EmitUsage()
+// 	}
+// }
 
 // HostInfo returns worker host info.
 func (w *worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
@@ -212,8 +134,8 @@ func (w *worker) HostInfo(ctx context.Context) (*pb.HostInfoReply, error) {
 	return info, err
 }
 
-func hostInfo(info *pb.HostInfoReply) HostInfo {
-	return HostInfo{
+func hostInfo(info *pb.HostInfoReply) core.HostInfo {
+	return core.HostInfo{
 		info.GetId(),
 		info.GetAddr(),
 		info.GetHostname(),
@@ -233,8 +155,25 @@ func hostInfo(info *pb.HostInfoReply) HostInfo {
 	}
 }
 
+// EmitUsage broadcast workers usage info.
+func (w worker) EmitUsage() {
+	if len(w.usage) < 1 {
+		return
+	}
+	usage := w.usage[len(w.usage)-1]
+	w.app.ws.Broadcast("/subs/workers_usage", map[string]interface{}{
+		"id":           w.ID,
+		"addr":         w.addr,
+		"cpu":          usage.CPU,
+		"mem":          usage.Mem,
+		"jobs_max":     w.max,
+		"jobs_running": w.running,
+		"timestamp":    time.Now(),
+	})
+}
+
 // UsageStats gRPC stream.
-func (w *worker) UsageStats(ctx context.Context) error {
+func (w worker) UsageStats(ctx context.Context) error {
 	stream, err := w.cli.UsageStats(ctx)
 	if err != nil {
 		return err
@@ -246,8 +185,8 @@ func (w *worker) UsageStats(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		usage := Usage{
-			ID:          w.ID,
+		usage := core.Usage{
+			ID:          w.id,
 			Addr:        w.addr,
 			CPU:         stats.GetCpu(),
 			Mem:         stats.GetMem(),
@@ -265,4 +204,37 @@ func (w *worker) UsageStats(ctx context.Context) error {
 		w.EmitUsage()
 		w.mu.Unlock()
 	}
+}
+
+// GetAddr returns remote address.
+func (w worker) GetAddr() string {
+	return w.addr
+}
+
+// GetHost returns host info.
+func (w worker) GetHost() core.HostInfo {
+	return w.host
+}
+
+// GetUsage returns worker usage.
+func (w worker) GetUsage() []core.Usage {
+	return w.usage
+}
+
+// EmitData broadcast newly created worker via websocket.
+func (w worker) EmitData() {
+	w.app.ws.Broadcast("/subs/workers_add", map[string]interface{}{
+		"id":    w.ID,
+		"addr":  w.GetAddr(),
+		"host":  w.GetHost(),
+		"usage": w.GetUsage(),
+	})
+}
+
+// EmitDeleted broadcast disconnected worker via websocket.
+func (w worker) EmitDeleted() {
+	w.app.ws.Broadcast("/subs/workers_delete", map[string]interface{}{
+		"id":   w.ID,
+		"addr": w.GetAddr(),
+	})
 }

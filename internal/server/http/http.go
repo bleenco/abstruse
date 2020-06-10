@@ -5,10 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/NYTimes/gziphandler"
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
-	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -42,7 +40,7 @@ func (s *Server) Start() error {
 
 	if s.opts.HTTP.Addr != "" {
 		s.httpServer.Addr = s.opts.HTTP.Addr
-		s.httpServer.Handler = gziphandler.GzipHandler(getHandler(s.router, s.logger))
+		s.httpServer.Handler = getHandler(s.router, s.logger)
 		s.logger.Infof("starting http server on http://%s", s.opts.HTTP.Addr)
 
 		go func() {
@@ -55,7 +53,7 @@ func (s *Server) Start() error {
 	if s.opts.HTTP.TLSAddr != "" {
 		go func() {
 			s.httpsServer.Addr = s.opts.HTTP.TLSAddr
-			s.httpsServer.Handler = gziphandler.GzipHandler(getHandler(s.router, s.tlslogger))
+			s.httpsServer.Handler = getHandler(s.router, s.tlslogger)
 			http2.ConfigureServer(s.httpsServer, nil)
 			s.tlslogger.Infof("starting https server on https://%s", s.opts.HTTP.TLSAddr)
 			if err := s.httpsServer.ListenAndServeTLS(s.opts.TLS.Cert, s.opts.TLS.Key); err != nil {
@@ -94,6 +92,3 @@ func getHandler(router *Router, logger *zap.SugaredLogger) http.Handler {
 		)
 	})
 }
-
-// ProviderSet export.
-var ProviderSet = wire.NewSet(NewServer, NewRouter)

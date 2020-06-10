@@ -3,8 +3,10 @@ package app
 import (
 	"sync"
 
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/server/db/repository"
 	"github.com/jkuri/abstruse/internal/server/options"
+	"github.com/jkuri/abstruse/internal/server/scheduler/pqueue"
 	"github.com/jkuri/abstruse/internal/server/websocket"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
@@ -15,11 +17,12 @@ import (
 type App struct {
 	mu        sync.RWMutex
 	opts      *options.Options
-	Workers   map[string]*worker
+	workers   map[string]core.Worker
 	client    *clientv3.Client
 	ws        *websocket.App
+	log       *zap.Logger
 	logger    *zap.SugaredLogger
-	scheduler *scheduler
+	scheduler core.Scheduler
 	errch     chan error
 
 	buildRepository repository.BuildRepository
@@ -28,15 +31,16 @@ type App struct {
 }
 
 // NewApp returns new instance of App.
-func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, logger *zap.Logger) (*App, error) {
+func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, log *zap.Logger) (*App, error) {
 	app := &App{
 		opts:            opts,
-		Workers:         make(map[string]*worker),
+		workers:         make(map[string]core.Worker),
 		ws:              ws,
 		buildRepository: br,
 		jobRepository:   jr,
 		repoRepository:  rr,
-		logger:          logger.With(zap.String("type", "app")).Sugar(),
+		log:             log,
+		logger:          log.With(zap.String("type", "app")).Sugar(),
 		errch:           make(chan error),
 	}
 
@@ -54,8 +58,8 @@ func (app *App) Start(client *clientv3.Client) error {
 	}()
 
 	go func() {
-		app.scheduler = newScheduler(app.client, app.logger.Desugar(), app)
-		if err := app.scheduler.run(); err != nil {
+		app.scheduler = pqueue.NewPriorityQueue(app.client, app.log)
+		if err := app.scheduler.Start(); err != nil {
 			app.errch <- err
 		}
 	}()
@@ -63,13 +67,9 @@ func (app *App) Start(client *clientv3.Client) error {
 	return <-app.errch
 }
 
-func (app *App) getCapacity() (int32, int32) {
-	var max, running int32
+// GetWorkers returns workers list.
+func (app *App) GetWorkers() map[string]core.Worker {
 	app.mu.Lock()
 	defer app.mu.Unlock()
-	for _, w := range app.Workers {
-		max += w.max
-		running += w.running
-	}
-	return max, running
+	return app.workers
 }

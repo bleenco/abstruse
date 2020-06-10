@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
-	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/db/model"
 	"github.com/jkuri/abstruse/internal/server/parser"
 	jsoniter "github.com/json-iterator/go"
@@ -93,7 +93,7 @@ func (app *App) StopBuild(buildID uint) (model.Build, error) {
 	wg.Add(len(build.Jobs))
 	for _, job := range build.Jobs {
 		go func(job *model.Job) {
-			if err := app.scheduler.stopJob(job.ID); err != nil {
+			if err := app.scheduler.Cancel(job.ID); err != nil {
 				app.logger.Errorf("error stopping job %d: %v", job.ID, err)
 			}
 			wg.Done()
@@ -129,7 +129,7 @@ func (app *App) RestartBuild(buildID uint) error {
 }
 
 func (app *App) scheduleJob(job *model.Job, provider model.Provider, commitSHA, repo string) error {
-	j := &shared.Job{
+	j := core.Job{
 		ID:            job.ID,
 		BuildID:       job.BuildID,
 		Commands:      job.Commands,
@@ -141,9 +141,9 @@ func (app *App) scheduleJob(job *model.Job, provider model.Provider, commitSHA, 
 		CommitSHA:     commitSHA,
 		RepoName:      repo,
 		Priority:      uint16(1000),
-		Status:        shared.StatusUnknown,
+		Status:        core.StatusUnknown,
 	}
-	app.scheduler.scheduleJob(j)
+	app.scheduler.Schedule(j)
 	return nil
 }
 

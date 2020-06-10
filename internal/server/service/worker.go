@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/server/app"
 	"go.uber.org/zap"
 )
@@ -18,10 +19,10 @@ type DefaultWorkerService struct {
 
 // WorkerData struct
 type WorkerData struct {
-	ID    string       `json:"id"`
-	Addr  string       `json:"addr"`
-	Host  app.HostInfo `json:"host"`
-	Usage []app.Usage  `json:"usage"`
+	ID    string        `json:"id"`
+	Addr  string        `json:"addr"`
+	Host  core.HostInfo `json:"host"`
+	Usage []core.Usage  `json:"usage"`
 }
 
 // NewWorkerService returns new intsance of worker service.
@@ -35,7 +36,7 @@ func NewWorkerService(logger *zap.Logger, app *app.App) WorkerService {
 // GetWorkers comment.
 func (s *DefaultWorkerService) GetWorkers() []WorkerData {
 	var data []WorkerData
-	for id, worker := range s.app.Workers {
+	for id, worker := range s.app.GetWorkers() {
 		data = append(data, WorkerData{id, worker.GetAddr(), worker.GetHost(), worker.GetUsage()})
 	}
 	return data
