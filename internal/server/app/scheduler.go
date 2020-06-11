@@ -26,8 +26,6 @@ type Scheduler struct {
 	client  *clientv3.Client
 	queue   *recipe.PriorityQueue
 	workers map[string]*Worker
-	wdelch  <-chan string
-	jobch   <-chan core.Job
 	pending map[uint]core.Job
 	logger  *zap.SugaredLogger
 	app     *App
@@ -49,9 +47,7 @@ func NewScheduler(client *clientv3.Client, app *App) Scheduler {
 }
 
 // Start starts the scheduler.
-func (s Scheduler) Start() error {
-	s.wdelch = s.watchWorkers()
-	s.jobch = s.dequeue()
+func (s *Scheduler) Start() error {
 	go s.watchDone()
 
 	for {
@@ -65,7 +61,7 @@ func (s Scheduler) Start() error {
 }
 
 // Schedule adds new job for execution in queue with priority.
-func (s Scheduler) Schedule(job core.Job) error {
+func (s *Scheduler) Schedule(job core.Job) error {
 	job.Status = core.StatusQueued
 	job.StartTime = nil
 	job.EndTime = nil
@@ -88,7 +84,7 @@ func (s Scheduler) Schedule(job core.Job) error {
 }
 
 // Pause pauses jobs in the queue waiting for execution.
-func (s Scheduler) Pause() error {
+func (s *Scheduler) Pause() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.paused = true
@@ -97,7 +93,7 @@ func (s Scheduler) Pause() error {
 
 // Resume unpauses scheduler and continues with jobs
 // waiting for execution.
-func (s Scheduler) Resume() error {
+func (s *Scheduler) Resume() error {
 	s.mu.Lock()
 	s.paused = false
 	s.mu.Unlock()
@@ -106,7 +102,7 @@ func (s Scheduler) Resume() error {
 }
 
 // Cancel stops job if pending or removes from queue.
-func (s Scheduler) Cancel(id uint) error {
+func (s *Scheduler) Cancel(id uint) error {
 	resp, err := s.client.Get(context.TODO(), shared.QueuePrefix, clientv3.WithPrefix())
 	if err != nil {
 		return err
@@ -133,6 +129,7 @@ func (s Scheduler) Cancel(id uint) error {
 	}
 	s.mu.Lock()
 	if job, ok := s.pending[id]; ok {
+		s.mu.Unlock()
 		s.logger.Debugf("stopping job %d...", id)
 		job.EndTime = util.TimeNow()
 		job.Status = core.StatusFailing
@@ -151,22 +148,23 @@ func (s Scheduler) Cancel(id uint) error {
 }
 
 // AddWorker adds worker to schedulers worker list.
-func (s Scheduler) AddWorker(w *Worker) {
+func (s *Scheduler) AddWorker(w *Worker) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.workers[w.id] = w
 	s.logger.Debugf("worker %s added to scheduler list", w.id)
+	s.next()
 }
 
 // DeleteWorker removes worker from schedulers worker list.
-func (s Scheduler) DeleteWorker(id string) {
+func (s *Scheduler) DeleteWorker(id string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	delete(s.workers, id)
 	s.logger.Debugf("worker %s deleted from scheduler list", id)
 }
 
-func (s Scheduler) process() error {
+func (s *Scheduler) process() error {
 	s.mu.Lock()
 	count := len(s.workers)
 	pause := s.paused
@@ -180,38 +178,42 @@ func (s Scheduler) process() error {
 	s.mu.Lock()
 	for _, w := range s.workers {
 		w.mu.Lock()
-		count := w.max - w.running
-		if count > c {
+		diff := w.max - w.running
+		if diff > c {
 			worker, c = w, count
 		}
 		w.mu.Unlock()
 	}
 	s.mu.Unlock()
-	if c == 0 {
+	if c == 0 || s.queueLen() == 0 {
 		return nil
 	}
 
-	select {
-	case job := <-s.jobch:
-		worker.mu.Lock()
-		worker.running++
-		worker.mu.Unlock()
-		worker.emitUsage()
-		job.WorkerID = worker.id
-		s.logger.Debugf("job %d enqueued, sending to worker %s...", job.ID, job.WorkerID)
-		if err := s.startJob(job); err != nil {
-			s.logger.Errorf("error starting job %d: %v", job.ID, err)
-		}
-	case wid := <-s.wdelch:
-		if wid == worker.id {
-			return nil
-		}
+	data, err := s.queue.Dequeue()
+	if err != nil {
+		s.logger.Errorf("error while dequeue: %v", err)
+		return err
+	}
+	job := core.Job{}
+	if err := jsoniter.UnmarshalFromString(data, &job); err != nil {
+		s.logger.Errorf("error while unmarshaling job: %v", err)
+		return err
+	}
+
+	worker.mu.Lock()
+	worker.running++
+	worker.mu.Unlock()
+	worker.emitUsage()
+	job.WorkerID = worker.id
+	s.logger.Debugf("job %d enqueued, sending to worker %s...", job.ID, job.WorkerID)
+	if err := s.startJob(job); err != nil {
+		s.logger.Errorf("error starting job %d: %v", job.ID, err)
 	}
 
 	return nil
 }
 
-func (s Scheduler) startJob(job core.Job) error {
+func (s *Scheduler) startJob(job core.Job) error {
 	data, err := jsoniter.MarshalToString(&job)
 	if err != nil {
 		return err
@@ -231,29 +233,7 @@ func (s Scheduler) startJob(job core.Job) error {
 	return nil
 }
 
-func (s Scheduler) dequeue() <-chan core.Job {
-	ch := make(chan core.Job)
-
-	go func() {
-		for {
-			data, err := s.queue.Dequeue()
-			if err != nil {
-				s.logger.Errorf("error while dequeue: %v", err)
-				return
-			}
-			job := core.Job{}
-			if err := jsoniter.UnmarshalFromString(data, &job); err != nil {
-				s.logger.Errorf("error while unmarshaling job: %v", err)
-				return
-			}
-			ch <- job
-		}
-	}()
-
-	return ch
-}
-
-func (s Scheduler) watchDone() {
+func (s *Scheduler) watchDone() {
 	resp, err := s.client.Get(context.Background(), shared.DonePrefix, clientv3.WithPrefix())
 	if err != nil {
 		s.logger.Errorf("%v", err)
@@ -282,9 +262,8 @@ func (s Scheduler) watchDone() {
 			for _, ev := range n.Events {
 				switch ev.Type {
 				case mvccpb.PUT:
-					key := string(ev.Kv.Key)
-					job := core.Job{}
-					if err := jsoniter.UnmarshalFromString(string(ev.Kv.Value), &job); err == nil {
+					key, val, job := string(ev.Kv.Key), string(ev.Kv.Value), core.Job{}
+					if err := jsoniter.UnmarshalFromString(val, &job); err == nil {
 						if _, err := s.client.Delete(context.Background(), key); err == nil {
 							if err := s.save(job); err == nil {
 								s.logger.Debugf("job %d done with status: %s", job.ID, job.GetStatus())
@@ -310,33 +289,22 @@ func (s Scheduler) watchDone() {
 	}()
 }
 
-func (s Scheduler) watchWorkers() <-chan string {
-	ch := make(chan string)
-
-	go func() {
-		prefix := path.Join(shared.ServicePrefix, shared.WorkerService)
-		rch := s.client.Watch(context.Background(), prefix, clientv3.WithPrefix())
-		for n := range rch {
-			for _, ev := range n.Events {
-				switch ev.Type {
-				case mvccpb.DELETE:
-					ch <- path.Base(string(ev.Kv.Key))
-				}
-			}
-		}
-	}()
-
-	return ch
+func (s *Scheduler) queueLen() int {
+	resp, err := s.client.Get(context.Background(), shared.QueuePrefix, clientv3.WithPrefix())
+	if err != nil {
+		s.logger.Errorf("%v", err)
+	}
+	return len(resp.Kvs)
 }
 
-func (s Scheduler) next() {
+func (s *Scheduler) next() {
 	select {
 	case s.ready <- struct{}{}:
 	default:
 	}
 }
 
-func (s Scheduler) save(job core.Job) error {
+func (s *Scheduler) save(job core.Job) error {
 	jobModel := &model.Job{
 		ID:        job.ID,
 		Status:    job.GetStatus(),
@@ -352,7 +320,7 @@ func (s Scheduler) save(job core.Job) error {
 	return s.app.updateBuildTime(job.BuildID)
 }
 
-func (s Scheduler) broadcastJobStatus(job core.Job) {
+func (s *Scheduler) broadcastJobStatus(job core.Job) {
 	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.BuildID))
 	event := map[string]interface{}{
 		"build_id": job.BuildID,

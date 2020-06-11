@@ -173,22 +173,22 @@ func (w *Worker) usageStats(ctx context.Context) error {
 func (w *Worker) hostInfo(ctx context.Context) (core.HostInfo, error) {
 	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
 	return core.HostInfo{
-		info.GetId(),
-		info.GetAddr(),
-		info.GetHostname(),
-		info.GetUptime(),
-		info.GetBootTime(),
-		info.GetProcs(),
-		info.GetOs(),
-		info.GetPlatform(),
-		info.GetPlatformFamily(),
-		info.GetPlatformVersion(),
-		info.GetKernelVersion(),
-		info.GetKernelArch(),
-		info.GetVirtualizationSystem(),
-		info.GetVirtualizationSystem(),
-		info.GetHostname(),
-		info.GetMaxConcurrency(),
+		ID:                   info.GetId(),
+		Addr:                 info.GetAddr(),
+		Hostname:             info.GetHostname(),
+		Uptime:               info.GetUptime(),
+		BootTime:             info.GetBootTime(),
+		Procs:                info.GetProcs(),
+		Os:                   info.GetOs(),
+		Platform:             info.GetPlatform(),
+		PlatformFamily:       info.GetPlatformFamily(),
+		PlatformVersion:      info.GetPlatformVersion(),
+		KernelVersion:        info.GetKernelVersion(),
+		KernelArch:           info.GetKernelArch(),
+		VirtualizationSystem: info.GetVirtualizationSystem(),
+		VirtualizationRole:   info.GetVirtualizationRole(),
+		HostID:               info.GetHostID(),
+		MaxConcurrency:       info.GetMaxConcurrency(),
 	}, err
 }
 
