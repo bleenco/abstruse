@@ -7,6 +7,8 @@ import { Build, generateBuildModel, Job, generateJobModel } from './build.model'
 import { map, filter } from 'rxjs/operators';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
+import { Repo } from 'src/app/repos/shared/repo.model';
+import { ReposService } from 'src/app/repos/shared/repos.service';
 
 const buildsSubEvent = '/subs/builds';
 const buildsSubJobEvent = '/subs/jobs/';
@@ -16,8 +18,17 @@ const buildsSubJobLogEvent = '/subs/logs/';
   providedIn: 'root'
 })
 export class BuildsService {
+  repo: Repo;
 
-  constructor(public http: HttpClient, public dataService: DataService) { }
+  constructor(public http: HttpClient, public dataService: DataService, public reposService: ReposService) { }
+
+  findRepo(repoid: number): void {
+    this.repo = null;
+    this.reposService.find(repoid)
+      .subscribe(repo => {
+        this.repo = repo;
+      });
+  }
 
   findBuilds(limit = 5, offset = 0): Observable<Build[]> {
     const url = `${getAPIURL()}/builds/all/${limit}/${offset}`;

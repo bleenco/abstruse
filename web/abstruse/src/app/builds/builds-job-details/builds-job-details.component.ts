@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./builds-job-details.component.sass']
 })
 export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
+  repoid: number;
   buildid: number;
   jobid: number;
   fetching: boolean;
@@ -19,14 +20,16 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
   sub: Subscription = new Subscription();
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private buildsService: BuildsService,
-    private dataService: DataService
+    public activatedRoute: ActivatedRoute,
+    public buildsService: BuildsService,
+    public dataService: DataService
   ) { }
 
   ngOnInit(): void {
+    this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
     this.buildid = Number(this.activatedRoute.snapshot.paramMap.get('buildid'));
     this.jobid = Number(this.activatedRoute.snapshot.paramMap.get('jobid'));
+    this.buildsService.findRepo(this.repoid);
     this.findJob();
     this.sub.add(this.buildsService.jobEvents().subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev)));
     this.sub.add(this.buildsService.jobLogEvents().subscribe((ev: SocketEvent) => this.updateJobLogFromEvent(ev)));

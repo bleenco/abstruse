@@ -12,19 +12,22 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./builds-details.component.sass']
 })
 export class BuildsDetailsComponent implements OnInit, OnDestroy {
+  repoid: number;
   buildid: number;
   fetching: boolean;
   build: Build;
   sub: Subscription = new Subscription();
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private buildsService: BuildsService,
-    private dataService: DataService
+    public activatedRoute: ActivatedRoute,
+    public buildsService: BuildsService,
+    public dataService: DataService
   ) { }
 
   ngOnInit(): void {
+    this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
     this.buildid = Number(this.activatedRoute.snapshot.paramMap.get('buildid'));
+    this.buildsService.findRepo(this.repoid);
     this.findAll();
     this.sub.add(this.buildsService.jobEvents().subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev)));
     this.buildsService.subscribeToJobEvents([this.buildid]);

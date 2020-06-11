@@ -1,12 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Repo } from 'src/app/repos/shared/repo.model';
 import { Build } from '../shared/build.model';
 import { ActivatedRoute } from '@angular/router';
-import { ReposService } from 'src/app/repos/shared/repos.service';
 import { BuildsService } from '../shared/builds.service';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { Subscription } from 'rxjs';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
+import { JSONResponse } from 'src/app/core/shared/shared.model';
 
 @Component({
   selector: 'app-builds-repo-history',
@@ -18,19 +17,21 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
   fetchingBuilds: boolean;
   fetchingMore: boolean;
   hideMoreButton: boolean;
+  trigger: boolean;
   builds: Build[] = [];
   limit = 5;
   offset = 0;
   sub: Subscription = new Subscription();
 
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private buildsService: BuildsService,
-    private dataService: DataService
+    public activatedRoute: ActivatedRoute,
+    public buildsService: BuildsService,
+    public dataService: DataService
   ) { }
 
   ngOnInit(): void {
     this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
+    this.buildsService.findRepo(this.repoid);
     this.findBuilds();
     this.initDataEvents();
   }
@@ -61,6 +62,19 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
       }, () => {
         this.fetchingBuilds = false;
         this.fetchingMore = false;
+      });
+  }
+
+  triggerBuild(): void {
+    this.trigger = true;
+    this.buildsService.triggerBuild(this.repoid)
+      .subscribe((resp: JSONResponse) => {
+        console.log(resp);
+      }, err => {
+        console.error(err);
+        this.trigger = false;
+      }, () => {
+        this.trigger = false;
       });
   }
 
