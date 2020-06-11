@@ -105,7 +105,9 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   changeTheme(): void {
     this.settings = this.lightEnabled ? 'light' : 'dark';
-    this.terminal.setOption('theme', this.settings === 'light' ? this.themeLight : this.theme);
+    setTimeout(() => {
+      this.terminal.setOption('theme', this.settings === 'light' ? this.themeLight : this.theme);
+    }, 200);
   }
 
   get settings(): 'dark' | 'light' {
