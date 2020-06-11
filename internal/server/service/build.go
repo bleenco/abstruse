@@ -76,5 +76,12 @@ func (s *DefaultBuildService) FindByRepoID(repoID uint, limit, offset int) ([]mo
 
 // FindJob finds job by id.
 func (s *DefaultBuildService) FindJob(id uint) (*model.Job, error) {
-	return s.jobRepo.Find(id)
+	job, err := s.jobRepo.Find(id)
+	if err != nil {
+		return job, err
+	}
+	if job.Status == "running" {
+		job.Log = s.app.GetCurrentJobLog(job.ID)
+	}
+	return job, nil
 }

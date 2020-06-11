@@ -218,13 +218,7 @@ func (s *Scheduler) startJob(job *core.Job) error {
 	if err != nil {
 		return err
 	}
-	go func(workerID string, jobID, buildID uint) {
-		if worker, ok := s.workers[workerID]; ok {
-			if err := worker.logOutput(context.Background(), jobID, buildID); err != nil {
-				s.logger.Errorf("error streaming logs for job %d: %v", jobID, err)
-			}
-		}
-	}(job.WorkerID, job.ID, job.BuildID)
+	go s.jobLogs(job.WorkerID, job.ID, job.BuildID)
 	_, err = s.app.client.Put(context.Background(), path.Join(shared.PendingPrefix, fmt.Sprintf("%d", job.ID)), data)
 	if err != nil {
 		return err
@@ -307,6 +301,14 @@ func (s *Scheduler) queueLen() int {
 		s.logger.Errorf("%v", err)
 	}
 	return len(resp.Kvs)
+}
+
+func (s *Scheduler) jobLogs(workerID string, jobID, buildID uint) {
+	if worker, ok := s.workers[workerID]; ok {
+		if err := worker.logOutput(context.Background(), jobID, buildID); err != nil {
+			s.logger.Errorf("error streaming logs for job %d: %v", jobID, err)
+		}
+	}
 }
 
 func (s *Scheduler) next() {

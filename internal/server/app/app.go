@@ -1,6 +1,7 @@
 package app
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/jkuri/abstruse/internal/server/db/repository"
@@ -70,4 +71,14 @@ func (app *App) GetWorkers() map[string]*Worker {
 	app.mu.Lock()
 	defer app.mu.Unlock()
 	return app.workers
+}
+
+// GetCurrentJobLog returns current log for job which is still running.
+func (app *App) GetCurrentJobLog(jobID uint) string {
+	app.scheduler.mu.Lock()
+	defer app.scheduler.mu.Unlock()
+	if job, ok := app.scheduler.pending[jobID]; ok {
+		return strings.Join(job.Log, "")
+	}
+	return ""
 }

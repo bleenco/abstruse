@@ -29,7 +29,9 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
     this.jobid = Number(this.activatedRoute.snapshot.paramMap.get('jobid'));
     this.findJob();
     this.sub.add(this.buildsService.jobEvents().subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev)));
+    this.sub.add(this.buildsService.jobLogEvents().subscribe((ev: SocketEvent) => this.updateJobLogFromEvent(ev)));
     this.buildsService.subscribeToJobEvents([this.buildid]);
+    this.buildsService.subscribeToJobLogEvents(this.jobid);
   }
 
   ngOnDestroy(): void {
@@ -49,8 +51,8 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
-  updateJobFromEvent(ev: SocketEvent): void {
-    if (!this.job || !ev.data || ev.data.id !== this.jobid) {
+  private updateJobFromEvent(ev: SocketEvent): void {
+    if (!this.job || !ev.data || ev.data.job_id !== this.jobid) {
       return;
     }
 
@@ -63,8 +65,13 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
     if (ev.data.status) {
       this.job.status = ev.data.status;
     }
-    if (ev.data.log) {
-      this.job.log = ev.data.log;
+  }
+
+  private updateJobLogFromEvent(ev: SocketEvent): void {
+    if (!this.job || !ev.data || ev.data.id !== this.jobid) {
+      return;
     }
+
+    this.job.log = ev.data.log;
   }
 }

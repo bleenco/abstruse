@@ -193,6 +193,10 @@ func (w *Worker) logOutput(ctx context.Context, jobID, buildID uint) error {
 			j.Log = append(j.Log, log)
 		}
 		w.app.scheduler.mu.Unlock()
+		w.app.ws.Broadcast(fmt.Sprintf("/subs/logs/%d", id), map[string]interface{}{
+			"id":  id,
+			"log": log,
+		})
 	}
 }
 

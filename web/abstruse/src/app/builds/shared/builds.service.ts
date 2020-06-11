@@ -10,6 +10,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
 
 const buildsSubEvent = '/subs/builds';
 const buildsSubJobEvent = '/subs/jobs/';
+const buildsSubJobLogEvent = '/subs/logs/';
 
 @Injectable({
   providedIn: 'root'
@@ -91,11 +92,20 @@ export class BuildsService {
       .pipe(filter(ev => ev.type.startsWith(buildsSubJobEvent)));
   }
 
+  jobLogEvents(): Observable<SocketEvent> {
+    return this.dataService.socketOutput
+      .pipe(filter(ev => ev.type.startsWith(buildsSubJobLogEvent)));
+  }
+
   subscribeToBuildsEvents(): void {
     this.dataService.subscribeToEvent(buildsSubEvent);
   }
 
   subscribeToJobEvents(builds: number[]): void {
     builds.forEach(buildID => this.dataService.subscribeToEvent(`${buildsSubJobEvent}${buildID}`));
+  }
+
+  subscribeToJobLogEvents(jobID: number): void {
+    this.dataService.subscribeToEvent(`${buildsSubJobLogEvent}${jobID}`);
   }
 }
