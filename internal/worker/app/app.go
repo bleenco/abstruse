@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/google/wire"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"github.com/jkuri/abstruse/internal/worker/id"
 	"github.com/jkuri/abstruse/internal/worker/options"
@@ -19,7 +18,6 @@ type App struct {
 	client    *clientv3.Client
 	logger    *zap.Logger
 	ready     chan struct{}
-	errch     chan error
 }
 
 // NewApp returns new instance of an App.
@@ -33,7 +31,6 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 		addr:   util.GetListenAddress(opts.GRPC.ListenAddr),
 		id:     id,
 		logger: logger,
-		errch:  make(chan error),
 		ready:  make(chan struct{}, 1),
 	}
 	app.api = NewAPIServer(app)
@@ -47,17 +44,17 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 
 // Start starts worker application.
 func (app *App) Start() error {
-	app.logger.Sugar().Infof("starting worker...")
+	errch := make(chan error)
 
 	go func() {
 		if err := app.api.Start(); err != nil {
-			app.errch <- err
+			errch <- err
 		}
 	}()
 
 	go func() {
 		if err := app.connect(); err != nil {
-			app.errch <- err
+			errch <- err
 		}
 	}()
 
@@ -65,13 +62,10 @@ func (app *App) Start() error {
 		for {
 			<-app.ready
 			if err := app.scheduler.run(); err != nil {
-				app.errch <- err
+				errch <- err
 			}
 		}
 	}()
 
-	return <-app.errch
+	return <-errch
 }
-
-// ProviderSet exports for wire dependency injection.
-var ProviderSet = wire.NewSet(NewApp)

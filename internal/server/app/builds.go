@@ -71,7 +71,7 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 		if err != nil {
 			return err
 		}
-		if err := app.scheduleJob(job, repo.Provider, commit.Sha, repo.FullName); err != nil {
+		if err := app.scheduleJob(job, repo, commit.Sha); err != nil {
 			return err
 		}
 	}
@@ -97,7 +97,7 @@ func (app *App) RestartJob(jobID uint) error {
 	if err != nil {
 		return err
 	}
-	return app.scheduleJob(job, job.Build.Repository.Provider, job.Build.Commit, job.Build.Repository.FullName)
+	return app.scheduleJob(job, job.Build.Repository, job.Build.Commit)
 }
 
 // StopBuild stops the build and related jobs.
@@ -135,7 +135,7 @@ func (app *App) RestartBuild(buildID uint) error {
 	wg.Add(len(build.Jobs))
 	for _, job := range build.Jobs {
 		go func(job *model.Job) {
-			if err := app.scheduleJob(job, build.Repository.Provider, build.Commit, build.Repository.FullName); err != nil {
+			if err := app.scheduleJob(job, build.Repository, build.Commit); err != nil {
 				app.logger.Debugf("error scheduling job %d: %v", job.ID, err)
 			}
 			wg.Done()
@@ -145,18 +145,19 @@ func (app *App) RestartBuild(buildID uint) error {
 	return nil
 }
 
-func (app *App) scheduleJob(job *model.Job, provider model.Provider, commitSHA, repo string) error {
+func (app *App) scheduleJob(job *model.Job, repo *model.Repository, commitSHA string) error {
 	j := &core.Job{
 		ID:            job.ID,
 		BuildID:       job.BuildID,
 		Commands:      job.Commands,
 		Image:         job.Image,
 		Env:           job.Env,
-		ProviderName:  provider.Name,
-		ProviderURL:   provider.URL,
-		ProviderToken: provider.AccessToken,
+		URL:           repo.URL,
+		ProviderName:  repo.Provider.Name,
+		ProviderURL:   repo.Provider.URL,
+		ProviderToken: repo.Provider.AccessToken,
 		CommitSHA:     commitSHA,
-		RepoName:      repo,
+		RepoName:      repo.FullName,
 		Priority:      uint16(1000),
 		Status:        core.StatusUnknown,
 	}

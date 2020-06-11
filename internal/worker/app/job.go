@@ -1,17 +1,14 @@
 package app
 
 import (
-	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/jkuri/abstruse/internal/core"
 	"github.com/jkuri/abstruse/internal/pkg/fs"
-	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/worker/docker"
+	"github.com/jkuri/abstruse/internal/worker/git"
 	pb "github.com/jkuri/abstruse/proto"
 	jsoniter "github.com/json-iterator/go"
 )
@@ -36,19 +33,8 @@ func (app *App) startJob(job core.Job) error {
 		panic(err)
 	}
 	defer os.RemoveAll(dir)
-	scm, err := scm.NewSCM(context.Background(), job.ProviderName, job.ProviderURL, job.ProviderToken)
-	if err != nil {
+	if err := git.CloneRepository(job.URL, job.CommitSHA, job.ProviderToken, dir); err != nil {
 		panic(err)
-	}
-	contents, err := scm.ListContent(job.RepoName, job.CommitSHA, "/")
-	if err != nil {
-		panic(err)
-	}
-	for _, content := range contents {
-		filePath := path.Clean(path.Join(dir, content.Path))
-		if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
-			panic(err)
-		}
 	}
 
 	go func(id, buildID uint) {

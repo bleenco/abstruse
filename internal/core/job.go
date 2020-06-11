@@ -26,6 +26,7 @@ type Job struct {
 	Commands      string     `json:"commands"`
 	Image         string     `json:"image"`
 	Env           string     `json:"env"`
+	URL           string     `json:"url"`
 	ProviderName  string     `json:"provider_name"`
 	ProviderURL   string     `json:"provider_url"`
 	ProviderToken string     `json:"provider_token"`

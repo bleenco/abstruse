@@ -56,12 +56,14 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 
 	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env)
 	if err != nil {
+		logch <- []byte(err.Error())
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
 			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env)
 			if err != nil {
+				logch <- []byte(err.Error())
 				return err
 			}
 		}
@@ -74,6 +76,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 	for _, command := range commands {
 		if !isContainerRunning(cli, containerID) {
 			if err := startContainer(cli, containerID); err != nil {
+				logch <- []byte(err.Error())
 				return err
 			}
 		}
@@ -82,6 +85,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		command = append([]string{"/bin/abstruse-pty"}, command...)
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
+			logch <- []byte(err.Error())
 			return err
 		}
 		for {
@@ -95,6 +99,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		}
 		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
+			logch <- []byte(err.Error())
 			return err
 		}
 		exitCode = inspect.ExitCode

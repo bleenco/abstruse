@@ -15,6 +15,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.9.0
 	github.com/felixge/httpsnoop v1.0.1
+	github.com/go-git/go-git/v5 v5.1.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
 	github.com/gobwas/pool v0.2.0 // indirect
