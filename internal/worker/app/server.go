@@ -3,14 +3,12 @@ package app
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
-	"io"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/jkuri/abstruse/internal/worker/docker"
 	"github.com/jkuri/abstruse/internal/worker/stats"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
@@ -22,12 +20,12 @@ import (
 type APIServer struct {
 	id       string
 	addr     string
+	mu       sync.Mutex
 	listener net.Listener
 	server   *grpc.Server
 	app      *App
 	logger   *zap.SugaredLogger
-
-	capacity pb.API_CapacityServer
+	logs     map[uint]pb.API_JobLogServer
 }
 
 // NewAPIServer returns new instance of APIServer.
@@ -36,6 +34,7 @@ func NewAPIServer(app *App) *APIServer {
 		addr:   app.addr,
 		app:    app,
 		logger: app.logger.With(zap.String("type", "api")).Sugar(),
+		logs:   make(map[uint]pb.API_JobLogServer),
 	}
 }
 
@@ -67,10 +66,10 @@ func (s *APIServer) Stop() {
 	s.server.Stop()
 }
 
-// UsageStats returns stream of health data.
-func (s *APIServer) UsageStats(stream pb.API_UsageStatsServer) error {
+// Usage returns stream of health data.
+func (s *APIServer) Usage(stream pb.API_UsageServer) error {
 	errch := make(chan error)
-	send := func(stream pb.API_UsageStatsServer) error {
+	send := func(stream pb.API_UsageServer) error {
 		cpu, mem := stats.GetUsageStats()
 		if err := stream.Send(&pb.UsageStatsReply{
 			Cpu:       cpu,
@@ -124,116 +123,15 @@ func (s *APIServer) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfo
 	}, nil
 }
 
-// Capacity returns stream of current worker capacity info.
-func (s *APIServer) Capacity(stream pb.API_CapacityServer) error {
-	s.capacity = stream
+// JobLog returns stream of job container output data.
+func (s *APIServer) JobLog(in *pb.Job, stream pb.API_JobLogServer) error {
+	s.mu.Lock()
+	id := uint(in.GetId())
+	s.logs[id] = stream
+	s.mu.Unlock()
 
-	for {
-		_, err := stream.Recv()
-		if err == io.EOF {
-			return nil
-		}
-		if err != nil {
-			return err
-		}
+	select {
+	case <-stream.Context().Done():
+		return stream.Context().Err()
 	}
-}
-
-// JobProcess gRPC method.
-func (s *APIServer) JobProcess(in *pb.JobTask, stream pb.API_JobProcessServer) error {
-	// errch := make(chan error)
-
-	// s.app.scheduler.add()
-	// defer s.app.scheduler.done()
-
-	// jobStatus := &pb.JobStatus{
-	// 	Id:   in.GetId(),
-	// 	Code: pb.JobStatus_Running,
-	// }
-	// if err := stream.Send(jobStatus); err != nil {
-	// 	errch <- err
-	// }
-
-	// go func() {
-	// 	logch := make(chan []byte)
-	// 	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
-	// 	image := in.GetImage()
-	// 	env := in.GetEnv()
-	// 	var commands [][]string
-	// 	for _, c := range in.GetCommands() {
-	// 		commands = append(commands, strings.Split(c, " "))
-	// 	}
-
-	// 	go func() {
-	// 		for log := range logch {
-	// 			jobStatus := &pb.JobStatus{
-	// 				Id:      in.GetId(),
-	// 				Content: log,
-	// 				Code:    pb.JobStatus_Streaming,
-	// 			}
-	// 			if err := stream.Send(jobStatus); err != nil {
-	// 				if err == io.EOF {
-	// 					errch <- nil
-	// 				} else {
-	// 					errch <- err
-	// 				}
-	// 			}
-	// 		}
-	// 	}()
-
-	// 	// TODO: separate func
-	// 	dir, err := ioutil.TempDir("/tmp", "abstruse-build")
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	defer os.RemoveAll(dir)
-	// 	scm, err := scm.NewSCM(context.Background(), in.GetProvider(), in.GetUrl(), in.GetCredentials())
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	contents, err := scm.ListContent(in.GetRepo(), in.GetCommitSHA(), "/")
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	for _, content := range contents {
-	// 		filePath := path.Join(dir, content.Path)
-	// 		if err := ioutil.WriteFile(filePath, content.Data, 0644); err != nil {
-	// 			panic(err)
-	// 		}
-	// 	}
-
-	// 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
-	// 		jobStatus := &pb.JobStatus{
-	// 			Id:   in.GetId(),
-	// 			Code: pb.JobStatus_Failing,
-	// 		}
-	// 		if serr := stream.Send(jobStatus); serr != nil && serr != io.EOF {
-	// 			errch <- serr
-	// 		} else {
-	// 			errch <- err
-	// 		}
-	// 		s.logger.Errorf("%v", err)
-	// 	} else {
-	// 		jobStatus := &pb.JobStatus{
-	// 			Id:   in.GetId(),
-	// 			Code: pb.JobStatus_Passing,
-	// 		}
-	// 		if err := stream.Send(jobStatus); err != nil && err != io.EOF {
-	// 			errch <- err
-	// 		} else {
-	// 			errch <- nil
-	// 		}
-	// 	}
-	// }()
-
-	// return <-errch
-	return nil
-}
-
-// StopJobProcess gRPC method.
-func (s *APIServer) StopJobProcess(ctx context.Context, in *pb.JobTask) (*empty.Empty, error) {
-	name := fmt.Sprintf("abstruse-job-%d", in.GetId())
-	s.logger.Debugf("stopping job %d...", in.GetId())
-	err := docker.StopContainer(name)
-	return &empty.Empty{}, err
 }

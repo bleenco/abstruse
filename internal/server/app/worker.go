@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"sync"
 	"time"
 
@@ -135,7 +136,7 @@ func (w *Worker) Usage() []core.Usage {
 
 // usageStats gRPC stream.
 func (w *Worker) usageStats(ctx context.Context) error {
-	stream, err := w.cli.UsageStats(ctx)
+	stream, err := w.cli.Usage(ctx)
 	if err != nil {
 		return err
 	}
@@ -166,6 +167,32 @@ func (w *Worker) usageStats(ctx context.Context) error {
 		w.emitUsage()
 		w.mu.Unlock()
 		w.app.workers[w.id] = w
+	}
+}
+
+// logOutput gRPC stream.
+func (w *Worker) logOutput(ctx context.Context, jobID, buildID uint) error {
+	job := &pb.Job{Id: uint64(jobID), BuildId: uint64(buildID)}
+	stream, err := w.cli.JobLog(ctx, job)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+
+	for {
+		output, err := stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return nil
+			}
+			return err
+		}
+		id, log := uint(output.GetId()), string(output.GetContent())
+		w.app.scheduler.mu.Lock()
+		if j, ok := w.app.scheduler.pending[id]; ok {
+			j.Log = append(j.Log, log)
+		}
+		w.app.scheduler.mu.Unlock()
 	}
 }
 

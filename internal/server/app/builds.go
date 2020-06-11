@@ -129,7 +129,7 @@ func (app *App) RestartBuild(buildID uint) error {
 }
 
 func (app *App) scheduleJob(job *model.Job, provider model.Provider, commitSHA, repo string) error {
-	j := core.Job{
+	j := &core.Job{
 		ID:            job.ID,
 		BuildID:       job.BuildID,
 		Commands:      job.Commands,

@@ -12,6 +12,7 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/fs"
 	"github.com/jkuri/abstruse/internal/pkg/scm"
 	"github.com/jkuri/abstruse/internal/worker/docker"
+	pb "github.com/jkuri/abstruse/proto"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -50,11 +51,16 @@ func (app *App) startJob(job core.Job) error {
 		}
 	}
 
-	go func() {
+	go func(id, buildID uint) {
 		for output := range logch {
-			fmt.Printf("%s\n", string(output))
+			if stream, ok := app.api.logs[id]; ok {
+				log := &pb.JobOutput{Id: uint64(id), BuildId: uint64(buildID), Content: output}
+				if err := stream.Send(log); err != nil {
+					return
+				}
+			}
 		}
-	}()
+	}(job.ID, job.BuildID)
 
 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
 		app.logger.Error(err.Error())
