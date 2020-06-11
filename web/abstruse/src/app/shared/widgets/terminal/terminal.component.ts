@@ -11,6 +11,8 @@ import { FitAddon } from 'xterm-addon-fit';
 export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   @Input() data: string;
 
+  terminalSettings = 'abstruse-terminal-settings';
+  lightEnabled: boolean;
   terminal: Terminal;
   fitAddon: FitAddon;
   themeLight: ITheme = {
@@ -19,7 +21,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     black: '#050505',
     red: '#b0263f',
     green: '#4b862c',
-    yellow: '#a18912',
+    yellow: '#d69e2e',
     blue: '#3b62d9',
     magenta: '#a431c4',
     cyan: '#178262',
@@ -73,11 +75,19 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
+    this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal'));
     this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
     this.terminal.setOption('fontSize', 12);
-    this.terminal.setOption('theme', this.theme);
+    if (this.settings === 'dark') {
+      this.terminal.setOption('theme', this.theme);
+    } else {
+      this.terminal.setOption('theme', this.themeLight);
+      this.lightEnabled = true;
+    }
     this.fitAddon.fit();
+    this.terminal.onData(() => {
+      this.fitAddon.fit();
+    });
   }
 
   ngOnChanges() {
@@ -91,5 +101,21 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy() {
     this.data = null;
     this.terminal.dispose();
+  }
+
+  changeTheme(): void {
+    this.settings = this.lightEnabled ? 'light' : 'dark';
+    this.terminal.setOption('theme', this.settings === 'light' ? this.themeLight : this.theme);
+  }
+
+  get settings(): 'dark' | 'light' {
+    if (!localStorage.getItem(this.terminalSettings)) {
+      localStorage.setItem(this.terminalSettings, 'dark');
+    }
+    return localStorage.getItem(this.terminalSettings) as 'dark' | 'light';
+  }
+
+  set settings(value: 'dark' | 'light') {
+    localStorage.setItem(this.terminalSettings, value);
   }
 }

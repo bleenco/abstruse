@@ -20,6 +20,7 @@ import { SpinnerComponent } from './widgets/spinner/spinner.component';
 import { TerminalComponent } from './widgets/terminal/terminal.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
 import { TooltipDirective } from './directives/tooltip.directive';
+import { ToggleComponent } from './widgets/toggle/toggle.component';
 
 @NgModule({
   imports: [
@@ -37,7 +38,8 @@ import { TooltipDirective } from './directives/tooltip.directive';
     SpinnerComponent,
     TerminalComponent,
     StopPropagationDirective,
-    TooltipDirective
+    TooltipDirective,
+    ToggleComponent
   ],
   exports: [
     CommonModule,
@@ -52,7 +54,8 @@ import { TooltipDirective } from './directives/tooltip.directive';
     SpinnerComponent,
     TerminalComponent,
     StopPropagationDirective,
-    TooltipDirective
+    TooltipDirective,
+    ToggleComponent
   ]
 })
 export class SharedModule {
