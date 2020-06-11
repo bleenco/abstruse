@@ -17,7 +17,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   fitAddon: FitAddon;
   themeLight: ITheme = {
     foreground: '#615f51',
-    background: '#fff',
+    background: '#fcfcfc',
     black: '#050505',
     red: '#b0263f',
     green: '#4b862c',
