@@ -94,6 +94,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     if (!this.data || !this.terminal) {
       return;
     }
+    if (this.data === '__CLEAR__') {
+      this.terminal.clear();
+      return;
+    }
 
     this.terminal.write(this.data);
   }

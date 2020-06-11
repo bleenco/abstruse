@@ -11,6 +11,8 @@ type BuildService interface {
 	TriggerBuild(repoID, userID uint) bool
 	StopBuild(id uint) bool
 	RestartBuild(id uint) bool
+	StopJob(id uint) bool
+	RestartJob(id uint) bool
 	Find(id uint) (model.Build, error)
 	FindAll(id uint) (model.Build, error)
 	FindBuilds(limit, offset int) ([]model.Build, error)
@@ -49,6 +51,22 @@ func (s *DefaultBuildService) StopBuild(id uint) bool {
 // RestartBuild restarts the build.
 func (s *DefaultBuildService) RestartBuild(id uint) bool {
 	if err := s.app.RestartBuild(id); err != nil {
+		return false
+	}
+	return true
+}
+
+// StopJob stops the job if running.
+func (s *DefaultBuildService) StopJob(id uint) bool {
+	if err := s.app.StopJob(id); err != nil {
+		return false
+	}
+	return true
+}
+
+// RestartJob restart the job.
+func (s *DefaultBuildService) RestartJob(id uint) bool {
+	if err := s.app.RestartJob(id); err != nil {
 		return false
 	}
 	return true

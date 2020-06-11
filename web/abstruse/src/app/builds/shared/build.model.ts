@@ -54,7 +54,7 @@ export class Build {
     return format(this.createdAt, 'Do MMMM YYYY [at] HH:mm');
   }
 
-  private getBuildStatus(): string {
+  getBuildStatus(): string {
     if (this.jobs.find(job => job.status === 'running')) {
       return 'running';
     }

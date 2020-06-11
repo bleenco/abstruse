@@ -48,7 +48,7 @@ func (c *BuildController) TriggerBuild(resp http.ResponseWriter, req *http.Reque
 	JSONResponse(resp, http.StatusOK, Response{Data: c.service.TriggerBuild(uint(repoID), uint(userID))})
 }
 
-// StopBuild stops the build and related jobs => POST /api/builds/stop/:id
+// StopBuild stops the build and related jobs => POST /api/builds/stop
 func (c *BuildController) StopBuild(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	type stopBuildForm struct {
 		BuildID uint `json:"build_id"`
@@ -62,7 +62,7 @@ func (c *BuildController) StopBuild(resp http.ResponseWriter, req *http.Request,
 	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.StopBuild(uint(form.BuildID))})
 }
 
-// RestartBuild restarts build.
+// RestartBuild restarts build => POST /api/builds/restart
 func (c *BuildController) RestartBuild(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
 	type restartBuildForm struct {
 		BuildID uint `json:"build_id"`
@@ -74,6 +74,34 @@ func (c *BuildController) RestartBuild(resp http.ResponseWriter, req *http.Reque
 	}
 	defer req.Body.Close()
 	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.RestartBuild(uint(form.BuildID))})
+}
+
+// StopJob stops the job or unqueue if in queue => POST /api/builds/job/stop
+func (c *BuildController) StopJob(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	type stopJobForm struct {
+		JobID uint `json:"job_id"`
+	}
+	var form stopJobForm
+	if err := jsoniter.NewDecoder(req.Body).Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.StopJob(uint(form.JobID))})
+}
+
+// RestartJob stops the job or unqueue if in queue => POST /api/builds/job/restart
+func (c *BuildController) RestartJob(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	type restartJobForm struct {
+		JobID uint `json:"job_id"`
+	}
+	var form restartJobForm
+	if err := jsoniter.NewDecoder(req.Body).Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	JSONResponse(resp, http.StatusOK, BoolResponse{c.service.RestartJob(uint(form.JobID))})
 }
 
 // Find handler => GET /api/builds/:id

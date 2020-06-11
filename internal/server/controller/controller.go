@@ -28,6 +28,8 @@ func CreateInitControllersFn(
 		r.POST("/api/builds/stop", mc.AuthorizationMiddleware(bc.StopBuild))
 		r.POST("/api/builds/restart", mc.AuthorizationMiddleware(bc.RestartBuild))
 		r.GET("/api/builds/jobs/:id", mc.AuthorizationMiddleware(bc.FindJob))
+		r.POST("/api/builds/job/stop", mc.AuthorizationMiddleware(bc.StopJob))
+		r.POST("/api/builds/job/restart", mc.AuthorizationMiddleware(bc.RestartJob))
 
 		r.GET("/api/providers", mc.AuthorizationMiddleware(pc.List))
 		r.PUT("/api/providers", mc.AuthorizationMiddleware(pc.Create))

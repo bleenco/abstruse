@@ -35,12 +35,12 @@
       <span class="data-text justify-center">{{ job?.runningTime | async }}</span>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
-      <button type="button" class="button is-small" [disabled]="job?.processing">
+      <button type="button" class="button is-small" [disabled]="processing" (click)="restartJob()">
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
       <button type="button" class="button is-small"
-        [disabled]="job?.status != 'running' || job?.status != 'queued' || job?.processing">
+        [disabled]="job?.status != 'running' || job?.status != 'queued' || processing" (click)="stopJob()">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

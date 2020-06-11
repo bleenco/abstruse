@@ -18,11 +18,12 @@
         </h2>
       </div>
       <div class="main-heading-right">
-        <button type="button" class="button">
+        <button type="button" class="button" [disabled]="processing" (click)="restartJob()">
           <i class="fas fa-sync-alt"></i>
           <span>Restart Job</span>
         </button>
-        <button type="button" class="button">
+        <button type="button" class="button"
+          [disabled]="job?.status != 'running' || job?.status != 'queued' || processing" (click)="stopJob()">
           <i class="fas fa-hand-paper"></i>
           <span>Stop Job</span>
         </button>

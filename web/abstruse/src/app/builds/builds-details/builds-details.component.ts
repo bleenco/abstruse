@@ -15,6 +15,7 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
   repoid: number;
   buildid: number;
   fetching: boolean;
+  processing: boolean;
   build: Build;
   sub: Subscription = new Subscription();
 
@@ -49,7 +50,33 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
       });
   }
 
-  updateJobFromEvent(ev: SocketEvent): void {
+  restartBuild(): void {
+    this.processing = true;
+    this.buildsService.restartBuild(this.buildid)
+      .subscribe(resp => {
+        console.log(resp);
+      }, err => {
+        this.processing = false;
+        console.error(err);
+      }, () => {
+        this.processing = false;
+      });
+  }
+
+  stopBuild(): void {
+    this.processing = true;
+    this.buildsService.stopBuild(this.buildid)
+      .subscribe(resp => {
+        console.log(resp);
+      }, err => {
+        this.processing = false;
+        console.error(err);
+      }, () => {
+        this.processing = false;
+      });
+  }
+
+  private updateJobFromEvent(ev: SocketEvent): void {
     if (!this.build || this.build.id !== ev.data.build_id) {
       return;
     }

@@ -83,6 +83,23 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 	return nil
 }
 
+// StopJob stops the job with given id.
+func (app *App) StopJob(jobID uint) error {
+	return app.scheduler.Cancel(jobID)
+}
+
+// RestartJob stops or unqueue the job if running and schedule it again.
+func (app *App) RestartJob(jobID uint) error {
+	if err := app.StopJob(jobID); err != nil {
+		return err
+	}
+	job, err := app.jobRepository.Find(jobID)
+	if err != nil {
+		return err
+	}
+	return app.scheduleJob(job, job.Build.Repository.Provider, job.Build.Commit, job.Build.Repository.FullName)
+}
+
 // StopBuild stops the build and related jobs.
 func (app *App) StopBuild(buildID uint) (model.Build, error) {
 	build, err := app.buildRepository.FindAll(buildID)

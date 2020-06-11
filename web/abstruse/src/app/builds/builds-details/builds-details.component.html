@@ -14,11 +14,12 @@
         </h2>
       </div>
       <div class="main-heading-right">
-        <button type="button" class="button">
+        <button type="button" class="button" [disabled]="processing" (click)="restartBuild()">
           <i class="fas fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button">
+        <button type="button" class="button" [disabled]="processing || build?.getBuildStatus() !== 'running'"
+          (click)="stopBuild()">
           <i class="fas fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>
