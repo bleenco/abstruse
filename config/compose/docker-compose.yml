@@ -39,8 +39,8 @@ services:
     restart: always
     volumes:
       - "./data/abstruse-worker:/abstruse-worker"
-      - "./data/abstruse-worker/tmp:/tmp"
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "/tmp:/tmp"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       - ABSTRUSE_ETCD_ADDR=172.100.0.20:2379
       - ABSTRUSE_ETCD_USERNAME=abstruse
