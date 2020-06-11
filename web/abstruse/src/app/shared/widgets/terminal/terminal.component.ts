@@ -40,22 +40,22 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   };
   theme: ITheme = {
     foreground: 'hsl(220, 14%, 71%)',
-    background: '#24292e',
+    background: '#282c34',
     black: '#000',
-    red: 'hsl(355, 65%, 65%)',
-    green: '#32cd56',
-    yellow: '#ffea7f',
-    blue: '#79b8ff',
-    magenta: 'hsl(286, 60%, 67%)',
-    cyan: 'hsl(187, 47%, 55%)',
+    red: '#be5046',
+    green: '#98c379',
+    yellow: '#e6c07b',
+    blue: '#61aeee',
+    magenta: '#c678dd',
+    cyan: '#56b6c2',
     white: '#ffffff',
     brightBlack: '#666666',
-    brightRed: 'hsl(5, 48%, 51%)',
-    brightGreen: '#32cd56',
-    brightYellow: '#ffea7f',
-    brightBlue: '#79b8ff',
-    brightMagenta: 'hsl(286, 60%, 67%)',
-    brightCyan: 'hsl(187, 47%, 55%)',
+    brightRed: '#e06c75',
+    brightGreen: '#98c379',
+    brightYellow: '#e6c07b',
+    brightBlue: '#61aeee',
+    brightMagenta: '#c678dd',
+    brightCyan: '#56b6c2',
     brightWhite: '#ffffff',
     cursor: 'rgba(0, 0, 0, 0)',
     cursorAccent: 'rgba(0, 0, 0, 0)',
@@ -68,7 +68,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       disableStdin: true,
       scrollback: 10000,
       drawBoldTextInBrightColors: true,
-      fontWeightBold: '700'
+      fontWeightBold: 'bold'
     });
     this.fitAddon = new FitAddon();
     this.terminal.loadAddon(this.fitAddon);
@@ -76,7 +76,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal'));
-    this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
+    this.terminal.setOption('fontFamily', 'Monaco, Menlo, Consolas, "Liberation Mono", "Courier New", monospace');
     this.terminal.setOption('fontSize', 12);
     if (this.settings === 'dark') {
       this.terminal.setOption('theme', this.theme);
