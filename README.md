@@ -14,6 +14,7 @@ For a quick preview you can run:
 
 ```sh
 git clone https://github.com/jkuri/abstruse2
+cd abstruse2
 make compose
 ```
 
