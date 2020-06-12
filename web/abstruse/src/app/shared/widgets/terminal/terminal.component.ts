@@ -78,12 +78,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal'));
     this.terminal.setOption('fontFamily', 'Monaco, Menlo, Consolas, "Liberation Mono", "Courier New", monospace');
     this.terminal.setOption('fontSize', 12);
-    if (this.settings === 'dark') {
-      this.terminal.setOption('theme', this.theme);
-    } else {
-      this.terminal.setOption('theme', this.themeLight);
-      this.lightEnabled = true;
-    }
+    this.terminal.setOption('theme', this.theme);
     this.fitAddon.fit();
     this.terminal.onData(() => {
       this.fitAddon.fit();
@@ -105,23 +100,5 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy() {
     this.data = null;
     this.terminal.dispose();
-  }
-
-  changeTheme(): void {
-    this.settings = this.lightEnabled ? 'light' : 'dark';
-    setTimeout(() => {
-      this.terminal.setOption('theme', this.settings === 'light' ? this.themeLight : this.theme);
-    }, 200);
-  }
-
-  get settings(): 'dark' | 'light' {
-    if (!localStorage.getItem(this.terminalSettings)) {
-      localStorage.setItem(this.terminalSettings, 'dark');
-    }
-    return localStorage.getItem(this.terminalSettings) as 'dark' | 'light';
-  }
-
-  set settings(value: 'dark' | 'light') {
-    localStorage.setItem(this.terminalSettings, value);
   }
 }
