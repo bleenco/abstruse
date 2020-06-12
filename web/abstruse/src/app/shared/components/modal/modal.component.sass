@@ -22,9 +22,9 @@
     width: 1000px
     margin: 40px auto
     background: $white
-    border: 1px solid $border-default
+    border: 1px solid $green
     border-radius: 2px
-    box-shadow: $box-shadow-light
+    box-shadow: $box-shadow-modal
 
     &.is-small
       width: 500px
@@ -37,47 +37,94 @@
 
     ::ng-deep
       .modal-header
-        padding: 0 15px
         display: flex
         align-items: center
-        border-bottom: 1px solid $border-default
+        // border-bottom: 1px solid $border-default
+        padding: 25px 30px 10px 30px
         position: relative
-        height: 50px
 
-        h1
-          margin-right: 10px
-          font-size: 14px
-          font-weight: $weight-semibold
+        .header-icon
+          color: $green
+          font-size: 40px
+          display: block
+          width: 40px
+          height: 40px
+          margin-right: 23px
 
-        h2
-          font-weight: $weight-medium
-          color: $text-gray
-          font-size: 14px
-          text-transform: none
-          padding-left: 15px
-          border-left: 1px solid $border-default
-          height: 25px
+        .header-title
+          width: 100%
+          display: block
+
+          h1
+            font-size: 16px
+            font-weight: $weight-semibold
+            display: block
+            padding: 0 0 5px 0
+            text-transform: none
+
+          h2
+            font-weight: $weight-normal
+            color: $text-primary
+            font-size: 15px
+            text-transform: none
+            display: block
+            padding: 0
 
         .close-icon
           position: absolute
-          right: 20px
-          top: 17px
+          right: 25px
+          top: 24px
           cursor: pointer
-          color: $text-gray
-          font-size: 14px
+          color: $green
+          font-size: 20px
 
           &:hover
-            color: $text-primary
+            color: $green-400
 
       .modal-footer
-        padding: 0 20px
+        padding: 20px 40px 20px 90px
         display: flex
         align-items: center
-        border-top: 1px solid $border-default
-        height: 50px
 
       .modal-body
-        padding: 10px 20px
+        padding: 20px 40px 20px 90px
+
+        .columns
+          padding: 0
+          margin: 0
+
+          .column
+            padding: 0
+            margin: 0
+
+        .section
+          width: 100%
+          padding-bottom: 20px
+          border-bottom: 1px solid $border-default
+
+          &:not(:first-child)
+            margin-top: 20px
+
+          &.is-borderless
+            border-bottom: none
+            padding-bottom: 10px
 
         h3
           padding: 0 0 5px 0
+          color: $text-secondary
+          font-weight: $weight-semibold
+          font-size: 15px
+
+        p
+          padding: 5px 0
+          margin: 0 0 5px 0
+          font-size: 15px
+          color: $text-primary
+          font-weight: $weight-normal
+
+          a
+            color: $green
+
+            &:hover
+              text-decoration: underline
+              cursor: pointer

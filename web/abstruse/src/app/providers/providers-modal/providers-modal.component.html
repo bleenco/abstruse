@@ -1,24 +1,24 @@
 <div class="modal-header">
-  <h1>Provider</h1>
-  <h2>Integration</h2>
+  <i class="fab fa-git-square header-icon"></i>
+  <div class="header-title">
+    <h1>Provider</h1>
+    <h2>Git provider integration</h2>
+  </div>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)">
     <i class="fas fa-times"></i>
   </span>
 </div>
 <div class="modal-body">
   <div class="columns is-multiline">
-    <div class="column is-12">
+    <div class="section is-borderless">
       <form #providerForm="ngForm">
-        <div class="columns">
-          <div class="column is-4">
-            <div class="field">
-              <label class="label">Provider</label>
-              <app-selectbox name="name" [values]="providerList" [(ngModel)]="provider.name"
-                (ngModelChange)="updateProviderURL()" required>
-              </app-selectbox>
-            </div>
+        <div class="columns is-multiline">
+          <div class="column is-12">
+            <p>Choose your git provider and add its API URL with access token.</p>
+            <app-radio-tabs [values]="providerList" name="name" [(ngModel)]="provider.name"
+              (ngModelChange)="updateProviderURL()" required></app-radio-tabs>
           </div>
-          <div class="column is-8">
+          <div class="column is-12">
             <div class="field">
               <label class="label">URL</label>
               <input type="text" name="url" class="input" [(ngModel)]="provider.url" required autocomplete="off">
@@ -41,6 +41,7 @@
 <div class="modal-footer space-between">
   <div class="align-center"></div>
   <div class="align-center">
-    <button type="button" class="button" (click)="save()" [disabled]="!providerForm.valid">Save</button>
+    <button type="button" class="button" (click)="activeModal.close()">Cancel</button>
+    <button type="button" class="button is-green" (click)="save()" [disabled]="!providerForm.valid">Save</button>
   </div>
 </div>

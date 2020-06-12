@@ -1,17 +1,18 @@
 .button
-  color: $text-primary
+  color: $text-secondary
   border-radius: 3px
   border: 1px solid $border-button
-  padding: 9px 16px
+  padding: 9px 20px
   display: inline-flex
   align-items: center
   justify-content: center
-  font-size: 13px
+  font-size: 14px
   font-weight: $weight-semibold
   outline: none
   cursor: pointer
   background: $white
   box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
+  transition: background 200ms ease-out
 
   &[disabled]
     opacity: .5 !important
@@ -19,7 +20,7 @@
     touch-action: none
 
   &:not(:last-child)
-    margin-right: 5px
+    margin-right: 10px
 
   &:hover, &.is-active
     color: $text-button
@@ -60,13 +61,12 @@
       color: $white
 
   &.is-green
-    color: $green
+    color: $white
     border-color: $green
-    background: rgba($green, .1)
+    background: $green
 
     &:hover, &.is-active
-      background: $green
-      color: $white
+      background: rgba($green, .9)
 
   &.is-orange
     color: $orange

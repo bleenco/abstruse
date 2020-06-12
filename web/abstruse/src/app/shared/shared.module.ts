@@ -21,6 +21,7 @@ import { TerminalComponent } from './widgets/terminal/terminal.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
 import { TooltipDirective } from './directives/tooltip.directive';
 import { ToggleComponent } from './widgets/toggle/toggle.component';
+import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
     TerminalComponent,
     StopPropagationDirective,
     TooltipDirective,
-    ToggleComponent
+    ToggleComponent,
+    RadioTabsComponent
   ],
   exports: [
     CommonModule,
@@ -55,7 +57,8 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
     TerminalComponent,
     StopPropagationDirective,
     TooltipDirective,
-    ToggleComponent
+    ToggleComponent,
+    RadioTabsComponent
   ]
 })
 export class SharedModule {

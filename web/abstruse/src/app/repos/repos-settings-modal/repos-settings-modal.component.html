@@ -1,12 +1,29 @@
 <div class="modal-header">
-  <h1>Repository</h1>
-  <h2>{{ repo?.fullName }}</h2>
+  <img src="/assets/images/icons/code-repo-green.svg" class="header-icon">
+  <div class="header-title">
+    <h1>Repository</h1>
+    <!-- <h2>{{ repo?.fullName }} @ {{ repo?.providerName }}</h2> -->
+    <h2>Show answers to commonly asked questions.</h2>
+  </div>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)">
     <i class="fas fa-times"></i>
   </span>
 </div>
 <div class="modal-body">
   <div class="columns is-multiline">
+    <div class="section">
+      <div class="column is-12">
+        <h3>Visibility</h3>
+        <p>When should this tool be shown? <a>Edit hours of operation</a></p>
+
+      </div>
+    </div>
+    <div class="section">
+      <div class="column is-12">
+        <h3>Introduction media</h3>
+        <p>Add an image or video to the top of your form.</p>
+      </div>
+    </div>
     <!-- <div class="column is-12">
       <form #providerForm="ngForm">
         <div class="columns">
@@ -41,6 +58,7 @@
 <div class="modal-footer space-between">
   <div class="align-center"></div>
   <div class="align-center">
-    <button type="button" class="button" (click)="activeModal.close()">Save</button>
+    <button type="button" class="button" (click)="activeModal.close()">Cancel</button>
+    <button type="button" class="button is-green" (click)="activeModal.close()">Save</button>
   </div>
 </div>

@@ -18,7 +18,7 @@ export class ProvidersListItemComponent implements OnInit {
   ngOnInit(): void { }
 
   openProviderModal(): void {
-    const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'small' });
+    const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'medium' });
     modalRef.componentInstance.provider = new Provider(this.provider.id, this.provider.name, this.provider.url);
     modalRef.result
       .then(result => console.log(result), reason => console.log(reason));
