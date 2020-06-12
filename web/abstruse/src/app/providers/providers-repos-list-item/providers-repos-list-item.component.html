@@ -21,7 +21,7 @@
     <div class="column is-1 data-column">
       <div class="data-text justify-center">
         <i class="fas fa-check-circle is-green" *ngIf="repo?.isImported"></i>
-        <button type="button" class="button" (click)="import()" *ngIf="!repo?.isImported">
+        <button type="button" class="button is-small" (click)="import()" *ngIf="!repo?.isImported">
           <span>Import</span>
         </button>
       </div>
