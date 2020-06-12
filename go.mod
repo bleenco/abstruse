@@ -13,7 +13,6 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/drone/go-scm v1.7.0
 	github.com/dustin/go-humanize v1.0.0
-	github.com/fatih/color v1.9.0
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-git/go-git/v5 v5.1.0
 	github.com/go-ole/go-ole v1.2.4 // indirect
@@ -28,6 +27,7 @@ require (
 	github.com/jkuri/statik v0.3.0
 	github.com/json-iterator/go v1.1.9
 	github.com/julienschmidt/httprouter v1.3.0
+	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect

@@ -1,17 +1,18 @@
 package docker
 
-import "github.com/fatih/color"
+import (
+	"fmt"
+
+	"github.com/logrusorgru/aurora"
+)
 
 func genExitMessage(code int) string {
 	if code == 0 {
-		green := color.New(color.FgGreen).SprintfFunc()
-		return green("\nExit code: %d", code)
+		return aurora.Bold(aurora.Green(fmt.Sprintf("\nExit code: %d", code))).String()
 	}
-	red := color.New(color.FgRed).SprintfFunc()
-	return red("\nExit code: %d", code)
+	return aurora.Bold(aurora.Red(fmt.Sprintf("\nExit code: %d", code))).String()
 }
 
 func yellow(str string) string {
-	y := color.New(color.FgYellow).SprintfFunc()
-	return y(str)
+	return aurora.Bold(aurora.Yellow(str)).String()
 }
