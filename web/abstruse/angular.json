@@ -40,7 +40,8 @@
               "includePaths": [
                 "src/styles"
               ]
-            }
+            },
+            "showCircularDependencies": false
           },
           "configurations": {
             "production": {
@@ -115,7 +116,8 @@
                 "src/styles"
               ]
             }
-          }
+          },
+          "showCircularDependencies": false
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",

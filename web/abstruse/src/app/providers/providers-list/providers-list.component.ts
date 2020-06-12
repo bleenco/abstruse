@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProvidersService } from '../shared/providers.service';
 import { Provider } from '../shared/provider.class';
-import { ModalService } from 'src/app/shared/components/modal/modal.service';
-import { ProvidersModalComponent } from '../providers-modal/providers-modal.component';
 
 @Component({
   selector: 'app-providers-list',
@@ -10,35 +8,10 @@ import { ProvidersModalComponent } from '../providers-modal/providers-modal.comp
   styleUrls: ['./providers-list.component.sass']
 })
 export class ProvidersListComponent implements OnInit {
-  providers: Provider[] = [];
-  fetching: boolean;
 
-  constructor(
-    public providersService: ProvidersService,
-    public modalService: ModalService
-  ) { }
+  constructor(public providersService: ProvidersService) { }
 
   ngOnInit(): void {
-    this.list();
-  }
-
-  openProviderModal(): void {
-    const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'medium' });
-    modalRef.componentInstance.provider = new Provider();
-    modalRef.result
-      .then(result => console.log(result), reason => console.log(reason));
-  }
-
-  list(): void {
-    this.fetching = true;
-    this.providersService.list().subscribe(resp => {
-      this.providers = resp;
-    }, err => {
-      console.error(err);
-      this.providers = [];
-      this.fetching = false;
-    }, () => {
-      this.fetching = false;
-    });
+    this.providersService.list();
   }
 }

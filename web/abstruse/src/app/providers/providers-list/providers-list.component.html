@@ -7,32 +7,33 @@
         <h2>Provider Integrations</h2>
       </div>
       <div class="main-heading-right">
-        <button class="button" type="button" (click)="openProviderModal()">Add Provider</button>
+        <button class="button" type="button" (click)="providersService.openProviderModal()">
+          <i class="octicon octicon-plus"></i>
+          <span>Add Provider</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <div class="column is-12 justify-center" *ngIf="fetching">
+  <div class="column is-12 justify-center" *ngIf="providersService.fetchingProviders">
     <app-spinner class="is-large"></app-spinner>
   </div>
 
-  <div class="column is-12" *ngIf="providers.length && !fetching">
+  <div class="column is-12" *ngIf="providersService.providers.length && !providersService.fetchingProviders">
     <div class="list">
       <div class="list-items">
-        <app-providers-list-item [provider]="p" *ngFor="let p of providers"></app-providers-list-item>
+        <app-providers-list-item [provider]="p" *ngFor="let p of providersService.providers"></app-providers-list-item>
       </div>
     </div>
   </div>
 
-  <div class="column is-12" *ngIf="!fetching && !providers.length">
+  <div class="column is-12" *ngIf="!providersService.fetchingProviders && !providersService.providers.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">
         <div class="notification">
           <p>
             <i class="fas fa-info"></i>
-            <span>
-              No provider configurations found.
-            </span>
+            <span>No provider configurations found.</span>
           </p>
         </div>
       </div>

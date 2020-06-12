@@ -18,23 +18,30 @@
     </div>
     <div class="column is-3">
       <div class="list-item-content">
+        <span class="label">URL</span>
+        <span class="text">{{ provider?.url }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
         <span class="label">Created At</span>
         <span class="text">{{ provider?.createdAt | date:'medium' }}</span>
       </div>
     </div>
-    <div class="column is-3">
+    <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Updated At</span>
         <span class="text">{{ provider?.updatedAt | date:'medium' }}</span>
       </div>
     </div>
-    <div class="column is-1"></div>
     <div class="column is-2">
       <div class="list-item-content is-row">
-        <button type="button" class="button" (click)="openProviderModal()">
+        <button type="button" class="button is-small" (click)="providersService.openProviderModal(provider)">
+          <i class="octicon octicon-pencil"></i>
           <span>Edit</span>
         </button>
-        <button type="button" class="button" [routerLink]="['/providers', provider.id]">
+        <button type="button" class="button is-small" [routerLink]="['/providers', provider.id]">
+          <i class="octicon octicon-plus"></i>
           <span>Import</span>
         </button>
       </div>

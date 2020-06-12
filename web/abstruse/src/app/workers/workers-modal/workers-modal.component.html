@@ -1,22 +1,29 @@
 <div class="modal-header">
-  <h1>Worker</h1>
-  <h2>{{ worker?.id }} - {{ worker?.addr }}</h2>
+  <i class="octicon octicon-server header-icon"></i>
+  <div class="header-title">
+    <h1>Worker Node</h1>
+    <h2>{{ worker?.id }} - {{ worker?.addr }}</h2>
+  </div>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss('Cross click')">
     <i class="fas fa-times"></i>
   </span>
 </div>
 <div class="modal-body">
   <div class="columns is-multiline">
-    <div class="column is-12">
-      <h3>CPU Usage</h3>
-      <div class="modal-realtime-chart">
-        <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
+    <div class="section">
+      <div class="column is-12">
+        <h3>CPU Usage</h3>
+        <div class="modal-realtime-chart">
+          <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
+        </div>
       </div>
     </div>
-    <div class="column is-12">
-      <h3>Memory Usage</h3>
-      <div class="modal-realtime-chart">
-        <app-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></app-realtime-chart>
+    <div class="section">
+      <div class="column is-12">
+        <h3>Memory Usage</h3>
+        <div class="modal-realtime-chart">
+          <app-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></app-realtime-chart>
+        </div>
       </div>
     </div>
   </div>

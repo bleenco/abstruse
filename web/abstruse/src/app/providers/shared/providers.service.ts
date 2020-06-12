@@ -8,20 +8,36 @@ import { map, filter } from 'rxjs/operators';
 import { ProviderRepo, ProviderRepoPermission } from './repo.class';
 import { ReposService } from 'src/app/repos/shared/repos.service';
 import { User } from 'src/app/teams/shared/user.model';
+import { ModalService } from 'src/app/shared/components/modal/modal.service';
+import { ProvidersModalComponent } from '../providers-modal/providers-modal.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProvidersService {
+  providers: Provider[] = [];
+  fetchingProviders: boolean;
 
   constructor(
-    private http: HttpClient,
-    private reposService: ReposService
-  ) { }
+    public http: HttpClient,
+    public reposService: ReposService,
+    public modalService: ModalService
+  ) {
+    this.providers = [];
+  }
 
-  list(): Observable<Provider[]> {
+  openProviderModal(provider?: Provider): void {
+    const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'medium' });
+    if (provider) {
+      modalRef.componentInstance.provider = new Provider(provider.id, provider.name, provider.url);
+    }
+    modalRef.result.then(() => this.list());
+  }
+
+  list(): void {
+    this.fetchingProviders = true;
     const url = `${getAPIURL()}/providers`;
-    return this.http.get<JSONResponse>(url)
+    this.http.get<JSONResponse>(url)
       .pipe(
         filter(resp => resp.data && resp.data.length),
         map(resp => resp.data.map((p: any) => {
@@ -35,7 +51,16 @@ export class ProvidersService {
             new Date(p.updated_at)
           );
         }))
-      );
+      )
+      .subscribe(providers => {
+        this.providers = providers;
+      }, err => {
+        console.error(err);
+        this.fetchingProviders = false;
+        this.providers = [];
+      }, () => {
+        this.fetchingProviders = false;
+      });
   }
 
   find(providerID: number): Observable<Provider> {
