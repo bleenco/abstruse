@@ -19,7 +19,6 @@ import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 import { SpinnerComponent } from './widgets/spinner/spinner.component';
 import { TerminalComponent } from './widgets/terminal/terminal.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
-import { TooltipDirective } from './directives/tooltip.directive';
 import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
 
@@ -39,7 +38,6 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     SpinnerComponent,
     TerminalComponent,
     StopPropagationDirective,
-    TooltipDirective,
     ToggleComponent,
     RadioTabsComponent
   ],
@@ -56,7 +54,6 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     SpinnerComponent,
     TerminalComponent,
     StopPropagationDirective,
-    TooltipDirective,
     ToggleComponent,
     RadioTabsComponent
   ]
