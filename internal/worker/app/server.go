@@ -54,10 +54,14 @@ func (s *APIServer) Start() error {
 		Certificates:       []tls.Certificate{certificate},
 		InsecureSkipVerify: true,
 	})
+
 	grpcOpts = append(grpcOpts, grpc.Creds(creds))
+	grpcOpts = append(grpcOpts, grpc.UnaryInterceptor(s.unaryInterceptor))
+	grpcOpts = append(grpcOpts, grpc.StreamInterceptor(s.streamInterceptor))
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterAPIServer(s.server, s)
 	s.logger.Infof("grpc server listening on %s", s.app.addr)
+
 	return s.server.Serve(s.listener)
 }
 

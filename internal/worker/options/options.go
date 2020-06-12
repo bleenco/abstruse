@@ -5,8 +5,10 @@ import (
 	"path"
 	"strings"
 
+	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/certgen"
 	"github.com/jkuri/abstruse/internal/pkg/fs"
+	"github.com/jkuri/abstruse/internal/pkg/log"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
@@ -28,14 +30,8 @@ type Options struct {
 	Scheduler struct {
 		MaxConcurrency int
 	}
-	Log struct {
-		Level      string
-		Stdout     bool
-		Filename   string
-		MaxSize    int
-		MaxBackups int
-		MaxAge     int
-	}
+	Auth *auth.Options
+	Log  *log.Options
 }
 
 // NewConfig returns viper config.
@@ -54,6 +50,7 @@ func NewConfig(configPath string) (*viper.Viper, error) {
 	v.SetDefault("etcd.password", "abstrusepasswd")
 	v.SetDefault("grpc.listenaddr", "0.0.0.0:3330")
 	v.SetDefault("scheduler.maxconcurrency", 5)
+	v.SetDefault("auth.jwtsecret", "sfd919bUYxQ")
 	v.SetDefault("log.level", "debug")
 	v.SetDefault("log.stdout", true)
 	v.SetDefault("log.filename", path.Join(dir, "abstruse-worker.log"))

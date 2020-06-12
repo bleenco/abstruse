@@ -11,6 +11,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jkuri/abstruse/internal/core"
+	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/server/options"
 	pb "github.com/jkuri/abstruse/proto"
 	"go.uber.org/zap"
@@ -51,8 +52,17 @@ func newWorker(addr, id string, opts *options.Options, logger *zap.SugaredLogger
 		Certificates:       []tls.Certificate{certificate},
 		InsecureSkipVerify: true,
 	})
+	jwt, err := auth.GenerateWorkerJWT(id)
+	if err != nil {
+		return nil, err
+	}
+	auth := &auth.Authentication{
+		Identifier: id,
+		JWT:        jwt,
+	}
 
 	grpcOpts = append(grpcOpts, grpc.WithTransportCredentials(creds))
+	grpcOpts = append(grpcOpts, grpc.WithPerRPCCredentials(auth))
 
 	conn, err := grpc.Dial(addr, grpcOpts...)
 	if err != nil {

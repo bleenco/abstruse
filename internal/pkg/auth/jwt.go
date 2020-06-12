@@ -99,12 +99,21 @@ func GetUserDataFromJWT(tokenString string) (int, string, string, string, bool, 
 	return 0, "", "", "", false, fmt.Errorf("invalid token")
 }
 
-// GetWorkerIdentifierByJWT return workers identifier by token string.
+// GenerateWorkerJWT generates workers json web token.
+func GenerateWorkerJWT(id string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"identifier": id,
+	})
+
+	return token.SignedString(JWTSecret)
+}
+
+// GetWorkerIdentifierByJWT return workers id by token string.
 func GetWorkerIdentifierByJWT(token string) (string, error) {
-	var identifier string
+	var id string
 
 	if token == "" {
-		return identifier, fmt.Errorf("invalid token")
+		return id, fmt.Errorf("invalid token")
 	}
 
 	t, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
@@ -115,12 +124,12 @@ func GetWorkerIdentifierByJWT(token string) (string, error) {
 		return JWTSecret, nil
 	})
 	if err != nil {
-		return identifier, err
+		return id, err
 	}
 
 	if claims, ok := t.Claims.(jwt.MapClaims); ok && t.Valid {
-		identifier = claims["identifier"].(string)
+		id = claims["identifier"].(string)
 	}
 
-	return identifier, nil
+	return id, nil
 }

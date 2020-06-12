@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"github.com/jkuri/abstruse/internal/worker/id"
 	"github.com/jkuri/abstruse/internal/worker/options"
@@ -46,6 +47,9 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 
 // Start starts worker application.
 func (app *App) Start() error {
+	if err := app.init(); err != nil {
+		return err
+	}
 	errch := make(chan error)
 
 	go func() {
@@ -65,4 +69,9 @@ func (app *App) Start() error {
 	}()
 
 	return <-errch
+}
+
+func (app *App) init() error {
+	err := auth.InitAuth(app.opts.Auth)
+	return err
 }
