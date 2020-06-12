@@ -61,10 +61,10 @@ docker_push:
 	@docker push abstruse/abstruse-worker
 
 compose:
-	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose/data up -d
+	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose up -d
 
 compose_down:
-	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose/data down
+	@docker-compose -f config/compose/docker-compose.yml --project-directory config/compose down
 
 docker: docker_server docker_worker
 
