@@ -21,7 +21,9 @@ export class BuildsJobListItemComponent implements OnInit {
     this.processing = true;
     this.buildsService.restartJob(this.job.id)
       .subscribe(resp => {
-        console.log(resp);
+        if (!resp.data) {
+          console.error(resp);
+        }
       }, err => {
         this.processing = false;
         console.error(err);
@@ -34,7 +36,9 @@ export class BuildsJobListItemComponent implements OnInit {
     this.processing = true;
     this.buildsService.stopJob(this.job.id)
       .subscribe(resp => {
-        console.log(resp);
+        if (!resp.data) {
+          console.error(resp);
+        }
       }, err => {
         this.processing = false;
         console.error(err);

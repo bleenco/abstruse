@@ -170,6 +170,10 @@ func (app *App) updateBuildTime(buildID uint) error {
 	if err != nil {
 		return err
 	}
+	if build.StartTime != nil && build.EndTime != nil {
+		return nil
+	}
+
 	alldone := true
 	var startTime *time.Time
 	var endTime *time.Time
@@ -192,7 +196,7 @@ func (app *App) updateBuildTime(buildID uint) error {
 			return err
 		}
 	}
-	if alldone {
+	if alldone && endTime != nil {
 		build.EndTime = endTime
 		if _, err := app.buildRepository.Update(build); err != nil {
 			return err

@@ -18,7 +18,9 @@ export class BuildsListItemComponent implements OnInit {
     this.build.processing = true;
     this.buildsService.stopBuild(this.build.id)
       .subscribe(resp => {
-        console.log(resp);
+        if (!resp.data) {
+          console.error(resp);
+        }
       }, err => {
         this.build.processing = false;
         console.error(err);
@@ -31,7 +33,9 @@ export class BuildsListItemComponent implements OnInit {
     this.build.processing = true;
     this.buildsService.restartBuild(this.build.id)
       .subscribe(resp => {
-        console.log(resp);
+        if (resp.data) {
+          this.build.resetTime();
+        }
       }, err => {
         this.build.processing = false;
         console.error(err);

@@ -18,8 +18,8 @@
           <i class="fas fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button" [disabled]="processing || build?.getBuildStatus() !== 'running'"
-          (click)="stopBuild()">
+        <button type="button" class="button"
+          [disabled]="processing || (build?.status !== 'running' && build?.status !== 'queued')" (click)="stopBuild()">
           <i class="fas fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>

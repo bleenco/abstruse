@@ -40,7 +40,7 @@
         <span>Restart</span>
       </button>
       <button type="button" class="button is-small"
-        [disabled]="job?.status != 'running' || job?.status != 'queued' || processing" (click)="stopJob()">
+        [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || processing" (click)="stopJob()">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

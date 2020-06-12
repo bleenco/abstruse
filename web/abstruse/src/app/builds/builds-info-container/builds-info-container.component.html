@@ -10,7 +10,7 @@
           <i *ngIf="build?.status === 'running'">
             <app-spinner class="is-small is-yellow"></app-spinner>
           </i>
-          <span>{{ build?.buildStatus | async }}</span>
+          <span>{{ build?.status }}</span>
         </span>
       </div>
       <div class="info-text" *ngIf="job">
@@ -33,7 +33,7 @@
       </div>
       <div class="info-text">
         <i class="octicon octicon-git-commit"></i>
-        <span class="desc-text">{{ build?.getCommit() }}</span>
+        <span class="desc-text">{{ build?.commitShort }}</span>
       </div>
       <div class="info-text">
         <i class="far fa-comment-alt"></i>

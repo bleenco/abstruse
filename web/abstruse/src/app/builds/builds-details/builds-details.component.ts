@@ -54,7 +54,9 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     this.processing = true;
     this.buildsService.restartBuild(this.buildid)
       .subscribe(resp => {
-        console.log(resp);
+        if (resp.data) {
+          this.build.resetTime();
+        }
       }, err => {
         this.processing = false;
         console.error(err);
@@ -67,7 +69,9 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     this.processing = true;
     this.buildsService.stopBuild(this.buildid)
       .subscribe(resp => {
-        console.log(resp);
+        if (!resp.data) {
+          console.error(resp);
+        }
       }, err => {
         this.processing = false;
         console.error(err);
