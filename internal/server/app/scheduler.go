@@ -180,7 +180,7 @@ func (s *Scheduler) process() error {
 		w.mu.Lock()
 		diff := w.max - w.running
 		if diff > c {
-			worker, c = w, count
+			worker, c = w, diff
 		}
 		w.mu.Unlock()
 	}
@@ -231,6 +231,7 @@ func (s *Scheduler) startJob(job *core.Job) error {
 	if err := s.save(job); err != nil {
 		return err
 	}
+	s.next()
 	return nil
 }
 
