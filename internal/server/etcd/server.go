@@ -100,7 +100,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	s.cleanup()
+	// s.cleanup()
 	s.ready <- true
 	return nil
 }
