@@ -54,6 +54,7 @@ func (rs *RegService) Register() error {
 				rs.revoke()
 				return fmt.Errorf("lost connection")
 			}
+			return nil
 		}
 	}
 }

@@ -87,7 +87,6 @@ func (s *APIServer) Usage(stream pb.API_UsageServer) error {
 		_, err := stream.Recv()
 		if err != nil {
 			s.app.errch <- err
-			errch <- err
 		}
 	}()
 

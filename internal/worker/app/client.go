@@ -8,7 +8,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 )
 
-func (app *App) connectLoop() *clientv3.Client {
+func (app *App) connectLoop() {
 	b := &backoff.Backoff{
 		Min:    time.Second,
 		Factor: 1,
@@ -17,23 +17,24 @@ func (app *App) connectLoop() *clientv3.Client {
 	}
 
 	for {
-		client, err := app.getClient()
+		var err error
+		app.client, err = app.getClient()
 		if err != nil {
 			app.logger.Errorf("connection to abstruse server %s failed, reconnecting...", app.opts.Etcd.Addr)
 			time.Sleep(b.Duration())
 			continue
 		}
 		b.Reset()
-		app.logger.Infof("connected to abstruse server %s", app.opts.Etcd.Addr)
-		if err := app.register(client); err != nil {
+		if err := app.register(); err != nil {
 			continue
 		}
-		return client
+		app.logger.Infof("connected to abstruse server %s", app.opts.Etcd.Addr)
+		break
 	}
 }
 
-func (app *App) register(client *clientv3.Client) error {
-	rs := etcdutil.NewRegisterService(client, app.id, app.addr, 5)
+func (app *App) register() error {
+	rs := etcdutil.NewRegisterService(app.client, app.id, app.addr, 5)
 	return rs.Register()
 }
 

@@ -33,7 +33,7 @@ func newScheduler(id string, max int, logger *zap.Logger, app *App) (*scheduler,
 		max:    max,
 		logger: logger.With(zap.String("type", "scheduler")).Sugar(),
 		app:    app,
-		quit:   make(chan struct{}),
+		quit:   make(chan struct{}, 1),
 	}, nil
 }
 

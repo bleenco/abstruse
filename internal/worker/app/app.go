@@ -56,7 +56,7 @@ func (app *App) Start() error {
 
 	go func() {
 		for {
-			app.client = app.connectLoop()
+			app.connectLoop()
 			go app.scheduler.run()
 			<-app.errch
 			app.scheduler.stop()
