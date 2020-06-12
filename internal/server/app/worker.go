@@ -162,7 +162,7 @@ func (w *Worker) usageStats(ctx context.Context) error {
 		w.usage = append(w.usage, usage)
 		if len(w.usage) > 120 {
 			// TODO save to db.
-			w.usage = w.usage[1:]
+			w.usage = w.usage[len(w.usage)-120:]
 		}
 		w.emitUsage()
 		w.mu.Unlock()

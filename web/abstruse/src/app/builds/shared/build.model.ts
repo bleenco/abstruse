@@ -86,7 +86,7 @@ export class Build {
     }
 
     if (!this.endTime && this.jobs.every(job => job.endTime)) {
-      this.endTime = new Date(Math.max(...this.jobs.map(job => job.startTime.getTime())));
+      this.endTime = new Date(Math.max(...this.jobs.map(job => job.endTime.getTime())));
     }
 
     const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);

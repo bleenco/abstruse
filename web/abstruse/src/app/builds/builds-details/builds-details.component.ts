@@ -85,13 +85,13 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const jobIndex = this.build.jobs.findIndex(job => job.id === ev.data.job_id);
-    if (jobIndex < 0) {
+    const job = this.build.jobs.find(j => j.id === ev.data.job_id);
+    if (!job) {
       return;
     }
 
-    this.build.jobs[jobIndex].startTime = ev.data.start_time ? new Date(ev.data.start_time) : null;
-    this.build.jobs[jobIndex].endTime = ev.data.end_time ? new Date(ev.data.end_time) : null;
-    this.build.jobs[jobIndex].status = ev.data.status;
+    job.startTime = ev.data.start_time ? new Date(ev.data.start_time) : null;
+    job.endTime = ev.data.end_time ? new Date(ev.data.end_time) : null;
+    job.status = ev.data.status;
   }
 }
