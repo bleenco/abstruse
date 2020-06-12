@@ -16,8 +16,9 @@ type App struct {
 	api       *APIServer
 	scheduler *scheduler
 	client    *clientv3.Client
-	logger    *zap.Logger
-	ready     chan struct{}
+	log       *zap.Logger
+	logger    *zap.SugaredLogger
+	errch     chan error
 }
 
 // NewApp returns new instance of an App.
@@ -30,8 +31,9 @@ func NewApp(opts *options.Options, logger *zap.Logger) (*App, error) {
 		opts:   opts,
 		addr:   util.GetListenAddress(opts.GRPC.ListenAddr),
 		id:     id,
-		logger: logger,
-		ready:  make(chan struct{}, 1),
+		log:    logger,
+		logger: logger.Sugar(),
+		errch:  make(chan error),
 	}
 	app.api = NewAPIServer(app)
 	scheduler, err := newScheduler(id, opts.Scheduler.MaxConcurrency, logger, app)
@@ -53,17 +55,12 @@ func (app *App) Start() error {
 	}()
 
 	go func() {
-		if err := app.connect(); err != nil {
-			errch <- err
-		}
-	}()
-
-	go func() {
 		for {
-			<-app.ready
-			if err := app.scheduler.run(); err != nil {
-				errch <- err
-			}
+			app.client = app.connectLoop()
+			go app.scheduler.run()
+			<-app.errch
+			app.scheduler.stop()
+			continue
 		}
 	}()
 

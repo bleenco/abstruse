@@ -3,32 +3,38 @@ package app
 import (
 	"time"
 
-	"github.com/cenkalti/backoff/v4"
 	"github.com/jkuri/abstruse/internal/pkg/etcdutil"
+	"github.com/jpillora/backoff"
 	"go.etcd.io/etcd/clientv3"
 )
 
-func (app *App) connect() error {
-	c := func() error {
-		app.logger.Sugar().Infof("connecting to abstruse etcd server %s...", app.opts.Etcd.Addr)
-		var err error
-		if app.client, err = app.getClient(); err != nil {
-			app.logger.Sugar().Errorf(
-				"could not connect to abstruse server %s (%s), retrying...",
-				app.opts.Etcd.Addr, err.Error(),
-			)
-			return err
-		}
-		app.ready <- struct{}{}
-		rs := etcdutil.NewRegisterService(app.client, app.id, app.addr, 5, app.logger)
-		if err := rs.Register(); err != nil {
-			app.logger.Sugar().Errorf("error registering service on abstruse server")
-			return err
-		}
-		return nil
+func (app *App) connectLoop() *clientv3.Client {
+	b := &backoff.Backoff{
+		Min:    time.Second,
+		Factor: 1,
+		Max:    5 * time.Second,
+		Jitter: false,
 	}
-	err := backoff.Retry(c, backoff.NewConstantBackOff(5*time.Second))
-	return err
+
+	for {
+		client, err := app.getClient()
+		if err != nil {
+			app.logger.Errorf("connection to abstruse server %s failed, reconnecting...", app.opts.Etcd.Addr)
+			time.Sleep(b.Duration())
+			continue
+		}
+		b.Reset()
+		app.logger.Infof("connected to abstruse server %s", app.opts.Etcd.Addr)
+		if err := app.register(client); err != nil {
+			continue
+		}
+		return client
+	}
+}
+
+func (app *App) register(client *clientv3.Client) error {
+	rs := etcdutil.NewRegisterService(client, app.id, app.addr, 5)
+	return rs.Register()
 }
 
 func (app *App) getClient() (*clientv3.Client, error) {

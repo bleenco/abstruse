@@ -33,7 +33,7 @@ func NewAPIServer(app *App) *APIServer {
 	return &APIServer{
 		addr:   app.addr,
 		app:    app,
-		logger: app.logger.With(zap.String("type", "api")).Sugar(),
+		logger: app.log.With(zap.String("type", "api")).Sugar(),
 		logs:   make(map[uint]pb.API_JobLogServer),
 	}
 }
@@ -69,6 +69,8 @@ func (s *APIServer) Stop() {
 // Usage returns stream of health data.
 func (s *APIServer) Usage(stream pb.API_UsageServer) error {
 	errch := make(chan error)
+	s.app.logger.Infof("service ready to accept jobs")
+
 	send := func(stream pb.API_UsageServer) error {
 		cpu, mem := stats.GetUsageStats()
 		if err := stream.Send(&pb.UsageStatsReply{
@@ -80,6 +82,15 @@ func (s *APIServer) Usage(stream pb.API_UsageServer) error {
 		}
 		return nil
 	}
+
+	go func() {
+		_, err := stream.Recv()
+		if err != nil {
+			s.app.errch <- err
+			errch <- err
+		}
+	}()
+
 	go func() {
 		if err := send(stream); err != nil {
 			errch <- err
@@ -132,6 +143,9 @@ func (s *APIServer) JobLog(in *pb.Job, stream pb.API_JobLogServer) error {
 
 	select {
 	case <-stream.Context().Done():
+		s.mu.Lock()
+		delete(s.logs, id)
+		s.mu.Unlock()
 		return stream.Context().Err()
 	}
 }

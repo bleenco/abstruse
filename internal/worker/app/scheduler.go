@@ -21,6 +21,7 @@ type scheduler struct {
 	logger       *zap.SugaredLogger
 	app          *App
 	max, running int
+	quit         chan struct{}
 }
 
 func newScheduler(id string, max int, logger *zap.Logger, app *App) (*scheduler, error) {
@@ -32,29 +33,30 @@ func newScheduler(id string, max int, logger *zap.Logger, app *App) (*scheduler,
 		max:    max,
 		logger: logger.With(zap.String("type", "scheduler")).Sugar(),
 		app:    app,
+		quit:   make(chan struct{}),
 	}, nil
 }
 
-func (s *scheduler) run() error {
-	errch := make(chan error)
+func (s *scheduler) run() {
 	jobch := s.watchPending()
 	stopch := s.watchStop()
 
-	go func() {
-		for {
-			select {
-			case job := <-jobch:
-				s.logger.Infof("received job %d, trying to start...", job.ID)
-				go s.startJob(job)
-			case job := <-stopch:
-				s.logger.Infof("received job %d stop command, trying to stop...", job.ID)
-				go s.stopJob(job)
-			case <-s.app.ready:
-			}
+	for {
+		select {
+		case job := <-jobch:
+			s.logger.Infof("received job %d start command", job.ID)
+			go s.startJob(job)
+		case job := <-stopch:
+			s.logger.Infof("received job %d stop command", job.ID)
+			go s.stopJob(job)
+		case <-s.quit:
+			return
 		}
-	}()
+	}
+}
 
-	return <-errch
+func (s *scheduler) stop() {
+	close(s.quit)
 }
 
 func (s *scheduler) watchPending() <-chan core.Job {
@@ -137,11 +139,6 @@ func (s *scheduler) stopJob(job core.Job) error {
 			return err
 		}
 	}
-	// job.Status = core.StatusFailing
-	// job.EndTime = util.TimeNow()
-	// if err := s.putDone(job); err != nil {
-	// 	return err
-	// }
 	return nil
 }
 

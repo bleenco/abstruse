@@ -10,7 +10,6 @@ import (
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/pkg/util"
 	"go.etcd.io/etcd/clientv3"
-	"go.uber.org/zap"
 )
 
 // RegService worker register service.
@@ -20,12 +19,11 @@ type RegService struct {
 	client  *clientv3.Client
 	ttl     int64
 	leaseid clientv3.LeaseID
-	logger  *zap.SugaredLogger
 	stopch  chan error
 }
 
 // NewRegisterService returns new RegService instance.
-func NewRegisterService(client *clientv3.Client, id, addr string, ttl int64, logger *zap.Logger) *RegService {
+func NewRegisterService(client *clientv3.Client, id, addr string, ttl int64) *RegService {
 	val := getAddress(addr)
 	key := path.Join(shared.ServicePrefix, shared.WorkerService, id)
 	return &RegService{
@@ -33,7 +31,6 @@ func NewRegisterService(client *clientv3.Client, id, addr string, ttl int64, log
 		val:    val,
 		client: client,
 		ttl:    ttl,
-		logger: logger.With(zap.String("type", "register")).Sugar(),
 		stopch: make(chan error),
 	}
 }
@@ -75,7 +72,6 @@ func (rs *RegService) keepAlive() (<-chan *clientv3.LeaseKeepAliveResponse, erro
 	if err != nil {
 		return nil, err
 	}
-	rs.logger.Infof("connection to abstruse etcd server successful")
 	rs.leaseid = resp.ID
 	return rs.client.KeepAlive(context.TODO(), resp.ID)
 }
