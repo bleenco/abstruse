@@ -51,7 +51,7 @@ func NewConfig(configPath string) (*viper.Viper, error) {
 	v.SetDefault("tls.key", path.Join(dir, "certs/worker-key.pem"))
 	v.SetDefault("etcd.addr", "127.0.0.1:2379")
 	v.SetDefault("etcd.username", "abstruse")
-	v.SetDefault("etcd.password", "abstruse")
+	v.SetDefault("etcd.password", "abstrusepasswd")
 	v.SetDefault("grpc.listenaddr", "0.0.0.0:3330")
 	v.SetDefault("scheduler.maxconcurrency", 5)
 	v.SetDefault("log.level", "debug")

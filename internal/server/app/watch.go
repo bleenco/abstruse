@@ -10,7 +10,7 @@ import (
 )
 
 func (app *App) watchWorkers() error {
-	prefix := path.Join(shared.ServicePrefix, shared.WorkerService)
+	prefix := path.Clean(shared.WorkerService)
 
 	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
@@ -61,7 +61,7 @@ func (app *App) watchWorkers() error {
 
 func (app *App) initWorker(w *Worker) {
 	if err := w.Run(); err != nil {
-		key := path.Join(shared.ServicePrefix, shared.WorkerService, w.id)
+		key := path.Clean(path.Join(shared.WorkerService, w.id))
 		app.client.Delete(context.TODO(), key)
 	}
 }

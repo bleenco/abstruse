@@ -1,10 +1,8 @@
 package shared
 
 const (
-	// ServicePrefix is etcd global prefix.
-	ServicePrefix = "abstruse"
 	// WorkerService is etcd worker service prefix.
-	WorkerService = "workers/register"
+	WorkerService = "/abstruse/workers/register"
 	// WorkersCapacity etcd workers capacity prefix.
 	WorkersCapacity = "/abstruse/workers/capacity"
 	// WorkersCapacityLock etcd workers capacity lock prefix.

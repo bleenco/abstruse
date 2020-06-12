@@ -39,13 +39,14 @@ type (
 
 	// ETCD configuration for etcd embedded server.
 	ETCD struct {
-		Name       string
-		Host       string
-		ClientPort int
-		PeerPort   int
-		DataDir    string
-		Username   string
-		Password   string
+		Name         string
+		Host         string
+		ClientPort   int
+		PeerPort     int
+		DataDir      string
+		Username     string
+		Password     string
+		RootPassword string
 	}
 
 	// DB database configuration
@@ -93,6 +94,7 @@ func NewConfig(configPath string) (*viper.Viper, error) {
 	v.SetDefault("etcd.dataDir", path.Join(dir, "abstruse-data"))
 	v.SetDefault("etcd.username", "abstruse")
 	v.SetDefault("etcd.password", "abstrusepasswd")
+	v.SetDefault("etcd.rootPassword", "et33cd19pa")
 	v.SetDefault("auth.jwtsecret", "sfd919bUYxQ")
 	v.SetDefault("log.level", "debug")
 	v.SetDefault("log.stdout", true)

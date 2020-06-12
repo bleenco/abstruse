@@ -3,15 +3,17 @@ package etcd
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/url"
 	"path"
+	"strings"
 	"time"
 
+	"github.com/jkuri/abstruse/internal/pkg/etcdutil"
 	"github.com/jkuri/abstruse/internal/pkg/shared"
 	"github.com/jkuri/abstruse/internal/server/options"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
-	"go.etcd.io/etcd/etcdserver/api/v3client"
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
 	"go.etcd.io/etcd/pkg/transport"
 	"go.uber.org/zap"
@@ -87,23 +89,17 @@ func (s *Server) Start() error {
 	}
 	s.logger.Infof("started etcd server %s on %s", cfg.Name, curl.String())
 
-	s.cli = v3client.New(s.server.Server)
-	// target := net.JoinHostPort(s.opts.Etcd.Host, fmt.Sprintf("%d", s.opts.Etcd.ClientPort))
-	// s.cli, err = etcdutil.NewClient(
-	// 	target,
-	// 	s.opts.Etcd.Username,
-	// 	s.opts.Etcd.Password,
-	// 	s.opts.Etcd.Cert,
-	// 	s.opts.Etcd.Key,
-	// )
-	// if err != nil {
-	// 	return err
-	// }
+	// s.cli = v3client.New(s.server.Server)
+	// s.cli.Username = s.opts.Etcd.Username
+	// s.cli.Password = s.opts.Etcd.Password
 
-	// if err := s.authEnable(); err != nil {
-	// 	s.logger.Errorf("%v\n", err)
-	// 	return err
-	// }
+	if err := s.authEnable(); err != nil {
+		return err
+	}
+	if s.cli, err = s.getClient(); err != nil {
+		return err
+	}
+
 	s.cleanup()
 	s.ready <- true
 	return nil
@@ -118,40 +114,78 @@ func (s *Server) Client() *clientv3.Client {
 }
 
 func (s *Server) cleanup() {
-	workersPrefix := path.Join(shared.ServicePrefix, shared.WorkerService)
+	workersPrefix := path.Clean(shared.WorkerService)
 	s.cli.Delete(context.TODO(), workersPrefix, clientv3.WithFromKey())
 }
 
+func (s *Server) getClient() (*clientv3.Client, error) {
+	target := net.JoinHostPort(s.opts.Etcd.Host, fmt.Sprintf("%d", s.opts.Etcd.ClientPort))
+	cfg := etcdutil.ClientConfig{
+		Target:   target,
+		Username: "root",
+		Password: s.opts.Etcd.RootPassword,
+		Cert:     s.opts.TLS.Cert,
+		Key:      s.opts.TLS.Key,
+	}
+	return etcdutil.NewClient(cfg)
+}
+
 // this is required since s.Client.Auth make etcd embed server crash.
-// func (s *Server) authEnable() error {
-// 	target := net.JoinHostPort(s.opts.Etcd.Host, fmt.Sprintf("%d", s.opts.Etcd.ClientPort))
-// 	client, err := etcdutil.NewClient(target, s.opts.Etcd.Username, s.opts.Etcd.Password, s.opts.Etcd.Cert, s.opts.Etcd.Key)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = client.RoleAdd(context.TODO(), s.opts.Etcd.Username)
-// 	if err != nil {
-// 		if strings.HasSuffix(err.Error(), "role name already exists") {
-// 			goto enable
-// 		}
-// 		return err
-// 	}
-// 	if _, err = client.UserAdd(context.TODO(), s.opts.Etcd.Username, s.opts.Etcd.Password); err != nil {
-// 		return err
-// 	}
-// 	if _, err = client.UserGrantRole(context.TODO(), s.opts.Etcd.Username, s.opts.Etcd.Username); err != nil {
-// 		return err
-// 	}
-// enable:
-// 	resp, err := client.AuthStatus(context.TODO())
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if !resp.Enabled {
-// 		_, err = client.AuthEnable(context.TODO())
-// 		if err != nil {
-// 			return err
-// 		}
-// 	}
-// 	return nil
-// }
+func (s *Server) authEnable() error {
+	client, err := s.getClient()
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	if _, err := client.RoleAdd(context.TODO(), "root"); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto user
+		}
+	}
+	if _, err := client.UserAdd(context.TODO(), "root", s.opts.Etcd.RootPassword); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto user
+		}
+	}
+	if _, err = client.UserGrantRole(context.TODO(), "root", "root"); err != nil {
+		return err
+	}
+user:
+	_, err = client.RoleAdd(context.TODO(), s.opts.Etcd.Username)
+	if err != nil {
+		if strings.HasSuffix(err.Error(), "role name already exists") {
+			goto enable
+		}
+		return err
+	}
+	if _, err := client.RoleGrantPermission(
+		context.TODO(),
+		s.opts.Etcd.Username,
+		"/abstruse/",
+		"\x00",
+		clientv3.PermissionType(clientv3.PermReadWrite),
+	); err != nil {
+		return err
+	}
+	if _, err = client.UserAdd(context.TODO(), s.opts.Etcd.Username, s.opts.Etcd.Password); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto enable
+		}
+	}
+	if _, err = client.UserGrantRole(context.TODO(), s.opts.Etcd.Username, s.opts.Etcd.Username); err != nil {
+		return err
+	}
+enable:
+	resp, err := client.AuthStatus(context.TODO())
+	if err != nil {
+		return err
+	}
+	if !resp.Enabled {
+		_, err = client.AuthEnable(context.TODO())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

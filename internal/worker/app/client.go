@@ -20,12 +20,13 @@ func (app *App) connectLoop() {
 		var err error
 		app.client, err = app.getClient()
 		if err != nil {
-			app.logger.Errorf("connection to abstruse server %s failed, reconnecting...", app.opts.Etcd.Addr)
+			app.logger.Errorf("connection to abstruse server %s failed: %v, reconnecting...", app.opts.Etcd.Addr, err)
 			time.Sleep(b.Duration())
 			continue
 		}
 		b.Reset()
 		if err := app.register(); err != nil {
+			app.logger.Errorf("failed to register to abstruse server: %v", err)
 			continue
 		}
 		app.logger.Infof("connected to abstruse server %s", app.opts.Etcd.Addr)
