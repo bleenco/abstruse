@@ -1,5 +1,5 @@
 <div class="list-item-slim" [routerLink]="['/builds', build?.repository?.id, build?.id]">
-  <div class="columns is-marginless is-paddingless">
+  <div class="columns">
     <div class="column is-1 data-column">
       <div class="data-text has-text-left is-light align-center no-padding">
         <span class="status-line"
@@ -7,27 +7,28 @@
         <span>#{{ build?.id }}</span>
       </div>
     </div>
-    <div class="column is-1 data-column">
+    <!-- <div class="column is-1 data-column">
       <div class="info-text align-center">
         <img [src]="build?.committerAvatar" class="committer-avatar">
       </div>
-    </div>
+    </div> -->
     <div class="column is-2 data-column">
       <div class="info-text has-text-left align-center">
-        <i class="octicon octicon-repo repo-icon"></i>
-        <span class="repo-name">{{ build?.repository?.name }}</span>
+        <span class="data-text">{{ build?.repository?.fullName }}</span>
       </div>
     </div>
-    <div class="column is-2 data-column">
+    <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center">
-        <i class="octicon octicon-git-branch repo-icon"></i>
-        <span class="small-text">{{ build?.branch }}</span>
+        <i class="octicon octicon-git-branch"></i>
+        <span class="data-text">{{ build?.branch }}</span>
+        <i class="octicon octicon-git-commit"></i>
+        <span class="data-text">{{ build?.commitShort }}</span>
       </div>
     </div>
     <div class="column is-2 data-column">
       <div class="info-text has-text-left align-center">
         <i class="far fa-calendar-alt"></i>
-        <span class="small-text">{{ build?.createdAtWords | async }}</span>
+        <span class="data-text">{{ build?.createdAtWords | async }}</span>
       </div>
     </div>
     <div class="column is-1 data-column">

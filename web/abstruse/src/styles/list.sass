@@ -153,6 +153,8 @@ $list-heading-height: 50px
     display: flex
     align-items: center
     height: $list-item-slim-height
+    margin: 0
+    padding: 0
 
     .data-column
       padding-left: 0
@@ -173,8 +175,8 @@ $list-heading-height: 50px
         color: $text-button
 
         i
-          margin-right: 10px
-          color: $text-button
+          margin-right: 5px
+          color: $text-primary
 
         .committer-avatar
           width: 25px
@@ -182,13 +184,6 @@ $list-heading-height: 50px
           margin-right: 10px
           display: inline-block
           border-radius: $border-radius
-
-        .repo-name
-          font-size: 15px
-          font-weight: $weight-medium
-
-        .small-text
-          font-size: 13px
 
       .data-with-label
 
@@ -289,12 +284,3 @@ $list-heading-height: 50px
 
         &.is-running
           background: $yellow
-
-
-    .svg-column
-      display: flex
-      align-items: center
-      justify-content: center
-
-      svg
-        height: 20px

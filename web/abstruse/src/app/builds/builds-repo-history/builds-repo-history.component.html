@@ -26,7 +26,7 @@
     <app-builds-list-item [build]="b" *ngFor="let b of builds"></app-builds-list-item>
   </div>
 
-  <div class="column is-12" *ngIf="builds.length && !fetchingBuilds">
+  <div class="column is-12 is-marginless is-paddingless" *ngIf="builds.length && !fetchingBuilds">
     <div class="more-button-container align-center justify-center mtb10" *ngIf="!hideMoreButton">
       <button type="button" class="button" (click)="findBuilds()">
         <app-spinner class="is-small" *ngIf="fetchingMore"></app-spinner>
