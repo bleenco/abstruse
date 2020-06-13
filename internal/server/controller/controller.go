@@ -12,6 +12,7 @@ func CreateInitControllersFn(
 	bc *BuildController,
 	rc *RepositoryController,
 	pc *ProviderController,
+	hc *HookController,
 	mc *MiddlewareController,
 ) http.InitControllers {
 	return func(r *http.Router) {
@@ -42,5 +43,7 @@ func CreateInitControllersFn(
 		r.GET("/api/repos", mc.AuthorizationMiddleware(rc.List))
 		r.GET("/api/repos/:id", mc.AuthorizationMiddleware(rc.Find))
 		r.POST("/api/repos/search", mc.AuthorizationMiddleware(rc.Search))
+
+		r.POST("/webhooks", hc.Hook)
 	}
 }

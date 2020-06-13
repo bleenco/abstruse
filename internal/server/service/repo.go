@@ -8,6 +8,7 @@ import (
 // RepositoryService interface
 type RepositoryService interface {
 	Find(id, userID uint) (*model.Repository, error)
+	FindByURL(url string) (model.Repository, error)
 	List(userID uint) ([]model.Repository, error)
 	Search(keyword string) ([]model.Repository, error)
 	Create(data repository.SCMRepository, provider *model.Provider) (*model.Repository, error)
@@ -26,6 +27,11 @@ func NewRepositoryService(repository repository.RepoRepository) RepositoryServic
 // Find method.
 func (s *DefaultRepositoryService) Find(id, userID uint) (*model.Repository, error) {
 	return s.repository.Find(id, userID)
+}
+
+// FindByURL method.
+func (s *DefaultRepositoryService) FindByURL(url string) (model.Repository, error) {
+	return s.repository.FindByURL(url)
 }
 
 // List method.

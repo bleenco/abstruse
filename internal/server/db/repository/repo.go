@@ -10,6 +10,7 @@ import (
 // RepoRepository interface.
 type RepoRepository interface {
 	Find(id, userID uint) (*model.Repository, error)
+	FindByURL(url string) (model.Repository, error)
 	List(UserID uint) ([]model.Repository, error)
 	Search(keyword string) ([]model.Repository, error)
 	Create(data SCMRepository, provider *model.Provider) (*model.Repository, error)
@@ -32,6 +33,13 @@ func (r *DBRepoRepository) Find(id, userID uint) (*model.Repository, error) {
 		return nil, err
 	}
 	return repo, nil
+}
+
+// FindByURL returns repo by url.
+func (r *DBRepoRepository) FindByURL(url string) (model.Repository, error) {
+	var repo model.Repository
+	err := r.db.Model(&repo).Where("url = ?", url).Preload("Provider").First(&repo).Error
+	return repo, err
 }
 
 // List returns list of repositories by user_id.
