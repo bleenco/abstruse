@@ -23,10 +23,16 @@
         </span>
       </div>
     </div>
-    <div class="column is-2">
+    <div class="column is-1">
       <div class="list-item-content">
         <span class="label">Kernel</span>
         <span class="text">{{ worker?.kernelArch }} {{ worker?.kernelVersion }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Uptime</span>
+        <span class="text">{{ worker?.getUptime }}</span>
       </div>
     </div>
     <div class="column is-1 justify-center">
@@ -55,11 +61,11 @@
         </span>
       </div>
     </div>
-    <div class="column is-2">
+    <div class="column is-1">
       <div class="list-item-content">
         <button type="button" class="button is-small" (click)="openWorkerModal()">
           <i class="fas fa-chart-bar"></i>
-          <span>Usage</span>
+          <span>Stats</span>
         </button>
       </div>
     </div>

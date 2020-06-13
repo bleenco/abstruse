@@ -32,4 +32,13 @@ export class ReposService {
         map(resp => generateRepoModel(resp.data))
       );
   }
+
+  search(keyword: string): Observable<Repo[]> {
+    const url = `${getAPIURL()}/repos/search`;
+    return this.http.post<JSONResponse>(url, { keyword })
+      .pipe(
+        map(resp => resp.data && resp.data.length ? resp.data : []),
+        map(data => data.map(generateRepoModel))
+      );
+  }
 }

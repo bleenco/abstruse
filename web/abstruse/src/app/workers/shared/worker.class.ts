@@ -25,6 +25,7 @@ export class Worker {
     public virtualizationSystem: string,
     public virtualizationRole: string,
     public hostID: string,
+    public connectedAt: Date,
     public usage: {
       cpu: number,
       mem: number,
@@ -36,8 +37,24 @@ export class Worker {
     this.initUsage();
   }
 
-  getUptime(): string {
-    return formatDistanceToNow(fromUnixTime(this.bootTime));
+  get getUptime(): string {
+    return formatDistanceToNow(this.connectedAt);
+  }
+
+  updateUsage(data: { cpu: number, mem: number, jobs_max: number, jobs_running: number }): void {
+    this.cpu[0].push({ value: data.cpu, date: new Date() });
+    this.memory[0].push({ value: data.mem, date: new Date() });
+    if (this.memory[0].length > 130) {
+      this.memory[0].shift();
+    }
+    if (this.cpu[0].length > 130) {
+      this.cpu[0].shift();
+    }
+    this.currentCPU = data.cpu;
+    this.currentMem = data.mem;
+    this.jobsMax = data.jobs_max;
+    this.jobsRunning = data.jobs_running;
+    this.jobsPercent = Math.round(this.jobsRunning / this.jobsMax * 100);
   }
 
   private initUsage(): void {
@@ -57,20 +74,26 @@ export class Worker {
       this.jobsPercent = 0;
     }
   }
+}
 
-  updateUsage(data: { cpu: number, mem: number, jobs_max: number, jobs_running: number }): void {
-    this.cpu[0].push({ value: data.cpu, date: new Date() });
-    this.memory[0].push({ value: data.mem, date: new Date() });
-    if (this.memory[0].length > 130) {
-      this.memory[0].shift();
-    }
-    if (this.cpu[0].length > 130) {
-      this.cpu[0].shift();
-    }
-    this.currentCPU = data.cpu;
-    this.currentMem = data.mem;
-    this.jobsMax = data.jobs_max;
-    this.jobsRunning = data.jobs_running;
-    this.jobsPercent = Math.round(this.jobsRunning / this.jobsMax * 100);
-  }
+export function generateWorker(data: any): Worker {
+  return new Worker(
+    data.id,
+    data.addr,
+    data.host.hostname,
+    data.host.uptime,
+    data.host.boot_time,
+    data.host.procs,
+    data.host.os,
+    data.host.platform,
+    data.host.platform_family,
+    data.host.platform_version,
+    data.host.kernel_version,
+    data.host.kernel_arch,
+    data.host.virtualization_system,
+    data.host.virtualization_role,
+    data.host.host_id,
+    data.host.connected_at ? new Date(data.host.connected_at) : null,
+    data.usage
+  );
 }

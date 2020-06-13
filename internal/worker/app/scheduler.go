@@ -56,7 +56,7 @@ func (s *scheduler) run() {
 }
 
 func (s *scheduler) stop() {
-	close(s.quit)
+	s.quit <- struct{}{}
 }
 
 func (s *scheduler) watchPending() <-chan core.Job {

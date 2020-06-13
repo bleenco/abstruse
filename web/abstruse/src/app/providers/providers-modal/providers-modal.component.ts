@@ -20,7 +20,6 @@ export class ProvidersModalComponent implements OnInit {
   ];
   saving: boolean;
   checking: boolean;
-  authok: boolean;
 
   constructor(
     public providersService: ProvidersService,
@@ -34,22 +33,26 @@ export class ProvidersModalComponent implements OnInit {
     if (this.provider.id) {
       this.providersService.update(this.provider)
         .subscribe(resp => {
-          console.log(resp);
+          if (resp.data) {
+            this.activeModal.close(true);
+          }
         }, err => {
           console.error(err);
+          this.saving = false;
         }, () => {
           this.saving = false;
-          this.activeModal.close(true);
         });
     } else {
       this.providersService.create(this.provider)
         .subscribe(resp => {
-          console.log(resp);
+          if (resp.data) {
+            this.activeModal.close(true);
+          }
         }, err => {
           console.error(err);
+          this.saving = false;
         }, () => {
           this.saving = false;
-          this.activeModal.close(true);
         });
     }
   }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jkuri/abstruse/internal/pkg/auth"
 	"github.com/jkuri/abstruse/internal/server/service"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -49,6 +50,26 @@ func (c *RepositoryController) Find(resp http.ResponseWriter, req *http.Request,
 		return
 	}
 	data, err := c.s.Find(uint(repoID), uint(userID))
+	if err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	JSONResponse(resp, http.StatusOK, Response{Data: data})
+}
+
+// Search handler => POST /api/repos/search
+func (c *RepositoryController) Search(resp http.ResponseWriter, req *http.Request, params httprouter.Params) {
+	type searchForm struct {
+		Keyword string `json:"keyword"`
+	}
+	var form searchForm
+	decoder := jsoniter.NewDecoder(req.Body)
+	if err := decoder.Decode(&form); err != nil {
+		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
+		return
+	}
+	defer req.Body.Close()
+	data, err := c.s.Search(form.Keyword)
 	if err != nil {
 		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
 		return

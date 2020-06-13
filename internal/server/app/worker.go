@@ -230,6 +230,7 @@ func (w *Worker) hostInfo(ctx context.Context) (core.HostInfo, error) {
 		VirtualizationRole:   info.GetVirtualizationRole(),
 		HostID:               info.GetHostID(),
 		MaxConcurrency:       info.GetMaxConcurrency(),
+		ConnectedAt:          time.Now(),
 	}, err
 }
 

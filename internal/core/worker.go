@@ -32,22 +32,23 @@ import "time"
 
 // HostInfo holds host information about worker.
 type HostInfo struct {
-	ID                   string `json:"id"`
-	Addr                 string `json:"addr"`
-	Hostname             string `json:"hostname"`
-	Uptime               uint64 `json:"uptime"`
-	BootTime             uint64 `json:"boot_time"`
-	Procs                uint64 `json:"procs"`
-	Os                   string `json:"os"`
-	Platform             string `json:"platform"`
-	PlatformFamily       string `json:"platform_family"`
-	PlatformVersion      string `json:"platform_version"`
-	KernelVersion        string `json:"kernel_version"`
-	KernelArch           string `json:"kernel_arch"`
-	VirtualizationSystem string `json:"virtualization_system"`
-	VirtualizationRole   string `json:"virtualization_role"`
-	HostID               string `json:"host_id"`
-	MaxConcurrency       uint64 `json:"max_concurrency"`
+	ID                   string    `json:"id"`
+	Addr                 string    `json:"addr"`
+	Hostname             string    `json:"hostname"`
+	Uptime               uint64    `json:"uptime"`
+	BootTime             uint64    `json:"boot_time"`
+	Procs                uint64    `json:"procs"`
+	Os                   string    `json:"os"`
+	Platform             string    `json:"platform"`
+	PlatformFamily       string    `json:"platform_family"`
+	PlatformVersion      string    `json:"platform_version"`
+	KernelVersion        string    `json:"kernel_version"`
+	KernelArch           string    `json:"kernel_arch"`
+	VirtualizationSystem string    `json:"virtualization_system"`
+	VirtualizationRole   string    `json:"virtualization_role"`
+	HostID               string    `json:"host_id"`
+	MaxConcurrency       uint64    `json:"max_concurrency"`
+	ConnectedAt          time.Time `json:"connected_at"`
 }
 
 // Usage represents worker usage stats.

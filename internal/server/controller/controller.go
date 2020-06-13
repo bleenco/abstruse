@@ -41,5 +41,6 @@ func CreateInitControllersFn(
 
 		r.GET("/api/repos", mc.AuthorizationMiddleware(rc.List))
 		r.GET("/api/repos/:id", mc.AuthorizationMiddleware(rc.Find))
+		r.POST("/api/repos/search", mc.AuthorizationMiddleware(rc.Search))
 	}
 }

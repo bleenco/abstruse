@@ -30,8 +30,14 @@ export class ProvidersService {
     const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'medium' });
     if (provider) {
       modalRef.componentInstance.provider = new Provider(provider.id, provider.name, provider.url);
+    } else {
+      modalRef.componentInstance.provider = new Provider();
     }
-    modalRef.result.then(() => this.list());
+    modalRef.result.then(ok => {
+      if (ok) {
+        this.list();
+      }
+    });
   }
 
   list(): void {

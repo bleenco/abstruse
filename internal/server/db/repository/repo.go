@@ -11,6 +11,7 @@ import (
 type RepoRepository interface {
 	Find(id, userID uint) (*model.Repository, error)
 	List(UserID uint) ([]model.Repository, error)
+	Search(keyword string) ([]model.Repository, error)
 	Create(data SCMRepository, provider *model.Provider) (*model.Repository, error)
 }
 
@@ -37,6 +38,13 @@ func (r *DBRepoRepository) Find(id, userID uint) (*model.Repository, error) {
 func (r *DBRepoRepository) List(UserID uint) ([]model.Repository, error) {
 	var repos []model.Repository
 	err := r.db.Where("user_id = ?", UserID).Find(&repos).Error
+	return repos, err
+}
+
+// Search returns list of repositories based by keyword searched.
+func (r *DBRepoRepository) Search(keyword string) ([]model.Repository, error) {
+	var repos []model.Repository
+	err := r.db.Where("full_name LIKE ?", fmt.Sprintf("%%%s%%", keyword)).Preload("Provider").Find(&repos).Error
 	return repos, err
 }
 
