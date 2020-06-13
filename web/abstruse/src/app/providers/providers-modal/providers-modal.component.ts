@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { Provider } from '../shared/provider.class';
 import { ProvidersService } from '../shared/providers.service';
+import { generateSecret } from 'src/app/core/shared/shared-functions';
 
 @Component({
   selector: 'app-providers-modal',
@@ -64,5 +65,9 @@ export class ProvidersModalComponent implements OnInit {
       case 'bitbucket': this.provider.url = 'https://api.bitbucket.org'; break;
       default: this.provider.url = '';
     }
+  }
+
+  generateSecret(): void {
+    this.provider.secret = generateSecret(12);
   }
 }

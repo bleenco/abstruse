@@ -29,7 +29,7 @@ export class ProvidersService {
   openProviderModal(provider?: Provider): void {
     const modalRef = this.modalService.open(ProvidersModalComponent, { size: 'medium' });
     if (provider) {
-      modalRef.componentInstance.provider = new Provider(provider.id, provider.name, provider.url);
+      modalRef.componentInstance.provider = new Provider(provider.id, provider.name, provider.url, provider.secret);
     } else {
       modalRef.componentInstance.provider = new Provider();
     }
@@ -45,12 +45,13 @@ export class ProvidersService {
     const url = `${getAPIURL()}/providers`;
     this.http.get<JSONResponse>(url)
       .pipe(
-        filter(resp => resp.data && resp.data.length),
-        map(resp => resp.data.map((p: any) => {
+        map(resp => resp.data && resp.data.length ? resp.data : []),
+        map(data => data.map((p: any) => {
           return new Provider(
             p.id,
             p.name,
             p.url,
+            p.secret,
             p.access_token,
             p.user_id,
             new Date(p.created_at),
@@ -79,6 +80,7 @@ export class ProvidersService {
             resp.data.id,
             resp.data.name,
             resp.data.url,
+            resp.data.secret,
             resp.data.access_token,
             resp.data.user_id,
             new Date(resp.data.created_at),

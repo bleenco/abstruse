@@ -29,8 +29,25 @@
           <div class="column is-12">
             <div class="field">
               <label class="label">Access Token</label>
-              <input type="text" name="access_token" class="input" [(ngModel)]="provider.accessToken" required
-                autocomplete="off">
+              <input type="text" name="access_token" class="input" [(ngModel)]="provider.accessToken"
+                [required]="!provider.id" autocomplete="off">
+              <span class="input-info">
+                Personal access token is mandatory for access to your repositories.
+                <a target="_blank"
+                  href="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line"
+                  *ngIf="provider.name === 'github'">Create access token.</a>
+              </span>
+            </div>
+          </div>
+          <div class="column is-12">
+            <div class="field">
+              <label class="label">Secret</label>
+              <input type="text" name="secret" class="input" [(ngModel)]="provider.secret" required autocomplete="off">
+              <button type="button" class="button is-small input-button" (click)="generateSecret()">
+                <i class="fas fa-key"></i>
+                <span>Generate Secret</span>
+              </button>
+              <span class="input-info">Secret is used for authentication when provider triggers webhook.</span>
             </div>
           </div>
         </div>

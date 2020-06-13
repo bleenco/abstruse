@@ -46,3 +46,13 @@ export function hexToRGB(hex: string, alpha: number = 1) {
 
   return `rgba(${r},${g},${b},${alpha})`;
 }
+
+export function generateSecret(len: number = 40): string {
+  const arr = new Uint8Array(len / 2);
+  window.crypto.getRandomValues(arr);
+  return Array.from(arr, dec2hex).join('');
+}
+
+function dec2hex(dec: number): string {
+  return `0${dec.toString(16).substr(-2)}`;
+}

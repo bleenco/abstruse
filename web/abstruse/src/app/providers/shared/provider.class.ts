@@ -1,16 +1,20 @@
 import { User } from 'src/app/teams/shared/user.model';
+import { generateSecret } from 'src/app/core/shared/shared-functions';
 
 export class Provider {
   constructor(
     public id?: number,
     public name?: string,
     public url?: string,
+    public secret?: string,
     public accessToken?: string,
     public userId?: number,
     public createdAt?: Date,
     public updatedAt?: Date,
     public user?: User
-  ) { }
+  ) {
+    this.secret = this.secret || generateSecret(12);
+  }
 
   get getName(): string {
     switch (this.name) {

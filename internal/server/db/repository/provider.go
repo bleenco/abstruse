@@ -22,6 +22,7 @@ type (
 		Name        string `json:"name"`
 		URL         string `json:"url"`
 		AccessToken string `json:"accessToken"`
+		Secret      string `json:"secret"`
 		UserID      uint   `json:"userId"`
 	}
 
@@ -71,6 +72,7 @@ func (r *DBProviderRepository) Create(data ProviderForm) (*model.Provider, error
 		Name:        data.Name,
 		URL:         data.URL,
 		AccessToken: data.AccessToken,
+		Secret:      data.Secret,
 		UserID:      data.UserID,
 	}
 	provider.CreatedAt = time.Now()
@@ -86,7 +88,11 @@ func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error
 	if err != nil {
 		return nil, err
 	}
-	err = r.db.Model(provider).Updates(model.Provider{Name: data.Name, AccessToken: data.AccessToken, URL: data.URL}).Error
+	accessToken := provider.AccessToken
+	if data.AccessToken != "" {
+		accessToken = data.AccessToken
+	}
+	err = r.db.Model(provider).Updates(model.Provider{Name: data.Name, AccessToken: accessToken, URL: data.URL, Secret: data.Secret}).Error
 	if err != nil {
 		return nil, err
 	}
