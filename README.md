@@ -8,6 +8,8 @@ This project is a work in progress, if you have time to contribute you are very 
 
 Please check [Makefile](Makefile) in order to build up the project.
 
+For preview [check demo video.](https://youtu.be/WJ7_hqhiStY)
+
 # Quick Start
 
 For a quick preview you can run:
