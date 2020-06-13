@@ -12,6 +12,40 @@
   <div class="columns is-multiline">
     <div class="section">
       <div class="column is-12">
+        <div class="columns">
+          <div class="column is-2">
+            <span class="text-label">Hostname</span>
+            <span class="text-data">{{ worker?.hostname }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">OS</span>
+            <span class="text-data">{{ worker?.os }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Kernel</span>
+            <span class="text-data">{{ worker?.kernelArch }} {{ worker?.kernelVersion }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Uptime</span>
+            <span class="text-data">{{ worker?.getUptime }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Platform</span>
+            <span class="text-data">{{ worker?.platform }} {{ worker?.platformVersion }}</span>
+          </div>
+          <div class="column is-1">
+            <span class="text-label">CPU</span>
+            <span class="text-data">{{ worker?.currentCPU }}%</span>
+          </div>
+          <div class="column is-1">
+            <span class="text-label">Memory</span>
+            <span class="text-data">{{ worker?.currentMem }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="column is-12">
         <h3>CPU Usage</h3>
         <div class="modal-realtime-chart">
           <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
