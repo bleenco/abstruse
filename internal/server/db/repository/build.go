@@ -56,7 +56,10 @@ func (r *DBBuildRepository) FindByRepoID(repoID uint, limit, offset int) ([]mode
 // Create inserts new build and returns inserted item.
 func (r *DBBuildRepository) Create(data model.Build) (model.Build, error) {
 	err := r.db.Create(&data).Error
-	return data, err
+	if err != nil {
+		return data, err
+	}
+	return r.FindAll(data.ID)
 }
 
 // Update updates build.

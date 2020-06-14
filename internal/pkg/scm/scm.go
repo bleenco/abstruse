@@ -136,6 +136,18 @@ func (s *SCM) FindCommit(repo, ref string) (*scm.Commit, error) {
 	return commit, err
 }
 
+// FindBranch finds a git branch by name.
+func (s *SCM) FindBranch(repo, name string) (*scm.Reference, error) {
+	reference, _, err := s.client.Git.FindBranch(s.ctx, repo, name)
+	return reference, err
+}
+
+// FindTag finds a git tag by name.
+func (s *SCM) FindTag(repo, name string) (*scm.Reference, error) {
+	tag, _, err := s.client.Git.FindTag(s.ctx, repo, name)
+	return tag, err
+}
+
 // FindContent finds content of a repository file.
 func (s *SCM) FindContent(repo, ref, path string) (*scm.Content, error) {
 	content, _, err := s.client.Contents.Find(s.ctx, repo, path, ref)
@@ -159,4 +171,23 @@ func (s *SCM) ListContent(repo, ref, path string) ([]*scm.Content, error) {
 		}
 	}
 	return content, nil
+}
+
+// RefType returns reference type.
+func (s *SCM) RefType(ref string) string {
+	if scm.IsPullRequest(ref) {
+		return "pr"
+	}
+	if scm.IsTag(ref) {
+		return "tag"
+	}
+	if scm.IsBranch(ref) {
+		return "branch"
+	}
+	return "unknown"
+}
+
+// Client returns underlying scm client.
+func (s *SCM) Client() *scm.Client {
+	return s.client
 }

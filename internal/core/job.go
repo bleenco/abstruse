@@ -30,6 +30,7 @@ type Job struct {
 	ProviderName  string     `json:"provider_name"`
 	ProviderURL   string     `json:"provider_url"`
 	ProviderToken string     `json:"provider_token"`
+	Ref           string     `json:"ref"`
 	CommitSHA     string     `json:"commit_sha"`
 	RepoName      string     `json:"repository_name"`
 	Priority      uint16     `json:"priority"`

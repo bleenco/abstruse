@@ -8,6 +8,7 @@ type Build struct {
 	Branch          string     `json:"branch"`
 	Commit          string     `json:"commit"`
 	CommitMessage   string     `json:"commit_message"`
+	Ref             string     `gorm:"default:'refs/heads/master'" json:"ref"`
 	PR              int        `json:"pr"`
 	PRTitle         string     `json:"pr_title"`
 	Config          string     `sql:"type:text" json:"config"`

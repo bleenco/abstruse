@@ -7,14 +7,15 @@ import (
 )
 
 // CloneRepository clones repository contents to specified path.
-func CloneRepository(url, commit, token, dir string) error {
+func CloneRepository(url, ref, commit, token, dir string) error {
 	r, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL: url,
 		Auth: &http.BasicAuth{
 			Username: "user",
 			Password: token,
 		},
-		Depth: 50,
+		Depth:             50,
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	})
 	if err != nil {
 		return err

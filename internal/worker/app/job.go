@@ -33,7 +33,7 @@ func (app *App) startJob(job core.Job) error {
 		panic(err)
 	}
 	defer os.RemoveAll(dir)
-	if err := git.CloneRepository(job.URL, job.CommitSHA, job.ProviderToken, dir); err != nil {
+	if err := git.CloneRepository(job.URL, job.Ref, job.CommitSHA, job.ProviderToken, dir); err != nil {
 		panic(err)
 	}
 
