@@ -11,6 +11,7 @@ type Build struct {
 	Ref             string     `gorm:"default:'refs/heads/master'" json:"ref"`
 	PR              int        `json:"pr"`
 	PRTitle         string     `json:"pr_title"`
+	PRBody          string     `json:"pr_body"`
 	Config          string     `sql:"type:text" json:"config"`
 	AuthorLogin     string     `json:"author_login"`
 	AuthorName      string     `json:"author_name"`

@@ -13,9 +13,10 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-// StartBuildFromPR temp func.
-func (app *App) StartBuildFromPR(pr core.PullRequest) error {
-	repo, err := app.repoRepository.FindByURL(pr.RepoURL)
+// StartBuild temp func.
+func (app *App) StartBuild(b core.Build) error {
+	app.logBuild(b)
+	repo, err := app.repoRepository.FindByURL(b.RepoURL)
 	if err != nil {
 		return err
 	}
@@ -23,7 +24,7 @@ func (app *App) StartBuildFromPR(pr core.PullRequest) error {
 	if err != nil {
 		return err
 	}
-	content, err := scm.FindContent(repo.FullName, pr.CommitSHA, ".abstruse.yml")
+	content, err := scm.FindContent(repo.FullName, b.CommitSHA, ".abstruse.yml")
 	if err != nil {
 		return err
 	}
@@ -37,20 +38,20 @@ func (app *App) StartBuildFromPR(pr core.PullRequest) error {
 	}
 
 	buildModel := model.Build{
-		Branch:          pr.RepoBranch,
-		Ref:             pr.Ref,
-		Commit:          pr.CommitSHA,
-		PR:              pr.Number,
-		PRTitle:         pr.Title,
+		Branch:          b.RepoBranch,
+		Ref:             b.Ref,
+		Commit:          b.CommitSHA,
+		PR:              b.PrNumber,
+		PRTitle:         b.PrTitle,
 		Config:          string(content.Data),
-		AuthorLogin:     pr.AuthorLogin,
-		AuthorName:      pr.AuthorName,
-		AuthorEmail:     pr.AuthorEmail,
-		AuthorAvatar:    pr.AuthorAvatar,
-		CommitterLogin:  pr.SenderLogin,
-		CommitterName:   pr.SenderName,
-		CommitterEmail:  pr.SenderEmail,
-		CommitterAvatar: pr.SenderAvatar,
+		AuthorLogin:     b.AuthorLogin,
+		AuthorName:      b.AuthorName,
+		AuthorEmail:     b.AuthorEmail,
+		AuthorAvatar:    b.AuthorAvatar,
+		CommitterLogin:  b.SenderLogin,
+		CommitterName:   b.SenderName,
+		CommitterEmail:  b.SenderEmail,
+		CommitterAvatar: b.SenderAvatar,
 		RepositoryID:    repo.ID,
 		StartTime:       util.TimeNow(),
 	}
@@ -279,4 +280,18 @@ func (app *App) updateBuildTime(buildID uint) error {
 		}
 	}
 	return nil
+}
+
+func (app *App) logBuild(b core.Build) {
+	if b.PrNumber != 0 {
+		app.logger.Infof(
+			"starting new build from pull request event %d on repository %s with ref: %s branch: %s sha: %s",
+			b.PrNumber, b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
+		)
+	} else {
+		app.logger.Infof(
+			"starting new build from push event on repository %s with ref: %s branch: %s sha: %s",
+			b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
+		)
+	}
 }

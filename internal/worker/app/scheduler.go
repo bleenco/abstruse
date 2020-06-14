@@ -44,10 +44,10 @@ func (s *scheduler) run() {
 	for {
 		select {
 		case job := <-jobch:
-			s.logger.Infof("received job %d start command", job.ID)
+			s.logger.Infof("received job %d, starting...", job.ID)
 			go s.startJob(job)
 		case job := <-stopch:
-			s.logger.Infof("received job %d stop command", job.ID)
+			s.logger.Infof("received job %d stop, stopping...", job.ID)
 			go s.stopJob(job)
 		case <-s.quit:
 			return
@@ -109,7 +109,6 @@ func (s *scheduler) startJob(job core.Job) error {
 	s.mu.Lock()
 	s.running++
 	s.mu.Unlock()
-	s.logger.Infof("starting job %d...", job.ID)
 	job.StartTime = util.TimeNow()
 	if err := s.app.startJob(job); err != nil {
 		job.Status = core.StatusFailing
