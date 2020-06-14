@@ -8,6 +8,12 @@
         <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
     </div>
+    <div class="column is-1 data-column">
+      <div class="info-text has-text-left align-center">
+        <img [src]="build?.committerAvatar" class="committer-avatar">
+        <span class="data-text is-small is-light">{{ build?.committerName }}</span>
+      </div>
+    </div>
     <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
         <i class="octicon octicon-repo"></i>
@@ -29,15 +35,8 @@
         <span class="data-text is-small is-light plr0">{{ build?.commitShort }}</span>
       </div>
     </div>
-    <div class="column is-1 data-column">
-      <div class="info-text has-text-left align-center">
-        <img [src]="build?.committerAvatar" class="committer-avatar">
-        <span class="data-text is-small is-light">{{ build?.committerName }}</span>
-      </div>
-    </div>
     <div class="column is-2 data-column">
-      <div class="info-text has-text-left align-center">
-        <i class="far fa-calendar-alt mr0"></i>
+      <div class="info-text justify-center align-center">
         <span class="data-text is-small is-light">{{ build?.createdAtWords | async }}</span>
       </div>
     </div>

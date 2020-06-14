@@ -6,7 +6,7 @@
     <div class="column is-4 data-column">
       <span class="data-text">{{ repo?.fullName }}</span>
     </div>
-    <div class="column is-1 data-column">
+    <div class="column is-1 data-column justify-center">
       <div class="data-text justify-center">
         <i class="fas fa-check icon-small" *ngIf="!repo?.isPrivate"></i>
         <i class="fas fa-times icon-small" *ngIf="repo?.isPrivate"></i>
@@ -18,7 +18,7 @@
     <div class="column is-2 data-column">
       <span class="data-text">{{ repo?.updatedAt | date:'medium' }}</span>
     </div>
-    <div class="column is-1 data-column">
+    <div class="column is-1 data-column justify-center">
       <div class="data-text justify-center">
         <i class="fas fa-check-circle is-green" *ngIf="repo?.isImported"></i>
         <button type="button" class="button is-small" (click)="import()" *ngIf="!repo?.isImported">

@@ -8,19 +8,19 @@
       </div>
     </div>
     <div class="column is-4 data-column">
-      <div class="info-text has-text-left">
+      <div class="info-text has-text-left align-center">
         <i class="fas fa-code"></i>
-        <span>{{ job?.env }}</span>
+        <span class="data-text">{{ job?.env }}</span>
       </div>
     </div>
     <div class="column is-2 data-column">
-      <div class="info-text has-text-left">
+      <div class="info-text has-text-left align-center">
         <i class="fab fa-docker"></i>
-        <span>{{ job?.image }}</span>
+        <span class="data-text">{{ job?.image }}</span>
       </div>
     </div>
-    <div class="column is-1 data-column">
-      <span class="tag is-medium"
+    <div class="column is-1 data-column justify-center">
+      <span class="tag is-small"
         [ngClass]="{ 'is-gray': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
         <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
@@ -32,7 +32,9 @@
       </span>
     </div>
     <div class="column is-1 data-column">
-      <span class="data-text justify-center">{{ job?.runningTime | async }}</span>
+      <div class="info-text justify-center align-center">
+        <span class="data-text is-light">{{ job?.runningTime | async }}</span>
+      </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
       <button type="button" class="button is-small" [disabled]="processing" (click)="restartJob()">

@@ -37,7 +37,8 @@
       </div>
       <div class="info-text">
         <i class="far fa-comment-alt"></i>
-        <span class="desc-text">{{ build?.commitMessage }}</span>
+        <span class="desc-text" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
+        <span class="desc-text" *ngIf="build?.pr">{{ build?.prTitle }}</span>
       </div>
     </div>
     <div class="column is-1 justify-end">
