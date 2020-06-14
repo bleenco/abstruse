@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"path"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/jkuri/abstruse/internal/core"
@@ -51,7 +52,7 @@ func (c *HookController) Hook(resp http.ResponseWriter, req *http.Request, _ htt
 			JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
 			return
 		}
-		JSONResponse(resp, http.StatusOK, BoolResponse{true})
+		break
 	case *scm.PullRequestHook:
 		if event.PullRequest.Closed {
 			JSONResponse(resp, http.StatusOK, BoolResponse{true})
@@ -61,10 +62,22 @@ func (c *HookController) Hook(resp http.ResponseWriter, req *http.Request, _ htt
 			JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
 			return
 		}
-		JSONResponse(resp, http.StatusOK, BoolResponse{true})
-	default:
-		JSONResponse(resp, http.StatusOK, BoolResponse{true})
+		break
+	case *scm.TagHook:
+		if err := c.app.StartBuild(generateTagBuild(event)); err != nil {
+			JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+			return
+		}
+		break
+	case *scm.BranchHook:
+		if err := c.app.StartBuild(generateBranchBuild(event)); err != nil {
+			JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
+			return
+		}
+		break
 	}
+
+	JSONResponse(resp, http.StatusOK, BoolResponse{true})
 }
 
 func generateBuild(event *scm.PushHook) core.Build {
@@ -104,5 +117,43 @@ func generatePR(event *scm.PullRequestHook) core.Build {
 		SenderEmail:  event.Sender.Email,
 		SenderAvatar: event.Sender.Avatar,
 		SenderLogin:  event.Sender.Login,
+	}
+}
+
+func generateTagBuild(event *scm.TagHook) core.Build {
+	return core.Build{
+		Ref:           event.Ref.Path,
+		CommitSHA:     event.Ref.Sha,
+		CommitMessage: path.Base(event.Ref.Path),
+		RepoURL:       event.Repo.Clone,
+		RepoBranch:    event.Repo.Branch,
+		RepoName:      fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
+		AuthorName:    event.Sender.Name,
+		AuthorEmail:   event.Sender.Email,
+		AuthorAvatar:  event.Sender.Avatar,
+		AuthorLogin:   event.Sender.Login,
+		SenderName:    event.Sender.Name,
+		SenderEmail:   event.Sender.Email,
+		SenderAvatar:  event.Sender.Avatar,
+		SenderLogin:   event.Sender.Login,
+	}
+}
+
+func generateBranchBuild(event *scm.BranchHook) core.Build {
+	return core.Build{
+		Ref:           event.Ref.Path,
+		CommitSHA:     event.Ref.Sha,
+		CommitMessage: path.Base(event.Ref.Path),
+		RepoURL:       event.Repo.Clone,
+		RepoBranch:    event.Repo.Branch,
+		RepoName:      fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
+		AuthorName:    event.Sender.Name,
+		AuthorEmail:   event.Sender.Email,
+		AuthorAvatar:  event.Sender.Avatar,
+		AuthorLogin:   event.Sender.Login,
+		SenderName:    event.Sender.Name,
+		SenderEmail:   event.Sender.Email,
+		SenderAvatar:  event.Sender.Avatar,
+		SenderLogin:   event.Sender.Login,
 	}
 }

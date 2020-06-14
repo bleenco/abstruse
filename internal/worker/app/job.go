@@ -43,7 +43,6 @@ func (app *App) startJob(job core.Job) error {
 
 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
 		app.logger.Error(err.Error())
-		logch <- []byte(err.Error())
 		return err
 	}
 

@@ -45,7 +45,12 @@ func (c *BuildController) TriggerBuild(resp http.ResponseWriter, req *http.Reque
 		JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{Data: err.Error()})
 		return
 	}
-	JSONResponse(resp, http.StatusOK, Response{Data: c.service.TriggerBuild(uint(repoID), uint(userID))})
+	err = c.service.TriggerBuild(uint(repoID), uint(userID))
+	if err == nil {
+		JSONResponse(resp, http.StatusOK, BoolResponse{true})
+		return
+	}
+	JSONResponse(resp, http.StatusInternalServerError, ErrorResponse{err.Error()})
 }
 
 // StopBuild stops the build and related jobs => POST /api/builds/stop

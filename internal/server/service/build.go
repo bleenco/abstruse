@@ -8,7 +8,7 @@ import (
 
 // BuildService interface
 type BuildService interface {
-	TriggerBuild(repoID, userID uint) bool
+	TriggerBuild(repoID, userID uint) error
 	StopBuild(id uint) bool
 	RestartBuild(id uint) bool
 	StopJob(id uint) bool
@@ -33,11 +33,8 @@ func NewBuildService(repo repository.BuildRepository, jobRepo repository.JobRepo
 }
 
 // TriggerBuild triggers build for repository.
-func (s *DefaultBuildService) TriggerBuild(repoID, userID uint) bool {
-	if err := s.app.TriggerBuild(repoID, userID); err != nil {
-		return false
-	}
-	return true
+func (s *DefaultBuildService) TriggerBuild(repoID, userID uint) error {
+	return s.app.TriggerBuild(repoID, userID)
 }
 
 // StopBuild stops the build and related jobs.

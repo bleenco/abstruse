@@ -41,6 +41,7 @@ func (app *App) StartBuild(b core.Build) error {
 		Branch:          b.RepoBranch,
 		Ref:             b.Ref,
 		Commit:          b.CommitSHA,
+		CommitMessage:   b.CommitMessage,
 		PR:              b.PrNumber,
 		PRTitle:         b.PrTitle,
 		Config:          string(content.Data),
@@ -285,12 +286,12 @@ func (app *App) updateBuildTime(buildID uint) error {
 func (app *App) logBuild(b core.Build) {
 	if b.PrNumber != 0 {
 		app.logger.Infof(
-			"starting new build from pull request event %d on repository %s with ref: %s branch: %s sha: %s",
+			"pull request %d on repository %s with ref: %s branch: %s sha: %s",
 			b.PrNumber, b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
 		)
 	} else {
 		app.logger.Infof(
-			"starting new build from push event on repository %s with ref: %s branch: %s sha: %s",
+			"push event on repository %s with ref: %s branch: %s sha: %s",
 			b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
 		)
 	}
