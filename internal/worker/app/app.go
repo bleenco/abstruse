@@ -64,7 +64,6 @@ func (app *App) Start() error {
 			go app.scheduler.run()
 			<-app.errch
 			app.scheduler.stop()
-			continue
 		}
 	}()
 
