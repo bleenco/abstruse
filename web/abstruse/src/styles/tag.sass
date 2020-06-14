@@ -27,6 +27,12 @@
     i
       padding-top: 1px
 
+  &.is-small
+    font-weight: $weight-normal
+
+    i
+      margin-right: 5px
+
   @each $name, $color in $colors
     &.is-#{$name}
       color: $color

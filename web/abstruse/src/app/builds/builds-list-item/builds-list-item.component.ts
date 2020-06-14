@@ -9,6 +9,7 @@ import { BuildsService } from '../shared/builds.service';
 })
 export class BuildsListItemComponent implements OnInit {
   @Input() build: Build;
+  @Input() style: 'repo' | 'history' = 'repo';
 
   constructor(private buildsService: BuildsService) { }
 

@@ -58,15 +58,6 @@ func (c *HookController) Hook(resp http.ResponseWriter, req *http.Request, _ htt
 			event.Sender.Login,
 		)
 	case *scm.PullRequestHook:
-		log.Println(
-			"pull request event",
-			event.PullRequest.Ref,
-			event.PullRequest.Sha,
-			event.PullRequest.Title,
-			event.Repo.Namespace,
-			event.Repo.Name,
-			event.Sender.Login,
-		)
 		if event.PullRequest.Closed {
 			JSONResponse(resp, http.StatusOK, BoolResponse{true})
 			return

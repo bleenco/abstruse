@@ -4,35 +4,45 @@
       <div class="data-text has-text-left is-light align-center no-padding">
         <span class="status-line"
           [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passing': build?.status === 'passing', 'is-failing': build?.status === 'failing', 'is-running': build?.status === 'running' }"></span>
-        <span>#{{ build?.id }}</span>
-      </div>
-    </div>
-    <!-- <div class="column is-1 data-column">
-      <div class="info-text align-center">
-        <img [src]="build?.committerAvatar" class="committer-avatar">
-      </div>
-    </div> -->
-    <div class="column is-2 data-column">
-      <div class="info-text has-text-left align-center">
-        <span class="data-text">{{ build?.repository?.fullName }}</span>
+        <span *ngIf="!build?.pr">#{{ build?.id }}</span>
+        <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
     </div>
     <div class="column is-3 data-column">
-      <div class="info-text has-text-left align-center">
+      <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
+        <i class="octicon octicon-repo"></i>
+        <span class="data-text">{{ build?.repository?.fullName }}</span>
+      </div>
+      <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
+        <i class="far fa-comment-alt"></i>
+        <span class="data-text is-small is-light" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
+        <span class="data-text is-small is-light" *ngIf="build?.pr">{{ build?.prTitle }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column direction-column">
+      <div class="info-text align-center">
         <i class="octicon octicon-git-branch"></i>
-        <span class="data-text">{{ build?.branch }}</span>
+        <span class="data-text is-small is-light plr0">{{ build?.branch }}</span>
+      </div>
+      <div class="info-text align-center">
         <i class="octicon octicon-git-commit"></i>
-        <span class="data-text">{{ build?.commitShort }}</span>
+        <span class="data-text is-small is-light plr0">{{ build?.commitShort }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column">
+      <div class="info-text has-text-left align-center">
+        <img [src]="build?.committerAvatar" class="committer-avatar">
+        <span class="data-text is-small is-light">{{ build?.committerName }}</span>
       </div>
     </div>
     <div class="column is-2 data-column">
       <div class="info-text has-text-left align-center">
-        <i class="far fa-calendar-alt"></i>
-        <span class="data-text">{{ build?.createdAtWords | async }}</span>
+        <i class="far fa-calendar-alt mr0"></i>
+        <span class="data-text is-small is-light">{{ build?.createdAtWords | async }}</span>
       </div>
     </div>
-    <div class="column is-1 data-column">
-      <span class="tag is-medium"
+    <div class="column is-1 data-column justify-center">
+      <span class="tag is-small"
         [ngClass]="{ 'is-gray': build?.status === 'queued', 'is-green': build?.status === 'passing', 'is-red': build?.status === 'failing', 'is-yellow': build?.status === 'running' }">
         <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
@@ -44,7 +54,9 @@
       </span>
     </div>
     <div class="column is-1 data-column">
-      <span class="data-text justify-center">{{ build?.runningTime | async }}</span>
+      <div class="info-text justify-center align-center">
+        <span class="data-text is-light">{{ build?.runningTime | async }}</span>
+      </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
       <button type="button" class="button is-small" (click)="restartBuild()" [disabled]="build?.processing">

@@ -16,7 +16,7 @@
   </div>
 
   <div class="column is-12" *ngIf="builds.length && !fetchingBuilds">
-    <app-builds-list-item [build]="b" *ngFor="let b of builds"></app-builds-list-item>
+    <app-builds-list-item [build]="b" *ngFor="let b of builds" [style]="'history'"></app-builds-list-item>
   </div>
 
   <div class="column is-12 is-marginless is-paddingless" *ngIf="builds.length && !fetchingBuilds">

@@ -157,8 +157,14 @@ $list-heading-height: 50px
     padding: 0
 
     .data-column
-      padding-left: 0
+      padding-left: 5px
       padding-right: 0
+      display: flex
+      align-items: center
+      justify-content: flex-start
+
+      &.direction-column
+        flex-direction: column
 
       .heading-text, .data-text, .info-text, .data-with-label
         +ellipsis
@@ -179,9 +185,9 @@ $list-heading-height: 50px
           color: $text-primary
 
         .committer-avatar
-          width: 25px
-          height: 25px
-          margin-right: 10px
+          width: 20px
+          height: 20px
+          margin-right: 0
           display: inline-block
           border-radius: $border-radius
 
@@ -198,12 +204,9 @@ $list-heading-height: 50px
           font-size: 12px
 
       .data-text
+        width: auto
         font-size: 14px
-        font-weight: $weight-medium
-        height: $list-item-slim-height
-        display: flex
-        align-items: center
-        justify-content: flex-start
+        font-weight: $weight-normal
         padding: 0 10px
         color: $text-primary
 
@@ -232,6 +235,9 @@ $list-heading-height: 50px
         &.is-light
           color: $text-button
           font-weight: $weight-normal
+
+        &.is-small
+          font-size: 12px
 
         .data-label
           font-weight: $weight-medium

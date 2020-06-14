@@ -139,7 +139,7 @@ export function generateBuildModel(data: any): Build {
     data.commit_message,
     data.branch,
     Number(data.pr),
-    data.pr_message,
+    data.pr_title,
     data.config,
     data.created_at ? new Date(data.created_at) : null,
     data.updated_at ? new Date(data.updated_at) : null,
@@ -150,8 +150,8 @@ export function generateBuildModel(data: any): Build {
     data.author_name,
     data.author_email,
     data.committer_avatar,
-    data.author_name,
-    data.author_email,
+    data.committer_name,
+    data.committer_email,
     data.jobs && data.jobs.length ? data.jobs.map(generateJobModel) : []
   );
 }
