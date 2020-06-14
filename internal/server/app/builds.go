@@ -24,6 +24,22 @@ func (app *App) StartBuild(b core.Build) error {
 	if err != nil {
 		return err
 	}
+	ref, err := scm.FindBranch(repo.FullName, b.Branch)
+	if err != nil {
+		return err
+	}
+	if b.CommitSHA == "" || b.CommitMessage == "" {
+		commit, err := scm.LastCommit(repo.FullName, b.Branch)
+		if err != nil {
+			return err
+		}
+		if b.CommitSHA == "" {
+			b.CommitSHA = commit.Sha
+		}
+		if b.CommitMessage == "" {
+			b.CommitMessage = commit.Message
+		}
+	}
 	content, err := scm.FindContent(repo.FullName, b.CommitSHA, ".abstruse.yml")
 	if err != nil {
 		return err
@@ -38,8 +54,8 @@ func (app *App) StartBuild(b core.Build) error {
 	}
 
 	buildModel := model.Build{
-		Branch:          b.RepoBranch,
-		Ref:             b.Ref,
+		Branch:          b.Branch,
+		Ref:             ref.Path,
 		Commit:          b.CommitSHA,
 		CommitMessage:   b.CommitMessage,
 		PR:              b.PrNumber,
@@ -287,12 +303,12 @@ func (app *App) logBuild(b core.Build) {
 	if b.PrNumber != 0 {
 		app.logger.Infof(
 			"pull request %d on repository %s with ref: %s branch: %s sha: %s",
-			b.PrNumber, b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
+			b.PrNumber, b.RepoName, b.Ref, b.Branch, b.CommitSHA,
 		)
 	} else {
 		app.logger.Infof(
 			"push event on repository %s with ref: %s branch: %s sha: %s",
-			b.RepoName, b.Ref, b.RepoBranch, b.CommitSHA,
+			b.RepoName, b.Ref, b.Branch, b.CommitSHA,
 		)
 	}
 }

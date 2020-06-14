@@ -2,6 +2,7 @@ package core
 
 // Build defines struct used for starting builds.
 type Build struct {
+	Branch        string
 	Ref           string
 	CommitSHA     string
 	CommitMessage string
@@ -10,9 +11,8 @@ type Build struct {
 	PrTitle  string
 	PrBody   string
 
-	RepoURL    string
-	RepoBranch string
-	RepoName   string
+	RepoURL  string
+	RepoName string
 
 	AuthorEmail  string
 	AuthorAvatar string

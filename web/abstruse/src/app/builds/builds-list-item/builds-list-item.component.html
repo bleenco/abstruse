@@ -8,29 +8,28 @@
         <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
     </div>
+    <div class="column is-2 data-column">
+      <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
+        <i class="octicon octicon-repo"></i>
+        <span class="data-text is-small is-light">{{ build?.repository?.fullName }}</span>
+      </div>
+      <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
+        <span class="data-text is-small is-light" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
+        <span class="data-text is-small is-light" *ngIf="build?.pr">{{ build?.prTitle }}</span>
+      </div>
+    </div>
     <div class="column is-1 data-column">
       <div class="info-text has-text-left align-center">
         <img [src]="build?.committerAvatar" class="committer-avatar">
         <span class="data-text is-small is-light">{{ build?.committerName }}</span>
       </div>
     </div>
-    <div class="column is-3 data-column">
-      <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
-        <i class="octicon octicon-repo"></i>
-        <span class="data-text">{{ build?.repository?.fullName }}</span>
-      </div>
-      <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
-        <i class="far fa-comment-alt"></i>
-        <span class="data-text is-small is-light" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
-        <span class="data-text is-small is-light" *ngIf="build?.pr">{{ build?.prTitle }}</span>
-      </div>
-    </div>
-    <div class="column is-1 data-column direction-column">
-      <div class="info-text align-center">
+    <div class="column is-2 data-column">
+      <div class="info-text align-center justify-start">
         <i class="octicon octicon-git-branch"></i>
         <span class="data-text is-small is-light plr0">{{ build?.branch }}</span>
       </div>
-      <div class="info-text align-center">
+      <div class="info-text align-center justify-start">
         <i class="octicon octicon-git-commit"></i>
         <span class="data-text is-small is-light plr0">{{ build?.commitShort }}</span>
       </div>

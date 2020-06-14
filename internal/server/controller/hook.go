@@ -82,11 +82,11 @@ func (c *HookController) Hook(resp http.ResponseWriter, req *http.Request, _ htt
 
 func generateBuild(event *scm.PushHook) core.Build {
 	return core.Build{
+		Branch:        event.Repo.Branch,
 		Ref:           event.Ref,
 		CommitSHA:     event.Commit.Sha,
 		CommitMessage: event.Commit.Message,
 		RepoURL:       event.Repo.Clone,
-		RepoBranch:    event.Repo.Branch,
 		RepoName:      fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
 		AuthorName:    event.Commit.Author.Name,
 		AuthorEmail:   event.Commit.Author.Email,
@@ -101,13 +101,13 @@ func generateBuild(event *scm.PushHook) core.Build {
 
 func generatePR(event *scm.PullRequestHook) core.Build {
 	return core.Build{
+		Branch:       event.Repo.Branch,
 		PrNumber:     event.PullRequest.Number,
 		Ref:          event.PullRequest.Ref,
 		CommitSHA:    event.PullRequest.Sha,
 		PrTitle:      event.PullRequest.Title,
 		PrBody:       event.PullRequest.Body,
 		RepoURL:      event.Repo.Clone,
-		RepoBranch:   event.Repo.Branch,
 		RepoName:     fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
 		AuthorName:   event.PullRequest.Author.Name,
 		AuthorEmail:  event.PullRequest.Author.Email,
@@ -122,11 +122,11 @@ func generatePR(event *scm.PullRequestHook) core.Build {
 
 func generateTagBuild(event *scm.TagHook) core.Build {
 	return core.Build{
+		Branch:        event.Repo.Branch,
 		Ref:           event.Ref.Path,
 		CommitSHA:     event.Ref.Sha,
 		CommitMessage: path.Base(event.Ref.Path),
 		RepoURL:       event.Repo.Clone,
-		RepoBranch:    event.Repo.Branch,
 		RepoName:      fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
 		AuthorName:    event.Sender.Name,
 		AuthorEmail:   event.Sender.Email,
@@ -141,19 +141,18 @@ func generateTagBuild(event *scm.TagHook) core.Build {
 
 func generateBranchBuild(event *scm.BranchHook) core.Build {
 	return core.Build{
-		Ref:           event.Ref.Path,
-		CommitSHA:     event.Ref.Sha,
-		CommitMessage: path.Base(event.Ref.Path),
-		RepoURL:       event.Repo.Clone,
-		RepoBranch:    event.Repo.Branch,
-		RepoName:      fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
-		AuthorName:    event.Sender.Name,
-		AuthorEmail:   event.Sender.Email,
-		AuthorAvatar:  event.Sender.Avatar,
-		AuthorLogin:   event.Sender.Login,
-		SenderName:    event.Sender.Name,
-		SenderEmail:   event.Sender.Email,
-		SenderAvatar:  event.Sender.Avatar,
-		SenderLogin:   event.Sender.Login,
+		Branch:       event.Ref.Name,
+		Ref:          fmt.Sprintf("refs/heads/%s", event.Ref.Name),
+		CommitSHA:    event.Ref.Sha,
+		RepoURL:      event.Repo.Clone,
+		RepoName:     fmt.Sprintf("%s/%s", event.Repo.Namespace, event.Repo.Name),
+		AuthorName:   event.Sender.Name,
+		AuthorEmail:  event.Sender.Email,
+		AuthorAvatar: event.Sender.Avatar,
+		AuthorLogin:  event.Sender.Login,
+		SenderName:   event.Sender.Name,
+		SenderEmail:  event.Sender.Email,
+		SenderAvatar: event.Sender.Avatar,
+		SenderLogin:  event.Sender.Login,
 	}
 }

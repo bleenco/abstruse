@@ -25,7 +25,7 @@ func CloneRepository(url, ref, commit, token, dir string) error {
 	if err != nil {
 		return err
 	}
-	if !isBranch(ref) {
+	if !strings.HasSuffix(ref, "/master") {
 		if err := r.Fetch(&git.FetchOptions{
 			RefSpecs: []config.RefSpec{
 				config.RefSpec(fmt.Sprintf("%s:%s", ref, ref)),
@@ -51,18 +51,4 @@ func CloneRepository(url, ref, commit, token, dir string) error {
 	}
 
 	return nil
-}
-
-func isPullRequest(ref string) bool {
-	return strings.HasPrefix(ref, "refs/pull/") ||
-		strings.HasPrefix(ref, "refs/pull-request/") ||
-		strings.HasPrefix(ref, "refs/merge-requests/")
-}
-
-func isTag(ref string) bool {
-	return strings.HasPrefix(ref, "refs/tag/")
-}
-
-func isBranch(ref string) bool {
-	return strings.HasPrefix(ref, "refs/heads/")
 }
