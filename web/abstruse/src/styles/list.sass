@@ -3,103 +3,98 @@ $list-item-condensed-height: 80px
 $list-item-condensed-label-height: 24px
 $list-heading-height: 50px
 
-.list
+.list-item
   display: block
   width: 100%
+  height: $list-item-height
+  border: 1px solid $border-default
+  margin-bottom: 10px
+  border-radius: 4px
+  padding: 0 5px
+  outline: none
+  background: $white
 
-  .list-item
-    display: block
-    width: 100%
-    height: $list-item-height
-    border: 1px solid $border-default
-    margin-bottom: 10px
-    border-radius: 4px
-    padding: 0 5px
-    outline: none
-    background: $white
+  +mobile
+    height: auto
+    padding: 10px
 
-    +mobile
-      height: auto
-      padding: 10px
+  &.is-link
 
-    &.is-link
+    &:hover
+      cursor: pointer
+      background: $background-light
 
-      &:hover
-        cursor: pointer
-        background: $background-light
+  .columns
+    margin: 0
+    padding: 0
 
-    .columns
+    .column
       margin: 0
-      padding: 0
+      padding: 0 5px
 
-      .column
-        margin: 0
-        padding: 0 5px
+      .list-item-content
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 100%
+        height: $list-item-height
+        flex-direction: column
 
-        .list-item-content
+        &.is-row
+          flex-direction: row
+
+        +mobile
+          height: auto
+
+        .label, .text
           display: flex
           align-items: center
           justify-content: center
+
+        .label
+          text-transform: uppercase
+          font-weight: $weight-medium
+          font-size: 12px
+          color: $text-primary
+          margin-bottom: 2px
+          margin-top: 0
+
+        .text
+          +ellipsis
+          color: $text-primary
+          font-size: 14px
           width: 100%
-          height: $list-item-height
-          flex-direction: column
+          padding: 5px 8px
 
-          &.is-row
-            flex-direction: row
+          &.has-border
+            border: 1px solid $border-primary
+            border-radius: 4px
+            width: auto
+            padding: 5px 15px
+            font-weight: $weight-semibold
+            background: $white
 
-          +mobile
-            height: auto
-
-          .label, .text
-            display: flex
-            align-items: center
-            justify-content: center
-
-          .label
-            text-transform: uppercase
-            font-weight: $weight-medium
-            font-size: 12px
-            color: $text-primary
-            margin-bottom: 2px
-            margin-top: 0
-
-          .text
-            +ellipsis
-            color: $text-primary
-            font-size: 14px
-            width: 100%
-            padding: 5px 8px
-
-            &.has-border
-              border: 1px solid $border-primary
-              border-radius: 4px
-              width: auto
-              padding: 5px 15px
-              font-weight: $weight-semibold
-              background: $white
-
-            i
-              font-size: 20px
-              margin-right: 5px
-
-          .icon-large
-            font-size: 26px
-            display: block
-            width: 26px
-            height: 26px
-
-          .icon-medium
+          i
             font-size: 20px
-            display: block
-            width: 20px
-            height: 20px
+            margin-right: 5px
 
-          .icon-small
-            font-size: 16px !important
-            display: block
-            width: 16px
-            height: 16px
+        .icon-large
+          font-size: 26px
+          display: block
+          width: 26px
+          height: 26px
 
+        .icon-medium
+          font-size: 20px
+          display: block
+          width: 20px
+          height: 20px
+
+        .icon-small
+          font-size: 16px !important
+          display: block
+          width: 16px
+          height: 16px
 
 .list-heading
   width: 100%
