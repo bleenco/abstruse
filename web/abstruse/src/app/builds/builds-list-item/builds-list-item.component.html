@@ -10,7 +10,8 @@
     </div>
     <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
-        <span class="data-text">{{ build?.repository?.fullName }}</span>
+        <a class="data-text" appStopPropagation
+          [routerLink]="['/builds', build?.repository?.id]">{{ build?.repository?.fullName }}</a>
       </div>
       <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
         <span class="data-text is-small" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
