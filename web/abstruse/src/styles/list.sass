@@ -1,6 +1,6 @@
 $list-item-height: 80px
-$list-item-slim-height: 70px
-$list-item-slim-label-height: 22px
+$list-item-condensed-height: 80px
+$list-item-condensed-label-height: 24px
 $list-heading-height: 50px
 
 .list
@@ -57,7 +57,7 @@ $list-heading-height: 50px
 
           .label
             text-transform: uppercase
-            font-weight: $weight-semibold
+            font-weight: $weight-medium
             font-size: 12px
             color: $text-primary
             margin-bottom: 2px
@@ -106,17 +106,18 @@ $list-heading-height: 50px
   height: $list-heading-height
   outline: none
   border-bottom: 1px solid $border-default
-  border-left: 2px solid transparent
   background: $white
 
   .columns
     display: flex
     align-items: center
     height: $list-heading-height
+    margin: 0
+    padding: 0
 
     .column
       margin: 0
-      padding: 0
+      padding: 0 3px
 
       .text
         font-size: 12px
@@ -125,46 +126,37 @@ $list-heading-height: 50px
         display: flex
         align-items: center
         justify-content: flex-start
-        padding: 0 10px
-        font-weight: $weight-semibold
+        font-weight: $weight-medium
 
-.list-item-slim
+.list-item-condensed
   width: 100%
-  height: $list-item-slim-height
+  height: $list-item-condensed-height
   outline: none
   border-bottom: 1px solid $border-default
   border-left: 2px solid transparent
   background: $white
 
-  &.is-bordered
-    border: 1px solid $border-default
-    margin-bottom: 10px
-    padding-left: 10px
-    padding-right: 10px
-
   &:hover:not(.no-hover-effect)
     cursor: pointer
     background: $background-light
 
-    &.is-bordered
-      box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
-
   .columns
-    display: flex
-    align-items: center
-    height: $list-item-slim-height
+    height: $list-item-condensed-height
     margin: 0
     padding: 0
 
     .data-column
-      padding-left: 0
-      padding-right: 0
+      padding-left: 3px
+      padding-right: 3px
       display: flex
       align-items: center
-      justify-content: flex-start
 
       &.direction-column
         flex-direction: column
+        align-self: center
+
+        .info-text
+          height: $list-item-condensed-label-height
 
       .heading-text, .data-text, .info-text, .data-with-label
         +ellipsis
@@ -184,12 +176,11 @@ $list-heading-height: 50px
           margin-right: 5px
           color: $text-primary
 
-        .committer-avatar
-          width: 25px
-          height: 25px
-          margin-right: 0
-          display: inline-block
-          border-radius: 50%
+      .committer-avatar
+        width: 25px
+        height: 25px
+        display: inline-block
+        border-radius: 50%
 
       .data-with-label
 
@@ -208,7 +199,7 @@ $list-heading-height: 50px
         font-size: 14px
         font-weight: $weight-normal
         padding: 0 10px
-        color: $text-primary
+        color: $text-secondary
 
         &.no-padding
           padding: 0
@@ -218,7 +209,7 @@ $list-heading-height: 50px
           font-weight: $weight-semibold
           color: $text-label
           text-transform: uppercase
-          height: $list-item-slim-label-height
+          height: $list-item-condensed-label-height
 
         &.is-number
           +unselectable
@@ -237,7 +228,7 @@ $list-heading-height: 50px
           font-weight: $weight-normal
 
         &.is-small
-          font-size: 12px
+          font-size: 13px
 
         .data-label
           font-weight: $weight-medium

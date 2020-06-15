@@ -1,42 +1,40 @@
-<div class="list-item-slim" [routerLink]="['/builds', build?.repository?.id, build?.id]">
+<div class="list-item-condensed" [routerLink]="['/builds', build?.repository?.id, build?.id]">
   <div class="columns">
     <div class="column is-1 data-column">
-      <div class="data-text has-text-left is-light align-center no-padding">
+      <div class="data-text has-text-left align-center no-padding">
         <span class="status-line"
           [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passing': build?.status === 'passing', 'is-failing': build?.status === 'failing', 'is-running': build?.status === 'running' }"></span>
         <span *ngIf="!build?.pr">#{{ build?.id }}</span>
         <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
     </div>
-    <div class="column is-2 data-column">
+    <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
-        <i class="octicon octicon-repo"></i>
-        <span class="data-text is-small is-light">{{ build?.repository?.fullName }}</span>
+        <span class="data-text">{{ build?.repository?.fullName }}</span>
       </div>
       <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
-        <span class="data-text is-small is-light" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
-        <span class="data-text is-small is-light" *ngIf="build?.pr">{{ build?.prTitle }}</span>
-      </div>
-    </div>
-    <div class="column is-1 data-column">
-      <div class="info-text has-text-left align-center">
-        <img [src]="build?.committerAvatar" class="committer-avatar">
-        <span class="data-text is-small is-light">{{ build?.committerName }}</span>
+        <span class="data-text is-small" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
+        <span class="data-text is-small" *ngIf="build?.pr">{{ build?.prTitle }}</span>
       </div>
     </div>
     <div class="column is-2 data-column">
-      <div class="info-text align-center justify-start">
-        <i class="octicon octicon-git-branch"></i>
-        <span class="data-text is-small is-light plr0">{{ build?.branch }}</span>
+      <div class="align-center justify-start mlr10">
+        <img [src]="build?.committerAvatar" class="committer-avatar mr10">
       </div>
-      <div class="info-text align-center justify-start">
-        <i class="octicon octicon-git-commit"></i>
-        <span class="data-text is-small is-light plr0">{{ build?.commitShort }}</span>
+      <div class="data-column direction-column">
+        <div class="info-text align-center justify-start">
+          <i class="octicon octicon-git-commit"></i>
+          <span class="data-text plr0">{{ build?.commitShort }}</span>
+        </div>
+        <div class="info-text align-center justify-start">
+          <i class="octicon octicon-git-branch"></i>
+          <span class="data-text plr0">{{ build?.branch }}</span>
+        </div>
       </div>
     </div>
     <div class="column is-2 data-column">
       <div class="info-text justify-center align-center">
-        <span class="data-text is-small is-light">{{ build?.createdAtWords | async }}</span>
+        <span class="data-text">{{ build?.createdAtWords | async }}</span>
       </div>
     </div>
     <div class="column is-1 data-column justify-center">
@@ -53,7 +51,7 @@
     </div>
     <div class="column is-1 data-column">
       <div class="info-text justify-center align-center">
-        <span class="data-text is-light">{{ build?.runningTime | async }}</span>
+        <span class="data-text">{{ build?.runningTime | async }}</span>
       </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>

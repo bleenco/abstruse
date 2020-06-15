@@ -16,6 +16,17 @@
   </div>
 
   <div class="column is-12" *ngIf="builds.length && !fetchingBuilds">
+    <div class="list-heading">
+      <div class="columns">
+        <div class="column is-1"><span class="text">ID</span></div>
+        <div class="column is-3"><span class="text mlr10">Repository</span></div>
+        <div class="column is-2"><span class="text mlr10">Commit / Branch</span></div>
+        <div class="column is-2"><span class="text justify-center">Created</span></div>
+        <div class="column is-1"><span class="text justify-center">Status</span></div>
+        <div class="column is-1"><span class="text justify-center">Time</span></div>
+        <div class="column is-2"><span class="text justify-center">Actions</span></div>
+      </div>
+    </div>
     <app-builds-list-item [build]="b" *ngFor="let b of builds" [style]="'history'"></app-builds-list-item>
   </div>
 
