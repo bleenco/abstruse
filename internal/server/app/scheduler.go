@@ -343,10 +343,10 @@ func (s *Scheduler) broadcastJobStatus(job *core.Job) {
 		"status":   job.GetStatus(),
 	}
 	if job.StartTime != nil {
-		event["start_time"] = util.FormatTime(*job.StartTime)
+		event["start_time"] = job.StartTime
 	}
 	if job.EndTime != nil {
-		event["end_time"] = util.FormatTime(*job.EndTime)
+		event["end_time"] = job.EndTime
 	}
 	s.app.ws.Broadcast(sub, event)
 }

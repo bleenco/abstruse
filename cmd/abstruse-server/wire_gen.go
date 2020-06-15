@@ -68,8 +68,9 @@ func CreateApp(cfg string) (*server.App, error) {
 	providerController := controller.NewProviderController(providerService, repositoryService)
 	hookService := service.NewHookService(repoRepository)
 	hookController := controller.NewHookController(hookService, repositoryService, appApp)
+	syncController := controller.NewSyncController()
 	middlewareController := controller.NewMiddlewareController(logger, userService)
-	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, repositoryController, providerController, hookController, middlewareController)
+	initControllers := controller.CreateInitControllersFn(userController, versionController, workerController, buildController, repositoryController, providerController, hookController, syncController, middlewareController)
 	router := http.NewRouter(optionsOptions, initControllers)
 	httpServer, err := http.NewServer(optionsOptions, logger, router)
 	if err != nil {

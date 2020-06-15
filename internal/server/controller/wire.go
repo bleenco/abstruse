@@ -12,5 +12,6 @@ var ProviderSet = wire.NewSet(
 	NewRepositoryController,
 	NewProviderController,
 	NewHookController,
+	NewSyncController,
 	CreateInitControllersFn,
 )

@@ -20,10 +20,6 @@ func NewVersionController(logger *zap.Logger, service service.VersionService) *V
 }
 
 // GetInfo method
-func (c *VersionController) GetInfo(
-	resp http.ResponseWriter,
-	req *http.Request,
-	_ httprouter.Params,
-) {
+func (c *VersionController) GetInfo(resp http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	JSONResponse(resp, http.StatusOK, Response{Data: c.service.GetInfo()})
 }

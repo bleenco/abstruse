@@ -13,12 +13,16 @@ func CreateInitControllersFn(
 	rc *RepositoryController,
 	pc *ProviderController,
 	hc *HookController,
+	sc *SyncController,
 	mc *MiddlewareController,
 ) http.InitControllers {
 	return func(r *http.Router) {
+		r.GET("/api/version", mc.AuthorizationMiddleware(vc.GetInfo))
+		r.GET("/api/sync/time", mc.AuthorizationMiddleware(sc.Time))
+
 		r.POST("/api/user/login", uc.Login)
 		r.GET("/api/user/:id", uc.Find)
-		r.GET("/api/version", mc.AuthorizationMiddleware(vc.GetInfo))
+
 		r.GET("/api/workers", mc.AuthorizationMiddleware(wc.GetWorkers))
 
 		r.GET("/api/builds/all/:limit/:offset", mc.AuthorizationMiddleware(bc.FindBuilds))
