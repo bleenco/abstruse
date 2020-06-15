@@ -30,7 +30,8 @@
                 "glob": "**/*",
                 "input": "./node_modules/@fortawesome/fontawesome-free/webfonts",
                 "output": "./assets/fonts/fa"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/styles/app.sass"
@@ -70,7 +71,9 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
-              ]
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
             }
           }
         },
@@ -105,7 +108,8 @@
                 "glob": "**/*",
                 "input": "./node_modules/@fortawesome/fontawesome-free/webfonts",
                 "output": "./assets/fonts/fa"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/styles/app.sass"
