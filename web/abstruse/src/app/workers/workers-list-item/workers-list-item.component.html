@@ -29,6 +29,12 @@
         <span class="text">{{ worker?.kernelArch }} {{ worker?.kernelVersion }}</span>
       </div>
     </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Uptime</span>
+        <span class="text">{{ worker?.getUptime }}</span>
+      </div>
+    </div>
     <div class="column is-1 justify-center">
       <div class="list-item-content">
         <span class="label">Jobs</span>
@@ -53,12 +59,6 @@
         <span class="text">
           <app-progress-bar [percent]="worker?.currentMem" [options]="{ color: 'green' }"></app-progress-bar>
         </span>
-      </div>
-    </div>
-    <div class="column is-2">
-      <div class="list-item-content">
-        <span class="label">Uptime</span>
-        <span class="text">{{ worker?.getUptime }}</span>
       </div>
     </div>
   </div>
