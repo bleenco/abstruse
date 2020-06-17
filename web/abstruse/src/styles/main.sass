@@ -78,9 +78,12 @@
           margin: 0
           color: $text-primary
 
+  .not-found-icon
+    width: 400px
+    display: block
+    margin: 40px auto
+
 .text-label
-  +ellipsis
-  +unselectable
   display: block
   text-align: center
   margin-bottom: 3px
@@ -88,12 +91,14 @@
   color: $text-label
   text-transform: uppercase
   font-size: 12px
+  +ellipsis
+  +unselectable
 
 .text-data
-  +unselectable
-  +ellipsis
   font-size: 14px
   font-weight: $weight-medium
   display: block
   text-align: center
   color: $text-primary
+  +unselectable
+  +ellipsis

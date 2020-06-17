@@ -5,9 +5,7 @@
         <h1>Workers</h1>
         <h2>Worker nodes</h2>
       </div>
-      <div class="main-heading-right">
-
-      </div>
+      <div class="main-heading-right"></div>
     </div>
   </div>
 
@@ -18,7 +16,10 @@
   <div class="column is-12" *ngIf="workers.length && !fetchingWorkers">
     <div class="list">
       <div class="list-items">
-        <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
+        <app-workers-list-item
+          [worker]="w"
+          *ngFor="let w of workers"
+        ></app-workers-list-item>
       </div>
     </div>
   </div>
@@ -26,13 +27,11 @@
   <div class="column is-12" *ngIf="!workers.length && !fetchingWorkers">
     <div class="columns">
       <div class="column is-8 is-offset-2">
-        <div class="notification">
-          <p>
-            <i class="fas fa-info"></i>
-            <span>
-              There are no workers currently online. In order to run jobs you need at least one worker node
-              connected.
-            </span>
+        <img src="/assets/images/icons/not-found.svg" class="not-found-icon" />
+        <div class="notification is-white">
+          <p class="justify-center">
+            There are no workers currently online. In order to run jobs you need
+            at least one worker node connected.
           </p>
         </div>
       </div>

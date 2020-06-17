@@ -25,6 +25,10 @@
     font-size: 20px
     margin-right: 25px
 
+  &.is-white
+    background: $white
+    border: none
+
   @each $name, $color in $colors
     &.is-#{$name}
       color: $color
