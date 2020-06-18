@@ -33,13 +33,9 @@
   <div class="column is-12" *ngIf="!fetching && !repos.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">
-        <div class="notification">
-          <p>
-            <i class="fas fa-info"></i>
-            <span>
-              No repositories found.
-            </span>
-          </p>
+        <img src="/assets/images/icons/documents-times.svg" class="not-found-icon" />
+        <div class="notification is-white">
+          <p class="justify-center">No repositories found.</p>
         </div>
       </div>
     </div>

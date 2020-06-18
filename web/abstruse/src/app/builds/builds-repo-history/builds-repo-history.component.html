@@ -51,13 +51,9 @@
   <div class="column is-12" *ngIf="!fetchingBuilds && !builds.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">
-        <div class="notification">
-          <p>
-            <i class="fas fa-info"></i>
-            <span>
-              No builds for repository found.
-            </span>
-          </p>
+        <img src="/assets/images/icons/documents-times.svg" class="not-found-icon" />
+        <div class="notification is-white">
+          <p class="justify-center">No builds for repository found.</p>
         </div>
       </div>
     </div>

@@ -30,10 +30,10 @@
   <div class="column is-12" *ngIf="!providersService.fetchingProviders && !providersService.providers.length">
     <div class="columns">
       <div class="column is-8 is-offset-2">
-        <div class="notification">
-          <p>
-            <i class="fas fa-info"></i>
-            <span>No provider configurations found.</span>
+        <img src="/assets/images/icons/documents-times.svg" class="not-found-icon" />
+        <div class="notification is-white">
+          <p class="justify-center">
+            No provider configurations found.
           </p>
         </div>
       </div>
