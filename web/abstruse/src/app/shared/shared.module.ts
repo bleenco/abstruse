@@ -12,9 +12,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
 import { ModalModule } from './components/modal/modal.module';
 import { ResizeService } from './providers/resize.service';
-import { LineChartModule } from './charts/line-chart/line-chart.module';
-import { PieChartModule } from './charts/pie-chart/pie-chart.module';
-import { RealtimeChartModule } from './charts/realtime-chart/realtime-chart.module';
 import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 import { SpinnerComponent } from './widgets/spinner/spinner.component';
 import { TerminalComponent } from './widgets/terminal/terminal.component';
@@ -27,10 +24,7 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     CommonModule,
     FormsModule,
     HttpClientModule,
-    ModalModule,
-    LineChartModule,
-    PieChartModule,
-    RealtimeChartModule
+    ModalModule
   ],
   declarations: [
     ProgressBarComponent,
@@ -47,9 +41,6 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     HttpClientModule,
     ProgressBarComponent,
     ModalModule,
-    LineChartModule,
-    PieChartModule,
-    RealtimeChartModule,
     SelectboxComponent,
     SpinnerComponent,
     TerminalComponent,

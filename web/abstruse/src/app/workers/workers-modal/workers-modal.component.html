@@ -48,7 +48,7 @@
       <div class="column is-12">
         <h3>CPU Usage</h3>
         <div class="modal-realtime-chart">
-          <app-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></app-realtime-chart>
+          <ngx-realtime-chart [data]="worker?.cpu" [options]="realtimeCpuChartOptions"></ngx-realtime-chart>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
       <div class="column is-12">
         <h3>Memory Usage</h3>
         <div class="modal-realtime-chart">
-          <app-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></app-realtime-chart>
+          <ngx-realtime-chart [data]="worker?.memory" [options]="realtimeMemoryChartOptions"></ngx-realtime-chart>
         </div>
       </div>
     </div>

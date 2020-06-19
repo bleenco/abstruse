@@ -5995,6 +5995,15 @@ ngx-cookie-service@^3.0.4:
   resolved "https://registry.yarnpkg.com/ngx-cookie-service/-/ngx-cookie-service-3.0.4.tgz#603600bf575322aa0bd3f83cab42494e9aebb00a"
   integrity sha512-g4KHpCWL2EtKatWqn8lz/DdyMQO8sDS7BNwCSvxF1ETTW5DPJnbdEwCjSdm84MmfqBh6JdgvoQd//rOxH5EbgQ==
 
+ngx-graph@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ngx-graph/-/ngx-graph-0.2.0.tgz#0d10bd9c934fd8abce21a43b3b382e594faae8a1"
+  integrity sha512-s0X5LmuO5Sy95RJj3i/PvoEq45OF/DcvYpByGtzZ5vZfiIYaPmc9IgWXwxviL4xMl3mQv+gqKyA0ToU9DeWgbg==
+  dependencies:
+    d3 "^5.16.0"
+    d3-interpolate-path "^2.1.2"
+    tslib "^1.10.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
