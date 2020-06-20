@@ -7,30 +7,30 @@ form
   &.no-padding
     padding: 5px 0 0 0
 
-  .field
-    display: inline-block
-    width: 100%
-    max-width: 100%
-    position: relative
+.field
+  display: inline-block
+  width: 100%
+  max-width: 100%
+  position: relative
 
-    &:not(:last-child)
-      margin-bottom: 10px
+  &:not(:last-child)
+    margin-bottom: 10px
 
-    &.is-grouped
-      display: flex
-      justify-content: flex-start
+  &.is-grouped
+    display: flex
+    justify-content: flex-start
 
-      & > .control
+    & > .control
+      flex-grow: 1
+      flex-shrink: 1
+
+      &:not(:last-child)
+        margin-bottom: 0
+        margin-right: 15px
+
+      &.is-expanded
         flex-grow: 1
         flex-shrink: 1
-
-        &:not(:last-child)
-          margin-bottom: 0
-          margin-right: 15px
-
-        &.is-expanded
-          flex-grow: 1
-          flex-shrink: 1
 
     .input-right-icon
       position: absolute

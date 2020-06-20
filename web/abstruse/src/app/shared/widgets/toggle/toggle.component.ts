@@ -25,8 +25,7 @@ export class ToggleComponent implements ControlValueAccessor {
   }
 
   toggle(): void {
-    const curr = this.value;
-    this.value = !curr;
+    this.value = !this.value;
   }
 
   writeValue(val: boolean) {

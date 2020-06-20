@@ -18,6 +18,7 @@ import { TerminalComponent } from './widgets/terminal/terminal.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
 import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
+import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     TerminalComponent,
     StopPropagationDirective,
     ToggleComponent,
-    RadioTabsComponent
+    RadioTabsComponent,
+    CheckboxComponent
   ],
   exports: [
     CommonModule,
@@ -46,7 +48,8 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
     TerminalComponent,
     StopPropagationDirective,
     ToggleComponent,
-    RadioTabsComponent
+    RadioTabsComponent,
+    CheckboxComponent
   ]
 })
 export class SharedModule {
