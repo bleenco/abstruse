@@ -15,8 +15,8 @@ For preview [check demo video.](https://youtu.be/WJ7_hqhiStY)
 For a quick preview you can run:
 
 ```sh
-git clone https://github.com/jkuri/abstruse2
-cd abstruse2
+git clone https://github.com/jkuri/abstruse
+cd abstruse
 make compose
 ```
 
