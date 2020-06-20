@@ -3,8 +3,8 @@ import { ContentRef } from './content-ref.class';
 import { ModalComponent } from './modal.component';
 
 export class ActiveModal {
-  close(result?: any): void { }
-  dismiss(reason?: any): void { }
+  close(result?: any): void {}
+  dismiss(reason?: any): void {}
 }
 
 export class ModalRef<T = any> {
@@ -26,8 +26,8 @@ export class ModalRef<T = any> {
     private beforeDismiss?: () => boolean | Promise<boolean>
   ) {
     this.windowComponentRef.instance.dismissEvent.subscribe((reason: any) => this.dismiss(reason));
-    this.result = new Promise((resolve, reject) => [this.resolve, this.reject] = [resolve, reject]);
-    this.result.then(null, () => { });
+    this.result = new Promise((resolve, reject) => ([this.resolve, this.reject] = [resolve, reject]));
+    this.result.then(null, () => {});
     this.body = document.querySelector('body');
   }
 
@@ -52,7 +52,7 @@ export class ModalRef<T = any> {
     } else {
       const dismiss = this.beforeDismiss();
       if (dismiss && dismiss instanceof Promise) {
-        dismiss.then(result => result !== false ? this.doDismiss(reason) : false);
+        dismiss.then(result => (result !== false ? this.doDismiss(reason) : false));
       } else if (dismiss !== false) {
         this.doDismiss(reason);
       }

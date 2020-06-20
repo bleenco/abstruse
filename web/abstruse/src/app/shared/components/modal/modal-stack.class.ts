@@ -17,24 +17,30 @@ import { ContentRef } from './content-ref.class';
 
 @Injectable({ providedIn: 'root' })
 export class ModalStack {
-
   private modalRefs: ModalRef[] = [];
   private windowComponents: ComponentRef<ModalComponent>[] = [];
   private windowComponentChanged = new Subject();
-  private modalOptions = ['backdrop', 'backdropOpacity', 'beforeDismiss', 'container', 'injector', 'keyboard', 'scrollable', 'size'];
+  private modalOptions = [
+    'backdrop',
+    'backdropOpacity',
+    'beforeDismiss',
+    'container',
+    'injector',
+    'keyboard',
+    'scrollable',
+    'size'
+  ];
 
   constructor(
     @Inject(DOCUMENT) private document: any,
     private applicationRef: ApplicationRef,
     private injector: Injector
   ) {
-    this.windowComponentChanged
-      .pipe(filter(() => !!this.windowComponents.length))
-      .subscribe(() => {
-        const activeWindowComponent = this.windowComponents[this.windowComponents.length - 1];
-        this.setHidden(activeWindowComponent);
-        this.setOpened(activeWindowComponent);
-      });
+    this.windowComponentChanged.pipe(filter(() => !!this.windowComponents.length)).subscribe(() => {
+      const activeWindowComponent = this.windowComponents[this.windowComponents.length - 1];
+      this.setHidden(activeWindowComponent);
+      this.setOpened(activeWindowComponent);
+    });
   }
 
   open(
@@ -43,23 +49,36 @@ export class ModalStack {
     content: any,
     options: ModalOptions
   ): ModalRef {
-    const containerEl = options && options.container ? this.document.querySelector(options.container) : this.document.body;
+    const containerEl =
+      options && options.container ? this.document.querySelector(options.container) : this.document.body;
     if (!containerEl) {
       throw new Error(`The specified modal container "${options.container || 'body'}" was not found in the DOM.`);
     }
 
     const activeModal = new ActiveModal();
-    const contentRef = this.getContentRef(moduleComponentFactoryResolver, options.injector || contentInjector, content, activeModal);
-    const windowComponentRef: ComponentRef<ModalComponent> =
-      this.attachWindowComponent(moduleComponentFactoryResolver, containerEl, contentRef);
+    const contentRef = this.getContentRef(
+      moduleComponentFactoryResolver,
+      options.injector || contentInjector,
+      content,
+      activeModal
+    );
+    const windowComponentRef: ComponentRef<ModalComponent> = this.attachWindowComponent(
+      moduleComponentFactoryResolver,
+      containerEl,
+      contentRef
+    );
     const modalRef: ModalRef = new ModalRef(windowComponentRef, contentRef, options.beforeDismiss);
     const body = this.document.querySelector('body');
 
     this.registerModalRef(modalRef);
     this.registerWindowComponent(windowComponentRef);
 
-    activeModal.close = (result?: any) => { modalRef.close(result); };
-    activeModal.dismiss = (result?: any) => { modalRef.dismiss(result); };
+    activeModal.close = (result?: any) => {
+      modalRef.close(result);
+    };
+    activeModal.dismiss = (result?: any) => {
+      modalRef.dismiss(result);
+    };
 
     this.applyOptions(windowComponentRef.instance, options);
     body.classList.add('no-scroll');
@@ -67,9 +86,13 @@ export class ModalStack {
     return modalRef;
   }
 
-  dismissAll(reason?: any) { this.modalRefs.forEach(modalRef => modalRef.dismiss(reason)); }
+  dismissAll(reason?: any) {
+    this.modalRefs.forEach(modalRef => modalRef.dismiss(reason));
+  }
 
-  hasOpenModals(): boolean { return this.modalRefs.length > 0; }
+  hasOpenModals(): boolean {
+    return this.modalRefs.length > 0;
+  }
 
   private getContentRef(
     moduleComponentFactoryResolver: ComponentFactoryResolver,
@@ -103,8 +126,12 @@ export class ModalStack {
   private createFromTemplateRef(content: TemplateRef<any>, activeModal: ActiveModal): ContentRef {
     const context = {
       $implicit: activeModal,
-      close(result: any) { activeModal.close(result); },
-      dismiss(reason: any) { activeModal.dismiss(reason); }
+      close(result: any) {
+        activeModal.close(result);
+      },
+      dismiss(reason: any) {
+        activeModal.dismiss(reason);
+      }
     };
     const viewRef = content.createEmbeddedView(context);
     this.applicationRef.attachView(viewRef);
@@ -123,8 +150,10 @@ export class ModalStack {
     context: ActiveModal
   ): ContentRef {
     const contentCmptFactory = moduleComponentFactoryResolver.resolveComponentFactory(content);
-    const modalContentInjector =
-      Injector.create({ providers: [{ provide: ActiveModal, useValue: context }], parent: contentInjector });
+    const modalContentInjector = Injector.create({
+      providers: [{ provide: ActiveModal, useValue: context }],
+      parent: contentInjector
+    });
     const componentRef = contentCmptFactory.create(modalContentInjector);
     const componentNativeEl = componentRef.location.nativeElement;
     this.applicationRef.attachView(componentRef.hostView);
@@ -133,12 +162,16 @@ export class ModalStack {
 
   private setOpened(comp: ComponentRef<ModalComponent>): void {
     const el = comp.location.nativeElement.querySelector('.modal-overlay') as HTMLElement;
-    if (!el.classList.contains('is-open')) { el.classList.add('is-open'); }
+    if (!el.classList.contains('is-open')) {
+      el.classList.add('is-open');
+    }
   }
 
   private setHidden(comp: ComponentRef<ModalComponent>): void {
     const el = comp.location.nativeElement.querySelector('.modal-overlay') as HTMLElement;
-    if (el.classList.contains('is-open')) { el.classList.remove('is-open'); }
+    if (el.classList.contains('is-open')) {
+      el.classList.remove('is-open');
+    }
   }
 
   private registerModalRef(modalRef: ModalRef): void {

@@ -14,23 +14,24 @@ export class ProvidersReposListItemComponent implements OnInit {
   saving: boolean;
   imported: boolean;
 
-  constructor(
-    private providersService: ProvidersService
-  ) { }
+  constructor(private providersService: ProvidersService) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   import(): void {
     this.saving = true;
-    this.providersService.import(this.providerId, this.repo)
-      .subscribe(resp => {
+    this.providersService.import(this.providerId, this.repo).subscribe(
+      resp => {
         if (resp && resp.data) {
           this.repo.isImported = true;
         }
-      }, err => {
+      },
+      err => {
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.saving = false;
-      });
+      }
+    );
   }
 }

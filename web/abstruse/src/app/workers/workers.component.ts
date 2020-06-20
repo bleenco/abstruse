@@ -4,4 +4,4 @@ import { Component } from '@angular/core';
   selector: 'app-workers',
   template: `<router-outlet></router-outlet>`
 })
-export class WorkersComponent { }
+export class WorkersComponent {}

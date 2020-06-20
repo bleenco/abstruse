@@ -10,4 +10,4 @@ import { ModalService } from './modal.service';
   providers: [ModalService],
   exports: [ModalComponent]
 })
-export class ModalModule { }
+export class ModalModule {}

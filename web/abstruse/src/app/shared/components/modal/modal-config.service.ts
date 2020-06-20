@@ -14,7 +14,7 @@ export interface ModalOptions {
 @Injectable({ providedIn: 'root' })
 export class ModalConfig implements Required<ModalOptions> {
   backdrop: boolean | 'white' = true;
-  backdropOpacity = .8;
+  backdropOpacity = 0.8;
   beforeDismiss: () => boolean | Promise<boolean>;
   container: string;
   injector: Injector;

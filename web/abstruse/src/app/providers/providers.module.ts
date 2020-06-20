@@ -9,7 +9,6 @@ import { ProvidersListItemComponent } from './providers-list-item/providers-list
 import { ProvidersReposListComponent } from './providers-repos-list/providers-repos-list.component';
 import { ProvidersReposListItemComponent } from './providers-repos-list-item/providers-repos-list-item.component';
 
-
 @NgModule({
   declarations: [
     ProvidersListComponent,
@@ -18,11 +17,7 @@ import { ProvidersReposListItemComponent } from './providers-repos-list-item/pro
     ProvidersReposListComponent,
     ProvidersReposListItemComponent
   ],
-  imports: [
-    CommonModule,
-    ProvidersRoutingModule,
-    SharedModule.forRoot()
-  ],
+  imports: [CommonModule, ProvidersRoutingModule, SharedModule.forRoot()],
   entryComponents: [ProvidersModalComponent]
 })
-export class ProvidersModule { }
+export class ProvidersModule {}

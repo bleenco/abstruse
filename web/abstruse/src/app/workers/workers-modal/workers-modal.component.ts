@@ -19,17 +19,15 @@ export class WorkersModalComponent implements OnInit {
     timeSlots: 120
   };
   realtimeCpuChartOptions: RealtimeChartOptions = {
-    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: .45 }]
+    ...this.realtimeChartOptions,
+    lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: 0.45 }]
   };
   realtimeMemoryChartOptions: RealtimeChartOptions = {
-    ...this.realtimeChartOptions, lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: .45 }]
+    ...this.realtimeChartOptions,
+    lines: [{ color: '#48bb78', areaColor: '#48bb78', areaOpacity: 0.45 }]
   };
 
-  constructor(
-    public activeModal: ActiveModal
-  ) { }
+  constructor(public activeModal: ActiveModal) {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

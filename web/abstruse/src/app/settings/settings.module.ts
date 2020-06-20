@@ -5,13 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { SettingsUserComponent } from './settings-user/settings-user.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SettingsRoutingModule,
-    SharedModule.forRoot()
-  ],
-  declarations: [
-    SettingsUserComponent
-  ]
+  imports: [CommonModule, SettingsRoutingModule, SharedModule.forRoot()],
+  declarations: [SettingsUserComponent]
 })
-export class SettingsModule { }
+export class SettingsModule {}

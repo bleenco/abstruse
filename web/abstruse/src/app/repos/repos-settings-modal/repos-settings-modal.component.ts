@@ -10,10 +10,7 @@ import { Repo } from '../shared/repo.model';
 export class ReposSettingsModalComponent implements OnInit {
   repo: Repo;
 
-  constructor(
-    public activeModal: ActiveModal
-  ) { }
+  constructor(public activeModal: ActiveModal) {}
 
-  ngOnInit(): void { }
-
+  ngOnInit(): void {}
 }

@@ -1,5 +1,4 @@
 <div class="columns is-multiline">
-
   <div class="column is-12">
     <div class="main-heading">
       <div class="main-heading-left">
@@ -9,8 +8,13 @@
       <div class="main-heading-right">
         <div class="search-container">
           <i class="fas fa-search"></i>
-          <input type="text" class="input search-box" placeholder="Search repositories..." [(ngModel)]="searchKeyword"
-            (ngModelChange)="onSearchInputChange($event)">
+          <input
+            type="text"
+            class="input search-box"
+            placeholder="Search repositories..."
+            [(ngModel)]="searchKeyword"
+            (ngModelChange)="onSearchInputChange($event)"
+          />
         </div>
         <!-- <button class="button" type="button">Add Provider</button> -->
         <!-- <app-selectbox></app-selectbox> -->
@@ -40,5 +44,4 @@
       </div>
     </div>
   </div>
-
 </div>

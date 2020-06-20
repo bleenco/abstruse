@@ -14,15 +14,13 @@ export const workerSubUsageEvent = '/subs/workers_usage';
   providedIn: 'root'
 })
 export class WorkersService {
-
-  constructor(public http: HttpClient) { }
+  constructor(public http: HttpClient) {}
 
   fetchWorkers(): Observable<Worker[]> {
     const url = getAPIURL() + '/workers';
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map(resp => resp.data && resp.data.length ? resp.data : []),
-        map(data => data.map(generateWorker))
-      );
+    return this.http.get<JSONResponse>(url).pipe(
+      map(resp => (resp.data && resp.data.length ? resp.data : [])),
+      map(data => data.map(generateWorker))
+    );
   }
 }

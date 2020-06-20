@@ -1,6 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Worker, generateWorker } from '../shared/worker.class';
-import { WorkersService, workerSubUsageEvent, workerSubAddEvent, workerSubDeleteEvent } from '../shared/workers.service';
+import {
+  WorkersService,
+  workerSubUsageEvent,
+  workerSubAddEvent,
+  workerSubDeleteEvent
+} from '../shared/workers.service';
 import { DataService } from '../../shared/providers/data.service';
 import { JSONResponse } from 'src/app/core/shared/shared.model';
 import { Subscription, generate } from 'rxjs';
@@ -16,10 +21,7 @@ export class WorkersListComponent implements OnInit, OnDestroy {
   fetchingWorkers: boolean;
   sub: Subscription = new Subscription();
 
-  constructor(
-    public workersService: WorkersService,
-    public dataService: DataService
-  ) { }
+  constructor(public workersService: WorkersService, public dataService: DataService) {}
 
   ngOnInit(): void {
     this.fetchWorkers();
@@ -42,7 +44,8 @@ export class WorkersListComponent implements OnInit, OnDestroy {
             break;
           }
         }
-      }));
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -51,16 +54,19 @@ export class WorkersListComponent implements OnInit, OnDestroy {
 
   private fetchWorkers(): void {
     this.fetchingWorkers = true;
-    this.workersService.fetchWorkers()
-      .subscribe((workers: Worker[]) => {
+    this.workersService.fetchWorkers().subscribe(
+      (workers: Worker[]) => {
         this.workers = workers;
-      }, err => {
+      },
+      err => {
         console.error(err);
         this.workers = [];
         this.fetchingWorkers = false;
-      }, () => {
+      },
+      () => {
         this.fetchingWorkers = false;
-      });
+      }
+    );
   }
 
   private subscribe(): void {
@@ -73,6 +79,8 @@ export class WorkersListComponent implements OnInit, OnDestroy {
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubAddEvent } });
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubDeleteEvent } });
     this.dataService.socketInput.emit({ type: 'unsubscribe', data: { sub: workerSubUsageEvent } });
-    if (this.sub) { this.sub.unsubscribe(); }
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

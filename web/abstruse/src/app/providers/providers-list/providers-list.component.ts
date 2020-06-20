@@ -8,8 +8,7 @@ import { Provider } from '../shared/provider.class';
   styleUrls: ['./providers-list.component.sass']
 })
 export class ProvidersListComponent implements OnInit {
-
-  constructor(public providersService: ProvidersService) { }
+  constructor(public providersService: ProvidersService) {}
 
   ngOnInit(): void {
     this.providersService.list();

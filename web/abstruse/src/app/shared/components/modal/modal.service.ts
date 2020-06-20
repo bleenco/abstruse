@@ -10,13 +10,17 @@ export class ModalService {
     private injector: Injector,
     private modalStack: ModalStack,
     private config: ModalConfig
-  ) { }
+  ) {}
 
   open<T>(content: T, options: ModalOptions = {}): ModalRef<T> {
     const combinedOptions = Object.assign({}, this.config, options);
     return this.modalStack.open(this.moduleComponentFactoryResolver, this.injector, content, combinedOptions);
   }
 
-  dismissAll(reason?: any) { this.modalStack.dismissAll(reason); }
-  hasOpenModals(): boolean { return this.modalStack.hasOpenModals(); }
+  dismissAll(reason?: any) {
+    this.modalStack.dismissAll(reason);
+  }
+  hasOpenModals(): boolean {
+    return this.modalStack.hasOpenModals();
+  }
 }

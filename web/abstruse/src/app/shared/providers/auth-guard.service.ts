@@ -7,18 +7,16 @@ import { JSONResponse } from '../../core/shared/shared.model';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-
-  constructor(public auth: AuthService, public router: Router, public http: HttpClient) { }
+  constructor(public auth: AuthService, public router: Router, public http: HttpClient) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-    return Promise.resolve()
-      .then(() => {
-        if (!this.auth.userInfo) {
-          this.router.navigate(['/login']);
-          return false;
-        } else {
-          return true;
-        }
-      });
+    return Promise.resolve().then(() => {
+      if (!this.auth.userInfo) {
+        this.router.navigate(['/login']);
+        return false;
+      } else {
+        return true;
+      }
+    });
   }
 }

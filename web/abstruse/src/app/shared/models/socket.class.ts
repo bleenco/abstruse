@@ -17,7 +17,7 @@ export class RxWebSocket {
   out$: Observable<any>;
   in$: Observer<any>;
 
-  constructor() { }
+  constructor() {}
 
   selector(e: MessageEvent) {
     return JSON.parse(e.data);

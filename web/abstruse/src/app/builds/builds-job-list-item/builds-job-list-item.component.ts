@@ -13,37 +13,43 @@ export class BuildsJobListItemComponent implements OnInit {
 
   processing: boolean;
 
-  constructor(public buildsService: BuildsService) { }
+  constructor(public buildsService: BuildsService) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   restartJob(): void {
     this.processing = true;
-    this.buildsService.restartJob(this.job.id)
-      .subscribe(resp => {
+    this.buildsService.restartJob(this.job.id).subscribe(
+      resp => {
         if (!resp.data) {
           console.error(resp);
         }
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 
   stopJob(): void {
     this.processing = true;
-    this.buildsService.stopJob(this.job.id)
-      .subscribe(resp => {
+    this.buildsService.stopJob(this.job.id).subscribe(
+      resp => {
         if (!resp.data) {
           console.error(resp);
         }
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 }

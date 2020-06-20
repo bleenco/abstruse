@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { SelectboxComponent } from './selectbox.component';
 
-const testData: { value: any,  placeholder: string }[] = [
+const testData: { value: any; placeholder: string }[] = [
   { value: 'ice-cream', placeholder: 'Ice cream' },
   { value: 'raspberry', placeholder: 'Raspberry' },
   { value: 'peach', placeholder: 'Peach' }
@@ -16,10 +16,9 @@ describe('SelectboxComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ FormsModule ],
-      declarations: [ SelectboxComponent ]
-    })
-    .compileComponents();
+      imports: [FormsModule],
+      declarations: [SelectboxComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -53,13 +52,17 @@ describe('SelectboxComponent', () => {
     fixture.detectChanges();
 
     expect(component.placeholder).toEqual('Raspberry');
-    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual('Raspberry');
+    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual(
+      'Raspberry'
+    );
 
     component.value = 'ice-cream';
     fixture.detectChanges();
 
     expect(component.placeholder).toEqual('Ice cream');
-    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual('Ice cream');
+    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual(
+      'Ice cream'
+    );
   });
 
   it('should throw an error when setting value when values are not initialized', () => {
@@ -71,5 +74,4 @@ describe('SelectboxComponent', () => {
     };
     expect(() => setValue()).toThrowError('no values initialized');
   });
-
 });

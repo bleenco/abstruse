@@ -15,7 +15,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     public statusService: StatusService,
     public cookieService: CookieService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.authService.checkAuthenticated();
@@ -30,6 +30,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.authSub) { this.authSub.unsubscribe(); }
+    if (this.authSub) {
+      this.authSub.unsubscribe();
+    }
   }
 }

@@ -26,22 +26,18 @@ export enum ModalDismissReasons {
   styleUrls: ['./modal.component.sass']
 })
 export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
-
   @ViewChild('UIModal', { read: ElementRef, static: false }) elementRef: ElementRef;
 
   @Input() backdrop: boolean | 'white' = true;
-  @Input() backdropOpacity = .5;
+  @Input() backdropOpacity = 0.5;
   @Input() keyboard = true;
   @Input() size: 'small' | 'large' | 'medium';
 
   @Output() dismissEvent = new EventEmitter();
 
-  constructor(
-    @Inject(DOCUMENT) private document: HTMLDocument,
-    private ngZone: NgZone
-  ) { }
+  constructor(@Inject(DOCUMENT) private document: HTMLDocument, private ngZone: NgZone) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     fromEvent<KeyboardEvent>(this.document, 'keydown')
@@ -49,12 +45,14 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
         takeUntil(this.dismissEvent),
         filter((e: KeyboardEvent) => e.key === 'Escape' && this.keyboard)
       )
-      .subscribe((e: KeyboardEvent) => requestAnimationFrame(() => {
-        if (!e.defaultPrevented) {
-          this.ngZone.run(() => this.dismissEvent.emit(ModalDismissReasons.ESC));
-        }
-      }));
+      .subscribe((e: KeyboardEvent) =>
+        requestAnimationFrame(() => {
+          if (!e.defaultPrevented) {
+            this.ngZone.run(() => this.dismissEvent.emit(ModalDismissReasons.ESC));
+          }
+        })
+      );
   }
 
-  ngOnDestroy() { }
+  ngOnDestroy() {}
 }

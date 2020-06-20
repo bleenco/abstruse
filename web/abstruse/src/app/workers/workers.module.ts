@@ -9,18 +9,8 @@ import { SharedModule } from '../shared/shared.module';
 import { WorkersModalComponent } from './workers-modal/workers-modal.component';
 
 @NgModule({
-  declarations: [
-    WorkersComponent,
-    WorkersListComponent,
-    WorkersListItemComponent,
-    WorkersModalComponent
-  ],
-  imports: [
-    CommonModule,
-    WorkersRoutingModule,
-    RealtimeChartModule,
-    SharedModule.forRoot()
-  ],
+  declarations: [WorkersComponent, WorkersListComponent, WorkersListItemComponent, WorkersModalComponent],
+  imports: [CommonModule, WorkersRoutingModule, RealtimeChartModule, SharedModule.forRoot()],
   entryComponents: [WorkersModalComponent]
 })
-export class WorkersModule { }
+export class WorkersModule {}

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 
 export class ContentRef {
-  constructor(public nodes: any[], public viewRef?: ViewRef, public componentRef?: ComponentRef<any>) { }
+  constructor(public nodes: any[], public viewRef?: ViewRef, public componentRef?: ComponentRef<any>) {}
 }
 
 export class PopupService<T> {
@@ -24,14 +24,17 @@ export class PopupService<T> {
     private renderer: Renderer2,
     private componentFactoryResolver: ComponentFactoryResolver,
     private applicationRef: ApplicationRef
-  ) { }
+  ) {}
 
   open(content?: string | TemplateRef<any>, context?: any): ComponentRef<T> {
     if (!this.windowRef) {
       this.contentRef = this.getContentRef(content, context);
       this.windowRef = this.viewContainerRef.createComponent(
-        this.componentFactoryResolver.resolveComponentFactory<T>(this.type), 0, this.injector,
-        this.contentRef.nodes);
+        this.componentFactoryResolver.resolveComponentFactory<T>(this.type),
+        0,
+        this.injector,
+        this.contentRef.nodes
+      );
     }
 
     return this.windowRef;

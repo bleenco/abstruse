@@ -23,7 +23,7 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
     public activatedRoute: ActivatedRoute,
     public buildsService: BuildsService,
     public dataService: DataService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
@@ -40,44 +40,53 @@ export class BuildsDetailsComponent implements OnInit, OnDestroy {
 
   findAll(): void {
     this.fetching = true;
-    this.buildsService.findAll(this.buildid)
-      .subscribe(build => {
+    this.buildsService.findAll(this.buildid).subscribe(
+      build => {
         this.build = build;
-      }, err => {
+      },
+      err => {
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   restartBuild(): void {
     this.processing = true;
-    this.buildsService.restartBuild(this.buildid)
-      .subscribe(resp => {
+    this.buildsService.restartBuild(this.buildid).subscribe(
+      resp => {
         if (resp.data) {
           this.build.resetTime();
         }
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 
   stopBuild(): void {
     this.processing = true;
-    this.buildsService.stopBuild(this.buildid)
-      .subscribe(resp => {
+    this.buildsService.stopBuild(this.buildid).subscribe(
+      resp => {
         if (!resp.data) {
           console.error(resp);
         }
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {

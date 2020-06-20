@@ -17,53 +17,63 @@ export class ProvidersModalComponent implements OnInit {
     { value: 'bitbucket', placeholder: 'Bitbucket' },
     { value: 'gitea', placeholder: 'Gitea' },
     { value: 'gogs', placeholder: 'Gogs' },
-    { value: 'stash', placeholder: 'Stash' },
+    { value: 'stash', placeholder: 'Stash' }
   ];
   saving: boolean;
   checking: boolean;
 
-  constructor(
-    public providersService: ProvidersService,
-    public activeModal: ActiveModal
-  ) { }
+  constructor(public providersService: ProvidersService, public activeModal: ActiveModal) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   save(): void {
     this.saving = true;
     if (this.provider.id) {
-      this.providersService.update(this.provider)
-        .subscribe(resp => {
+      this.providersService.update(this.provider).subscribe(
+        resp => {
           if (resp.data) {
             this.activeModal.close(true);
           }
-        }, err => {
+        },
+        err => {
           console.error(err);
           this.saving = false;
-        }, () => {
+        },
+        () => {
           this.saving = false;
-        });
+        }
+      );
     } else {
-      this.providersService.create(this.provider)
-        .subscribe(resp => {
+      this.providersService.create(this.provider).subscribe(
+        resp => {
           if (resp.data) {
             this.activeModal.close(true);
           }
-        }, err => {
+        },
+        err => {
           console.error(err);
           this.saving = false;
-        }, () => {
+        },
+        () => {
           this.saving = false;
-        });
+        }
+      );
     }
   }
 
   updateProviderURL(): void {
     switch (this.provider.name) {
-      case 'github': this.provider.url = 'https://api.github.com'; break;
-      case 'gitlab': this.provider.url = 'https://gitlab.com'; break;
-      case 'bitbucket': this.provider.url = 'https://api.bitbucket.org'; break;
-      default: this.provider.url = '';
+      case 'github':
+        this.provider.url = 'https://api.github.com';
+        break;
+      case 'gitlab':
+        this.provider.url = 'https://gitlab.com';
+        break;
+      case 'bitbucket':
+        this.provider.url = 'https://api.bitbucket.org';
+        break;
+      default:
+        this.provider.url = '';
     }
   }
 

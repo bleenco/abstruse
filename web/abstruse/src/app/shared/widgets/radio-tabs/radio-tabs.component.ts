@@ -5,19 +5,17 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   selector: 'app-radio-tabs',
   templateUrl: './radio-tabs.component.html',
   styleUrls: ['./radio-tabs.component.sass'],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => RadioTabsComponent), multi: true }
-  ]
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => RadioTabsComponent), multi: true }]
 })
 export class RadioTabsComponent implements ControlValueAccessor, OnInit {
-  @Input() values: { value: string | number | boolean, placeholder: string }[];
+  @Input() values: { value: string | number | boolean; placeholder: string }[];
 
   innerValue: number | string | boolean;
 
-  constructor() { }
+  constructor() {}
 
-  private onTouchedCallback: () => void = () => { };
-  private onChangeCallback: (_: any) => void = () => { };
+  private onTouchedCallback: () => void = () => {};
+  private onChangeCallback: (_: any) => void = () => {};
 
   get value(): number | string | boolean {
     return this.innerValue;
@@ -36,7 +34,7 @@ export class RadioTabsComponent implements ControlValueAccessor, OnInit {
     this.onChangeCallback(this.innerValue);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   writeValue(val: number | string | boolean) {
     if (!val) {

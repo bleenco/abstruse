@@ -8,10 +8,7 @@ import { getAPIURL } from '../../core/shared/shared-functions';
   providedIn: 'root'
 })
 export class AboutService {
-
-  constructor(
-    public http: HttpClient
-  ) { }
+  constructor(public http: HttpClient) {}
 
   fetchVersion(): Observable<JSONResponse> {
     const url = getAPIURL() + '/version';

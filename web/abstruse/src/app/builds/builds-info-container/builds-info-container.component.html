@@ -2,8 +2,15 @@
   <div class="columns info-columns">
     <div class="column is-2">
       <div class="info-text" *ngIf="!job">
-        <span class="tag is-medium"
-          [ngClass]="{ 'is-gray': build?.status === 'queued', 'is-green': build?.status === 'passing', 'is-red': build?.status === 'failing', 'is-yellow': build?.status === 'running' }">
+        <span
+          class="tag is-medium"
+          [ngClass]="{
+            'is-gray': build?.status === 'queued',
+            'is-green': build?.status === 'passing',
+            'is-red': build?.status === 'failing',
+            'is-yellow': build?.status === 'running'
+          }"
+        >
           <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
           <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
           <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
@@ -14,8 +21,15 @@
         </span>
       </div>
       <div class="info-text" *ngIf="job">
-        <span class="tag is-medium"
-          [ngClass]="{ 'is-gray': job?.status === 'queued', 'is-green': job?.status === 'passing', 'is-red': job?.status === 'failing', 'is-yellow': job?.status === 'running' }">
+        <span
+          class="tag is-medium"
+          [ngClass]="{
+            'is-gray': job?.status === 'queued',
+            'is-green': job?.status === 'passing',
+            'is-red': job?.status === 'failing',
+            'is-yellow': job?.status === 'running'
+          }"
+        >
           <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
           <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
           <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
@@ -28,7 +42,7 @@
     </div>
     <div class="column is-9 align-center">
       <div class="info-text">
-        <img [src]="build?.committerAvatar" class="committer-avatar">
+        <img [src]="build?.committerAvatar" class="committer-avatar" />
         <span class="desc-text">{{ build?.committerName }} authored and commited</span>
       </div>
       <div class="info-text">

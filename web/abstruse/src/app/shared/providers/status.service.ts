@@ -20,26 +20,25 @@ export class StatusService {
     this.status = 'loading';
     const url = getAPIURL() + `/setup/ready`;
 
-    this.http.get<JSONResponse>(url)
-      .subscribe(resp => {
-        if (resp && resp.data) {
-          this.status = resp.data;
-          this.status$.next(this.status);
-        }
+    this.http.get<JSONResponse>(url).subscribe(resp => {
+      if (resp && resp.data) {
+        this.status = resp.data;
+        this.status$.next(this.status);
+      }
 
-        const currentUrl: string = this.router.url;
-        switch (this.status) {
-          case 'setup':
-            if (currentUrl === '' || currentUrl === '/' || currentUrl === '/login') {
-              this.router.navigate(['/setup']);
-            }
-            break;
-          case 'ready':
-            if (currentUrl.startsWith('/setup')) {
-              this.router.navigate(['/login']);
-            }
-            break;
-        }
-      });
+      const currentUrl: string = this.router.url;
+      switch (this.status) {
+        case 'setup':
+          if (currentUrl === '' || currentUrl === '/' || currentUrl === '/login') {
+            this.router.navigate(['/setup']);
+          }
+          break;
+        case 'ready':
+          if (currentUrl.startsWith('/setup')) {
+            this.router.navigate(['/login']);
+          }
+          break;
+      }
+    });
   }
 }

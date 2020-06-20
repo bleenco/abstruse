@@ -16,14 +16,13 @@ export class DataService {
   constructor(public socketService: SocketService) {
     this.socketInput = new EventEmitter<SocketEvent>();
     this.socketOutput = this.socketService.onMessage();
-    this.socketService.connectionState
-      .subscribe(state => {
-        if (state === ConnectionStates.CONNECTED) {
-          this.connected.next(true);
-        } else if (state === ConnectionStates.RETRYING) {
-          this.connected.next(false);
-        }
-      });
+    this.socketService.connectionState.subscribe(state => {
+      if (state === ConnectionStates.CONNECTED) {
+        this.connected.next(true);
+      } else if (state === ConnectionStates.RETRYING) {
+        this.connected.next(false);
+      }
+    });
     this.socketInput.subscribe((e: SocketEvent) => this.socketService.emit(e));
   }
 

@@ -13,7 +13,7 @@ export class ProviderRepo {
     public link?: string,
     public createdAt?: Date,
     public updatedAt?: Date
-  ) { }
+  ) {}
 
   get fullName(): string {
     return `${this.namespace}/${this.name}`;
@@ -21,9 +21,5 @@ export class ProviderRepo {
 }
 
 export class ProviderRepoPermission {
-  constructor(
-    public pull: boolean,
-    public push: boolean,
-    public admin: boolean
-  ) { }
+  constructor(public pull: boolean, public push: boolean, public admin: boolean) {}
 }

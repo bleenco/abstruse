@@ -33,10 +33,7 @@ export class ProgressBarComponent implements OnInit, OnChanges {
     return this.placeholder;
   }
 
-  constructor(
-    public elementRef: ElementRef,
-    public renderer: Renderer2
-  ) { }
+  constructor(public elementRef: ElementRef, public renderer: Renderer2) {}
 
   ngOnInit() {
     this.container = this.elementRef.nativeElement.querySelector('.progress-bar-container');
@@ -55,7 +52,7 @@ export class ProgressBarComponent implements OnInit, OnChanges {
   }
 
   private initSettings(): void {
-    this.options = { ...defaultProgressBarSettings, ...this.options || {} };
+    this.options = { ...defaultProgressBarSettings, ...(this.options || {}) };
 
     Object.keys(this.classes).forEach(key => {
       this.renderer.removeClass(this.container, this.classes[key]);

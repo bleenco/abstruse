@@ -13,13 +13,12 @@ import { catchError } from 'rxjs/operators';
 @Injectable()
 export class HttpErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(request)
-      .pipe(
-        catchError((error: HttpErrorResponse) => throwError(error.error || error))
-      );
+    return next.handle(request).pipe(catchError((error: HttpErrorResponse) => throwError(error.error || error)));
   }
 }
 
 export const HttpErrorInterceptorProvider: Provider = {
-  provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true
+  provide: HTTP_INTERCEPTORS,
+  useClass: HttpErrorInterceptor,
+  multi: true
 };

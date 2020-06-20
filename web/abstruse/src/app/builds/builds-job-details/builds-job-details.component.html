@@ -1,19 +1,33 @@
 <div class="columns is-multiline">
-
   <div class="column is-12" *ngIf="buildsService?.repo && !fetching">
     <div class="main-heading">
       <div class="main-heading-left">
         <h1>Builds</h1>
-        <h2 class="is-link" [routerLink]="['/builds', repoid]" *ngIf="repoid" routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{exact: true}">
+        <h2
+          class="is-link"
+          [routerLink]="['/builds', repoid]"
+          *ngIf="repoid"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           {{ buildsService?.repo?.namespace }} / {{ buildsService?.repo?.name }}
         </h2>
-        <h2 class="is-link" [routerLink]="['/builds', repoid, buildid]" *ngIf="repoid && buildid"
-          routerLinkActive="is-active" [routerLinkActiveOptions]="{exact: true}">Build
-          #{{ buildid }}
+        <h2
+          class="is-link"
+          [routerLink]="['/builds', repoid, buildid]"
+          *ngIf="repoid && buildid"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Build #{{ buildid }}
         </h2>
-        <h2 class="is-link" [routerLink]="['/builds', repoid, buildid, jobid]" *ngIf="repoid && buildid && jobid"
-          routerLinkActive="is-active" [routerLinkActiveOptions]="{exact: true}">
+        <h2
+          class="is-link"
+          [routerLink]="['/builds', repoid, buildid, jobid]"
+          *ngIf="repoid && buildid && jobid"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           Job #{{ buildid }}.{{ jobid }}
         </h2>
       </div>
@@ -22,8 +36,12 @@
           <i class="fas fa-sync-alt"></i>
           <span>Restart Job</span>
         </button>
-        <button type="button" class="button"
-          [disabled]="job?.status != 'running' || job?.status != 'queued' || processing" (click)="stopJob()">
+        <button
+          type="button"
+          class="button"
+          [disabled]="job?.status != 'running' || job?.status != 'queued' || processing"
+          (click)="stopJob()"
+        >
           <i class="fas fa-hand-paper"></i>
           <span>Stop Job</span>
         </button>
@@ -44,5 +62,4 @@
       <app-terminal [data]="job?.log"></app-terminal>
     </div>
   </div>
-
 </div>

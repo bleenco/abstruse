@@ -12,11 +12,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   dropdownOpened: boolean;
   sub: Subscription;
 
-  constructor(
-    public authService: AuthService,
-    public elementRef: ElementRef,
-    public router: Router
-  ) { }
+  constructor(public authService: AuthService, public elementRef: ElementRef, public router: Router) {}
 
   ngOnInit() {
     this.dropdownOpened = false;
@@ -53,5 +49,4 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.dropdownOpened = false;
     }
   }
-
 }

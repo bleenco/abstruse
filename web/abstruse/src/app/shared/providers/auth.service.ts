@@ -15,10 +15,7 @@ export class AuthService {
   userInfo: any = false;
   authenticated$: BehaviorSubject<boolean>;
 
-  constructor(
-    public http: HttpClient,
-    public router: Router
-  ) {
+  constructor(public http: HttpClient, public router: Router) {
     this.tokenName = 'abstruse-auth-token';
     this.authenticated$ = new BehaviorSubject<boolean>(false);
   }

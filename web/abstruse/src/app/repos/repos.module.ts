@@ -7,16 +7,8 @@ import { ReposListItemComponent } from './repos-list-item/repos-list-item.compon
 import { ReposSettingsModalComponent } from './repos-settings-modal/repos-settings-modal.component';
 
 @NgModule({
-  declarations: [
-    ReposListComponent,
-    ReposListItemComponent,
-    ReposSettingsModalComponent
-  ],
-  imports: [
-    CommonModule,
-    ReposRoutingModule,
-    SharedModule.forRoot()
-  ],
+  declarations: [ReposListComponent, ReposListItemComponent, ReposSettingsModalComponent],
+  imports: [CommonModule, ReposRoutingModule, SharedModule.forRoot()],
   entryComponents: [ReposSettingsModalComponent]
 })
-export class ReposModule { }
+export class ReposModule {}

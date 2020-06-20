@@ -10,7 +10,7 @@ export class BuildsInfoContainerComponent implements OnInit {
   @Input() build: Build;
   @Input() job: Job;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 }

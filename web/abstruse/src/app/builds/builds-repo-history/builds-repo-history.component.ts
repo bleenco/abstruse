@@ -27,7 +27,7 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
     public activatedRoute: ActivatedRoute,
     public buildsService: BuildsService,
     public dataService: DataService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
@@ -48,8 +48,8 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
       this.fetchingMore = true;
     }
 
-    this.buildsService.findByRepoID(this.repoid, this.limit, this.offset)
-      .subscribe((resp: Build[]) => {
+    this.buildsService.findByRepoID(this.repoid, this.limit, this.offset).subscribe(
+      (resp: Build[]) => {
         this.builds = this.builds.concat(resp);
         if (resp.length === this.limit) {
           this.offset += resp.length;
@@ -57,36 +57,41 @@ export class BuildsRepoHistoryComponent implements OnInit, OnDestroy {
           this.hideMoreButton = true;
         }
         this.buildsService.subscribeToJobEvents(resp.map(b => b.id));
-      }, err => {
+      },
+      err => {
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.fetchingBuilds = false;
         this.fetchingMore = false;
-      });
+      }
+    );
   }
 
   triggerBuild(): void {
     this.trigger = true;
-    this.buildsService.triggerBuild(this.repoid)
-      .subscribe((resp: JSONResponse) => {
+    this.buildsService.triggerBuild(this.repoid).subscribe(
+      (resp: JSONResponse) => {
         console.log(resp);
-      }, err => {
+      },
+      err => {
         console.error(err);
         this.trigger = false;
-      }, () => {
+      },
+      () => {
         this.trigger = false;
-      });
+      }
+    );
   }
 
   private initDataEvents(): void {
     this.buildsService.subscribeToBuildsEvents();
     this.sub
       .add(
-        this.buildsService.buildsEvents(this.repoid)
-          .subscribe(build => {
-            this.builds.unshift(build);
-            this.buildsService.subscribeToJobEvents([build.id]);
-          })
+        this.buildsService.buildsEvents(this.repoid).subscribe(build => {
+          this.builds.unshift(build);
+          this.buildsService.subscribeToJobEvents([build.id]);
+        })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
   }

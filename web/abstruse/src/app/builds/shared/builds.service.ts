@@ -20,54 +20,38 @@ const buildsSubJobLogEvent = '/subs/logs/';
 export class BuildsService {
   repo: Repo;
 
-  constructor(public http: HttpClient, public dataService: DataService, public reposService: ReposService) { }
+  constructor(public http: HttpClient, public dataService: DataService, public reposService: ReposService) {}
 
   findRepo(repoid: number): void {
     this.repo = null;
-    this.reposService.find(repoid)
-      .subscribe(repo => {
-        this.repo = repo;
-      });
+    this.reposService.find(repoid).subscribe(repo => {
+      this.repo = repo;
+    });
   }
 
   findBuilds(limit = 5, offset = 0): Observable<Build[]> {
     const url = `${getAPIURL()}/builds/all/${limit}/${offset}`;
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map((resp: JSONResponse) => resp.data.map(generateBuildModel))
-      );
+    return this.http.get<JSONResponse>(url).pipe(map((resp: JSONResponse) => resp.data.map(generateBuildModel)));
   }
 
   find(buildID: number): Observable<Build> {
     const url = `${getAPIURL()}/builds/info/${buildID}`;
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map((resp: any) => generateBuildModel(resp.data))
-      );
+    return this.http.get<JSONResponse>(url).pipe(map((resp: any) => generateBuildModel(resp.data)));
   }
 
   findAll(buildID: number): Observable<Build> {
     const url = `${getAPIURL()}/builds/info/${buildID}/all`;
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map((resp: JSONResponse) => generateBuildModel(resp.data))
-      );
+    return this.http.get<JSONResponse>(url).pipe(map((resp: JSONResponse) => generateBuildModel(resp.data)));
   }
 
   findByRepoID(repoID: number, limit = 5, offset = 0): Observable<Build[]> {
     const url = `${getAPIURL()}/builds/repo/${repoID}/${limit}/${offset}`;
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map((resp: JSONResponse) => resp.data.map(generateBuildModel))
-      );
+    return this.http.get<JSONResponse>(url).pipe(map((resp: JSONResponse) => resp.data.map(generateBuildModel)));
   }
 
   findJob(jobID: number): Observable<Job> {
     const url = `${getAPIURL()}/builds/jobs/${jobID}`;
-    return this.http.get<JSONResponse>(url)
-      .pipe(
-        map((resp: JSONResponse) => generateJobModel(resp.data))
-      );
+    return this.http.get<JSONResponse>(url).pipe(map((resp: JSONResponse) => generateJobModel(resp.data)));
   }
 
   triggerBuild(repoID: number): Observable<JSONResponse> {
@@ -96,26 +80,23 @@ export class BuildsService {
   }
 
   buildsEvents(repoID?: number): Observable<Build> {
-    return this.dataService.socketOutput
-      .pipe(
-        filter(ev => {
-          if (repoID) {
-            return ev.type === buildsSubEvent && ev.data.build.repository_id === repoID;
-          }
-          return ev.type === buildsSubEvent;
-        }),
-        map(ev => generateBuildModel(ev.data.build))
-      );
+    return this.dataService.socketOutput.pipe(
+      filter(ev => {
+        if (repoID) {
+          return ev.type === buildsSubEvent && ev.data.build.repository_id === repoID;
+        }
+        return ev.type === buildsSubEvent;
+      }),
+      map(ev => generateBuildModel(ev.data.build))
+    );
   }
 
   jobEvents(): Observable<SocketEvent> {
-    return this.dataService.socketOutput
-      .pipe(filter(ev => ev.type.startsWith(buildsSubJobEvent)));
+    return this.dataService.socketOutput.pipe(filter(ev => ev.type.startsWith(buildsSubJobEvent)));
   }
 
   jobLogEvents(): Observable<SocketEvent> {
-    return this.dataService.socketOutput
-      .pipe(filter(ev => ev.type.startsWith(buildsSubJobLogEvent)));
+    return this.dataService.socketOutput.pipe(filter(ev => ev.type.startsWith(buildsSubJobLogEvent)));
   }
 
   subscribeToBuildsEvents(): void {

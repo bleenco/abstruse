@@ -10,7 +10,7 @@ import { ProvidersService } from '../shared/providers.service';
 export class ProvidersListItemComponent implements OnInit {
   @Input() provider: Provider;
 
-  constructor(public providersService: ProvidersService) { }
+  constructor(public providersService: ProvidersService) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 }

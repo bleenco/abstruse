@@ -1,5 +1,4 @@
 <div class="columns is-multiline">
-
   <div class="column is-12">
     <div class="main-heading">
       <div class="main-heading-left">
@@ -9,8 +8,8 @@
           <i class="fab fa-github icon-large" *ngSwitchCase="'github'"></i>
           <i class="fab fa-gitlab icon-large" *ngSwitchCase="'gitlab'"></i>
           <i class="fab fa-bitbucket icon-large" *ngSwitchCase="'bitbucket'"></i>
-          <img class="icon-large" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'">
-          <img class="icon-large" src="/assets/images/icons/gogs.png" *ngSwitchCase="'gogs'">
+          <img class="icon-large" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'" />
+          <img class="icon-large" src="/assets/images/icons/gogs.png" *ngSwitchCase="'gogs'" />
           <i class="fab fa-git icon-large" *ngSwitchDefault></i>
           <span>{{ provider?.getName }} Repositories</span>
         </h2>
@@ -18,8 +17,13 @@
       <div class="main-heading-right">
         <div class="search-container">
           <i class="fas fa-search"></i>
-          <input type="text" class="input search-box" placeholder="Search repositories..." [(ngModel)]="search"
-            (ngModelChange)="onSearchInputChange($event)">
+          <input
+            type="text"
+            class="input search-box"
+            placeholder="Search repositories..."
+            [(ngModel)]="search"
+            (ngModelChange)="onSearchInputChange($event)"
+          />
         </div>
         <div class="nav-items justify-center">
           <button type="button" class="button is-small" (click)="prev()" [disabled]="page === 1">
@@ -64,5 +68,4 @@
       </div>
     </div>
   </div>
-
 </div>

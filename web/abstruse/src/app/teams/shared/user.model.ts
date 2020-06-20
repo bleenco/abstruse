@@ -7,5 +7,5 @@ export class User {
     public admin: boolean,
     public createdAt: Date,
     public updatedAt: Date
-  ) { }
+  ) {}
 }

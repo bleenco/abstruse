@@ -13,19 +13,9 @@ import { DataService } from '../shared/providers/data.service';
 import { AuthService } from '../shared/providers/auth.service';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule
-  ],
-  declarations: [
-    HeaderComponent,
-    HeaderDropdownComponent
-  ],
-  exports: [
-    HeaderComponent,
-    HeaderDropdownComponent
-  ],
+  imports: [CommonModule, FormsModule, RouterModule],
+  declarations: [HeaderComponent, HeaderDropdownComponent],
+  exports: [HeaderComponent, HeaderDropdownComponent],
   providers: [SocketService, DataService, AuthService]
 })
 export class CoreModule {

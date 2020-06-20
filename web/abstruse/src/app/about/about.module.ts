@@ -5,15 +5,8 @@ import { AboutVersionComponent } from './about-version/about-version.component';
 import { AboutService } from './shared/about.service';
 
 @NgModule({
-  declarations: [
-    AboutVersionComponent
-  ],
-  imports: [
-    CommonModule,
-    AboutRoutingModule
-  ],
-  providers: [
-    AboutService
-  ]
+  declarations: [AboutVersionComponent],
+  imports: [CommonModule, AboutRoutingModule],
+  providers: [AboutService]
 })
-export class AboutModule { }
+export class AboutModule {}

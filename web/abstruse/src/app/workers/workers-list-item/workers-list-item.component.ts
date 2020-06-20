@@ -11,17 +11,16 @@ import { WorkersModalComponent } from '../workers-modal/workers-modal.component'
 export class WorkersListItemComponent implements OnInit {
   @Input() worker: Worker;
 
-  constructor(
-    public modalService: ModalService
-  ) { }
+  constructor(public modalService: ModalService) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   openWorkerModal(): void {
     const modalRef = this.modalService.open(WorkersModalComponent, { size: 'large' });
     modalRef.componentInstance.worker = this.worker;
-    modalRef.result
-      .then(result => console.log(result), reason => console.log(reason));
+    modalRef.result.then(
+      result => console.log(result),
+      reason => console.log(reason)
+    );
   }
 }

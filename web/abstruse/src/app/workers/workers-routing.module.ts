@@ -7,9 +7,7 @@ const routes: Routes = [
   {
     path: '',
     component: WorkersComponent,
-    children: [
-      { path: '', component: WorkersListComponent },
-    ]
+    children: [{ path: '', component: WorkersListComponent }]
   }
 ];
 
@@ -17,4 +15,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class WorkersRoutingModule { }
+export class WorkersRoutingModule {}

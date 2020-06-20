@@ -11,37 +11,43 @@ export class BuildsListItemComponent implements OnInit {
   @Input() build: Build;
   @Input() style: 'repo' | 'history' = 'repo';
 
-  constructor(private buildsService: BuildsService) { }
+  constructor(private buildsService: BuildsService) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   stopBuild(): void {
     this.build.processing = true;
-    this.buildsService.stopBuild(this.build.id)
-      .subscribe(resp => {
+    this.buildsService.stopBuild(this.build.id).subscribe(
+      resp => {
         if (!resp.data) {
           console.error(resp);
         }
-      }, err => {
+      },
+      err => {
         this.build.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.build.processing = false;
-      });
+      }
+    );
   }
 
   restartBuild(): void {
     this.build.processing = true;
-    this.buildsService.restartBuild(this.build.id)
-      .subscribe(resp => {
+    this.buildsService.restartBuild(this.build.id).subscribe(
+      resp => {
         if (resp.data) {
           this.build.resetTime();
         }
-      }, err => {
+      },
+      err => {
         this.build.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.build.processing = false;
-      });
+      }
+    );
   }
 }

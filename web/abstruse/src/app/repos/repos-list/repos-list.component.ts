@@ -16,9 +16,7 @@ export class ReposListComponent implements OnInit {
   searchInput: Subject<string> = new Subject<string>();
   sub: Subscription = new Subscription();
 
-  constructor(
-    private reposService: ReposService
-  ) { }
+  constructor(private reposService: ReposService) {}
 
   ngOnInit(): void {
     this.list();
@@ -38,30 +36,36 @@ export class ReposListComponent implements OnInit {
 
   list(): void {
     this.fetching = true;
-    this.reposService.list()
-      .subscribe(resp => {
+    this.reposService.list().subscribe(
+      resp => {
         this.repos = resp;
-      }, err => {
+      },
+      err => {
         console.log(err);
         this.repos = [];
         this.fetching = false;
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   search(keyword: string): void {
     this.fetching = true;
-    this.reposService.search(keyword)
-      .subscribe(repos => {
+    this.reposService.search(keyword).subscribe(
+      repos => {
         this.repos = repos;
-      }, err => {
+      },
+      err => {
         console.error(err);
         this.fetching = false;
         this.repos = [];
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   onSearchInputChange(keyword: string): void {

@@ -5,15 +5,13 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   selector: 'app-toggle',
   templateUrl: './toggle.component.html',
   styleUrls: ['./toggle.component.sass'],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: ToggleComponent, multi: true }
-  ]
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: ToggleComponent, multi: true }]
 })
 export class ToggleComponent implements ControlValueAccessor {
   isEnabled: boolean;
 
-  private onTouchedCallback: () => void = () => { };
-  private onChangeCallback: (_: any) => void = () => { };
+  private onTouchedCallback: () => void = () => {};
+  private onChangeCallback: (_: any) => void = () => {};
 
   get value(): boolean {
     return this.isEnabled;

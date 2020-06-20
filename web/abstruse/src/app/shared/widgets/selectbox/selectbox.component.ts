@@ -5,22 +5,20 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   selector: 'app-selectbox',
   templateUrl: './selectbox.component.html',
   styleUrls: ['./selectbox.component.sass'],
-  providers: [
-    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectboxComponent), multi: true }
-  ]
+  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => SelectboxComponent), multi: true }]
 })
 export class SelectboxComponent implements ControlValueAccessor, OnInit {
-  @Input() values: { value: any, placeholder: string }[];
+  @Input() values: { value: any; placeholder: string }[];
   @Input() customIcon: string;
 
   innerValue: number | string | boolean;
   placeholder: string;
   isOpened: boolean;
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef) {}
 
-  private onTouchedCallback: () => void = () => { };
-  private onChangeCallback: (_: any) => void = () => { };
+  private onTouchedCallback: () => void = () => {};
+  private onChangeCallback: (_: any) => void = () => {};
 
   get value(): number | string | boolean {
     return this.innerValue;

@@ -24,7 +24,7 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
     public activatedRoute: ActivatedRoute,
     public buildsService: BuildsService,
     public dataService: DataService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.repoid = Number(this.activatedRoute.snapshot.paramMap.get('repoid'));
@@ -44,42 +44,51 @@ export class BuildsJobDetailsComponent implements OnInit, OnDestroy {
 
   findJob(): void {
     this.fetching = true;
-    this.buildsService.findJob(this.jobid)
-      .subscribe(job => {
+    this.buildsService.findJob(this.jobid).subscribe(
+      job => {
         this.job = job;
-      }, err => {
+      },
+      err => {
         this.fetching = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   restartJob(): void {
     this.job.log = '__CLEAR__';
     this.processing = true;
-    this.buildsService.restartJob(this.job.id)
-      .subscribe(resp => {
+    this.buildsService.restartJob(this.job.id).subscribe(
+      resp => {
         console.log(resp);
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 
   stopJob(): void {
     this.processing = true;
-    this.buildsService.stopJob(this.job.id)
-      .subscribe(resp => {
+    this.buildsService.stopJob(this.job.id).subscribe(
+      resp => {
         console.log(resp);
-      }, err => {
+      },
+      err => {
         this.processing = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.processing = false;
-      });
+      }
+    );
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {

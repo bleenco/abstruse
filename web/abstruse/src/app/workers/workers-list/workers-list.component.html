@@ -16,10 +16,7 @@
   <div class="column is-12" *ngIf="workers.length && !fetchingWorkers">
     <div class="list">
       <div class="list-items">
-        <app-workers-list-item
-          [worker]="w"
-          *ngFor="let w of workers"
-        ></app-workers-list-item>
+        <app-workers-list-item [worker]="w" *ngFor="let w of workers"></app-workers-list-item>
       </div>
     </div>
   </div>
@@ -30,8 +27,7 @@
         <img src="/assets/images/icons/documents-times.svg" class="not-found-icon" />
         <div class="notification is-white">
           <p class="justify-center">
-            There are no workers currently online. In order to run jobs you need
-            at least one worker node connected.
+            There are no workers currently online. In order to run jobs you need at least one worker node connected.
           </p>
         </div>
       </div>

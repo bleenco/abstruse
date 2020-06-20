@@ -21,13 +21,7 @@ import { BuildsJobListItemComponent } from './builds-job-list-item/builds-job-li
     BuildsInfoContainerComponent,
     BuildsJobListItemComponent
   ],
-  imports: [
-    CommonModule,
-    BuildsRoutingModule,
-    SharedModule.forRoot()
-  ],
-  providers: [
-    BuildsService
-  ]
+  imports: [CommonModule, BuildsRoutingModule, SharedModule.forRoot()],
+  providers: [BuildsService]
 })
-export class BuildsModule { }
+export class BuildsModule {}

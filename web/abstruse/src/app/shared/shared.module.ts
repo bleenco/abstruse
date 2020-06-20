@@ -21,12 +21,7 @@ import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    ModalModule
-  ],
+  imports: [CommonModule, FormsModule, HttpClientModule, ModalModule],
   declarations: [
     ProgressBarComponent,
     SelectboxComponent,

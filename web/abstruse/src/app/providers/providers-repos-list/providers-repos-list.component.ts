@@ -23,10 +23,7 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
   page = 1;
   size = 30;
 
-  constructor(
-    private route: ActivatedRoute,
-    private providersService: ProvidersService
-  ) { }
+  constructor(private route: ActivatedRoute, private providersService: ProvidersService) {}
 
   ngOnInit(): void {
     this.providerId = Number(this.route.snapshot.paramMap.get('id'));
@@ -58,16 +55,19 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
 
   listRepos(): void {
     this.fetching = true;
-    this.providersService.listRepos(this.providerId, this.page, this.size)
-      .subscribe(repos => {
+    this.providersService.listRepos(this.providerId, this.page, this.size).subscribe(
+      repos => {
         this.repos = repos;
-      }, err => {
+      },
+      err => {
         this.fetching = false;
         this.repos = [];
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   prev(): void {
@@ -82,28 +82,34 @@ export class ProvidersReposListComponent implements OnInit, OnDestroy {
 
   findRepos(keyword: string): void {
     this.fetching = true;
-    this.providersService.reposFind(this.providerId, keyword)
-      .subscribe(repo => {
+    this.providersService.reposFind(this.providerId, keyword).subscribe(
+      repo => {
         this.repos = [repo];
-      }, err => {
+      },
+      err => {
         this.fetching = false;
         console.error(err);
         this.repos = [];
-      }, () => {
+      },
+      () => {
         this.fetching = false;
-      });
+      }
+    );
   }
 
   findProvider(): void {
     this.fetchingProvider = true;
-    this.providersService.find(this.providerId)
-      .subscribe(provider => {
+    this.providersService.find(this.providerId).subscribe(
+      provider => {
         this.provider = provider;
-      }, err => {
+      },
+      err => {
         this.fetchingProvider = false;
         console.error(err);
-      }, () => {
+      },
+      () => {
         this.fetchingProvider = false;
-      });
+      }
+    );
   }
 }

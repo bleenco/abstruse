@@ -19,10 +19,7 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
   offset = 0;
   sub: Subscription = new Subscription();
 
-  constructor(
-    private buildsService: BuildsService,
-    private dataService: DataService
-  ) { }
+  constructor(private buildsService: BuildsService, private dataService: DataService) {}
 
   ngOnInit(): void {
     this.findBuilds();
@@ -41,8 +38,8 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
       this.fetchingMore = true;
     }
 
-    this.buildsService.findBuilds(this.limit, this.offset)
-      .subscribe((resp: Build[]) => {
+    this.buildsService.findBuilds(this.limit, this.offset).subscribe(
+      (resp: Build[]) => {
         this.builds = this.builds.concat(resp);
         if (resp.length === this.limit) {
           this.offset += resp.length;
@@ -50,25 +47,27 @@ export class BuildsHistoryComponent implements OnInit, OnDestroy {
           this.hideMoreButton = true;
         }
         this.buildsService.subscribeToJobEvents(resp.map(b => b.id));
-      }, err => {
+      },
+      err => {
         console.error(err);
         this.fetchingBuilds = false;
         this.fetchingMore = false;
-      }, () => {
+      },
+      () => {
         this.fetchingBuilds = false;
         this.fetchingMore = false;
-      });
+      }
+    );
   }
 
   private initDataEvents(): void {
     this.buildsService.subscribeToBuildsEvents();
     this.sub
       .add(
-        this.buildsService.buildsEvents()
-          .subscribe(build => {
-            this.builds.unshift(build);
-            this.buildsService.subscribeToJobEvents([build.id]);
-          })
+        this.buildsService.buildsEvents().subscribe(build => {
+          this.builds.unshift(build);
+          this.buildsService.subscribeToJobEvents([build.id]);
+        })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
   }

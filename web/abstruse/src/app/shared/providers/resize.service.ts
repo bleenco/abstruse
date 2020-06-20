@@ -7,7 +7,6 @@ import { share } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ResizeService {
-
   get onResize$(): Observable<Window> {
     return this.resizeSubject.asObservable().pipe(share());
   }

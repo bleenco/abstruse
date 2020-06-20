@@ -2,16 +2,21 @@
   <div class="columns">
     <div class="column is-1 data-column">
       <div class="data-text has-text-left align-center no-padding">
-        <span class="status-line"
-          [ngClass]="{ 'is-queued': build?.status === 'queued', 'is-passing': build?.status === 'passing', 'is-failing': build?.status === 'failing', 'is-running': build?.status === 'running' }"></span>
+        <span class="status-line" [ngClass]="{
+            'is-queued': build?.status === 'queued',
+            'is-passing': build?.status === 'passing',
+            'is-failing': build?.status === 'failing',
+            'is-running': build?.status === 'running'
+          }"></span>
         <span *ngIf="!build?.pr">#{{ build?.id }}</span>
         <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
     </div>
     <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
-        <a class="data-text" appStopPropagation
-          [routerLink]="['/builds', build?.repository?.id]">{{ build?.repository?.fullName }}</a>
+        <a class="data-text" appStopPropagation [routerLink]="['/builds', build?.repository?.id]">{{
+          build?.repository?.fullName
+        }}</a>
       </div>
       <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
         <span class="data-text is-small" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
@@ -20,7 +25,7 @@
     </div>
     <div class="column is-2 data-column">
       <div class="align-center justify-start mlr10">
-        <img [src]="build?.committerAvatar" class="committer-avatar mr10">
+        <img [src]="build?.committerAvatar" class="committer-avatar mr10" />
       </div>
       <div class="data-column direction-column">
         <div class="info-text align-center justify-start">
@@ -39,8 +44,12 @@
       </div>
     </div>
     <div class="column is-1 data-column justify-center">
-      <span class="tag is-small"
-        [ngClass]="{ 'is-gray': build?.status === 'queued', 'is-green': build?.status === 'passing', 'is-red': build?.status === 'failing', 'is-yellow': build?.status === 'running' }">
+      <span class="tag is-small" [ngClass]="{
+          'is-gray': build?.status === 'queued',
+          'is-green': build?.status === 'passing',
+          'is-red': build?.status === 'failing',
+          'is-yellow': build?.status === 'running'
+        }">
         <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>

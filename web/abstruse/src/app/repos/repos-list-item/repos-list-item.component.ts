@@ -11,14 +11,16 @@ import { ReposSettingsModalComponent } from '../repos-settings-modal/repos-setti
 export class ReposListItemComponent implements OnInit {
   @Input() repo: Repo;
 
-  constructor(private modalService: ModalService) { }
+  constructor(private modalService: ModalService) {}
 
-  ngOnInit(): void { }
+  ngOnInit(): void {}
 
   openSettingsModal(): void {
     const modalRef = this.modalService.open(ReposSettingsModalComponent, { size: 'medium' });
     modalRef.componentInstance.repo = Object.create(this.repo);
-    modalRef.result
-      .then(result => console.log(result), reason => console.log(reason));
+    modalRef.result.then(
+      result => console.log(result),
+      reason => console.log(reason)
+    );
   }
 }

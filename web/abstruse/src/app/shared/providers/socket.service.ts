@@ -27,19 +27,22 @@ export class SocketService {
       return () => {
         sub.unsubscribe();
       };
-    })
-      .pipe(
-        share(),
-        retryWhen(errors => errors.pipe(switchMap(err => {
-          this.connectionState.next(ConnectionStates.RETRYING);
+    }).pipe(
+      share(),
+      retryWhen(errors =>
+        errors.pipe(
+          switchMap(err => {
+            this.connectionState.next(ConnectionStates.RETRYING);
 
-          if (navigator.onLine) {
-            return timer(3000);
-          } else {
-            return fromEvent(window, 'online').pipe(take(1));
-          }
-        })))
-      );
+            if (navigator.onLine) {
+              return timer(3000);
+            } else {
+              return fromEvent(window, 'online').pipe(take(1));
+            }
+          })
+        )
+      )
+    );
   }
 
   onMessage(): Observable<SocketEvent> {

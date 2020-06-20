@@ -5,7 +5,7 @@
         <nav class="header-container">
           <div class="header-left">
             <a class="header-item logo" [routerLink]="['/']">
-              <img src="/assets/images/abstruse-text-black.svg">
+              <img src="/assets/images/abstruse-text-black.svg" />
             </a>
           </div>
           <div class="header-right">
@@ -25,7 +25,7 @@
               Images
             </a>
             <div class="header-item">
-              <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()">
+              <img [src]="authService.userInfo?.avatar" class="avatar" (click)="toggleDropdown()" />
               <app-header-dropdown [class.is-open]="dropdownOpened"></app-header-dropdown>
             </div>
           </div>

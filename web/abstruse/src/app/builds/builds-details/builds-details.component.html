@@ -1,16 +1,25 @@
 <div class="columns is-multiline">
-
   <div class="column is-12" *ngIf="buildsService?.repo && !fetching">
     <div class="main-heading">
       <div class="main-heading-left">
         <h1>Builds</h1>
-        <h2 class="is-link" [routerLink]="['/builds', repoid]" *ngIf="repoid" routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{exact: true}">
+        <h2
+          class="is-link"
+          [routerLink]="['/builds', repoid]"
+          *ngIf="repoid"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
           {{ buildsService?.repo?.namespace }} / {{ buildsService?.repo?.name }}
         </h2>
-        <h2 class="is-link" [routerLink]="['/builds', repoid, buildid]" *ngIf="repoid && buildid"
-          routerLinkActive="is-active" [routerLinkActiveOptions]="{exact: true}">Build
-          #{{ buildid }}
+        <h2
+          class="is-link"
+          [routerLink]="['/builds', repoid, buildid]"
+          *ngIf="repoid && buildid"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Build #{{ buildid }}
         </h2>
       </div>
       <div class="main-heading-right">
@@ -18,8 +27,12 @@
           <i class="fas fa-sync-alt"></i>
           <span>Restart Build</span>
         </button>
-        <button type="button" class="button"
-          [disabled]="processing || (build?.status !== 'running' && build?.status !== 'queued')" (click)="stopBuild()">
+        <button
+          type="button"
+          class="button"
+          [disabled]="processing || (build?.status !== 'running' && build?.status !== 'queued')"
+          (click)="stopBuild()"
+        >
           <i class="fas fa-hand-paper"></i>
           <span>Stop Build</span>
         </button>
@@ -48,5 +61,4 @@
     </div>
     <app-builds-job-list-item [build]="build" [job]="job" *ngFor="let job of build?.jobs"></app-builds-job-list-item>
   </div>
-
 </div>

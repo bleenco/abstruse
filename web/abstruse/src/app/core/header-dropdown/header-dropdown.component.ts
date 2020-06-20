@@ -7,9 +7,7 @@ import { AuthService } from '../../shared/providers/auth.service';
   styleUrls: ['./header-dropdown.component.sass']
 })
 export class HeaderDropdownComponent implements OnInit {
+  constructor(public authService: AuthService) {}
 
-  constructor(public authService: AuthService) { }
-
-  ngOnInit() { }
-
+  ngOnInit() {}
 }

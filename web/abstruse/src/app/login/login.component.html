@@ -5,7 +5,7 @@
         <div class="column is-4 is-offset-4">
           <div class="box login-box">
             <div class="login-logo-container justify-center align-center">
-              <img src="/assets/images/abstruse-text-black.svg">
+              <img src="/assets/images/abstruse-text-black.svg" />
             </div>
             <div class="notification is-medium has-margin" *ngIf="credentialsError && !loading">
               <p>
@@ -16,17 +16,32 @@
             <form class="login-form has-padding" #form="ngForm" (ngSubmit)="doLogin()">
               <span class="field">
                 <label class="label">Username</label>
-                <input ngControl="username" type="text" name="username" class="input" [(ngModel)]="login.email"
-                  #username="ngModel" required [disabled]="loading">
+                <input
+                  ngControl="username"
+                  type="text"
+                  name="username"
+                  class="input"
+                  [(ngModel)]="login.email"
+                  #username="ngModel"
+                  required
+                  [disabled]="loading"
+                />
               </span>
               <span class="field">
                 <label class="label">Password</label>
-                <input type="password" name="password" class="input" [(ngModel)]="login.password" #password="ngModel"
-                  required [disabled]="loading">
+                <input
+                  type="password"
+                  name="password"
+                  class="input"
+                  [(ngModel)]="login.password"
+                  #password="ngModel"
+                  required
+                  [disabled]="loading"
+                />
               </span>
-              <div class=" align-center justify-center">
+              <div class="align-center justify-center">
                 <button type="submit" class="button" [disabled]="!form.valid">
-                  <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading">
+                  <img class="spinner" src="/assets/images/icons/spinner.svg" *ngIf="loading" />
                   <span *ngIf="loading">Logging in...</span>
                   <span *ngIf="!loading">Login</span>
                 </button>

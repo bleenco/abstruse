@@ -82,7 +82,9 @@ export class Build {
     }
 
     if (!this.startTime) {
-      this.startTime = new Date(Math.min(...this.jobs.map(job => job.startTime ? job.startTime.getTime() : new Date().getTime())));
+      this.startTime = new Date(
+        Math.min(...this.jobs.map(job => (job.startTime ? job.startTime.getTime() : new Date().getTime())))
+      );
     }
 
     if (!this.endTime && this.jobs.every(job => job.endTime)) {
@@ -93,7 +95,6 @@ export class Build {
     return format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
-
 
 export class Job {
   private time: TimeService;
@@ -122,7 +123,7 @@ export class Job {
     });
   }
 
-  get getTimeRunning(): { millis: number, time: string } {
+  get getTimeRunning(): { millis: number; time: string } {
     if (!this.startTime) {
       return { millis: 0, time: '00:00' };
     }

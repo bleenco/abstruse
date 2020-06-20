@@ -16,7 +16,7 @@ export class Repo {
     public providerId?: number,
     public createdAt?: Date,
     public updatedAt?: Date
-  ) { }
+  ) {}
 }
 
 export function generateRepoModel(data: any): Repo {
