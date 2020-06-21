@@ -1,4 +1,4 @@
-package shared
+package core
 
 const (
 	// WorkerService is etcd worker service prefix.

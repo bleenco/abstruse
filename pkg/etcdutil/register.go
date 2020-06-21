@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/jkuri/abstruse/pkg/shared"
+	"github.com/jkuri/abstruse/pkg/core"
 	"github.com/jkuri/abstruse/pkg/util"
 	"go.etcd.io/etcd/clientv3"
 )
@@ -25,7 +25,7 @@ type RegService struct {
 // NewRegisterService returns new RegService instance.
 func NewRegisterService(client *clientv3.Client, id, addr string, ttl int64) *RegService {
 	val := getAddress(addr)
-	key := path.Clean(path.Join(shared.WorkerService, id))
+	key := path.Clean(path.Join(core.WorkerService, id))
 	return &RegService{
 		key:    key,
 		val:    val,

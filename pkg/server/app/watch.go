@@ -4,13 +4,13 @@ import (
 	"context"
 	"path"
 
-	"github.com/jkuri/abstruse/pkg/shared"
+	"github.com/jkuri/abstruse/pkg/core"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 )
 
 func (app *App) watchWorkers() error {
-	prefix := path.Clean(shared.WorkerService)
+	prefix := path.Clean(core.WorkerService)
 
 	resp, err := app.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
@@ -61,7 +61,7 @@ func (app *App) watchWorkers() error {
 
 func (app *App) initWorker(w *Worker) {
 	if err := w.Run(); err != nil {
-		key := path.Clean(path.Join(shared.WorkerService, w.id))
+		key := path.Clean(path.Join(core.WorkerService, w.id))
 		app.client.Delete(context.TODO(), key)
 	}
 }

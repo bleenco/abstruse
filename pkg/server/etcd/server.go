@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jkuri/abstruse/pkg/core"
 	"github.com/jkuri/abstruse/pkg/etcdutil"
 	"github.com/jkuri/abstruse/pkg/server/options"
-	"github.com/jkuri/abstruse/pkg/shared"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
@@ -114,7 +114,7 @@ func (s *Server) Client() *clientv3.Client {
 }
 
 func (s *Server) cleanup() {
-	workersPrefix := path.Clean(shared.WorkerService)
+	workersPrefix := path.Clean(core.WorkerService)
 	s.cli.Delete(context.TODO(), workersPrefix, clientv3.WithFromKey())
 }
 

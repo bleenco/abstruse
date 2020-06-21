@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/jkuri/abstruse/pkg/core"
-	"github.com/jkuri/abstruse/pkg/shared"
 	"github.com/jkuri/abstruse/pkg/util"
 	jsoniter "github.com/json-iterator/go"
 	"go.etcd.io/etcd/clientv3"
@@ -63,7 +62,7 @@ func (s *scheduler) watchPending() <-chan core.Job {
 	jobch := make(chan core.Job)
 
 	go func() {
-		wch := s.app.client.Watch(context.Background(), shared.PendingPrefix, clientv3.WithPrefix())
+		wch := s.app.client.Watch(context.Background(), core.PendingPrefix, clientv3.WithPrefix())
 		for n := range wch {
 			for _, ev := range n.Events {
 				switch ev.Type {
@@ -86,7 +85,7 @@ func (s *scheduler) watchStop() <-chan core.Job {
 	jobch := make(chan core.Job)
 
 	go func() {
-		wch := s.app.client.Watch(context.Background(), shared.StopPrefix, clientv3.WithPrefix())
+		wch := s.app.client.Watch(context.Background(), core.StopPrefix, clientv3.WithPrefix())
 		for n := range wch {
 			for _, ev := range n.Events {
 				switch ev.Type {
@@ -142,7 +141,7 @@ func (s *scheduler) stopJob(job core.Job) error {
 }
 
 func (s *scheduler) deletePending(job core.Job) error {
-	key := path.Join(shared.PendingPrefix, fmt.Sprintf("%d", job.ID))
+	key := path.Join(core.PendingPrefix, fmt.Sprintf("%d", job.ID))
 	if _, err := s.app.client.Delete(context.Background(), key); err != nil {
 		return err
 	}
@@ -152,7 +151,7 @@ func (s *scheduler) deletePending(job core.Job) error {
 func (s *scheduler) putDone(job core.Job) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	key := path.Join(shared.DonePrefix, fmt.Sprintf("%d", job.ID))
+	key := path.Join(core.DonePrefix, fmt.Sprintf("%d", job.ID))
 	val, err := jsoniter.MarshalToString(&job)
 	if err != nil {
 		return err
@@ -165,7 +164,7 @@ func (s *scheduler) putDone(job core.Job) error {
 }
 
 func (s *scheduler) deleteStop(job core.Job) error {
-	key := path.Join(shared.StopPrefix, fmt.Sprintf("%d", job.ID))
+	key := path.Join(core.StopPrefix, fmt.Sprintf("%d", job.ID))
 	_, err := s.app.client.Delete(context.Background(), key)
 	return err
 }
