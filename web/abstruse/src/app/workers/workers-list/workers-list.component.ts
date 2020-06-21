@@ -7,8 +7,7 @@ import {
   workerSubDeleteEvent
 } from '../shared/workers.service';
 import { DataService } from '../../shared/providers/data.service';
-import { JSONResponse } from 'src/app/core/shared/shared.model';
-import { Subscription, generate } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 
 @Component({

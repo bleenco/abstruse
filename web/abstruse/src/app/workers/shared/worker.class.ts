@@ -1,4 +1,4 @@
-import { formatDistanceToNow, fromUnixTime, subSeconds } from 'date-fns';
+import { formatDistanceToNow, subSeconds } from 'date-fns';
 
 export class Worker {
   currentCPU: number;
