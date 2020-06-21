@@ -8,55 +8,40 @@ import (
 	"github.com/jkuri/abstruse/pkg/auth"
 	"github.com/jkuri/abstruse/pkg/server/db/model"
 	"github.com/jkuri/abstruse/pkg/server/db/repository"
-	"go.uber.org/zap"
 )
 
-// UserService interface
-type UserService interface {
-	Find(ID uint64) (*model.User, error)
-	FindByEmail(email string) (*model.User, error)
-	Login(email, password string) (string, error)
-	CheckPassword(user *model.User, password string) bool
-	GenerateJWT(user *model.User) (string, error)
-	CheckUserJWT(tokenString string) bool
-}
-
-// DefaultUserService struct
-type DefaultUserService struct {
-	logger     *zap.SugaredLogger
+// UserService struct
+type UserService struct {
 	repository repository.UserRepository
 }
 
 // NewUserService returns new instance of a user service.
-func NewUserService(logger *zap.Logger, repository repository.UserRepository) UserService {
-	return &DefaultUserService{
-		logger:     logger.With(zap.String("type", "UserService")).Sugar(),
-		repository: repository,
-	}
+func NewUserService(repository repository.UserRepository) UserService {
+	return UserService{repository}
 }
 
 // Find method
-func (s *DefaultUserService) Find(ID uint64) (*model.User, error) {
+func (s *UserService) Find(ID uint64) (*model.User, error) {
 	return s.repository.Find(ID)
 }
 
 // FindByEmail method
-func (s *DefaultUserService) FindByEmail(email string) (*model.User, error) {
+func (s *UserService) FindByEmail(email string) (*model.User, error) {
 	return s.repository.FindByEmail(email)
 }
 
 // Login method
-func (s *DefaultUserService) Login(email, password string) (string, error) {
+func (s *UserService) Login(email, password string) (string, error) {
 	return s.repository.Login(email, password)
 }
 
 // CheckPassword method
-func (s *DefaultUserService) CheckPassword(user *model.User, password string) bool {
+func (s *UserService) CheckPassword(user *model.User, password string) bool {
 	return auth.CheckPasswordHash(password, user.Password)
 }
 
 // GenerateJWT method
-func (s *DefaultUserService) GenerateJWT(user *model.User) (string, error) {
+func (s *UserService) GenerateJWT(user *model.User) (string, error) {
 	u := auth.UserJWT{
 		ID:       strconv.Itoa(int(user.ID)),
 		Email:    user.Email,
@@ -67,7 +52,7 @@ func (s *DefaultUserService) GenerateJWT(user *model.User) (string, error) {
 }
 
 // CheckUserJWT method
-func (s *DefaultUserService) CheckUserJWT(tokenString string) bool {
+func (s *UserService) CheckUserJWT(tokenString string) bool {
 	if tokenString == "" {
 		return false
 	}

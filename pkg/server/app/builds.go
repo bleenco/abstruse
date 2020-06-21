@@ -16,7 +16,7 @@ import (
 // StartBuild temp func.
 func (app *App) StartBuild(b core.Build) error {
 	app.logBuild(b)
-	repo, err := app.repoRepository.FindByURL(b.RepoURL)
+	repo, err := app.repo.Repo.FindByURL(b.RepoURL)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (app *App) StartBuild(b core.Build) error {
 		RepositoryID:    repo.ID,
 		StartTime:       util.TimeNow(),
 	}
-	build, err := app.buildRepository.Create(buildModel)
+	build, err := app.repo.Build.Create(buildModel)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func (app *App) StartBuild(b core.Build) error {
 			Env:      env,
 			BuildID:  build.ID,
 		}
-		job, err := app.jobRepository.Create(jobModel)
+		job, err := app.repo.Job.Create(jobModel)
 		if err != nil {
 			return err
 		}
@@ -102,7 +102,7 @@ func (app *App) StartBuild(b core.Build) error {
 
 // TriggerBuild temp func.
 func (app *App) TriggerBuild(repoID, userID uint) error {
-	repo, err := app.repoRepository.Find(repoID, userID)
+	repo, err := app.repo.Repo.Find(repoID, userID)
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 		RepositoryID:    repo.ID,
 		StartTime:       util.TimeNow(),
 	}
-	build, err := app.buildRepository.Create(buildModel)
+	build, err := app.repo.Build.Create(buildModel)
 	if err != nil {
 		return err
 	}
@@ -160,7 +160,7 @@ func (app *App) TriggerBuild(repoID, userID uint) error {
 			Env:      env,
 			BuildID:  build.ID,
 		}
-		job, err := app.jobRepository.Create(jobModel)
+		job, err := app.repo.Job.Create(jobModel)
 		if err != nil {
 			return err
 		}
@@ -186,7 +186,7 @@ func (app *App) RestartJob(jobID uint) error {
 	if err := app.StopJob(jobID); err != nil {
 		return err
 	}
-	job, err := app.jobRepository.Find(jobID)
+	job, err := app.repo.Job.Find(jobID)
 	if err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func (app *App) RestartJob(jobID uint) error {
 
 // StopBuild stops the build and related jobs.
 func (app *App) StopBuild(buildID uint) (model.Build, error) {
-	build, err := app.buildRepository.FindAll(buildID)
+	build, err := app.repo.Build.FindAll(buildID)
 	if err != nil {
 		return build, err
 	}
@@ -221,7 +221,7 @@ func (app *App) RestartBuild(buildID uint) error {
 	}
 	build.StartTime = nil
 	build.EndTime = nil
-	if build, err = app.buildRepository.Update(build); err != nil {
+	if build, err = app.repo.Build.Update(build); err != nil {
 		return err
 	}
 	var wg sync.WaitGroup
@@ -260,7 +260,7 @@ func (app *App) scheduleJob(job *model.Job, build model.Build) error {
 }
 
 func (app *App) updateBuildTime(buildID uint) error {
-	build, err := app.buildRepository.FindAll(buildID)
+	build, err := app.repo.Build.FindAll(buildID)
 	if err != nil {
 		return err
 	}
@@ -286,13 +286,13 @@ func (app *App) updateBuildTime(buildID uint) error {
 	}
 	if startTime != nil {
 		build.StartTime = startTime
-		if _, err := app.buildRepository.Update(build); err != nil {
+		if _, err := app.repo.Build.Update(build); err != nil {
 			return err
 		}
 	}
 	if alldone && endTime != nil {
 		build.EndTime = endTime
-		if _, err := app.buildRepository.Update(build); err != nil {
+		if _, err := app.repo.Build.Update(build); err != nil {
 			return err
 		}
 	}

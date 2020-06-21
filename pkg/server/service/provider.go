@@ -9,48 +9,38 @@ import (
 	"github.com/jkuri/abstruse/pkg/server/db/repository"
 )
 
-// ProviderService interface
-type ProviderService interface {
-	List(UserID uint) ([]model.Provider, error)
-	Create(data repository.ProviderForm) (*model.Provider, error)
-	Update(data repository.ProviderForm) (*model.Provider, error)
-	Find(providerID, userID uint) (*model.Provider, error)
-	ReposList(providerID, userID uint, page, size int) ([]repository.SCMRepository, error)
-	ReposFind(providerID, userID uint, keyword string) (repository.SCMRepository, error)
-}
-
-// DefaultProviderService struct
-type DefaultProviderService struct {
+// ProviderService struct
+type ProviderService struct {
 	repo repository.ProviderRepository
 }
 
 // NewProviderService returns new instance of ProviderService.
 func NewProviderService(repo repository.ProviderRepository) ProviderService {
-	return &DefaultProviderService{repo}
+	return ProviderService{repo}
 }
 
 // List method.
-func (s *DefaultProviderService) List(UserID uint) ([]model.Provider, error) {
+func (s *ProviderService) List(UserID uint) ([]model.Provider, error) {
 	return s.repo.List(UserID)
 }
 
 // Create method.
-func (s *DefaultProviderService) Create(data repository.ProviderForm) (*model.Provider, error) {
+func (s *ProviderService) Create(data repository.ProviderForm) (*model.Provider, error) {
 	return s.repo.Create(data)
 }
 
 // Update method.
-func (s *DefaultProviderService) Update(data repository.ProviderForm) (*model.Provider, error) {
+func (s *ProviderService) Update(data repository.ProviderForm) (*model.Provider, error) {
 	return s.repo.Update(data)
 }
 
 // Find method.
-func (s *DefaultProviderService) Find(providerID, userID uint) (*model.Provider, error) {
+func (s *ProviderService) Find(providerID, userID uint) (*model.Provider, error) {
 	return s.repo.Find(providerID, userID)
 }
 
 // ReposList lists available repositories.
-func (s *DefaultProviderService) ReposList(providerID, userID uint, page, size int) ([]repository.SCMRepository, error) {
+func (s *ProviderService) ReposList(providerID, userID uint, page, size int) ([]repository.SCMRepository, error) {
 	var repos []repository.SCMRepository
 	provider, err := s.repo.Find(providerID, userID)
 	if err != nil {
@@ -71,7 +61,7 @@ func (s *DefaultProviderService) ReposList(providerID, userID uint, page, size i
 }
 
 // ReposFind finds repository by search term.
-func (s *DefaultProviderService) ReposFind(providerID, userID uint, keyword string) (repository.SCMRepository, error) {
+func (s *ProviderService) ReposFind(providerID, userID uint, keyword string) (repository.SCMRepository, error) {
 	var r repository.SCMRepository
 	provider, err := s.repo.Find(providerID, userID)
 	if err != nil {

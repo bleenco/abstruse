@@ -21,23 +21,18 @@ var (
 	bitbucketHeaders = []string{"X-Request-Id", "X-Event-Key", "X-Hub-Signature"}
 )
 
-// HookService interface
-type HookService interface {
-	DetectWebhook(req *http.Request) (*scm.SCM, error)
-}
-
-// DefaultHookService struct
-type DefaultHookService struct {
+// HookService struct
+type HookService struct {
 	repository repository.RepoRepository
 }
 
 // NewHookService returns new instance of HookService
 func NewHookService(repository repository.RepoRepository) HookService {
-	return &DefaultHookService{repository}
+	return HookService{repository}
 }
 
 // DetectWebhook tries to detect provider based on webhook payload and headers.
-func (s *DefaultHookService) DetectWebhook(req *http.Request) (*scm.SCM, error) {
+func (s *HookService) DetectWebhook(req *http.Request) (*scm.SCM, error) {
 	headers := req.Header.Clone()
 	data, err := ioutil.ReadAll(req.Body)
 	if err != nil {

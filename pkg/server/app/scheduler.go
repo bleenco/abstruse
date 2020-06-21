@@ -326,7 +326,7 @@ func (s *Scheduler) save(job *core.Job) error {
 		EndTime:   job.EndTime,
 		Log:       strings.Join(job.Log, ""),
 	}
-	_, err := s.app.jobRepository.Update(jobModel)
+	_, err := s.app.repo.Job.Update(jobModel)
 	if err != nil {
 		return err
 	}

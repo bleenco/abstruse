@@ -44,26 +44,27 @@ func CreateApp(cfg string) (*server.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	userRepository := repository.NewDBUserRepository(logger, gormDB)
-	userService := service.NewUserService(logger, userRepository)
+	userRepository := repository.NewUserRepository(gormDB)
+	userService := service.NewUserService(userRepository)
 	userController := controller.NewUserController(logger, userService)
 	versionService := service.NewVersionService(logger)
 	versionController := controller.NewVersionController(logger, versionService)
 	websocketApp := websocket.NewApp(logger)
-	repoRepository := repository.NewDBRepoRepository(gormDB)
-	jobRepository := repository.NewDBJobRepository(gormDB)
-	buildRepository := repository.NewDBBuildRepository(gormDB)
-	appApp, err := app.NewApp(optionsOptions, websocketApp, repoRepository, jobRepository, buildRepository, logger)
+	buildRepository := repository.NewBuildRepository(gormDB)
+	jobRepository := repository.NewJobRepository(gormDB)
+	providerRepository := repository.NewProviderRepository(gormDB)
+	repoRepository := repository.NewRepoRepository(gormDB)
+	repo := repository.NewRepo(buildRepository, jobRepository, providerRepository, repoRepository, userRepository)
+	appApp, err := app.NewApp(optionsOptions, websocketApp, repo, logger)
 	if err != nil {
 		return nil, err
 	}
-	workerService := service.NewWorkerService(logger, appApp)
+	workerService := service.NewWorkerService(appApp)
 	workerController := controller.NewWorkerController(logger, workerService)
 	buildService := service.NewBuildService(buildRepository, jobRepository, appApp)
 	buildController := controller.NewBuildController(buildService)
 	repositoryService := service.NewRepositoryService(repoRepository)
 	repositoryController := controller.NewRepositoryController(repositoryService)
-	providerRepository := repository.NewDBProviderRepository(gormDB)
 	providerService := service.NewProviderService(providerRepository)
 	providerController := controller.NewProviderController(providerService, repositoryService)
 	hookService := service.NewHookService(repoRepository)

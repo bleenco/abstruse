@@ -1,7 +1,7 @@
 package app
 
 func (app *App) broadcastNewBuild(buildID uint) error {
-	build, err := app.buildRepository.FindAll(buildID)
+	build, err := app.repo.Build.FindAll(buildID)
 	if err != nil {
 		return err
 	}

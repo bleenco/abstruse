@@ -7,14 +7,6 @@ import (
 	"github.com/jkuri/abstruse/pkg/server/db/model"
 )
 
-// ProviderRepository interface.
-type ProviderRepository interface {
-	List(userID uint) ([]model.Provider, error)
-	Create(data ProviderForm) (*model.Provider, error)
-	Update(data ProviderForm) (*model.Provider, error)
-	Find(providerID, userID uint) (*model.Provider, error)
-}
-
 type (
 	// ProviderForm create data.
 	ProviderForm struct {
@@ -49,25 +41,25 @@ type (
 	}
 )
 
-// DBProviderRepository struct.
-type DBProviderRepository struct {
+// ProviderRepository struct.
+type ProviderRepository struct {
 	db *gorm.DB
 }
 
-// NewDBProviderRepository returns new DBProviderRepository instance.
-func NewDBProviderRepository(db *gorm.DB) ProviderRepository {
-	return &DBProviderRepository{db}
+// NewProviderRepository returns new ProviderRepository instance.
+func NewProviderRepository(db *gorm.DB) ProviderRepository {
+	return ProviderRepository{db}
 }
 
 // List returns list of providers for specified user.
-func (r *DBProviderRepository) List(userID uint) ([]model.Provider, error) {
+func (r *ProviderRepository) List(userID uint) ([]model.Provider, error) {
 	var providers []model.Provider
 	err := r.db.Where("user_id = ?", userID).Find(&providers).Error
 	return providers, err
 }
 
 // Create creates new provider.
-func (r *DBProviderRepository) Create(data ProviderForm) (*model.Provider, error) {
+func (r *ProviderRepository) Create(data ProviderForm) (*model.Provider, error) {
 	provider := &model.Provider{
 		Name:        data.Name,
 		URL:         data.URL,
@@ -82,7 +74,7 @@ func (r *DBProviderRepository) Create(data ProviderForm) (*model.Provider, error
 }
 
 // Update updates provider data.
-func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error) {
+func (r *ProviderRepository) Update(data ProviderForm) (*model.Provider, error) {
 	provider := &model.Provider{}
 	err := r.db.Where("id = ? AND user_id = ?", data.ID, data.UserID).First(provider).Error
 	if err != nil {
@@ -100,7 +92,7 @@ func (r *DBProviderRepository) Update(data ProviderForm) (*model.Provider, error
 }
 
 // Find provider by id.
-func (r *DBProviderRepository) Find(providerID, userID uint) (*model.Provider, error) {
+func (r *ProviderRepository) Find(providerID, userID uint) (*model.Provider, error) {
 	provider := &model.Provider{}
 	err := r.db.Preload("User").Where("id = ? AND user_id = ?", providerID, userID).First(provider).Error
 	return provider, err

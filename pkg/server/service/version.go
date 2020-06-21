@@ -5,24 +5,15 @@ import (
 	"go.uber.org/zap"
 )
 
-// VersionService interface
-type VersionService interface {
-	GetInfo() version.BuildInfo
-}
-
-// DefaultVersionService struct
-type DefaultVersionService struct {
-	logger *zap.SugaredLogger
-}
+// VersionService struct
+type VersionService struct{}
 
 // NewVersionService returns new instance of version service.
 func NewVersionService(logger *zap.Logger) VersionService {
-	return &DefaultVersionService{
-		logger: logger.With(zap.String("type", "VersionService")).Sugar(),
-	}
+	return VersionService{}
 }
 
 // GetInfo returns version and build info.
-func (s *DefaultVersionService) GetInfo() version.BuildInfo {
+func (s *VersionService) GetInfo() version.BuildInfo {
 	return version.GetBuildInfo()
 }

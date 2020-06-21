@@ -24,23 +24,19 @@ type App struct {
 	scheduler Scheduler
 	errch     chan error
 
-	buildRepository repository.BuildRepository
-	jobRepository   repository.JobRepository
-	repoRepository  repository.RepoRepository
+	repo repository.Repo
 }
 
 // NewApp returns new instance of App.
-func NewApp(opts *options.Options, ws *websocket.App, rr repository.RepoRepository, jr repository.JobRepository, br repository.BuildRepository, log *zap.Logger) (*App, error) {
+func NewApp(opts *options.Options, ws *websocket.App, repo repository.Repo, log *zap.Logger) (*App, error) {
 	app := &App{
-		opts:            opts,
-		workers:         make(map[string]*Worker),
-		ws:              ws,
-		buildRepository: br,
-		jobRepository:   jr,
-		repoRepository:  rr,
-		log:             log,
-		logger:          log.With(zap.String("type", "app")).Sugar(),
-		errch:           make(chan error),
+		opts:    opts,
+		workers: make(map[string]*Worker),
+		ws:      ws,
+		repo:    repo,
+		log:     log,
+		logger:  log.With(zap.String("type", "app")).Sugar(),
+		errch:   make(chan error),
 	}
 
 	return app, nil

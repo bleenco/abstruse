@@ -7,32 +7,20 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/jkuri/abstruse/pkg/auth"
 	"github.com/jkuri/abstruse/pkg/server/db/model"
-	"go.uber.org/zap"
 )
 
-// UserRepository iface.
-type UserRepository interface {
-	Find(ID uint64) (*model.User, error)
-	FindByEmail(email string) (*model.User, error)
-	Login(email, password string) (string, error)
+// UserRepository struct.
+type UserRepository struct {
+	db *gorm.DB
 }
 
-// DBUserRepository struct.
-type DBUserRepository struct {
-	logger *zap.Logger
-	db     *gorm.DB
-}
-
-// NewDBUserRepository func.
-func NewDBUserRepository(logger *zap.Logger, db *gorm.DB) UserRepository {
-	return &DBUserRepository{
-		logger: logger.With(zap.String("type", "UserRepository")),
-		db:     db,
-	}
+// NewUserRepository func.
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return UserRepository{db}
 }
 
 // Find returns user by id or error if not exists.
-func (r *DBUserRepository) Find(ID uint64) (*model.User, error) {
+func (r *UserRepository) Find(ID uint64) (*model.User, error) {
 	user := &model.User{}
 	if err := r.db.Model(user).Where("id = ?", ID).First(user).Error; err != nil {
 		return nil, err
@@ -41,7 +29,7 @@ func (r *DBUserRepository) Find(ID uint64) (*model.User, error) {
 }
 
 // FindByEmail returns user by email or error if not exists.
-func (r *DBUserRepository) FindByEmail(email string) (*model.User, error) {
+func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	user := &model.User{}
 	if err := r.db.Model(user).Where("email = ?", email).First(user).Error; err != nil {
 		return nil, err
@@ -50,7 +38,7 @@ func (r *DBUserRepository) FindByEmail(email string) (*model.User, error) {
 }
 
 // Login func
-func (r *DBUserRepository) Login(email, password string) (string, error) {
+func (r *UserRepository) Login(email, password string) (string, error) {
 	user, err := r.FindByEmail(email)
 	if err != nil {
 		return "", err

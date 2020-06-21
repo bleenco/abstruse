@@ -3,18 +3,11 @@ package service
 import (
 	"github.com/jkuri/abstruse/pkg/core"
 	"github.com/jkuri/abstruse/pkg/server/app"
-	"go.uber.org/zap"
 )
 
 // WorkerService comment
-type WorkerService interface {
-	GetWorkers() []WorkerData
-}
-
-// DefaultWorkerService comment
-type DefaultWorkerService struct {
-	logger *zap.SugaredLogger
-	app    *app.App
+type WorkerService struct {
+	app *app.App
 }
 
 // WorkerData struct
@@ -26,15 +19,12 @@ type WorkerData struct {
 }
 
 // NewWorkerService returns new intsance of worker service.
-func NewWorkerService(logger *zap.Logger, app *app.App) WorkerService {
-	return &DefaultWorkerService{
-		logger: logger.With(zap.String("type", "WorkerService")).Sugar(),
-		app:    app,
-	}
+func NewWorkerService(app *app.App) WorkerService {
+	return WorkerService{app}
 }
 
 // GetWorkers comment.
-func (s *DefaultWorkerService) GetWorkers() []WorkerData {
+func (s *WorkerService) GetWorkers() []WorkerData {
 	var data []WorkerData
 	for id, worker := range s.app.GetWorkers() {
 		data = append(data, WorkerData{id, worker.Addr(), worker.Host(), worker.Usage()})
