@@ -1,6 +1,6 @@
 build/
-internal/server/ui/
-internal/worker/data/
+pkg/server/ui/
+pkg/worker/data/
 proto/api.pb.go
 .DS_Store
 config/compose/data

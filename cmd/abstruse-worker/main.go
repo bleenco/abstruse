@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/jkuri/abstruse/internal/pkg/version"
+	"github.com/jkuri/abstruse/pkg/version"
 )
 
 var (

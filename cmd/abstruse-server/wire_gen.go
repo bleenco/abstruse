@@ -7,18 +7,18 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/jkuri/abstruse/internal/pkg/auth"
-	"github.com/jkuri/abstruse/internal/pkg/log"
-	"github.com/jkuri/abstruse/internal/server"
-	"github.com/jkuri/abstruse/internal/server/app"
-	"github.com/jkuri/abstruse/internal/server/controller"
-	"github.com/jkuri/abstruse/internal/server/db"
-	"github.com/jkuri/abstruse/internal/server/db/repository"
-	"github.com/jkuri/abstruse/internal/server/etcd"
-	"github.com/jkuri/abstruse/internal/server/http"
-	"github.com/jkuri/abstruse/internal/server/options"
-	"github.com/jkuri/abstruse/internal/server/service"
-	"github.com/jkuri/abstruse/internal/server/websocket"
+	"github.com/jkuri/abstruse/pkg/auth"
+	"github.com/jkuri/abstruse/pkg/log"
+	"github.com/jkuri/abstruse/pkg/server"
+	"github.com/jkuri/abstruse/pkg/server/app"
+	"github.com/jkuri/abstruse/pkg/server/controller"
+	"github.com/jkuri/abstruse/pkg/server/db"
+	"github.com/jkuri/abstruse/pkg/server/db/repository"
+	"github.com/jkuri/abstruse/pkg/server/etcd"
+	"github.com/jkuri/abstruse/pkg/server/http"
+	"github.com/jkuri/abstruse/pkg/server/options"
+	"github.com/jkuri/abstruse/pkg/server/service"
+	"github.com/jkuri/abstruse/pkg/server/websocket"
 )
 
 // Injectors from wire.go:

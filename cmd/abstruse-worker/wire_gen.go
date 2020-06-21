@@ -7,9 +7,9 @@ package main
 
 import (
 	"github.com/google/wire"
-	"github.com/jkuri/abstruse/internal/pkg/log"
-	"github.com/jkuri/abstruse/internal/worker/app"
-	"github.com/jkuri/abstruse/internal/worker/options"
+	"github.com/jkuri/abstruse/pkg/log"
+	"github.com/jkuri/abstruse/pkg/worker/app"
+	"github.com/jkuri/abstruse/pkg/worker/options"
 )
 
 // Injectors from wire.go:

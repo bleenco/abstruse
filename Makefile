@@ -1,5 +1,5 @@
 ABSTRUSE_UI_VERSION=$(shell cat web/abstruse/package.json | grep version | head -1 | awk -F: '{ print $$2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
-ABSTRUSE_VERSION_PATH=github.com/jkuri/abstruse/internal/pkg/version
+ABSTRUSE_VERSION_PATH=github.com/jkuri/abstruse/pkg/version
 GIT_COMMIT=$(shell git rev-list -1 HEAD)
 BUILD_DATE=$(shell date +%FT%T%z)
 UNAME=$(shell uname -s)
@@ -26,10 +26,10 @@ build_pty:
 	@if [ ! -r "build/worker-data/abstruse-pty" ]; then GOOS=linux GOARCH=amd64 go build -o build/worker-data/abstruse-pty ./cmd/abstruse-pty; fi
 
 statik:
-	@if [ ! -r "internal/server/ui/statik.go" ]; then statik -dest ./internal/server -p ui -src ./web/abstruse/dist; fi
+	@if [ ! -r "internal/server/ui/statik.go" ]; then statik -dest ./pkg/server -p ui -src ./web/abstruse/dist; fi
 
 statik_worker: build_pty
-	@if [ ! -r "internal/worker/data/statik.go" ]; then statik -dest ./internal/worker -p data -src ./build/worker-data; fi
+	@if [ ! -r "internal/worker/data/statik.go" ]; then statik -dest ./pkg/worker -p data -src ./build/worker-data; fi
 
 wire:
 	@wire ./cmd/...
