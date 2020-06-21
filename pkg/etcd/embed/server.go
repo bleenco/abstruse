@@ -1,4 +1,4 @@
-package etcd
+package embed
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/jkuri/abstruse/pkg/core"
-	"github.com/jkuri/abstruse/pkg/etcdutil"
+	"github.com/jkuri/abstruse/pkg/etcd/client"
 	"github.com/jkuri/abstruse/pkg/server/options"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/embed"
@@ -120,14 +120,14 @@ func (s *Server) cleanup() {
 
 func (s *Server) getClient() (*clientv3.Client, error) {
 	target := net.JoinHostPort(s.opts.Etcd.Host, fmt.Sprintf("%d", s.opts.Etcd.ClientPort))
-	cfg := etcdutil.ClientConfig{
+	cfg := client.ClientConfig{
 		Target:   target,
 		Username: "root",
 		Password: s.opts.Etcd.RootPassword,
 		Cert:     s.opts.TLS.Cert,
 		Key:      s.opts.TLS.Key,
 	}
-	return etcdutil.NewClient(cfg)
+	return client.NewClient(cfg)
 }
 
 // this is required since s.Client.Auth make etcd embed server crash.

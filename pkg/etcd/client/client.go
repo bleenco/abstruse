@@ -1,4 +1,4 @@
-package etcdutil
+package client
 
 import (
 	"strings"

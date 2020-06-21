@@ -3,8 +3,8 @@ package server
 import (
 	"github.com/google/wire"
 	"github.com/jkuri/abstruse/pkg/auth"
+	"github.com/jkuri/abstruse/pkg/etcd/embed"
 	"github.com/jkuri/abstruse/pkg/server/app"
-	"github.com/jkuri/abstruse/pkg/server/etcd"
 	"github.com/jkuri/abstruse/pkg/server/http"
 	"github.com/jkuri/abstruse/pkg/server/options"
 	"github.com/jkuri/abstruse/pkg/server/websocket"
@@ -17,12 +17,12 @@ type App struct {
 	logger     *zap.SugaredLogger
 	httpServer *http.Server
 	wsServer   *websocket.Server
-	etcdServer *etcd.Server
+	etcdServer *embed.Server
 	app        *app.App
 }
 
 // NewApp returns new instance of App
-func NewApp(opts *options.Options, logger *zap.Logger, httpServer *http.Server, etcdServer *etcd.Server, wsServer *websocket.Server, app *app.App) *App {
+func NewApp(opts *options.Options, logger *zap.Logger, httpServer *http.Server, etcdServer *embed.Server, wsServer *websocket.Server, app *app.App) *App {
 	log := logger.With(zap.String("type", "app")).Sugar()
 	return &App{opts, log, httpServer, wsServer, etcdServer, app}
 }

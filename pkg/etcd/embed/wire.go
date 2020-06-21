@@ -1,4 +1,4 @@
-package etcd
+package embed
 
 import "github.com/google/wire"
 

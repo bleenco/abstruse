@@ -3,7 +3,7 @@ package app
 import (
 	"time"
 
-	"github.com/jkuri/abstruse/pkg/etcdutil"
+	"github.com/jkuri/abstruse/pkg/etcd/client"
 	"github.com/jpillora/backoff"
 	"go.etcd.io/etcd/clientv3"
 )
@@ -35,12 +35,12 @@ func (app *App) connectLoop() {
 }
 
 func (app *App) register() error {
-	rs := etcdutil.NewRegisterService(app.client, app.id, app.addr, 5)
+	rs := client.NewRegisterService(app.client, app.id, app.addr, 5)
 	return rs.Register()
 }
 
 func (app *App) getClient() (*clientv3.Client, error) {
-	config := etcdutil.ClientConfig{
+	config := client.ClientConfig{
 		Target:      app.opts.Etcd.Addr,
 		DialTimeout: 3 * time.Second,
 	}
@@ -51,5 +51,5 @@ func (app *App) getClient() (*clientv3.Client, error) {
 		config.Cert, config.Key = app.opts.TLS.Cert, app.opts.TLS.Key
 	}
 
-	return etcdutil.NewClient(config)
+	return client.NewClient(config)
 }
