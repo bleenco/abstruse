@@ -40,7 +40,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   };
   theme: ITheme = {
     foreground: 'hsl(220, 14%, 71%)',
-    background: '#282c34',
+    background: '#2f3136',
     black: '#000',
     red: '#be5046',
     green: '#98c379',

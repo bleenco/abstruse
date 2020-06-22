@@ -12,7 +12,7 @@ $list-heading-height: 50px
   border-radius: 4px
   padding: 0 5px
   outline: none
-  background: $white
+  background: var(--background-primary)
 
   +mobile
     height: auto
@@ -72,7 +72,7 @@ $list-heading-height: 50px
             width: auto
             padding: 5px 15px
             font-weight: $weight-semibold
-            background: $white
+            background: var(--background-primary)
 
           i
             font-size: 20px
@@ -101,7 +101,7 @@ $list-heading-height: 50px
   height: $list-heading-height
   outline: none
   border-bottom: 1px solid var(--border-default)
-  background: $white
+  background: var(--background-primary)
 
   .columns
     display: flex
@@ -116,7 +116,7 @@ $list-heading-height: 50px
 
       .text
         font-size: 12px
-        color: $gray-500
+        color: var(--text-light)
         text-transform: uppercase
         display: flex
         align-items: center
@@ -129,7 +129,7 @@ $list-heading-height: 50px
   outline: none
   border-bottom: 1px solid var(--border-default)
   border-left: 2px solid transparent
-  background: $white
+  background: var(--background-primary)
 
   &:hover:not(.no-hover-effect)
     cursor: pointer
@@ -165,7 +165,7 @@ $list-heading-height: 50px
 
       .info-text
         font-size: 15px
-        color: $text-button
+        color: var(--text-secondary)
 
         i
           margin-right: 5px
@@ -185,7 +185,7 @@ $list-heading-height: 50px
         .data-label
           margin-bottom: 3px
           font-weight: $weight-medium
-          color: $text-label
+          color: var(--text-secondary)
           text-transform: uppercase
           font-size: 12px
 
@@ -202,7 +202,7 @@ $list-heading-height: 50px
         &.is-title
           font-size: 12px
           font-weight: $weight-semibold
-          color: $text-label
+          color: var(--text-secondary)
           text-transform: uppercase
           height: $list-item-condensed-label-height
 
@@ -215,11 +215,11 @@ $list-heading-height: 50px
           border-radius: 4px
           height: 40px
           font-size: 13px
-          background: $white
+          background: var(--background-primary)
           font-weight: $weight-medium
 
         &.is-light
-          color: $text-button
+          color: var(--text-secondary)
           font-weight: $weight-normal
 
         &.is-small
@@ -227,7 +227,7 @@ $list-heading-height: 50px
 
         .data-label
           font-weight: $weight-medium
-          color: $text-label
+          color: var(--text-secondary)
 
         i, img
           width: 20px

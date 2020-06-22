@@ -6,7 +6,7 @@
 .header
   width: 100%
   height: 60px
-  background: var(--background-primary)
+  background: var(--background-header)
   display: flex
   align-items: center
   position: relative
@@ -51,8 +51,12 @@
         height: 25px
         margin-top: -5px
 
-        img
+        img, svg
+          width: 120px
           height: 25px
+
+          path
+            fill: var(--text-secondary)
 
       .avatar
         vertical-align: middle
