@@ -32,21 +32,21 @@ form
         flex-grow: 1
         flex-shrink: 1
 
-    .input-right-icon
-      position: absolute
-      right: 10px
-      top: 40px
-      cursor: pointer
-      color: var(--text-primary)
-      font-size: 20px
+  .input-right-icon
+    position: absolute
+    right: 10px
+    top: 40px
+    cursor: pointer
+    color: var(--text-primary)
+    font-size: 20px
 
-      &:hover
-        color: var(--text-secondary)
+    &:hover
+      color: var(--text-secondary)
 
-    .input-button
-      position: absolute
-      right: 5px
-      top: 43px
+  .input-button
+    position: absolute
+    right: 0px
+    top: 43px
 
 .label
   display: block
@@ -57,20 +57,22 @@ form
   text-transform: uppercase
 
 .input
-  color: $text-input
-  font-size: 14px
+  color: var(--text-primary)
+  font-size: 15px
   height: $input-height
-  text-indent: 14px
-  border: 1px solid $border-input
+  text-indent: 0
+  border: 1px solid var(--border-input)
+  background: var(--background-input)
   outline: none
   display: flex
   align-items: center
   justify-content: center
   line-height: 100%
   margin: 0
-  padding: 0 30px 0 0
+  padding: 10px 30px 10px 10px
   width: 100%
-  border-radius: 4px
+  border-radius: 3px
+  transition: border-color 200ms ease-in-out
 
   &.search-box
     min-width: 200px
@@ -90,10 +92,10 @@ form
   &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
     color: var(--text-primary)
     opacity: .5
-    font-size: 14px
+    font-size: 15px
 
   &:focus
-    border-color: var(--border-primary)
+    border-color: var(--border-input-active)
 
   &[type="number"]
     -moz-appearance: textfield
@@ -102,9 +104,9 @@ form
       -webkit-appearance: none
 
   &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus
-    border: 1px solid $border-input
-    -webkit-text-fill-color: $text-input
-    -webkit-box-shadow: 0 0 0px 1000px $white inset
+    border: 1px solid var(--border-input)
+    -webkit-text-fill-color: var(--text-primary)
+    -webkit-box-shadow: 0 0 0px 1000px var(--background-input) inset
     transition: background-color 5000s ease-in-out 0s
 
   // &.ng-valid[required]:not(.ng-untouched), &.ng-valid.required:not(.ng-untouched)
