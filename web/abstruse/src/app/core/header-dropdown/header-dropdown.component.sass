@@ -2,51 +2,42 @@
 @import 'variables'
 
 \:host
-  width: 230px
-  background: $white
+  width: 190px
+  background: var(--background-floating)
   position: absolute
   top: 52px
   right: -15px
   border-radius: 4px
   display: none
-  border: 1px solid $border-default
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06)
+  box-shadow: var(--shadow-high)
 
   &.is-open
     display: block
     z-index: 20
 
-  &:after
-    content: ''
-    display: block
-    width: 20px
-    height: 20px
-    position: absolute
-    transform: rotate(-45deg)
-    border: solid $border-default
-    border-width: 1px 1px 0 0
-    top: -10px
-    right: 20px
-    background: $white
-
   .header-dropdown-container
     width: 100%
-    padding: 0
+    padding: 6px 8px
     text-transform: none
 
     .hd-item
       width: 100%
+      height: 32px
       display: flex
       align-items: center
-      color: $text-menu
+      color: var(--interactive-normal)
+      border-color: var(--interactive-normal)
       font-size: 14px
-      padding: 10px 18px
-
-      &.bordered-bottom
-        border-bottom: 1px solid $border-default
+      margin: 2px 0
+      padding: 6px 8px
+      border-radius: 2px
+      font-size: 14px
+      font-weight: $weight-medium
+      outline: none
 
       &:hover:not(.avatar-item)
-        color: $green
+        background-color: var(--green)
+        color: $white
         text-decoration: none
 
       &.avatar-item
@@ -78,8 +69,3 @@
         .email
           font-size: 11px
           color: rgb(142, 155, 178)
-
-      &.logout-item
-        padding-bottom: 16px
-        padding-top: 14px
-        border-top: 1px solid $border-box

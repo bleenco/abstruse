@@ -13,6 +13,7 @@
 @import '~bulma/sass/grid/columns'
 @import '~xterm/css/xterm'
 @import 'typography'
+@import 'theme'
 @import 'animations'
 @import 'octicons'
 @import 'common'
@@ -26,8 +27,8 @@
 @import 'tag'
 
 html, body
-  background: $background
-  color: $gray-900
+  background: var(--background-primary)
+  color: var(--text-normal)
   font-family: $font-family
   -webkit-font-smoothing: antialiased
   -webkit-tap-highlight-color: transparent
@@ -38,9 +39,9 @@ html, body
     overflow: hidden
 
 ::selection
-    background: $green
+    background: var(--green)
     color: $white
 
 ::-moz-selection
-  background: $green
+  background: var(--green)
   color: $white

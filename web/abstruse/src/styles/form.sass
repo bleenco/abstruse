@@ -37,11 +37,11 @@ form
       right: 10px
       top: 40px
       cursor: pointer
-      color: $text-primary
+      color: var(--text-primary)
       font-size: 20px
 
       &:hover
-        color: $text-secondary
+        color: var(--text-secondary)
 
     .input-button
       position: absolute
@@ -81,19 +81,19 @@ form
       border: 1px solid transparent
 
     &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
-      color: $text-gray
+      color: var(--text-light)
       opacity: 1
 
   &[disabled]
     opacity: .5
 
   &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
-    color: $text-primary
+    color: var(--text-primary)
     opacity: .5
     font-size: 14px
 
   &:focus
-    border-color: $border-primary
+    border-color: var(--border-primary)
 
   &[type="number"]
     -moz-appearance: textfield
@@ -125,9 +125,9 @@ form
   font-weight: $weight-normal
   font-size: 13px
   margin: 5px 10px
-  color: $text-primary
+  color: var(--text-primary)
   display: block
 
   i
     font-size: 13px
-    color: $text-primary
+    color: var(--text-primary)

@@ -9,7 +9,7 @@
   left: 0
   width: 100%
   height: 100%
-  background: rgba($background-light, .95)
+  background: rgba(var(--background-secondary), .95)
   z-index: 100
   display: none
   overflow-y: scroll
@@ -22,7 +22,7 @@
     width: 1000px
     margin: 40px auto
     background: $white
-    border: 1px solid $border-default
+    border: 1px solid var(--border-default)
     border-radius: 2px
     box-shadow: $box-shadow
 
@@ -39,12 +39,12 @@
       .modal-header
         display: flex
         align-items: center
-        // border-bottom: 1px solid $border-default
+        // border-bottom: 1px solid var(--border-default)
         padding: 25px 30px 10px 30px
         position: relative
 
         .header-icon
-          color: $green
+          color: var(--green)
           font-size: 40px
           display: block
           width: 40px
@@ -64,7 +64,7 @@
 
           h2
             font-weight: $weight-normal
-            color: $text-primary
+            color: var(--text-primary)
             font-size: 15px
             text-transform: none
             display: block
@@ -75,11 +75,11 @@
           right: 25px
           top: 24px
           cursor: pointer
-          color: $green
+          color: var(--green)
           font-size: 20px
 
           &:hover
-            color: $green-400
+            color: var(--green)-400
 
       .modal-body
         padding: 20px 40px 20px 90px
@@ -95,7 +95,7 @@
         .section
           width: 100%
           padding-bottom: 20px
-          border-bottom: 1px solid $border-default
+          border-bottom: 1px solid var(--border-default)
 
           &:not(:first-child)
             margin-top: 20px
@@ -105,7 +105,7 @@
 
         h3
           padding: 0 0 5px 0
-          color: $text-secondary
+          color: var(--text-secondary)
           font-weight: $weight-semibold
           font-size: 15px
 
@@ -113,11 +113,11 @@
           padding: 5px 0
           margin: 0 0 5px 0
           font-size: 15px
-          color: $text-primary
+          color: var(--text-primary)
           font-weight: $weight-normal
 
           a
-            color: $green
+            color: var(--green)
 
             &:hover
               text-decoration: underline

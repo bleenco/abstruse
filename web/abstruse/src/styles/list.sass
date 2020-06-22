@@ -7,7 +7,7 @@ $list-heading-height: 50px
   display: block
   width: 100%
   height: $list-item-height
-  border: 1px solid $border-default
+  border: 1px solid var(--border-default)
   margin-bottom: 10px
   border-radius: 4px
   padding: 0 5px
@@ -22,7 +22,7 @@ $list-heading-height: 50px
 
     &:hover
       cursor: pointer
-      background: $background-light
+      background: var(--background-secondary)
 
   .columns
     margin: 0
@@ -55,19 +55,19 @@ $list-heading-height: 50px
           text-transform: uppercase
           font-weight: $weight-medium
           font-size: 12px
-          color: $text-primary
+          color: var(--text-primary)
           margin-bottom: 2px
           margin-top: 0
 
         .text
           +ellipsis
-          color: $text-primary
+          color: var(--text-primary)
           font-size: 14px
           width: 100%
           padding: 5px 8px
 
           &.has-border
-            border: 1px solid $border-primary
+            border: 1px solid var(--border-primary)
             border-radius: 4px
             width: auto
             padding: 5px 15px
@@ -100,7 +100,7 @@ $list-heading-height: 50px
   width: 100%
   height: $list-heading-height
   outline: none
-  border-bottom: 1px solid $border-default
+  border-bottom: 1px solid var(--border-default)
   background: $white
 
   .columns
@@ -127,13 +127,13 @@ $list-heading-height: 50px
   width: 100%
   height: $list-item-condensed-height
   outline: none
-  border-bottom: 1px solid $border-default
+  border-bottom: 1px solid var(--border-default)
   border-left: 2px solid transparent
   background: $white
 
   &:hover:not(.no-hover-effect)
     cursor: pointer
-    background: $background-light
+    background: var(--background-secondary)
 
   .columns
     height: $list-item-condensed-height
@@ -161,7 +161,7 @@ $list-heading-height: 50px
 
       .heading-text
         font-size: 12px
-        color: $text-primary
+        color: var(--text-primary)
 
       .info-text
         font-size: 15px
@@ -169,7 +169,7 @@ $list-heading-height: 50px
 
         i
           margin-right: 5px
-          color: $text-primary
+          color: var(--text-primary)
 
       .committer-avatar
         width: 25px
@@ -194,7 +194,7 @@ $list-heading-height: 50px
         font-size: 14px
         font-weight: $weight-normal
         padding: 0 10px
-        color: $text-secondary
+        color: var(--text-secondary)
 
         &.no-padding
           padding: 0
@@ -211,7 +211,7 @@ $list-heading-height: 50px
           display: inline-flex
           align-items: center
           justify-content: center
-          border: 1px solid $border-default
+          border: 1px solid var(--border-default)
           border-radius: 4px
           height: 40px
           font-size: 13px
@@ -239,7 +239,7 @@ $list-heading-height: 50px
         img
           width: 30px
           height: 30px
-          border: 1px solid $border-secondary
+          border: 1px solid var(--border-secondary)
           border-radius: 4px
           margin-bottom: 3px
 
@@ -253,7 +253,7 @@ $list-heading-height: 50px
             color: $yellow
 
           &.is-green
-            color: $green
+            color: var(--green)
 
           &.is-red
             color: $red
@@ -269,7 +269,7 @@ $list-heading-height: 50px
           background: $gray
 
         &.is-passing
-          background: $green
+          background: var(--green)
 
         &.is-failing
           background: $red

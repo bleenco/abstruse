@@ -4,7 +4,7 @@
   .main-heading
     display: flex
     align-items: center
-    border-bottom: 1px solid $border-default
+    border-bottom: 1px solid var(--border-default)
     padding: 10px 0
     justify-content: space-between
 
@@ -17,7 +17,7 @@
       h1
         padding-right: 20px
         margin-right: 20px
-        border-right: 1px solid $border-default
+        border-right: 1px solid var(--border-default)
         font-size: 18px
 
         &.is-link
@@ -27,23 +27,24 @@
             cursor: pointer
 
       h2
-        color: $text-gray
+        color: var(--header-light)
         text-transform: none
         margin-right: 15px
         padding-right: 15px
-        font-weight: $weight-normal
+        font-weight: $weight-medium
         display: inline-flex
         align-items: center
-        font-size: 16px
+        font-size: 13px
+        text-transform: uppercase
 
         &:not(:last-child)
-          border-right: 1px solid $border-default
+          border-right: 1px solid var(--border-default)
 
         &.is-link
           outline: none
 
           &:hover, &.is-active
-            color: $gray-600
+            color: var(--header-light-secondary)
             cursor: pointer
 
         i
@@ -70,13 +71,13 @@
           width: 250px
 
         i
-          color: $text-gray
+          color: var(--text-light)
 
       .nav-items
         i
           font-size: 14px
           margin: 0
-          color: $text-primary
+          color: var(--text-primary)
 
   .not-found-icon
     height: 200px
@@ -99,6 +100,6 @@
   font-weight: $weight-medium
   display: block
   text-align: center
-  color: $text-primary
+  color: var(--text-primary)
   +unselectable
   +ellipsis
