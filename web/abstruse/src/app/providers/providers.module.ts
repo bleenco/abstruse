@@ -17,7 +17,7 @@ import { ProvidersReposListItemComponent } from './providers-repos-list-item/pro
     ProvidersReposListComponent,
     ProvidersReposListItemComponent
   ],
-  imports: [CommonModule, ProvidersRoutingModule, SharedModule.forRoot()],
+  imports: [CommonModule, ProvidersRoutingModule, SharedModule],
   entryComponents: [ProvidersModalComponent]
 })
 export class ProvidersModule {}

@@ -26,8 +26,12 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.onTouchedCallback();
   }
 
-  toggle(): void {
-    this.value = !this.value;
+  onChanged(ev: MouseEvent): void {
+    this.value = ev && ev.target && !!(ev.target as any).checked;
+  }
+
+  onBlur(): void {
+    this.onTouchedCallback();
   }
 
   writeValue(val: boolean) {

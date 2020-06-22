@@ -15,7 +15,8 @@
 
   <div class="column is-12 justify-center">
     <div class="field">
-      <app-checkbox name="value" [(ngModel)]="value" label="Enabled"></app-checkbox>
+      <app-checkbox name="darkTheme" [(ngModel)]="darkTheme" label="Dark Theme" (ngModelChange)="onChange()">
+      </app-checkbox>
     </div>
   </div>
 </div>

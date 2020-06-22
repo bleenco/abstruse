@@ -10,7 +10,7 @@ import { WorkersModalComponent } from './workers-modal/workers-modal.component';
 
 @NgModule({
   declarations: [WorkersComponent, WorkersListComponent, WorkersListItemComponent, WorkersModalComponent],
-  imports: [CommonModule, WorkersRoutingModule, RealtimeChartModule, SharedModule.forRoot()],
+  imports: [CommonModule, WorkersRoutingModule, RealtimeChartModule, SharedModule],
   entryComponents: [WorkersModalComponent]
 })
 export class WorkersModule {}

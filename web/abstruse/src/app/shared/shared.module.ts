@@ -19,6 +19,7 @@ import { StopPropagationDirective } from './directives/stop-propagation.directiv
 import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
+import { ThemeService } from './providers/theme.service';
 
 @NgModule({
   imports: [CommonModule, FormsModule, HttpClientModule, ModalModule],
@@ -58,7 +59,8 @@ export class SharedModule {
         StatusService,
         TimeService,
         CookieService,
-        ResizeService
+        ResizeService,
+        ThemeService
       ]
     };
   }

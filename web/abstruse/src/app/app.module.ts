@@ -18,7 +18,6 @@ import { environment } from '../environments/environment';
     SharedModule.forRoot(),
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
