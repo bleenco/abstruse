@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.settings.open();
+    // this.settings.open();
     this.authService.checkAuthenticated();
 
     this.authSub = this.authService.isLoggedIn.subscribe(status => {
