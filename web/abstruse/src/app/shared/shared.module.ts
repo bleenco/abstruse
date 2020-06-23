@@ -20,6 +20,7 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { RadioTabsComponent } from './widgets/radio-tabs/radio-tabs.component';
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 import { ThemeService } from './providers/theme.service';
+import { TooltipDirective } from './directives/tooltip.directive';
 
 @NgModule({
   imports: [CommonModule, FormsModule, HttpClientModule, ModalModule],
@@ -31,7 +32,8 @@ import { ThemeService } from './providers/theme.service';
     StopPropagationDirective,
     ToggleComponent,
     RadioTabsComponent,
-    CheckboxComponent
+    CheckboxComponent,
+    TooltipDirective
   ],
   exports: [
     CommonModule,
@@ -45,7 +47,8 @@ import { ThemeService } from './providers/theme.service';
     StopPropagationDirective,
     ToggleComponent,
     RadioTabsComponent,
-    CheckboxComponent
+    CheckboxComponent,
+    TooltipDirective
   ]
 })
 export class SharedModule {

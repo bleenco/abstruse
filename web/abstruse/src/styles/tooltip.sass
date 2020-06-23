@@ -1,0 +1,24 @@
+@import 'variables'
+
+.tooltip-container
+  min-width: 80px
+  padding: 6px 8px
+  background: var(--background-tooltip)
+  color: var(--text-white)
+  display: flex
+  align-items: center
+  justify-content: center
+  border-radius: 3px
+  font-weight: $weight-medium
+  position: relative
+
+  &::after
+    content: ''
+    position: absolute
+    width: 10px
+    height: 10px
+    transform: rotate(-45deg)
+    background: var(--background-tooltip)
+    top: calc(100% - 5px)
+    left: calc(50% - 5px)
+
