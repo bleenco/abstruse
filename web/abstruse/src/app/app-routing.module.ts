@@ -45,11 +45,6 @@ const routes: Routes = [
     canActivate: [AuthGuardService]
   },
   {
-    path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule),
-    canActivate: [AuthGuardService]
-  },
-  {
     path: 'about',
     loadChildren: () => import('./about/about.module').then(m => m.AboutModule),
     canActivate: [AuthGuardService]
