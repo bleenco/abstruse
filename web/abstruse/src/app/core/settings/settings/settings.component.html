@@ -15,8 +15,9 @@
               </div>
             </div>
             <div class="column is-9">
-              <div *ngIf="tab === 'user'">
-
+              <div class="settings-content">
+                <app-settings-user *ngIf="tab === 'user'"></app-settings-user>
+                <app-settings-appearance *ngIf="tab === 'appearance'"></app-settings-appearance>
               </div>
             </div>
           </div>

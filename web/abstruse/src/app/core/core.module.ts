@@ -9,15 +9,24 @@ import { HeaderComponent } from './header/header.component';
 import { HeaderDropdownComponent } from './header-dropdown/header-dropdown.component';
 import { SettingsComponent } from './settings/settings/settings.component';
 
+import { SharedModule } from '../shared/shared.module';
 import { SocketService } from '../shared/providers/socket.service';
 import { DataService } from '../shared/providers/data.service';
 import { AuthService } from '../shared/providers/auth.service';
 import { SettingsService } from '../shared/providers/settings.service';
+import { SettingsUserComponent } from './settings/settings-user/settings-user.component';
+import { SettingsAppearanceComponent } from './settings/settings-appearance/settings-appearance.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RouterModule],
-  declarations: [HeaderComponent, HeaderDropdownComponent, SettingsComponent],
-  exports: [HeaderComponent, HeaderDropdownComponent, SettingsComponent],
+  imports: [CommonModule, FormsModule, RouterModule, SharedModule],
+  declarations: [
+    HeaderComponent,
+    HeaderDropdownComponent,
+    SettingsComponent,
+    SettingsUserComponent,
+    SettingsAppearanceComponent
+  ],
+  exports: [HeaderComponent, HeaderDropdownComponent, SettingsComponent, SettingsUserComponent],
   providers: [SocketService, DataService, AuthService, SettingsService]
 })
 export class CoreModule {
