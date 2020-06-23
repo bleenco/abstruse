@@ -28,6 +28,8 @@ export class TooltipDirective implements OnDestroy {
       return;
     }
 
+    this.setBodyPosition();
+
     this.tooltip = this.renderer.createElement('div');
     this.tooltip.innerHTML = this.text;
     this.renderer.setStyle(this.tooltip, 'display', 'inline-flex');
@@ -36,11 +38,18 @@ export class TooltipDirective implements OnDestroy {
     this.renderer.appendChild(this.body, this.tooltip);
 
     const b = this.el.getBoundingClientRect();
-    const left = b.left + b.width / 2 - this.tooltip.clientWidth / 2;
+    const left = b.left + window.scrollX + b.width / 2 - this.tooltip.clientWidth / 2;
     const top = b.top + window.scrollY - this.tooltip.clientHeight - 15;
 
     this.renderer.setStyle(this.tooltip, 'top', `${top}px`);
     this.renderer.setStyle(this.tooltip, 'left', `${left}px`);
+  }
+
+  private setBodyPosition(): void {
+    const style = getComputedStyle(this.body);
+    if (style.position !== 'relative') {
+      this.renderer.setStyle(this.body, 'position', 'relative');
+    }
   }
 
   private destroy(): void {
