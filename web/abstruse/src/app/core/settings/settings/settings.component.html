@@ -1,0 +1,25 @@
+<div class="settings-overlay">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-8 is-offset-2">
+        <div class="settings-container">
+          <span class="close-icon" (click)="close()">
+            <i class="fa fa-times"></i>
+          </span>
+          <div class="columns is-marginless is-paddingless">
+            <div class="column is-3">
+              <div class="settings-links">
+                <span [class.is-active]="tab === 'user'" (click)="tab = 'user'">User Settings</span>
+                <span [class.is-active]="tab === 'teams'" (click)="tab = 'teams'">Teams</span>
+                <span [class.is-active]="tab === 'appearance'" (click)="tab = 'appearance'">Appearance</span>
+              </div>
+            </div>
+            <div class="column is-9">
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

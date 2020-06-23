@@ -2,7 +2,7 @@
 @import 'variables'
 
 \:host
-  width: 190px
+  width: 200px
   background: var(--background-floating)
   position: absolute
   top: 52px
@@ -17,8 +17,10 @@
 
   .header-dropdown-container
     width: 100%
-    padding: 6px 8px
     text-transform: none
+
+    .hd-links
+      padding: 6px 8px
 
     .hd-item
       width: 100%
@@ -41,8 +43,9 @@
         text-decoration: none
 
       &.avatar-item
-        padding-top: 16px
-        padding-bottom: 16px
+        padding: 10px
+        height: auto
+        border-bottom: 1px solid var(--border-default)
 
         &:hover
           color: $text-menu

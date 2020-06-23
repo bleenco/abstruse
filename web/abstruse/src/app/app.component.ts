@@ -5,6 +5,7 @@ import { AuthService } from './shared/providers/auth.service';
 import { StatusService } from './shared/providers/status.service';
 import { CookieService } from 'ngx-cookie-service';
 import { ThemeService } from './shared/providers/theme.service';
+import { SettingsService } from './shared/providers/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +21,12 @@ export class AppComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     public statusService: StatusService,
     public cookieService: CookieService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    public settings: SettingsService
   ) {}
 
   ngOnInit(): void {
+    this.settings.open();
     this.authService.checkAuthenticated();
 
     this.authSub = this.authService.isLoggedIn.subscribe(status => {

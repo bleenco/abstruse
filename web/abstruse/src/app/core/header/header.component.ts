@@ -37,16 +37,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.dropdownOpened) {
       return;
     }
-
-    const input = this.elementRef.nativeElement.querySelector('.avatar');
-
-    if (e.target === input) {
+    if (e.target === this.elementRef.nativeElement.querySelector('.avatar')) {
       return;
     }
-
-    const container = this.elementRef.nativeElement.querySelector('.header-dropdown-container');
-    if (container && container !== e.target && !container.contains(<any>e.target)) {
-      this.dropdownOpened = false;
-    }
+    this.dropdownOpened = false;
   }
 }
