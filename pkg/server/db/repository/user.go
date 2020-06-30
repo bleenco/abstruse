@@ -63,6 +63,7 @@ func generateJWT(u *model.User) (string, error) {
 		Email:    u.Email,
 		Fullname: u.Fullname,
 		Avatar:   u.Avatar,
+		Admin:    u.Admin,
 	}
 	return auth.GenerateJWT(user)
 }
