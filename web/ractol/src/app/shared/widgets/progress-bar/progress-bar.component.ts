@@ -62,7 +62,7 @@ export class ProgressBarComponent implements OnInit, OnChanges {
     this.renderer.setStyle(this.container, 'width', this.options.width);
     this.renderer.setStyle(this.container, 'height', this.options.height);
     if (this.options.transition) {
-      this.renderer.setStyle(this.bar, 'transition', `width ${this.options.transitionDuration} ease-in-out`);
+      this.renderer.setStyle(this.bar, 'transition', `width ${this.options.transitionDuration}ms ease-in-out`);
     } else {
       this.renderer.setStyle(this.bar, 'transition', `none`);
     }
