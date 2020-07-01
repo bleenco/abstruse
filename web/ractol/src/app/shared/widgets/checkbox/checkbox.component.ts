@@ -23,11 +23,10 @@ export class CheckboxComponent implements ControlValueAccessor {
   set value(val: boolean) {
     this.isEnabled = val;
     this.onChangeCallback(this.isEnabled);
-    this.onTouchedCallback();
   }
 
   onChanged(ev: Event): void {
-    this.value = ev && ev.target && (ev.target as any).checked;
+    this.value = (ev && ev.target && (ev.target as HTMLInputElement).checked) as boolean;
   }
 
   onBlur(): void {
@@ -35,7 +34,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   }
 
   writeValue(val: boolean) {
-    this.isEnabled = val;
+    this.value = val;
   }
 
   registerOnChange(fn: any) {
