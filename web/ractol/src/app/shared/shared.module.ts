@@ -5,11 +5,22 @@ import { FormsModule } from '@angular/forms';
 
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
+import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
+
+import { TooltipDirective } from './directives/tooltip.directive';
 
 @NgModule({
   imports: [CommonModule, FormsModule, HttpClientModule],
-  declarations: [CheckboxComponent, ProgressBarComponent],
-  exports: [CommonModule, FormsModule, HttpClientModule, CheckboxComponent, ProgressBarComponent]
+  declarations: [CheckboxComponent, ProgressBarComponent, SelectboxComponent, TooltipDirective],
+  exports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    CheckboxComponent,
+    ProgressBarComponent,
+    SelectboxComponent,
+    TooltipDirective
+  ]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
