@@ -1,0 +1,36 @@
+.notification
+  display: flex
+  align-items: center
+  border-radius: 3px
+  flex-direction: row
+  flex-wrap: nowrap
+  margin: 20px 0 10px
+  padding: 16px 24px
+  background: $background
+  border: 1px solid $border-default
+
+  i
+    font-size: 24px
+    margin: 0 24px 0 0
+    padding: 0
+
+  p
+    color: $text-primary
+    flex-grow: 1
+    flex-shrink: 1
+    font-size: 14px
+    line-height: 1.6
+    margin: 0
+    padding: 0
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      background: rgba($color, .1)
+      border: 1px solid $color
+
+      i
+        color: $color
+
+      p
+        color: $color
+

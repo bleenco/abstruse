@@ -14,6 +14,7 @@ export class LoginComponent implements OnInit {
   error: string | undefined;
   loginForm!: FormGroup;
   isLoading = false;
+  submitted = false;
 
   constructor(private fromBuilder: FormBuilder, private auth: AuthService) {
     this.createForm();
@@ -22,6 +23,12 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {}
 
   login(): void {
+    this.submitted = true;
+    this.error = undefined;
+    if (!this.loginForm.valid) {
+      return;
+    }
+
     this.isLoading = true;
     this.auth
       .authenticate(this.loginForm.value)
@@ -34,7 +41,7 @@ export class LoginComponent implements OnInit {
       )
       .subscribe(
         creds => this.auth.login(creds, this.loginForm.controls.remember.value),
-        error => (this.error = error)
+        error => (this.error = error.message)
       );
   }
 
