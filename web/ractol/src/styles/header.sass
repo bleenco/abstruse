@@ -1,0 +1,139 @@
+$header-height: 60px
+
+.header
+  width: 100%
+  height: $header-height
+  background: $background-header
+  display: flex
+  align-items: center
+  position: relative
+  font-family: $font-family-roboto
+  border-bottom: 1px solid $border-default
+
+  .header-container
+    width: 100%
+    height: $header-height
+    display: flex
+    justify-content: space-between
+
+    .header-left, .header-right
+      height: $header-height
+      display: flex
+      align-items: center
+
+    .header-item
+      +unselectable
+      display: block
+      color: $text-primary
+      cursor: pointer
+      position: relative
+      text-transform: uppercase
+      font-size: 14px
+      padding: 0 13px
+      font-weight: $weight-semibold
+      outline: none
+      text-decoration: none
+
+      &:first-child
+        padding-left: 0
+
+      &:last-child
+        margin-left: 10px
+        padding-right: 0
+
+      &:hover, &.is-active
+        color: $green
+        text-decoration: none
+
+      &.logo
+        height: 35px
+
+        img, svg
+          height: 35px
+
+      .avatar
+        vertical-align: middle
+        width: 35px
+        height: 35px
+        border-radius: 50%
+        border: 1px solid $border-default
+
+  .header-dropdown-container
+    width: 220px
+    background: $background-floating
+    position: absolute
+    top: 52px
+    right: -15px
+    border-radius: $border-radius
+    box-shadow: $box-shadow
+    text-transform: none
+    border: 1px solid $border-default
+
+    &::after
+      position: absolute
+      content: ''
+      display: block
+      width: 16px
+      height: 16px
+      transform: rotate(-45deg)
+      top: -8px
+      right: 23px
+      background: $background-floating
+      border-right: 1px solid $border-default
+      border-top: 1px solid $border-default
+
+    .hd-links
+      padding: 5px 8px
+
+    .hd-item
+      width: 100%
+      height: 32px
+      display: flex
+      align-items: center
+      color: $text-primary
+      border-color: $border-default
+      font-size: 14px
+      margin: 2px 0
+      padding: 6px 10px
+      border-radius: $border-radius
+      font-size: 14px
+      font-weight: $weight-medium
+      outline: none
+      text-decoration: none
+
+      &:hover:not(.avatar-item)
+        background-color: $green
+        color: $white
+        text-decoration: none
+
+      &.avatar-item
+        padding: 20px 10px
+        height: auto
+        border-bottom: 1px solid $border-default
+
+        &:hover
+          color: $text-menu
+
+        .hd-avatar
+          width: 40px
+          height: 40px
+          border-radius: 50%
+          border: 1px solid $border-default
+          margin-right: 20px
+          color: $white
+
+        .name, .email
+          display: block
+          text-align: left
+          line-height: 12px
+
+        .name
+          font-size: 14px
+          color: $text-secondary
+          margin-bottom: 5px
+          font-weight: $weight-semibold
+
+        .email
+          font-size: 12px
+          color: $text-primary
+          font-weight: $weight-medium
