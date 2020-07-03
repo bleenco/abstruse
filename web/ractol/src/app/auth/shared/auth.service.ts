@@ -47,8 +47,8 @@ export class AuthService {
     this.authenticated$.next(this.isAuthenticated);
   }
 
-  authenticate(creds: Login): Observable<Credentials> {
-    return this.http.post<Credentials>('/users/login', creds);
+  authenticate(data: Login): Observable<Credentials> {
+    return this.http.post<Credentials>('/users/login', data);
   }
 
   private setCredentials(creds: Credentials, remember: boolean): void {

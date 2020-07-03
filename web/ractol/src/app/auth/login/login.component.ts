@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(
-        creds => this.auth.login(creds),
+        creds => this.auth.login(creds, this.loginForm.controls.remember.value),
         error => (this.error = error)
       );
   }

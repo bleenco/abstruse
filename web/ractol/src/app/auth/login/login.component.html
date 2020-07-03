@@ -4,17 +4,20 @@
       <div class="columns">
         <div class="column is-4 is-offset-4">
           <section class="section">
-            <form (ngSubmit)="login()" [formGroup]="loginForm" novalidate>
+            <div class="logo-section">
+              <img src="/assets/images/ractol.svg" class="logo" />
+            </div>
+            <form class="form" (ngSubmit)="login()" [formGroup]="loginForm" novalidate>
               <div class="field">
                 <label class="label">Email</label>
-                <input class="input" type="text" formControlName="email" />
+                <input class="input" type="text" formControlName="email" autocomplete="false" />
               </div>
               <div class="field">
                 <label class="label">Password</label>
-                <input class="input" type="password" formControlName="password" />
+                <input class="input" type="password" formControlName="password" autocomplete="new-password" />
               </div>
               <div class="field">
-                <app-checkbox label="Remember me"></app-checkbox>
+                <app-checkbox formControlName="remember" label="Remember me"></app-checkbox>
               </div>
               <div class="form-buttons justify-center align-center">
                 <button type="submit" class="button">Login</button>
