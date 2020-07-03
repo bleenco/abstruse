@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Login } from './login.model';
 
 @Component({
   selector: 'app-login',
@@ -6,10 +7,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./login.component.sass']
 })
 export class LoginComponent implements OnInit {
+  form: Login = { email: '', password: '' };
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

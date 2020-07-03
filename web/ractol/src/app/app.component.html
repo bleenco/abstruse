@@ -1,7 +1,5 @@
 <main class="main" *ngIf="!(auth$ | async)">
-  <div class="container">
-    <router-outlet></router-outlet>
-  </div>
+  <router-outlet></router-outlet>
 </main>
 
 <main class="main" *ngIf="auth$ | async">

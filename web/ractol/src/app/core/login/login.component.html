@@ -1,1 +1,25 @@
-<p>login works!</p>
+<div class="hero is-medium">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-4 is-offset-4">
+          <section class="section">
+            <form>
+              <div class="field">
+                <label class="label">Email</label>
+                <input class="input" type="text" name="email" [(ngModel)]="form.email" />
+              </div>
+              <div class="field">
+                <label class="label">Password</label>
+                <input class="input" type="password" name="password" [(ngModel)]="form.password" />
+              </div>
+              <div class="form-buttons justify-center align-center">
+                <button type="button" class="button">Login</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
