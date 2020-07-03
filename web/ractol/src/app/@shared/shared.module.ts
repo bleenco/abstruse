@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
-import { TokenInterceptorProvider } from './interceptors/token.interceptor';
-
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
 import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
@@ -30,7 +28,7 @@ export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
     return {
       ngModule: SharedModule,
-      providers: [TokenInterceptorProvider]
+      providers: []
     };
   }
 }

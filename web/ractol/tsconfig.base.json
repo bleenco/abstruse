@@ -16,7 +16,11 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "es2020",
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom"],
+    "paths": {
+      "@core": ["src/app/@core/index"],
+      "@shared": ["src/app/@shared/index"]
+    }
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
