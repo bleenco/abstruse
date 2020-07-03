@@ -10,10 +10,11 @@ import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.compon
 import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 
 import { TooltipDirective } from './directives/tooltip.directive';
+import { LoaderComponent } from './components/loader/loader.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, HttpClientModule],
-  declarations: [CheckboxComponent, ProgressBarComponent, SelectboxComponent, TooltipDirective],
+  declarations: [CheckboxComponent, ProgressBarComponent, SelectboxComponent, TooltipDirective, LoaderComponent],
   exports: [
     CommonModule,
     FormsModule,
@@ -21,7 +22,8 @@ import { TooltipDirective } from './directives/tooltip.directive';
     CheckboxComponent,
     ProgressBarComponent,
     SelectboxComponent,
-    TooltipDirective
+    TooltipDirective,
+    LoaderComponent
   ]
 })
 export class SharedModule {
