@@ -1,0 +1,12 @@
+<main class="main" *ngIf="!(auth$ | async)">
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<main class="main" *ngIf="auth$ | async">
+  <app-header></app-header>
+  <div class="container">
+    <router-outlet></router-outlet>
+  </div>
+</main>
