@@ -13,6 +13,7 @@ import (
 	"github.com/ractol/ractol/pkg/tlsutil"
 	"github.com/ractol/ractol/server/api"
 	"github.com/ractol/ractol/server/config"
+	"github.com/ractol/ractol/server/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -49,6 +50,8 @@ func run() error {
 			errch <- err
 		}
 	}()
+
+	db.Connect(cfg)
 
 	go func() {
 		signal.Notify(sigch, syscall.SIGINT, syscall.SIGTERM)

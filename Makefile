@@ -14,7 +14,7 @@ all: build
 build: build_ui statik protoc server
 
 server:
-	@CGO_ENABLED=${CGO_ENABLED} go build -ldflags "-X ${RACTOL_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${RACTOL_VERSION_PATH}.UIVersion=${RACTOL_UI_VERSION} -X ${RACTOL_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/ractol-server ./cmd/ractol-server
+	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${RACTOL_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${RACTOL_VERSION_PATH}.UIVersion=${RACTOL_UI_VERSION} -X ${RACTOL_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/ractol-server ./cmd/ractol-server
 
 build_ui:
 	@if [ ! -d "web/ractol/dist" ]; then cd web/ractol && yarn build; fi
@@ -30,7 +30,7 @@ clean:
 	@rm -rf build/ web/ractol/dist internal/ui/ pb/api.pb.go
 
 dev:
-	@reflex -sr '\.go$$' -R '^web/' -R '^internal/ui' -R '^worker/' -R '^configs/' -- sh -c 'go run ./cmd/ractol-server'
+	@reflex -sr '\.go$$' -R '^web/' -R '^internal/ui' -R '^worker/' -R '^configs/' -- sh -c 'go install ./cmd/ractol-server && ractol-server'
 
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
