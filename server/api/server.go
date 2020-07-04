@@ -5,6 +5,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/dustin/go-humanize"
+	"github.com/felixge/httpsnoop"
 	"github.com/ractol/ractol/server/config"
 	"go.uber.org/zap"
 )
@@ -36,7 +38,7 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	s.Handler = newRouter()
+	s.Handler = s.logHandler(newRouter())
 	s.listener = listener
 	scheme := "http"
 	if s.config.HTTP.TLS {
@@ -74,4 +76,19 @@ func (s *Server) closeWith(err error) {
 	}
 	s.isRunning = false
 	s.running <- err
+}
+
+func (s *Server) logHandler(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		m := httpsnoop.CaptureMetrics(handler, w, r)
+		s.logger.Debugf(
+			"%s %s (code=%d dt=%s written=%s remote=%s)",
+			r.Method,
+			r.URL,
+			m.Code,
+			m.Duration,
+			humanize.Bytes(uint64(m.Written)),
+			r.RemoteAddr,
+		)
+	})
 }

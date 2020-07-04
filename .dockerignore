@@ -2,3 +2,4 @@ build/
 pb/api.pb.go
 internal/ui
 .DS_Store
+tmp/

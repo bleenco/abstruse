@@ -30,7 +30,7 @@ clean:
 	@rm -rf build/ web/raqctol/dist internal/ui/ pb/api.pb.go
 
 dev:
-	@reflex -sr '\.go$$' -R '^web/' -R '^internal/ui' -R '^worker/' -R '^configs/' -- sh -c 'make server && ./build/ractol-server'
+	@reflex -sr '\.go$$' -R '^web/' -R '^internal/ui' -R '^worker/' -R '^configs/' -- sh -c 'go run ./cmd/ractol-server'
 
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
