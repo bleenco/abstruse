@@ -27,7 +27,7 @@ install_dependencies:
 	@cd web/ractol && yarn install
 
 clean:
-	@rm -rf build/ web/raqctol/dist internal/ui/ pb/api.pb.go
+	@rm -rf build/ web/ractol/dist internal/ui/ pb/api.pb.go
 
 dev:
 	@reflex -sr '\.go$$' -R '^web/' -R '^internal/ui' -R '^worker/' -R '^configs/' -- sh -c 'go run ./cmd/ractol-server'
