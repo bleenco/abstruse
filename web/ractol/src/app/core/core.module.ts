@@ -2,7 +2,7 @@ import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from '@shared';
+import { SharedModule } from '../shared';
 import { ApiInterceptorProvider } from './interceptors/api.interceptor';
 import { ErrorInterceptorProvider } from './interceptors/error.interceptor';
 import { TokenInterceptorProvider } from './interceptors/token.interceptor';
