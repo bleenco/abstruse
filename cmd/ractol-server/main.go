@@ -1,7 +1,9 @@
 package main
 
-import "os"
+import (
+	"github.com/ractol/ractol/server/cmd"
+)
 
 func main() {
-	os.Exit(0)
+	cmd.Execute()
 }

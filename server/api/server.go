@@ -5,12 +5,14 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/ractol/ractol/server/config"
 	"go.uber.org/zap"
 )
 
 // Server extends net/http Server with graceful shutdowns.
 type Server struct {
 	*http.Server
+	config    config.Config
 	listener  net.Listener
 	isRunning bool
 	running   chan error
@@ -18,27 +20,37 @@ type Server struct {
 }
 
 // NewServer creates a new HTTP Server instance.
-func NewServer(logger *zap.SugaredLogger) *Server {
+func NewServer(config config.Config, logger *zap.Logger) *Server {
 	return &Server{
+		config:  config,
 		Server:  &http.Server{},
 		running: make(chan error),
-		logger:  logger,
+		logger:  logger.With(zap.String("type", "http")).Sugar(),
 	}
 }
 
 // Run starts HTTP Server instance and listens on specified port.
 func (s *Server) Run() error {
-	addr := "0.0.0.0:80"
+	addr := s.config.HTTP.Addr
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
 	s.Handler = newRouter()
 	s.listener = listener
+	scheme := "http"
+	if s.config.HTTP.TLS {
+		scheme = "https"
+	}
 
-	s.logger.Infof("Starting HTTP server on %s", addr)
+	s.logger.Infof("Starting HTTP server on %s://%s", scheme, addr)
 
-	go s.closeWith(s.Serve(listener))
+	if s.config.HTTP.TLS {
+		go s.closeWith(s.ServeTLS(listener, s.config.TLS.Cert, s.config.TLS.Key))
+	} else {
+		go s.closeWith(s.Serve(listener))
+	}
+
 	return nil
 }
 

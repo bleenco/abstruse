@@ -4,8 +4,10 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/jkuri/statik/fs"
 	_ "github.com/ractol/ractol/internal/ui" // user interface files
 )
@@ -20,8 +22,15 @@ type statikWrapper struct {
 
 func newRouter() *router {
 	router := &router{chi.NewRouter()}
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.Timeout(30 * time.Second))
+
 	router.Mount("/api/v1", apiRouter())
 	router.NotFound(ui())
+
 	return router
 }
 
