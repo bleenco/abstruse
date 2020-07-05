@@ -16,7 +16,20 @@ import (
 )
 
 type auth struct {
-	logger *zap.SugaredLogger
+	logger    *zap.SugaredLogger
+	userRepo  repository.UserRepo
+	tokenRepo repository.TokenRepo
+}
+
+func newAuth(logger *zap.Logger) auth {
+	a := auth{
+		logger:    logger.With(zap.Field(zap.String("api", "auth"))).Sugar(),
+		userRepo:  repository.NewUserRepo(),
+		tokenRepo: repository.NewTokenRepo(),
+	}
+	a.choresTicker()
+
+	return a
 }
 
 func (a *auth) login() http.HandlerFunc {
@@ -39,10 +52,7 @@ func (a *auth) login() http.HandlerFunc {
 			return
 		}
 
-		userRepo := repository.NewUserRepo()
-		tokenRepo := repository.NewTokenRepo()
-
-		user, err := userRepo.Login(f.Email, f.Password)
+		user, err := a.userRepo.Login(f.Email, f.Password)
 		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
@@ -66,7 +76,7 @@ func (a *auth) login() http.HandlerFunc {
 			IP:       ip,
 		}
 
-		token, err = tokenRepo.CreateOrUpdate(token)
+		token, err = a.tokenRepo.CreateOrUpdate(token)
 		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
@@ -82,6 +92,25 @@ func (a *auth) login() http.HandlerFunc {
 	})
 }
 
+func (a *auth) logout() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rt := refreshTokenFromCtx(r.Context())
+
+		token, err := a.tokenRepo.FindByToken(rt)
+		if err != nil {
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := a.tokenRepo.Delete(token); err != nil {
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
 func (a *auth) token() http.HandlerFunc {
 	type resp struct {
 		Token        string `json:"token"`
@@ -90,24 +119,22 @@ func (a *auth) token() http.HandlerFunc {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rt := refreshTokenFromCtx(r.Context())
-		tokenRepo := repository.NewTokenRepo()
-		userRepo := repository.NewUserRepo()
 
-		token, err := tokenRepo.FindByToken(rt)
+		token, err := a.tokenRepo.FindByToken(rt)
 		if err != nil {
 			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
 			return
 		}
 
 		if time.Now().After(token.ExpiresAt) {
-			if err := tokenRepo.Delete(token); err != nil {
+			if err := a.tokenRepo.Delete(token); err != nil {
 				// log error
 			}
 			render.JSON(w, http.StatusUnauthorized, render.Error{Message: "token expired"})
 			return
 		}
 
-		user, err := userRepo.Find(token.UserID)
+		user, err := a.userRepo.Find(token.UserID)
 		if err != nil {
 			render.JSON(w, http.StatusUnauthorized, render.Error{Message: "unknown user"})
 			return
@@ -118,14 +145,14 @@ func (a *auth) token() http.HandlerFunc {
 			return
 		}
 
-		token, err = tokenRepo.CreateOrUpdate(token)
+		token, err = a.tokenRepo.CreateOrUpdate(token)
 		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
 		user.LastLogin = time.Now()
-		user, err = userRepo.Update(user)
+		user, err = a.userRepo.Update(user)
 		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
@@ -139,4 +166,15 @@ func (a *auth) token() http.HandlerFunc {
 
 		render.JSON(w, http.StatusOK, resp{Token: userToken, RefreshToken: refreshToken})
 	})
+}
+
+func (a *auth) choresTicker() {
+	ticker := time.NewTicker(20 * time.Minute)
+	go func() {
+		for range ticker.C {
+			if err := a.tokenRepo.DeleteExpired(); err != nil {
+				a.logger.Errorf("error while deleting expired refresh tokens: %v", err)
+			}
+		}
+	}()
 }

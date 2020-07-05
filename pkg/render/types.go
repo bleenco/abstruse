@@ -4,3 +4,6 @@ package render
 type Error struct {
 	Message string `json:"message"`
 }
+
+// Empty response.
+type Empty struct{}

@@ -38,7 +38,7 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	s.Handler = s.logHandler(newRouter())
+	s.Handler = s.logHandler(newRouter(s.logger.Desugar()))
 	s.listener = listener
 	scheme := "http"
 	if s.config.HTTP.TLS {

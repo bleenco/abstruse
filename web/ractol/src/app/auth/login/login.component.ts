@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(
-        creds => this.auth.login(creds, this.loginForm.controls.remember.value),
+        tokens => this.auth.login(tokens),
         error => (this.error = error.message)
       );
   }
@@ -48,8 +48,7 @@ export class LoginComponent implements OnInit {
   private createForm(): void {
     this.loginForm = this.fromBuilder.group({
       email: ['', Validators.required],
-      password: ['', Validators.required],
-      remember: true
+      password: ['', Validators.required]
     });
   }
 }

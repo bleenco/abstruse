@@ -11,76 +11,79 @@ import (
 	"github.com/jkuri/statik/fs"
 	_ "github.com/ractol/ractol/internal/ui" // user interface files
 	authpkg "github.com/ractol/ractol/server/auth"
+	"go.uber.org/zap"
 )
 
 type router struct {
 	*chi.Mux
+	logger *zap.Logger
 }
 
 type statikWrapper struct {
 	assets http.FileSystem
 }
 
-func newRouter() *router {
-	router := &router{chi.NewRouter()}
+func newRouter(logger *zap.Logger) *router {
+	router := &router{chi.NewRouter(), logger}
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(30 * time.Second))
 
-	router.Mount("/api/v1", apiRouter())
-	router.NotFound(ui())
+	router.Mount("/api/v1", router.apiRouter())
+	router.NotFound(router.ui())
 
 	return router
 }
 
-func apiRouter() *chi.Mux {
+func (r *router) apiRouter() *chi.Mux {
 	router := chi.NewRouter()
-	middlewares := &middlewares{}
+	middlewares := newMiddlewares(r.logger)
 
-	router.Mount("/auth", authRouter())
+	router.Mount("/auth", r.authRouter())
 
 	router.Group(func(router chi.Router) {
 		router.Use(authpkg.JWT.Verifier(), middlewares.authenticator)
-		router.Mount("/users", usersRouter())
-		router.Mount("/system", systemRouter())
+		router.Mount("/users", r.usersRouter())
+		router.Mount("/system", r.systemRouter())
 	})
 
 	return router
 }
 
-func authRouter() *chi.Mux {
+func (r *router) authRouter() *chi.Mux {
 	router := chi.NewRouter()
-	auth := &auth{}
+	auth := newAuth(r.logger)
 	middlewares := &middlewares{}
 
 	router.Post("/login", auth.login())
 
 	router.Group(func(router chi.Router) {
-		router.Use(middlewares.authenticateRefreshToken)
+		router.Use(authpkg.JWT.Verifier(), middlewares.authenticateRefreshToken)
 		router.Post("/token", auth.token())
+		router.Post("/logout", auth.logout())
 	})
 
 	return router
 }
 
-func usersRouter() *chi.Mux {
+func (r *router) usersRouter() *chi.Mux {
 	router := chi.NewRouter()
 
 	return router
 }
 
-func systemRouter() *chi.Mux {
+func (r *router) systemRouter() *chi.Mux {
 	router := chi.NewRouter()
-	system := &system{}
+	system := newSystem(r.logger)
 
 	router.Get("/version", system.version())
 
 	return router
 }
 
-func ui() http.HandlerFunc {
+func (r *router) ui() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		root, _ := fs.New()
 		fs := http.FileServer(&statikWrapper{root})

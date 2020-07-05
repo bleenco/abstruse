@@ -55,3 +55,12 @@ func (r TokenRepo) Delete(data model.Token) error {
 
 	return db.Delete(&data).Error
 }
+
+// DeleteExpired deletes all refresh tokens that has expired.
+func (r TokenRepo) DeleteExpired() error {
+	db, err := db.Instance()
+	if err != nil {
+		return err
+	}
+	return db.Delete(model.Token{}, "expires_at <= ?", time.Now()).Error
+}

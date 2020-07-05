@@ -1,15 +1,25 @@
-export const AUTH_TOKEN_KEY = 'ractol-auth-token';
+export const AUTH_TOKEN_DATA = 'ractol-auth-data';
+export const TIMEOUT_FACTOR = 0.003;
 
 export interface Login {
   email: string;
   password: string;
-  remember: boolean;
 }
 
-export interface Credentials {
+export interface UserData {
   email: string;
   name: string;
   avatar: string;
-  admin: boolean;
+  role: string;
+  lastLogin: Date;
+  tokens: {
+    token: string;
+    refreshToken: string;
+    storedAt: number;
+  };
+}
+
+export interface TokenResponse {
   token: string;
+  refreshToken: string;
 }

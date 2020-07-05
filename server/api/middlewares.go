@@ -20,6 +20,12 @@ type middlewares struct {
 	logger *zap.SugaredLogger
 }
 
+func newMiddlewares(logger *zap.Logger) middlewares {
+	return middlewares{
+		logger: logger.With(zap.String("api", "middleware")).Sugar(),
+	}
+}
+
 func (m *middlewares) authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, claims, err := authpkg.FromContext(r.Context())

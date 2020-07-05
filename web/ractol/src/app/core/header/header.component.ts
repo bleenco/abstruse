@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
   dropdownOpened = false;
 
   constructor(private auth: AuthService, private elementRef: ElementRef, private router: Router) {
-    this.user = generateUser(this.auth.credentials);
+    this.user = generateUser(this.auth.userData);
   }
 
   ngOnInit(): void {
