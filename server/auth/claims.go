@@ -22,7 +22,7 @@ func (c *UserClaims) ParseClaims(claims jwt.MapClaims) error {
 	if !ok {
 		return fmt.Errorf("could not parse id claim")
 	}
-	c.ID = uint(id.(int))
+	c.ID = uint(id.(float64))
 
 	email, ok := claims["email"]
 	if !ok {
@@ -64,7 +64,7 @@ func (c *RefreshClaims) ParseClaims(claims jwt.MapClaims) error {
 	if !ok {
 		return fmt.Errorf("could not parse id claim")
 	}
-	c.ID = uint(id.(int))
+	c.ID = uint(id.(float64))
 
 	token, ok := claims["token"]
 	if !ok {

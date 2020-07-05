@@ -174,7 +174,7 @@ func tokenFromCookie(r *http.Request) string {
 
 func tokenFromHeader(r *http.Request) string {
 	bearer := r.Header.Get("Authorization")
-	if strings.ToLower(bearer[0:6]) == "bearer" {
+	if len(bearer) > 7 && strings.ToLower(bearer[0:6]) == "bearer" {
 		return bearer[7:]
 	}
 	return ""

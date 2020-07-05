@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"time"
 
@@ -50,6 +51,11 @@ func (a *auth) login() http.HandlerFunc {
 		ua := user_agent.New(r.UserAgent())
 		browser, browserVersion := ua.Browser()
 		engine, engineVersion := ua.Engine()
+		ip, _, serr := net.SplitHostPort(r.RemoteAddr)
+		if serr != nil {
+			ip = r.RemoteAddr
+		}
+
 		token := model.Token{
 			UserID:   user.ID,
 			OS:       fmt.Sprintf("%s %s", ua.OSInfo().Name, ua.OSInfo().Version),
@@ -57,7 +63,7 @@ func (a *auth) login() http.HandlerFunc {
 			Engine:   fmt.Sprintf("%s %s", engine, engineVersion),
 			Platform: ua.Platform(),
 			Mobile:   ua.Mobile(),
-			IP:       r.RemoteAddr,
+			IP:       ip,
 		}
 
 		token, err = tokenRepo.CreateOrUpdate(token)
