@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/jkuri/statik/fs"
 	_ "github.com/ractol/ractol/internal/ui" // user interface files
+	authpkg "github.com/ractol/ractol/server/auth"
 )
 
 type router struct {
@@ -36,9 +37,15 @@ func newRouter() *router {
 
 func apiRouter() *chi.Mux {
 	router := chi.NewRouter()
+	middlewares := &middlewares{}
+
 	router.Mount("/auth", authRouter())
-	router.Mount("/users", usersRouter())
-	router.Mount("/system", systemRouter())
+
+	router.Group(func(router chi.Router) {
+		router.Use(authpkg.JWT.Verifier(), middlewares.authenticator)
+		router.Mount("/users", usersRouter())
+		router.Mount("/system", systemRouter())
+	})
 
 	return router
 }
@@ -46,8 +53,14 @@ func apiRouter() *chi.Mux {
 func authRouter() *chi.Mux {
 	router := chi.NewRouter()
 	auth := &auth{}
+	middlewares := &middlewares{}
 
 	router.Post("/login", auth.login())
+
+	router.Group(func(router chi.Router) {
+		router.Use(middlewares.authenticateRefreshToken)
+		router.Post("/token", auth.token())
+	})
 
 	return router
 }

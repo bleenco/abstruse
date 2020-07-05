@@ -38,55 +38,27 @@ func (r UserRepo) FindByEmail(email string) (model.User, error) {
 	return user, err
 }
 
+// Update updates user with specified non-empty fields provided.
+func (r UserRepo) Update(data model.User) (model.User, error) {
+	db, err := db.Instance()
+	if err != nil {
+		return data, err
+	}
+	err = db.Model(&data).Updates(&data).Error
+	return data, err
+}
+
 // Login checks user credentials and returns user model, token and refresh token
 // or error if invalid credentials.
-func (r UserRepo) Login(email, password string) (model.User, string, string, error) {
-	var token, refreshToken string
+func (r UserRepo) Login(email, password string) (model.User, error) {
 	user, err := r.FindByEmail(email)
 	if err != nil {
-		return user, token, refreshToken, err
+		return user, err
 	}
 
 	if auth.CheckPasswordHash(password, user.Password) {
-		token, err = generateToken(user)
-		if err != nil {
-			return user, token, refreshToken, err
-		}
-
-		refreshToken, err = generateRefreshToken(user)
-		return user, token, refreshToken, err
+		return user, nil
 	}
 
-	return user, token, refreshToken, fmt.Errorf("Invalid credentials")
-}
-
-func generateTokens(user model.User) (string, string, error) {
-	userClaims := auth.UserClaims{
-		ID:     user.ID,
-		Email:  user.Email,
-		Name:   user.Name,
-		Avatar: user.Avatar,
-		Role:   user.Role,
-  }
-  token, err := auth.JWT.CreateJWT(userClaims)
-  if err != nil {
-    return "", "", err
-  }
-
-  refreshClaims := auth.RefreshClaims{
-    ID: user.ID,
-    Token:
-  }
-}
-
-func generateRefreshToken(user model.User) (string, error) {
-	payload := auth.Payload{
-		ID:     user.ID,
-		Email:  user.Email,
-		Name:   user.Name,
-		Avatar: user.Avatar,
-		Role:   user.Role,
-	}
-
-	return auth.GenerateRefreshToken(payload)
+	return user, fmt.Errorf("Invalid credentials")
 }

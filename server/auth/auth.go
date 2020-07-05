@@ -9,15 +9,18 @@ import (
 var JWT *JWTAuth
 
 var (
-	jwtSecret        []byte
-	jwtExpiry        time.Duration
-	jwtRefreshExpiry time.Duration
+	// JWTSecret secred from config for signing tokens.
+	JWTSecret []byte
+	// JWTExpiry user token expiration time.
+	JWTExpiry time.Duration
+	// JWTRefreshExpiry refresh token expiration time.
+	JWTRefreshExpiry time.Duration
 )
 
 // Init authentication constants from config.
 func Init(secret string, expiry, refreshExpiry time.Duration) {
-	jwtSecret = []byte(secret)
-	jwtExpiry = expiry
-	jwtRefreshExpiry = refreshExpiry
+	JWTSecret = []byte(secret)
+	JWTExpiry = expiry
+	JWTRefreshExpiry = refreshExpiry
 	JWT = NewJWTAuth("HS256")
 }

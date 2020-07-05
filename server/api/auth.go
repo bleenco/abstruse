@@ -1,16 +1,22 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
+	"github.com/mssola/user_agent"
 	"github.com/ractol/ractol/pkg/lib"
 	"github.com/ractol/ractol/pkg/render"
 	authpkg "github.com/ractol/ractol/server/auth"
 	"github.com/ractol/ractol/server/db/model"
 	"github.com/ractol/ractol/server/db/repository"
+	"go.uber.org/zap"
 )
 
-type auth struct{}
+type auth struct {
+	logger *zap.SugaredLogger
+}
 
 func (a *auth) login() http.HandlerFunc {
 	type form struct {
@@ -35,48 +41,96 @@ func (a *auth) login() http.HandlerFunc {
 		userRepo := repository.NewUserRepo()
 		tokenRepo := repository.NewTokenRepo()
 
-		user, token, refreshToken, err := userRepo.Login(f.Email, f.Password)
+		user, err := userRepo.Login(f.Email, f.Password)
 		if err != nil {
-			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		payload, err := authpkg.GetRefreshTokenData(refreshToken)
+		ua := user_agent.New(r.UserAgent())
+		browser, browserVersion := ua.Browser()
+		engine, engineVersion := ua.Engine()
+		token := model.Token{
+			UserID:   user.ID,
+			OS:       fmt.Sprintf("%s %s", ua.OSInfo().Name, ua.OSInfo().Version),
+			Browser:  fmt.Sprintf("%s %s", browser, browserVersion),
+			Engine:   fmt.Sprintf("%s %s", engine, engineVersion),
+			Platform: ua.Platform(),
+			Mobile:   ua.Mobile(),
+			IP:       r.RemoteAddr,
+		}
+
+		token, err = tokenRepo.CreateOrUpdate(token)
 		if err != nil {
-			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		tokenModel := model.Token{Token: refreshToken, ExpiresAt: payload.ExpiresAt, UserID: user.ID}
-		if _, err := tokenRepo.Create(tokenModel); err != nil {
-			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+		userToken, refreshToken, err := authpkg.JWT.GenerateTokenPair(user.Claims(), token.Claims())
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		render.JSON(w, http.StatusOK, resp{Token: token, RefreshToken: refreshToken})
+		render.JSON(w, http.StatusOK, resp{Token: userToken, RefreshToken: refreshToken})
 	})
 }
 
 func (a *auth) token() http.HandlerFunc {
-	type form struct {
-		Token string `json:"token"`
-	}
-
 	type resp struct {
 		Token        string `json:"token"`
 		RefreshToken string `json:"refreshToken"`
 	}
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var f form
-		defer r.Body.Close()
+		rt := refreshTokenFromCtx(r.Context())
+		tokenRepo := repository.NewTokenRepo()
+		userRepo := repository.NewUserRepo()
 
-		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+		token, err := tokenRepo.FindByToken(rt)
+		if err != nil {
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+			return
+		}
+
+		if time.Now().After(token.ExpiresAt) {
+			if err := tokenRepo.Delete(token); err != nil {
+				// log error
+			}
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: "token expired"})
+			return
+		}
+
+		user, err := userRepo.Find(token.UserID)
+		if err != nil {
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: "unknown user"})
+			return
+		}
+
+		if !user.IsActive() {
+			render.JSON(w, http.StatusUnauthorized, render.Error{Message: "user deactivated"})
+			return
+		}
+
+		token, err = tokenRepo.CreateOrUpdate(token)
+		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		// tokenRepo := repository.NewTokenRepo()
+		user.LastLogin = time.Now()
+		user, err = userRepo.Update(user)
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
 
+		userToken, refreshToken, err := authpkg.JWT.GenerateTokenPair(user.Claims(), token.Claims())
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, resp{Token: userToken, RefreshToken: refreshToken})
 	})
 }
