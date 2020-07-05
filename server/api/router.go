@@ -36,13 +36,34 @@ func newRouter() *router {
 
 func apiRouter() *chi.Mux {
 	router := chi.NewRouter()
+	router.Mount("/auth", authRouter())
 	router.Mount("/users", usersRouter())
+	router.Mount("/system", systemRouter())
+
+	return router
+}
+
+func authRouter() *chi.Mux {
+	router := chi.NewRouter()
+	auth := &auth{}
+
+	router.Post("/login", auth.login())
 
 	return router
 }
 
 func usersRouter() *chi.Mux {
 	router := chi.NewRouter()
+
+	return router
+}
+
+func systemRouter() *chi.Mux {
+	router := chi.NewRouter()
+	system := &system{}
+
+	router.Get("/version", system.version())
+
 	return router
 }
 

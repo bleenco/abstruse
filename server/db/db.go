@@ -12,29 +12,36 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"   // sqlite driver
 	"github.com/ractol/ractol/server/config"
 	"github.com/ractol/ractol/server/db/model"
+	"go.uber.org/zap"
 )
 
 var db *gorm.DB
 
 // Instance returns db connection.
-func Instance() *gorm.DB {
-	return db
+func Instance() (*gorm.DB, error) {
+	if db == nil {
+		return nil, fmt.Errorf("database connection not initialized")
+	}
+	return db, nil
 }
 
 // Connect connects to database.
-func Connect(cfg config.Config) {
+func Connect(cfg config.Config, logger *zap.Logger) {
+	log := logger.With(zap.String("type", "db")).Sugar()
+
 	if err := check(cfg); err != nil {
-		fmt.Printf("database connection issue: %v\n", err)
+		log.Errorf("database connection issue: %v", err)
 	} else {
 		conn, err := gorm.Open(cfg.Db.Client, connString(cfg, true))
 		if err != nil {
-			fmt.Printf("database connection issue: %v\n", err)
+			log.Errorf("database connection issue: %v", err)
 		} else {
 			conn.AutoMigrate(
 				model.User{},
+				model.Token{},
 			)
 			db = conn
-			fmt.Printf("succesfully connected to database\n")
+			log.Debugf("succesfully connected to database")
 		}
 	}
 }

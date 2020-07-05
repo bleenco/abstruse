@@ -9,9 +9,11 @@ import (
 	"syscall"
 
 	"github.com/ractol/ractol/pkg/fs"
+	"github.com/ractol/ractol/pkg/lib"
 	"github.com/ractol/ractol/pkg/logger"
 	"github.com/ractol/ractol/pkg/tlsutil"
 	"github.com/ractol/ractol/server/api"
+	"github.com/ractol/ractol/server/auth"
 	"github.com/ractol/ractol/server/config"
 	"github.com/ractol/ractol/server/db"
 	"github.com/spf13/cobra"
@@ -51,7 +53,7 @@ func run() error {
 		}
 	}()
 
-	db.Connect(cfg)
+	go db.Connect(cfg, log)
 
 	go func() {
 		signal.Notify(sigch, syscall.SIGINT, syscall.SIGTERM)
@@ -63,7 +65,7 @@ func run() error {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initTLS)
+	cobra.OnInitialize(initConfig, initTLS, initAuthentication)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/ractol/ractol-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
@@ -80,7 +82,9 @@ func init() {
 	rootCmd.PersistentFlags().String("etcd-addr", "localhost:2379", "etcd server address")
 	rootCmd.PersistentFlags().String("etcd-username", "ractol", "etcd username")
 	rootCmd.PersistentFlags().String("etcd-password", "ractol", "etcd password")
-	rootCmd.PersistentFlags().String("auth-secret", "sfd919bUYxQ", "authentication secret key (change that)")
+	rootCmd.PersistentFlags().String("auth-jwtsecret", lib.RandomString(), "JWT authentication secret key")
+	rootCmd.PersistentFlags().String("auth-jwtexpiry", "15m", "JWT access token expiry time")
+	rootCmd.PersistentFlags().String("auth-jwtrefreshexpiry", "1h", "JWT refresh token expiry time")
 	rootCmd.PersistentFlags().String("log-level", "info", "logging level (available options: debug, info, warn, error, panic, fatal)")
 	rootCmd.PersistentFlags().Bool("log-stdout", true, "print logs to stdout")
 	rootCmd.PersistentFlags().String("log-filename", "ractol-server.log", "log filename")
@@ -102,7 +106,9 @@ func init() {
 	viper.BindPFlag("etcd.addr", rootCmd.PersistentFlags().Lookup("etcd-addr"))
 	viper.BindPFlag("etcd.username", rootCmd.PersistentFlags().Lookup("etcd-username"))
 	viper.BindPFlag("etcd.password", rootCmd.PersistentFlags().Lookup("etcd-password"))
-	viper.BindPFlag("auth.secret", rootCmd.PersistentFlags().Lookup("auth-secret"))
+	viper.BindPFlag("auth.jwtsecret", rootCmd.PersistentFlags().Lookup("auth-jwtsecret"))
+	viper.BindPFlag("auth.jwtexpiry", rootCmd.PersistentFlags().Lookup("auth-jwtexpiry"))
+	viper.BindPFlag("auth.jwtrefreshexpiry", rootCmd.PersistentFlags().Lookup("auth-jwtrefreshexpiry"))
 	viper.BindPFlag("log.level", rootCmd.PersistentFlags().Lookup("log-level"))
 	viper.BindPFlag("log.stdout", rootCmd.PersistentFlags().Lookup("log-stdout"))
 	viper.BindPFlag("log.filename", rootCmd.PersistentFlags().Lookup("log-filename"))
@@ -173,6 +179,12 @@ func initTLS() {
 	if err := tlsutil.CheckAndGenerateCert(cert, key); err != nil {
 		fatal(err)
 	}
+}
+
+func initAuthentication() {
+	secret := viper.GetString("auth.jwtsecret")
+	expiry, refreshExpiry := viper.GetDuration("auth.jwtexpiry"), viper.GetDuration("auth.jwtrefreshexpiry")
+	auth.Init(secret, expiry, refreshExpiry)
 }
 
 func fatal(msg interface{}) {

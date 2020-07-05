@@ -2,7 +2,7 @@ package model
 
 // User defines `users` database table.
 type User struct {
-	ID       uint   `gorm:"PRIMARY_KEY;AUTO_INCREMENT;NOT NULL" json:"id"`
+	ID       uint   `gorm:"primary_key;auto_increment;not null" json:"id"`
 	Email    string `gorm:"not null;varchar(255);unique_index" json:"email"`
 	Password string `gorm:"not null;varchar(255);column:password" json:"-"`
 	Name     string `gorm:"not null;varchar(255)" json:"name"`

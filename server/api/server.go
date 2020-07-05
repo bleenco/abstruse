@@ -45,7 +45,7 @@ func (s *Server) Run() error {
 		scheme = "https"
 	}
 
-	s.logger.Infof("Starting HTTP server on %s://%s", scheme, addr)
+	s.logger.Infof("starting HTTP server on %s://%s", scheme, addr)
 
 	if s.config.HTTP.TLS {
 		go s.closeWith(s.ServeTLS(listener, s.config.TLS.Cert, s.config.TLS.Key))
