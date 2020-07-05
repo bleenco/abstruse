@@ -16,7 +16,6 @@ export class AuthService {
   jwt = new JwtHelperService();
   refresh$ = new BehaviorSubject<void>(void 0);
   refreshSub = new Subscription();
-  refreshTokenInProgress: boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private location: Location) {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
@@ -76,13 +75,6 @@ export class AuthService {
   }
 
   refreshTokens(): Observable<TokenResponse | never> {
-    console.log(this.jwt.decodeToken(this.userData?.tokens.refreshToken));
-
-    if (this.refreshTokenInProgress) {
-      return empty();
-    }
-    this.refreshTokenInProgress = true;
-
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -90,10 +82,7 @@ export class AuthService {
       })
     };
 
-    return this.http.post<TokenResponse>('/auth/token', {}, options).pipe(
-      tap(tokens => this.setUserData(tokens)),
-      tap(() => (this.refreshTokenInProgress = false))
-    );
+    return this.http.post<TokenResponse>('/auth/token', {}, options).pipe(tap(tokens => this.setUserData(tokens)));
   }
 
   private setupAutoRefreshTimer(): Subscription {
@@ -117,7 +106,8 @@ export class AuthService {
     const exp = this.refreshTokenExpiry();
     const delta = (exp - now) * TIMEOUT_FACTOR;
     // console.log('next token auto refresh at: ', new Date(Date.now() + delta));
-    return Math.max(0, delta);
+    // return Math.max(0, delta);
+    return 10000;
   }
 
   private refreshTokenExpiry(): number {

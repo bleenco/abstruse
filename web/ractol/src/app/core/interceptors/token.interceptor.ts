@@ -24,11 +24,12 @@ export class TokenInterceptor implements HttpInterceptor {
       request = request.clone({ setHeaders: { Authorization: `Bearer ${this.auth.userToken}` } });
     }
 
-    return next.handle(request).pipe(
-      catchError(error => {
-        return this.handleResponseError(error, request, next);
-      })
-    );
+    return next.handle(request);
+    // return next.handle(request).pipe(
+    //   catchError(error => {
+    //     return this.handleResponseError(error, request, next);
+    //   })
+    // );
   }
 
   private handleResponseError(
