@@ -60,16 +60,23 @@ func (r UserRepo) Login(email, password string) (model.User, string, string, err
 	return user, token, refreshToken, fmt.Errorf("Invalid credentials")
 }
 
-func generateToken(user model.User) (string, error) {
-	payload := auth.Payload{
+func generateTokens(user model.User) (string, string, error) {
+	userClaims := auth.UserClaims{
 		ID:     user.ID,
 		Email:  user.Email,
 		Name:   user.Name,
 		Avatar: user.Avatar,
-		Admin:  user.Admin,
-	}
+		Role:   user.Role,
+  }
+  token, err := auth.JWT.CreateJWT(userClaims)
+  if err != nil {
+    return "", "", err
+  }
 
-	return auth.GenerateToken(payload)
+  refreshClaims := auth.RefreshClaims{
+    ID: user.ID,
+    Token:
+  }
 }
 
 func generateRefreshToken(user model.User) (string, error) {
@@ -78,7 +85,7 @@ func generateRefreshToken(user model.User) (string, error) {
 		Email:  user.Email,
 		Name:   user.Name,
 		Avatar: user.Avatar,
-		Admin:  user.Admin,
+		Role:   user.Role,
 	}
 
 	return auth.GenerateRefreshToken(payload)

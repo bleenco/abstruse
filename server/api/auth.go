@@ -56,3 +56,27 @@ func (a *auth) login() http.HandlerFunc {
 		render.JSON(w, http.StatusOK, resp{Token: token, RefreshToken: refreshToken})
 	})
 }
+
+func (a *auth) token() http.HandlerFunc {
+	type form struct {
+		Token string `json:"token"`
+	}
+
+	type resp struct {
+		Token        string `json:"token"`
+		RefreshToken string `json:"refreshToken"`
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var f form
+		defer r.Body.Close()
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		// tokenRepo := repository.NewTokenRepo()
+
+	})
+}
