@@ -1,8 +1,8 @@
-<div *ngIf="!(auth$ | async)">
+<div *ngIf="!(loggedIn | async)">
   <router-outlet></router-outlet>
 </div>
 
-<div *ngIf="auth$ | async">
+<div *ngIf="loggedIn | async">
   <app-header></app-header>
   <main class="main">
     <div class="container">

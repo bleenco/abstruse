@@ -20,8 +20,8 @@ export class TokenInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
-    if (this.auth.userToken) {
-      request = request.clone({ setHeaders: { Authorization: `Bearer ${this.auth.userToken}` } });
+    if (this.auth.accessToken) {
+      request = request.clone({ setHeaders: { Authorization: `Bearer ${this.auth.accessToken}` } });
     }
 
     return next.handle(request);
@@ -32,32 +32,32 @@ export class TokenInterceptor implements HttpInterceptor {
     // );
   }
 
-  private handleResponseError(
-    error: HttpErrorResponse,
-    request?: HttpRequest<any>,
-    next?: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    if (error.status === 401) {
-      return this.auth.refreshTokens().pipe(
-        switchMap(() => {
-          request = request!.clone({ setHeaders: { Authorization: `Bearer ${this.auth.userToken}` } });
-          return next!.handle(request);
-        }),
-        catchError(err => {
-          if (err.status === 401) {
-            this.auth.logout();
-          } else {
-            return this.handleResponseError(err);
-          }
-          throw err;
-        })
-      );
-    } else if (error.status === 403 || error.status === 500) {
-      this.auth.logout();
-    }
+  // private handleResponseError(
+  //   error: HttpErrorResponse,
+  //   request?: HttpRequest<any>,
+  //   next?: HttpHandler
+  // ): Observable<HttpEvent<any>> {
+  //   if (error.status === 401) {
+  //     return this.auth.refreshTokens().pipe(
+  //       switchMap(() => {
+  //         request = request!.clone({ setHeaders: { Authorization: `Bearer ${this.auth.accessToken}` } });
+  //         return next!.handle(request);
+  //       }),
+  //       catchError(err => {
+  //         if (err.status === 401) {
+  //           this.auth.logout();
+  //         } else {
+  //           return this.handleResponseError(err);
+  //         }
+  //         throw err;
+  //       })
+  //     );
+  //   } else if (error.status === 403 || error.status === 500) {
+  //     this.auth.logout();
+  //   }
 
-    return throwError(error);
-  }
+  //   return throwError(error);
+  // }
 }
 
 export const TokenInterceptorProvider: Provider = {

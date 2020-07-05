@@ -7,10 +7,10 @@ import { Observable } from 'rxjs';
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
-  auth$: Observable<boolean>;
+  loggedIn: Observable<boolean>;
 
   constructor(private auth: AuthService) {
-    this.auth$ = this.auth.authenticated$.asObservable();
+    this.loggedIn = this.auth.authenticated.asObservable();
   }
 
   ngOnInit(): void {}

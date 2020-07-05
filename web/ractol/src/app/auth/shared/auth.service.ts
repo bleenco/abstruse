@@ -1,34 +1,48 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, Subscription, empty } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, Subject, of } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
-import { tap, delay, mergeMap } from 'rxjs/operators';
+import { delay, finalize } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   data: UserData | null;
-  authenticated$: BehaviorSubject<boolean>;
+  authenticated: BehaviorSubject<boolean>;
   jwt = new JwtHelperService();
-  refresh$ = new BehaviorSubject<void>(void 0);
-  refreshSub = new Subscription();
+  events: Subject<string> = new Subject<string>();
+  refreshTokenTimeoutSubscription = new Subscription();
 
-  constructor(private http: HttpClient, private router: Router, private location: Location) {
+  constructor(private http: HttpClient, private router: Router, private location: Location, private ngZone: NgZone) {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
     this.data = (data && JSON.parse(data)) || null;
-    this.authenticated$ = new BehaviorSubject<boolean>(this.isAuthenticated);
+    this.authenticated = new BehaviorSubject<boolean>(this.isAuthenticated);
+
+    this.events.subscribe(e => {
+      switch (e) {
+        case 'token_expires':
+          this.refreshTokens()
+            .then(() => {
+              this.restartRefreshTimer();
+            })
+            .catch(err => {
+              console.log('error refreshing tokens: ', err);
+            });
+          break;
+      }
+    });
   }
 
   get userData(): UserData | null {
     return this.data;
   }
 
-  get userToken(): string | boolean {
-    return this.isAuthenticated ? this.data!.tokens.token : false;
+  get accessToken(): string | boolean {
+    return this.isAuthenticated ? this.data!.tokens.accessToken : false;
   }
 
   get refreshToken(): string | boolean {
@@ -39,14 +53,13 @@ export class AuthService {
     const status = !!this.data;
     if (!status) {
       this.router.navigate(['/login']);
+      this.clearRefreshTimer();
     } else if (this.location.isCurrentPathEqualTo('/login')) {
       this.router.navigate(['/']);
     }
 
-    if (!status) {
-      this.refreshSub.unsubscribe();
-    } else {
-      this.refreshSub = this.setupAutoRefreshTimer();
+    if (status) {
+      this.setupRefreshTimer();
     }
 
     return status;
@@ -54,46 +67,22 @@ export class AuthService {
 
   login(tokens: TokenResponse): void {
     this.setUserData(tokens);
-    this.authenticated$.next(this.isAuthenticated);
+    this.authenticated.next(this.isAuthenticated);
     this.router.navigate(['/']);
   }
 
   logout(): void {
-    this.unsetUserData();
-    this.authenticated$.next(this.isAuthenticated);
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.refreshToken}`
-      })
-    };
-    this.http.post<{}>('/auth/logout', {}, options).subscribe();
-  }
-
-  authenticate(data: Login): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>('/auth/login', data);
-  }
-
-  refreshTokens(): Observable<TokenResponse | never> {
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.refreshToken}`
-      })
-    };
-
-    return this.http.post<TokenResponse>('/auth/token', {}, options).pipe(tap(tokens => this.setUserData(tokens)));
-  }
-
-  private setupAutoRefreshTimer(): Subscription {
-    return this.refresh$
+    this.http
+      .post<any>('/auth/logout', {}, this.refreshHttpOptions())
       .pipe(
-        delay(this.calcTimeout()),
-        mergeMap(() => this.refreshTokens())
+        finalize(() => {
+          this.unsetUserData();
+          this.authenticated.next(this.isAuthenticated);
+        })
       )
       .subscribe(
         () => {
-          this.refresh$.next();
+          console.log('successfully logged out');
         },
         err => {
           console.error(err);
@@ -101,22 +90,65 @@ export class AuthService {
       );
   }
 
-  private calcTimeout(): number {
-    const now = Date.now();
-    const exp = this.refreshTokenExpiry();
-    const delta = (exp - now) * TIMEOUT_FACTOR;
-    // console.log('next token auto refresh at: ', new Date(Date.now() + delta));
-    // return Math.max(0, delta);
-    return 10000;
+  authenticate(data: Login): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>('/auth/login', data);
   }
 
-  private refreshTokenExpiry(): number {
-    const decoded = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
+  refreshTokens(): Promise<TokenResponse> {
+    return new Promise((resolve, reject) => {
+      this.http.post<TokenResponse>('/auth/token', {}, this.refreshHttpOptions()).subscribe(
+        tokens => {
+          console.log('Tokens received: ', tokens);
+          this.setUserData(tokens);
+          resolve(tokens);
+        },
+        err => {
+          console.log('Error refreshing token: ', err);
+          reject(err);
+        }
+      );
+    });
+  }
+
+  private setupRefreshTimer(): void {
+    if (!this.userData || !this.userData.tokens || !this.userData.tokens.accessToken) {
+      return;
+    }
+
+    this.clearRefreshTimer();
+    this.refreshTokenTimeoutSubscription = of('token_expires')
+      .pipe(delay(this.calcTimeout()))
+      .subscribe(e => this.events.next(e));
+  }
+
+  private restartRefreshTimer(): void {
+    this.clearRefreshTimer();
+    this.setupRefreshTimer();
+  }
+
+  private clearRefreshTimer(): void {
+    this.refreshTokenTimeoutSubscription.unsubscribe();
+  }
+
+  private refreshHttpOptions() {
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${this.refreshToken}` }) };
+  }
+
+  private calcTimeout(): number {
+    const now = Date.now();
+    const exp = this.accessTokenExpiry();
+    const delta = (exp - now) * TIMEOUT_FACTOR;
+    // console.log('next token auto refresh at: ', new Date(Date.now() + delta));
+    return Math.max(0, delta);
+  }
+
+  private accessTokenExpiry(): number {
+    const decoded = this.jwt.decodeToken(this.userData!.tokens.accessToken);
     return decoded.exp * 1000;
   }
 
   private setUserData(tokens: TokenResponse): void {
-    const token = this.jwt.decodeToken(tokens.token);
+    const token = this.jwt.decodeToken(tokens.accessToken);
     this.data = { ...token, tokens };
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
   }

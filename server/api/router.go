@@ -55,7 +55,7 @@ func (r *router) apiRouter() *chi.Mux {
 func (r *router) authRouter() *chi.Mux {
 	router := chi.NewRouter()
 	auth := newAuth(r.logger)
-	middlewares := &middlewares{}
+	middlewares := newMiddlewares(r.logger)
 
 	router.Post("/login", auth.login())
 

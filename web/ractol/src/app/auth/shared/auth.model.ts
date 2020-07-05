@@ -13,13 +13,13 @@ export interface UserData {
   role: string;
   lastLogin: Date;
   tokens: {
-    token: string;
+    accessToken: string;
     refreshToken: string;
     storedAt: number;
   };
 }
 
 export interface TokenResponse {
-  token: string;
+  accessToken: string;
   refreshToken: string;
 }

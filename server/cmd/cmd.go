@@ -47,13 +47,13 @@ func run() error {
 	errch := make(chan error, 1)
 	sigch := make(chan os.Signal, 1)
 
+	db.Connect(cfg, log)
+
 	go func() {
 		if err := server.Run(); err != nil {
 			errch <- err
 		}
 	}()
-
-	go db.Connect(cfg, log)
 
 	go func() {
 		signal.Notify(sigch, syscall.SIGINT, syscall.SIGTERM)

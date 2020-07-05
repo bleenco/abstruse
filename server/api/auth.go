@@ -39,7 +39,7 @@ func (a *auth) login() http.HandlerFunc {
 	}
 
 	type resp struct {
-		Token        string `json:"token"`
+		AccessToken  string `json:"accessToken"`
 		RefreshToken string `json:"refreshToken"`
 	}
 
@@ -88,7 +88,7 @@ func (a *auth) login() http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, http.StatusOK, resp{Token: userToken, RefreshToken: refreshToken})
+		render.JSON(w, http.StatusOK, resp{AccessToken: userToken, RefreshToken: refreshToken})
 	})
 }
 
@@ -103,8 +103,7 @@ func (a *auth) logout() http.HandlerFunc {
 		}
 
 		if err := a.tokenRepo.Delete(token); err != nil {
-			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
-			return
+			a.logger.Warnf("could not delete refresh token: %v", err)
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})
@@ -113,7 +112,7 @@ func (a *auth) logout() http.HandlerFunc {
 
 func (a *auth) token() http.HandlerFunc {
 	type resp struct {
-		Token        string `json:"token"`
+		AccessToken  string `json:"accessToken"`
 		RefreshToken string `json:"refreshToken"`
 	}
 
@@ -164,13 +163,17 @@ func (a *auth) token() http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, http.StatusOK, resp{Token: userToken, RefreshToken: refreshToken})
+		render.JSON(w, http.StatusOK, resp{AccessToken: userToken, RefreshToken: refreshToken})
 	})
 }
 
 func (a *auth) choresTicker() {
 	ticker := time.NewTicker(20 * time.Minute)
 	go func() {
+		if err := a.tokenRepo.DeleteExpired(); err != nil {
+			a.logger.Errorf("error while deleting expired refresh tokens: %v", err)
+		}
+
 		for range ticker.C {
 			if err := a.tokenRepo.DeleteExpired(); err != nil {
 				a.logger.Errorf("error while deleting expired refresh tokens: %v", err)

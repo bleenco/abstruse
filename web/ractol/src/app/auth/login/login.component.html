@@ -14,7 +14,7 @@
               </div>
               <div class="field">
                 <label class="label">Email</label>
-                <input class="input" type="text" formControlName="email" autocomplete="false" />
+                <input class="input" type="text" formControlName="email" />
                 <span class="form-helper is-red"
                   [hidden]="loginForm.controls.email.valid || (loginForm.controls.email.pristine && !submitted)">
                   Email is required.
@@ -29,7 +29,10 @@
                 </span>
               </div>
               <div class="form-buttons justify-center align-center">
-                <button type="submit" class="button">Login</button>
+                <button type="submit" class="button" [disabled]="isLoading">
+                  <span [hidden]="!isLoading">Logging in...</span>
+                  <span [hidden]="isLoading">Login</span>
+                </button>
               </div>
             </form>
           </section>
