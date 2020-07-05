@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, empty } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
 import { tap, delay, mergeMap } from 'rxjs/operators';
@@ -16,6 +16,7 @@ export class AuthService {
   jwt = new JwtHelperService();
   refresh$ = new BehaviorSubject<void>(void 0);
   refreshSub = new Subscription();
+  refreshTokenInProgress: boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private location: Location) {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
@@ -74,7 +75,14 @@ export class AuthService {
     return this.http.post<TokenResponse>('/auth/login', data);
   }
 
-  refreshTokens(): Observable<TokenResponse> {
+  refreshTokens(): Observable<TokenResponse | never> {
+    console.log(this.jwt.decodeToken(this.userData?.tokens.refreshToken));
+
+    if (this.refreshTokenInProgress) {
+      return empty();
+    }
+    this.refreshTokenInProgress = true;
+
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -82,7 +90,10 @@ export class AuthService {
       })
     };
 
-    return this.http.post<TokenResponse>('/auth/token', {}, options).pipe(tap(tokens => this.setUserData(tokens)));
+    return this.http.post<TokenResponse>('/auth/token', {}, options).pipe(
+      tap(tokens => this.setUserData(tokens)),
+      tap(() => (this.refreshTokenInProgress = false))
+    );
   }
 
   private setupAutoRefreshTimer(): Subscription {

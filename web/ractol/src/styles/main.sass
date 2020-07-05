@@ -13,3 +13,86 @@ html, body
   -webkit-tap-highlight-color: transparent
   -moz-osx-font-smoothing: grayscale
   -webkit-font-smoothing: antialiased
+
+.main
+  margin: 40px 0 80px 0
+
+  .main-heading
+    display: flex
+    align-items: center
+    border-bottom: 1px solid $border-default
+    padding: 10px 0
+    justify-content: space-between
+
+    .main-heading-left, .main-heading-right
+      display: flex
+      align-items: center
+
+    .main-heading-left
+
+      h1
+        padding-right: 20px
+        margin-right: 20px
+        border-right: 1px solid $border-default
+        font-size: 18px
+        color: $header-primary
+        font-weight: $weight-semibold
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            cursor: pointer
+
+      h2
+        color: $header-light
+        text-transform: none
+        margin-right: 15px
+        padding-right: 15px
+        font-weight: $weight-medium
+        display: inline-flex
+        align-items: center
+        font-size: 14px
+        text-transform: uppercase
+
+        &:not(:last-child)
+          border-right: 1px solid $border-default
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            color: $header-light-secondary
+            cursor: pointer
+
+        i
+          margin-right: 10px
+          padding-top: 2px
+
+        img
+          display: block
+          width: 18px
+          height: 18px
+          margin-right: 10px
+
+    .main-heading-right
+
+      .search-container
+        padding: 0 5px 0 15px
+        border-radius: $border-radius
+        display: inline-flex
+        align-items: center
+        margin: 0 20px
+
+        .input
+          height: 34px
+          width: 250px
+
+        i
+          color: $text-light
+
+      .nav-items
+        i
+          font-size: 14px
+          margin: 0
+          color: $text-primary

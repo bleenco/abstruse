@@ -14,10 +14,10 @@ var (
 
 // BuildInfo defines build information
 type BuildInfo struct {
-	GitCommit  string `json:"git_commit"`
-	APIVersion string `json:"api_version"`
-	UIVersion  string `json:"ui_version"`
-	BuildDate  string `json:"build_date"`
+	GitCommit  string `json:"commitHash"`
+	APIVersion string `json:"api"`
+	UIVersion  string `json:"ui"`
+	BuildDate  string `json:"buildDate"`
 }
 
 // GetBuildInfo returns build information

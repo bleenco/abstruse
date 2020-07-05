@@ -1,10 +1,12 @@
-<main class="main" *ngIf="!(auth$ | async)">
+<div *ngIf="!(auth$ | async)">
   <router-outlet></router-outlet>
-</main>
+</div>
 
-<main class="main" *ngIf="auth$ | async">
+<div *ngIf="auth$ | async">
   <app-header></app-header>
-  <div class="container">
-    <router-outlet></router-outlet>
-  </div>
-</main>
+  <main class="main">
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
