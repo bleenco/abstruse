@@ -9,7 +9,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mssql"    // mssql driver
 	_ "github.com/jinzhu/gorm/dialects/mysql"    // mysql driver
 	_ "github.com/jinzhu/gorm/dialects/postgres" // postres driver
-	_ "github.com/jinzhu/gorm/dialects/sqlite"   // sqlite driver
 	"github.com/ractol/ractol/server/config"
 	"github.com/ractol/ractol/server/db/model"
 	"go.uber.org/zap"
