@@ -39,7 +39,8 @@
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": ["jwt-decode"]
           },
           "configurations": {
             "production": {

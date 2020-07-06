@@ -3,7 +3,7 @@ import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, BehaviorSubject, Subscription, of, timer, throwError } from 'rxjs';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import * as jwt from 'jwt-decode';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
 import { finalize, flatMap, switchMap, tap, catchError, map } from 'rxjs/operators';
 
@@ -13,7 +13,6 @@ import { finalize, flatMap, switchMap, tap, catchError, map } from 'rxjs/operato
 export class AuthService {
   data: UserData | null;
   authenticated: BehaviorSubject<boolean>;
-  jwt = new JwtHelperService();
 
   refreshTokenTimerSubscription = new Subscription();
   refreshTokenInProgress: boolean = false;
@@ -70,7 +69,7 @@ export class AuthService {
   }
 
   logoutRequest(): Observable<never> {
-    const decoded = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
+    const decoded = jwt<any>(this.userData!.tokens.refreshToken);
     const refreshToken = decoded.token;
     return this.http.post<never>('/auth/logout', { refreshToken }, this.refreshHttpOptions()).pipe(
       finalize(() => {
@@ -137,13 +136,13 @@ export class AuthService {
   }
 
   private tokenExpiry(): number {
-    const accessToken = this.jwt.decodeToken(this.userData!.tokens.accessToken);
-    const refreshToken = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
+    const accessToken = jwt<any>(this.userData!.tokens.accessToken);
+    const refreshToken = jwt<any>(this.userData!.tokens.refreshToken);
     return Math.min(accessToken.exp, refreshToken.exp) * 1000;
   }
 
   private setUserData(tokens: TokenResponse): void {
-    const token = this.jwt.decodeToken(tokens.accessToken);
+    const token = jwt<any>(tokens.accessToken);
     this.data = { ...token, tokens };
     this.data!.tokens.storedAt = Date.now();
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
