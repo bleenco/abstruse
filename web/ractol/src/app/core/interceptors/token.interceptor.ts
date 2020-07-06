@@ -8,56 +8,70 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { AuthService } from '../../auth/shared/auth.service';
-import { Observable, empty, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Observable, empty, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, switchMap, filter, take } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class TokenInterceptor implements HttpInterceptor {
+  private refreshTokenInProgress: boolean = false;
+  private refreshTokenSubject: BehaviorSubject<boolean> = new BehaviorSubject<any>(false);
+
   constructor(private auth: AuthService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (request.headers.has('Authorization')) {
-      return next.handle(request);
-    }
+    request = this.addToken(request);
 
-    if (this.auth.accessToken) {
-      request = request.clone({ setHeaders: { Authorization: `Bearer ${this.auth.accessToken()}` } });
-    }
+    return next.handle(request).pipe(
+      catchError(error => {
+        if (request.url.endsWith('/login') || request.url.endsWith('/token')) {
+          // check if refreshing token failed
+          if (request.url.endsWith('/token')) {
+            return this.auth.logoutRequest();
+          }
 
-    return next.handle(request);
-    // return next.handle(request).pipe(
-    //   catchError(error => {
-    //     return this.handleResponseError(error, request, next);
-    //   })
-    // );
+          return throwError(error);
+        }
+
+        // if error code is different than 401 we want to skip refreshing token
+        if (error.status !== 401) {
+          return throwError(error);
+        }
+
+        if (this.refreshTokenInProgress) {
+          return this.refreshTokenSubject.pipe(
+            filter(result => !!result),
+            take(1),
+            switchMap(() => next.handle(this.addToken(request)))
+          );
+        } else {
+          this.refreshTokenInProgress = true;
+          this.refreshTokenSubject.next(false);
+
+          return this.auth.refreshTokens().pipe(
+            switchMap(() => {
+              this.refreshTokenInProgress = false;
+              this.refreshTokenSubject.next(true);
+
+              return next.handle(this.addToken(request));
+            }),
+            catchError(() => {
+              this.refreshTokenInProgress = false;
+              return this.auth.logoutRequest();
+            })
+          );
+        }
+      })
+    );
   }
 
-  // private handleResponseError(
-  //   error: HttpErrorResponse,
-  //   request?: HttpRequest<any>,
-  //   next?: HttpHandler
-  // ): Observable<HttpEvent<any>> {
-  //   if (error.status === 401) {
-  //     return this.auth.refreshTokens().pipe(
-  //       switchMap(() => {
-  //         request = request!.clone({ setHeaders: { Authorization: `Bearer ${this.auth.accessToken}` } });
-  //         return next!.handle(request);
-  //       }),
-  //       catchError(err => {
-  //         if (err.status === 401) {
-  //           this.auth.logout();
-  //         } else {
-  //           return this.handleResponseError(err);
-  //         }
-  //         throw err;
-  //       })
-  //     );
-  //   } else if (error.status === 403 || error.status === 500) {
-  //     this.auth.logout();
-  //   }
+  private addToken(request: HttpRequest<any>): HttpRequest<any> {
+    const accessToken = this.auth.accessToken();
+    if (!accessToken || request.headers.has('Authorization')) {
+      return request;
+    }
 
-  //   return throwError(error);
-  // }
+    return request.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });
+  }
 }
 
 export const TokenInterceptorProvider: Provider = {

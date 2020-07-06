@@ -153,7 +153,7 @@ func FromContext(ctx context.Context) (*jwt.Token, jwt.MapClaims, error) {
 		if tokenClaims, ok := token.Claims.(jwt.MapClaims); ok {
 			claims = tokenClaims
 		} else {
-			panic(fmt.Sprintf("jwtauth: unknown type of Claims: %T", token.Claims))
+			return token, claims, fmt.Errorf("unknown type of claims: %T", tokenClaims)
 		}
 	} else {
 		claims = jwt.MapClaims{}

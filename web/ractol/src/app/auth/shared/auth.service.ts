@@ -69,10 +69,10 @@ export class AuthService {
       .subscribe();
   }
 
-  logoutRequest(): Observable<{}> {
+  logoutRequest(): Observable<never> {
     const decoded = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
     const refreshToken = decoded.token;
-    return this.http.post<{}>('/auth/logout', { refreshToken }, this.refreshHttpOptions()).pipe(
+    return this.http.post<never>('/auth/logout', { refreshToken }, this.refreshHttpOptions()).pipe(
       finalize(() => {
         this.unsetUserData();
         this.authenticated.next(this.isAuthenticated);
@@ -129,16 +129,17 @@ export class AuthService {
 
   private calcTimeout(): number {
     const now = Date.now();
-    const exp = this.accessTokenExpiry();
+    const exp = this.tokenExpiry();
     const storedAt = (this.data?.tokens.storedAt as number) || now;
     const delta = (exp - storedAt) * TIMEOUT_FACTOR - (now - storedAt);
     console.log('next token auto refresh at: ', new Date(Date.now() + delta));
     return Math.max(0, delta);
   }
 
-  private accessTokenExpiry(): number {
-    const decoded = this.jwt.decodeToken(this.userData!.tokens.accessToken);
-    return decoded.exp * 1000;
+  private tokenExpiry(): number {
+    const accessToken = this.jwt.decodeToken(this.userData!.tokens.accessToken);
+    const refreshToken = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
+    return Math.min(accessToken.exp, refreshToken.exp) * 1000;
   }
 
   private setUserData(tokens: TokenResponse): void {
