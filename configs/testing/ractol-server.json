@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "jwtexpiry": "15m",
+    "jwtrefreshexpiry": "1h",
+    "jwtsecret": "e4435a98"
+  },
+  "db": {
+    "charset": "utf8",
+    "client": "mysql",
+    "host": "localhost",
+    "name": "ractol",
+    "password": "test",
+    "port": 33306,
+    "user": "root"
+  },
+  "etcd": {
+    "addr": "localhost:2379",
+    "password": "ractol",
+    "username": "ractol"
+  },
+  "http": {
+    "addr": "0.0.0.0:80",
+    "tls": false
+  },
+  "log": {
+    "filename": "ractol-server.log",
+    "level": "debug",
+    "maxage": 3,
+    "maxbackups": 3,
+    "maxsize": 500,
+    "stdout": true
+  },
+  "tls": {
+    "cert": "cert.pem",
+    "key": "key.pem"
+  }
+}

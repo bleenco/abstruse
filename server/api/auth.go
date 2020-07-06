@@ -177,12 +177,8 @@ func (a *auth) token() http.HandlerFunc {
 }
 
 func (a *auth) choresTicker() {
-	ticker := time.NewTicker(20 * time.Minute)
+	ticker := time.NewTicker(15 * time.Minute)
 	go func() {
-		if err := a.tokenRepo.DeleteExpired(); err != nil {
-			a.logger.Errorf("error while deleting expired refresh tokens: %v", err)
-		}
-
 		for range ticker.C {
 			if err := a.tokenRepo.DeleteExpired(); err != nil {
 				a.logger.Errorf("error while deleting expired refresh tokens: %v", err)

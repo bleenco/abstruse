@@ -35,4 +35,13 @@ dev:
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
 
-.PHONY: build server build_ui statik install_dependencies clean protoc dev
+test:
+	go test -v ./...
+
+test-unit:
+	cd web/ractol && npm run test:ci
+
+test-e2e:
+	go run ./tests/e2e
+
+.PHONY: build server build_ui statik install_dependencies clean protoc dev test test-unit test-e2e

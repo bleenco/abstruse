@@ -1,6 +1,6 @@
 package version
 
-// APIVersion represents current version of bh-platform API
+// APIVersion represents current version of ractol API
 const APIVersion = "0.0.0"
 
 var (

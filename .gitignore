@@ -3,3 +3,5 @@ pb/api.pb.go
 internal/ui
 .DS_Store
 tmp/
+configs/testing/*.pem
+configs/testing/*.log
