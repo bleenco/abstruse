@@ -1,11 +1,11 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, Subscription, Subject, of } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, of, timer, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
-import { delay, finalize } from 'rxjs/operators';
+import { finalize, flatMap, switchMap, tap, catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,55 +14,47 @@ export class AuthService {
   data: UserData | null;
   authenticated: BehaviorSubject<boolean>;
   jwt = new JwtHelperService();
-  events: Subject<string> = new Subject<string>();
-  refreshTokenTimeoutSubscription = new Subscription();
 
-  constructor(private http: HttpClient, private router: Router, private location: Location, private ngZone: NgZone) {
+  refreshTokenTimerSubscription = new Subscription();
+  refreshTokenInProgress: boolean = false;
+  refreshTimerRunning: boolean = false;
+
+  constructor(private http: HttpClient, private router: Router, private location: Location) {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
     this.data = (data && JSON.parse(data)) || null;
     this.authenticated = new BehaviorSubject<boolean>(this.isAuthenticated);
-
-    this.events.subscribe(e => {
-      switch (e) {
-        case 'token_expires':
-          this.refreshTokens()
-            .then(() => {
-              this.restartRefreshTimer();
-            })
-            .catch(err => {
-              console.log('error refreshing tokens: ', err);
-            });
-          break;
-      }
-    });
   }
 
   get userData(): UserData | null {
     return this.data;
   }
 
-  get accessToken(): string | boolean {
-    return this.isAuthenticated ? this.data!.tokens.accessToken : false;
-  }
-
-  get refreshToken(): string | boolean {
-    return this.isAuthenticated ? this.data!.tokens.refreshToken : false;
-  }
-
   get isAuthenticated(): boolean {
     const status = !!this.data;
     if (!status) {
       this.router.navigate(['/login']);
-      this.clearRefreshTimer();
+      this.cancelRefreshTimer();
     } else if (this.location.isCurrentPathEqualTo('/login')) {
       this.router.navigate(['/']);
     }
 
     if (status) {
-      this.setupRefreshTimer();
+      this.startRefreshTimer();
     }
 
     return status;
+  }
+
+  accessToken(): string | boolean {
+    return this.isAuthenticated ? this.data!.tokens.accessToken : false;
+  }
+
+  refreshToken(): string | boolean {
+    return this.isAuthenticated ? this.data!.tokens.refreshToken : false;
+  }
+
+  authenticate(data: Login): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>('/auth/login', data);
   }
 
   login(tokens: TokenResponse): void {
@@ -72,73 +64,75 @@ export class AuthService {
   }
 
   logout(): void {
-    this.http
-      .post<any>('/auth/logout', {}, this.refreshHttpOptions())
-      .pipe(
-        finalize(() => {
-          this.unsetUserData();
-          this.authenticated.next(this.isAuthenticated);
-        })
-      )
-      .subscribe(
-        () => {
-          console.log('successfully logged out');
-        },
-        err => {
-          console.error(err);
-        }
-      );
+    this.logoutRequest()
+      .pipe(catchError(error => (error.status !== 401 ? throwError(error) : of(null))))
+      .subscribe();
   }
 
-  authenticate(data: Login): Observable<TokenResponse> {
-    return this.http.post<TokenResponse>('/auth/login', data);
+  logoutRequest(): Observable<{}> {
+    const decoded = this.jwt.decodeToken(this.userData!.tokens.refreshToken);
+    const refreshToken = decoded.token;
+    return this.http.post<{}>('/auth/logout', { refreshToken }, this.refreshHttpOptions()).pipe(
+      finalize(() => {
+        this.unsetUserData();
+        this.authenticated.next(this.isAuthenticated);
+      })
+    );
   }
 
-  refreshTokens(): Promise<TokenResponse> {
-    return new Promise((resolve, reject) => {
-      this.http.post<TokenResponse>('/auth/token', {}, this.refreshHttpOptions()).subscribe(
-        tokens => {
-          console.log('Tokens received: ', tokens);
-          this.setUserData(tokens);
-          resolve(tokens);
-        },
-        err => {
-          console.log('Error refreshing token: ', err);
-          reject(err);
-        }
-      );
-    });
+  refreshTokens(): Observable<TokenResponse> {
+    this.refreshTokenInProgress = true;
+    return this.http.post<TokenResponse>('/auth/token', {}, this.refreshHttpOptions()).pipe(
+      tap(tokens => {
+        this.setUserData(tokens);
+        console.log('tokens refreshed succesfully');
+      }),
+      finalize(() => (this.refreshTokenInProgress = false))
+    );
   }
 
-  private setupRefreshTimer(): void {
-    if (!this.userData || !this.userData.tokens || !this.userData.tokens.accessToken) {
+  startRefreshTimer(): void {
+    if (this.refreshTimerRunning) {
       return;
     }
 
-    this.clearRefreshTimer();
-    this.refreshTokenTimeoutSubscription = of('token_expires')
-      .pipe(delay(this.calcTimeout()))
-      .subscribe(e => this.events.next(e));
+    this.refreshTimerRunning = true;
+    this.refreshTokenTimerSubscription = of('refresh_token')
+      .pipe(
+        switchMap(() => timer(this.calcTimeout())),
+        switchMap(() =>
+          this.refreshTokenInProgress
+            ? of(200)
+            : this.refreshTokens().pipe(
+                flatMap(() => of(200)),
+                catchError(error => of(error.status))
+              )
+        ),
+        switchMap(status => (status !== 200 ? this.logoutRequest().pipe(map(() => 'logout')) : of('ok')))
+      )
+      .subscribe(msg => (msg === 'ok' ? this.restartRefreshTimer() : false));
   }
 
-  private restartRefreshTimer(): void {
-    this.clearRefreshTimer();
-    this.setupRefreshTimer();
+  restartRefreshTimer(): void {
+    this.cancelRefreshTimer();
+    this.startRefreshTimer();
   }
 
-  private clearRefreshTimer(): void {
-    this.refreshTokenTimeoutSubscription.unsubscribe();
+  cancelRefreshTimer(): void {
+    this.refreshTokenTimerSubscription.unsubscribe();
+    this.refreshTimerRunning = false;
   }
 
   private refreshHttpOptions() {
-    return { headers: new HttpHeaders({ Authorization: `Bearer ${this.refreshToken}` }) };
+    return { headers: new HttpHeaders({ Authorization: `Bearer ${this.refreshToken()}` }) };
   }
 
   private calcTimeout(): number {
     const now = Date.now();
     const exp = this.accessTokenExpiry();
-    const delta = (exp - now) * TIMEOUT_FACTOR;
-    // console.log('next token auto refresh at: ', new Date(Date.now() + delta));
+    const storedAt = (this.data?.tokens.storedAt as number) || now;
+    const delta = (exp - storedAt) * TIMEOUT_FACTOR - (now - storedAt);
+    console.log('next token auto refresh at: ', new Date(Date.now() + delta));
     return Math.max(0, delta);
   }
 
@@ -150,6 +144,7 @@ export class AuthService {
   private setUserData(tokens: TokenResponse): void {
     const token = this.jwt.decodeToken(tokens.accessToken);
     this.data = { ...token, tokens };
+    this.data!.tokens.storedAt = Date.now();
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
   }
 

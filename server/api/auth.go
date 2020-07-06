@@ -93,17 +93,26 @@ func (a *auth) login() http.HandlerFunc {
 }
 
 func (a *auth) logout() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rt := refreshTokenFromCtx(r.Context())
+	type form struct {
+		RefreshToken string `json:"refreshToken"`
+	}
 
-		token, err := a.tokenRepo.FindByToken(rt)
-		if err != nil {
-			render.JSON(w, http.StatusUnauthorized, render.Error{Message: err.Error()})
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var f form
+		defer r.Body.Close()
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		if err := a.tokenRepo.Delete(token); err != nil {
-			a.logger.Warnf("could not delete refresh token: %v", err)
+		token, err := a.tokenRepo.FindByToken(f.RefreshToken)
+		if err != nil {
+			a.logger.Warnf("could not find refresh token: %v", err)
+		} else {
+			if err := a.tokenRepo.Delete(token); err != nil {
+				a.logger.Warnf("could not delete refresh token: %v", err)
+			}
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})

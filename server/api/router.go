@@ -58,11 +58,11 @@ func (r *router) authRouter() *chi.Mux {
 	middlewares := newMiddlewares(r.logger)
 
 	router.Post("/login", auth.login())
+	router.Post("/logout", auth.logout())
 
 	router.Group(func(router chi.Router) {
 		router.Use(authpkg.JWT.Verifier(), middlewares.authenticateRefreshToken)
 		router.Post("/token", auth.token())
-		router.Post("/logout", auth.logout())
 	})
 
 	return router
