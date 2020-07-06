@@ -1,14 +1,7 @@
 import { Injectable, Provider } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HTTP_INTERCEPTORS,
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthService } from '../../auth/shared/auth.service';
-import { Observable, empty, throwError, BehaviorSubject } from 'rxjs';
+import { Observable, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
@@ -24,7 +17,6 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (request.url.endsWith('/login') || request.url.endsWith('/token')) {
-          // check if refreshing token failed
           if (request.url.endsWith('/token')) {
             return this.auth.logoutRequest();
           }
@@ -32,7 +24,6 @@ export class TokenInterceptor implements HttpInterceptor {
           return throwError(error);
         }
 
-        // if error code is different than 401 we want to skip refreshing token
         if (error.status !== 401) {
           return throwError(error);
         }
@@ -66,7 +57,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
   private addToken(request: HttpRequest<any>): HttpRequest<any> {
     const accessToken = this.auth.accessToken();
-    if (!accessToken || request.headers.has('Authorization')) {
+    if (!accessToken || request.url.endsWith('/token')) {
       return request;
     }
 
