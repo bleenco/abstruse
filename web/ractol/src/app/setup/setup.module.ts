@@ -4,9 +4,10 @@ import { SetupDoneGuardService } from './shared/setup-done-guard.service';
 import { SetupRoutingModule } from './setup-routing.module';
 import { UserComponent } from './user/user.component';
 import { SetupComponent } from './setup.component';
+import { SharedModule } from '../shared';
 
 @NgModule({
-  imports: [CommonModule, SetupRoutingModule],
+  imports: [CommonModule, SetupRoutingModule, SharedModule],
   declarations: [UserComponent, SetupComponent],
   providers: [SetupDoneGuardService]
 })

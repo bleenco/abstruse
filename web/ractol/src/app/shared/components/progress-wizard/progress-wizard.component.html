@@ -1,0 +1,22 @@
+<div class="progress-wizard-container">
+  <div class="progress-wizard-bar-grid">
+    <span class="progress-wizard-bar" [style.width]="progressPercent + '%'"></span>
+  </div>
+  <div class="progress-items">
+    <div class="progress-item" *ngFor="let s of options?.steps; index as i">
+      <div class="progress-item-circle">
+        <div class="circle-step">
+          <div class="progress-item-inner-circle" [class.is-active]="step - 1 > i">
+            <span class="step-text" *ngIf="step - 1 <= i">{{ i + 1 }}</span>
+            <svg width="58" height="44" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58 44" class="step-checked"
+              *ngIf="step - 1 > i">
+              <path
+                d="M51.984.5l-2.843 2.813c-9.885 9.906-18.89 19.68-28.5 29.437L8.484 23.031l-3.125-2.5-5 6.25 3.125 2.5 15 12 2.813 2.219 2.531-2.531c10.75-10.772 20.416-21.393 31-32l2.813-2.844L51.984.5z"
+                fill="#ffffff" fill-rule="nonzero" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

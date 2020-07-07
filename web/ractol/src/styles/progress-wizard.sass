@@ -1,0 +1,90 @@
+$progress-wizard-border: #D3DCE1
+$progress-wizard-grid: #F0F3F5
+$progress-wizard-bar: $text-primary
+$progress-wizard-circle-size: 40px
+$progress-wizard-inner-circle-size: 34px
+
+.progress-wizard-container
+  display: block
+  width: 100%
+  height: 70px
+  position: relative
+
+  .progress-wizard-bar-grid
+    width: 100%
+    height: 8px
+    border: 1px solid $progress-wizard-border
+    background: $progress-wizard-grid
+    position: absolute
+    left: 0
+    top: 50%
+    transform: translateY(-50%)
+    overflow: hidden
+
+    .progress-wizard-bar
+      height: 8px
+      background: $progress-wizard-bar
+      display: inline-block
+      position: absolute
+      top: 0
+      left: 0
+      transition: width 500ms ease
+
+  .progress-items
+    width: 100%
+    display: flex
+    justify-content: space-between
+    align-items: center
+    height: 60px
+    position: absolute
+    z-index: 10
+    left: 0
+    top: 0
+
+    .progress-item
+      height: 60px
+      width: auto
+      display: inline-flex
+
+      &:first-child
+        margin-left: -1px
+
+      &:last-child
+        margin-right: -2px
+
+      .progress-item-circle
+        display: inline-flex
+        align-items: center
+        justify-content: center
+        position: relative
+        margin-top: 15px
+        width: $progress-wizard-circle-size
+        height: $progress-wizard-circle-size
+        border-radius: 50%
+        border: 1px solid $progress-wizard-border
+        background: $progress-wizard-grid
+
+        .progress-item-inner-circle
+          display: inline-flex
+          align-items: center
+          justify-content: center
+          width: $progress-wizard-inner-circle-size
+          height: $progress-wizard-inner-circle-size
+          border-radius: 50%
+          border: 1px solid $progress-wizard-border
+          background: $white
+
+          .step-text
+            font-size: 14px
+            font-family: $font-family
+            color: $text-primary
+
+          &.is-active
+            background: $text-primary
+
+            .step-text
+              color: $white
+
+          .step-checked
+            height: 8px
+            display: block
