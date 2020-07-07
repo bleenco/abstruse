@@ -41,6 +41,7 @@ func (r *router) apiRouter() *chi.Mux {
 	router := chi.NewRouter()
 	middlewares := newMiddlewares(r.logger)
 
+	router.Mount("/setup", r.setupRouter())
 	router.Mount("/auth", r.authRouter())
 
 	router.Group(func(router chi.Router) {
@@ -48,6 +49,15 @@ func (r *router) apiRouter() *chi.Mux {
 		router.Mount("/users", r.usersRouter())
 		router.Mount("/system", r.systemRouter())
 	})
+
+	return router
+}
+
+func (r *router) setupRouter() *chi.Mux {
+	router := chi.NewRouter()
+	setup := newSetup(r.logger)
+
+	router.Get("/ready", setup.ready())
 
 	return router
 }

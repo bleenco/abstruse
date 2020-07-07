@@ -62,3 +62,14 @@ func (r UserRepo) Login(email, password string) (model.User, error) {
 
 	return user, fmt.Errorf("Invalid credentials")
 }
+
+// AdminExists returns boolean response if user with admin role exists or not.
+func (r UserRepo) AdminExists() (bool, error) {
+	db, err := db.Instance()
+	if err != nil {
+		return false, err
+	}
+
+	var user model.User
+	return db.Where("role = ?", "admin").First(&user).RecordNotFound(), nil
+}
