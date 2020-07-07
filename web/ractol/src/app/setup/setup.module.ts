@@ -5,10 +5,11 @@ import { SetupRoutingModule } from './setup-routing.module';
 import { UserComponent } from './user/user.component';
 import { SetupComponent } from './setup.component';
 import { SharedModule } from '../shared';
+import { DatabaseComponent } from './database/database.component';
 
 @NgModule({
   imports: [CommonModule, SetupRoutingModule, SharedModule],
-  declarations: [UserComponent, SetupComponent],
+  declarations: [UserComponent, SetupComponent, DatabaseComponent],
   providers: [SetupDoneGuardService]
 })
 export class SetupModule {}

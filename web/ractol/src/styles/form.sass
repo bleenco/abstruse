@@ -4,6 +4,14 @@ form
   .form-buttons
     margin: 10px 0
 
+  .columns
+    margin-top: 0 !important
+    margin-bottom: 0 !important
+
+    .column
+      padding-top: 0
+      padding-bottom: 0
+
 .field
   display: inline-block
   width: 100%
@@ -41,20 +49,25 @@ form
   border-radius: $border-radius
   transition: border-color 200ms ease-in-out
   text-size-adjust: none !important
+  +placeholder
+    color: $text-secondary
+    opacity: .3
+    font-size: 15px
 
   &[disabled]
     opacity: .5
-
-  &::placeholder, &::-webkit-input-placeholder, &::-moz-placeholder , &::-ms-input-placeholder
-    color: $text-secondary
-    opacity: .5
-    font-size: 15px
 
   &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill::first-line
     border: 1px solid $border-input
     -webkit-text-fill-color: $text-primary
     -webkit-box-shadow: 0 0 0 1000px $background-input inset
     transition: background-color 5000s ease-in-out 0s
+
+  &[type="number"]
+    -moz-appearance: textfield
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      -webkit-appearance: none
 
 .form-helper
   display: block

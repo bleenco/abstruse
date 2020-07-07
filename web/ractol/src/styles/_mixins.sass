@@ -10,3 +10,15 @@
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+
+=placeholder
+  &::placeholder
+    @content
+  &::-webkit-input-placeholder
+    @content
+  &:-moz-placeholder
+    @content
+  &::-moz-placeholder
+    @content
+  &:-ms-input-placeholder
+    @content

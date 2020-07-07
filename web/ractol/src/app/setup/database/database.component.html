@@ -1,0 +1,38 @@
+<h1>Setup Database</h1>
+
+<div class="columns">
+  <div class="column is-8 is-offset-2">
+    <form class="form">
+      <div class="field">
+        <label class="label">Database Driver</label>
+        <app-selectbox [values]="drivers" placeholder="Database Driver"></app-selectbox>
+      </div>
+      <div class="columns">
+        <div class="column is-8">
+          <div class="field">
+            <label class="label">Hostname / IP</label>
+            <input type="text" class="input" placeholder="Hostname" />
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="field">
+            <label class="label">Port</label>
+            <input type="number" class="input" placeholder="Port" />
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Database Name</label>
+        <input type="text" class="input" placeholder="Database Name" />
+      </div>
+      <div class="field">
+        <label class="label">Username</label>
+        <input type="text" class="input" placeholder="Username" />
+      </div>
+      <div class="field">
+        <label class="label">Password</label>
+        <input type="text" class="input" placeholder="Password" />
+      </div>
+    </form>
+  </div>
+</div>

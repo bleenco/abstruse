@@ -10,9 +10,10 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 export class SelectboxComponent implements ControlValueAccessor, OnInit {
   @Input() values!: { value: any; placeholder: string }[];
   @Input() customIcon!: string;
+  @Input() placeholder!: string;
 
   innerValue!: number | string | boolean;
-  placeholder!: string;
+  placeholderText!: string;
   isOpened!: boolean;
 
   constructor(private elementRef: ElementRef) {}
@@ -35,12 +36,13 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
     }
 
     this.innerValue = val;
-    this.placeholder = this.values[index].placeholder;
+    this.placeholderText = this.values[index].placeholder;
     this.onChangeCallback(this.innerValue);
   }
 
   ngOnInit() {
     this.isOpened = false;
+    this.placeholderText = this.placeholder;
   }
 
   toggle(): void {
@@ -62,7 +64,7 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
       return;
     }
 
-    this.placeholder = this.values[index].placeholder;
+    this.placeholderText = this.values[index].placeholder;
     this.innerValue = val;
   }
 

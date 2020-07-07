@@ -71,5 +71,5 @@ func (r UserRepo) AdminExists() (bool, error) {
 	}
 
 	var user model.User
-	return db.Where("role = ?", "admin").First(&user).RecordNotFound(), nil
+	return !db.Where("role = ?", "admin").First(&user).RecordNotFound(), nil
 }
