@@ -31,13 +31,11 @@ export class AuthService {
   get isAuthenticated(): boolean {
     const status = !!this.data;
     if (!status) {
-      this.router.navigate(['/login']);
       this.cancelRefreshTimer();
-    } else if (this.location.isCurrentPathEqualTo('/login')) {
-      this.router.navigate(['/']);
-    }
-
-    if (status) {
+    } else {
+      if (this.location.isCurrentPathEqualTo('/login')) {
+        this.router.navigate(['/']);
+      }
       this.startRefreshTimer();
     }
 
@@ -45,11 +43,11 @@ export class AuthService {
   }
 
   accessToken(): string | boolean {
-    return this.isAuthenticated ? this.data!.tokens.accessToken : false;
+    return !!this.data ? this.data!.tokens.accessToken : false;
   }
 
   refreshToken(): string | boolean {
-    return this.isAuthenticated ? this.data!.tokens.refreshToken : false;
+    return !!this.data ? this.data!.tokens.refreshToken : false;
   }
 
   authenticate(data: Login): Observable<TokenResponse> {
@@ -75,6 +73,9 @@ export class AuthService {
       finalize(() => {
         this.unsetUserData();
         this.authenticated.next(this.isAuthenticated);
+        if (!this.location.isCurrentPathEqualTo('/login')) {
+          this.router.navigate(['/login']);
+        }
       })
     );
   }
