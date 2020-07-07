@@ -1,8 +1,8 @@
 $progress-wizard-border: #D3DCE1
 $progress-wizard-grid: #F0F3F5
-$progress-wizard-bar: $text-primary
-$progress-wizard-circle-size: 40px
-$progress-wizard-inner-circle-size: 34px
+$progress-wizard-bar: $green
+$progress-wizard-circle-size: 34px
+$progress-wizard-inner-circle-size: 28px
 
 .progress-wizard-container
   display: block
@@ -57,7 +57,8 @@ $progress-wizard-inner-circle-size: 34px
         align-items: center
         justify-content: center
         position: relative
-        margin-top: 15px
+        margin-top: 50%
+        translate: translateY(-50%)
         width: $progress-wizard-circle-size
         height: $progress-wizard-circle-size
         border-radius: 50%
@@ -80,7 +81,7 @@ $progress-wizard-inner-circle-size: 34px
             color: $text-primary
 
           &.is-active
-            background: $text-primary
+            background: $green
 
             .step-text
               color: $white

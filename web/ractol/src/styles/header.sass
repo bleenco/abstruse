@@ -10,14 +10,24 @@ $header-height: 60px
   font-family: $font-family-roboto
   border-bottom: 1px solid $border-default
 
+  &.is-alternative
+    height: 50px
+
+    .header-container
+      .header-item
+        &.logo
+          height: 30px
+          svg, img
+            height: 30px
+
   .header-container
     width: 100%
-    height: $header-height
+    height: 100%
     display: flex
     justify-content: space-between
 
     .header-left, .header-right
-      height: $header-height
+      height: 100%
       display: flex
       align-items: center
 

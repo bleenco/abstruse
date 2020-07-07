@@ -17,6 +17,39 @@ html, body
 .main
   margin: 40px 0 80px 0
 
+  h1, h2, h3, h4, h5, h6
+    display: block
+    font-family: $font-family-roboto
+    margin: 0 20px 0 0
+
+  h1
+    font-size: 26px
+    color: $heading-primary
+    font-weight: $weight-semibold
+
+  h2
+    font-size: 22px
+    color: $heading-secondary
+    font-weight: $weight-medium
+
+  h3
+    font-size: 16px
+    color: $heading-light
+    font-weight: $weight-medium
+    text-transform: uppercase
+
+  h4
+    font-size: 14px
+    color: $heading-light
+    font-weight: $weight-medium
+    text-transform: uppercase
+
+  h5
+    font-size: 12px
+    color: $heading-light
+    font-weight: $weight-medium
+    text-transform: uppercase
+
   .main-heading
     display: flex
     align-items: center
@@ -35,7 +68,7 @@ html, body
         margin-right: 20px
         border-right: 1px solid $border-default
         font-size: 18px
-        color: $header-primary
+        color: $heading-primary
         font-weight: $weight-semibold
 
         &.is-link
@@ -45,7 +78,7 @@ html, body
             cursor: pointer
 
       h2
-        color: $header-light
+        color: $heading-light
         text-transform: none
         margin-right: 15px
         padding-right: 15px
@@ -62,7 +95,7 @@ html, body
           outline: none
 
           &:hover, &.is-active
-            color: $header-light-secondary
+            color: $heading-light-secondary
             cursor: pointer
 
         i

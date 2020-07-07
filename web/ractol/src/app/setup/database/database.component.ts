@@ -19,6 +19,7 @@ export class DatabaseComponent implements OnInit {
   };
   defaultUsername = 'root';
   defaultPassword = 'test';
+  defaultDriver = 'mssql';
 
   constructor() {}
 

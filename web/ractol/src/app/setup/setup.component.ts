@@ -6,8 +6,8 @@ import { ProgressWizardOptions } from '../shared';
   templateUrl: './setup.component.html'
 })
 export class SetupComponent implements OnInit {
-  progressWizardOptions: ProgressWizardOptions = { steps: ['database', 'auth', 'user'] };
-  progressWizardStep: number = 0;
+  progressWizardOptions: ProgressWizardOptions = { steps: ['database', 'auth', 'user', 'config'] };
+  progressWizardStep: number = 2;
 
   constructor() {}
 
