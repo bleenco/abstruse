@@ -1,10 +1,20 @@
 <div class="columns is-multiline">
-  <div class="column is-12">
-    <div class="align-center justify-center">
+  <!-- <div class="column is-12 pb0">
+    <div class="align-center justify-start">
       <h3>Database Configuration</h3>
     </div>
+  </div> -->
+  <div class="column is-12 pt0 pb0">
+    <div class="notification">
+      <i class="far fa-question-circle"></i>
+      <p>Please test database connection, it is mandatory before you can save the config.</p>
+    </div>
+    <!-- <div class="notification is-green">
+      <i class="fas fa-server"></i>
+      <p>Connection succesfully established.</p>
+    </div> -->
   </div>
-  <div class="column is-10 is-offset-1">
+  <div class="column is-12 pt0 pb0">
     <form class="form">
       <div class="field">
         <label class="label">Database Driver</label>
@@ -28,20 +38,44 @@
         <label class="label">Database Name</label>
         <input type="text" class="input" placeholder="Database Name" />
       </div>
-      <div class="field">
-        <label class="label">Username</label>
-        <input type="text" class="input" placeholder="Username" />
+      <div class="columns">
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">Username</label>
+            <input type="text" class="input" placeholder="Username" />
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">Password</label>
+            <input type="text" class="input" placeholder="Password" />
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label class="label">Password</label>
-        <input type="text" class="input" placeholder="Password" />
+      <div class="form-buttons justify-end">
+        <button type="button" class="button is-small">
+          <i class="fas fa-database"></i>
+          <span>Test Connection</span>
+        </button>
+        <button type="submit" class="button is-small is-green" disabled>Save</button>
       </div>
     </form>
   </div>
   <div class="column is-12">
-    <div class="space-between align-center mt30 pt20">
-      <button type="button" class="button" disabled>Back</button>
-      <button type="button" class="button is-green">Next</button>
+    <div class="info-column">
+      <i class="fas fa-info-circle"></i>
+      <p>You need to provide valid database configuration in order to proceed the configuration wizard.</p>
+    </div>
+  </div>
+  <div class="column is-12">
+    <div class="space-between align-center mt30">
+      <div class="left">
+        <button type="button" class="button" disabled>Back</button>
+      </div>
+      <div class="right">
+        <button type="button" class="button" disabled>Skip</button>
+        <button type="button" class="button is-green" disabled>Next</button>
+      </div>
     </div>
   </div>
 </div>
