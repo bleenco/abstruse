@@ -1,0 +1,40 @@
+<div class="setup-controls">
+  <div class="controls-info-column">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-8 is-offset-2">
+          <div class="controls-info-container">
+            <i class="fas fa-info-circle"></i>
+            <p>You need to provide valid database configuration in order to proceed the configuration wizard.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="setup-controls-column">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-8 is-offset-2">
+          <div class="setup-controls-container">
+            <div class="left">
+              <button type="button" class="button" [disabled]="!wizard.steps[wizard.step - 1].backEnabled"
+                (click)="back()">
+                Back
+              </button>
+            </div>
+            <div class="right">
+              <button type="button" class="button" [disabled]="!wizard.steps[wizard.step - 1].skipEnabled"
+                (click)="next()">
+                Skip
+              </button>
+              <button type="button" class="button is-green" [disabled]="!wizard.steps[wizard.step - 1].nextEnabled"
+                (click)="next()">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

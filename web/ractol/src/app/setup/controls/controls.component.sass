@@ -1,0 +1,43 @@
+@import 'variables'
+@import 'colours'
+@import 'mixins'
+
+$controls-height: 80px
+
+.setup-controls
+  position: fixed
+  background: $background
+  bottom: 0
+  left: 0
+  right: 0
+  width: 100%
+  z-index: 9
+
+.controls-info-column
+  display: block
+  width: 100%
+  padding: 20px 0
+  margin-top: 20px
+
+  .controls-info-container
+    display: flex
+    width: 100%
+    align-items: center
+
+    i
+      margin-right: 10px
+
+    p
+      font-size: 12px
+
+.setup-controls-column
+  display: block
+  width: 100%
+  border-top: 1px solid $border-default
+
+  .setup-controls-container
+    width: 100%
+    display: flex
+    align-items: center
+    justify-content: space-between
+    min-height: $controls-height

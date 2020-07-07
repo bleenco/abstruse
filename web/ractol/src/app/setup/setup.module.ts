@@ -7,10 +7,13 @@ import { SetupComponent } from './setup.component';
 import { SharedModule } from '../shared';
 import { DatabaseComponent } from './database/database.component';
 import { HeaderComponent } from './header/header.component';
+import { ControlsComponent } from './controls/controls.component';
+import { SecurityComponent } from './security/security.component';
+import { EtcdComponent } from './etcd/etcd.component';
 
 @NgModule({
   imports: [CommonModule, SetupRoutingModule, SharedModule],
-  declarations: [UserComponent, SetupComponent, DatabaseComponent, HeaderComponent],
+  declarations: [UserComponent, SetupComponent, DatabaseComponent, HeaderComponent, ControlsComponent, SecurityComponent, EtcdComponent],
   providers: [SetupDoneGuardService]
 })
 export class SetupModule {}

@@ -4,6 +4,8 @@ import { UserComponent } from './user/user.component';
 import { SetupComponent } from './setup.component';
 import { SetupDoneGuardService } from './shared/setup-done-guard.service';
 import { DatabaseComponent } from './database/database.component';
+import { SecurityComponent } from './security/security.component';
+import { EtcdComponent } from './etcd/etcd.component';
 
 const routes: Routes = [
   {
@@ -11,9 +13,11 @@ const routes: Routes = [
     component: SetupComponent,
     canActivate: [SetupDoneGuardService],
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'database' },
+      { path: '', pathMatch: 'full', redirectTo: 'security' },
+      { path: 'security', component: SecurityComponent },
       { path: 'database', component: DatabaseComponent },
-      { path: 'user', component: UserComponent }
+      { path: 'user', component: UserComponent },
+      { path: 'etcd', component: EtcdComponent }
     ]
   }
 ];
