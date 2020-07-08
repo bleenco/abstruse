@@ -3,7 +3,9 @@ import { SetupService } from '../shared/setup.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ConfigDB, generateConfigDB } from '../shared/config.model';
 import { finalize } from 'rxjs/operators';
+import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-database',
   templateUrl: './database.component.html',
@@ -11,7 +13,9 @@ import { finalize } from 'rxjs/operators';
 })
 export class DatabaseComponent implements OnInit {
   dbForm!: FormGroup;
-  submitted: boolean = false;
+  tested: boolean = false;
+  testDBConnectionLoading: boolean = false;
+  saved: boolean = false;
   connTest: 'untested' | 'ok' | 'nok' = 'untested';
   drivers: { value: any; placeholder: string }[] = [
     { value: 'mysql', placeholder: 'MySQL' },
@@ -27,9 +31,8 @@ export class DatabaseComponent implements OnInit {
   defaultUsername = 'root';
   defaultPassword = 'test';
   defaultDriver = 'mssql';
-  testDBConnectionLoading: boolean = false;
 
-  constructor(private fb: FormBuilder, private setup: SetupService) {
+  constructor(private fb: FormBuilder, public setup: SetupService) {
     this.createForm();
   }
 
@@ -41,20 +44,46 @@ export class DatabaseComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.submitted = true;
     if (!this.dbForm.valid) {
       return;
     }
+
+    const config = { ...this.setup.config, ...{ db: this.generateModel() } };
+    this.setup
+      .saveConfig(config)
+      .pipe(
+        finalize(() => (this.connTest = 'untested')),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        () => {
+          this.setup.config = { ...config };
+          this.saved = true;
+          this.dbForm.markAsPristine();
+          this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
+        },
+        err => {
+          this.resetValues();
+          console.error(err);
+        }
+      );
   }
 
   testDBConnection(): void {
     this.connTest = 'untested';
+    this.saved = false;
+    this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = false;
     this.testDBConnectionLoading = true;
     this.setup
       .testDBConnection(this.generateModel())
-      .pipe(finalize(() => (this.testDBConnectionLoading = false)))
+      .pipe(
+        finalize(() => (this.testDBConnectionLoading = false)),
+        untilDestroyed(this)
+      )
       .subscribe(
-        resp => (this.connTest = resp ? 'ok' : 'nok'),
+        resp => {
+          this.connTest = resp ? 'ok' : 'nok';
+        },
         err => {
           this.resetValues();
           console.error(err);
@@ -73,6 +102,7 @@ export class DatabaseComponent implements OnInit {
       charset: this.setup.config.db.charset
     });
     this.connTest = 'untested';
+    this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = false;
   }
 
   private generateModel(): ConfigDB {

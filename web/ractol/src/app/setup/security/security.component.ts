@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { randomHash, durationValidator } from '../../shared';
 import { SetupService } from '../shared/setup.service';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-security',
   templateUrl: './security.component.html',
@@ -11,6 +13,7 @@ import { SetupService } from '../shared/setup.service';
 export class SecurityComponent implements OnInit {
   securityForm!: FormGroup;
   submitted: boolean = false;
+  saved: boolean = false;
   jwtExpiryTimes: { value: string; placeholder: string }[] = [
     { value: '15m', placeholder: '15 minutes' },
     { value: '30m', placeholder: '30 minutes' },
@@ -33,10 +36,15 @@ export class SecurityComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setup.fetchConfig().subscribe(config => {
-      this.setup.config = { ...config };
-      this.resetValues();
-    });
+    this.setup
+      .fetchConfig()
+      .pipe(untilDestroyed(this))
+      .subscribe(config => {
+        this.setup.config = { ...config };
+        this.resetValues();
+      });
+
+    this.securityForm.valueChanges.pipe(untilDestroyed(this)).subscribe(() => (this.saved = false));
   }
 
   onSubmit(): void {
@@ -56,15 +64,21 @@ export class SecurityComponent implements OnInit {
       }
     };
 
-    this.setup.saveConfig(config).subscribe(
-      () => {
-        this.setup.config = { ...config };
-      },
-      err => {
-        this.resetValues();
-        console.error(err);
-      }
-    );
+    this.setup
+      .saveConfig(config)
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        () => {
+          this.setup.config = { ...config };
+          this.saved = true;
+          this.securityForm.markAsPristine();
+          this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
+        },
+        err => {
+          this.resetValues();
+          console.error(err);
+        }
+      );
   }
 
   resetValues(): void {
@@ -73,11 +87,14 @@ export class SecurityComponent implements OnInit {
       jwtExpiry: this.setup.config.auth.jwtExpiry,
       jwtRefreshExpiry: this.setup.config.auth.jwtRefreshExpiry
     });
+    this.securityForm.markAsPristine();
+    this.saved = false;
   }
 
   generateSecret(): void {
     const secret = randomHash(20);
-    this.securityForm.controls.jwtSecret.setValue(secret);
+    this.securityForm.patchValue({ jwtSecret: secret });
+    this.securityForm.controls.jwtSecret.markAsDirty();
   }
 
   private createForm(): void {

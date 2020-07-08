@@ -57,12 +57,18 @@
         </div>
       </div>
       <div class="form-buttons justify-end">
-        <button type="button" class="button" [disabled]="testDBConnectionLoading" (click)="testDBConnection()">
+        <button type="button" class="button" [disabled]="testDBConnectionLoading || connTest === 'ok'"
+          (click)="testDBConnection()">
           <i class="fas fa-database"></i>
           <span *ngIf="!testDBConnectionLoading">Test Connection</span>
           <span *ngIf="testDBConnectionLoading">Testing Connection...</span>
         </button>
-        <button type="submit" class="button is-green" [disabled]="connTest !== 'ok'">Save</button>
+        <button type="submit" class="button is-green" [disabled]="connTest !== 'ok' || !dbForm.valid">
+          <span *ngIf="setup.savingConfig">Saving...</span>
+          <span *ngIf="!setup.savingConfig && !saved">Save</span>
+          <i class="fas fa-check" *ngIf="!setup.savingConfig && saved"></i>
+          <span *ngIf="!setup.savingConfig && saved">Saved</span>
+        </button>
       </div>
     </form>
   </div>
