@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/bleenco/abstruse/internal/version"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/core"
@@ -21,6 +22,14 @@ var (
 			if err := run(); err != nil {
 				fatal(err)
 			}
+			os.Exit(0)
+		},
+	}
+	versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the version number and build info",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(version.GenerateBuildVersionString())
 			os.Exit(0)
 		},
 	}
@@ -54,6 +63,7 @@ func run() error {
 }
 
 func init() {
+	rootCmd.AddCommand(versionCmd)
 	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/bleenco/abstruse-server.json)")
