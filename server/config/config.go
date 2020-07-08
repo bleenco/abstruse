@@ -14,9 +14,9 @@ type Config struct {
 
 // Auth authentication config.
 type Auth struct {
-	JWTSecret        string `json:"jwtsecret"`
-	JWTExpiry        string `json:"jwtexpiry"`
-	JWTRefreshExpiry string `json:"jwtrefreshexpiry"`
+	JWTSecret        string `json:"jwtSecret"`
+	JWTExpiry        string `json:"jwtExpiry"`
+	JWTRefreshExpiry string `json:"jwtRefreshExpiry"`
 }
 
 // Db database config.

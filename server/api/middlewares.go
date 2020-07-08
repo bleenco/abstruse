@@ -6,6 +6,8 @@ import (
 
 	"github.com/ractol/ractol/pkg/render"
 	authpkg "github.com/ractol/ractol/server/auth"
+	"github.com/ractol/ractol/server/db"
+	"github.com/ractol/ractol/server/db/repository"
 	"go.uber.org/zap"
 )
 
@@ -17,12 +19,14 @@ const (
 )
 
 type middlewares struct {
-	logger *zap.SugaredLogger
+	logger   *zap.SugaredLogger
+	userRepo repository.UserRepo
 }
 
 func newMiddlewares(logger *zap.Logger) middlewares {
 	return middlewares{
-		logger: logger.With(zap.String("api", "middleware")).Sugar(),
+		logger:   logger.With(zap.String("api", "middleware")).Sugar(),
+		userRepo: repository.NewUserRepo(),
 	}
 }
 
@@ -82,4 +86,25 @@ func claimsFromCtx(ctx context.Context) authpkg.UserClaims {
 
 func refreshTokenFromCtx(ctx context.Context) string {
 	return ctx.Value(ctxRefreshToken).(string)
+}
+
+func (m *middlewares) setupAuthenticator(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := db.Instance(); err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		exists, err := m.userRepo.AdminExists()
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+		if !exists {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		render.JSON(w, http.StatusForbidden, render.Empty{})
+	})
 }

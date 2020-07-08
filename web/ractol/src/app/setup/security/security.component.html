@@ -41,10 +41,13 @@
           </div>
         </div>
       </div>
-      <p>{{ securityForm.controls.jwtRefreshExpiry.errors | json }}</p>
+      <!-- <p>{{ securityForm.controls.jwtRefreshExpiry.errors | json }}</p> -->
       <div class="form-buttons has-border justify-end">
-        <button type="button" class="button">Reset</button>
-        <button type="submit" class="button is-green">Save</button>
+        <button type="button" class="button" [disabled]="setup.savingConfig" (click)="resetValues()">Reset</button>
+        <button type="submit" class="button is-green" [disabled]="setup.savingConfig">
+          <span *ngIf="setup.savingConfig">Saving...</span>
+          <span *ngIf="!setup.savingConfig">Save</span>
+        </button>
       </div>
     </form>
   </div>

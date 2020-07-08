@@ -3,10 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Setup } from './setup.model';
 import { SetupWizard, defaultWizardConfig } from './wizard.model';
+import { Config, generateConfig } from './config.model';
+import { map, finalize } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SetupService {
   wizard: SetupWizard = defaultWizardConfig();
+  config!: Config;
+  fetchingConfig: boolean = false;
+  savingConfig: boolean = false;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -27,6 +33,19 @@ export class SetupService {
   navigate(): void {
     const step = this.wizard.steps.find(s => s.step === this.wizard.step);
     this.router.navigate([`/setup/${step?.route}`]);
+  }
+
+  fetchConfig(): Observable<Config> {
+    this.fetchingConfig = true;
+    return this.http.get<Config>('/setup/config').pipe(
+      map(data => generateConfig(data)),
+      finalize(() => (this.fetchingConfig = false))
+    );
+  }
+
+  saveConfig(config: Config): Observable<void> {
+    this.savingConfig = true;
+    return this.http.put<void>('/setup/config', config).pipe(finalize(() => (this.savingConfig = false)));
   }
 
   ready(): Promise<boolean> {
