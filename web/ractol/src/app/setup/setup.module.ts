@@ -10,10 +10,19 @@ import { HeaderComponent } from './header/header.component';
 import { ControlsComponent } from './controls/controls.component';
 import { SecurityComponent } from './security/security.component';
 import { EtcdComponent } from './etcd/etcd.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, SetupRoutingModule, SharedModule],
-  declarations: [UserComponent, SetupComponent, DatabaseComponent, HeaderComponent, ControlsComponent, SecurityComponent, EtcdComponent],
+  imports: [CommonModule, SetupRoutingModule, SharedModule, ReactiveFormsModule],
+  declarations: [
+    UserComponent,
+    SetupComponent,
+    DatabaseComponent,
+    HeaderComponent,
+    ControlsComponent,
+    SecurityComponent,
+    EtcdComponent
+  ],
   providers: [SetupDoneGuardService]
 })
 export class SetupModule {}

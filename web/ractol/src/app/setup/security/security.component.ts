@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { randomHash } from '../../shared';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { randomHash, durationValidator } from '../../shared';
 
 @Component({
   selector: 'app-security',
@@ -7,6 +8,7 @@ import { randomHash } from '../../shared';
   styleUrls: ['./security.component.sass']
 })
 export class SecurityComponent implements OnInit {
+  securityForm!: FormGroup;
   jwtExpiryTimes: { value: string; placeholder: string }[] = [
     { value: '15m', placeholder: '15 minutes' },
     { value: '30m', placeholder: '30 minutes' },
@@ -24,12 +26,29 @@ export class SecurityComponent implements OnInit {
     { value: '3h', placeholder: '3 hours' }
   ];
 
-  constructor() {}
+  constructor(private fb: FormBuilder) {
+    this.createForm();
+  }
 
   ngOnInit(): void {}
 
+  onSubmit(): void {}
+
   generateSecret(): void {
-    const secret = randomHash(12);
-    console.log(secret);
+    const secret = randomHash(20);
+    this.securityForm.controls.jwtSecret.setValue(secret);
+  }
+
+  private createForm(): void {
+    this.securityForm = this.fb.group({
+      jwtSecret: ['', [Validators.required, Validators.minLength(8)]],
+      jwtExpiry: ['', Validators.required],
+      jwtRefreshExpiry: ['', Validators.required]
+    });
+
+    this.securityForm.controls.jwtRefreshExpiry.setValidators([
+      Validators.required,
+      durationValidator(this.securityForm.controls.jwtExpiry)
+    ]);
   }
 }

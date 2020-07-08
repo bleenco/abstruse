@@ -1,6 +1,6 @@
 <div class="columns is-multiline">
   <div class="column is-12 pt0 pb0">
-    <form class="form">
+    <form class="form" [formGroup]="securityForm" (ngSubmit)="onSubmit()">
       <div class="notification">
         <i class="fas fa-key"></i>
         <p>JWT Secret is used to sign JWT Tokens using the HMAC algorithm, please enter secret longer than 8 characters
@@ -10,7 +10,7 @@
         <label class="label">JWT Secret</label>
         <div class="columns align-center">
           <div class="column is-8">
-            <input type="text" class="input" placeholder="JWT Secret" />
+            <input type="text" class="input" placeholder="JWT Secret" formControlName="jwtSecret" />
           </div>
           <div class="column is-4">
             <button type="button" class="button is-fullwidth" (click)="generateSecret()">
@@ -29,16 +29,19 @@
         <div class="column is-6">
           <div class="field">
             <label class="label">JWT Token Expiry</label>
-            <app-selectbox [values]="jwtExpiryTimes" placeholder="JWT Token Expiry Time"></app-selectbox>
+            <app-selectbox [values]="jwtExpiryTimes" placeholder="JWT Token Expiry Time" formControlName="jwtExpiry">
+            </app-selectbox>
           </div>
         </div>
         <div class="column is-6">
           <div class="field">
             <label class="label">JWT Refresh Token Expiry</label>
-            <app-selectbox [values]="jwtRefreshExpiryTimes" placeholder="JWT Refresh Token Expiry Time"></app-selectbox>
+            <app-selectbox [values]="jwtRefreshExpiryTimes" placeholder="JWT Refresh Token Expiry Time"
+              formControlName="jwtRefreshExpiry"></app-selectbox>
           </div>
         </div>
       </div>
+      <p>{{ securityForm.controls.jwtRefreshExpiry.errors | json }}</p>
       <div class="form-buttons has-border justify-end">
         <button type="button" class="button">Reset</button>
         <button type="submit" class="button is-green">Save</button>
