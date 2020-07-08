@@ -1,0 +1,43 @@
+<div *ngIf="(loggedIn | async); else loggedOut">
+  <ng-container *ngTemplateOutlet="notFoundTemplate"></ng-container>
+</div>
+
+<ng-template #loggedOut>
+  <header class="header">
+    <div class="container">
+      <nav class="header-container">
+        <div class="header-left">
+          <a class="header-item logo" [routerLink]="['/']">
+            <img src="/assets/images/abstruse-text-black.svg" class="logo-text" />
+          </a>
+        </div>
+        <div class="header-right"></div>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <ng-container *ngTemplateOutlet="notFoundTemplate"></ng-container>
+    </div>
+  </main>
+</ng-template>
+
+<ng-template #notFoundTemplate>
+  <div class="columns is-multiline">
+    <div class="column is-12">
+      <div class="main-heading">
+        <div class="main-heading-left">
+          <h1>Not Found</h1>
+          <h2>Page Not Found</h2>
+        </div>
+        <div class="main-heading-right"></div>
+      </div>
+    </div>
+    <div class="column is-8 is-offset-2">
+      <div class="notification">
+        <i class="fas fa-search-location"></i>
+        <p>The page you requested was not found.</p>
+      </div>
+    </div>
+  </div>
+</ng-template>

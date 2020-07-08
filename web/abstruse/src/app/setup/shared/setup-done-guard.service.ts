@@ -7,12 +7,15 @@ export class SetupDoneGuardService implements CanActivate {
   constructor(private setup: SetupService, private router: Router) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
-    const ready = await this.setup.ready();
-    if (ready) {
-      this.router.navigate(['/login']);
-      return false;
+    try {
+      const ready = await this.setup.ready();
+      if (ready) {
+        this.router.navigate(['/login']);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      throw e;
     }
-
-    return true;
   }
 }
