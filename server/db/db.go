@@ -25,13 +25,13 @@ func Instance() (*gorm.DB, error) {
 }
 
 // Connect connects to database.
-func Connect(cfg config.Config, logger *zap.Logger) {
+func Connect(cfg config.Db, logger *zap.Logger) {
 	log := logger.With(zap.String("type", "db")).Sugar()
 
 	if err := check(cfg); err != nil {
 		log.Errorf("database connection issue: %v", err)
 	} else {
-		conn, err := gorm.Open(cfg.Db.Client, connString(cfg, true))
+		conn, err := gorm.Open(cfg.Driver, connString(cfg, true))
 		if err != nil {
 			log.Errorf("database connection issue: %v", err)
 		} else {
@@ -50,26 +50,40 @@ func Close() error {
 	return db.Close()
 }
 
-func connString(cfg config.Config, useDB bool) string {
-	switch strings.ToLower(cfg.Db.Client) {
+// CheckConnection checks valid database connection.
+func CheckConnection(cfg config.Db) bool {
+	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	if err := conn.Ping(); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func connString(cfg config.Db, useDB bool) string {
+	switch strings.ToLower(cfg.Driver) {
 	case "mysql", "mariadb":
 		if useDB {
-			return fmt.Sprintf("%stcp([%s]:%d)/%s?charset=%s&parseTime=true&loc=Local", credentials(cfg), cfg.Db.Host, cfg.Db.Port, cfg.Db.Name, cfg.Db.Charset)
+			return fmt.Sprintf("%stcp([%s]:%d)/%s?charset=%s&parseTime=true&loc=Local", credentials(cfg), cfg.Host, cfg.Port, cfg.Name, cfg.Charset)
 		}
-		return fmt.Sprintf("%stcp([%s]:%d)/", credentials(cfg), cfg.Db.Host, cfg.Db.Port)
+		return fmt.Sprintf("%stcp([%s]:%d)/", credentials(cfg), cfg.Host, cfg.Port)
 	case "mssql":
-		return fmt.Sprintf("sqlserver://%s%s:%d?database=%s", credentials(cfg), cfg.Db.Host, cfg.Db.Port, cfg.Db.Name)
+		return fmt.Sprintf("sqlserver://%s%s:%d?database=%s", credentials(cfg), cfg.Host, cfg.Port, cfg.Name)
 	case "postgres", "postgresql":
-		return fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s", cfg.Db.Host, cfg.Db.Port, cfg.Db.User, cfg.Db.Name, cfg.Db.Password)
+		return fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s", cfg.Host, cfg.Port, cfg.User, cfg.Name, cfg.Password)
 	case "sqlite", "sqlite3":
-		return cfg.Db.Name
+		return cfg.Name
 	default:
 		return ""
 	}
 }
 
-func check(cfg config.Config) error {
-	switch strings.ToLower(cfg.Db.Client) {
+func check(cfg config.Db) error {
+	switch strings.ToLower(cfg.Driver) {
 	case "mysql", "mariadb":
 		return checkMySQL(cfg)
 	default:
@@ -77,8 +91,8 @@ func check(cfg config.Config) error {
 	}
 }
 
-func checkMySQL(cfg config.Config) error {
-	conn, err := sql.Open(cfg.Db.Client, connString(cfg, false))
+func checkMySQL(cfg config.Db) error {
+	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
 	if err != nil {
 		return err
 	}
@@ -88,8 +102,8 @@ func checkMySQL(cfg config.Config) error {
 		return fmt.Errorf("mysql: could not establish a connection")
 	}
 
-	if _, err := conn.Exec(fmt.Sprintf("USE %s", cfg.Db.Name)); err != nil {
-		if _, err := conn.Exec(fmt.Sprintf("%s %s", "CREATE DATABASE IF NOT EXISTS", cfg.Db.Name)); err != nil {
+	if _, err := conn.Exec(fmt.Sprintf("USE %s", cfg.Name)); err != nil {
+		if _, err := conn.Exec(fmt.Sprintf("%s %s", "CREATE DATABASE IF NOT EXISTS", cfg.Name)); err != nil {
 			return fmt.Errorf("mysql: could not create database: %s", err.Error())
 		}
 	}
@@ -97,6 +111,6 @@ func checkMySQL(cfg config.Config) error {
 	return nil
 }
 
-func credentials(cfg config.Config) string {
-	return fmt.Sprintf("%s:%s@", cfg.Db.User, cfg.Db.Password)
+func credentials(cfg config.Db) string {
+	return fmt.Sprintf("%s:%s@", cfg.User, cfg.Password)
 }

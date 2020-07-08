@@ -22,7 +22,7 @@ type Auth struct {
 // Db database config.
 type Db struct {
 	Charset  string `json:"charset"`
-	Client   string `json:"client"`
+	Driver   string `json:"driver"`
 	Host     string `json:"host"`
 	Name     string `json:"name"`
 	Password string `json:"password"`

@@ -16,7 +16,7 @@ export class ConfigAuth {
 export class ConfigDB {
   constructor(
     public charset: string,
-    public client: string,
+    public driver: string,
     public host: string,
     public name: string,
     public password: string,
@@ -53,7 +53,7 @@ export const generateConfigAuth = (data: any): ConfigAuth => {
 };
 
 export const generateConfigDB = (data: any): ConfigDB => {
-  return new ConfigDB(data.charset, data.client, data.host, data.name, data.password, Number(data.port), data.user);
+  return new ConfigDB(data.charset, data.driver, data.host, data.name, data.password, Number(data.port), data.user);
 };
 
 export const generateConfigEtcd = (data: any): ConfigEtcd => {

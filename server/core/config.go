@@ -19,7 +19,7 @@ import (
 
 var (
 	// ConfigFile is path to config file.
-	CfgFile string
+	ConfigFile string
 	// Config is global export of configuration.
 	Config config.Config
 	// Log is application logger.
@@ -28,13 +28,13 @@ var (
 
 // InitDefaults initializes default values for command flags.
 func InitDefaults(cmd *cobra.Command, cfgFile string) {
-	CfgFile = cfgFile
+	ConfigFile = cfgFile
 
 	viper.BindPFlag("http.addr", cmd.PersistentFlags().Lookup("http-addr"))
 	viper.BindPFlag("http.tls", cmd.PersistentFlags().Lookup("http-tls"))
 	viper.BindPFlag("tls.cert", cmd.PersistentFlags().Lookup("tls-cert"))
 	viper.BindPFlag("tls.key", cmd.PersistentFlags().Lookup("tls-key"))
-	viper.BindPFlag("db.client", cmd.PersistentFlags().Lookup("db-client"))
+	viper.BindPFlag("db.driver", cmd.PersistentFlags().Lookup("db-driver"))
 	viper.BindPFlag("db.host", cmd.PersistentFlags().Lookup("db-host"))
 	viper.BindPFlag("db.port", cmd.PersistentFlags().Lookup("db-port"))
 	viper.BindPFlag("db.user", cmd.PersistentFlags().Lookup("db-user"))
@@ -59,14 +59,14 @@ func InitDefaults(cmd *cobra.Command, cfgFile string) {
 func InitConfig() {
 	var err error
 
-	if CfgFile == "" {
+	if ConfigFile == "" {
 		home, err := fs.GetHomeDir()
 		if err != nil {
 			fatal(err)
 		}
-		CfgFile = filepath.Join(home, "ractol", "ractol-server.json")
+		ConfigFile = filepath.Join(home, "ractol", "ractol-server.json")
 	}
-	viper.SetConfigFile(CfgFile)
+	viper.SetConfigFile(ConfigFile)
 
 	viper.SetConfigType("json")
 	viper.SetEnvPrefix("ractol")
@@ -74,8 +74,8 @@ func InitConfig() {
 	viper.AutomaticEnv()
 
 	if !fs.Exists(viper.ConfigFileUsed()) {
-		if !fs.Exists(filepath.Dir(CfgFile)) {
-			if err := fs.MakeDir(filepath.Dir(CfgFile)); err != nil {
+		if !fs.Exists(filepath.Dir(ConfigFile)) {
+			if err := fs.MakeDir(filepath.Dir(ConfigFile)); err != nil {
 				fatal(err)
 			}
 		}
@@ -123,7 +123,7 @@ func InitTLS() {
 
 // InitDB initializes database connection.
 func InitDB() {
-	db.Connect(Config, Log)
+	db.Connect(Config.Db, Log)
 }
 
 // InitAuthentication populates authentication global config variables.
@@ -141,7 +141,7 @@ func SaveConfig(cfg config.Config) error {
 	viper.Set("http.tls", Config.HTTP.TLS)
 	viper.Set("tls.cert", Config.TLS.Cert)
 	viper.Set("tls.key", Config.TLS.Key)
-	viper.Set("db.client", Config.Db.Client)
+	viper.Set("db.driver", Config.Db.Driver)
 	viper.Set("db.host", Config.Db.Host)
 	viper.Set("db.port", Config.Db.Port)
 	viper.Set("db.user", Config.Db.User)

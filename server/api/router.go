@@ -64,6 +64,7 @@ func (r *router) setupRouter() *chi.Mux {
 		router.Use(middlewares.setupAuthenticator)
 		router.Get("/config", setup.config())
 		router.Put("/config", setup.saveConfig())
+		router.Post("/db/test", setup.testDBConnection())
 	})
 
 	return router

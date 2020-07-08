@@ -61,7 +61,7 @@ func init() {
 	rootCmd.PersistentFlags().Bool("http-tls", false, "run HTTP server in TLS mode")
 	rootCmd.PersistentFlags().String("tls-cert", "cert.pem", "path to SSL certificate file")
 	rootCmd.PersistentFlags().String("tls-key", "key.pem", "path to SSL private key file")
-	rootCmd.PersistentFlags().String("db-client", "mysql", "database client (available options: mysql, postgres, sqlite, mssql)")
+	rootCmd.PersistentFlags().String("db-driver", "mysql", "database client (available options: mysql, postgres, mssql)")
 	rootCmd.PersistentFlags().String("db-host", "localhost", "database server host address")
 	rootCmd.PersistentFlags().Int("db-port", 3306, "database server port")
 	rootCmd.PersistentFlags().String("db-user", "root", "database username")

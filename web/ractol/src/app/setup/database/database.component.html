@@ -5,59 +5,64 @@
     </div>
   </div> -->
   <div class="column is-12 pt0 pb0">
-    <div class="notification">
+    <div class="notification" *ngIf="connTest === 'untested'">
       <i class="far fa-question-circle"></i>
       <p>Please test database connection, it is mandatory before you can save the config.</p>
     </div>
-    <!-- <div class="notification is-green">
+    <div class="notification is-green" *ngIf="connTest === 'ok'">
       <i class="fas fa-server"></i>
       <p>Connection succesfully established.</p>
-    </div> -->
+    </div>
+    <div class="notification is-red" *ngIf="connTest === 'nok'">
+      <i class="fas fa-server"></i>
+      <p>Failed to establish connection with given parameters.</p>
+    </div>
   </div>
   <div class="column is-12 pt0 pb0">
-    <form class="form">
+    <form class="form" [formGroup]="dbForm" (ngSubmit)="onSubmit()">
       <div class="field">
         <label class="label">Database Driver</label>
-        <app-selectbox [values]="drivers" placeholder="Database Driver"></app-selectbox>
+        <app-selectbox [values]="drivers" placeholder="Database Driver" formControlName="driver"></app-selectbox>
       </div>
       <div class="columns">
         <div class="column is-8">
           <div class="field">
             <label class="label">Hostname / IP</label>
-            <input type="text" class="input" placeholder="Hostname" />
+            <input type="text" class="input" placeholder="Hostname" formControlName="host" />
           </div>
         </div>
         <div class="column is-4">
           <div class="field">
             <label class="label">Port</label>
-            <input type="number" class="input" placeholder="Port" />
+            <input type="number" class="input" placeholder="Port" formControlName="port" />
           </div>
         </div>
       </div>
       <div class="field">
         <label class="label">Database Name</label>
-        <input type="text" class="input" placeholder="Database Name" />
+        <input type="text" class="input" placeholder="Database Name" formControlName="name" />
       </div>
       <div class="columns">
         <div class="column is-6">
           <div class="field">
             <label class="label">Username</label>
-            <input type="text" class="input" placeholder="Username" />
+            <input type="text" class="input" placeholder="Username" formControlName="user" />
           </div>
         </div>
         <div class="column is-6">
           <div class="field">
             <label class="label">Password</label>
-            <input type="text" class="input" placeholder="Password" />
+            <input type="text" class="input" placeholder="Password" formControlName="password" />
           </div>
         </div>
       </div>
       <div class="form-buttons justify-end">
-        <button type="button" class="button is-small">
+        <button type="button" class="button" [disabled]="testDBConnectionLoading" (click)="testDBConnection()">
           <i class="fas fa-database"></i>
-          <span>Test Connection</span>
+          <span *ngIf="!testDBConnectionLoading">Test Connection</span>
+          <span *ngIf="testDBConnectionLoading">Testing Connection...</span>
         </button>
-        <button type="submit" class="button is-small is-green" disabled>Save</button>
+        <button type="submit" class="button is-green" [disabled]="connTest !== 'ok'">Save</button>
       </div>
     </form>
   </div>
