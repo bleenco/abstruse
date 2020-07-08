@@ -1,1 +1,48 @@
-<p>security works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12 pt0 pb0">
+    <form class="form">
+      <div class="notification">
+        <i class="fas fa-key"></i>
+        <p>JWT Secret is used to sign JWT Tokens using the HMAC algorithm, please enter secret longer than 8 characters
+          or just generate it.</p>
+      </div>
+      <div class="field">
+        <label class="label">JWT Secret</label>
+        <div class="columns align-center">
+          <div class="column is-8">
+            <input type="text" class="input" placeholder="JWT Secret" />
+          </div>
+          <div class="column is-4">
+            <button type="button" class="button is-fullwidth" (click)="generateSecret()">
+              <i class="fas fa-key"></i>
+              <span>Generate Secret</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="notification">
+        <i class="fas fa-history"></i>
+        <p>To ensure security, JSON Web Tokens are refreshed in some expiry duration time. Refresh Token expiry
+          duration should be greater than actual Token expiry duration.</p>
+      </div>
+      <div class="columns">
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">JWT Token Expiry</label>
+            <app-selectbox [values]="jwtExpiryTimes" placeholder="JWT Token Expiry Time"></app-selectbox>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">JWT Refresh Token Expiry</label>
+            <app-selectbox [values]="jwtRefreshExpiryTimes" placeholder="JWT Refresh Token Expiry Time"></app-selectbox>
+          </div>
+        </div>
+      </div>
+      <div class="form-buttons has-border justify-end">
+        <button type="button" class="button">Reset</button>
+        <button type="submit" class="button is-green">Save</button>
+      </div>
+    </form>
+  </div>
+</div>

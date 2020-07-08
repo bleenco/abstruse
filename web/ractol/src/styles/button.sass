@@ -3,7 +3,7 @@
   color: $text-primary
   border-radius: 3px
   border: 1px solid $border-secondary
-  padding: 9px 20px
+  padding: 10px 20px
   display: inline-flex
   align-items: center
   justify-content: center
@@ -49,6 +49,9 @@
     width: 16px
     height: 16px
     margin-right: 7px
+
+  &.is-fullwidth
+    width: 100%
 
   @each $name, $color in $colors
     &.is-#{$name}
