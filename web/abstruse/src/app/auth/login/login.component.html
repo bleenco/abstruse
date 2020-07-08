@@ -15,7 +15,7 @@
               <div class="field">
                 <label class="label">Email</label>
                 <input class="input" type="text" formControlName="email" />
-                <span class="form-helper is-red"
+                <span class="form-helper"
                   [hidden]="loginForm.controls.email.valid || (loginForm.controls.email.pristine && !submitted)">
                   Email is required.
                 </span>
@@ -23,7 +23,7 @@
               <div class="field">
                 <label class="label">Password</label>
                 <input class="input" type="password" formControlName="password" autocomplete="new-password" />
-                <span class="form-helper is-red"
+                <span class="form-helper"
                   [hidden]="loginForm.controls.password.valid || (loginForm.controls.password.pristine && !submitted)">
                   Password is required.
                 </span>
