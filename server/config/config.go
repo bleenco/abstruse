@@ -1,6 +1,6 @@
 package config
 
-import "github.com/ractol/ractol/pkg/logger"
+import "github.com/bleenco/abstruse/pkg/logger"
 
 // Config holds configuration data.
 type Config struct {

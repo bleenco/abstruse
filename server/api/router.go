@@ -6,11 +6,11 @@ import (
 	"path"
 	"time"
 
+	_ "github.com/bleenco/abstruse/internal/ui" // user interface files
+	authpkg "github.com/bleenco/abstruse/server/auth"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/jkuri/statik/fs"
-	_ "github.com/ractol/ractol/internal/ui" // user interface files
-	authpkg "github.com/ractol/ractol/server/auth"
 	"go.uber.org/zap"
 )
 

@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ractol/ractol/pkg/render"
-	authpkg "github.com/ractol/ractol/server/auth"
-	"github.com/ractol/ractol/server/db"
-	"github.com/ractol/ractol/server/db/repository"
+	"github.com/bleenco/abstruse/pkg/render"
+	authpkg "github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/server/db"
+	"github.com/bleenco/abstruse/server/db/repository"
 	"go.uber.org/zap"
 )
 

@@ -49,7 +49,7 @@ func (a *JWTAuth) GenerateTokenPair(userClaims UserClaims, refreshClaims Refresh
 func (a *JWTAuth) CreateJWT(c UserClaims) (string, error) {
 	c.IssuedAt = time.Now().Unix()
 	c.ExpiresAt = time.Now().Add(JWTExpiry).Unix()
-	c.Issuer = "Ractol CI"
+	c.Issuer = "Abstruse CI"
 	_, tokenString, err := a.encode(c)
 	return tokenString, err
 }
@@ -58,7 +58,7 @@ func (a *JWTAuth) CreateJWT(c UserClaims) (string, error) {
 func (a *JWTAuth) CreateRefreshJWT(c RefreshClaims) (string, error) {
 	c.IssuedAt = time.Now().Unix()
 	c.ExpiresAt = time.Now().Add(JWTRefreshExpiry).Unix()
-	c.Issuer = "Ractol CI"
+	c.Issuer = "Abstruse CI"
 	_, tokenString, err := a.encode(c)
 	return tokenString, err
 }

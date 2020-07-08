@@ -14,11 +14,11 @@ services:
     volumes:
       - etcd_data:/bitnami/etcd
     networks:
-      ractol_net:
+      abstruse_net:
         ipv4_address: 10.100.100.1
 
 networks:
-  ractol_net:
+  abstruse_net:
     driver: bridge
     ipam:
       config:

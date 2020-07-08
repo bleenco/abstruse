@@ -33,7 +33,7 @@ func main() {
 		goto exit
 	}
 
-	if err = startRactol(); err != nil {
+	if err = startAbstruse(); err != nil {
 		exitCode = 1
 		goto exit
 	}
@@ -59,7 +59,7 @@ func tests() int {
 	}
 
 	cmd := exec.Command(path, "-ci", "npm run e2e:ci")
-	cmd.Dir = filepath.Join(cwd, "web", "ractol")
+	cmd.Dir = filepath.Join(cwd, "web", "abstruse")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
@@ -74,8 +74,8 @@ func tests() int {
 	return waitStatus.ExitStatus()
 }
 
-func startRactol() error {
-	cmd := exec.Command("./build/ractol-server", "--config", "./configs/testing/ractol-server.json")
+func startAbstruse() error {
+	cmd := exec.Command("./build/abstruse-server", "--config", "./configs/testing/abstruse-server.json")
 	if err := cmd.Start(); err != nil {
 		return err
 	}

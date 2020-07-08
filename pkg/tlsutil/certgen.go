@@ -13,7 +13,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/ractol/ractol/pkg/fs"
+	"github.com/bleenco/abstruse/pkg/fs"
 )
 
 // CheckAndGenerateCert checks if clients certificate exists and if not
@@ -64,7 +64,7 @@ func generateCertAndKey(certPath, keyPath string) error {
 	template := x509.Certificate{
 		SerialNumber: serialNumber,
 		Subject: pkix.Name{
-			Organization: []string{"Ractol CI"},
+			Organization: []string{"Abstruse CI"},
 		},
 		NotBefore:             notBefore,
 		NotAfter:              notAfter,

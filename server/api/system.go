@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/ractol/ractol/internal/version"
-	"github.com/ractol/ractol/pkg/render"
+	"github.com/bleenco/abstruse/internal/version"
+	"github.com/bleenco/abstruse/pkg/render"
 	"go.uber.org/zap"
 )
 

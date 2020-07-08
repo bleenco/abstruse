@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/ractol/ractol/server/auth"
+	"github.com/bleenco/abstruse/server/auth"
 )
 
 // Token represents `tokens` database table and holds

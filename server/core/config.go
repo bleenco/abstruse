@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ractol/ractol/pkg/fs"
-	"github.com/ractol/ractol/pkg/logger"
-	"github.com/ractol/ractol/pkg/tlsutil"
-	"github.com/ractol/ractol/server/auth"
-	"github.com/ractol/ractol/server/config"
-	"github.com/ractol/ractol/server/db"
+	"github.com/bleenco/abstruse/pkg/fs"
+	"github.com/bleenco/abstruse/pkg/logger"
+	"github.com/bleenco/abstruse/pkg/tlsutil"
+	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -64,12 +64,12 @@ func InitConfig() {
 		if err != nil {
 			fatal(err)
 		}
-		ConfigFile = filepath.Join(home, "ractol", "ractol-server.json")
+		ConfigFile = filepath.Join(home, "abstruse", "abstruse-server.json")
 	}
 	viper.SetConfigFile(ConfigFile)
 
 	viper.SetConfigType("json")
-	viper.SetEnvPrefix("ractol")
+	viper.SetEnvPrefix("abstruse")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 

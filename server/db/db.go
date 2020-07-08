@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mssql"    // mssql driver
 	_ "github.com/jinzhu/gorm/dialects/mysql"    // mysql driver
 	_ "github.com/jinzhu/gorm/dialects/postgres" // postres driver
-	"github.com/ractol/ractol/server/config"
-	"github.com/ractol/ractol/server/db/model"
 	"go.uber.org/zap"
 )
 

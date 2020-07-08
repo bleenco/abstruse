@@ -1,4 +1,4 @@
-module github.com/ractol/ractol
+module github.com/bleenco/abstruse
 
 go 1.14
 

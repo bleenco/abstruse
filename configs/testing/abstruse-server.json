@@ -1,0 +1,37 @@
+{
+  "auth": {
+    "jwtexpiry": "15m",
+    "jwtrefreshexpiry": "1h",
+    "jwtsecret": "e4435a98"
+  },
+  "db": {
+    "charset": "utf8",
+    "client": "mysql",
+    "host": "localhost",
+    "name": "abstruse",
+    "password": "test",
+    "port": 33306,
+    "user": "root"
+  },
+  "etcd": {
+    "addr": "localhost:2379",
+    "password": "abstruse",
+    "username": "abstruse"
+  },
+  "http": {
+    "addr": "0.0.0.0:80",
+    "tls": false
+  },
+  "log": {
+    "filename": "abstruse-server.log",
+    "level": "debug",
+    "maxage": 3,
+    "maxbackups": 3,
+    "maxsize": 500,
+    "stdout": true
+  },
+  "tls": {
+    "cert": "cert.pem",
+    "key": "key.pem"
+  }
+}

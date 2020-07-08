@@ -5,9 +5,9 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/bleenco/abstruse/server/config"
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
-	"github.com/ractol/ractol/server/config"
 	"go.uber.org/zap"
 )
 

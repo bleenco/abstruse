@@ -1,6 +1,6 @@
 package version
 
-// APIVersion represents current version of ractol API
+// APIVersion represents current version of abstruse API
 const APIVersion = "0.0.0"
 
 var (

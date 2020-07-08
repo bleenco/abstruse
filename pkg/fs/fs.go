@@ -50,5 +50,5 @@ func TempDir() (string, error) {
 	} else {
 		tmp = "/tmp"
 	}
-	return ioutil.TempDir(tmp, "ractol")
+	return ioutil.TempDir(tmp, "abstruse")
 }

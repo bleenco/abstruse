@@ -1,0 +1,43 @@
+<div class="hero is-medium">
+  <div class="hero-body">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-4 is-offset-4">
+          <section class="section">
+            <div class="logo-section">
+              <img src="/assets/images/abstruse-text-black.svg" class="logo" />
+            </div>
+            <form class="form" (ngSubmit)="login()" [formGroup]="loginForm" novalidate>
+              <div class="notification is-red" [hidden]="!error">
+                <i class="far fa-comment-dots"></i>
+                <p>{{ error }}.</p>
+              </div>
+              <div class="field">
+                <label class="label">Email</label>
+                <input class="input" type="text" formControlName="email" />
+                <span class="form-helper is-red"
+                  [hidden]="loginForm.controls.email.valid || (loginForm.controls.email.pristine && !submitted)">
+                  Email is required.
+                </span>
+              </div>
+              <div class="field">
+                <label class="label">Password</label>
+                <input class="input" type="password" formControlName="password" autocomplete="new-password" />
+                <span class="form-helper is-red"
+                  [hidden]="loginForm.controls.password.valid || (loginForm.controls.password.pristine && !submitted)">
+                  Password is required.
+                </span>
+              </div>
+              <div class="form-buttons justify-center align-center">
+                <button type="submit" class="button" [disabled]="isLoading">
+                  <span [hidden]="!isLoading">Logging in...</span>
+                  <span [hidden]="isLoading">Login</span>
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,17 +6,17 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/ractol/ractol/pkg/lib"
-	"github.com/ractol/ractol/server/api"
-	"github.com/ractol/ractol/server/core"
+	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api"
+	"github.com/bleenco/abstruse/server/core"
 	"github.com/spf13/cobra"
 )
 
 var (
 	cfgFile string
 	rootCmd = &cobra.Command{
-		Use:   "ractol-server",
-		Short: "Ractol CI server",
+		Use:   "abstruse-server",
+		Short: "Abstruse CI server",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := run(); err != nil {
 				fatal(err)
@@ -56,7 +56,7 @@ func run() error {
 func init() {
 	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/ractol/ractol-server.json)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/bleenco/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
 	rootCmd.PersistentFlags().Bool("http-tls", false, "run HTTP server in TLS mode")
 	rootCmd.PersistentFlags().String("tls-cert", "cert.pem", "path to SSL certificate file")
@@ -66,17 +66,17 @@ func init() {
 	rootCmd.PersistentFlags().Int("db-port", 3306, "database server port")
 	rootCmd.PersistentFlags().String("db-user", "root", "database username")
 	rootCmd.PersistentFlags().String("db-password", "", "database password")
-	rootCmd.PersistentFlags().String("db-name", "ractol", "database name (file name when sqlite client used)")
+	rootCmd.PersistentFlags().String("db-name", "abstruse", "database name (file name when sqlite client used)")
 	rootCmd.PersistentFlags().String("db-charset", "utf8", "database charset")
 	rootCmd.PersistentFlags().String("etcd-addr", "localhost:2379", "etcd server address")
-	rootCmd.PersistentFlags().String("etcd-username", "ractol", "etcd username")
-	rootCmd.PersistentFlags().String("etcd-password", "ractol", "etcd password")
+	rootCmd.PersistentFlags().String("etcd-username", "abstruse", "etcd username")
+	rootCmd.PersistentFlags().String("etcd-password", "abstruse", "etcd password")
 	rootCmd.PersistentFlags().String("auth-jwtsecret", lib.RandomString(), "JWT authentication secret key")
 	rootCmd.PersistentFlags().String("auth-jwtexpiry", "15m", "JWT access token expiry time")
 	rootCmd.PersistentFlags().String("auth-jwtrefreshexpiry", "1h", "JWT refresh token expiry time")
 	rootCmd.PersistentFlags().String("log-level", "info", "logging level (available options: debug, info, warn, error, panic, fatal)")
 	rootCmd.PersistentFlags().Bool("log-stdout", true, "print logs to stdout")
-	rootCmd.PersistentFlags().String("log-filename", "ractol-server.log", "log filename")
+	rootCmd.PersistentFlags().String("log-filename", "abstruse-server.log", "log filename")
 	rootCmd.PersistentFlags().Int("log-max-size", 500, "maximum log file size (in MB)")
 	rootCmd.PersistentFlags().Int("log-max-backups", 3, "maximum log file backups")
 	rootCmd.PersistentFlags().Int("log-max-age", 3, "maximum log age")

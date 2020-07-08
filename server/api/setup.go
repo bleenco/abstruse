@@ -3,12 +3,12 @@ package api
 import (
 	"net/http"
 
-	"github.com/ractol/ractol/pkg/lib"
-	"github.com/ractol/ractol/pkg/render"
-	"github.com/ractol/ractol/server/config"
-	"github.com/ractol/ractol/server/core"
-	"github.com/ractol/ractol/server/db"
-	"github.com/ractol/ractol/server/db/repository"
+	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/pkg/render"
+	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/db"
+	"github.com/bleenco/abstruse/server/db/repository"
 	"go.uber.org/zap"
 )
 

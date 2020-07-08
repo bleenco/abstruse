@@ -3,9 +3,9 @@ package repository
 import (
 	"fmt"
 
-	"github.com/ractol/ractol/server/auth"
-	"github.com/ractol/ractol/server/db"
-	"github.com/ractol/ractol/server/db/model"
+	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/server/db"
+	"github.com/bleenco/abstruse/server/db/model"
 )
 
 // UserRepo repository.

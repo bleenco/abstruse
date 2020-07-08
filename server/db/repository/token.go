@@ -3,10 +3,10 @@ package repository
 import (
 	"time"
 
-	"github.com/ractol/ractol/pkg/lib"
-	"github.com/ractol/ractol/server/auth"
-	"github.com/ractol/ractol/server/db"
-	"github.com/ractol/ractol/server/db/model"
+	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/server/db"
+	"github.com/bleenco/abstruse/server/db/model"
 )
 
 // TokenRepo repository.
