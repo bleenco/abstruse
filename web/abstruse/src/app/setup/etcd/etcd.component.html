@@ -1,6 +1,6 @@
 <div class="columns is-multiline">
   <div class="column is-12 pt0 pb0">
-    <form class="form">
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="notification">
         <i class="fas fa-database"></i>
         <p>Etcd is distributed key-value store which is embedded into Abstruse. You can leave default configuration, but
@@ -8,25 +8,25 @@
       </div>
       <div class="field">
         <label class="label">Server Name</label>
-        <input type="text" class="input" placeholder="Etcd Server Name" />
+        <input type="text" class="input" placeholder="Etcd Server Name" formControlName="name" />
       </div>
       <div class="columns">
         <div class="column is-6">
           <div class="field">
             <label class="label">Hostname / IP</label>
-            <input type="text" class="input" placeholder="Listen Hostname or IP" />
+            <input type="text" class="input" placeholder="Listen Hostname or IP" formControlName="host" />
           </div>
         </div>
         <div class="column is-3">
           <div class="field">
             <label class="label">Client Port</label>
-            <input type="number" class="input" placeholder="Client Port" />
+            <input type="number" class="input" placeholder="Client Port" formControlName="clientPort" />
           </div>
         </div>
         <div class="column is-3">
           <div class="field">
             <label class="label">Peer Port</label>
-            <input type="number" class="input" placeholder="Peer Port" />
+            <input type="number" class="input" placeholder="Peer Port" formControlName="peerPort" />
           </div>
         </div>
       </div>
@@ -34,25 +34,26 @@
         <div class="column is-4">
           <div class="field">
             <label class="label">Root Password</label>
-            <input type="password" class="input" placeholder="Root Password" autocomplete="new-password" />
+            <input type="password" class="input" placeholder="Root Password" autocomplete="new-password"
+              formControlName="rootPassword" />
           </div>
         </div>
         <div class="column is-4">
           <div class="field">
             <label class="label">User</label>
-            <input type="text" class="input" placeholder="Username" />
+            <input type="text" class="input" placeholder="Username" formControlName="username" />
           </div>
         </div>
         <div class="column is-4">
           <div class="field">
             <label class="label">Password</label>
-            <input type="password" class="input" placeholder="Password" />
+            <input type="password" class="input" placeholder="Password" formControlName="password" />
           </div>
         </div>
       </div>
       <div class="field">
         <label class="label">Data Directory</label>
-        <input type="text" class="input" placeholder="/path/to/data/dir" />
+        <input type="text" class="input" placeholder="/path/to/data/dir" formControlName="dataDir" />
       </div>
       <div class="form-buttons justify-end">
         <button type="button" class="button" [disabled]="" (click)="resetValues()">Reset</button>

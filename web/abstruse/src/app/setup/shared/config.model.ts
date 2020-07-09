@@ -26,7 +26,16 @@ export class ConfigDB {
 }
 
 export class ConfigEtcd {
-  constructor(public addr: string, public password: string, public username: string) {}
+  constructor(
+    public name: string,
+    public host: string,
+    public clientPort: number,
+    public peerPort: number,
+    public dataDir: string,
+    public username: string,
+    public password: string,
+    public rootPassword: string
+  ) {}
 }
 
 export class ConfigHTTP {
@@ -57,7 +66,16 @@ export const generateConfigDB = (data: any): ConfigDB => {
 };
 
 export const generateConfigEtcd = (data: any): ConfigEtcd => {
-  return new ConfigEtcd(data.addr, data.password, data.username);
+  return new ConfigEtcd(
+    data.name,
+    data.host,
+    data.clientPort,
+    data.peerPort,
+    data.dataDir,
+    data.username,
+    data.password,
+    data.rootPassword
+  );
 };
 
 export const generateConfigHTTP = (data: any): ConfigHTTP => {
