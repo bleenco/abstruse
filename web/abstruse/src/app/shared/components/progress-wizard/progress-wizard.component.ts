@@ -6,7 +6,8 @@ export interface ProgressWizardOptions {
 
 @Component({
   selector: 'app-progress-wizard',
-  templateUrl: './progress-wizard.component.html'
+  templateUrl: './progress-wizard.component.html',
+  styleUrls: ['./progress-wizard.component.sass']
 })
 export class ProgressWizardComponent implements OnInit, OnChanges {
   @Input() options: ProgressWizardOptions = { steps: [] };

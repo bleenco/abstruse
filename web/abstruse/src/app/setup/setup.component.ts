@@ -14,7 +14,7 @@ export class SetupComponent implements OnInit {
 
   constructor(private setup: SetupService, private router: Router) {
     this.wizard = this.setup.wizard;
-    this.progressOptions = { steps: this.setup.wizard.steps.map(s => s.route) };
+    this.progressOptions = { steps: this.setup.wizard.steps.map(s => s.route.toUpperCase()) };
   }
 
   ngOnInit(): void {
