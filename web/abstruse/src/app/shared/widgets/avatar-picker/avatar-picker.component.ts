@@ -26,10 +26,11 @@ export class AvatarPickerComponent implements ControlValueAccessor, OnInit {
   }
 
   set value(val: string) {
-    this.innerValue = val;
     if (!this.values) {
       throw new Error('no values initialized');
     }
+
+    this.innerValue = val;
 
     const index = this.values.findIndex(v => v === val);
     if (index === -1) {

@@ -8,3 +8,9 @@ export function durationValidator(compare: AbstractControl): ValidatorFn {
     return cmpdur < dur ? null : { duration: true };
   };
 }
+
+export function equalValidator(compare: AbstractControl): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    return compare.value === control.value ? null : { mismatch: true };
+  };
+}
