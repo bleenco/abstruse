@@ -10,6 +10,7 @@ import { SelectboxComponent } from './widgets/selectbox/selectbox.component';
 import { TooltipDirective } from './directives/tooltip.directive';
 import { LoaderComponent } from './components/loader/loader.component';
 import { ProgressWizardComponent } from './components/progress-wizard/progress-wizard.component';
+import { AvatarPickerComponent } from './widgets/avatar-picker/avatar-picker.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, HttpClientModule],
@@ -19,7 +20,8 @@ import { ProgressWizardComponent } from './components/progress-wizard/progress-w
     SelectboxComponent,
     TooltipDirective,
     LoaderComponent,
-    ProgressWizardComponent
+    ProgressWizardComponent,
+    AvatarPickerComponent
   ],
   exports: [
     CommonModule,
@@ -30,7 +32,8 @@ import { ProgressWizardComponent } from './components/progress-wizard/progress-w
     SelectboxComponent,
     TooltipDirective,
     LoaderComponent,
-    ProgressWizardComponent
+    ProgressWizardComponent,
+    AvatarPickerComponent
   ]
 })
 export class SharedModule {
