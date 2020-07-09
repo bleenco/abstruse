@@ -4,12 +4,12 @@ import "github.com/bleenco/abstruse/pkg/logger"
 
 // Config holds configuration data.
 type Config struct {
-	Auth Auth          `json:"auth"`
-	Db   Db            `json:"db"`
-	Etcd Etcd          `json:"etcd"`
-	HTTP HTTP          `json:"http"`
-	Log  logger.Config `json:"log"`
-	TLS  TLS           `json:"tls"`
+	Auth *Auth          `json:"auth"`
+	Db   *Db            `json:"db"`
+	Etcd *Etcd          `json:"etcd"`
+	HTTP *HTTP          `json:"http"`
+	Log  *logger.Config `json:"log"`
+	TLS  *TLS           `json:"tls"`
 }
 
 // Auth authentication config.

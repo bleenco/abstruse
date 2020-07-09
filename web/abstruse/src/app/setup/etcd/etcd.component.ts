@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { SetupService } from '../shared/setup.service';
+import { ConfigEtcd } from '../shared/config.model';
 
 @UntilDestroy()
 @Component({
@@ -13,7 +14,7 @@ export class EtcdComponent implements OnInit {
   form!: FormGroup;
   saved: boolean = false;
 
-  constructor(private fb: FormBuilder, private setup: SetupService) {
+  constructor(private fb: FormBuilder, public setup: SetupService) {
     this.createForm();
   }
 
@@ -27,7 +28,28 @@ export class EtcdComponent implements OnInit {
       });
   }
 
-  onSubmit(): void {}
+  onSubmit(): void {
+    if (!this.form.valid) {
+      return;
+    }
+
+    const config = this.generateModel();
+    this.setup
+      .saveEtcdConfig(config)
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        () => {
+          this.saved = true;
+          this.form.markAsPristine();
+          this.setup.config.etcd = { ...config };
+          setTimeout(() => (this.saved = false), 5000);
+        },
+        err => {
+          this.resetValues();
+          console.error(err);
+        }
+      );
+  }
 
   resetValues(): void {
     this.form.patchValue({
@@ -42,6 +64,19 @@ export class EtcdComponent implements OnInit {
     });
     this.form.markAsPristine();
     this.saved = false;
+  }
+
+  private generateModel(): ConfigEtcd {
+    return {
+      name: this.form.controls.name.value,
+      host: this.form.controls.host.value,
+      clientPort: this.form.controls.clientPort.value,
+      peerPort: this.form.controls.peerPort.value,
+      dataDir: this.form.controls.dataDir.value,
+      username: this.form.controls.username.value,
+      password: this.form.controls.password.value,
+      rootPassword: this.form.controls.rootPassword.value
+    } as ConfigEtcd;
   }
 
   private createForm(): void {

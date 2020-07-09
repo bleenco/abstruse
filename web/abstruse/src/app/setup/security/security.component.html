@@ -46,7 +46,8 @@
         <button type="button" class="button" [disabled]="setup.savingConfig || securityForm.pristine"
           (click)="resetValues()">Reset</button>
         <button type="submit" class="button is-green"
-          [disabled]="setup.savingConfig || !securityForm.valid || securityForm.pristine">
+          [disabled]="setup.savingConfig || !securityForm.valid || (securityForm.pristine && !saved)"
+          [class.events-none]="saved">
           <span *ngIf="setup.savingConfig">Saving...</span>
           <span *ngIf="!setup.savingConfig && !saved">Save</span>
           <i class="fas fa-check" *ngIf="!setup.savingConfig && saved"></i>

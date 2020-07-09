@@ -84,13 +84,13 @@ func (s *setup) testDatabaseConnection() http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, http.StatusOK, db.CheckConnection(f))
+		render.JSON(w, http.StatusOK, db.CheckConnection(&f))
 	})
 }
 
 func (s *setup) etcd() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var f config.Config
+		var f config.Etcd
 		defer r.Body.Close()
 
 		if err := lib.DecodeJSON(r.Body, &f); err != nil {
@@ -98,7 +98,7 @@ func (s *setup) etcd() http.HandlerFunc {
 			return
 		}
 
-		if err := s.app.SaveConfig(&f); err != nil {
+		if err := s.app.SaveEtcdConfig(&f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}

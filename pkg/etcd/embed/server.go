@@ -103,7 +103,7 @@ func (s *Server) Run() error {
 // Stop stops the etcd server.
 func (s *Server) Stop() {
 	defer s.cli.Close()
-	s.Stop()
+	s.server.Close()
 }
 
 // GetClient returns etcd client.

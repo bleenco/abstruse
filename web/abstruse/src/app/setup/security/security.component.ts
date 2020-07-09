@@ -42,6 +42,8 @@ export class SecurityComponent implements OnInit {
       .subscribe(config => {
         this.setup.config = { ...config };
         this.resetValues();
+        this.saved = true;
+        setTimeout(() => (this.saved = false), 5000);
       });
 
     this.securityForm.valueChanges.pipe(untilDestroyed(this)).subscribe(() => (this.saved = false));

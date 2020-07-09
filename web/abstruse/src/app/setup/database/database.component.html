@@ -58,7 +58,8 @@
           <span *ngIf="!testDBConnectionLoading">Test Connection</span>
           <span *ngIf="testDBConnectionLoading">Testing Connection...</span>
         </button>
-        <button type="submit" class="button is-green" [disabled]="connTest !== 'ok' || !dbForm.valid">
+        <button type="submit" class="button is-green" [disabled]="(connTest !== 'ok' && !saved) || !dbForm.valid"
+          [class.events-none]="saved">
           <span *ngIf="setup.savingConfig">Saving...</span>
           <span *ngIf="!setup.savingConfig && !saved">Save</span>
           <i class="fas fa-check" *ngIf="!setup.savingConfig && saved"></i>

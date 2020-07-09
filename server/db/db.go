@@ -25,7 +25,7 @@ func Instance() (*gorm.DB, error) {
 }
 
 // Connect connects to database.
-func Connect(cfg config.Db, logger *zap.Logger) {
+func Connect(cfg *config.Db, logger *zap.Logger) {
 	log := logger.With(zap.String("type", "db")).Sugar()
 
 	if err := check(cfg); err != nil {
@@ -51,7 +51,7 @@ func Close() error {
 }
 
 // CheckConnection checks valid database connection.
-func CheckConnection(cfg config.Db) bool {
+func CheckConnection(cfg *config.Db) bool {
 	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
 	if err != nil {
 		return false
@@ -64,7 +64,7 @@ func CheckConnection(cfg config.Db) bool {
 	return true
 }
 
-func connString(cfg config.Db, useDB bool) string {
+func connString(cfg *config.Db, useDB bool) string {
 	switch strings.ToLower(cfg.Driver) {
 	case "mysql", "mariadb":
 		if useDB {
@@ -82,7 +82,7 @@ func connString(cfg config.Db, useDB bool) string {
 	}
 }
 
-func check(cfg config.Db) error {
+func check(cfg *config.Db) error {
 	switch strings.ToLower(cfg.Driver) {
 	case "mysql", "mariadb":
 		return checkMySQL(cfg)
@@ -91,7 +91,7 @@ func check(cfg config.Db) error {
 	}
 }
 
-func checkMySQL(cfg config.Db) error {
+func checkMySQL(cfg *config.Db) error {
 	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
 	if err != nil {
 		return err
@@ -111,6 +111,6 @@ func checkMySQL(cfg config.Db) error {
 	return nil
 }
 
-func credentials(cfg config.Db) string {
+func credentials(cfg *config.Db) string {
 	return fmt.Sprintf("%s:%s@", cfg.User, cfg.Password)
 }

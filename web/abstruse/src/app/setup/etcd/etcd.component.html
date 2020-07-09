@@ -33,13 +33,6 @@
       <div class="columns">
         <div class="column is-4">
           <div class="field">
-            <label class="label">Root Password</label>
-            <input type="password" class="input" placeholder="Root Password" autocomplete="new-password"
-              formControlName="rootPassword" />
-          </div>
-        </div>
-        <div class="column is-4">
-          <div class="field">
             <label class="label">User</label>
             <input type="text" class="input" placeholder="Username" formControlName="username" />
           </div>
@@ -50,14 +43,28 @@
             <input type="password" class="input" placeholder="Password" formControlName="password" />
           </div>
         </div>
+        <div class="column is-4">
+          <div class="field">
+            <label class="label">Root Password</label>
+            <input type="password" class="input" placeholder="Root Password" autocomplete="new-password"
+              formControlName="rootPassword" />
+          </div>
+        </div>
       </div>
       <div class="field">
         <label class="label">Data Directory</label>
         <input type="text" class="input" placeholder="/path/to/data/dir" formControlName="dataDir" />
       </div>
       <div class="form-buttons justify-end">
-        <button type="button" class="button" [disabled]="" (click)="resetValues()">Reset</button>
-        <button type="submit" class="button is-green" [disabled]="">Save</button>
+        <button type="button" class="button" [disabled]="setup.savingConfig || form.pristine"
+          (click)="resetValues()">Reset</button>
+        <button type="submit" class="button is-green" [disabled]="(form.pristine && !this.saved) || setup.savingConfig"
+          [class.events-none]="saved">
+          <span *ngIf="!saved && !setup.savingConfig">Save & Restart</span>
+          <span *ngIf="setup.savingConfig">Saving & Restarting...</span>
+          <i class="fas fa-check" *ngIf="!setup.savingConfig && saved"></i>
+          <span *ngIf="!setup.savingConfig && saved">Saved & Restarted</span>
+        </button>
       </div>
     </form>
   </div>

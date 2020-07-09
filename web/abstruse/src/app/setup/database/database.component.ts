@@ -61,6 +61,7 @@ export class DatabaseComponent implements OnInit {
           this.saved = true;
           this.dbForm.markAsPristine();
           this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
+          setTimeout(() => (this.saved = false), 5000);
         },
         err => {
           this.resetValues();

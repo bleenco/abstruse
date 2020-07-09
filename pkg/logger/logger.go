@@ -19,7 +19,7 @@ type Config struct {
 }
 
 // NewLogger returns new zap logger from config.
-func NewLogger(cfg Config) (*zap.Logger, error) {
+func NewLogger(cfg *Config) (*zap.Logger, error) {
 	var logger *zap.Logger
 	level := zap.NewAtomicLevel()
 

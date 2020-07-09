@@ -152,8 +152,8 @@ func InitAuthentication() {
 	auth.Init(secret, expiry, refreshExpiry)
 }
 
-// SaveConfig saves new configuration and reinitializes services.
-func SaveConfig(cfg *config.Config) error {
+// saveConfig saves new configuration and reinitializes services.
+func saveConfig(cfg *config.Config) error {
 	Config = cfg
 
 	viper.Set("http.addr", Config.HTTP.Addr)
@@ -187,6 +187,23 @@ func SaveConfig(cfg *config.Config) error {
 
 	InitAuthentication()
 	InitDB()
+
+	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
+	return viper.WriteConfigAs(viper.ConfigFileUsed())
+}
+
+// saveEtcdConfig saves new etcd configuration.
+func saveEtcdConfig(cfg *config.Etcd) error {
+	Config.Etcd = cfg
+
+	viper.Set("etcd.name", Config.Etcd.Name)
+	viper.Set("etcd.host", Config.Etcd.Host)
+	viper.Set("etcd.clientport", Config.Etcd.ClientPort)
+	viper.Set("etcd.peerport", Config.Etcd.PeerPort)
+	viper.Set("etcd.datadir", Config.Etcd.DataDir)
+	viper.Set("etcd.username", Config.Etcd.Username)
+	viper.Set("etcd.password", Config.Etcd.Password)
+	viper.Set("etcd.rootpassword", Config.Etcd.RootPassword)
 
 	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
 	return viper.WriteConfigAs(viper.ConfigFileUsed())

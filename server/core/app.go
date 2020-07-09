@@ -64,7 +64,12 @@ func (a *App) RestartEtcd() error {
 
 // SaveConfig saves new configuration.
 func (a *App) SaveConfig(cfg *config.Config) error {
-	return SaveConfig(cfg)
+	return saveConfig(cfg)
+}
+
+// SaveEtcdConfig saves new etcd configuration.
+func (a *App) SaveEtcdConfig(cfg *config.Etcd) error {
+	return saveEtcdConfig(cfg)
 }
 
 func (a *App) startEtcd() (*clientv3.Client, error) {

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Setup } from './setup.model';
 import { SetupWizard, defaultWizardConfig } from './wizard.model';
-import { Config, generateConfig, ConfigDB } from './config.model';
+import { Config, generateConfig, ConfigDB, ConfigEtcd } from './config.model';
 import { map, finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -46,6 +46,11 @@ export class SetupService {
   saveConfig(config: Config): Observable<void> {
     this.savingConfig = true;
     return this.http.put<void>('/setup/config', config).pipe(finalize(() => (this.savingConfig = false)));
+  }
+
+  saveEtcdConfig(config: ConfigEtcd): Observable<void> {
+    this.savingConfig = true;
+    return this.http.put<void>('/setup/etcd', config).pipe(finalize(() => (this.savingConfig = false)));
   }
 
   testDBConnection(config: ConfigDB): Observable<boolean> {
