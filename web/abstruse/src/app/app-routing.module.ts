@@ -4,12 +4,12 @@ import { LoginComponent } from './auth/login/login.component';
 import { AuthGuardService } from './auth/shared/auth-guard.service';
 import { SetupGuardService } from './setup/shared/setup-guard.service';
 import { SetupDoneGuardService } from './setup/shared/setup-done-guard.service';
-import { NotFoundComponent } from './core';
-import { GatewayTimeoutComponent } from './core/gateway-timeout/gateway-timeout.component';
+import { NotFoundComponent, GatewayTimeoutComponent } from './core';
+import { AlreadyAuthGuardService } from './auth/shared/already-auth-guard.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'builds', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [SetupGuardService] },
+  { path: 'login', component: LoginComponent, canActivate: [SetupGuardService, AlreadyAuthGuardService] },
   {
     path: 'setup',
     loadChildren: () => import('./setup/setup.module').then(m => m.SetupModule),
@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   { path: 'not-found', component: NotFoundComponent },
   { path: 'gateway-timeout', component: GatewayTimeoutComponent },
-  { path: '**', redirectTo: '/not-found' }
+  { path: '**', redirectTo: 'builds' }
 ];
 
 @NgModule({

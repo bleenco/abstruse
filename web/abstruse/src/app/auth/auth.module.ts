@@ -4,11 +4,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../shared';
 import { SetupGuardService } from '../setup/shared/setup-guard.service';
 import { AuthGuardService } from './shared/auth-guard.service';
+import { AlreadyAuthGuardService } from './shared/already-auth-guard.service';
 import { LoginComponent } from './login/login.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule],
   declarations: [LoginComponent],
-  providers: [AuthGuardService, SetupGuardService]
+  providers: [AuthGuardService, AlreadyAuthGuardService, SetupGuardService]
 })
 export class AuthModule {}
