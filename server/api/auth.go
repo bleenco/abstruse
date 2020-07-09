@@ -159,7 +159,7 @@ func (a *auth) token() http.HandlerFunc {
 			return
 		}
 
-		user.LastLogin = time.Now()
+		user.LastLogin = lib.TimeNow()
 		user, err = a.userRepo.Update(user)
 		if err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})

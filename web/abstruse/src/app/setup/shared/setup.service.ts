@@ -6,6 +6,7 @@ import { SetupWizard, defaultWizardConfig } from './wizard.model';
 import { Config, generateConfig, ConfigDB, ConfigEtcd } from './config.model';
 import { map, finalize } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { Admin } from './admin.model';
 
 @Injectable({ providedIn: 'root' })
 export class SetupService {
@@ -51,6 +52,10 @@ export class SetupService {
   saveEtcdConfig(config: ConfigEtcd): Observable<void> {
     this.savingConfig = true;
     return this.http.put<void>('/setup/etcd', config).pipe(finalize(() => (this.savingConfig = false)));
+  }
+
+  saveUser(form: Admin): Observable<void> {
+    return this.http.post<void>('/setup/user', form);
   }
 
   testDBConnection(config: ConfigDB): Observable<boolean> {

@@ -63,6 +63,30 @@ func (r UserRepo) Login(email, password string) (model.User, error) {
 	return user, fmt.Errorf("Invalid credentials")
 }
 
+// Create adds new user into database.
+func (r UserRepo) Create(data UserForm) (model.User, error) {
+	user := model.User{
+		Email:  data.Email,
+		Name:   data.Name,
+		Avatar: data.Avatar,
+		Role:   data.Role,
+		Active: data.Active,
+	}
+	password, err := auth.HashPassword(data.Password)
+	if err != nil {
+		return user, err
+	}
+	user.Password = password
+
+	db, err := db.Instance()
+	if err != nil {
+		return user, err
+	}
+
+	err = db.Create(&user).Error
+	return user, err
+}
+
 // AdminExists returns boolean response if user with admin role exists or not.
 func (r UserRepo) AdminExists() (bool, error) {
 	db, err := db.Instance()
@@ -72,4 +96,15 @@ func (r UserRepo) AdminExists() (bool, error) {
 
 	var user model.User
 	return !db.Where("role = ?", "admin").First(&user).RecordNotFound(), nil
+}
+
+// UserForm defines struct for creating and updating users.
+type UserForm struct {
+	ID       uint   `json:"id,omitempty"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Avatar   string `json:"avatar"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+	Active   bool   `json:"active"`
 }
