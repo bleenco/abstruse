@@ -15,12 +15,14 @@ import (
 type setup struct {
 	logger   *zap.SugaredLogger
 	userRepo repository.UserRepo
+	app      *core.App
 }
 
-func newSetup(logger *zap.Logger) setup {
+func newSetup(logger *zap.Logger, app *core.App) setup {
 	return setup{
 		logger:   logger.With(zap.String("type", "setup")).Sugar(),
 		userRepo: repository.NewUserRepo(),
+		app:      app,
 	}
 }
 
@@ -63,7 +65,7 @@ func (s *setup) saveConfig() http.HandlerFunc {
 			return
 		}
 
-		if err := core.SaveConfig(&f); err != nil {
+		if err := s.app.SaveConfig(&f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
@@ -72,7 +74,7 @@ func (s *setup) saveConfig() http.HandlerFunc {
 	})
 }
 
-func (s *setup) testDBConnection() http.HandlerFunc {
+func (s *setup) testDatabaseConnection() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var f config.Db
 		defer r.Body.Close()
@@ -83,5 +85,29 @@ func (s *setup) testDBConnection() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, db.CheckConnection(f))
+	})
+}
+
+func (s *setup) etcd() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var f config.Config
+		defer r.Body.Close()
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := s.app.SaveConfig(&f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := s.app.RestartEtcd(); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, render.Empty{})
 	})
 }

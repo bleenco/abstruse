@@ -12,7 +12,7 @@ type App struct {
 	cfg    *config.Config
 	logger *zap.SugaredLogger
 	etcd   *embed.Server
-	cli    *clientv3.Client
+	client *clientv3.Client
 	stopch chan struct{}
 }
 
@@ -31,18 +31,13 @@ func NewApp() *App {
 
 // Run starts the main application with all services.
 func (a *App) Run() error {
+	var err error
 	errch := make(chan error)
 
-	go func() {
-		if err := a.etcd.Run(); err != nil {
-			errch <- err
-		}
-		cli, err := a.etcd.GetClient()
-		if err != nil {
-			errch <- err
-		}
-		a.cli = cli
-	}()
+	a.client, err = a.startEtcd()
+	if err != nil {
+		errch <- err
+	}
 
 	select {
 	case err := <-errch:
@@ -55,4 +50,27 @@ func (a *App) Run() error {
 // Stop stops the application.
 func (a *App) Stop() {
 	a.stopch <- struct{}{}
+}
+
+// RestartEtcd restarts etcd server.
+func (a *App) RestartEtcd() error {
+	var err error
+	a.etcd.Stop()
+	a.etcd = embed.NewServer(Config, Log)
+	a.client, err = a.startEtcd()
+
+	return err
+}
+
+// SaveConfig saves new configuration.
+func (a *App) SaveConfig(cfg *config.Config) error {
+	return SaveConfig(cfg)
+}
+
+func (a *App) startEtcd() (*clientv3.Client, error) {
+	if err := a.etcd.Run(); err != nil {
+		return nil, err
+	}
+
+	return a.etcd.GetClient()
 }

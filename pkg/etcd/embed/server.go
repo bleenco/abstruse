@@ -100,6 +100,12 @@ func (s *Server) Run() error {
 	return nil
 }
 
+// Stop stops the etcd server.
+func (s *Server) Stop() {
+	defer s.cli.Close()
+	s.Stop()
+}
+
 // GetClient returns etcd client.
 func (s *Server) GetClient() (*clientv3.Client, error) {
 	target := net.JoinHostPort("127.0.0.1", fmt.Sprintf("%d", s.cfg.Etcd.ClientPort))

@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/bleenco/abstruse/internal/ui" // user interface files
 	authpkg "github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/server/core"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/jkuri/statik/fs"
@@ -17,14 +18,15 @@ import (
 type router struct {
 	*chi.Mux
 	logger *zap.Logger
+	app    *core.App
 }
 
 type statikWrapper struct {
 	assets http.FileSystem
 }
 
-func newRouter(logger *zap.Logger) *router {
-	router := &router{chi.NewRouter(), logger}
+func newRouter(logger *zap.Logger, app *core.App) *router {
+	router := &router{chi.NewRouter(), logger, app}
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -55,7 +57,7 @@ func (r *router) apiRouter() *chi.Mux {
 
 func (r *router) setupRouter() *chi.Mux {
 	router := chi.NewRouter()
-	setup := newSetup(r.logger)
+	setup := newSetup(r.logger, r.app)
 	middlewares := newMiddlewares(r.logger)
 
 	router.Get("/ready", setup.ready())
@@ -64,7 +66,8 @@ func (r *router) setupRouter() *chi.Mux {
 		router.Use(middlewares.setupAuthenticator)
 		router.Get("/config", setup.config())
 		router.Put("/config", setup.saveConfig())
-		router.Post("/db/test", setup.testDBConnection())
+		router.Post("/db/test", setup.testDatabaseConnection())
+		router.Put("/etcd", setup.etcd())
 	})
 
 	return router

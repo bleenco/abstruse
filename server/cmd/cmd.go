@@ -42,7 +42,7 @@ func Execute() error {
 
 func run() error {
 	app := core.NewApp()
-	api := api.NewServer(core.Config, core.Log)
+	api := api.NewServer(core.Config, core.Log, app)
 	errch := make(chan error, 1)
 	sigch := make(chan os.Signal, 1)
 

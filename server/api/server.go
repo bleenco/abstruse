@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/core"
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
 	"go.uber.org/zap"
@@ -19,15 +20,17 @@ type Server struct {
 	isRunning bool
 	running   chan error
 	logger    *zap.SugaredLogger
+	app       *core.App
 }
 
 // NewServer creates a new HTTP Server instance.
-func NewServer(config *config.Config, logger *zap.Logger) *Server {
+func NewServer(config *config.Config, logger *zap.Logger, app *core.App) *Server {
 	return &Server{
 		config:  config,
 		Server:  &http.Server{},
 		running: make(chan error),
 		logger:  logger.With(zap.String("type", "http")).Sugar(),
+		app:     app,
 	}
 }
 
@@ -38,7 +41,7 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	s.Handler = s.logHandler(newRouter(s.logger.Desugar()))
+	s.Handler = s.logHandler(newRouter(s.logger.Desugar(), s.app))
 	s.listener = listener
 	scheme := "http"
 	if s.config.HTTP.TLS {
