@@ -41,9 +41,14 @@ func InitDefaults(cmd *cobra.Command, cfgFile string) {
 	viper.BindPFlag("db.password", cmd.PersistentFlags().Lookup("db-password"))
 	viper.BindPFlag("db.name", cmd.PersistentFlags().Lookup("db-name"))
 	viper.BindPFlag("db.charset", cmd.PersistentFlags().Lookup("db-charset"))
-	viper.BindPFlag("etcd.addr", cmd.PersistentFlags().Lookup("etcd-addr"))
+	viper.BindPFlag("etcd.name", cmd.PersistentFlags().Lookup("etcd-name"))
+	viper.BindPFlag("etcd.host", cmd.PersistentFlags().Lookup("etcd-host"))
+	viper.BindPFlag("etcd.clientport", cmd.PersistentFlags().Lookup("etcd-clientport"))
+	viper.BindPFlag("etcd.peerport", cmd.PersistentFlags().Lookup("etcd-peerport"))
+	viper.BindPFlag("etcd.datadir", cmd.PersistentFlags().Lookup("etcd-datadir"))
 	viper.BindPFlag("etcd.username", cmd.PersistentFlags().Lookup("etcd-username"))
 	viper.BindPFlag("etcd.password", cmd.PersistentFlags().Lookup("etcd-password"))
+	viper.BindPFlag("etcd.rootpassword", cmd.PersistentFlags().Lookup("etcd-rootpassword"))
 	viper.BindPFlag("auth.jwtsecret", cmd.PersistentFlags().Lookup("auth-jwtsecret"))
 	viper.BindPFlag("auth.jwtexpiry", cmd.PersistentFlags().Lookup("auth-jwtexpiry"))
 	viper.BindPFlag("auth.jwtrefreshexpiry", cmd.PersistentFlags().Lookup("auth-jwtrefreshexpiry"))
@@ -82,6 +87,8 @@ func InitConfig() {
 		if err = viper.SafeWriteConfigAs(viper.ConfigFileUsed()); err != nil {
 			fatal(err)
 		}
+
+		Log.Sugar().Infof("config file save to %s", viper.ConfigFileUsed())
 	}
 
 	if err = viper.ReadInConfig(); err != nil {
@@ -90,6 +97,10 @@ func InitConfig() {
 
 	if err = viper.Unmarshal(&Config); err != nil {
 		fatal(err)
+	}
+
+	if !strings.HasPrefix(Config.Etcd.DataDir, "/") {
+		Config.Etcd.DataDir = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.Etcd.DataDir)
 	}
 
 	if !strings.HasPrefix(Config.Log.Filename, "/") {
@@ -148,9 +159,14 @@ func SaveConfig(cfg config.Config) error {
 	viper.Set("db.password", Config.Db.Password)
 	viper.Set("db.name", Config.Db.Name)
 	viper.Set("db.charset", Config.Db.Charset)
-	viper.Set("etcd.addr", Config.Etcd.Addr)
-	viper.Set("etcd.username", Config.Etcd.Addr)
+	viper.Set("etcd.name", Config.Etcd.Name)
+	viper.Set("etcd.host", Config.Etcd.Host)
+	viper.Set("etcd.clientport", Config.Etcd.ClientPort)
+	viper.Set("etcd.peerport", Config.Etcd.PeerPort)
+	viper.Set("etcd.datadir", Config.Etcd.DataDir)
+	viper.Set("etcd.username", Config.Etcd.Username)
 	viper.Set("etcd.password", Config.Etcd.Password)
+	viper.Set("etcd.rootpassword", Config.Etcd.RootPassword)
 	viper.Set("auth.jwtsecret", Config.Auth.JWTSecret)
 	viper.Set("auth.jwtexpiry", Config.Auth.JWTExpiry)
 	viper.Set("auth.jwtrefreshexpiry", Config.Auth.JWTRefreshExpiry)
@@ -164,6 +180,7 @@ func SaveConfig(cfg config.Config) error {
 	InitAuthentication()
 	InitDB()
 
+	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
 	return viper.WriteConfigAs(viper.ConfigFileUsed())
 }
 

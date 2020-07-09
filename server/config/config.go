@@ -32,9 +32,14 @@ type Db struct {
 
 // Etcd config.
 type Etcd struct {
-	Addr     string `json:"addr"`
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Name         string `json:"name"`
+	Host         string `json:"host"`
+	ClientPort   int    `json:"clientport"`
+	PeerPort     int    `json:"peerport"`
+	DataDir      string `json:"datadir"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	RootPassword string `json:"rootpasssword"`
 }
 
 // HTTP server config.
