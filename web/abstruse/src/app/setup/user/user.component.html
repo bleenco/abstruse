@@ -1,1 +1,58 @@
-<p>user works!</p>
+<div class="columns is-multiline">
+  <div class="column is-12 pb0">
+    <div class="align-center justify-start">
+      <h3>Security Configuration</h3>
+    </div>
+  </div>
+  <div class="column is-12 pt0 pb0">
+    <form class="form">
+      <div class="notification is-green">
+        <i class="fas fa-user-tag"></i>
+        <p>Create new admin account, all fields are mandatory.</p>
+      </div>
+      <div class="field">
+        <label class="label">
+          <span>Email</span>
+          <i class="fas fa-question-circle" appTooltip text="Email is unique identifier used for username."></i>
+        </label>
+        <input type="text" class="input" placeholder="Email" />
+        <!-- <span class="form-helper">
+          <i class="fas fa-info-circle"></i>
+          <span>Email is used as username.</span>
+        </span> -->
+      </div>
+      <div class="field">
+        <label class="label">
+          <span>Full Name</span>
+          <i class="fas fa-question-circle" appTooltip text="Type in your real name and lastname."></i>
+        </label>
+        <input type="text" class="input" placeholder="John Smith" />
+      </div>
+      <div class="columns">
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">
+              <span>Password</span>
+              <i class="fas fa-question-circle" appTooltip text="Password must include at least 8 characters."></i>
+            </label>
+            <input type="password" class="input" placeholder="Set Your Password" autocomplete="new-password" />
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="field">
+            <label class="label">
+              <span>Confirm Password</span>
+              <i class="fas fa-question-circle" appTooltip
+                text="Re-type password, it must match with previous input."></i>
+            </label>
+            <input type="password" class="input" placeholder="Confirm Password" autocomplete="new-password" />
+          </div>
+        </div>
+      </div>
+      <div class="form-buttons has-border justify-end">
+        <button type="button" class="button">Reset</button>
+        <button type="submit" class="button is-green">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
