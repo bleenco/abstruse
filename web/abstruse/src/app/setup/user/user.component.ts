@@ -30,7 +30,8 @@ export class UserComponent implements OnInit {
       email: '',
       name: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      role: 'admin'
     });
     this.userForm.markAsPristine();
   }
@@ -41,7 +42,8 @@ export class UserComponent implements OnInit {
       email: [null, [Validators.required]],
       name: [null, [Validators.required]],
       password: [null, [Validators.required, Validators.minLength(8)]],
-      confirmPassword: [null]
+      confirmPassword: [null],
+      role: ['admin']
     });
 
     this.userForm.controls.confirmPassword.setValidators([
