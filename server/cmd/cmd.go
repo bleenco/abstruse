@@ -41,22 +41,29 @@ func Execute() error {
 }
 
 func run() error {
-	server := api.NewServer(core.Config, core.Log)
+	app := core.NewApp()
+	api := api.NewServer(core.Config, core.Log)
 	errch := make(chan error, 1)
 	sigch := make(chan os.Signal, 1)
 
 	core.InitDB()
 
 	go func() {
-		if err := server.Run(); err != nil {
+		if err := api.Run(); err != nil {
 			errch <- err
 		}
 	}()
 
 	go func() {
-		signal.Notify(sigch, syscall.SIGINT, syscall.SIGTERM)
+		if err := app.Run(); err != nil {
+			errch <- err
+		}
+	}()
+
+	go func() {
+		signal.Notify(sigch, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
 		<-sigch
-		errch <- server.Close()
+		errch <- api.Close()
 	}()
 
 	return <-errch

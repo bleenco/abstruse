@@ -21,7 +21,7 @@ var (
 	// ConfigFile is path to config file.
 	ConfigFile string
 	// Config is global export of configuration.
-	Config config.Config
+	Config *config.Config
 	// Log is application logger.
 	Log *zap.Logger
 )
@@ -107,6 +107,14 @@ func InitConfig() {
 		Config.Log.Filename = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.Log.Filename)
 	}
 
+	if !strings.HasPrefix(Config.TLS.Cert, "/") {
+		Config.TLS.Cert = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.TLS.Cert)
+	}
+
+	if !strings.HasPrefix(Config.TLS.Key, "/") {
+		Config.TLS.Key = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.TLS.Key)
+	}
+
 	Log, err = logger.NewLogger(Config.Log)
 	if err != nil {
 		fatal(err)
@@ -145,7 +153,7 @@ func InitAuthentication() {
 }
 
 // SaveConfig saves new configuration and reinitializes services.
-func SaveConfig(cfg config.Config) error {
+func SaveConfig(cfg *config.Config) error {
 	Config = cfg
 
 	viper.Set("http.addr", Config.HTTP.Addr)

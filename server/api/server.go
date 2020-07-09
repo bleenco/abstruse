@@ -14,7 +14,7 @@ import (
 // Server extends net/http Server with graceful shutdowns.
 type Server struct {
 	*http.Server
-	config    config.Config
+	config    *config.Config
 	listener  net.Listener
 	isRunning bool
 	running   chan error
@@ -22,7 +22,7 @@ type Server struct {
 }
 
 // NewServer creates a new HTTP Server instance.
-func NewServer(config config.Config, logger *zap.Logger) *Server {
+func NewServer(config *config.Config, logger *zap.Logger) *Server {
 	return &Server{
 		config:  config,
 		Server:  &http.Server{},

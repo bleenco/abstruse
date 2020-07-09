@@ -63,7 +63,7 @@ func (s *setup) saveConfig() http.HandlerFunc {
 			return
 		}
 
-		if err := core.SaveConfig(f); err != nil {
+		if err := core.SaveConfig(&f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
