@@ -4,10 +4,11 @@ export class User {
     public email: string,
     public name: string,
     public avatar: string,
-    public admin: boolean
+    public role: string,
+    public lastLogin: Date
   ) {}
 }
 
 export const generateUser = (data: any): User => {
-  return new User(data.id, data.email, data.name, data.avatar, Boolean(data.admin));
+  return new User(data.id, data.email, data.name, data.avatar, data.role, data.lastLogin);
 };
