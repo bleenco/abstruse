@@ -24,6 +24,17 @@
 </header>
 
 <div class="container">
+  <div class="list-heading">
+    <div class="columns">
+      <div class="column is-1"><span class="text ml10">ID</span></div>
+      <div class="column is-3"><span class="text ml10">Repository</span></div>
+      <div class="column is-2"><span class="text ml10">Commit / Branch</span></div>
+      <div class="column is-2"><span class="text justify-center">Created</span></div>
+      <div class="column is-1"><span class="text ml10">Status</span></div>
+      <div class="column is-1"><span class="text justify-center">Time</span></div>
+      <div class="column is-2"><span class="text justify-center">Actions</span></div>
+    </div>
+  </div>
   <div class="list-items">
     <app-build-list-item [build]="b" *ngFor="let b of builds"></app-build-list-item>
   </div>
