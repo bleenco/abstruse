@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { ModalModule } from './components/modal/modal.module';
 import { TimeService } from './providers/time.service';
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
 import { ProgressBarComponent } from './widgets/progress-bar/progress-bar.component';
@@ -13,7 +14,7 @@ import { ProgressWizardComponent } from './components/progress-wizard/progress-w
 import { AvatarPickerComponent } from './widgets/avatar-picker/avatar-picker.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, ModalModule],
   declarations: [
     CheckboxComponent,
     ProgressBarComponent,
