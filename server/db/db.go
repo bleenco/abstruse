@@ -38,6 +38,10 @@ func Connect(cfg *config.Db, logger *zap.Logger) {
 			conn.AutoMigrate(
 				model.User{},
 				model.Token{},
+				model.Provider{},
+				model.Repository{},
+				model.Build{},
+				model.Job{},
 			)
 			db = conn
 			log.Debugf("succesfully connected to database")
