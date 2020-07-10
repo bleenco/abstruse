@@ -1,0 +1,90 @@
+$subheader-height: 70px
+
+.subheader
+  display: block
+  width: 100%
+  height: $subheader-height
+  border-bottom: 1px solid $border-default
+  margin-bottom: 30px
+
+  .subheader-container
+    display: flex
+    width: 100%
+    height: $subheader-height
+    align-items: center
+    justify-content: space-between
+
+    .subheader-left, .subheader-right
+      display: flex
+      align-items: center
+
+    .subheader-left
+
+      h1
+        padding-right: 20px
+        padding-top: 3px
+        padding-bottom: 3px
+        margin-right: 20px
+        border-right: 1px solid $border-default
+        font-size: 22px
+        color: $heading-primary
+        font-weight: $weight-light
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            cursor: pointer
+
+      h2
+        color: $heading-light
+        text-transform: none
+        margin-right: 15px
+        padding-right: 15px
+        font-weight: $weight-medium
+        display: inline-flex
+        align-items: center
+        font-size: 13px
+        text-transform: uppercase
+
+        &:not(:last-child)
+          border-right: 1px solid $border-default
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            color: $heading-light-secondary
+            cursor: pointer
+
+        i
+          margin-right: 10px
+          padding-top: 2px
+
+        img
+          display: block
+          width: 18px
+          height: 18px
+          margin-right: 10px
+
+    .subheader-right
+
+      .link
+        +unselectable
+        padding: 0 15px
+        color: $text-primary
+        font-size: 14px
+        text-decoration: none
+        cursor: pointer
+        display: inline-flex
+        align-items: center
+
+        &:last-child
+          padding-right: 0
+
+        &:hover
+          color: $green
+
+        i
+          font-size: 16px
+          margin-right: 10px

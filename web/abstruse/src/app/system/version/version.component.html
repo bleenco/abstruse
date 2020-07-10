@@ -1,41 +1,46 @@
-<div class="columns is-multiline">
-  <div class="column is-12">
-    <div class="main-heading">
-      <div class="main-heading-left">
-        <h1>About</h1>
-        <h2>Abstruse version and build info</h2>
+<header class="subheader">
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>System</h1>
+        <h2>Version and build information</h2>
       </div>
-      <div class="main-heading-right"></div>
+      <div class="subheader-right"></div>
     </div>
   </div>
-  <div class="column is-12" *ngIf="system?.fetchingVersion">
-    <app-loader></app-loader>
-  </div>
-  <div class="column is-12" *ngIf="!system?.fetchingVersion">
-    <div class="list-item">
-      <div class="columns">
-        <div class="column is-2">
-          <div class="list-item-content">
-            <span class="label">API Version</span>
-            <span class="text">{{ system?.version?.api }}</span>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="system?.fetchingVersion">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-12" *ngIf="!system?.fetchingVersion">
+      <div class="list-item">
+        <div class="columns">
+          <div class="column is-2">
+            <div class="list-item-content">
+              <span class="label">API Version</span>
+              <span class="text">{{ system?.version?.api }}</span>
+            </div>
           </div>
-        </div>
-        <div class="column is-2">
-          <div class="list-item-content">
-            <span class="label">UI Version</span>
-            <span class="text">{{ system?.version?.ui }}</span>
+          <div class="column is-2">
+            <div class="list-item-content">
+              <span class="label">UI Version</span>
+              <span class="text">{{ system?.version?.ui }}</span>
+            </div>
           </div>
-        </div>
-        <div class="column is-5">
-          <div class="list-item-content">
-            <span class="label">Commit Hash</span>
-            <span class="text">{{ system?.version?.commitHash }}</span>
+          <div class="column is-5">
+            <div class="list-item-content">
+              <span class="label">Commit Hash</span>
+              <span class="text">{{ system?.version?.commitHash }}</span>
+            </div>
           </div>
-        </div>
-        <div class="column is-3">
-          <div class="list-item-content">
-            <span class="label">Build Date</span>
-            <span class="text">{{ system?.version?.buildDate | date: 'medium' }}</span>
+          <div class="column is-3">
+            <div class="list-item-content">
+              <span class="label">Build Date</span>
+              <span class="text">{{ system?.version?.buildDate | date: 'medium' }}</span>
+            </div>
           </div>
         </div>
       </div>

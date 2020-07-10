@@ -4,7 +4,7 @@ import { Directive, Input, ViewContainerRef, Renderer2, OnDestroy, HostListener,
   selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnChanges, OnDestroy {
-  @Input() text!: string;
+  @Input() text!: string | null;
 
   el: HTMLElement;
   tooltip!: HTMLElement;
@@ -38,7 +38,7 @@ export class TooltipDirective implements OnChanges, OnDestroy {
     this.setBodyPosition();
 
     this.tooltip = this.renderer.createElement('div');
-    this.tooltip.innerHTML = this.text;
+    this.tooltip.innerHTML = this.text!;
     this.renderer.setStyle(this.tooltip, 'display', 'inline-flex');
     this.renderer.setStyle(this.tooltip, 'position', 'absolute');
     this.renderer.addClass(this.tooltip, 'tooltip-container');

@@ -3,7 +3,7 @@
     <nav class="header-container">
       <div class="header-left">
         <a class="header-item logo" [routerLink]="['/']">
-          <img src="/assets/images/abstruse-text-black.svg" class="logo-text" />
+          <img src="/assets/images/ractol-square.svg" class="logo-text" />
         </a>
         <a class="header-item" [routerLink]="['/repos']" routerLinkActive="is-active">
           <span>Repositories</span>
@@ -54,7 +54,7 @@
               </a>
             </div>
             <div class="hd-links gray-bg">
-              <a class="hd-item">
+              <a class="hd-item" [routerLink]="['/profile']">
                 <span>Profile</span>
               </a>
               <a class="hd-item" (click)="logout()">

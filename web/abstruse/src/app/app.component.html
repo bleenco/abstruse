@@ -1,9 +1,7 @@
 <div *ngIf="(loggedIn | async); else loggedOut">
   <app-header></app-header>
   <main class="main">
-    <div class="container">
-      <router-outlet></router-outlet>
-    </div>
+    <router-outlet></router-outlet>
   </main>
 </div>
 

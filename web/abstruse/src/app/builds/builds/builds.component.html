@@ -1,1 +1,30 @@
-<!-- <app-loader></app-loader> -->
+<header class="subheader">
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Builds</h1>
+        <h2>Latest Builds</h2>
+      </div>
+      <div class="subheader-right">
+        <a class="link">
+          <i class="far fa-list-alt"></i>
+          <span>All Builds</span>
+        </a>
+        <a class="link">
+          <i class="octicon octicon-git-commit"></i>
+          <span>Commits</span>
+        </a>
+        <a class="link">
+          <i class="octicon octicon-git-pull-request"></i>
+          <span>Pull Requests</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="list-items">
+    <app-build-list-item [build]="b" *ngFor="let b of builds"></app-build-list-item>
+  </div>
+</div>

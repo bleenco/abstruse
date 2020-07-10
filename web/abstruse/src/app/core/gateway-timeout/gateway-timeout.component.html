@@ -23,20 +23,26 @@
 </ng-template>
 
 <ng-template #timeoutTemplate>
-  <div class="columns is-multiline">
-    <div class="column is-12">
-      <div class="main-heading">
-        <div class="main-heading-left">
+  <header class="subheader">
+    <div class="container">
+      <div class="subheader-container">
+        <div class="subheader-left">
           <h1>504</h1>
           <h2>Gateway Timeout</h2>
         </div>
-        <div class="main-heading-right"></div>
+        <div class="subheader-right"></div>
       </div>
     </div>
-    <div class="column is-8 is-offset-2">
-      <div class="notification">
-        <i class="fas fa-search-location"></i>
-        <p>Looks like the API is not available, please check on that, then return <a [routerLink]="['/']">back</a>.</p>
+  </header>
+
+  <div class="container">
+    <div class="columns is-multiline">
+      <div class="column is-8 is-offset-2">
+        <div class="notification">
+          <i class="fas fa-search-location"></i>
+          <p>Looks like the API is not available, please check on that, then return <a [routerLink]="['/']">back</a>.
+          </p>
+        </div>
       </div>
     </div>
   </div>

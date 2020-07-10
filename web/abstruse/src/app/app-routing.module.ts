@@ -11,6 +11,11 @@ const routes: Routes = [
   { path: '', redirectTo: 'builds', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [SetupGuardService, AlreadyAuthGuardService] },
   {
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'setup',
     loadChildren: () => import('./setup/setup.module').then(m => m.SetupModule),
     canActivate: [SetupDoneGuardService]

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Build, generateBuildModel } from '../shared/build.model';
+import { builds } from '../../../testing/fixtures/builds';
 
 @Component({
   selector: 'app-builds',
@@ -6,10 +8,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./builds.component.sass']
 })
 export class BuildsComponent implements OnInit {
+  builds: Build[] = [];
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
+    this.builds = builds.map(generateBuildModel);
   }
-
 }
