@@ -5,34 +5,41 @@
         <a class="header-item logo" [routerLink]="['/']">
           <img src="/assets/images/abstruse-text-black.svg" class="logo-text" />
         </a>
-      </div>
-      <div class="header-right">
-        <a class="header-item" [routerLink]="['/dashboard']" routerLinkActive="is-active">
-          Dashboard
-        </a>
         <a class="header-item" [routerLink]="['/repos']" routerLinkActive="is-active">
-          Repositories
-        </a>
-        <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
-          Workers
+          <span>Repositories</span>
         </a>
         <a class="header-item" [routerLink]="['/teams']" routerLinkActive="is-active">
-          Teams
+          <span>Teams</span>
         </a>
         <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active">
-          Images
+          <span>Images</span>
         </a>
+        <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
+          <span>Workers</span>
+        </a>
+      </div>
+      <div class="header-right">
         <div class="header-item">
-          <img [src]="user.avatar" class="avatar" (click)="toggleDropdown()" />
-          <div class="header-dropdown-container" [hidden]="!dropdownOpened">
-            <div class="hd-item bordered-bottom avatar-item align-center">
-              <img [src]="user.avatar" class="hd-avatar" />
-              <div class="user-info">
-                <span class="name">{{ user.name }}</span>
-                <span class="email">{{ user.email }}</span>
-              </div>
+          <div class="user-item" (click)="toggleDropdown()">
+            <img [src]="user.avatar" class="avatar" />
+            <div class="user-info">
+              <span class="name">{{ user.name }}</span>
+              <span class="role">Admin</span>
             </div>
+            <i class="fas fa-caret-down icon-down"></i>
+          </div>
+
+          <div class="header-dropdown-container" [hidden]="!dropdownOpened">
             <div class="hd-links">
+              <a class="hd-item">
+                <span>Dashboard</span>
+              </a>
+              <a class="hd-item">
+                <span>Worker Nodes</span>
+              </a>
+              <a class="hd-item">
+                <span>Teams</span>
+              </a>
               <a class="hd-item" [routerLink]="['/providers']">
                 <span>Providers</span>
               </a>
@@ -44,6 +51,11 @@
               </a>
               <a class="hd-item" [routerLink]="['/system']">
                 <span>System Information</span>
+              </a>
+            </div>
+            <div class="hd-links gray-bg">
+              <a class="hd-item">
+                <span>Profile</span>
               </a>
               <a class="hd-item" (click)="logout()">
                 <span>Logout</span>

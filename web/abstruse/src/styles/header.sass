@@ -30,9 +30,9 @@ $header-height: 60px
       cursor: pointer
       position: relative
       text-transform: uppercase
-      font-size: 14px
-      padding: 0 13px
-      font-weight: $weight-semibold
+      font-size: 13px
+      padding: 0 15px
+      font-weight: $weight-medium
       outline: none
       text-decoration: none
 
@@ -40,32 +40,59 @@ $header-height: 60px
         padding-left: 0
 
       &:last-child
-        margin-left: 10px
         padding-right: 0
 
       &:hover, &.is-active
         color: $green
         text-decoration: none
 
+        .icon-down
+          color: $text-primary
+
       &.logo
+        margin-right: 30px
 
         img, svg
           height: 25px
 
-      .avatar
-        vertical-align: middle
-        width: 35px
-        height: 35px
-        border-radius: 50%
-        border: 1px solid $border-default
+      .user-item
+        display: flex
+        align-items: center
+
+        .avatar
+          vertical-align: middle
+          width: 35px
+          height: 35px
+          border-radius: 50%
+
+        .user-info
+          display: flex
+          flex-direction: column
+          padding: 0 10px
+
+          .name, .role
+            display: block
+            width: 100%
+            text-transform: none
+
+          .name
+            font-size: 12px
+            color: $text-primary
+
+          .role
+            font-size: 11px
+            color: $text-secondary
+
+        .icon-down
+          font-size: 10px
 
   .header-dropdown-container
-    width: 220px
+    width: 190px
     background: $background-floating
     position: absolute
-    top: 52px
-    right: -15px
-    border-radius: $border-radius
+    top: 55px
+    right: -29px
+    border-radius: $border-radius-floating
     box-shadow: $box-shadow
     text-transform: none
     border: 1px solid $border-default
@@ -85,57 +112,25 @@ $header-height: 60px
       border-top: 1px solid $border-default
 
     .hd-links
-      padding: 5px 8px
+      padding: 10px 5px
+
+      &.gray-bg
+        background: $background-gray
+        border-top: 1px solid $border-default
 
     .hd-item
       width: 100%
-      height: 32px
+      height: 35px
       display: flex
       align-items: center
-      color: $text-primary
-      border-color: $border-default
+      color: $text-menu
       font-size: 14px
-      margin: 2px 0
-      padding: 6px 10px
-      border-radius: $border-radius
+      padding: 5px 20px
       font-size: 14px
-      font-weight: $weight-medium
+      font-weight: $weight-normal
       outline: none
       text-decoration: none
+      text-transform: none
 
-      &:hover:not(.avatar-item)
-        background-color: $green
-        color: $white
-        text-decoration: none
-
-      &.avatar-item
-        padding: 20px 10px
-        height: auto
-        border-bottom: 1px solid $border-default
-
-        &:hover
-          color: $text-menu
-
-        .hd-avatar
-          width: 40px
-          height: 40px
-          border-radius: 50%
-          border: 1px solid $border-default
-          margin-right: 20px
-          color: $white
-
-        .name, .email
-          display: block
-          text-align: left
-          line-height: 12px
-
-        .name
-          font-size: 14px
-          color: $text-secondary
-          margin-bottom: 5px
-          font-weight: $weight-semibold
-
-        .email
-          font-size: 12px
-          color: $text-primary
-          font-weight: $weight-medium
+      &:hover
+        color: $green

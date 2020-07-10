@@ -40,7 +40,8 @@ export class HeaderComponent implements OnInit {
     if (!this.dropdownOpened) {
       return;
     }
-    if (e.target === this.elementRef.nativeElement.querySelector('.avatar')) {
+    const userItem: HTMLElement = this.elementRef.nativeElement.querySelector('.user-item');
+    if (e.target === userItem || userItem.contains(e.target as Node)) {
       return;
     }
     this.dropdownOpened = false;
