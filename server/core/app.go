@@ -62,11 +62,6 @@ func (a *App) RestartEtcd() error {
 	return err
 }
 
-// SaveConfig saves new configuration.
-func (a *App) SaveConfig(cfg *config.Config) error {
-	return saveConfig(cfg)
-}
-
 // SaveAuthConfig saves new authentication configuration.
 func (a *App) SaveAuthConfig(cfg *config.Auth) error {
 	return saveAuthConfig(cfg)

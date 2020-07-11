@@ -65,7 +65,6 @@ func (r *router) setupRouter() *chi.Mux {
 	router.Group(func(router chi.Router) {
 		router.Use(middlewares.setupAuthenticator)
 		router.Get("/config", setup.config())
-		router.Put("/config", setup.saveConfig())
 		router.Post("/db/test", setup.testDatabaseConnection())
 		router.Put("/auth", setup.auth())
 		router.Put("/db", setup.db())

@@ -44,11 +44,6 @@ export class SetupService {
     );
   }
 
-  saveConfig(config: Config): Observable<void> {
-    this.savingConfig = true;
-    return this.http.put<void>('/setup/config', config).pipe(finalize(() => (this.savingConfig = false)));
-  }
-
   saveAuthConfig(config: ConfigAuth): Observable<void> {
     this.savingConfig = true;
     return this.http.put<void>('/setup/auth', config).pipe(finalize(() => (this.savingConfig = false)));

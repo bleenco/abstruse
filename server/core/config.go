@@ -152,46 +152,6 @@ func InitAuthentication() {
 	auth.Init(secret, expiry, refreshExpiry)
 }
 
-// saveConfig saves new configuration and reinitializes services.
-func saveConfig(cfg *config.Config) error {
-	Config = cfg
-
-	viper.Set("http.addr", Config.HTTP.Addr)
-	viper.Set("http.tls", Config.HTTP.TLS)
-	viper.Set("tls.cert", Config.TLS.Cert)
-	viper.Set("tls.key", Config.TLS.Key)
-	viper.Set("db.driver", Config.Db.Driver)
-	viper.Set("db.host", Config.Db.Host)
-	viper.Set("db.port", Config.Db.Port)
-	viper.Set("db.user", Config.Db.User)
-	viper.Set("db.password", Config.Db.Password)
-	viper.Set("db.name", Config.Db.Name)
-	viper.Set("db.charset", Config.Db.Charset)
-	viper.Set("etcd.name", Config.Etcd.Name)
-	viper.Set("etcd.host", Config.Etcd.Host)
-	viper.Set("etcd.clientport", Config.Etcd.ClientPort)
-	viper.Set("etcd.peerport", Config.Etcd.PeerPort)
-	viper.Set("etcd.datadir", Config.Etcd.DataDir)
-	viper.Set("etcd.username", Config.Etcd.Username)
-	viper.Set("etcd.password", Config.Etcd.Password)
-	viper.Set("etcd.rootpassword", Config.Etcd.RootPassword)
-	viper.Set("auth.jwtsecret", Config.Auth.JWTSecret)
-	viper.Set("auth.jwtexpiry", Config.Auth.JWTExpiry)
-	viper.Set("auth.jwtrefreshexpiry", Config.Auth.JWTRefreshExpiry)
-	viper.Set("log.level", Config.Log.Level)
-	viper.Set("log.stdout", Config.Log.Stdout)
-	viper.Set("log.filename", Config.Log.Filename)
-	viper.Set("log.maxsize", Config.Log.MaxSize)
-	viper.Set("log.maxbackups", Config.Log.MaxBackups)
-	viper.Set("log.maxage", Config.Log.MaxAge)
-
-	InitAuthentication()
-	InitDB()
-
-	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
-	return viper.WriteConfigAs(viper.ConfigFileUsed())
-}
-
 // saveAuthConfig saves new authentication configuration.
 func saveAuthConfig(cfg *config.Auth) error {
 	Config.Auth = cfg

@@ -56,25 +56,6 @@ func (s *setup) config() http.HandlerFunc {
 	})
 }
 
-func (s *setup) saveConfig() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var f config.Config
-		defer r.Body.Close()
-
-		if err := lib.DecodeJSON(r.Body, &f); err != nil {
-			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
-			return
-		}
-
-		if err := s.app.SaveConfig(&f); err != nil {
-			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
-			return
-		}
-
-		render.JSON(w, http.StatusOK, render.Empty{})
-	})
-}
-
 func (s *setup) auth() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var f config.Auth
