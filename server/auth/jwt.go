@@ -26,7 +26,7 @@ type JWTAuth struct {
 // NewJWTAuth creates new JWTAuth authenticator instance.
 func NewJWTAuth(alg string) *JWTAuth {
 	return &JWTAuth{
-		signKey: []byte(JWTSecret),
+		signKey: JWTSecret,
 		signer:  jwt.GetSigningMethod(alg),
 		parser:  &jwt.Parser{},
 	}

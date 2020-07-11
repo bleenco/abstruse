@@ -67,6 +67,8 @@ func (r *router) setupRouter() *chi.Mux {
 		router.Get("/config", setup.config())
 		router.Put("/config", setup.saveConfig())
 		router.Post("/db/test", setup.testDatabaseConnection())
+		router.Put("/auth", setup.auth())
+		router.Put("/db", setup.db())
 		router.Put("/etcd", setup.etcd())
 		router.Post("/user", setup.user())
 	})

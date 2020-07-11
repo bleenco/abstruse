@@ -126,10 +126,10 @@ func (r UserRepo) AdminExists() (bool, error) {
 // UserForm defines struct for creating and updating users.
 type UserForm struct {
 	ID       uint   `json:"id,omitempty"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Avatar   string `json:"avatar"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	Email    string `json:"email" valid:"email,required"`
+	Name     string `json:"name" valid:"stringlength(2|50),required"`
+	Avatar   string `json:"avatar" valid:"stringlength(5|255),required"`
+	Password string `json:"password" valid:"stringlength(8|50),required"`
+	Role     string `json:"role" valid:"in(admin|user),required"`
 	Active   bool   `json:"active"`
 }

@@ -192,6 +192,38 @@ func saveConfig(cfg *config.Config) error {
 	return viper.WriteConfigAs(viper.ConfigFileUsed())
 }
 
+// saveAuthConfig saves new authentication configuration.
+func saveAuthConfig(cfg *config.Auth) error {
+	Config.Auth = cfg
+
+	viper.Set("auth.jwtsecret", Config.Auth.JWTSecret)
+	viper.Set("auth.jwtexpiry", Config.Auth.JWTExpiry)
+	viper.Set("auth.jwtrefreshexpiry", Config.Auth.JWTRefreshExpiry)
+
+	InitAuthentication()
+
+	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
+	return viper.WriteConfigAs(viper.ConfigFileUsed())
+}
+
+// saveDBConfig saves new database configuration.
+func saveDBConfig(cfg *config.Db) error {
+	Config.Db = cfg
+
+	viper.Set("db.driver", Config.Db.Driver)
+	viper.Set("db.host", Config.Db.Host)
+	viper.Set("db.port", Config.Db.Port)
+	viper.Set("db.user", Config.Db.User)
+	viper.Set("db.password", Config.Db.Password)
+	viper.Set("db.name", Config.Db.Name)
+	viper.Set("db.charset", Config.Db.Charset)
+
+	InitDB()
+
+	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
+	return viper.WriteConfigAs(viper.ConfigFileUsed())
+}
+
 // saveEtcdConfig saves new etcd configuration.
 func saveEtcdConfig(cfg *config.Etcd) error {
 	Config.Etcd = cfg

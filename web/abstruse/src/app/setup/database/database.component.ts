@@ -48,16 +48,16 @@ export class DatabaseComponent implements OnInit {
       return;
     }
 
-    const config = { ...this.setup.config, ...{ db: this.generateModel() } };
+    const config = this.generateModel();
     this.setup
-      .saveConfig(config)
+      .saveDBConfig(config)
       .pipe(
         finalize(() => (this.connTest = 'untested')),
         untilDestroyed(this)
       )
       .subscribe(
         () => {
-          this.setup.config = { ...config };
+          this.setup.config = { ...this.setup.config, ...{ db: config } };
           this.saved = true;
           this.dbForm.markAsPristine();
           this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;

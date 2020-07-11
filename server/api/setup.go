@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
 	"github.com/bleenco/abstruse/server/config"
@@ -74,6 +75,54 @@ func (s *setup) saveConfig() http.HandlerFunc {
 	})
 }
 
+func (s *setup) auth() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var f config.Auth
+		defer r.Body.Close()
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := s.app.SaveAuthConfig(&f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
+func (s *setup) db() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var f config.Db
+		defer r.Body.Close()
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := s.app.SaveDBConfig(&f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
 func (s *setup) testDatabaseConnection() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var f config.Db
@@ -98,6 +147,11 @@ func (s *setup) etcd() http.HandlerFunc {
 			return
 		}
 
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
 		if err := s.app.SaveEtcdConfig(&f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
@@ -119,6 +173,11 @@ func (s *setup) user() http.HandlerFunc {
 
 		if err := lib.DecodeJSON(r.Body, &f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
 			return
 		}
 

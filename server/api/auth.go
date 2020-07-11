@@ -54,7 +54,7 @@ func (a *auth) login() http.HandlerFunc {
 
 		user, err := a.userRepo.Login(f.Email, f.Password)
 		if err != nil {
-			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
 			return
 		}
 

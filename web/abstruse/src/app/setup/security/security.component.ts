@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { randomHash, durationValidator } from '../../shared';
 import { SetupService } from '../shared/setup.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { ConfigAuth } from '../shared/config.model';
 
 @UntilDestroy()
 @Component({
@@ -42,8 +43,6 @@ export class SecurityComponent implements OnInit {
       .subscribe(config => {
         this.setup.config = { ...config };
         this.resetValues();
-        this.saved = true;
-        setTimeout(() => (this.saved = false), 5000);
       });
 
     this.securityForm.valueChanges.pipe(untilDestroyed(this)).subscribe(() => (this.saved = false));
@@ -55,26 +54,22 @@ export class SecurityComponent implements OnInit {
       return;
     }
 
-    const config = {
-      ...this.setup.config,
-      ...{
-        auth: {
-          jwtSecret: this.securityForm.controls.jwtSecret.value,
-          jwtExpiry: this.securityForm.controls.jwtExpiry.value,
-          jwtRefreshExpiry: this.securityForm.controls.jwtRefreshExpiry.value
-        }
-      }
+    const config: ConfigAuth = {
+      jwtSecret: this.securityForm.controls.jwtSecret.value,
+      jwtExpiry: this.securityForm.controls.jwtExpiry.value,
+      jwtRefreshExpiry: this.securityForm.controls.jwtRefreshExpiry.value
     };
 
     this.setup
-      .saveConfig(config)
+      .saveAuthConfig(config)
       .pipe(untilDestroyed(this))
       .subscribe(
         () => {
-          this.setup.config = { ...config };
-          this.saved = true;
+          this.setup.config = { ...this.setup.config, ...{ auth: config } };
           this.securityForm.markAsPristine();
           this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
+          this.saved = true;
+          setTimeout(() => (this.saved = false), 5000);
         },
         err => {
           this.resetValues();

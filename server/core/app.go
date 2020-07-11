@@ -67,6 +67,16 @@ func (a *App) SaveConfig(cfg *config.Config) error {
 	return saveConfig(cfg)
 }
 
+// SaveAuthConfig saves new authentication configuration.
+func (a *App) SaveAuthConfig(cfg *config.Auth) error {
+	return saveAuthConfig(cfg)
+}
+
+// SaveDBConfig saves new database configuration.
+func (a *App) SaveDBConfig(cfg *config.Db) error {
+	return saveDBConfig(cfg)
+}
+
 // SaveEtcdConfig saves new etcd configuration.
 func (a *App) SaveEtcdConfig(cfg *config.Etcd) error {
 	return saveEtcdConfig(cfg)

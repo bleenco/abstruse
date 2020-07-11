@@ -3,6 +3,7 @@ module github.com/bleenco/abstruse
 go 1.14
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20200620013148-b91950f658ec // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
