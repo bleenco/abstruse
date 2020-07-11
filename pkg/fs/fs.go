@@ -36,6 +36,11 @@ func DeleteFile(filePath string) error {
 	return os.Remove(filePath)
 }
 
+// DeleteDirectory deletes dir from disk.
+func DeleteDirectory(dirPath string) error {
+	return os.RemoveAll(dirPath)
+}
+
 // ReadFile read contents from file and return it as string.
 func ReadFile(filePath string) (string, error) {
 	contents, err := ioutil.ReadFile(filePath)

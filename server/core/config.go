@@ -188,6 +188,10 @@ func saveDBConfig(cfg *config.Db) error {
 func saveEtcdConfig(cfg *config.Etcd) error {
 	Config.Etcd = cfg
 
+	if !strings.HasPrefix(Config.Etcd.DataDir, "/") {
+		Config.Etcd.DataDir = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.Etcd.DataDir)
+	}
+
 	viper.Set("etcd.name", Config.Etcd.Name)
 	viper.Set("etcd.host", Config.Etcd.Host)
 	viper.Set("etcd.clientport", Config.Etcd.ClientPort)
@@ -196,6 +200,10 @@ func saveEtcdConfig(cfg *config.Etcd) error {
 	viper.Set("etcd.username", Config.Etcd.Username)
 	viper.Set("etcd.password", Config.Etcd.Password)
 	viper.Set("etcd.rootpassword", Config.Etcd.RootPassword)
+
+	if err := fs.DeleteDirectory(Config.Etcd.DataDir); err != nil {
+		return err
+	}
 
 	Log.Sugar().Infof("saving config file to %s", viper.ConfigFileUsed())
 	return viper.WriteConfigAs(viper.ConfigFileUsed())

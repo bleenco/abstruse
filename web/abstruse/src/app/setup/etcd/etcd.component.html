@@ -1,10 +1,14 @@
 <div class="columns is-multiline">
   <div class="column is-12 pt0 pb0">
     <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="notification">
+      <div class="notification" *ngIf="!error">
         <i class="fas fa-database"></i>
         <p>Etcd is distributed key-value store which is embedded into Abstruse. You can leave default configuration, but
           make sure you set username and both passwords.</p>
+      </div>
+      <div class="notification is-red" *ngIf="error">
+        <i class="fas fa-database"></i>
+        <p>Error: {{ error }}</p>
       </div>
       <div class="field">
         <label class="label">Server Name</label>
@@ -40,13 +44,13 @@
         <div class="column is-4">
           <div class="field">
             <label class="label">Password</label>
-            <input type="password" class="input" placeholder="Password" formControlName="password" />
+            <input type="text" class="input" placeholder="Password" formControlName="password" />
           </div>
         </div>
         <div class="column is-4">
           <div class="field">
             <label class="label">Root Password</label>
-            <input type="password" class="input" placeholder="Root Password" autocomplete="new-password"
+            <input type="text" class="input" placeholder="Root Password" autocomplete="new-password"
               formControlName="rootPassword" />
           </div>
         </div>

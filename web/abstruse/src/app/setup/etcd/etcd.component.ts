@@ -13,6 +13,7 @@ import { ConfigEtcd } from '../shared/config.model';
 export class EtcdComponent implements OnInit {
   form!: FormGroup;
   saved: boolean = false;
+  error!: string | null;
 
   constructor(private fb: FormBuilder, public setup: SetupService) {
     this.createForm();
@@ -33,6 +34,8 @@ export class EtcdComponent implements OnInit {
       return;
     }
 
+    this.error = null;
+
     const config = this.generateModel();
     this.setup
       .saveEtcdConfig(config)
@@ -43,10 +46,11 @@ export class EtcdComponent implements OnInit {
           this.form.markAsPristine();
           this.setup.config.etcd = { ...config };
           setTimeout(() => (this.saved = false), 5000);
+          this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
         },
         err => {
           this.resetValues();
-          console.error(err);
+          this.error = err.message;
         }
       );
   }

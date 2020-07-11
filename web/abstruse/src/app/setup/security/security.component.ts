@@ -84,8 +84,13 @@ export class SecurityComponent implements OnInit {
       jwtExpiry: this.setup.config.auth.jwtExpiry,
       jwtRefreshExpiry: this.setup.config.auth.jwtRefreshExpiry
     });
+
     this.securityForm.markAsPristine();
     this.saved = false;
+
+    if (this.securityForm.valid) {
+      this.setup.wizard.steps[this.setup.wizard.step - 1].nextEnabled = true;
+    }
   }
 
   generateSecret(): void {

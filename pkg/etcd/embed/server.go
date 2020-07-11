@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/bleenco/abstruse/pkg/etcd/client"
@@ -56,9 +57,6 @@ func (s *Server) Run() error {
 	cfg.AutoCompactionMode = v3compactor.ModePeriodic
 	cfg.AutoCompactionRetention = "1h" // every hour
 
-	// cfg.ClientAutoTLS = true
-	// cfg.PeerAutoTLS = true
-
 	tlsInfo := transport.TLSInfo{
 		CertFile:           s.cfg.TLS.Cert,
 		KeyFile:            s.cfg.TLS.Key,
@@ -85,36 +83,95 @@ func (s *Server) Run() error {
 	}
 	s.logger.Infof("started etcd server %s on %s", cfg.Name, curl.String())
 
-	// s.cli = v3client.New(s.server.Server)
-	// s.cli.Username = s.cfg.Etcd.Username
-	// s.cli.Password = s.cfg.Etcd.Password
+	if err := s.authEnable(); err != nil {
+		return err
+	}
 
-	// if err := s.authEnable(); err != nil {
-	// 	return err
-	// }
 	if s.cli, err = s.GetClient(); err != nil {
 		return err
 	}
 
-	// s.cleanup()
 	return nil
 }
 
 // Stop stops the etcd server.
 func (s *Server) Stop() {
-	defer s.cli.Close()
+	if s.cli != nil {
+		defer s.cli.Close()
+	}
+
 	s.server.Close()
 }
 
 // GetClient returns etcd client.
 func (s *Server) GetClient() (*clientv3.Client, error) {
-	target := net.JoinHostPort("127.0.0.1", fmt.Sprintf("%d", s.cfg.Etcd.ClientPort))
+	target := net.JoinHostPort(s.cfg.Etcd.Host, fmt.Sprintf("%d", s.cfg.Etcd.ClientPort))
 	cfg := client.ClientConfig{
 		Target:   target,
-		Username: "root",
-		Password: s.cfg.Etcd.RootPassword,
+		Username: s.cfg.Etcd.Username,
+		Password: s.cfg.Etcd.Password,
 		Cert:     s.cfg.TLS.Cert,
 		Key:      s.cfg.TLS.Key,
+	}
+	return client.NewClient(cfg)
+}
+
+func (s *Server) authEnable() error {
+	client, err := s.authClient()
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	if _, err := client.RoleAdd(context.TODO(), "root"); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto user
+		}
+	}
+	if _, err := client.UserAdd(context.TODO(), "root", s.cfg.Etcd.RootPassword); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto user
+		}
+	}
+	if _, err = client.UserGrantRole(context.TODO(), "root", "root"); err != nil {
+		return err
+	}
+user:
+	_, err = client.RoleAdd(context.TODO(), s.cfg.Etcd.Username)
+	if err != nil {
+		if strings.HasSuffix(err.Error(), "role name already exists") {
+			goto enable
+		}
+		return err
+	}
+	if _, err := client.RoleGrantPermission(
+		context.TODO(),
+		s.cfg.Etcd.Username,
+		"/abstruse/",
+		"\x00",
+		clientv3.PermissionType(clientv3.PermReadWrite),
+	); err != nil {
+		return err
+	}
+	if _, err = client.UserAdd(context.TODO(), s.cfg.Etcd.Username, s.cfg.Etcd.Password); err != nil {
+		if strings.HasSuffix(err.Error(), "already exists") {
+			goto enable
+		}
+	}
+	if _, err = client.UserGrantRole(context.TODO(), s.cfg.Etcd.Username, s.cfg.Etcd.Username); err != nil {
+		return err
+	}
+enable:
+	_, err = client.AuthEnable(context.TODO())
+	return err
+}
+
+func (s *Server) authClient() (*clientv3.Client, error) {
+	target := net.JoinHostPort(s.cfg.Etcd.Host, fmt.Sprintf("%d", s.cfg.Etcd.ClientPort))
+	cfg := client.ClientConfig{
+		Target: target,
+		Cert:   s.cfg.TLS.Cert,
+		Key:    s.cfg.TLS.Key,
 	}
 	return client.NewClient(cfg)
 }
