@@ -1,5 +1,10 @@
 package version
 
+import (
+	"runtime"
+	"strings"
+)
+
 // APIVersion represents current version of abstruse API
 const APIVersion = "2.0.0-alpha.1"
 
@@ -18,6 +23,8 @@ type BuildInfo struct {
 	APIVersion string `json:"api"`
 	UIVersion  string `json:"ui"`
 	BuildDate  string `json:"buildDate"`
+	OS         string `json:"os"`
+	Arch       string `json:"arch"`
 }
 
 // GetBuildInfo returns build information
@@ -27,6 +34,8 @@ func GetBuildInfo() BuildInfo {
 		APIVersion,
 		UIVersion,
 		BuildDate,
+		getOS(),
+		getArch(),
 	}
 }
 
@@ -35,7 +44,17 @@ func GenerateBuildVersionString() string {
 	versionString := "API version " + APIVersion + "\n" +
 		"UI version  " + UIVersion + "\n" +
 		"Commit      " + GitCommit + "\n" +
-		"Date        " + BuildDate
+		"Date        " + BuildDate + "\n" +
+		"OS          " + getOS() + "\n" +
+		"Arch        " + getArch()
 
 	return versionString
+}
+
+func getOS() string {
+	return strings.Title(strings.ToLower(runtime.GOOS))
+}
+
+func getArch() string {
+	return runtime.GOARCH
 }

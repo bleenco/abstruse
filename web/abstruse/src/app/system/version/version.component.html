@@ -18,6 +18,18 @@
     <div class="column is-12" *ngIf="!system?.fetchingVersion">
       <div class="list-item">
         <div class="columns">
+          <div class="column is-1">
+            <div class="list-item-content">
+              <span class="label">OS</span>
+              <span class="text">{{ system?.version?.os }}</span>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="list-item-content">
+              <span class="label">Arch</span>
+              <span class="text">{{ system?.version?.arch }}</span>
+            </div>
+          </div>
           <div class="column is-2">
             <div class="list-item-content">
               <span class="label">API Version</span>
@@ -30,7 +42,7 @@
               <span class="text">{{ system?.version?.ui }}</span>
             </div>
           </div>
-          <div class="column is-5">
+          <div class="column is-3">
             <div class="list-item-content">
               <span class="label">Commit Hash</span>
               <span class="text">{{ system?.version?.commitHash }}</span>
