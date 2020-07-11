@@ -95,6 +95,7 @@ func (r *router) usersRouter() *chi.Mux {
 	users := newUsers(r.logger)
 
 	router.Get("/sessions", users.sessions())
+	router.Put("/password", users.password())
 
 	return router
 }

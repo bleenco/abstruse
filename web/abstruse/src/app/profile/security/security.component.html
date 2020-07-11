@@ -1,1 +1,40 @@
-<p>security works!</p>
+<div class="columns is-multiline">
+  <div class="column is-4 is-offset-4">
+    <h3>Update Password</h3>
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="notification" *ngIf="!ok && !error">
+        <i class="fas fa-info"></i>
+        <p>New password must include at least 8 characters.</p>
+      </div>
+      <div class="notification is-red" *ngIf="error">
+        <i class="fas fa-key"></i>
+        <p>Error: {{ error }}</p>
+      </div>
+      <div class="notification is-green" *ngIf="ok">
+        <i class="fas fa-key"></i>
+        <p>Password succesfully updated.</p>
+      </div>
+      <div class="field">
+        <label class="label">Current Password</label>
+        <input type="password" class="input" placeholder="Current Password" autocomplete="new-password"
+          formControlName="currentPassword" />
+      </div>
+      <div class="field">
+        <label class="label">New Password</label>
+        <input type="password" class="input" placeholder="New Password" autocomplete="new-password"
+          formControlName="password" />
+      </div>
+      <div class="field">
+        <label class="label">Repeat Password</label>
+        <input type="password" class="input" placeholder="Repeat Password" autocomplete="new-password"
+          formControlName="repeatPassword" />
+      </div>
+      <div class="form-buttons justify-end">
+        <button type="submit" class="button" [disabled]="form.invalid || saving">
+          <span *ngIf="!saving">Update Password</span>
+          <span *ngIf="saving">Updating Password...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

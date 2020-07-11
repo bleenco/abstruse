@@ -63,6 +63,31 @@ func (r UserRepo) Login(email, password string) (model.User, error) {
 	return user, fmt.Errorf("Invalid credentials")
 }
 
+// UpdatePassword updates new password if current password is correct.
+func (r UserRepo) UpdatePassword(userID uint, currentPassword, newPassword string) error {
+	user, err := r.Find(userID)
+	if err != nil {
+		return err
+	}
+
+	if !auth.CheckPasswordHash(currentPassword, user.Password) {
+		return fmt.Errorf("invalid current password")
+	}
+
+	password, err := auth.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	user.Password = password
+
+	db, err := db.Instance()
+	if err != nil {
+		return err
+	}
+
+	return db.Model(&user).Updates(user).Error
+}
+
 // Create adds new user into database.
 func (r UserRepo) Create(data UserForm) (model.User, error) {
 	user := model.User{
