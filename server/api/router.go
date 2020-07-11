@@ -92,6 +92,9 @@ func (r *router) authRouter() *chi.Mux {
 
 func (r *router) usersRouter() *chi.Mux {
 	router := chi.NewRouter()
+	users := newUsers(r.logger)
+
+	router.Get("/sessions", users.sessions())
 
 	return router
 }

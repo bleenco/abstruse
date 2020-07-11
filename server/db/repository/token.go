@@ -17,6 +17,17 @@ func NewTokenRepo() TokenRepo {
 	return TokenRepo{}
 }
 
+// Find finds tokens by user id.
+func (r TokenRepo) Find(userID uint) ([]model.Token, error) {
+	var data []model.Token
+	db, err := db.Instance()
+	if err != nil {
+		return data, err
+	}
+	err = db.Where("user_id = ?", userID).Find(&data).Error
+	return data, err
+}
+
 // FindByToken finds and returns token by refresh token value.
 func (r TokenRepo) FindByToken(token string) (model.Token, error) {
 	var data model.Token

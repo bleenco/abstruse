@@ -6,12 +6,23 @@
         <h2>My Profile</h2>
       </div>
       <div class="subheader-right">
-
+        <a class="link" [routerLink]="['/profile/settings']" routerLinkActive="is-active">
+          <i class="fas fa-user-tag"></i>
+          <span>Settings</span>
+        </a>
+        <a class="link" [routerLink]="['/profile/security']" routerLinkActive="is-active">
+          <i class="fas fa-key"></i>
+          <span>Security</span>
+        </a>
+        <a class="link" [routerLink]="['/profile/sessions']" routerLinkActive="is-active">
+          <i class="far fa-list-alt"></i>
+          <span>Active Sessions</span>
+        </a>
       </div>
     </div>
   </div>
 </header>
 
 <div class="container">
-
+  <router-outlet></router-outlet>
 </div>
