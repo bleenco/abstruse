@@ -9,6 +9,7 @@ export interface Login {
 export interface UserData {
   email: string;
   name: string;
+  location: string;
   avatar: string;
   role: string;
   lastLogin: Date;

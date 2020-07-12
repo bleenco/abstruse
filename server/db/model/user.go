@@ -13,6 +13,7 @@ type User struct {
 	Password  string     `gorm:"not null;varchar(255);column:password" json:"-"`
 	Name      string     `gorm:"not null;varchar(255)" json:"name"`
 	Avatar    string     `gorm:"not null;varchar(255);default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
+	Location  string     `gorm:"varchar(255)" json:"location"`
 	Role      string     `gorm:"not null;default:'user'" json:"role"`
 	Active    bool       `gorm:"not null;default:true" json:"active"`
 	LastLogin *time.Time `json:"lastLogin"`
@@ -22,11 +23,12 @@ type User struct {
 // Claims returns the token claims to be signed.
 func (u *User) Claims() auth.UserClaims {
 	return auth.UserClaims{
-		ID:     u.ID,
-		Email:  u.Email,
-		Name:   u.Name,
-		Avatar: u.Avatar,
-		Role:   u.Role,
+		ID:       u.ID,
+		Email:    u.Email,
+		Name:     u.Name,
+		Location: u.Location,
+		Avatar:   u.Avatar,
+		Role:     u.Role,
 	}
 }
 

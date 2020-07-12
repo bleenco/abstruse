@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, Subscription, of, timer, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, of, timer, throwError, Subject } from 'rxjs';
 import * as jwt from 'jwt-decode';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
-import { finalize, flatMap, switchMap, tap, catchError, map } from 'rxjs/operators';
+import { finalize, flatMap, switchMap, tap, catchError, map, share } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,8 @@ import { finalize, flatMap, switchMap, tap, catchError, map } from 'rxjs/operato
 export class AuthService {
   data: UserData | null;
   authenticated: BehaviorSubject<boolean>;
+  userUpdated: Subject<UserData> = new Subject<UserData>();
+  updated: Observable<UserData>;
 
   refreshTokenTimerSubscription = new Subscription();
   refreshTokenInProgress: boolean = false;
@@ -22,6 +24,7 @@ export class AuthService {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
     this.data = (data && JSON.parse(data)) || null;
     this.authenticated = new BehaviorSubject<boolean>(this.isAuthenticated);
+    this.updated = this.userUpdated.asObservable().pipe(share());
   }
 
   get userData(): UserData | null {
@@ -147,6 +150,7 @@ export class AuthService {
     this.data = { ...token, tokens };
     this.data!.tokens.storedAt = Date.now();
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
+    this.userUpdated.next(this.userData!);
   }
 
   private unsetUserData(): void {

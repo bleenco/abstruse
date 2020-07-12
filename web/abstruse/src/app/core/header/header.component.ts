@@ -26,6 +26,10 @@ export class HeaderComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(() => (this.dropdownOpened = false));
+
+    this.auth.updated.pipe(untilDestroyed(this)).subscribe(data => {
+      this.user = generateUser(data);
+    });
   }
 
   logout(): void {

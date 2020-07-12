@@ -7,6 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
+	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"go.uber.org/zap"
 )
@@ -23,6 +24,61 @@ func newUsers(logger *zap.Logger) users {
 		userRepo:  repository.NewUserRepo(),
 		tokenRepo: repository.NewTokenRepo(),
 	}
+}
+
+func (u *users) profile() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims := claimsFromCtx(r.Context())
+
+		user, err := u.userRepo.Find(claims.ID)
+		if err != nil {
+			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, user)
+	})
+}
+
+func (u *users) saveProfile() http.HandlerFunc {
+	type form struct {
+		Email    string `json:"email" valid:"email,required"`
+		Name     string `json:"name" valid:"stringlength(3|50),required"`
+		Avatar   string `json:"avatar" valid:"stringlength(5|255),required"`
+		Location string `json:"location"`
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		claims := claimsFromCtx(r.Context())
+		var f form
+		var err error
+
+		if err := lib.DecodeJSON(r.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
+		user := model.User{
+			ID:       claims.ID,
+			Email:    f.Email,
+			Name:     f.Name,
+			Avatar:   f.Avatar,
+			Location: f.Location,
+		}
+
+		user, err = u.userRepo.Update(user)
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, user)
+	})
 }
 
 func (u *users) sessions() http.HandlerFunc {
