@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProfileService } from '../shared/profile.service';
 import { Profile, User } from '../../users/shared/user.model';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize, switchMap, flatMap } from 'rxjs/operators';
-import { AuthService } from 'src/app/auth/shared/auth.service';
+import { AuthService } from '../../auth/shared/auth.service';
 import { of } from 'rxjs';
+import { UploadFile, UploadInput, UploaderOptions, UploadOutput, UploadStatus } from 'ngx-uploader';
+import { API_URL } from '../../core/interceptors/api.interceptor';
 
 @UntilDestroy()
 @Component({
@@ -20,13 +22,22 @@ export class SettingsComponent implements OnInit {
   error: string | null = null;
   loading: boolean = false;
 
+  files: UploadFile[] = [];
+  uploadInput: EventEmitter<UploadInput> = new EventEmitter<UploadInput>();
+  uploadOptions: UploaderOptions = {
+    concurrency: 1,
+    maxFileSize: 3000000,
+    allowedContentTypes: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif']
+  };
+  uploadUrl: string = `${API_URL}/users/avatar`;
+  uploadingAvatar: boolean = false;
+
   constructor(private fb: FormBuilder, private profile: ProfileService, private auth: AuthService) {
     this.createForm();
   }
 
   ngOnInit(): void {
     this.loadProfile();
-
     this.form.valueChanges.pipe(untilDestroyed(this)).subscribe(() => (this.saved = false));
   }
 
@@ -57,6 +68,32 @@ export class SettingsComponent implements OnInit {
           this.error = err.message;
         }
       );
+  }
+
+  onUploadOutput(output: UploadOutput): void {
+    if (output.type === 'allAddedToQueue') {
+      const event: UploadInput = {
+        type: 'uploadAll',
+        url: this.uploadUrl,
+        method: 'POST',
+        fieldName: 'file',
+        headers: { Authorization: `Bearer ${this.auth.userData!.tokens.accessToken}` }
+      };
+      this.uploadInput.emit(event);
+      this.uploadingAvatar = true;
+    } else if (output.type === 'addedToQueue' && typeof output.file !== 'undefined') {
+      this.files.push(output.file);
+    } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
+      const index = this.files.findIndex(file => typeof output.file !== 'undefined' && file.id === output.file.id);
+      this.files[index] = output.file;
+    } else if (output.type === 'cancelled' || output.type === 'removed') {
+      this.files = this.files.filter((file: UploadFile) => file !== output.file);
+    } else if (output.type === 'done') {
+      this.files = this.files.filter(file => file.progress.status !== UploadStatus.Done);
+      this.form.patchValue({ avatar: output.file!.response });
+      this.form.markAsDirty();
+      this.uploadingAvatar = false;
+    }
   }
 
   private loadProfile(): void {

@@ -17,16 +17,13 @@ import (
 
 type router struct {
 	*chi.Mux
-	logger *zap.Logger
-	app    *core.App
+	logger    *zap.Logger
+	app       *core.App
+	uploadDir string
 }
 
-type statikWrapper struct {
-	assets http.FileSystem
-}
-
-func newRouter(logger *zap.Logger, app *core.App) *router {
-	router := &router{chi.NewRouter(), logger, app}
+func newRouter(logger *zap.Logger, app *core.App, uploadDir string) *router {
+	router := &router{chi.NewRouter(), logger, app, uploadDir}
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -34,6 +31,7 @@ func newRouter(logger *zap.Logger, app *core.App) *router {
 	router.Use(middleware.Timeout(30 * time.Second))
 
 	router.Mount("/api/v1", router.apiRouter())
+	router.Mount("/uploads", router.fileServer())
 	router.NotFound(router.ui())
 
 	return router
@@ -99,6 +97,7 @@ func (r *router) usersRouter() *chi.Mux {
 	router.Get("/profile", users.profile())
 	router.Put("/profile", users.saveProfile())
 	router.Put("/password", users.password())
+	router.Post("/avatar", users.uploadAvatar(r.uploadDir))
 
 	return router
 }
@@ -118,6 +117,21 @@ func (r *router) ui() http.HandlerFunc {
 		fs := http.FileServer(&statikWrapper{root})
 		fs.ServeHTTP(w, r)
 	})
+}
+
+func (r *router) fileServer() *chi.Mux {
+	router := chi.NewRouter()
+	fs := http.FileServer(http.Dir(r.uploadDir))
+
+	router.Get("/*", func(w http.ResponseWriter, req *http.Request) {
+		http.StripPrefix("/uploads/", fs).ServeHTTP(w, req)
+	})
+
+	return router
+}
+
+type statikWrapper struct {
+	assets http.FileSystem
 }
 
 // Open returns file from http FileSystem by path,

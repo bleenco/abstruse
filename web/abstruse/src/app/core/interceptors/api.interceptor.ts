@@ -2,7 +2,7 @@ import { Injectable, Provider } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-const API_URL = '/api/v1';
+export const API_URL = '/api/v1';
 
 @Injectable({ providedIn: 'root' })
 export class ApiInterceptor implements HttpInterceptor {

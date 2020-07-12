@@ -1,7 +1,12 @@
 package api
 
 import (
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/asaskevich/govalidator"
@@ -127,5 +132,35 @@ func (u *users) password() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
+func (u *users) uploadAvatar(uploadDir string) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.ParseMultipartForm(3 << 20)
+
+		file, header, err := r.FormFile("file")
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+		defer file.Close()
+
+		fileName := fmt.Sprintf("%s%s", lib.RandomString(), filepath.Ext(header.Filename))
+		filePath := filepath.Join(uploadDir, "avatars", fileName)
+
+		uploadedFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+		defer uploadedFile.Close()
+
+		if _, err := io.Copy(uploadedFile, file); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, path.Join("/uploads/avatars/", fileName))
 	})
 }

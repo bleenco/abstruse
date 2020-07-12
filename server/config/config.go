@@ -44,8 +44,9 @@ type Etcd struct {
 
 // HTTP server config.
 type HTTP struct {
-	Addr string `json:"addr" valid:"host,required"`
-	TLS  bool   `json:"tls"`
+	Addr      string `json:"addr" valid:"host,required"`
+	TLS       bool   `json:"tls"`
+	UploadDir string `json:"uploadDir"`
 }
 
 // TLS config.

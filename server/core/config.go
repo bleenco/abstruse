@@ -32,6 +32,7 @@ func InitDefaults(cmd *cobra.Command, cfgFile string) {
 
 	viper.BindPFlag("http.addr", cmd.PersistentFlags().Lookup("http-addr"))
 	viper.BindPFlag("http.tls", cmd.PersistentFlags().Lookup("http-tls"))
+	viper.BindPFlag("http.uploaddir", cmd.PersistentFlags().Lookup("http-uploaddir"))
 	viper.BindPFlag("tls.cert", cmd.PersistentFlags().Lookup("tls-cert"))
 	viper.BindPFlag("tls.key", cmd.PersistentFlags().Lookup("tls-key"))
 	viper.BindPFlag("db.driver", cmd.PersistentFlags().Lookup("db-driver"))
@@ -84,11 +85,12 @@ func InitConfig() {
 				fatal(err)
 			}
 		}
+
 		if err = viper.SafeWriteConfigAs(viper.ConfigFileUsed()); err != nil {
 			fatal(err)
 		}
 
-		Log.Sugar().Infof("config file save to %s", viper.ConfigFileUsed())
+		Log.Sugar().Infof("config file saved to %s", viper.ConfigFileUsed())
 	}
 
 	if err = viper.ReadInConfig(); err != nil {
@@ -97,6 +99,20 @@ func InitConfig() {
 
 	if err = viper.Unmarshal(&Config); err != nil {
 		fatal(err)
+	}
+
+	if !strings.HasPrefix(Config.HTTP.UploadDir, "/") {
+		Config.HTTP.UploadDir = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.HTTP.UploadDir)
+	}
+
+	if !fs.Exists(Config.HTTP.UploadDir) {
+		if err := fs.MakeDir(Config.HTTP.UploadDir); err != nil {
+			fatal(err)
+		}
+
+		if err := fs.MakeDir(filepath.Join(Config.HTTP.UploadDir, "avatars")); err != nil {
+			fatal(err)
+		}
 	}
 
 	if !strings.HasPrefix(Config.Etcd.DataDir, "/") {

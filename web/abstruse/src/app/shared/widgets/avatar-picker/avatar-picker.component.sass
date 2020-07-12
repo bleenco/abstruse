@@ -13,8 +13,9 @@
   .avatar-image
     cursor: pointer
     width: auto
-    max-height: 100px
+    max-height: 120px
     display: block
+    border-radius: 50%
 
   .avatars-picker
     position: absolute
@@ -28,17 +29,6 @@
     justify-content: center
     z-index: 9
 
-    .close-icon
-      position: absolute
-      top: 10px
-      right: 10px
-      color: $text-gray
-      cursor: pointer
-      font-size: 18px
-
-      &:hover
-        color: $text-secondary
-
     .avatars-container
       display: flex
       flex-wrap: wrap
@@ -47,7 +37,7 @@
       padding: 10px
 
       .avatar-small
-        border: 2px solid $border-default
+        border: 2px solid transparent
         width: 40px
         height: 40px
         margin: 3px

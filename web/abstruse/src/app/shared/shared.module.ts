@@ -30,6 +30,7 @@ import { AvatarPickerComponent } from './widgets/avatar-picker/avatar-picker.com
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    NgxUploaderModule,
     CheckboxComponent,
     ProgressBarComponent,
     SelectboxComponent,

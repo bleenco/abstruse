@@ -14,9 +14,12 @@
         <div class="column is-4">
           <app-avatar-picker formControlName="avatar"></app-avatar-picker>
           <div class="justify-center mt10">
-            <button type="button" class="button is-small">
-              <span>Upload Avatar</span>
-            </button>
+            <label class="button is-small" [class.events-none]="uploadingAvatar">
+              <span *ngIf="!uploadingAvatar">Upload Avatar</span>
+              <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
+              <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
+                [uploadInput]="uploadInput" />
+            </label>
           </div>
         </div>
         <div class="column is-8">

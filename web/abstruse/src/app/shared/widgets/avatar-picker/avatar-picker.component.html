@@ -1,7 +1,6 @@
 <div class="avatar-picker-container">
   <img class="avatar-image" [src]="innerValue" (click)="toggle()">
   <div class="avatars-picker" *ngIf="isOpened">
-    <i class="fas fa-times close-icon" (click)="close()"></i>
     <div class="avatars-container">
       <img class="avatar-small" [src]="a" *ngFor="let a of values; let i = index;" [class.is-active]="a === innerValue"
         (click)="selectAvatar(i)">
