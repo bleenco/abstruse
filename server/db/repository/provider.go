@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/scm"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/db/model"
@@ -81,7 +82,10 @@ func (r ProviderRepo) Sync(providerID, userID uint) error {
 		}
 
 		for _, repo := range repos {
-			data, permission := convertRepo(repo, provider)
+			data, permission := convertRepo(repo)
+			data.ProviderName = provider.Name
+			data.ProviderID = provider.ID
+			data.UserID = userID
 			if permission.Admin {
 				if _, err := r.repoRepository.CreateOrUpdate(data); err != nil {
 					return err
@@ -96,6 +100,7 @@ func (r ProviderRepo) Sync(providerID, userID uint) error {
 		}
 	}
 
+	provider.LastSync = lib.TimeNow()
 	_, err = r.Update(provider)
 	return err
 }
@@ -117,10 +122,9 @@ func (r ProviderRepo) findRepos(providerID, userID uint, page, size int) ([]*gos
 	return repos, err
 }
 
-func convertRepo(repo *goscm.Repository, provider model.Provider) (model.Repository, Permission) {
+func convertRepo(repo *goscm.Repository) (model.Repository, Permission) {
 	r := model.Repository{
 		UID:           repo.ID,
-		ProviderName:  provider.Name,
 		Namespace:     repo.Namespace,
 		Name:          repo.Name,
 		FullName:      fmt.Sprintf("%s/%s", repo.Namespace, repo.Name),

@@ -14,7 +14,7 @@ type Job struct {
 	EndTime   *time.Time `json:"end_time"`
 	Status    string     `gorm:"not null;varchar(20);default:'queued'" json:"status"` // queued | running | passing | failing
 	Log       string     `sql:"type:text" json:"-"`
+	Build     *Build     `gorm:"PRELOAD:false" json:"build,omitempty"`
+	BuildID   uint       `json:"build_id"`
 	TimestampModel
-	Build   *Build `gorm:"PRELOAD:false" json:"build,omitempty"`
-	BuildID uint   `json:"build_id"`
 }

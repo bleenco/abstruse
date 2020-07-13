@@ -30,7 +30,7 @@ export class ProviderItemComponent implements OnInit {
       )
       .subscribe(
         () => {
-          this.provider.updatedAt = new Date();
+          this.provider.lastSync = new Date();
         },
         err => {
           this.error = err.message;

@@ -36,6 +36,6 @@ func (r RepoRepository) CreateOrUpdate(data model.Repository) (model.Repository,
 		return data, err
 	}
 
-	err = db.Model(&data).Where("uid = ? AND clone = ?", data.UID, data.Clone).Updates(&data).Error
+	err = db.Model(&data).Where("uid = ? AND clone = ?", data.UID, data.Clone).Updates(data).Error
 	return data, err
 }

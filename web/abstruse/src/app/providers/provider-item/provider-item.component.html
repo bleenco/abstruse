@@ -9,7 +9,12 @@
   <div class="provider-item-container">
     <h2>{{ provider?.getName }}</h2>
     <span class="url">{{ provider?.url }}</span>
-    <span class="last-update">Last Sync: {{ provider?.updatedAt | date:'medium' }}</span>
+    <span class="last-update">
+      Last Sync:
+      <span *ngIf="provider?.lastSync" appTooltip
+        [text]="provider?.lastSync | date:'medium'">{{ provider?.lastSynced }}</span>
+      <span *ngIf="!provider?.lastSync">Never</span>
+    </span>
     <div class="buttons justify-end">
       <button type="button" class="button is-small is-blue" [class.events-none]="synchronizing">
         <span>Edit</span>

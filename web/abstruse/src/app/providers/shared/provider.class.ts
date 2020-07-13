@@ -1,5 +1,6 @@
 import { User } from '../../users/shared/user.model';
 import { randomHash } from '../../shared';
+import { formatDistanceToNow } from 'date-fns';
 
 export class Provider {
   constructor(
@@ -8,6 +9,7 @@ export class Provider {
     public url?: string,
     public secret?: string,
     public accessToken?: string,
+    public lastSync?: Date | null,
     public userID?: number,
     public createdAt?: Date,
     public updatedAt?: Date,
@@ -34,6 +36,10 @@ export class Provider {
         return 'unknown provider';
     }
   }
+
+  get lastSynced(): string {
+    return `${formatDistanceToNow(this.lastSync!)} ago`;
+  }
 }
 
 export const generateProvider = (data: any): Provider => {
@@ -43,6 +49,7 @@ export const generateProvider = (data: any): Provider => {
     data.url,
     data.secret,
     data.accessToken,
+    data.lastSync ? new Date(data.lastSync) : null,
     data.userID,
     new Date(data.createdAt),
     new Date(data.updatedAt)
