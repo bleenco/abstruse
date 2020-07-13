@@ -57,6 +57,7 @@ func (u *users) saveProfile() http.HandlerFunc {
 		claims := claimsFromCtx(r.Context())
 		var f form
 		var err error
+		defer r.Body.Close()
 
 		if err := lib.DecodeJSON(r.Body, &f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})

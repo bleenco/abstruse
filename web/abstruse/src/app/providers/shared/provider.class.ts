@@ -8,7 +8,7 @@ export class Provider {
     public url?: string,
     public secret?: string,
     public accessToken?: string,
-    public userId?: number,
+    public userID?: number,
     public createdAt?: Date,
     public updatedAt?: Date,
     public user?: User
@@ -35,3 +35,16 @@ export class Provider {
     }
   }
 }
+
+export const generateProvider = (data: any): Provider => {
+  return new Provider(
+    data.id,
+    data.name,
+    data.url,
+    data.secret,
+    data.accessToken,
+    data.userID,
+    new Date(data.createdAt),
+    new Date(data.updatedAt)
+  );
+};

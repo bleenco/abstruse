@@ -3,7 +3,11 @@ import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { Provider } from '../shared/provider.class';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { randomHash } from 'src/app/shared';
+import { ProvidersService } from '../shared/providers.service';
+import { finalize } from 'rxjs/operators';
+import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-providers-modal',
   templateUrl: './providers-modal.component.html',
@@ -22,13 +26,35 @@ export class ProvidersModalComponent implements OnInit {
   checking: boolean = false;
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, public activeModal: ActiveModal) {
+  constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {
     this.createForm();
   }
 
   ngOnInit(): void {}
 
-  onSubmit(): void {}
+  onSubmit(): void {
+    if (!this.form.valid) {
+      return;
+    }
+
+    this.saving = true;
+    const data = {
+      name: this.form.controls.name.value,
+      url: this.form.controls.url.value,
+      accessToken: this.form.controls.accessToken.value,
+      secret: this.form.controls.secret.value
+    };
+
+    this.providers
+      .create(data)
+      .pipe(
+        finalize(() => (this.saving = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(() => {
+        this.activeModal.close(true);
+      });
+  }
 
   updateProviderURL(): void {
     switch (this.form.controls.name.value) {

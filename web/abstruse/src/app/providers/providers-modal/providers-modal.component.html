@@ -7,15 +7,13 @@
     <i class="fas fa-times"></i>
   </span>
 </div>
-<div class="modal-body">
-  <div class="columns is-multiline">
-    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="columns is-multiline">
       <div class="field">
         <label class="label">SCM Provider</label>
         <app-selectbox [values]="providerList" placeholder="Choose Your Git SCM Provider"
           (ngModelChange)="updateProviderURL()" formControlName="name"></app-selectbox>
-        <!-- <app-radio-tabs [values]="providerList" name="name" [(ngModel)]="provider.name"
-              (ngModelChange)="updateProviderURL()" required></app-radio-tabs> -->
       </div>
       <div class="field">
         <label class="label">URL</label>
@@ -41,13 +39,13 @@
         </button>
         <span class="form-helper">Secret is used for authentication when provider triggers webhook.</span>
       </div>
-    </form>
+    </div>
   </div>
-</div>
-<div class="modal-footer space-between">
-  <div class="align-center"></div>
-  <div class="align-center">
-    <button type="button" class="button" (click)="activeModal.close()">Cancel</button>
-    <button type="submit" class="button is-green" [disabled]="!form.valid">Save</button>
+  <div class="modal-footer space-between">
+    <div class="align-center"></div>
+    <div class="align-center">
+      <button type="button" class="button" (click)="activeModal.close()">Cancel</button>
+      <button type="submit" class="button is-green" [disabled]="!form.valid">Save</button>
+    </div>
   </div>
-</div>
+</form>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Provider } from './provider.class';
 import { HttpClient } from '@angular/common/http';
-import { ModalService } from 'src/app/shared/components/modal/modal.service';
-import { ProvidersModalComponent } from '../providers-modal/providers-modal.component';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,21 +11,13 @@ export class ProvidersService {
   providers: Provider[] = [];
   fetchingProviders: boolean = false;
 
-  constructor(private http: HttpClient, private modal: ModalService) {}
+  constructor(private http: HttpClient) {}
 
-  openProviderModal(provider?: Provider): void {
-    const modalRef = this.modal.open(ProvidersModalComponent, { size: 'medium' });
-    if (provider) {
-      modalRef.componentInstance.provider = new Provider(provider.id, provider.name, provider.url, provider.secret);
-    } else {
-      modalRef.componentInstance.provider = new Provider();
-    }
-    modalRef.result.then((ok: boolean) => {
-      if (ok) {
-        this.list();
-      }
-    });
+  list(): void {
+    this.fetchingProviders = true;
   }
 
-  list(): void {}
+  create(data: any): Observable<Provider> {
+    return this.http.post<any>('/providers', data).pipe(map(data => new Provider(data)));
+  }
 }
