@@ -7,10 +7,10 @@ import * as jwt from 'jwt-decode';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
 import { finalize, flatMap, switchMap, tap, catchError, map, share } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
+import { Logger } from '../../core/shared/logger.service';
+import { formatDistanceToNow } from 'date-fns';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   data: UserData | null;
   authenticated: BehaviorSubject<boolean>;
@@ -20,6 +20,8 @@ export class AuthService {
   refreshTokenTimerSubscription = new Subscription();
   refreshTokenInProgress: boolean = false;
   refreshTimerRunning: boolean = false;
+
+  logger = new Logger('auth');
 
   constructor(
     private http: HttpClient,
@@ -94,7 +96,7 @@ export class AuthService {
     return this.http.post<TokenResponse>('/auth/token', {}, this.refreshHttpOptions()).pipe(
       tap(tokens => {
         this.setUserData(tokens);
-        console.log('tokens refreshed succesfully');
+        this.logger.info('tokens refreshed succesfully');
       }),
       finalize(() => (this.refreshTokenInProgress = false))
     );
@@ -141,7 +143,12 @@ export class AuthService {
     const exp = this.tokenExpiry();
     const storedAt = (this.data?.tokens.storedAt as number) || now;
     const delta = (exp - storedAt) * TIMEOUT_FACTOR - (now - storedAt);
-    console.log('next token auto refresh at: ', new Date(Date.now() + delta));
+    this.logger.info(
+      [
+        `next token auto refresh at: ${new Date(Date.now() + delta)}`,
+        `(in ${formatDistanceToNow(new Date(Date.now() + delta))})`
+      ].join(' ')
+    );
     return Math.max(0, delta);
   }
 

@@ -1,7 +1,7 @@
 import { Repo, generateRepoModel } from 'src/app/repos/shared/repo.model';
 import { formatDistanceToNow, format, differenceInMilliseconds } from 'date-fns';
 import { BehaviorSubject } from 'rxjs';
-import { TimeService } from 'src/app/shared/providers/time.service';
+import { TimeService } from '../../shared/providers/time.service';
 
 export class Build {
   private time: TimeService;

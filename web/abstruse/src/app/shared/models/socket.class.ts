@@ -13,7 +13,7 @@ export class RxWebSocket {
   didOpen!: (e: Event) => void;
   willOpen!: () => void;
   didClose!: (e?: any) => void;
-  out$: Observable<any> | null = null;
+  out$!: Observable<any> | null;
   in$: Observer<any> | null = null;
 
   constructor() {}
@@ -78,9 +78,9 @@ export class RxWebSocket {
         next: (message: any) => {
           const data = typeof message === 'string' ? message : JSON.stringify(message);
           if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-            this.socket.send(message);
+            this.socket.send(data);
           } else {
-            this.messageQueue.push(message);
+            this.messageQueue.push(data);
           }
         },
         error: (err: any) => {

@@ -7,7 +7,7 @@ import { finalize, switchMap, flatMap } from 'rxjs/operators';
 import { AuthService } from '../../auth/shared/auth.service';
 import { of } from 'rxjs';
 import { UploadFile, UploadInput, UploaderOptions, UploadOutput, UploadStatus } from 'ngx-uploader';
-import { API_URL } from '../../core/interceptors/api.interceptor';
+import { environment } from 'src/environments/environment';
 
 @UntilDestroy()
 @Component({
@@ -29,7 +29,7 @@ export class SettingsComponent implements OnInit {
     maxFileSize: 3000000,
     allowedContentTypes: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif']
   };
-  uploadUrl: string = `${API_URL}/users/avatar`;
+  uploadUrl: string = `${environment.apiURL}/users/avatar`;
   uploadingAvatar: boolean = false;
 
   constructor(private fb: FormBuilder, private profile: ProfileService, private auth: AuthService) {
