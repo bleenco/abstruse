@@ -6,6 +6,7 @@ import { Observable, BehaviorSubject, Subscription, of, timer, throwError, Subje
 import * as jwt from 'jwt-decode';
 import { AUTH_TOKEN_DATA, TIMEOUT_FACTOR, Login, UserData, TokenResponse } from './auth.model';
 import { finalize, flatMap, switchMap, tap, catchError, map, share } from 'rxjs/operators';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,12 @@ export class AuthService {
   refreshTokenInProgress: boolean = false;
   refreshTimerRunning: boolean = false;
 
-  constructor(private http: HttpClient, private router: Router, private location: Location) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private location: Location,
+    private cookie: CookieService
+  ) {
     const data = localStorage.getItem(AUTH_TOKEN_DATA);
     this.data = (data && JSON.parse(data)) || null;
     this.authenticated = new BehaviorSubject<boolean>(this.isAuthenticated);
@@ -150,11 +156,13 @@ export class AuthService {
     this.data = { ...token, tokens };
     this.data!.tokens.storedAt = Date.now();
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
+    this.cookie.set('jwt', this.data!.tokens.accessToken);
     this.userUpdated.next(this.userData!);
   }
 
   private unsetUserData(): void {
     this.data = null;
     localStorage.removeItem(AUTH_TOKEN_DATA);
+    this.cookie.delete('jwt');
   }
 }
