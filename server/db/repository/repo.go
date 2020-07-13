@@ -31,6 +31,17 @@ func (r RepoRepository) Find(userID uint, limit, offset int) ([]model.Repository
 	return repos, count, err
 }
 
+// FindByID finds repository by ID.
+func (r RepoRepository) FindByID(repoID, userID uint) (model.Repository, error) {
+	var repo model.Repository
+	db, err := db.Instance()
+	if err != nil {
+		return repo, err
+	}
+	err = db.Where("id = ? AND user_id = ?", repoID, userID).First(&repo).Error
+	return repo, err
+}
+
 // CreateOrUpdate inserts new repository into db or updates it if already exists.
 func (r RepoRepository) CreateOrUpdate(data model.Repository) (model.Repository, error) {
 	db, err := db.Instance()

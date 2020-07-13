@@ -9,6 +9,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/render"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
+	"github.com/go-chi/chi"
 	"go.uber.org/zap"
 )
 
@@ -51,9 +52,27 @@ func (r *repos) find() http.HandlerFunc {
 	})
 }
 
+func (r *repos) findByID() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		claims := claimsFromCtx(req.Context())
+		repoID, err := strconv.Atoi(chi.URLParam(req, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		repo, err := r.repoRepository.FindByID(uint(repoID), claims.ID)
+		if err != nil {
+			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, repo)
+	})
+}
+
 func (r *repos) setActive() http.HandlerFunc {
 	type form struct {
-		ID     uint `json:"id" valid:"required"`
 		Active bool `json:"active" valid:"required"`
 	}
 
@@ -62,6 +81,11 @@ func (r *repos) setActive() http.HandlerFunc {
 		var f form
 		var err error
 		defer req.Body.Close()
+		repoID, err := strconv.Atoi(chi.URLParam(req, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
 
 		if err = lib.DecodeJSON(req.Body, &f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
@@ -73,7 +97,7 @@ func (r *repos) setActive() http.HandlerFunc {
 			return
 		}
 
-		if err = r.repoRepository.SetActive(f.ID, claims.ID, f.Active); err != nil {
+		if err = r.repoRepository.SetActive(uint(repoID), claims.ID, f.Active); err != nil {
 			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
 			return
 		}

@@ -122,7 +122,8 @@ func (r *router) reposRouter() *chi.Mux {
 	repos := newRepos(r.logger)
 
 	router.Get("/", repos.find())
-	router.Put("/active", repos.setActive())
+	router.Get("/{id}", repos.findByID())
+	router.Put("/{id}/active", repos.setActive())
 
 	return router
 }

@@ -1,4 +1,4 @@
-<div class="list-item-condensed is-slim">
+<div class="list-item-condensed is-slim" [routerLink]="['/repos', repo?.id]">
   <div class="columns">
     <div class="column is-1 data-column">
       <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
