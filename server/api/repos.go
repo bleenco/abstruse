@@ -33,9 +33,3 @@ func (r *repos) find() http.HandlerFunc {
 		render.JSON(w, http.StatusOK, repositories)
 	})
 }
-
-func (r *repos) create() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-
-	})
-}

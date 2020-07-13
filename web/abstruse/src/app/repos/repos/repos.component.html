@@ -1,0 +1,39 @@
+<header class="subheader">
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Repositories</h1>
+        <h2>My Repositories</h2>
+      </div>
+      <div class="subheader-right">
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-6 is-offset-3" *ngIf="!loading && !repos?.length">
+
+    </div>
+    <div class="column is-12" *ngIf="!loading && repos?.length">
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-1"><span class="text justify-center">Provider</span></div>
+          <div class="column is-2"><span class="text ml10">Name</span></div>
+          <div class="column is-3"><span class="text ml10">URL</span></div>
+          <div class="column is-1"><span class="text justify-center">Public</span></div>
+          <div class="column is-2"><span class="text justify-center">Default Branch</span></div>
+          <div class="column is-2"><span class="text justify-center">Last Update</span></div>
+          <div class="column is-1"><span class="text justify-center">Actions</span></div>
+        </div>
+      </div>
+      <div class="list-items">
+        <app-repo-item [repo]="r" *ngFor="let r of repos"></app-repo-item>
+      </div>
+    </div>
+  </div>
+</div>

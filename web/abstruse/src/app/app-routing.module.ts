@@ -21,6 +21,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'repos',
+    loadChildren: () => import('./repos/repos.module').then(m => m.ReposModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'setup',
     loadChildren: () => import('./setup/setup.module').then(m => m.SetupModule),
     canActivate: [SetupDoneGuardService]

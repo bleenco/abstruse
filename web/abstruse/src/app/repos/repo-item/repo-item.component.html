@@ -1,0 +1,45 @@
+<div class="list-item-condensed">
+  <div class="columns">
+    <div class="column is-1 data-column">
+      <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
+        <i class="fab fa-github" *ngSwitchCase="'github'"></i>
+        <i class="fab fa-gitlab" *ngSwitchCase="'gitlab'"></i>
+        <i class="fab fa-bitbucket" *ngSwitchCase="'bitbucket'"></i>
+        <img class="bg-icon" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'" />
+        <i class="fab fa-git" *ngSwitchDefault></i>
+      </div>
+    </div>
+    <div class="column is-2 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text">{{ repo?.fullName }}</span>
+      </div>
+    </div>
+    <div class="column is-3 data-column">
+      <div class="info-text has-text-left align-center">
+        <i class="octicon octicon-repo"></i>
+        <span class="data-text">{{ repo?.url }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column">
+      <div class="info-text justify-center align-center" [ngSwitch]="repo?.isPrivate">
+        <i class="octicon octicon-check" *ngSwitchCase="false"></i>
+        <i class="octicon octicon-x" *ngSwitchCase="true"></i>
+      </div>
+    </div>
+    <div class="column is-2 data-column justify-center">
+      <div class="info-text justify-center align-center">
+        <i class="octicon octicon-git-branch"></i>
+        <span class="data-text">{{ repo?.defaultBranch }}</span>
+      </div>
+    </div>
+    <div class="column is-2 data-column justify-center">
+      <div class="info-text justify-center align-center">
+        <i class="octicon octicon-clock"></i>
+        <span class="data-text">{{ repo?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column justify-center">
+      <button type="button" class="button is-small is-green">Active</button>
+    </div>
+  </div>
+</div>
