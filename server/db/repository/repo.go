@@ -15,15 +15,20 @@ func NewRepoRepository() RepoRepository {
 	return RepoRepository{}
 }
 
-// Find find repositories by userID.
-func (r RepoRepository) Find(userID uint) ([]model.Repository, error) {
+// Find finds repositories by userID.
+func (r RepoRepository) Find(userID uint, limit, offset int) ([]model.Repository, int, error) {
 	var repos []model.Repository
+	var count int
 	db, err := db.Instance()
 	if err != nil {
-		return repos, err
+		return repos, count, err
 	}
-	err = db.Where("user_id = ?", userID).Find(&repos).Error
-	return repos, err
+	err = db.Limit(limit).Offset(offset).Where("user_id = ?", userID).Find(&repos).Error
+	if err != nil {
+		return repos, count, err
+	}
+	err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Count(&count).Error
+	return repos, count, err
 }
 
 // CreateOrUpdate inserts new repository into db or updates it if already exists.

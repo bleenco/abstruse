@@ -34,6 +34,11 @@
       <div class="list-items">
         <app-repo-item [repo]="r" *ngFor="let r of repos"></app-repo-item>
       </div>
+      <div class="pagination">
+        <span class="btn" (click)="back()">Back</span>
+        <span class="page" *ngFor="let p of pages" (click)="setPage(p)" [class.is-active]="page === p">{{ p }}</span>
+        <span class="btn" (click)="next()">Next</span>
+      </div>
     </div>
   </div>
 </div>
