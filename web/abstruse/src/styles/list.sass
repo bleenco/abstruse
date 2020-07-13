@@ -130,6 +130,12 @@ $list-heading-height: 50px
   border-left: 2px solid transparent
   background: $background
 
+  &.is-slim
+    height: $list-item-condensed-height - 15px
+
+    .columns
+      height: $list-item-condensed-height - 15px
+
   &:hover
     cursor: pointer
     background: $background-light
