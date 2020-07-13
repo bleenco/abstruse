@@ -1,0 +1,33 @@
+<header class="subheader">
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Providers</h1>
+        <h2>Git SCM Providers</h2>
+      </div>
+      <div class="subheader-right">
+        <button type="button" class="button is-green" (click)="openProviderModal()">
+          <span>Add Provider</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-6 is-offset-3" *ngIf="!loading && !providers?.length">
+
+    </div>
+    <div class="column is-12" *ngIf="!loading && providers?.length">
+      <div class="columns is-multiline">
+        <div class="column is-4" *ngFor="let p of providers">
+          <app-provider-item [provider]="p"></app-provider-item>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

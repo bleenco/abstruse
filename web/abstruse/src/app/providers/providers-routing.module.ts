@@ -1,12 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ProvidersListComponent } from './providers-list/providers-list.component';
-import { ProvidersReposListComponent } from './providers-repos-list/providers-repos-list.component';
+import { ProvidersComponent } from './providers/providers.component';
 
-const routes: Routes = [
-  { path: '', pathMatch: 'full', component: ProvidersListComponent },
-  { path: ':id', component: ProvidersReposListComponent }
-];
+const routes: Routes = [{ path: '', pathMatch: 'full', component: ProvidersComponent }];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],

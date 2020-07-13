@@ -1,0 +1,23 @@
+<article class="provider-item">
+  <div class="provider-item-bg" [ngSwitch]="provider?.name">
+    <i class="fab fa-github bg-icon" *ngSwitchCase="'github'"></i>
+    <i class="fab fa-gitlab bg-icon" *ngSwitchCase="'gitlab'"></i>
+    <i class="fab fa-bitbucket bg-icon" *ngSwitchCase="'bitbucket'"></i>
+    <img class="bg-icon" src="/assets/images/icons/gitea-bg.svg" *ngSwitchCase="'gitea'" />
+    <i class="fab fa-git icon-large" *ngSwitchDefault></i>
+  </div>
+  <div class="provider-item-container">
+    <h2>{{ provider?.getName }}</h2>
+    <span class="url">{{ provider?.url }}</span>
+    <span class="last-update">Last Sync: {{ provider?.updatedAt | date:'medium' }}</span>
+    <div class="buttons justify-end">
+      <button type="button" class="button is-small is-blue">
+        <span>Edit</span>
+      </button>
+      <button type="button" class="button is-small is-green">
+        <i class="fas fa-sync-alt"></i>
+        <span>Synchronize</span>
+      </button>
+    </div>
+  </div>
+</article>
