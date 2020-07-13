@@ -13,13 +13,13 @@
 
 <div class="container">
   <div class="columns is-multiline">
-    <div class="column is-12" *ngIf="loading">
+    <div class="column is-12" *ngIf="loading && !loaded">
       <app-loader></app-loader>
     </div>
-    <div class="column is-6 is-offset-3" *ngIf="!loading && !repos?.length">
+    <div class="column is-6 is-offset-3" *ngIf="(!loading || loaded) && !repos?.length">
 
     </div>
-    <div class="column is-12" *ngIf="!loading && repos?.length">
+    <div class="column is-12" *ngIf="(!loading || loaded) && repos?.length">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-1"><span class="text justify-center">Provider</span></div>
@@ -34,7 +34,7 @@
       <div class="list-items">
         <app-repo-item [repo]="r" *ngFor="let r of repos"></app-repo-item>
       </div>
-      <div class="pagination">
+      <div class="pagination" *ngIf="count > limit">
         <span class="btn" (click)="back()">Back</span>
         <span class="page" *ngFor="let p of pages" (click)="setPage(p)" [class.is-active]="page === p">{{ p }}</span>
         <span class="btn" (click)="next()">Next</span>

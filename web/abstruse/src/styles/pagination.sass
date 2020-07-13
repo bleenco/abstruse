@@ -1,6 +1,7 @@
 .pagination
+  +unselectable
   display: flex
-  margin: 20px 0
+  margin: 30px 0 0 0
   align-items: center
   justify-content: center
 
@@ -9,11 +10,18 @@
     cursor: pointer
     padding: 5px 10px
     border: 1px solid transparent
+    border-radius: $border-radius
 
     &:hover, &.is-active
-      border: 1px solid $border-default
+      border: 1px solid $green
+      background: $green
+      color: $white
 
   .btn
     padding: 5px 10px
     margin: 0 5px
     cursor: pointer
+    border: 1px solid transparent
+
+    &:hover
+      border: 1px solid $border-default

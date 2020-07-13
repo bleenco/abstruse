@@ -13,6 +13,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 export class ReposComponent implements OnInit {
   repos: Repo[] = [];
   loading: boolean = false;
+  loaded: boolean = false;
   error: string | null = null;
   limit: number = 10;
   page: number = 1;
@@ -30,7 +31,10 @@ export class ReposComponent implements OnInit {
     this.reposService
       .find(this.limit, (this.page - 1) * this.limit)
       .pipe(
-        finalize(() => (this.loading = false)),
+        finalize(() => {
+          this.loading = false;
+          this.loaded = true;
+        }),
         untilDestroyed(this)
       )
       .subscribe(
