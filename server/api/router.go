@@ -50,6 +50,7 @@ func (r *router) apiRouter() *chi.Mux {
 		router.Use(authpkg.JWT.Verifier(), middlewares.authenticator)
 		router.Mount("/users", r.usersRouter())
 		router.Mount("/providers", r.providersRouter())
+		router.Mount("/repos", r.reposRouter())
 		router.Mount("/system", r.systemRouter())
 	})
 
@@ -111,6 +112,16 @@ func (r *router) providersRouter() *chi.Mux {
 
 	router.Get("/", providers.find())
 	router.Post("/", providers.create())
+
+	return router
+}
+
+func (r *router) reposRouter() *chi.Mux {
+	router := chi.NewRouter()
+	repos := newRepos(r.logger)
+
+	router.Get("/", repos.find())
+	router.Post("/", repos.create())
 
 	return router
 }

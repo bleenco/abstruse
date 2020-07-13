@@ -9,11 +9,11 @@ export class Repo {
     public isPrivate?: boolean,
     public fork?: boolean,
     public url?: string,
-    public gitUrl?: string,
+    public gitURL?: string,
     public defaultBranch?: string,
     public visibility?: string,
-    public userId?: number,
-    public providerId?: number,
+    public userID?: number,
+    public providerID?: number,
     public createdAt?: Date,
     public updatedAt?: Date
   ) {}
@@ -21,21 +21,21 @@ export class Repo {
 
 export function generateRepoModel(data: any): Repo {
   return new Repo(
-    data.id,
+    Number(data.id),
     data.uid,
-    data.provider_name,
+    data.providerName,
     data.namespace,
     data.name,
-    data.full_name,
+    data.fullName,
     Boolean(data.private),
     Boolean(data.fork),
     data.url,
-    data.git_url,
-    data.default_branch,
+    data.gitURL,
+    data.defaultBranch,
     data.visibility,
-    Number(data.user_id),
-    Number(data.provider_id),
-    new Date(data.created_at ? data.created_at : null),
-    new Date(data.updated_at ? data.updated_at : null)
+    Number(data.userID),
+    Number(data.providerID),
+    new Date(data.createdAt ? data.createdAt : null),
+    new Date(data.updatedAt ? data.updatedAt : null)
   );
 }

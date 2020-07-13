@@ -15,5 +15,12 @@
 </header>
 
 <div class="container">
-
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-12" *ngIf="!loading && providers?.length">
+      <app-providers-list-item [provider]="p" *ngFor="let p of providers"></app-providers-list-item>
+    </div>
+  </div>
 </div>

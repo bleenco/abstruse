@@ -1,20 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Provider } from './provider.class';
+import { Provider, generateProvider } from './provider.class';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { ReposService } from '../../repos/shared/repos.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ProvidersService {
-  providers: Provider[] = [];
-  fetchingProviders: boolean = false;
+  constructor(private http: HttpClient, private repos: ReposService) {}
 
-  constructor(private http: HttpClient) {}
-
-  list(): void {
-    this.fetchingProviders = true;
+  find(): Observable<Provider[]> {
+    return this.http.get<Provider[]>('/providers').pipe(map(data => data.map(generateProvider)));
   }
 
   create(data: any): Observable<Provider> {

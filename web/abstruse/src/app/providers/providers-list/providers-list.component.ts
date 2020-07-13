@@ -3,24 +3,51 @@ import { ProvidersService } from '../shared/providers.service';
 import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { ProvidersModalComponent } from '../providers-modal/providers-modal.component';
 import { Provider } from '../shared/provider.class';
+import { finalize } from 'rxjs/operators';
+import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-providers-list',
   templateUrl: './providers-list.component.html',
   styleUrls: ['./providers-list.component.sass']
 })
 export class ProvidersListComponent implements OnInit {
-  constructor(public providers: ProvidersService, public modal: ModalService) {}
+  providers: Provider[] = [];
+  loading: boolean = false;
+  error: string | null = null;
 
-  ngOnInit(): void {}
+  constructor(public providersService: ProvidersService, public modal: ModalService) {}
 
-  openProviderModal(provider?: Provider): void {
+  ngOnInit(): void {
+    this.find();
+  }
+
+  openProviderModal(): void {
     const modalRef = this.modal.open(ProvidersModalComponent, { size: 'medium' });
     modalRef.componentInstance.provider = new Provider();
     modalRef.result.then((ok: boolean) => {
       if (ok) {
-        this.providers.list();
+        this.find();
       }
     });
+  }
+
+  find(): void {
+    this.loading = true;
+    this.providersService
+      .find()
+      .pipe(
+        finalize(() => (this.loading = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => {
+          this.providers = resp;
+        },
+        err => {
+          this.error = err.message;
+        }
+      );
   }
 }
