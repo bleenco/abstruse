@@ -1,5 +1,5 @@
 export class ProviderRepo {
-  isImported: boolean;
+  isImported: boolean = false;
 
   constructor(
     public id?: string,
@@ -23,3 +23,19 @@ export class ProviderRepo {
 export class ProviderRepoPermission {
   constructor(public pull: boolean, public push: boolean, public admin: boolean) {}
 }
+
+export const generateProviderRepo = (data: any): ProviderRepo => {
+  return new ProviderRepo(
+    data.id,
+    data.namespace,
+    data.name,
+    new ProviderRepoPermission(data.permission.pull, data.permission.push, data.permission.admin),
+    data.branch,
+    Boolean(data.private),
+    data.clone,
+    data.cloneSSH,
+    data.link,
+    new Date(data.createdAt),
+    new Date(data.updatedAt)
+  );
+};
