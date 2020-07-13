@@ -41,7 +41,12 @@ func (s *Server) Run() error {
 	if err != nil {
 		return err
 	}
-	s.Handler = s.logHandler(newRouter(s.logger.Desugar(), s.app, s.config.HTTP.UploadDir))
+	s.Handler = s.logHandler(newRouter(
+		s.logger.Desugar(),
+		s.app,
+		s.config.HTTP.UploadDir,
+		s.config.WebSocket.Addr,
+	))
 	s.listener = listener
 	scheme := "http"
 	if s.config.HTTP.TLS {

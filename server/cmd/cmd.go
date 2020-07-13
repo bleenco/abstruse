@@ -76,6 +76,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/bleenco/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
 	rootCmd.PersistentFlags().String("http-uploaddir", "uploads/", "HTTP uploads directory")
+	rootCmd.PersistentFlags().String("websocket-addr", "127.0.0.1:2220", "WebSocket server listen address")
 	rootCmd.PersistentFlags().Bool("http-tls", false, "run HTTP server in TLS mode")
 	rootCmd.PersistentFlags().String("tls-cert", "cert.pem", "path to SSL certificate file")
 	rootCmd.PersistentFlags().String("tls-key", "key.pem", "path to SSL private key file")

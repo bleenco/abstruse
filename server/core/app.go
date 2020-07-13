@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/bleenco/abstruse/pkg/etcd/embed"
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/ws"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 )
@@ -13,6 +14,7 @@ type App struct {
 	logger *zap.SugaredLogger
 	etcd   *embed.Server
 	client *clientv3.Client
+	ws     *ws.Server
 	stopch chan struct{}
 }
 
@@ -20,11 +22,13 @@ type App struct {
 func NewApp() *App {
 	logger := Log.With(zap.String("type", "app")).Sugar()
 	etcd := embed.NewServer(Config, Log)
+	ws := ws.NewServer(Config, Log)
 
 	return &App{
 		cfg:    Config,
 		logger: logger,
 		etcd:   etcd,
+		ws:     ws,
 		stopch: make(chan struct{}),
 	}
 }
@@ -33,6 +37,12 @@ func NewApp() *App {
 func (a *App) Run() error {
 	var err error
 	errch := make(chan error)
+
+	go func() {
+		if err := a.ws.Run(); err != nil {
+			errch <- err
+		}
+	}()
 
 	a.client, err = a.startEtcd()
 	if err != nil {

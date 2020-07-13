@@ -9,6 +9,7 @@ import (
 	_ "github.com/bleenco/abstruse/internal/ui" // user interface files
 	authpkg "github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/ws"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/jkuri/statik/fs"
@@ -22,7 +23,7 @@ type router struct {
 	uploadDir string
 }
 
-func newRouter(logger *zap.Logger, app *core.App, uploadDir string) *router {
+func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *router {
 	router := &router{chi.NewRouter(), logger, app, uploadDir}
 
 	router.Use(middleware.RequestID)
@@ -31,6 +32,7 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir string) *router {
 	router.Use(middleware.Timeout(30 * time.Second))
 
 	router.Mount("/api/v1", router.apiRouter())
+	router.Get("/ws", ws.UpstreamHandler(wsAddr))
 	router.Mount("/uploads", router.fileServer())
 	router.NotFound(router.ui())
 

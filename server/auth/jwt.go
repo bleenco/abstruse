@@ -63,6 +63,31 @@ func (a *JWTAuth) CreateRefreshJWT(c RefreshClaims) (string, error) {
 	return tokenString, err
 }
 
+// UserClaimsFromJWT returns user data included in token.
+func UserClaimsFromJWT(tokenString string) (UserClaims, error) {
+	var c UserClaims
+	if tokenString == "" {
+		return c, fmt.Errorf("invalid token")
+	}
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return c, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return JWTSecret, nil
+	})
+	if err != nil {
+		return c, fmt.Errorf("invalid token")
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		err := c.ParseClaims(claims)
+		return c, err
+	}
+
+	return c, fmt.Errorf("invalid token")
+}
+
 // Verifier http middleware handler will verify a JWT string from a http request.
 func (a *JWTAuth) Verifier() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

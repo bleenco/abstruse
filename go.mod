@@ -12,6 +12,9 @@ require (
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/gobwas/httphead v0.0.0-20180130184737-2c6c146eadee
+	github.com/gobwas/pool v0.2.1 // indirect
+	github.com/gobwas/ws v1.0.3
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.2
 	github.com/google/uuid v1.1.1
