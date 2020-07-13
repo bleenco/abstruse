@@ -22,8 +22,8 @@
 
   &.is-small
     .loader
-      width: 16px
-      height: 16px
+      width: 14px
+      height: 14px
       margin: 0 5px 0 0
 
   &.is-large
@@ -31,6 +31,13 @@
       width: 40px
       height: 40px
       margin: 40px auto
+
+  &.is-white
+    .loader
+      border-top: 2px solid rgba($white, .4)
+      border-right: 2px solid rgba($white, .4)
+      border-bottom: 2px solid rgba($white, .4)
+      border-left: 2px solid $white
 
   @each $name, $color in $colors
     &.is-#{$name}

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"time"
+	"fmt"
 
 	"github.com/bleenco/abstruse/pkg/scm"
 	"github.com/bleenco/abstruse/server/db"
@@ -11,11 +11,15 @@ import (
 )
 
 // ProviderRepo repository.
-type ProviderRepo struct{}
+type ProviderRepo struct {
+	repoRepository RepoRepository
+}
 
 // NewProviderRepo returns new ProviderRepo instance.
 func NewProviderRepo() ProviderRepo {
-	return ProviderRepo{}
+	return ProviderRepo{
+		repoRepository: NewRepoRepository(),
+	}
 }
 
 // Find finds providers by userID.
@@ -50,9 +54,57 @@ func (r ProviderRepo) Create(data model.Provider) (model.Provider, error) {
 	return data, err
 }
 
-// FindRepos finds SCM providers repositories.
-func (r ProviderRepo) FindRepos(providerID, userID uint, page, size int) ([]SCMRepository, error) {
-	var repos []SCMRepository
+// Update updates provider.
+func (r ProviderRepo) Update(data model.Provider) (model.Provider, error) {
+	db, err := db.Instance()
+	if err != nil {
+		return data, err
+	}
+	err = db.Model(&data).Updates(data).Error
+	return data, err
+}
+
+// Sync synchronizes provider repositories with local repositories.
+func (r ProviderRepo) Sync(providerID, userID uint) error {
+	page := 1
+	size := 30
+
+	provider, err := r.FindByID(providerID, userID)
+	if err != nil {
+		return err
+	}
+
+	for {
+		repos, err := r.findRepos(providerID, userID, page, size)
+		if err != nil {
+			break
+		}
+
+		for _, repo := range repos {
+			data, permission := convertRepo(repo, provider)
+			if permission.Admin {
+				if _, err := r.repoRepository.CreateOrUpdate(data); err != nil {
+					return err
+				}
+			}
+		}
+
+		if len(repos) == size {
+			page++
+		} else {
+			break
+		}
+	}
+
+	_, err = r.Update(provider)
+	return err
+}
+
+// findRepos finds SCM providers repositories.
+func (r ProviderRepo) findRepos(providerID, userID uint, page, size int) ([]*goscm.Repository, error) {
+	var repos []*goscm.Repository
+	var err error
+
 	provider, err := r.FindByID(providerID, userID)
 	if err != nil {
 		return repos, err
@@ -61,57 +113,35 @@ func (r ProviderRepo) FindRepos(providerID, userID uint, page, size int) ([]SCMR
 	if err != nil {
 		return repos, err
 	}
-	repositories, err := scm.ListRepos(page, size)
-	if err != nil {
-		return repos, err
-	}
-	for _, repo := range repositories {
-		repos = append(repos, convertRepo(repo))
-	}
-	return repos, nil
+	repos, err = scm.ListRepos(page, size)
+	return repos, err
 }
 
-func convertRepo(repo *goscm.Repository) SCMRepository {
-	perm := &Permission{
+func convertRepo(repo *goscm.Repository, provider model.Provider) (model.Repository, Permission) {
+	r := model.Repository{
+		UID:           repo.ID,
+		ProviderName:  provider.Name,
+		Namespace:     repo.Namespace,
+		Name:          repo.Name,
+		FullName:      fmt.Sprintf("%s/%s", repo.Namespace, repo.Name),
+		Private:       repo.Private,
+		URL:           repo.Link,
+		Clone:         repo.Clone,
+		CloneSSH:      repo.CloneSSH,
+		DefaultBranch: repo.Branch,
+	}
+	perm := Permission{
 		Pull:  repo.Perm.Pull,
 		Push:  repo.Perm.Push,
 		Admin: repo.Perm.Admin,
 	}
-	return SCMRepository{
-		ID:         repo.ID,
-		Namespace:  repo.Namespace,
-		Name:       repo.Name,
-		Permission: perm,
-		Branch:     repo.Branch,
-		Private:    repo.Private,
-		Clone:      repo.Clone,
-		CloneSSH:   repo.CloneSSH,
-		Link:       repo.Link,
-		Created:    repo.Created,
-		Updated:    repo.Updated,
-	}
+
+	return r, perm
 }
 
-type (
-	// SCMRepository scm result.
-	SCMRepository struct {
-		ID         string      `json:"id"`
-		Namespace  string      `json:"namespace"`
-		Name       string      `json:"name"`
-		Permission *Permission `json:"permission"`
-		Branch     string      `json:"branch"`
-		Private    bool        `json:"private"`
-		Clone      string      `json:"clone"`
-		CloneSSH   string      `json:"cloneSSH"`
-		Link       string      `json:"link"`
-		Created    time.Time   `json:"createdAt"`
-		Updated    time.Time   `json:"updatedAt"`
-	}
-
-	// Permission scm result.
-	Permission struct {
-		Pull  bool `json:"pull"`
-		Push  bool `json:"push"`
-		Admin bool `json:"admin"`
-	}
-)
+// Permission SCM Repository permissions.
+type Permission struct {
+	Pull  bool `json:"pull"`
+	Push  bool `json:"push"`
+	Admin bool `json:"admin"`
+}

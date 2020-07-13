@@ -2,14 +2,12 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
-	"github.com/go-chi/chi"
 	"go.uber.org/zap"
 )
 
@@ -81,31 +79,61 @@ func (p *providers) create() http.HandlerFunc {
 	})
 }
 
-func (p *providers) repos() http.HandlerFunc {
+func (p *providers) sync() http.HandlerFunc {
+	type form struct {
+		ID uint `json:"id" valid:"required"`
+	}
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims := claimsFromCtx(r.Context())
-		providerID, err := strconv.Atoi(chi.URLParam(r, "id"))
-		if err != nil {
-			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
-			return
-		}
-		page, err := strconv.Atoi(r.URL.Query().Get("page"))
-		if err != nil {
-			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
-			return
-		}
-		size, err := strconv.Atoi(r.URL.Query().Get("size"))
-		if err != nil {
+		var f form
+		var err error
+		defer r.Body.Close()
+
+		if err = lib.DecodeJSON(r.Body, &f); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		repos, err := p.providerRepo.FindRepos(uint(providerID), claims.ID, page, size)
-		if err != nil {
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := p.providerRepo.Sync(f.ID, claims.ID); err != nil {
 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
 			return
 		}
 
-		render.JSON(w, http.StatusOK, repos)
+		render.JSON(w, http.StatusOK, render.Empty{})
 	})
 }
+
+// func (p *providers) repos() http.HandlerFunc {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		claims := claimsFromCtx(r.Context())
+// 		providerID, err := strconv.Atoi(chi.URLParam(r, "id"))
+// 		if err != nil {
+// 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+// 			return
+// 		}
+// 		page, err := strconv.Atoi(r.URL.Query().Get("page"))
+// 		if err != nil {
+// 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+// 			return
+// 		}
+// 		size, err := strconv.Atoi(r.URL.Query().Get("size"))
+// 		if err != nil {
+// 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+// 			return
+// 		}
+
+// 		repos, err := p.providerRepo.FindRepos(uint(providerID), claims.ID, page, size)
+// 		if err != nil {
+// 			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+// 			return
+// 		}
+
+// 		render.JSON(w, http.StatusOK, repos)
+// 	})
+// }

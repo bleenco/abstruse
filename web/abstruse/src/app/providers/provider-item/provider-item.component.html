@@ -11,12 +11,14 @@
     <span class="url">{{ provider?.url }}</span>
     <span class="last-update">Last Sync: {{ provider?.updatedAt | date:'medium' }}</span>
     <div class="buttons justify-end">
-      <button type="button" class="button is-small is-blue">
+      <button type="button" class="button is-small is-blue" [class.events-none]="synchronizing">
         <span>Edit</span>
       </button>
-      <button type="button" class="button is-small is-green">
-        <i class="fas fa-sync-alt"></i>
-        <span>Synchronize</span>
+      <button type="button" class="button is-small is-green" [class.events-none]="synchronizing" (click)="sync()">
+        <i class="fas fa-sync-alt" *ngIf="!synchronizing"></i>
+        <span *ngIf="!synchronizing">Synchronize</span>
+        <app-loader class="is-small is-white" *ngIf="synchronizing"></app-loader>
+        <span *ngIf="synchronizing">Synchronizing...</span>
       </button>
     </div>
   </div>

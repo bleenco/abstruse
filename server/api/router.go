@@ -111,8 +111,8 @@ func (r *router) providersRouter() *chi.Mux {
 	providers := newProviders(r.logger)
 
 	router.Get("/", providers.find())
-	router.Get("/{id}", providers.repos())
 	router.Post("/", providers.create())
+	router.Put("/sync", providers.sync())
 
 	return router
 }

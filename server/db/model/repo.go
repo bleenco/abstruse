@@ -11,9 +11,10 @@ type Repository struct {
 	Private       bool   `json:"private"`
 	Fork          bool   `json:"fork"`
 	URL           string `json:"url"`
-	GitURL        string `json:"gitURL"`
+	Clone         string `json:"clone"`
+	CloneSSH      string `json:"cloneSSH"`
 	DefaultBranch string `json:"defaultBranch"`
-	Visibility    string `json:"visibility"`
+	Active        bool   `json:"active"`
 	TimestampModel
 	UserID     uint     `json:"userID"`
 	User       User     `json:"-"`
