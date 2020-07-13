@@ -14,6 +14,7 @@ import { Logger } from './core/shared/logger.service';
 export class AppComponent implements OnInit {
   loggedIn: Observable<boolean>;
   sub!: Subscription;
+  logger = new Logger('websocket');
 
   constructor(private auth: AuthService, private socket: SocketService) {
     this.loggedIn = this.auth.authenticated.asObservable();
@@ -26,7 +27,7 @@ export class AppComponent implements OnInit {
 
     this.loggedIn.pipe(untilDestroyed(this)).subscribe(loggedIn => {
       if (loggedIn) {
-        this.sub = this.socket.onMessage().subscribe(ev => console.log(ev));
+        this.sub = this.socket.onMessage().subscribe(ev => this.logger.debug(ev));
       } else if (this.sub) {
         this.sub.unsubscribe();
       }
