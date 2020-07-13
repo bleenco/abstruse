@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/db/model"
 )
@@ -38,4 +40,19 @@ func (r RepoRepository) CreateOrUpdate(data model.Repository) (model.Repository,
 
 	err = db.Model(&data).Where("uid = ? AND clone = ?", data.UID, data.Clone).Updates(data).Error
 	return data, err
+}
+
+// SetActive updates active status.
+func (r RepoRepository) SetActive(repoID, userID uint, active bool) error {
+	db, err := db.Instance()
+	if err != nil {
+		return err
+	}
+
+	var repo model.Repository
+	if db.Where("id = ? AND user_id = ?", repoID, userID).First(&repo).RecordNotFound() {
+		return fmt.Errorf("repository not found")
+	}
+
+	return db.Model(&repo).Update("active", active).Error
 }

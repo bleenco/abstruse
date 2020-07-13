@@ -13,4 +13,8 @@ export class ReposService {
   find(): Observable<Repo[]> {
     return this.http.get<Repo[]>('/repos').pipe(map(data => data.map(generateRepoModel)));
   }
+
+  setActive(id: number, status: boolean): Observable<void> {
+    return this.http.put<void>('/repos/active', { id: id, active: status });
+  }
 }
