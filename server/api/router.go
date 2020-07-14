@@ -7,8 +7,8 @@ import (
 	"time"
 
 	authpkg "github.com/bleenco/abstruse/internal/auth"
-	_ "github.com/bleenco/abstruse/internal/ui" // user interface files
 	"github.com/bleenco/abstruse/server/core"
+	_ "github.com/bleenco/abstruse/server/ui" // user interface files
 	"github.com/bleenco/abstruse/server/ws"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"

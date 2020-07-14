@@ -73,8 +73,6 @@ func InitConfig() {
 		if err = viper.SafeWriteConfigAs(viper.ConfigFileUsed()); err != nil {
 			fatal(err)
 		}
-
-		Log.Sugar().Infof("config file saved to %s", viper.ConfigFileUsed())
 	}
 
 	if err = viper.ReadInConfig(); err != nil {

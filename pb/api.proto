@@ -5,9 +5,8 @@ option go_package = ".;api";
 import "google/protobuf/empty.proto";
 
 service API {
-  rpc Heartbeat(stream google.protobuf.Empty)
-      returns (stream google.protobuf.Empty) {}
   rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
+  rpc Usage(stream google.protobuf.Empty) returns (stream UsageStatsReply) {}
   rpc JobLog(Job) returns (stream JobOutput) {}
 }
 

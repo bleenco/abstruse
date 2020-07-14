@@ -23,7 +23,7 @@ build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && yarn build; fi
 
 build_pty:
-	@if [ ! -r "worker/worker-data/abstruse-pty" ]; then GOOS=linux GOARCH=amd64 go build -o build/worker-data/abstruse-pty ./cmd/abstruse-pty; fi
+	@if [ ! -r "build/worker-data/abstruse-pty" ]; then GOOS=linux GOARCH=amd64 go build -o build/worker-data/abstruse-pty ./cmd/abstruse-pty; fi
 
 statik:
 	@if [ ! -r "server/ui/statik.go" ]; then statik -dest ./server -p ui -src ./web/abstruse/dist; fi
