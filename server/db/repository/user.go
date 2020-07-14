@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/db/model"
 )

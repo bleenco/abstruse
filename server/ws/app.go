@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/internal/auth"
 	"go.uber.org/zap"
 )
 

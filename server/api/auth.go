@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	authpkg "github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
-	authpkg "github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"github.com/mssola/user_agent"

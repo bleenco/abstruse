@@ -6,7 +6,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/gobwas/ws"
 	"github.com/gobwas/ws/wsutil"
 )

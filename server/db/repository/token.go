@@ -3,8 +3,8 @@ package repository
 import (
 	"time"
 
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/lib"
-	"github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/db/model"
 )

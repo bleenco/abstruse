@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/bleenco/abstruse/server/auth"
+	"github.com/bleenco/abstruse/internal/auth"
 )
 
 // User defines `users` database table.

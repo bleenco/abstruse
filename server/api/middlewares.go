@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	authpkg "github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/render"
-	authpkg "github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"go.uber.org/zap"

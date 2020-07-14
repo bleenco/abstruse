@@ -73,7 +73,7 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/bleenco/abstruse-server.json)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
 	rootCmd.PersistentFlags().String("http-uploaddir", "uploads/", "HTTP uploads directory")
 	rootCmd.PersistentFlags().String("websocket-addr", "127.0.0.1:2220", "WebSocket server listen address")

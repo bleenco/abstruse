@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bleenco/abstruse/internal/auth"
 	pb "github.com/bleenco/abstruse/pb"
-	"github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/config"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"

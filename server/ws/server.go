@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/internal/version"
-	"github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/gobwas/httphead"
 	"github.com/gobwas/ws"

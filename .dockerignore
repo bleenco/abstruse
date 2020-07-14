@@ -1,6 +1,7 @@
 build/
 pb/api.pb.go
-internal/ui
+server/ui
+worker/data
 .DS_Store
 tmp/
 configs/testing/*.pem

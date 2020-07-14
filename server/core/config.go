@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/tlsutil"
-	"github.com/bleenco/abstruse/server/auth"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db"
 	"github.com/spf13/cobra"
