@@ -26,11 +26,11 @@ export class ProvidersModalComponent implements OnInit {
   checking: boolean = false;
   form!: FormGroup;
 
-  constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {
+  constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {}
+
+  ngOnInit(): void {
     this.createForm();
   }
-
-  ngOnInit(): void {}
 
   onSubmit(): void {
     if (!this.form.valid) {
@@ -39,21 +39,45 @@ export class ProvidersModalComponent implements OnInit {
 
     this.saving = true;
     const data = {
+      id: (this.provider && this.provider.id) || null,
       name: this.form.controls.name.value,
       url: this.form.controls.url.value,
+      host: this.form.controls.host.value,
       accessToken: this.form.controls.accessToken.value,
       secret: this.form.controls.secret.value
     };
 
-    this.providers
-      .create(data)
-      .pipe(
-        finalize(() => (this.saving = false)),
-        untilDestroyed(this)
-      )
-      .subscribe(() => {
-        this.activeModal.close(true);
-      });
+    if (this.provider.id) {
+      this.providers
+        .update(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.activeModal.close(err.message);
+          }
+        );
+    } else {
+      this.providers
+        .create(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.activeModal.close(err.message);
+          }
+        );
+    }
   }
 
   updateProviderURL(): void {
@@ -78,10 +102,11 @@ export class ProvidersModalComponent implements OnInit {
 
   private createForm(): void {
     this.form = this.fb.group({
-      name: [null, [Validators.required]],
-      url: [null, [Validators.required]],
-      accessToken: [null, [Validators.required]],
-      secret: [null, [Validators.required]]
+      name: [(this.provider && this.provider.name) || null, [Validators.required]],
+      url: [(this.provider && this.provider.url) || null, [Validators.required]],
+      host: [(this.provider && this.provider.host) || window.location.origin, [Validators.required]],
+      accessToken: [(this.provider && this.provider.accessToken) || null, [Validators.required]],
+      secret: [(this.provider && this.provider.secret) || null, [Validators.required]]
     });
   }
 }

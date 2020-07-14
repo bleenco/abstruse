@@ -46,6 +46,10 @@ export class ReposService {
       );
   }
 
+  findHooks(id: number): Observable<any> {
+    return this.http.get<any>(`/repos/${id}/hooks`);
+  }
+
   setActive(id: number, status: boolean): Observable<void> {
     return this.http.put<void>(`/repos/${id}/active`, { active: status });
   }

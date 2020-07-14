@@ -16,7 +16,8 @@
       <span *ngIf="!provider?.lastSync">Never</span>
     </span>
     <div class="buttons justify-end">
-      <button type="button" class="button is-small is-blue" [class.events-none]="synchronizing">
+      <button type="button" class="button is-small is-blue" [class.events-none]="synchronizing"
+        (click)="openProviderModal()">
         <span>Edit</span>
       </button>
       <button type="button" class="button is-small is-green" [class.events-none]="synchronizing" (click)="sync()">

@@ -186,6 +186,13 @@ func (s *SCM) RefType(ref string) string {
 	return "unknown"
 }
 
+// ListHooks returns webhooks applied for the repository.
+func (s *SCM) ListHooks(repo string) ([]*scm.Hook, error) {
+	opts := scm.ListOptions{Page: 1, Size: 30}
+	hooks, _, err := s.client.Repositories.ListHooks(s.ctx, repo, opts)
+	return hooks, err
+}
+
 // Client returns underlying scm client.
 func (s *SCM) Client() *scm.Client {
 	return s.client

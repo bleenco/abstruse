@@ -9,6 +9,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/render"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
+	"github.com/bleenco/abstruse/server/service"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
 )
@@ -16,12 +17,14 @@ import (
 type repos struct {
 	logger         *zap.SugaredLogger
 	repoRepository repository.RepoRepository
+	repoService    service.RepoService
 }
 
 func newRepos(logger *zap.Logger) repos {
 	return repos{
 		logger:         logger.With(zap.String("api", "repos")).Sugar(),
 		repoRepository: repository.NewRepoRepository(),
+		repoService:    service.NewRepoService(logger),
 	}
 }
 
@@ -103,5 +106,24 @@ func (r *repos) setActive() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
+func (r *repos) hooks() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		claims := claimsFromCtx(req.Context())
+		repoID, err := strconv.Atoi(chi.URLParam(req, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		data, err := r.repoService.ListHooks(uint(repoID), claims.ID)
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, data)
 	})
 }

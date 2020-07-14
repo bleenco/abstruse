@@ -26,11 +26,14 @@ export class ProvidersComponent implements OnInit {
   openProviderModal(): void {
     const modalRef = this.modal.open(ProvidersModalComponent, { size: 'medium' });
     modalRef.componentInstance.provider = new Provider();
-    modalRef.result.then((ok: boolean) => {
-      if (ok) {
-        this.find();
-      }
-    });
+    modalRef.result.then(
+      (ok: boolean) => {
+        if (ok) {
+          this.find();
+        }
+      },
+      () => {}
+    );
   }
 
   find(): void {
@@ -49,5 +52,9 @@ export class ProvidersComponent implements OnInit {
           this.error = err.message;
         }
       );
+  }
+
+  onSaved(): void {
+    this.find();
   }
 }

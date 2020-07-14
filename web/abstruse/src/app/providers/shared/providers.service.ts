@@ -19,4 +19,8 @@ export class ProvidersService {
   create(data: any): Observable<Provider> {
     return this.http.post<any>('/providers', data).pipe(map(data => new Provider(data)));
   }
+
+  update(data: any): Observable<Provider> {
+    return this.http.put<any>('/providers', data).pipe(map(data => new Provider(data)));
+  }
 }

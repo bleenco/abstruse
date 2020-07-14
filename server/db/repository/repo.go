@@ -38,7 +38,7 @@ func (r RepoRepository) FindByID(repoID, userID uint) (model.Repository, error) 
 	if err != nil {
 		return repo, err
 	}
-	err = db.Where("id = ? AND user_id = ?", repoID, userID).First(&repo).Error
+	err = db.Where("id = ? AND user_id = ?", repoID, userID).Preload("Provider").First(&repo).Error
 	return repo, err
 }
 

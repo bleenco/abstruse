@@ -25,7 +25,7 @@
     <div class="column is-12" *ngIf="!loading && providers?.length">
       <div class="columns is-multiline">
         <div class="column is-4" *ngFor="let p of providers">
-          <app-provider-item [provider]="p"></app-provider-item>
+          <app-provider-item [provider]="p" (saved)="onSaved()"></app-provider-item>
         </div>
       </div>
     </div>

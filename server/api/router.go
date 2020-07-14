@@ -112,6 +112,7 @@ func (r *router) providersRouter() *chi.Mux {
 
 	router.Get("/", providers.find())
 	router.Post("/", providers.create())
+	router.Put("/", providers.update())
 	router.Put("/sync", providers.sync())
 
 	return router
@@ -124,6 +125,7 @@ func (r *router) reposRouter() *chi.Mux {
 	router.Get("/", repos.find())
 	router.Get("/{id}", repos.findByID())
 	router.Put("/{id}/active", repos.setActive())
+	router.Get("/{id}/hooks", repos.hooks())
 
 	return router
 }
