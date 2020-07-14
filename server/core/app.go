@@ -10,12 +10,13 @@ import (
 
 // App represents main server application which handles all the services.
 type App struct {
-	cfg    *config.Config
-	logger *zap.SugaredLogger
-	etcd   *embed.Server
-	client *clientv3.Client
-	ws     *ws.Server
-	stopch chan struct{}
+	cfg       *config.Config
+	logger    *zap.SugaredLogger
+	etcd      *embed.Server
+	client    *clientv3.Client
+	ws        *ws.Server
+	scheduler *Scheduler
+	stopch    chan struct{}
 }
 
 // NewApp returns new instance of main application.
@@ -23,13 +24,15 @@ func NewApp() *App {
 	logger := Log.With(zap.String("type", "app")).Sugar()
 	etcd := embed.NewServer(Config, Log)
 	ws := ws.NewServer(Config, Log)
+	scheduler := NewScheduler(Log)
 
 	return &App{
-		cfg:    Config,
-		logger: logger,
-		etcd:   etcd,
-		ws:     ws,
-		stopch: make(chan struct{}),
+		cfg:       Config,
+		logger:    logger,
+		etcd:      etcd,
+		ws:        ws,
+		scheduler: scheduler,
+		stopch:    make(chan struct{}),
 	}
 }
 
@@ -48,6 +51,12 @@ func (a *App) Run() error {
 	if err != nil {
 		errch <- err
 	}
+
+	go func() {
+		if err := a.scheduler.Run(a.client); err != nil {
+			errch <- err
+		}
+	}()
 
 	select {
 	case err := <-errch:

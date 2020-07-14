@@ -169,9 +169,11 @@ enable:
 func (s *Server) authClient() (*clientv3.Client, error) {
 	target := net.JoinHostPort(s.cfg.Etcd.Host, fmt.Sprintf("%d", s.cfg.Etcd.ClientPort))
 	cfg := client.ClientConfig{
-		Target: target,
-		Cert:   s.cfg.TLS.Cert,
-		Key:    s.cfg.TLS.Key,
+		Target:   target,
+		Username: "root",
+		Password: s.cfg.Etcd.RootPassword,
+		Cert:     s.cfg.TLS.Cert,
+		Key:      s.cfg.TLS.Key,
 	}
 	return client.NewClient(cfg)
 }
