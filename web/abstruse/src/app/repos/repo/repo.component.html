@@ -2,11 +2,10 @@
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
-        <h1>{{ repos?.repo?.fullName }}</h1>
+        <h1>{{ (repos.repo | async)?.fullName }}</h1>
         <h2>Settings</h2>
       </div>
-      <div class="subheader-right">
-      </div>
+      <div class="subheader-right"></div>
     </div>
   </div>
 </header>

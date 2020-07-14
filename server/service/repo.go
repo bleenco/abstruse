@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/bleenco/abstruse/pkg/scm"
 	"github.com/bleenco/abstruse/server/db/repository"
@@ -36,5 +38,16 @@ func (s *RepoService) ListHooks(repoID, userID uint) ([]*goscm.Hook, error) {
 	}
 
 	hooks, err := scm.ListHooks(repo.FullName)
-	return hooks, err
+	if err != nil {
+		return nil, err
+	}
+
+	var webhooks []*goscm.Hook
+	for _, hook := range hooks {
+		if strings.HasPrefix(hook.Target, repo.Provider.Host) && strings.HasSuffix(hook.Target, fmt.Sprintf("/webhooks/%s", repo.Provider.Name)) {
+			webhooks = append(webhooks, hook)
+		}
+	}
+
+	return webhooks, nil
 }
