@@ -163,7 +163,8 @@ export class AuthService {
     this.data = { ...token, tokens };
     this.data!.tokens.storedAt = Date.now();
     localStorage.setItem(AUTH_TOKEN_DATA, JSON.stringify(this.data));
-    this.cookie.set('jwt', this.data!.tokens.accessToken);
+    this.cookie.delete('jwt');
+    this.cookie.set('jwt', tokens.accessToken, token.exp * 1000, '/');
     this.userUpdated.next(this.userData!);
   }
 
