@@ -9,7 +9,6 @@
               <app-toggle label="Build Pushed Branches" [(ngModel)]="hooks!.push" (ngModelChange)="saveHooks()">
               </app-toggle>
               <span class="form-helper is-small">
-                <i class="fa fa-info-circle"></i>
                 <span>Run builds on branches that are not explicitly excluded in config.</span>
               </span>
             </div>
@@ -17,14 +16,12 @@
               <app-toggle label="Build Pushed Pull Requests" [(ngModel)]="hooks!.pullRequest"
                 (ngModelChange)="saveHooks()"></app-toggle>
               <span class="form-helper is-small">
-                <i class="fa fa-info-circle"></i>
                 <span>Run builds on new or updated pull requests.</span>
               </span>
             </div>
             <div class="field">
               <app-toggle label="Build Pushed Tags" [(ngModel)]="hooks!.tag" (ngModelChange)="saveHooks()"></app-toggle>
               <span class="form-helper is-small">
-                <i class="fa fa-info-circle"></i>
                 <span>Run builds on new tags.</span>
               </span>
             </div>
