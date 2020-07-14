@@ -7,6 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
+	"github.com/bleenco/abstruse/pkg/scm"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"github.com/bleenco/abstruse/server/service"
@@ -125,5 +126,35 @@ func (r *repos) hooks() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, data)
+	})
+}
+
+func (r *repos) createHooks() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		var f scm.HookForm
+		claims := claimsFromCtx(req.Context())
+		repoID, err := strconv.Atoi(chi.URLParam(req, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+		defer req.Body.Close()
+
+		if err = lib.DecodeJSON(req.Body, &f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
+			render.JSON(w, http.StatusBadRequest, render.Error{Message: err.Error()})
+			return
+		}
+
+		if err := r.repoService.CreateHook(uint(repoID), claims.ID, f); err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, render.Empty{})
 	})
 }

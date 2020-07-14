@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
-import { switchMap, finalize } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { Hook } from '../shared/hook.model';
+import { Hook, HookData } from '../shared/hook.model';
 
 @UntilDestroy()
 @Component({
@@ -12,6 +12,7 @@ import { Hook } from '../shared/hook.model';
 })
 export class SettingsComponent implements OnInit {
   loading: boolean = false;
+  saving: boolean = false;
   hooks: { push: boolean; pullRequest: boolean; tag: boolean } = {
     push: false,
     pullRequest: false,
@@ -36,6 +37,30 @@ export class SettingsComponent implements OnInit {
         resp => {
           this.applySettings(resp);
         },
+        err => {
+          console.error(err);
+        }
+      );
+  }
+
+  saveHooks(): void {
+    this.saving = true;
+
+    const data: HookData = {
+      branch: this.hooks.push,
+      push: this.hooks.push,
+      pullRequest: this.hooks.pullRequest,
+      tag: this.hooks.tag
+    };
+
+    this.reposService
+      .saveHooks(data)
+      .pipe(
+        finalize(() => (this.saving = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        () => {},
         err => {
           console.error(err);
         }

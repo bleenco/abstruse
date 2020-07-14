@@ -9,6 +9,13 @@ export class Hook {
   ) {}
 }
 
+export interface HookData {
+  branch: boolean;
+  pullRequest: boolean;
+  push: boolean;
+  tag: boolean;
+}
+
 export const generateHook = (data: any): Hook => {
   return new Hook(Number(data.ID), Boolean(data.Active), data.Name, data.Target, Boolean(data.SkipVerify), data.Events);
 };

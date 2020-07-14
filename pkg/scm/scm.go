@@ -193,6 +193,50 @@ func (s *SCM) ListHooks(repo string) ([]*scm.Hook, error) {
 	return hooks, err
 }
 
+// CreateHook creates hook for specified repository.
+func (s *SCM) CreateHook(repo, target, secret, provider string, data HookForm) (*scm.Hook, error) {
+	input := &scm.HookInput{
+		Name:       "Abstruse CI",
+		Target:     target,
+		Secret:     secret,
+		SkipVerify: false,
+	}
+
+	if provider == "gitea" {
+		var events []string
+		if data.Branch || data.Tag {
+			events = append(events, "create")
+		}
+		if data.PullRequest {
+			events = append(events, "pull_request")
+		}
+		if data.Push {
+			events = append(events, "push")
+		}
+		input.NativeEvents = events
+	} else {
+		input.Events = scm.HookEvents{
+			Branch:             data.Branch,
+			Push:               data.Push,
+			Tag:                data.Tag,
+			PullRequest:        data.PullRequest,
+			Issue:              false,
+			IssueComment:       false,
+			PullRequestComment: false,
+			ReviewComment:      false,
+		}
+	}
+
+	hook, _, err := s.client.Repositories.CreateHook(s.ctx, repo, input)
+	return hook, err
+}
+
+// DeleteHook deletes webhook by ID.
+func (s *SCM) DeleteHook(repo string, ID string) error {
+	_, err := s.client.Repositories.DeleteHook(s.ctx, repo, ID)
+	return err
+}
+
 // Client returns underlying scm client.
 func (s *SCM) Client() *scm.Client {
 	return s.client

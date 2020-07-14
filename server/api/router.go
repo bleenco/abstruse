@@ -126,6 +126,7 @@ func (r *router) reposRouter() *chi.Mux {
 	router.Get("/{id}", repos.findByID())
 	router.Put("/{id}/active", repos.setActive())
 	router.Get("/{id}/hooks", repos.hooks())
+	router.Put("/{id}/hooks", repos.createHooks())
 
 	return router
 }

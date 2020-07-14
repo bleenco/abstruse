@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, Subject, generate } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Repo, generateRepoModel } from './repo.model';
-import { map, finalize, take, switchMap, share } from 'rxjs/operators';
+import { map, finalize, switchMap, share, filter } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { Hook, generateHook } from './hook.model';
+import { Hook, generateHook, HookData } from './hook.model';
 
 @UntilDestroy()
 @Injectable({
   providedIn: 'root'
 })
 export class ReposService {
-  repoSubject: Subject<Repo> = new Subject<Repo>();
-  repo = this.repoSubject.asObservable().pipe(share());
+  repoSubject: BehaviorSubject<Repo | null> = new BehaviorSubject<Repo | null>(null);
+  repo = this.repoSubject.asObservable().pipe(
+    filter(repo => !!repo),
+    share()
+  );
   loading: boolean = false;
   error: string | null = null;
 
@@ -48,9 +51,17 @@ export class ReposService {
   }
 
   findHooks(): Observable<Hook[]> {
-    return this.repo.pipe(
-      switchMap(repo => this.http.get<any>(`/repos/${repo.id}/hooks`)),
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.get<any>(`/repos/${repo!.id}/hooks`)),
       map(resp => (resp && resp.length ? resp.map(generateHook) : []))
+    );
+  }
+
+  saveHooks(data: HookData): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.put<void>(`/repos/${repo!.id}/hooks`, data))
     );
   }
 
