@@ -13,15 +13,27 @@
     font-size: 24px
     margin: 0 24px 0 0
     padding: 0
+    color: $text-secondary
 
   p
-    color: $text-primary
+    color: $text-secondary
     flex-grow: 1
     flex-shrink: 1
     font-size: 14px
     line-height: 1.5
     margin: 0
     padding: 0
+
+  &.is-small
+    padding: 10px 16px
+
+    i
+      font-size: 16px
+      margin: 0 16px 0 0
+
+    p
+      font-size: 13px
+      line-height: 1.5
 
   @each $name, $color in $colors
     &.is-#{$name}

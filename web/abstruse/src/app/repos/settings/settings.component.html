@@ -1,0 +1,47 @@
+<div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="section">
+      <div class="columns">
+        <div class="column is-6">
+          <div class="inner-section">
+            <h4>General</h4>
+            <div class="field">
+              <app-toggle label="Build Pushed Branches"></app-toggle>
+              <span class="form-helper is-small">
+                <i class="fa fa-info-circle"></i>
+                <span>Run builds on branches that are not explicitly excluded in config.</span>
+              </span>
+            </div>
+            <div class="field">
+              <app-toggle label="Build Pushed Pull Requests"></app-toggle>
+              <span class="form-helper is-small">
+                <i class="fa fa-info-circle"></i>
+                <span>Run builds on new or updated pull requests.</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="inner-section">
+            <h4>Auto Cancellation</h4>
+            <div class="notification is-gray is-small">
+              <i class="far fa-comments"></i>
+              <p>
+                Auto Cancellation allows you to only run builds for the latest commits in the queue.<br />
+                When new commits are pushed to same branch or pull request and jobs for previous commits are still
+                running,
+                they will be auto-cancelled if this options are on.
+              </p>
+            </div>
+            <div class="field">
+              <app-toggle label="Auto Cancel Branch Builds"></app-toggle>
+            </div>
+            <div class="field">
+              <app-toggle label="Auto Cancel Pull Request Builds"></app-toggle>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

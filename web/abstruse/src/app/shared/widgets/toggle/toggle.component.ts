@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 @Component({
@@ -8,6 +8,8 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: ToggleComponent, multi: true }]
 })
 export class ToggleComponent implements ControlValueAccessor {
+  @Input() label: string = '';
+
   isEnabled!: boolean;
 
   private onTouchedCallback: () => void = () => {};
