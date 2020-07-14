@@ -3,16 +3,33 @@ $subheader-height: 70px
 .subheader
   display: block
   width: 100%
-  height: $subheader-height
-  margin: 20px 0
+  margin-bottom: 20px
+
+  .subheader-links
+    width: 100%
+    display: flex
+    justify-content: center
+    border-bottom: 1px solid $border-default
+    font-family: $font-family-roboto
+
+    a
+      +unselectable
+      color: $text-secondary
+      font-size: 13px
+      text-transform: uppercase
+      padding: 15px
+      font-weight: $weight-medium
+
+      &:hover, &.is-active
+        color: $green
 
   .subheader-container
     display: flex
     width: 100%
-    height: $subheader-height
     align-items: center
     justify-content: space-between
     border-bottom: 1px solid $border-default
+    height: $subheader-height
 
     .subheader-left, .subheader-right
       display: flex

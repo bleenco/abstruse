@@ -1,7 +1,7 @@
 <div class="columns is-multiline">
   <div class="column is-4 is-offset-4">
     <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="notification" *ngIf="!ok && !error">
+      <div class="notification is-gray" *ngIf="!ok && !error">
         <i class="fas fa-info"></i>
         <p>New password must include at least 8 characters.</p>
       </div>

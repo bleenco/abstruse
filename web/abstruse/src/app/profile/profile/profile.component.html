@@ -1,24 +1,16 @@
 <header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/profile/settings']" routerLinkActive="is-active">Settings</a>
+    <a [routerLink]="['/profile/security']" routerLinkActive="is-active">Security</a>
+    <a [routerLink]="['/profile/sessions']" routerLinkActive="is-active">Active Sessions</a>
+  </nav>
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Profile</h1>
-        <h2>My Profile</h2>
+        <h2>{{ title }}</h2>
       </div>
-      <div class="subheader-right">
-        <a class="link" [routerLink]="['/profile/settings']" routerLinkActive="is-active">
-          <i class="fas fa-user-tag"></i>
-          <span>Settings</span>
-        </a>
-        <a class="link" [routerLink]="['/profile/security']" routerLinkActive="is-active">
-          <i class="fas fa-key"></i>
-          <span>Security</span>
-        </a>
-        <a class="link" [routerLink]="['/profile/sessions']" routerLinkActive="is-active">
-          <i class="far fa-list-alt"></i>
-          <span>Active Sessions</span>
-        </a>
-      </div>
+      <div class="subheader-right"></div>
     </div>
   </div>
 </header>
