@@ -44,11 +44,21 @@
           [text]="build?.createdAt! | date:'medium'">{{ build?.createdAtWords! | async }}</span>
       </div>
     </div>
-    <div class="column is-1 data-column justify-start">
-      <span class="status is-green" *ngIf="build?.status === 'passing'">Passing</span>
-      <span class="status is-red" *ngIf="build?.status === 'failing'">Failing</span>
-      <span class="status is-gray" *ngIf="build?.status === 'queued'">Queued</span>
-      <span class="status is-yellow" *ngIf="build?.status === 'running'">Running</span>
+    <div class="column is-1 data-column justify-center">
+      <span class="tag is-small" [ngClass]="{
+                'is-gray': build?.status === 'queued',
+                'is-green': build?.status === 'passing',
+                'is-red': build?.status === 'failing',
+                'is-yellow': build?.status === 'running'
+              }">
+        <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
+        <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
+        <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
+        <i *ngIf="build?.status === 'running'">
+          <app-loader class="is-small is-yellow"></app-loader>
+        </i>
+        <span>{{ build?.status }}</span>
+      </span>
     </div>
     <div class="column is-1 data-column">
       <div class="info-text justify-center align-center">

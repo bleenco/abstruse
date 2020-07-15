@@ -23,6 +23,10 @@ export class BuildsService {
       .pipe(map(data => (data && data.length ? data.map(generateBuildModel) : [])));
   }
 
+  findBuild(id: number): Observable<Build> {
+    return this.http.get<Build>(`/builds/${id}`).pipe(map(generateBuildModel));
+  }
+
   triggerBuild(id: number): Observable<void> {
     return this.http.put<void>('/builds/trigger', { id });
   }

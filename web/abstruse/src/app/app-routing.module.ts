@@ -36,8 +36,7 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   { path: 'not-found', component: NotFoundComponent },
-  { path: 'gateway-timeout', component: GatewayTimeoutComponent },
-  { path: '**', redirectTo: 'builds' }
+  { path: 'gateway-timeout', component: GatewayTimeoutComponent }
 ];
 
 @NgModule({

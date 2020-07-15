@@ -8,11 +8,10 @@ import { ErrorInterceptorProvider } from './interceptors/error.interceptor';
 import { TokenInterceptorProvider } from './interceptors/token.interceptor';
 import { HeaderComponent } from './header/header.component';
 import { AuthService } from '../auth/shared/auth.service';
-import { NotFoundComponent } from './not-found/not-found.component';
 import { GatewayTimeoutComponent } from './gateway-timeout/gateway-timeout.component';
 
 @NgModule({
-  declarations: [HeaderComponent, NotFoundComponent, GatewayTimeoutComponent],
+  declarations: [HeaderComponent, GatewayTimeoutComponent],
   imports: [CommonModule, FormsModule, RouterModule, SharedModule],
   exports: [HeaderComponent],
   providers: [AuthService, ApiInterceptorProvider, ErrorInterceptorProvider, TokenInterceptorProvider]

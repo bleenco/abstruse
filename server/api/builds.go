@@ -10,6 +10,7 @@ import (
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"github.com/bleenco/abstruse/server/service"
+	"github.com/go-chi/chi"
 )
 
 type builds struct {
@@ -44,6 +45,26 @@ func (b *builds) find() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, builds)
+	})
+}
+
+func (b *builds) findBuild() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// TODO: add authentication
+
+		buildID, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		build, err := b.buildRepo.FindAll(uint(buildID))
+		if err != nil {
+			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, build)
 	})
 }
 
