@@ -131,7 +131,7 @@ func (s *APIServer) HostInfo(ctx context.Context, in *empty.Empty) (*pb.HostInfo
 		VirtualizationSystem: info.VirtualizationRole,
 		VirtualizationRole:   info.VirtualizationRole,
 		HostID:               info.HostID,
-		MaxConcurrency:       uint64(s.app.scheduler.max),
+		MaxParallel:          uint64(s.app.scheduler.max),
 	}, nil
 }
 

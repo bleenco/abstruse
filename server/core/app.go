@@ -3,6 +3,7 @@ package core
 import (
 	"github.com/bleenco/abstruse/pkg/etcd/embed"
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/db/repository"
 	"github.com/bleenco/abstruse/server/ws"
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
@@ -16,6 +17,7 @@ type App struct {
 	client    *clientv3.Client
 	ws        *ws.Server
 	scheduler *Scheduler
+	repo      repository.Repo
 	stopch    chan struct{}
 }
 
@@ -24,16 +26,16 @@ func NewApp() *App {
 	logger := Log.With(zap.String("type", "app")).Sugar()
 	etcd := embed.NewServer(Config, Log)
 	ws := ws.NewServer(Config, Log)
-	scheduler := NewScheduler(Log)
-
-	return &App{
-		cfg:       Config,
-		logger:    logger,
-		etcd:      etcd,
-		ws:        ws,
-		scheduler: scheduler,
-		stopch:    make(chan struct{}),
+	app := &App{
+		cfg:    Config,
+		logger: logger,
+		etcd:   etcd,
+		ws:     ws,
+		repo:   repository.NewRepo(),
+		stopch: make(chan struct{}),
 	}
+	app.scheduler = NewScheduler(Log, app)
+	return app
 }
 
 // Run starts the main application with all services.
@@ -57,6 +59,19 @@ func (a *App) Run() error {
 			errch <- err
 		}
 	}()
+
+	go func() {
+		if err := a.watchWorkers(); err != nil {
+			errch <- err
+		}
+	}()
+
+	// go func() {
+	// 	time.Sleep(10 * time.Second)
+	// 	if err := a.TriggerBuild(1, 4); err != nil {
+	// 		fmt.Println(err)
+	// 	}
+	// }()
 
 	select {
 	case err := <-errch:

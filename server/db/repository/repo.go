@@ -42,6 +42,17 @@ func (r RepoRepository) FindByID(repoID, userID uint) (model.Repository, error) 
 	return repo, err
 }
 
+// FindByURL returns repo by url.
+func (r RepoRepository) FindByURL(url string) (model.Repository, error) {
+	var repo model.Repository
+	db, err := db.Instance()
+	if err != nil {
+		return repo, err
+	}
+	err = db.Model(&repo).Where("url = ?", url).Preload("Provider").First(&repo).Error
+	return repo, err
+}
+
 // CreateOrUpdate inserts new repository into db or updates it if already exists.
 func (r RepoRepository) CreateOrUpdate(data model.Repository) (model.Repository, error) {
 	db, err := db.Instance()

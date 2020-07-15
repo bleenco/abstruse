@@ -33,7 +33,7 @@ message HostInfoReply {
   string virtualizationSystem = 13;
   string virtualizationRole = 14;
   string hostID = 15;
-  uint64 maxConcurrency = 16;
+  uint64 maxParallel = 16;
 }
 
 message UsageStatsReply {
