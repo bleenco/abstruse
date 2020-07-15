@@ -40,7 +40,7 @@ export class AuthService {
   }
 
   get isAuthenticated(): boolean {
-    const status = !!this.data;
+    const status = !!this.data && this.tokenExpiry() > Date.now();
     if (!status) {
       this.cancelRefreshTimer();
     } else {
@@ -134,6 +134,12 @@ export class AuthService {
     this.refreshTimerRunning = false;
   }
 
+  tokenExpiry(): number {
+    const accessToken = jwt<any>(this.userData!.tokens.accessToken);
+    const refreshToken = jwt<any>(this.userData!.tokens.refreshToken);
+    return Math.min(accessToken.exp, refreshToken.exp) * 1000;
+  }
+
   private refreshHttpOptions() {
     return { headers: new HttpHeaders({ Authorization: `Bearer ${this.refreshToken()}` }) };
   }
@@ -150,12 +156,6 @@ export class AuthService {
       ].join(' ')
     );
     return Math.max(0, delta);
-  }
-
-  private tokenExpiry(): number {
-    const accessToken = jwt<any>(this.userData!.tokens.accessToken);
-    const refreshToken = jwt<any>(this.userData!.tokens.refreshToken);
-    return Math.min(accessToken.exp, refreshToken.exp) * 1000;
   }
 
   private setUserData(tokens: TokenResponse): void {

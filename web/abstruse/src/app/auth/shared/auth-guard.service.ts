@@ -17,7 +17,12 @@ export class AuthGuardService implements CanActivate, CanLoad {
 
   private authGuard(): boolean {
     if (!!this.auth.userData) {
-      return true;
+      if (this.auth.tokenExpiry() < Date.now()) {
+        this.auth.logout();
+        return false;
+      } else {
+        return true;
+      }
     }
 
     this.router.navigate(['/login']);
