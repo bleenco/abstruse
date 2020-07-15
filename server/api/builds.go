@@ -8,6 +8,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/pkg/render"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 	"github.com/bleenco/abstruse/server/service"
 	"github.com/go-chi/chi"
@@ -159,6 +160,29 @@ func (b *builds) stopBuild() http.HandlerFunc {
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})
+	})
+}
+
+func (b *builds) findJob() http.HandlerFunc {
+	type resp struct {
+		*model.Job
+		Log string `json:"log"`
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		jobID, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		data, err := b.buildService.FindJob(uint(jobID))
+		if err != nil {
+			render.JSON(w, http.StatusInternalServerError, render.Error{Message: err.Error()})
+			return
+		}
+
+		render.JSON(w, http.StatusOK, resp{data, data.Log})
 	})
 }
 

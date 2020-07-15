@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Build, generateBuildModel } from './build.model';
+import { Build, generateBuildModel, Job, generateJobModel } from './build.model';
 import { map, filter } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { DataService } from '../../shared/providers/data.service';
@@ -16,8 +16,8 @@ export class BuildsService {
 
   find(limit: number = 5, offset: number = 0): Observable<Build[]> {
     let params = new HttpParams();
-    params.append('limit', String(limit));
-    params.append('offset', String(offset));
+    params = params.append('limit', String(limit));
+    params = params.append('offset', String(offset));
     return this.http
       .get<Build[]>('/builds', { params })
       .pipe(map(data => (data && data.length ? data.map(generateBuildModel) : [])));
@@ -37,6 +37,10 @@ export class BuildsService {
 
   stopBuild(id: number): Observable<void> {
     return this.http.put<void>('/builds/stop', { id });
+  }
+
+  findJob(id: number): Observable<Job> {
+    return this.http.get<Job>(`/builds/job/${id}`).pipe(map(generateJobModel));
   }
 
   restartJob(id: number): Observable<void> {

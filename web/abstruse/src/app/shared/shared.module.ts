@@ -18,6 +18,7 @@ import { ProgressWizardComponent } from './components/progress-wizard/progress-w
 import { AvatarPickerComponent } from './widgets/avatar-picker/avatar-picker.component';
 import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
+import { TerminalComponent } from './components/terminal/terminal.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, ModalModule, NgxUploaderModule],
@@ -30,7 +31,8 @@ import { StopPropagationDirective } from './directives/stop-propagation.directiv
     ProgressWizardComponent,
     AvatarPickerComponent,
     ToggleComponent,
-    StopPropagationDirective
+    StopPropagationDirective,
+    TerminalComponent
   ],
   exports: [
     CommonModule,
@@ -46,7 +48,8 @@ import { StopPropagationDirective } from './directives/stop-propagation.directiv
     ProgressWizardComponent,
     AvatarPickerComponent,
     ToggleComponent,
-    StopPropagationDirective
+    StopPropagationDirective,
+    TerminalComponent
   ]
 })
 export class SharedModule {

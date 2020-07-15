@@ -8,7 +8,7 @@ import { JobComponent } from './job/job.component';
 const routes: Routes = [
   { path: 'builds', component: BuildsComponent, canActivate: [AuthGuardService] },
   { path: 'builds/:id', component: BuildComponent, canActivate: [AuthGuardService] },
-  { path: 'builds/:id/:jobid', component: JobComponent, canActivate: [AuthGuardService] }
+  { path: 'builds/:buildid/:jobid', component: JobComponent, canActivate: [AuthGuardService] }
 ];
 
 @NgModule({

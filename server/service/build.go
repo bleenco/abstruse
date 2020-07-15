@@ -2,20 +2,23 @@ package service
 
 import (
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 )
 
 // BuildService is builds service.
 type BuildService struct {
-	repo repository.BuildRepo
-	app  *core.App
+	buildRepo repository.BuildRepo
+	jobRepo   repository.JobRepo
+	app       *core.App
 }
 
 // NewBuildService returns new instance of BuildService.
 func NewBuildService(app *core.App) BuildService {
 	return BuildService{
-		repo: repository.NewBuildRepo(),
-		app:  app,
+		buildRepo: repository.NewBuildRepo(),
+		jobRepo:   repository.NewJobRepo(),
+		app:       app,
 	}
 }
 
@@ -43,4 +46,9 @@ func (s *BuildService) RestartJob(jobID uint) error {
 // StopJob stops running job by ID.
 func (s *BuildService) StopJob(jobID uint) error {
 	return s.app.StopJob(jobID)
+}
+
+// FindJob finds job by ID.
+func (s *BuildService) FindJob(jobID uint) (*model.Job, error) {
+	return s.jobRepo.Find(jobID)
 }

@@ -1,1 +1,9 @@
-<p>job works!</p>
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="job && !fetching">
+      <div class="console-output">
+        <app-terminal [data]="job!.log"></app-terminal>
+      </div>
+    </div>
+  </div>
+</div>

@@ -141,6 +141,7 @@ func (r *router) buildsRouter(app *core.App) *chi.Mux {
 	router.Put("/trigger", builds.triggerBuild())
 	router.Put("/restart", builds.restartBuild())
 	router.Put("/stop", builds.stopBuild())
+	router.Get("/job/{id}", builds.findJob())
 	router.Put("/job/restart", builds.restartJob())
 	router.Put("/job/stop", builds.stopJob())
 
