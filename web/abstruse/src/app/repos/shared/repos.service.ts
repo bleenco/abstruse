@@ -31,6 +31,7 @@ export class ReposService {
   }
 
   findByID(id: number): void {
+    this.repoSubject.next(null);
     this.loading = true;
     this.error = null;
     this.http

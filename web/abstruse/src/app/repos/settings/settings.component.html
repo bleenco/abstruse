@@ -50,4 +50,22 @@
       </div>
     </div>
   </div>
+  <div class="column is-12">
+    <div class="section">
+      <div class="columns">
+        <div class="column is-12">
+          <div class="inner-section">
+            <h4>Trigger Build</h4>
+            <div class="justify-end">
+              <button type="button" class="button is-green" (click)="triggerBuild()"
+                [class.events-none]="triggeringBuild">
+                <span *ngIf="!triggeringBuild">Trigger Build</span>
+                <span *ngIf="triggeringBuild">Starting Build...</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

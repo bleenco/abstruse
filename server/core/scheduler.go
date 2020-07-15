@@ -341,22 +341,6 @@ func (s *Scheduler) save(job *common.Job) error {
 	if err != nil {
 		return err
 	}
-	go s.broadcastJobStatus(job)
+	go s.app.broadcastJobStatus(job)
 	return s.app.updateBuildTime(job.BuildID)
-}
-
-func (s *Scheduler) broadcastJobStatus(job *common.Job) {
-	sub := path.Join("/subs", "jobs", fmt.Sprintf("%d", job.BuildID))
-	event := map[string]interface{}{
-		"build_id": job.BuildID,
-		"job_id":   job.ID,
-		"status":   job.GetStatus(),
-	}
-	if job.StartTime != nil {
-		event["start_time"] = job.StartTime
-	}
-	if job.EndTime != nil {
-		event["end_time"] = job.EndTime
-	}
-	s.app.ws.App.Broadcast(sub, event)
 }

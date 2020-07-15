@@ -7,7 +7,7 @@ import { DataService } from '../../shared/providers/data.service';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 
 const buildsSubEvent = '/subs/builds';
-const buildsSubJobEvent = '/subs/jobs/';
+const buildsSubJobEvent = '/subs/jobs';
 const buildsSubJobLogEvent = '/subs/logs/';
 
 @Injectable({ providedIn: 'root' })
@@ -67,8 +67,8 @@ export class BuildsService {
     this.dataService.subscribeToEvent(buildsSubEvent);
   }
 
-  subscribeToJobEvents(builds: number[]): void {
-    builds.forEach(buildID => this.dataService.subscribeToEvent(`${buildsSubJobEvent}${buildID}`));
+  subscribeToJobEvents(): void {
+    this.dataService.subscribeToEvent(buildsSubJobEvent);
   }
 
   subscribeToJobLogEvents(jobID: number): void {

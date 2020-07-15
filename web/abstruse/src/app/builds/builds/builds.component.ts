@@ -68,11 +68,11 @@ export class BuildsComponent implements OnInit, OnDestroy {
 
   private initDataEvents(): void {
     this.buildsService.subscribeToBuildsEvents();
+    this.buildsService.subscribeToJobEvents();
     this.sub
       .add(
         this.buildsService.buildsEvents().subscribe(build => {
           this.builds.unshift(build);
-          this.buildsService.subscribeToJobEvents([build.id]);
         })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
@@ -91,6 +91,11 @@ export class BuildsComponent implements OnInit, OnDestroy {
     const job = build.jobs.find(j => j.id === ev.data.jobID);
     if (!job) {
       return;
+    }
+
+    if (!job.endTime) {
+      build.startTime = null;
+      build.endTime = null;
     }
 
     job.startTime = ev.data.startTime ? new Date(ev.data.startTime) : null;

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, switchMap } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, HookData } from '../shared/hook.model';
+import { BuildsService } from 'src/app/builds/shared/builds.service';
+import { ActivatedRoute } from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -11,17 +13,20 @@ import { Hook, HookData } from '../shared/hook.model';
   styleUrls: ['./settings.component.sass']
 })
 export class SettingsComponent implements OnInit {
+  id!: number;
   loading: boolean = false;
   saving: boolean = false;
+  triggeringBuild: boolean = false;
   hooks: { push: boolean; pullRequest: boolean; tag: boolean } = {
     push: false,
     pullRequest: false,
     tag: false
   };
 
-  constructor(public reposService: ReposService) {}
+  constructor(public reposService: ReposService, private buildsService: BuildsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.id = Number(this.route.parent?.snapshot.paramMap.get('id'));
     this.findHooks();
   }
 
@@ -65,6 +70,17 @@ export class SettingsComponent implements OnInit {
           console.error(err);
         }
       );
+  }
+
+  triggerBuild(): void {
+    this.triggeringBuild = true;
+    this.buildsService
+      .triggerBuild(this.id)
+      .pipe(
+        finalize(() => (this.triggeringBuild = false)),
+        untilDestroyed(this)
+      )
+      .subscribe();
   }
 
   private applySettings(hooks: Hook[]): void {

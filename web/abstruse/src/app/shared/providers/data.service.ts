@@ -3,6 +3,7 @@ import { SocketService } from './socket.service';
 import { Observable } from 'rxjs';
 import { SocketEvent } from '../models/socket.model';
 import { ConnectionStates } from '../models/socket.class';
+import { share } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {
