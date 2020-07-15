@@ -4,15 +4,21 @@
   justify-content: center
   padding: 4px 12px
   border-radius: 4px
-  border: 1px solid $border-default
+  border: 1px solid $border-secondary
   background: transparent
   font-weight: $weight-medium
   background: $white
   position: relative
-  color: $text-secondary
 
   i
     margin-right: 5px
+
+  &.is-light
+    border: 1px solid $border-default
+    color: $text-secondary
+
+    i
+      color: $text-secondary !important
 
   &.is-medium
     width: 100px

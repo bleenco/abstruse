@@ -1,11 +1,14 @@
 <div class="list-item-condensed is-slim" [routerLink]="['/repos', repo?.id]">
   <div class="columns">
     <div class="column is-1 data-column">
+      <div class="data-text no-padding has-text-left">
+        <span class="status-line" [class.is-passing]="repo.active" [class.is-running]="!repo.active"></span>
+      </div>
       <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
         <i class="fab fa-github is-medium is-gray" *ngSwitchCase="'github'"></i>
         <i class="fab fa-gitlab is-medium is-gray" *ngSwitchCase="'gitlab'"></i>
         <i class="fab fa-bitbucket is-medium is-gray" *ngSwitchCase="'bitbucket'"></i>
-        <img class="bg-icon" src="/assets/images/icons/gitea-gray.svg" *ngSwitchCase="'gitea'" />
+        <img src="/assets/images/icons/gitea-gray.svg" *ngSwitchCase="'gitea'" />
         <i class="fab fa-git is-medium is-gray" *ngSwitchDefault></i>
       </div>
     </div>
@@ -20,7 +23,7 @@
     <div class="column is-2 data-column justify-center">
       <div class="info-text justify-center align-center">
         <div class="tag is-small">
-          <i class="octicon octicon-git-branch is-medium is-gray"></i>
+          <i class="octicon octicon-git-branch is-medium"></i>
           <span>{{ repo?.defaultBranch }}</span>
         </div>
       </div>

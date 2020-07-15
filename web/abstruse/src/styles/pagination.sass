@@ -12,10 +12,14 @@
     border: 1px solid transparent
     border-radius: $border-radius
 
-    &:hover, &.is-active
+    &:hover
+      border: 1px solid $border-secondary
+      color: $text-primary
+
+    &.is-active
+      background: rgba($gray, .2)
+      color: $text-primary
       border: 1px solid $gray
-      background: $gray
-      color: $white
 
   .btn
     padding: 5px 10px
@@ -25,5 +29,5 @@
     border-radius: $border-radius
 
     &:hover
-      background: $gray
-      color: $white
+      border: 1px solid $border-secondary
+      color: $text-primary
