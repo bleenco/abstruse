@@ -6,6 +6,7 @@ import { NgxUploaderModule } from 'ngx-uploader';
 import { CookieService } from 'ngx-cookie-service';
 
 import { SocketService } from './providers/socket.service';
+import { DataService } from './providers/data.service';
 import { ModalModule } from './components/modal/modal.module';
 import { TimeService } from './providers/time.service';
 import { CheckboxComponent } from './widgets/checkbox/checkbox.component';
@@ -16,6 +17,7 @@ import { LoaderComponent } from './components/loader/loader.component';
 import { ProgressWizardComponent } from './components/progress-wizard/progress-wizard.component';
 import { AvatarPickerComponent } from './widgets/avatar-picker/avatar-picker.component';
 import { ToggleComponent } from './widgets/toggle/toggle.component';
+import { StopPropagationDirective } from './directives/stop-propagation.directive';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, ModalModule, NgxUploaderModule],
@@ -27,7 +29,8 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
     LoaderComponent,
     ProgressWizardComponent,
     AvatarPickerComponent,
-    ToggleComponent
+    ToggleComponent,
+    StopPropagationDirective
   ],
   exports: [
     CommonModule,
@@ -42,14 +45,15 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
     LoaderComponent,
     ProgressWizardComponent,
     AvatarPickerComponent,
-    ToggleComponent
+    ToggleComponent,
+    StopPropagationDirective
   ]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
     return {
       ngModule: SharedModule,
-      providers: [TimeService, CookieService, SocketService]
+      providers: [TimeService, CookieService, SocketService, DataService]
     };
   }
 }

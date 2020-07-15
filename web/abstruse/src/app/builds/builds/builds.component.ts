@@ -1,18 +1,100 @@
-import { Component, OnInit } from '@angular/core';
-import { Build, generateBuildModel } from '../shared/build.model';
-import { builds } from '../../../testing/fixtures/builds';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Build } from '../shared/build.model';
+import { BuildsService } from '../shared/builds.service';
+import { finalize } from 'rxjs/operators';
+import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
+import { SocketEvent } from '../../shared/models/socket.model';
+import { Subscription } from 'rxjs';
+import { DataService } from 'src/app/shared/providers/data.service';
 
+@UntilDestroy()
 @Component({
   selector: 'app-builds',
   templateUrl: './builds.component.html',
   styleUrls: ['./builds.component.sass']
 })
-export class BuildsComponent implements OnInit {
+export class BuildsComponent implements OnInit, OnDestroy {
   builds: Build[] = [];
+  fetchingBuilds: boolean = false;
+  fetchingMore: boolean = false;
+  hideMoreButton: boolean = false;
+  limit = 5;
+  offset = 0;
+  error: string | null = null;
+  sub: Subscription = new Subscription();
 
-  constructor() {}
+  constructor(private buildsService: BuildsService, private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.builds = builds.map(generateBuildModel);
+    this.find();
+    this.initDataEvents();
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
+    this.dataService.unsubscribeAll();
+  }
+
+  find(): void {
+    if (this.offset === 0) {
+      this.fetchingBuilds = true;
+    } else {
+      this.fetchingMore = true;
+    }
+
+    this.buildsService
+      .find(this.limit, this.offset)
+      .pipe(
+        finalize(() => {
+          this.fetchingBuilds = false;
+          this.fetchingMore = false;
+        }),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => {
+          this.builds = this.builds.concat(resp);
+          if (resp.length === this.limit) {
+            this.offset += resp.length;
+          } else {
+            this.hideMoreButton = true;
+          }
+        },
+        err => {
+          this.error = err.message;
+        }
+      );
+  }
+
+  private initDataEvents(): void {
+    this.buildsService.subscribeToBuildsEvents();
+    this.sub
+      .add(
+        this.buildsService.buildsEvents().subscribe(build => {
+          this.builds.unshift(build);
+          this.buildsService.subscribeToJobEvents([build.id]);
+        })
+      )
+      .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
+  }
+
+  private updateJobFromEvent(ev: SocketEvent): void {
+    if (!this.builds || !this.builds.length) {
+      return;
+    }
+
+    const build = this.builds.find(b => b.id === ev.data.buildID);
+    if (!build || !build.jobs || !build.jobs.length) {
+      return;
+    }
+
+    const job = build.jobs.find(j => j.id === ev.data.jobID);
+    if (!job) {
+      return;
+    }
+
+    job.startTime = ev.data.startTime ? new Date(ev.data.startTime) : null;
+    job.endTime = ev.data.endTime ? new Date(ev.data.endTime) : null;
+    job.status = ev.data.status;
   }
 }

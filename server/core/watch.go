@@ -22,9 +22,6 @@ func (app *App) watchWorkers() error {
 			if err != nil {
 				app.logger.Errorf("%v", err)
 			} else {
-				app.scheduler.mu.Lock()
-				app.scheduler.workers[id] = worker
-				app.scheduler.mu.Unlock()
 				go app.initWorker(worker)
 			}
 		}
@@ -41,9 +38,6 @@ func (app *App) watchWorkers() error {
 					if err != nil {
 						return err
 					}
-					app.scheduler.mu.Lock()
-					app.scheduler.workers[id] = worker
-					app.scheduler.mu.Unlock()
 					go app.initWorker(worker)
 				}
 			case mvccpb.DELETE:
@@ -52,9 +46,7 @@ func (app *App) watchWorkers() error {
 					app.ws.App.Broadcast("/subs/workers_delete", map[string]interface{}{
 						"id": worker.ID(),
 					})
-					app.scheduler.mu.Lock()
-					delete(app.scheduler.workers, id)
-					app.scheduler.mu.Unlock()
+					app.scheduler.DeleteWorker(worker.ID())
 				}
 			}
 		}

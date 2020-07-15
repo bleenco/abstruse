@@ -19,10 +19,10 @@ export class Build {
     public pr: number,
     public prTitle: string,
     public config: string,
-    public createdAt: Date,
-    public updatedAt: Date,
-    public startTime: Date,
-    public endTime: Date,
+    public createdAt: Date | null,
+    public updatedAt: Date | null,
+    public startTime: Date | null,
+    public endTime: Date | null,
     public repository: Repo | null,
     public authorAvatar: string,
     public authorName: string,
@@ -36,13 +36,13 @@ export class Build {
     this.status = this.getBuildStatus;
     this.buildStatus = new BehaviorSubject<string>(this.status);
     this.runningTime = new BehaviorSubject<string>(this.getTimeRunning);
-    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt) + ' ago');
+    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt!) + ' ago');
 
     this.time.getCurrentTime().subscribe(() => {
       this.status = this.getBuildStatus;
       this.buildStatus.next(this.status);
       this.runningTime.next(this.getTimeRunning);
-      this.createdAtWords.next(formatDistanceToNow(this.createdAt) + ' ago');
+      this.createdAtWords.next(formatDistanceToNow(this.createdAt!) + ' ago');
     });
   }
 
@@ -57,7 +57,7 @@ export class Build {
   }
 
   get createdAtFormatted(): string {
-    return format(this.createdAt, 'Do MMMM YYYY [at] HH:mm');
+    return format(this.createdAt!, 'Do MMMM YYYY [at] HH:mm');
   }
 
   get getBuildStatus(): string {
@@ -88,7 +88,7 @@ export class Build {
     }
 
     if (!this.endTime && this.jobs.every(job => job.endTime)) {
-      this.endTime = new Date(Math.max(...this.jobs.map(job => job.endTime.getTime())));
+      this.endTime = new Date(Math.max(...this.jobs.map(job => job.endTime!.getTime())));
     }
 
     const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
@@ -108,10 +108,10 @@ export class Job {
     public image: string,
     public status: string,
     public log: string,
-    public startTime: Date,
-    public endTime: Date,
-    public createdAt: Date,
-    public updatedAt: Date,
+    public startTime: Date | null,
+    public endTime: Date | null,
+    public createdAt: Date | null,
+    public updatedAt: Date | null,
     public buildId: number,
     public build: Build | null
   ) {
@@ -137,22 +137,22 @@ export function generateBuildModel(data: any): Build {
   return new Build(
     Number(data.id),
     data.commit,
-    data.commit_message,
+    data.commitMessage,
     data.branch,
     Number(data.pr),
-    data.pr_title,
+    data.prTitle,
     data.config,
-    new Date(data.created_at || 0),
-    new Date(data.updated_at || 0),
-    new Date(data.start_time || 0),
-    new Date(data.end_time || 0),
+    data.createdAt ? new Date(data.createdAt) : null,
+    data.updatedAt ? new Date(data.updatedAt) : null,
+    data.start_time ? new Date(data.startTime) : null,
+    data.endTime ? new Date(data.endTime) : null,
     data.repository ? generateRepoModel(data.repository) : null,
-    data.author_avatar,
-    data.author_name,
-    data.author_email,
-    data.committer_avatar,
-    data.committer_name,
-    data.committer_email,
+    data.authorAvatar,
+    data.authorName,
+    data.authorEmail,
+    data.committerAvatar,
+    data.committerName,
+    data.committerEmail,
     data.jobs && data.jobs.length ? data.jobs.map(generateJobModel) : []
   );
 }
@@ -165,11 +165,11 @@ export function generateJobModel(data: any): Job {
     data.image,
     data.status,
     data.log,
-    new Date(data.start_time || 0),
-    new Date(data.end_time || 0),
-    new Date(data.created_at || 0),
-    new Date(data.updated_at || 0),
-    Number(data.build_id),
+    data.startTime ? new Date(data.startTime) : null,
+    data.endTime ? new Date(data.endTime) : null,
+    data.createdAt ? new Date(data.createdAt) : null,
+    data.updatedAt ? new Date(data.updatedAt) : null,
+    Number(data.buildID),
     data.build ? generateBuildModel(data.build) : null
   );
 }

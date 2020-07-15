@@ -14,7 +14,7 @@
     </div>
     <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
-        <a class="data-text" appStopPropagation [routerLink]="['/builds', build?.repository?.id]">{{
+        <a class="data-text" appStopPropagation [routerLink]="['/repos', build?.repository?.id]">{{
           build?.repository?.fullName
         }}</a>
       </div>

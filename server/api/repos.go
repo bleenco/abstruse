@@ -25,7 +25,7 @@ func newRepos(logger *zap.Logger) repos {
 	return repos{
 		logger:         logger.With(zap.String("api", "repos")).Sugar(),
 		repoRepository: repository.NewRepoRepository(),
-		repoService:    service.NewRepoService(logger),
+		repoService:    service.NewRepoService(),
 	}
 }
 

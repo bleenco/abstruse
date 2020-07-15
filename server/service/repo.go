@@ -10,20 +10,17 @@ import (
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/bleenco/abstruse/server/db/repository"
 	goscm "github.com/drone/go-scm/scm"
-	"go.uber.org/zap"
 )
 
 // RepoService is repository service.
 type RepoService struct {
-	logger *zap.SugaredLogger
-	repo   repository.RepoRepository
+	repo repository.RepoRepository
 }
 
 // NewRepoService returns new instance of RepoService.
-func NewRepoService(logger *zap.Logger) RepoService {
+func NewRepoService() RepoService {
 	return RepoService{
-		logger: logger.With(zap.String("service", "repo")).Sugar(),
-		repo:   repository.NewRepoRepository(),
+		repo: repository.NewRepoRepository(),
 	}
 }
 

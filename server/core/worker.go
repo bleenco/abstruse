@@ -122,7 +122,7 @@ func (w *Worker) Run() error {
 	w.max = int(w.host.MaxParallel)
 	w.logger.Infof("connected to worker %s %s with capacity %d", w.id, w.addr, w.max)
 	w.emitData()
-	w.app.scheduler.workers[w.id] = w
+	w.app.scheduler.AddWorker(w)
 
 	ch := make(chan error)
 
