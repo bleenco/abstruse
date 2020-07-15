@@ -2,13 +2,17 @@
   display: flex
   align-items: center
   justify-content: center
-  padding: 3px 10px
+  padding: 4px 12px
   border-radius: 4px
   border: 1px solid $border-default
   background: transparent
   font-weight: $weight-medium
   background: $white
   position: relative
+  color: $text-secondary
+
+  i
+    margin-right: 5px
 
   &.is-medium
     width: 100px
@@ -29,11 +33,12 @@
       padding-top: 1px
 
   &.is-small
-    width: 100%
+    min-width: 100px
     font-size: 13px
-    padding: 6px 4px
+    padding: 2px 10px
 
     i
+      font-size: 16px
       margin-right: 5px
 
   @each $name, $color in $colors

@@ -2,43 +2,42 @@
   <div class="columns">
     <div class="column is-1 data-column">
       <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
-        <i class="fab fa-github" *ngSwitchCase="'github'"></i>
-        <i class="fab fa-gitlab" *ngSwitchCase="'gitlab'"></i>
-        <i class="fab fa-bitbucket" *ngSwitchCase="'bitbucket'"></i>
-        <img class="bg-icon" src="/assets/images/icons/gitea.svg" *ngSwitchCase="'gitea'" />
-        <i class="fab fa-git" *ngSwitchDefault></i>
+        <i class="fab fa-github is-medium is-gray" *ngSwitchCase="'github'"></i>
+        <i class="fab fa-gitlab is-medium is-gray" *ngSwitchCase="'gitlab'"></i>
+        <i class="fab fa-bitbucket is-medium is-gray" *ngSwitchCase="'bitbucket'"></i>
+        <img class="bg-icon" src="/assets/images/icons/gitea-gray.svg" *ngSwitchCase="'gitea'" />
+        <i class="fab fa-git is-medium is-gray" *ngSwitchDefault></i>
       </div>
     </div>
-    <div class="column is-2 data-column">
+    <div class="column is-4 data-column direction-column">
       <div class="info-text has-text-left align-center">
-        <span class="data-text">{{ repo?.fullName }}</span>
+        <span class="data-text is-title">{{ repo?.fullName }}</span>
+      </div>
+      <div class="info-text has-text-left align-center">
+        <span class="data-text is-subtitle">{{ repo?.clone }}</span>
       </div>
     </div>
-    <div class="column is-3 data-column">
-      <div class="info-text has-text-left align-center">
-        <i class="octicon octicon-repo"></i>
-        <span class="data-text">{{ repo?.url }}</span>
+    <div class="column is-2 data-column justify-center">
+      <div class="info-text justify-center align-center">
+        <div class="tag is-small">
+          <i class="octicon octicon-git-branch is-medium is-gray"></i>
+          <span>{{ repo?.defaultBranch }}</span>
+        </div>
       </div>
     </div>
     <div class="column is-1 data-column">
       <div class="info-text justify-center align-center" [ngSwitch]="repo?.isPrivate">
-        <i class="octicon octicon-check" *ngSwitchCase="false"></i>
-        <i class="octicon octicon-x" *ngSwitchCase="true"></i>
+        <i class="octicon octicon-check is-medium is-green" *ngSwitchCase="false"></i>
+        <i class="octicon octicon-x is-medium is-yellow" *ngSwitchCase="true"></i>
       </div>
     </div>
-    <div class="column is-2 data-column justify-center">
+    <div class="column is-3 data-column justify-center">
       <div class="info-text justify-center align-center">
-        <i class="octicon octicon-git-branch"></i>
-        <span class="data-text">{{ repo?.defaultBranch }}</span>
+        <i class="far fa-clock is-medium is-gray"></i>
+        <span class="data-text is-small">{{ repo?.updatedAt | date:'medium' }}</span>
       </div>
     </div>
-    <div class="column is-2 data-column justify-center">
-      <div class="info-text justify-center align-center">
-        <i class="octicon octicon-clock"></i>
-        <span class="data-text">{{ repo?.updatedAt | date:'medium' }}</span>
-      </div>
-    </div>
-    <div class="column is-1 data-column justify-center">
+    <div class="column is-1 data-column justify-center" appStopPropagation>
       <app-toggle [(ngModel)]="repo.active" (ngModelChange)="onActiveChange()"></app-toggle>
     </div>
   </div>
