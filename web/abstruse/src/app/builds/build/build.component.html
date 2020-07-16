@@ -1,0 +1,38 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/builds', build?.id]">Build</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Build</h1>
+        <h2>Build</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="column is-12" *ngIf="!loading && build">
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-2"><span class="text mlr10">ID</span></div>
+          <div class="column is-4"><span class="text">Environment / Command</span></div>
+          <div class="column is-2"><span class="text">Docker Image</span></div>
+          <div class="column is-1"><span class="text justify-center">Status</span></div>
+          <div class="column is-1"><span class="text justify-center">Time</span></div>
+          <div class="column is-2"><span class="text justify-center">Actions</span></div>
+        </div>
+      </div>
+      <div class="list-items">
+        <app-job-list-item [build]="build" [job]="job" *ngFor="let job of build.jobs"></app-job-list-item>
+      </div>
+    </div>
+  </div>
+</div>
