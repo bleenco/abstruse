@@ -3,19 +3,19 @@
     <div class="column is-1">
       <div class="list-item-content">
         <span class="label">ID</span>
-        <span class="text">{{ worker.id }}</span>
+        <span class="tag is-green">{{ worker.id }}</span>
       </div>
     </div>
     <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Server</span>
-        <span class="text">{{ worker.addr }}</span>
+        <span class="tag is-yellow">{{ worker.addr }}</span>
       </div>
     </div>
     <div class="column is-2">
       <div class="list-item-content">
         <span class="label">OS</span>
-        <span class="text">
+        <span class="tag is-gray">
           <i class="fab fa-apple" *ngIf="worker.os === 'darwin'"></i>
           <i class="fab fa-linux" *ngIf="worker.os === 'linux'"></i>
           <i class="fab fa-windows" *ngIf="worker.os === 'windows'"></i>
@@ -26,7 +26,7 @@
     <div class="column is-2">
       <div class="list-item-content">
         <span class="label">Kernel</span>
-        <span class="text">{{ worker.kernelArch }} {{ worker.kernelVersion }}</span>
+        <span class="tag is-gray">{{ worker.kernelArch }} {{ worker.kernelVersion }}</span>
       </div>
     </div>
     <div class="column is-2">
