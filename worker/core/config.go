@@ -11,6 +11,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/tlsutil"
 	"github.com/bleenco/abstruse/worker/config"
+	"github.com/bleenco/abstruse/worker/id"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -98,6 +99,16 @@ func InitConfig() {
 	Log, err = logger.NewLogger(Config.Log)
 	if err != nil {
 		fatal(err)
+	}
+
+	if Config.ID == "" {
+		Config.ID = id.GenerateID()
+		Log.Sugar().Infof("generated worker node id: %s", Config.ID)
+		viper.Set("id", Config.ID)
+		if err := viper.WriteConfigAs(viper.ConfigFileUsed()); err != nil {
+			fatal(err)
+		}
+		Log.Sugar().Infof("saved config file to %s", viper.ConfigFileUsed())
 	}
 }
 

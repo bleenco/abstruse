@@ -4,6 +4,7 @@ import "github.com/bleenco/abstruse/pkg/logger"
 
 // Config is worker configuration.
 type Config struct {
+	ID        string
 	TLS       *TLS
 	Etcd      *Etcd
 	GRPC      *GRPC
