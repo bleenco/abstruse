@@ -67,20 +67,11 @@ export class SetupService {
     return this.http.post<boolean>('/setup/db/test', config);
   }
 
-  ready(): Promise<boolean> {
-    return new Promise(resolve => {
-      this.http.get<Setup>('/setup/ready').subscribe(
-        resp => {
-          if (resp.database && resp.user) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        },
-        () => {
-          resolve(false);
-        }
-      );
-    });
+  async ready(): Promise<boolean> {
+    return this.http
+      .get<Setup>('/setup/ready')
+      .toPromise()
+      .then(resp => resp.database && resp.user)
+      .catch(() => false);
   }
 }

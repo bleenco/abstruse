@@ -68,7 +68,6 @@ export class AuthService {
   login(tokens: TokenResponse): void {
     this.setUserData(tokens);
     this.authenticated.next(this.isAuthenticated);
-    this.router.navigate(['/']);
   }
 
   logout(): void {
@@ -84,9 +83,7 @@ export class AuthService {
       finalize(() => {
         this.unsetUserData();
         this.authenticated.next(this.isAuthenticated);
-        if (!this.location.isCurrentPathEqualTo('/login')) {
-          this.router.navigate(['/login']);
-        }
+        this.router.navigate(['/login']);
       })
     );
   }

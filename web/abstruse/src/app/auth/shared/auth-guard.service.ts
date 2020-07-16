@@ -7,25 +7,29 @@ import { Route } from '@angular/compiler/src/core';
 export class AuthGuardService implements CanActivate, CanLoad {
   constructor(private auth: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     return this.authGuard();
   }
 
-  canLoad(route: Route, segments: UrlSegment[]): boolean {
+  canLoad(route: Route, segments: UrlSegment[]): Promise<boolean> {
     return this.authGuard();
   }
 
-  private authGuard(): boolean {
+  private async authGuard(): Promise<boolean> {
     if (!!this.auth.userData) {
       if (this.auth.tokenExpiry() < Date.now()) {
-        this.auth.logout();
-        return false;
+        return this.auth
+          .logoutRequest()
+          .toPromise()
+          .then(() => false)
+          .catch(() => false);
       } else {
-        return true;
+        return Promise.resolve(true);
       }
     }
 
-    this.router.navigate(['/login']);
-    return false;
+    return Promise.resolve()
+      .then(() => this.router.navigate(['/login']))
+      .then(() => false);
   }
 }

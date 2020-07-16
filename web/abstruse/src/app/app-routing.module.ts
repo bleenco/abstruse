@@ -2,14 +2,13 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuardService } from './auth/shared/auth-guard.service';
-import { SetupGuardService } from './setup/shared/setup-guard.service';
 import { SetupDoneGuardService } from './setup/shared/setup-done-guard.service';
 import { NotFoundComponent, GatewayTimeoutComponent } from './core';
 import { AlreadyAuthGuardService } from './auth/shared/already-auth-guard.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'builds', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [SetupGuardService, AlreadyAuthGuardService] },
+  { path: 'login', component: LoginComponent, canActivate: [AlreadyAuthGuardService] },
   {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule),

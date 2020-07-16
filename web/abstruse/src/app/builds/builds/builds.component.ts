@@ -67,8 +67,6 @@ export class BuildsComponent implements OnInit, OnDestroy {
   }
 
   private initDataEvents(): void {
-    this.buildsService.subscribeToBuildsEvents();
-    this.buildsService.subscribeToJobEvents();
     this.sub
       .add(
         this.buildsService.buildsEvents().subscribe(build => {
@@ -76,6 +74,9 @@ export class BuildsComponent implements OnInit, OnDestroy {
         })
       )
       .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
+
+    this.buildsService.subscribeToBuildsEvents();
+    this.buildsService.subscribeToJobEvents();
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {
