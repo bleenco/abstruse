@@ -1,4 +1,4 @@
-build/
+/build
 pb/api.pb.go
 server/ui
 worker/data
