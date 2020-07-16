@@ -1,9 +1,10 @@
-/build
+build/
 pb/api.pb.go
 server/ui
 worker/data
 .DS_Store
 tmp/
 configs/
-web/abstruse/node_modules/
-web/abstruse/dist/
+web/abstruse/node_modules
+web/abstruse/dist
+.git/
