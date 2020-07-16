@@ -51,7 +51,8 @@ func (r *router) apiRouter() *chi.Mux {
 		router.Mount("/users", r.usersRouter())
 		router.Mount("/providers", r.providersRouter())
 		router.Mount("/repos", r.reposRouter())
-		router.Mount("/builds", r.buildsRouter(r.app))
+		router.Mount("/builds", r.buildsRouter())
+		router.Mount("/workers", r.workersRouter())
 		router.Mount("/system", r.systemRouter())
 	})
 
@@ -132,9 +133,9 @@ func (r *router) reposRouter() *chi.Mux {
 	return router
 }
 
-func (r *router) buildsRouter(app *core.App) *chi.Mux {
+func (r *router) buildsRouter() *chi.Mux {
 	router := chi.NewRouter()
-	builds := newBuilds(app)
+	builds := newBuilds(r.app)
 
 	router.Get("/", builds.find())
 	router.Get("/{id}", builds.findBuild())
@@ -153,6 +154,15 @@ func (r *router) systemRouter() *chi.Mux {
 	system := newSystem(r.logger)
 
 	router.Get("/version", system.version())
+
+	return router
+}
+
+func (r *router) workersRouter() *chi.Mux {
+	router := chi.NewRouter()
+	workers := newWorkers(r.app)
+
+	router.Get("/", workers.find())
 
 	return router
 }

@@ -66,13 +66,6 @@ func (a *App) Run() error {
 		}
 	}()
 
-	// go func() {
-	// 	time.Sleep(10 * time.Second)
-	// 	if err := a.TriggerBuild(1, 4); err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// }()
-
 	select {
 	case err := <-errch:
 		return err
@@ -84,6 +77,13 @@ func (a *App) Run() error {
 // Stop stops the application.
 func (a *App) Stop() {
 	a.stopch <- struct{}{}
+}
+
+// GetWorkers returns currently online workers.
+func (a *App) GetWorkers() map[string]*Worker {
+	a.scheduler.mu.Lock()
+	defer a.scheduler.mu.Unlock()
+	return a.scheduler.workers
 }
 
 // RestartEtcd restarts etcd server.

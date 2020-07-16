@@ -1,0 +1,38 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/workers']" routerLinkActive="is-active">Worker Nodes</a>
+    <a [routerLink]="['/workers/usage']" routerLinkActive="is-active">Usage History</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Workers</h1>
+        <h2>Workers Nodes</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="column is-6 is-offset-3" *ngIf="!loading && !workers.length">
+      <div class="notification">
+        <i class="fas fa-network-wired"></i>
+        <p class="has-text-centered">
+          There are no workers currently online. In order to run jobs you need at least one worker node connected.
+        </p>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="!loading && workers.length">
+      <div class="list-items">
+        <app-worker-list-item [worker]="w" *ngFor="let w of workers"></app-worker-list-item>
+      </div>
+    </div>
+  </div>
+</div>

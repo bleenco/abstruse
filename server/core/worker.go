@@ -58,8 +58,8 @@ type (
 	Usage struct {
 		CPU       int32     `json:"cpu"`
 		Mem       int32     `json:"mem"`
-		Max       int       `json:"max"`
-		Running   int       `json:"running"`
+		Max       int       `json:"jobsMax"`
+		Running   int       `json:"jobsRunning"`
 		Timestamp time.Time `json:"timestamp"`
 	}
 )
@@ -185,8 +185,11 @@ func (w *Worker) usageStats(ctx context.Context) error {
 			return err
 		}
 		usage := Usage{
-			CPU: stats.GetCpu(),
-			Mem: stats.GetMem(),
+			CPU:       stats.GetCpu(),
+			Mem:       stats.GetMem(),
+			Max:       w.max,
+			Running:   w.running,
+			Timestamp: time.Now(),
 		}
 
 		w.mu.Lock()
@@ -271,12 +274,12 @@ func (w *Worker) emitUsage() {
 	}
 	usage := w.usage[len(w.usage)-1]
 	w.app.ws.App.Broadcast("/subs/workers_usage", map[string]interface{}{
-		"id":           w.id,
-		"addr":         w.addr,
-		"cpu":          usage.CPU,
-		"mem":          usage.Mem,
-		"jobs_max":     w.max,
-		"jobs_running": w.running,
-		"timestamp":    time.Now(),
+		"id":          w.id,
+		"addr":        w.addr,
+		"cpu":         usage.CPU,
+		"mem":         usage.Mem,
+		"jobsMax":     w.max,
+		"jobsRunning": w.running,
+		"timestamp":   time.Now(),
 	})
 }

@@ -26,6 +26,11 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'workers',
+    loadChildren: () => import('./workers/workers.module').then(m => m.WorkersModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'setup',
     loadChildren: () => import('./setup/setup.module').then(m => m.SetupModule),
     canActivate: [SetupDoneGuardService]
