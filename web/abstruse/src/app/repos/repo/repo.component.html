@@ -8,8 +8,8 @@
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
-        <h1>{{ (repos.repo | async)?.fullName }}</h1>
-        <h2>Settings</h2>
+        <h1>{{ (reposService.repo | async)?.fullName }}</h1>
+        <h2>{{ title }}</h2>
       </div>
       <div class="subheader-right"></div>
     </div>
