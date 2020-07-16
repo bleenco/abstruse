@@ -47,6 +47,18 @@ dev_worker:
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
 
+docker: docker_server docker_worker
+
+docker_server:
+	@docker build --rm --compress -t abstruse/abstruse-server -f Dockerfile .
+
+docker_worker:
+	@docker build --rm --compress -t abstruse/abstruse-worker -f Dockerfile.worker .
+
+docker_push:
+	@docker push abstruse/abstruse-server
+	@docker push abstruse/abstruse-worker
+
 test:
 	go test -v ./...
 
@@ -56,4 +68,4 @@ test-unit:
 test-e2e:
 	go run ./tests/e2e
 
-.PHONY: build server build_ui statik install_dependencies clean protoc dev test test-unit test-e2e statik_worker build_pty worker dev_worker
+.PHONY: build server build_ui statik install_dependencies clean protoc dev test test-unit test-e2e statik_worker build_pty worker dev_worker docker docker_server docker_worker docker_push
