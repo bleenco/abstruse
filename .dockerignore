@@ -4,5 +4,6 @@ server/ui
 worker/data
 .DS_Store
 tmp/
-configs/testing/*.pem
-configs/testing/*.log
+configs/
+web/abstruse/node_modules/
+web/abstruse/dist/
