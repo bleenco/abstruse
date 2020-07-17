@@ -11,6 +11,7 @@ type Config struct {
 	Log       *logger.Config `json:"log"`
 	TLS       *TLS           `json:"tls"`
 	WebSocket *WebSocket     `json:"websocket"`
+	Registry  *Registry      `json:"registry"`
 }
 
 // Auth authentication config.
@@ -60,3 +61,6 @@ type TLS struct {
 type WebSocket struct {
 	Addr string `json:"addr"`
 }
+
+// Registry docker image registry configuration.
+type Registry struct{}

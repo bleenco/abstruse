@@ -1,13 +1,16 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path"
 	"time"
 
 	authpkg "github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/registry"
 	_ "github.com/bleenco/abstruse/server/ui" // user interface files
 	"github.com/bleenco/abstruse/server/ws"
 	"github.com/go-chi/chi"
@@ -33,10 +36,22 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *rou
 
 	router.Mount("/api/v1", router.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(wsAddr))
+	router.Mount("/registry", registry.Handler())
+	router.Mount("/v2", http.HandlerFunc(proxy))
 	router.Mount("/uploads", router.fileServer())
 	router.NotFound(router.ui())
 
 	return router
+}
+
+func proxy(w http.ResponseWriter, r *http.Request) {
+	p := httputil.ReverseProxy{Director: func(req *http.Request) {
+		req.URL.Scheme = "https"
+		req.URL.Path = fmt.Sprintf("%s", path.Clean(path.Join("/registry", r.URL.Path)))
+		req.URL.Host = r.Host
+		req.Host = r.Host
+	}}
+	p.ServeHTTP(w, r)
 }
 
 func (r *router) apiRouter() *chi.Mux {
