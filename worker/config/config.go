@@ -10,6 +10,7 @@ type Config struct {
 	GRPC      *GRPC
 	Scheduler *Scheduler
 	Auth      *Auth
+	Registry  *Registry
 	Log       *logger.Config
 }
 
@@ -39,4 +40,11 @@ type Scheduler struct {
 // Auth authentication config.
 type Auth struct {
 	JWTSecret string `json:"jwtSecret"`
+}
+
+// Registry docker image registry configuration.
+type Registry struct {
+	Addr     string `json:"addr"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

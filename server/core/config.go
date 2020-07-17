@@ -51,6 +51,10 @@ func InitDefaults(cmd *cobra.Command, cfgFile string) {
 	viper.BindPFlag("etcd.username", cmd.PersistentFlags().Lookup("etcd-username"))
 	viper.BindPFlag("etcd.password", cmd.PersistentFlags().Lookup("etcd-password"))
 	viper.BindPFlag("etcd.rootpassword", cmd.PersistentFlags().Lookup("etcd-rootpassword"))
+	viper.BindPFlag("registry.datadir", cmd.PersistentFlags().Lookup("registry-datadir"))
+	viper.BindPFlag("registry.username", cmd.PersistentFlags().Lookup("registry-username"))
+	viper.BindPFlag("registry.password", cmd.PersistentFlags().Lookup("registry-password"))
+	viper.BindPFlag("registry.htpasswd", cmd.PersistentFlags().Lookup("registry-htpasswd"))
 	viper.BindPFlag("auth.jwtsecret", cmd.PersistentFlags().Lookup("auth-jwtsecret"))
 	viper.BindPFlag("auth.jwtexpiry", cmd.PersistentFlags().Lookup("auth-jwtexpiry"))
 	viper.BindPFlag("auth.jwtrefreshexpiry", cmd.PersistentFlags().Lookup("auth-jwtrefreshexpiry"))
@@ -130,6 +134,20 @@ func InitConfig() {
 		Config.TLS.Key = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.TLS.Key)
 	}
 
+	if !strings.HasPrefix(Config.Registry.DataDir, "/") {
+		Config.Registry.DataDir = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.Registry.DataDir)
+	}
+
+	if !fs.Exists(Config.Registry.DataDir) {
+		if err := fs.MakeDir(Config.Registry.DataDir); err != nil {
+			fatal(err)
+		}
+	}
+
+	if !strings.HasPrefix(Config.Registry.HTPasswd, "/") {
+		Config.Registry.HTPasswd = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), Config.Registry.HTPasswd)
+	}
+
 	Log, err = logger.NewLogger(Config.Log)
 	if err != nil {
 		fatal(err)
@@ -165,6 +183,13 @@ func InitAuthentication() {
 	secret := viper.GetString("auth.jwtsecret")
 	expiry, refreshExpiry := viper.GetDuration("auth.jwtexpiry"), viper.GetDuration("auth.jwtrefreshexpiry")
 	auth.Init(secret, expiry, refreshExpiry)
+}
+
+// InitRegistryAuthentication initializes docker registry auth with creating htpasswd file.
+func InitRegistryAuthentication() {
+	username, password := viper.GetString("registry.username"), viper.GetString("registry.password")
+	filePath := Config.Registry.HTPasswd
+	auth.InitHtpasswd(filePath, username, password)
 }
 
 // saveAuthConfig saves new authentication configuration.

@@ -71,7 +71,7 @@ func run() error {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication)
+	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitRegistryAuthentication)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
@@ -95,6 +95,10 @@ func init() {
 	rootCmd.PersistentFlags().String("etcd-username", "abstruse", "etcd username")
 	rootCmd.PersistentFlags().String("etcd-password", "abstruse", "etcd password")
 	rootCmd.PersistentFlags().String("etcd-rootpassword", "abstruse", "etcd root password")
+	rootCmd.PersistentFlags().String("registry-datadir", "registry/", "docker image registry storage directory path")
+	rootCmd.PersistentFlags().String("registry-username", "abstruse", "docker image registry username")
+	rootCmd.PersistentFlags().String("registry-password", lib.RandomString(), "docker image registry password")
+	rootCmd.PersistentFlags().String("registry-htpasswd", "htpasswd", "docker image registry htpasswd file path")
 	rootCmd.PersistentFlags().String("auth-jwtsecret", lib.RandomString(), "JWT authentication secret key")
 	rootCmd.PersistentFlags().String("auth-jwtexpiry", "15m", "JWT access token expiry time")
 	rootCmd.PersistentFlags().String("auth-jwtrefreshexpiry", "1h", "JWT refresh token expiry time")

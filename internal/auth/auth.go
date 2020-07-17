@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+	"os"
 	"time"
 )
 
@@ -23,4 +25,16 @@ func Init(secret string, expiry, refreshExpiry time.Duration) {
 	JWTExpiry = expiry
 	JWTRefreshExpiry = refreshExpiry
 	JWT = NewJWTAuth("HS256")
+}
+
+// InitHtpasswd inits authentication for docker private registry.
+func InitHtpasswd(filePath, user, password string) {
+	if err := generateHtpasswdFile(filePath, user, password); err != nil {
+		fatal(err)
+	}
+}
+
+func fatal(msg interface{}) {
+	fmt.Println(msg)
+	os.Exit(1)
 }

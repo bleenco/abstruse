@@ -79,6 +79,11 @@ func (a *App) Stop() {
 	a.stopch <- struct{}{}
 }
 
+// GetConfig returns configuration.
+func (a *App) GetConfig() *config.Config {
+	return a.cfg
+}
+
 // GetWorkers returns currently online workers.
 func (a *App) GetWorkers() map[string]*Worker {
 	a.scheduler.mu.Lock()

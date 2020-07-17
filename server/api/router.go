@@ -26,6 +26,7 @@ type router struct {
 
 func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *router {
 	router := &router{chi.NewRouter(), logger, app, uploadDir}
+	cfg := app.GetConfig()
 
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -34,7 +35,7 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *rou
 
 	router.Mount("/api/v1", router.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(wsAddr))
-	router.Mount("/registry", registry.Handler())
+	router.Mount("/registry", registry.Handler(cfg.Registry))
 	router.Mount("/v2", http.HandlerFunc(registry.Proxy))
 	router.Mount("/uploads", router.fileServer())
 	router.NotFound(router.ui())

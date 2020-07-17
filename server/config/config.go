@@ -63,4 +63,9 @@ type WebSocket struct {
 }
 
 // Registry docker image registry configuration.
-type Registry struct{}
+type Registry struct {
+	DataDir  string `json:"dataDir"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	HTPasswd string `json:"htpasswd"`
+}

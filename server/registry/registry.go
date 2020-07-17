@@ -8,20 +8,30 @@ import (
 	"path"
 	"strings"
 
+	"github.com/bleenco/abstruse/server/config"
 	"github.com/docker/distribution/configuration"
+	_ "github.com/docker/distribution/registry/auth/htpasswd" // htpasswd auth access controller.
 	"github.com/docker/distribution/registry/handlers"
 	_ "github.com/docker/distribution/registry/storage/driver/filesystem" // filesystem storage driver.
 	log "github.com/sirupsen/logrus"
 )
 
 // Handler returns Docker image registry handler.
-func Handler() http.Handler {
+func Handler(cfg *config.Registry) http.Handler {
 	ctx := context.Background()
 	config := &configuration.Configuration{}
-	config.Storage = map[string]configuration.Parameters{"filesystem": map[string]interface{}{"rootdirectory": "/Users/jan/abstruse/registry"}}
+	config.Storage = map[string]configuration.Parameters{
+		"filesystem": map[string]interface{}{"rootdirectory": cfg.DataDir},
+	}
 	config.HTTP.Secret = "randpasswd"
 	config.HTTP.Prefix = "/registry/"
 	config.HTTP.RelativeURLs = true
+	config.Auth = configuration.Auth{
+		"htpasswd": configuration.Parameters{
+			"realm": "abstruse",
+			"path":  cfg.HTPasswd,
+		},
+	}
 	log.SetLevel(logLevel("panic"))
 
 	return panicHandler(handlers.NewApp(ctx, config))
@@ -41,18 +51,6 @@ func Proxy(w http.ResponseWriter, r *http.Request) {
 		req.Host = r.Host
 	}}
 	p.ServeHTTP(w, r)
-}
-
-func alive(path string, handler http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == path {
-			w.Header().Set("Cache-Control", "no-cache")
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		handler.ServeHTTP(w, r)
-	})
 }
 
 func panicHandler(handler http.Handler) http.Handler {
