@@ -29,7 +29,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setup.ready().then(ready => (!!ready ? (this.displayForm = true) : this.router.navigate(['/setup'])));
+    this.setup
+      .ready()
+      .then(ready => (!!ready ? (this.displayForm = true) : this.router.navigate(['/setup'])))
+      .catch(() => this.router.navigate(['/gateway-timeout']));
   }
 
   login(): void {
