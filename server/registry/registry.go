@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
+	"path"
+	"strings"
 
 	"github.com/docker/distribution/configuration"
-	"github.com/docker/distribution/health"
 	"github.com/docker/distribution/registry/handlers"
 	_ "github.com/docker/distribution/registry/storage/driver/filesystem" // filesystem storage driver.
 	log "github.com/sirupsen/logrus"
@@ -16,21 +18,29 @@ import (
 func Handler() http.Handler {
 	ctx := context.Background()
 	config := &configuration.Configuration{}
-	// config.Storage = map[string]configuration.Parameters{"filesystem": map[string]interface{}{
-	// 	"rootdirectory": "/Users/jan/abstruse/registry",
-	// }}
-	config.Storage = configuration.Storage{"filesystem": configuration.Parameters{"rootdirectory": "/Users/jan/abstruse/registry"}}
+	config.Storage = map[string]configuration.Parameters{"filesystem": map[string]interface{}{"rootdirectory": "/Users/jan/abstruse/registry"}}
 	config.HTTP.Secret = "randpasswd"
 	config.HTTP.Prefix = "/registry/"
-	log.SetLevel(logLevel("debug"))
+	config.HTTP.RelativeURLs = true
+	log.SetLevel(logLevel("panic"))
 
-	app := handlers.NewApp(ctx, config)
-	app.RegisterHealthChecks()
-	handler := alive("/registry", app)
-	handler = health.Handler(handler)
-	handler = panicHandler(handler)
+	return panicHandler(handlers.NewApp(ctx, config))
+}
 
-	return handler
+// Proxy proxies requests from /v2/ => /registry/v2/
+func Proxy(w http.ResponseWriter, r *http.Request) {
+	p := httputil.ReverseProxy{Director: func(req *http.Request) {
+		urlPath := r.URL.Path
+		req.URL.Path = path.Clean(fmt.Sprintf("%s/%s/", "/registry", urlPath))
+		if strings.HasSuffix(urlPath, "/") {
+			req.URL.Path = fmt.Sprintf("%s/", req.URL.Path)
+		}
+
+		req.URL.Scheme = "http"
+		req.URL.Host = r.Host
+		req.Host = r.Host
+	}}
+	p.ServeHTTP(w, r)
 }
 
 func alive(path string, handler http.Handler) http.Handler {
