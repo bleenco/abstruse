@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/registry"
 	"github.com/dustin/go-humanize"
 	"github.com/felixge/httpsnoop"
 	"go.uber.org/zap"
@@ -54,6 +56,19 @@ func (s *Server) Run() error {
 	}
 
 	s.logger.Infof("starting HTTP server on %s://%s", scheme, addr)
+
+	go func() {
+		time.Sleep(5 * time.Second)
+		client, err := registry.NewClient("http://localhost/registry/v2/", s.config.Registry.Username, s.config.Registry.Password)
+		if err != nil {
+			s.logger.Errorf("error: %s", err.Error())
+		}
+		images, err := client.Find()
+		if err != nil {
+			s.logger.Errorf("error: %s", err.Error())
+		}
+		fmt.Printf("%+v\n", images)
+	}()
 
 	if s.config.HTTP.TLS {
 		go s.closeWith(s.ServeTLS(listener, s.config.TLS.Cert, s.config.TLS.Key))

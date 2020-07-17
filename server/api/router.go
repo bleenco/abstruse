@@ -31,13 +31,13 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *rou
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(30 * time.Second))
+	router.Use(middleware.Timeout(60 * time.Second))
 
 	router.Mount("/api/v1", router.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(wsAddr))
+	router.Mount("/uploads", router.fileServer())
 	router.Mount("/registry", registry.Handler(cfg.Registry))
 	router.Mount("/v2", http.HandlerFunc(registry.Proxy))
-	router.Mount("/uploads", router.fileServer())
 	router.NotFound(router.ui())
 
 	return router
