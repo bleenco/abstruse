@@ -1,0 +1,49 @@
+@import 'colours'
+@import 'variables'
+
+.avatar-picker-container
+  padding: 10px
+  display: flex
+  justify-content: center
+  position: relative
+  width: 100%
+  height: auto
+  margin: 0 auto
+
+  .avatar-image
+    cursor: pointer
+    width: auto
+    max-height: 120px
+    display: block
+    border-radius: 50%
+
+  .avatars-picker
+    position: absolute
+    top: 10px
+    left: 0
+    width: 100%
+    border: 1px solid $border-default
+    background: $white
+    display: flex
+    align-items: center
+    justify-content: center
+    z-index: 9
+
+    .avatars-container
+      display: flex
+      flex-wrap: wrap
+      width: 100%
+      height: 100%
+      padding: 10px
+
+      .avatar-small
+        border: 2px solid transparent
+        width: 40px
+        height: 40px
+        margin: 3px
+        cursor: pointer
+        display: block
+        border-radius: 50%
+
+        &:hover, &.is-active
+          border-color: $green

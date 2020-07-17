@@ -1,0 +1,42 @@
+syntax = "proto3";
+package api;
+option go_package = ".;api";
+
+import "google/protobuf/empty.proto";
+
+service API {
+  rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
+  rpc Usage(stream google.protobuf.Empty) returns (stream UsageStatsReply) {}
+  rpc JobLog(Job) returns (stream JobOutput) {}
+}
+
+message Job { uint64 id = 1; }
+
+message JobOutput {
+  uint64 id = 1;
+  bytes content = 3;
+}
+
+message HostInfoReply {
+  string id = 1;
+  string addr = 2;
+  string hostname = 3;
+  uint64 uptime = 4;
+  uint64 bootTime = 5;
+  uint64 procs = 6;
+  string os = 7;
+  string platform = 8;
+  string platformFamily = 9;
+  string platformVersion = 10;
+  string kernelVersion = 11;
+  string kernelArch = 12;
+  string virtualizationSystem = 13;
+  string virtualizationRole = 14;
+  string hostID = 15;
+  uint64 maxParallel = 16;
+}
+
+message UsageStatsReply {
+  int32 cpu = 1;
+  int32 mem = 2;
+}

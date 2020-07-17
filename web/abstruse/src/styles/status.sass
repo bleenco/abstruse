@@ -1,0 +1,26 @@
+.status
+  display: inline-block
+  margin: 0 5px 0 0
+  padding: 0 0 0 20px
+  position: relative
+  color: $gray-500
+  font-size: 13px
+  font-weight: $weight-medium
+
+  &::before
+    content: ''
+    display: block
+    width: 12px
+    height: 12px
+    border-radius: 50%
+    background: $gray-500
+    position: absolute
+    left: 0
+    top: 2px
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      color: $color
+
+      &::before
+        background: $color

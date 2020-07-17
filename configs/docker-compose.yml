@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  etcd:
+    image: bitnami/etcd:latest
+    container_name: etcd
+    restart: unless-stopped
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+    volumes:
+      - etcd_data:/bitnami/etcd
+    networks:
+      abstruse_net:
+        ipv4_address: 10.100.100.1
+
+networks:
+  abstruse_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.100.100.0/16
+
+volumes:
+  etcd_data:
+    driver: local

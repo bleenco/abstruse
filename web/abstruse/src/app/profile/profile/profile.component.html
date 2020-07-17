@@ -1,0 +1,20 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/profile/settings']" routerLinkActive="is-active">Settings</a>
+    <a [routerLink]="['/profile/security']" routerLinkActive="is-active">Security</a>
+    <a [routerLink]="['/profile/sessions']" routerLinkActive="is-active">Active Sessions</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Profile</h1>
+        <h2>{{ title }}</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>

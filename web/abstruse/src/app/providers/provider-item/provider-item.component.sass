@@ -1,0 +1,63 @@
+@import 'colours'
+@import 'variables'
+@import 'mixins'
+
+$provider-item-height: 220px
+
+.provider-item
+  display: block
+  border: 1px solid $border-default
+  border-radius: $border-radius
+  width: 100%
+  height: $provider-item-height
+  position: relative
+
+  .provider-item-bg, .provider-item-container
+    position: absolute
+    width: 100%
+    height: $provider-item-height
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+
+  .provider-item-bg
+    z-index: 1
+
+    i, img
+      position: absolute
+      display: block
+      top: 20px
+      right: 20px
+      color: $background-gray
+      font-size: 100px
+
+    img
+      top: -15px
+      right: 0
+      width: 150px
+
+  .provider-item-container
+    z-index: 2
+
+  .provider-item-container
+    padding: 30px
+
+    h2
+      font-size: 16px
+      font-weight: $weight-medium
+      text-transform: uppercase
+      margin-bottom: 10px
+
+    .url, .last-update
+      display: block
+      font-size: 14px
+      font-weight: $weight-normal
+      color: $text-secondary
+      margin-bottom: 10px
+
+    .last-update
+      +unselectable
+      margin-top: 55px
+      border-bottom: 1px solid $border-default
+      padding-bottom: 10px

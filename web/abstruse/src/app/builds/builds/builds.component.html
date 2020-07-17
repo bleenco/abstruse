@@ -1,0 +1,48 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/builds']" routerLinkActive="is-active">Latest Builds</a>
+    <a [routerLink]="['/builds/commits']" routerLinkActive="is-active">Commits</a>
+    <a [routerLink]="['/builds/pull-requests']" routerLinkActive="is-active">Pull Requests</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Builds</h1>
+        <h2>Latest Builds</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12">
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-1"><span class="text ml10">ID</span></div>
+          <div class="column is-3"><span class="text ml10">Repository</span></div>
+          <div class="column is-2"><span class="text ml10">Commit / Branch</span></div>
+          <div class="column is-2"><span class="text justify-center">Created</span></div>
+          <div class="column is-1"><span class="text justify-center">Status</span></div>
+          <div class="column is-1"><span class="text justify-center">Time</span></div>
+          <div class="column is-2"><span class="text justify-center">Actions</span></div>
+        </div>
+      </div>
+      <div class="list-items">
+        <app-build-list-item [build]="b" *ngFor="let b of builds"></app-build-list-item>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="builds?.length && !fetchingBuilds">
+      <div class="align-center justify-center mtb10" *ngIf="!hideMoreButton">
+        <button type="button" class="button" (click)="find()">
+          <app-loader class="is-small" *ngIf="fetchingMore"></app-loader>
+          <span *ngIf="fetchingMore">Loading...</span>
+          <i class="fas fa-ellipsis-v" *ngIf="!fetchingMore"></i>
+          <span *ngIf="!fetchingMore">Load More</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

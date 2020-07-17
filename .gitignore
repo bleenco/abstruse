@@ -1,6 +1,8 @@
-build/
-pkg/server/ui/
-pkg/worker/data/
-proto/api.pb.go
+/build
+pb/api.pb.go
+server/ui
+worker/data
 .DS_Store
-config/compose/data
+tmp/
+configs/testing/*.pem
+configs/testing/*.log

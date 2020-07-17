@@ -1,0 +1,120 @@
+@import 'colours'
+@import 'variables'
+
+.modal-overlay
+  position: fixed
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: $background
+  z-index: 100
+  display: none
+  overflow-y: scroll
+
+  &.is-open
+    display: block
+
+  .modal-container
+    display: block
+    width: 1000px
+    margin: 40px auto
+    background: $background
+    border: 1px solid $border-default
+    border-radius: $border-radius
+
+    &.is-small
+      width: 500px
+
+    &.is-large
+      width: 1000px
+
+    &.is-medium
+      width: 700px
+
+    ::ng-deep
+      .modal-header
+        display: flex
+        align-items: center
+        border-bottom: 1px solid $border-default
+        padding: 20px 40px
+        position: relative
+
+        .header-title
+          width: 100%
+          display: block
+
+          h1
+            font-size: 16px
+            font-weight: $weight-semibold
+            display: block
+            padding: 0 0 5px 0
+            text-transform: none
+
+          h2
+            font-weight: $weight-normal
+            color: $text-primary
+            font-size: 15px
+            text-transform: none
+            display: block
+            padding: 0
+
+        .close-icon
+          position: absolute
+          right: 25px
+          top: 24px
+          cursor: pointer
+          color: $text-secondary
+          font-size: 20px
+
+          &:hover
+            color: $text-primary
+
+      .modal-body
+        padding: 20px 40px
+
+        .columns
+          padding: 0
+          margin: 0
+
+          .column
+            padding: 0
+            margin: 0
+
+        .section
+          width: 100%
+          padding-bottom: 20px
+          border-bottom: 1px solid $border-default
+
+          &:not(:first-child)
+            margin-top: 20px
+
+          &:last-child
+            border-bottom: none
+
+        h3
+          padding: 0 0 5px 0
+          color: $text-secondary
+          font-weight: $weight-semibold
+          font-size: 15px
+
+        p
+          padding: 5px 0
+          margin: 0 0 5px 0
+          font-size: 15px
+          color: $text-primary
+          font-weight: $weight-normal
+
+          a
+            color: $green
+
+            &:hover
+              text-decoration: underline
+              cursor: pointer
+
+      .modal-footer
+        padding: 10px 40px 20px 90px
+        display: flex
+        align-items: center

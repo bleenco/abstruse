@@ -1,0 +1,6 @@
+<div class="toggle-container">
+  <div class="toggle-button" [class.enabled]="isEnabled" (click)="toggle()">
+    <span class="toggle-circle"></span>
+  </div>
+  <label class="label" *ngIf="label !== ''">{{ label }}</label>
+</div>

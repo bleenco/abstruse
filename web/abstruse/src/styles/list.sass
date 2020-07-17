@@ -1,0 +1,286 @@
+$list-item-height: 80px
+$list-item-condensed-height: 80px
+$list-item-condensed-label-height: 24px
+$list-heading-height: 50px
+
+.list-item
+  display: block
+  width: 100%
+  height: $list-item-height
+  border: 1px solid $border-default
+  margin-bottom: 10px
+  border-radius: 4px
+  padding: 0 5px
+  outline: none
+  background: $background
+
+  +mobile
+    height: auto
+    padding: 10px
+
+  &.is-link
+
+    &:hover
+      cursor: pointer
+      background: $background-light
+
+  .columns
+    margin: 0
+    padding: 0
+
+    .column
+      margin: 0
+      padding: 0 5px
+
+      .list-item-content
+        display: flex
+        align-items: center
+        justify-content: center
+        width: 100%
+        height: $list-item-height
+        flex-direction: column
+
+        &.is-row
+          flex-direction: row
+
+        +mobile
+          height: auto
+
+        .label, .text
+          display: flex
+          align-items: center
+          justify-content: center
+
+        .label
+          text-transform: uppercase
+          font-weight: $weight-medium
+          font-size: 12px
+          color: $text-secondary
+          margin-bottom: 2px
+          margin-top: 0
+
+        .text
+          +ellipsis
+          color: $text-primary
+          font-size: 14px
+          width: 100%
+          padding: 5px 8px
+
+          &.has-border
+            border: 1px solid $border-default
+            border-radius: 4px
+            width: auto
+            padding: 5px 15px
+            font-weight: $weight-semibold
+            background: $background
+
+          i
+            font-size: 20px
+            margin-right: 5px
+
+        .tag
+          margin-top: 3px
+
+        .icon-large
+          font-size: 26px
+          display: block
+          width: 26px
+          height: 26px
+
+        .icon-medium
+          font-size: 20px
+          display: block
+          width: 20px
+          height: 20px
+
+        .icon-small
+          font-size: 16px !important
+          display: block
+          width: 16px
+          height: 16px
+
+.list-heading
+  width: 100%
+  height: $list-heading-height
+  outline: none
+  border-bottom: 1px solid $border-default
+  background: $background
+
+  .columns
+    display: flex
+    align-items: center
+    height: $list-heading-height
+    margin: 0
+    padding: 0
+
+    .column
+      margin: 0
+      padding: 0 3px
+
+      .text
+        font-size: 12px
+        color: $text-secondary
+        text-transform: uppercase
+        display: flex
+        align-items: center
+        justify-content: flex-start
+
+.list-item-condensed
+  width: 100%
+  height: $list-item-condensed-height
+  outline: none
+  border-bottom: 1px solid $border-default
+  border-left: 2px solid transparent
+  background: $background
+
+  &.is-slim
+    height: $list-item-condensed-height - 15px
+
+    .columns
+      height: $list-item-condensed-height - 15px
+
+  &:hover
+    cursor: pointer
+    background: $background-light
+
+  .columns
+    height: $list-item-condensed-height
+    margin: 0
+    padding: 0
+
+    .data-column
+      padding-left: 3px
+      padding-right: 3px
+      display: flex
+      align-items: center
+
+      a
+        &:hover
+          text-decoration: underline
+
+      &.direction-column
+        flex-direction: column
+        align-self: center
+
+        .info-text
+          height: $list-item-condensed-label-height
+
+      .heading-text, .data-text, .info-text, .data-with-label
+        +ellipsis
+        display: block
+        line-height: 20px
+        text-align: center
+
+      .heading-text
+        font-size: 12px
+        color: $text-primary
+
+      .info-text
+        font-size: 15px
+        color: $text-primary
+
+        i, img
+          margin-right: 5px
+          color: $text-primary
+
+        img
+          width: 22px
+          height: 22px
+          display: block
+
+      .committer-avatar
+        width: 30px
+        height: 30px
+        display: inline-block
+        border-radius: 50%
+        margin-right: 20px
+
+      .data-with-label
+
+        .data-label, .data-info
+          display: block
+
+        .data-label
+          margin-bottom: 3px
+          font-weight: $weight-medium
+          color: $text-primary
+          text-transform: uppercase
+          font-size: 12px
+
+      .data-text
+        width: auto
+        font-size: 14px
+        font-weight: $weight-normal
+        padding: 0 10px
+        color: $text-primary
+
+        &.no-padding
+          padding: 0
+
+        &.is-title
+          font-size: 15px
+          font-weight: $weight-medium
+          color: $text-primary
+          font-family: $font-family-roboto
+
+        &.is-subtitle
+          font-size: 13px
+          font-weight: $weight-normal
+          font-family: $font-family-roboto
+          color: rgba($text-primary, .8)
+
+        &.is-small
+          font-size: 13px
+
+        .data-label
+          font-weight: $weight-medium
+          color: $text-primary
+
+        i, img
+          width: 20px
+          height: 20px
+          display: block
+          margin: 0 auto
+          font-size: 20px
+
+        img
+          width: 30px
+          height: 30px
+          border: 1px solid $border-secondary
+          border-radius: 4px
+          margin-bottom: 3px
+
+        i
+
+          &.icon-small
+            font-size: 14px
+            padding-top: 4px
+
+          &.is-yellow
+            color: $yellow
+
+          &.is-green
+            color: $green
+
+          &.is-red
+            color: $red
+
+      .status-line
+        width: 3px
+        height: 25px
+        background: transparent
+        display: inline-block
+        margin-right: 15px
+        background: $border-default
+
+        &.is-queued
+          background: $gray
+
+        &.is-passing
+          background: $green
+
+        &.is-failing
+          background: $red
+
+        &.is-running
+          background: $yellow

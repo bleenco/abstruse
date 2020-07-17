@@ -1,0 +1,49 @@
+<div *ngIf="(loggedIn | async); else loggedOut">
+  <ng-container *ngTemplateOutlet="timeoutTemplate"></ng-container>
+</div>
+
+<ng-template #loggedOut>
+  <header class="header">
+    <div class="container">
+      <nav class="header-container">
+        <div class="header-left">
+          <a class="header-item logo" [routerLink]="['/']">
+            <img src="/assets/images/abstruse.svg" class="logo-text" />
+          </a>
+        </div>
+        <div class="header-right"></div>
+      </nav>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <ng-container *ngTemplateOutlet="timeoutTemplate"></ng-container>
+    </div>
+  </main>
+</ng-template>
+
+<ng-template #timeoutTemplate>
+  <header class="subheader">
+    <div class="container">
+      <div class="subheader-container">
+        <div class="subheader-left">
+          <h1>504</h1>
+          <h2>Gateway Timeout</h2>
+        </div>
+        <div class="subheader-right"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="columns is-multiline">
+      <div class="column is-8 is-offset-2">
+        <div class="notification">
+          <i class="fas fa-search-location"></i>
+          <p>Looks like the API is not available, please check on that, then return <a [routerLink]="['/']">back</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

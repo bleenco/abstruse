@@ -1,0 +1,80 @@
+.button
+  +unselectable
+  color: $text-button
+  border-radius: 3px
+  border: 1px solid $border-button
+  padding: 10px 20px
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  font-size: 13px
+  font-weight: $weight-semibold
+  outline: none
+  cursor: pointer
+  background: $background-button
+  box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)
+  transition: all 100ms ease-out
+
+  &[disabled]
+    opacity: .5 !important
+    pointer-events: none
+    touch-action: none
+
+  &:not(:last-child)
+    margin-right: 10px
+
+  &:hover, &.is-active
+    color: $text-primary
+    border: 1px solid $border-secondary
+
+  &.is-xsmall
+    padding: 0 12px
+    font-size: 11px
+    height: 26px
+
+  &.is-small
+    padding: 7px 15px
+    font-size: 12px
+
+    i
+      font-size: 14px
+
+  &.is-large
+    padding: 10px 30px
+
+  i
+    margin-right: 7px
+
+  img
+    display: inline-block
+    width: 16px
+    height: 16px
+    margin-right: 7px
+
+  &.is-fullwidth
+    width: 100%
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      background: $color
+      color: $white
+      border-color: $color
+
+      &:hover
+        background: rgba($color, .9)
+
+      &.is-outline
+        background: $white
+        color: $color
+
+        &:hover
+          background: $color
+          color: $white
+
+label
+
+  &.button
+    font-weight: $weight-medium
+
+    input[type="file"]
+      display: none

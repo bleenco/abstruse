@@ -1,0 +1,69 @@
+<header class="header">
+  <div class="container">
+    <nav class="header-container">
+      <div class="header-left">
+        <a class="header-item logo" [routerLink]="['/']">
+          <img src="/assets/images/abstruse.svg" class="logo-text" />
+        </a>
+        <a class="header-item" [routerLink]="['/repos']" routerLinkActive="is-active">
+          <span>Repositories</span>
+        </a>
+        <a class="header-item" [routerLink]="['/teams']" routerLinkActive="is-active">
+          <span>Teams</span>
+        </a>
+        <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active">
+          <span>Images</span>
+        </a>
+        <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
+          <span>Workers</span>
+        </a>
+      </div>
+      <div class="header-right">
+        <div class="header-item">
+          <div class="user-item" (click)="toggleDropdown()">
+            <img [src]="user.avatar" class="avatar" />
+            <div class="user-info">
+              <span class="name">{{ user.name }}</span>
+              <span class="role">{{ user.role }}</span>
+            </div>
+            <i class="fas fa-caret-down icon-down"></i>
+          </div>
+
+          <div class="header-dropdown-container" [hidden]="!dropdownOpened">
+            <div class="hd-links">
+              <a class="hd-item">
+                <span>Dashboard</span>
+              </a>
+              <a class="hd-item">
+                <span>Worker Nodes</span>
+              </a>
+              <a class="hd-item">
+                <span>Teams</span>
+              </a>
+              <a class="hd-item" [routerLink]="['/providers']">
+                <span>Providers</span>
+              </a>
+              <a class="hd-item">
+                <span>Administration</span>
+              </a>
+              <a class="hd-item">
+                <span>Help & Support</span>
+              </a>
+              <a class="hd-item" [routerLink]="['/system']">
+                <span>System Information</span>
+              </a>
+            </div>
+            <div class="hd-links gray-bg">
+              <a class="hd-item" [routerLink]="['/profile']">
+                <span>Profile</span>
+              </a>
+              <a class="hd-item" (click)="logout()">
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>

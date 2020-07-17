@@ -1,0 +1,102 @@
+form
+  margin: 10px 0
+  font-family: $font-family
+
+  .form-buttons
+    margin: 10px 0
+
+    &.has-border
+      margin: 20px 0
+      padding: 10px 0
+      border-top: 1px solid $border-default
+
+  .columns
+    margin-top: 0 !important
+    margin-bottom: 0 !important
+
+    .column
+      padding-top: 0
+      padding-bottom: 0
+
+.field
+  display: inline-block
+  width: 100%
+  max-width: 100%
+  position: relative
+  margin-bottom: 10px
+
+  .input-button
+    position: absolute
+    right: 0px
+    top: 40px
+
+.label
+  display: block
+  color: $text-label
+  font-size: 12px
+  font-weight: $weight-medium
+  margin: 15px 0 5px 0
+  text-transform: uppercase
+  font-family: $font-family
+
+  i
+    margin-left: 5px
+
+.input
+  -moz-appearance: none
+  -webkit-appearance: none
+  font-family: $font-family
+  color: $text-primary
+  font-size: 15px
+  height: $input-height
+  text-indent: 0
+  border: 1px solid $border-input
+  background: $background-input
+  outline: none
+  display: flex
+  align-items: center
+  justify-content: center
+  line-height: 100%
+  margin: 0
+  padding: 10px 30px 10px 10px
+  width: 100%
+  border-radius: $border-radius
+  transition: border-color 200ms ease-in-out
+  text-size-adjust: none !important
+  +placeholder
+    color: $text-secondary
+    opacity: .6
+    font-size: 15px
+    line-height: normal
+
+  &[disabled]
+    opacity: .5
+
+  &:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus, &:-webkit-autofill::first-line
+    border: 1px solid $border-input
+    -webkit-text-fill-color: $text-primary
+    -webkit-box-shadow: 0 0 0 1000px $background-input inset
+    transition: background-color 5000s ease-in-out 0s
+
+  &[type="number"]
+    -moz-appearance: textfield
+
+    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
+      -webkit-appearance: none
+
+.form-helper
+  display: block
+  padding: 8px 0 0 0
+  font-size: 14px
+  font-weight: $weight-normal
+  color: $text-secondary
+  margin-bottom: 5px
+
+  i
+    margin-right: 5px
+
+  &.is-small
+    font-size: 13px
+
+    i
+      font-size: 12px
