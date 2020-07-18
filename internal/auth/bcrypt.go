@@ -4,9 +4,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Password defines password to be hashed.
+type Password struct {
+	Password string
+	Cost     int
+}
+
 // HashPassword generates encrypted password from password string
-func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+func HashPassword(passwd Password) (string, error) {
+	if passwd.Cost == 0 {
+		passwd.Cost = bcrypt.MaxCost
+	}
+	bytes, err := bcrypt.GenerateFromPassword([]byte(passwd.Password), passwd.Cost)
 	return string(bytes), err
 }
 

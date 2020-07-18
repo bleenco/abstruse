@@ -7,6 +7,7 @@ import (
 	"net/http/httputil"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/docker/distribution/configuration"
@@ -22,10 +23,14 @@ func Handler(cfg *config.Registry) http.Handler {
 	config := &configuration.Configuration{}
 	config.Storage = map[string]configuration.Parameters{
 		"filesystem": map[string]interface{}{"rootdirectory": cfg.DataDir},
+		"cache": map[string]interface{}{
+			"blobdescriptor": "inmemory",
+		},
 	}
 	config.HTTP.Secret = "randpasswd"
 	config.HTTP.Prefix = "/registry/"
 	config.HTTP.RelativeURLs = true
+	config.HTTP.DrainTimeout = time.Duration(10) * time.Second
 	config.Auth = configuration.Auth{
 		"htpasswd": configuration.Parameters{
 			"realm": "abstruse",

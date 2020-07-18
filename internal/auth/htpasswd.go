@@ -7,7 +7,7 @@ import (
 )
 
 func generateHtpasswdFile(filePath, user, password string) error {
-	passwd, err := HashPassword(password)
+	passwd, err := HashPassword(Password{Password: password, Cost: 1})
 	if err != nil {
 		return err
 	}

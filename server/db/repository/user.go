@@ -74,7 +74,7 @@ func (r UserRepo) UpdatePassword(userID uint, currentPassword, newPassword strin
 		return fmt.Errorf("invalid current password")
 	}
 
-	password, err := auth.HashPassword(newPassword)
+	password, err := auth.HashPassword(auth.Password{Password: newPassword})
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (r UserRepo) Create(data UserForm) (model.User, error) {
 		Role:   data.Role,
 		Active: data.Active,
 	}
-	password, err := auth.HashPassword(data.Password)
+	password, err := auth.HashPassword(auth.Password{Password: data.Password})
 	if err != nil {
 		return user, err
 	}
