@@ -1,0 +1,37 @@
+<div class="list-item" *ngIf="image">
+  <div class="columns">
+    <div class="column is-1">
+      <div class="list-item-content">
+        <i class="fab fa-docker is-blue is-medium"></i>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Name</span>
+        <span class="text">{{ image.name }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Created At</span>
+        <span class="text">{{ image.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Updated At</span>
+        <span class="text">{{ image.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-5">
+      <div class="list-item-content">
+        <span class="label">Tags</span>
+        <span class="text">
+          <span class="tag is-gray" *ngFor="let tag of image.tags">
+            {{ tag.tag }}
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
