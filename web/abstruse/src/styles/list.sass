@@ -24,6 +24,16 @@ $list-heading-height: 50px
       cursor: pointer
       background: $background-light
 
+  &.is-slim
+    height: $list-item-height - 15px
+
+    .columns
+
+      .column
+
+        .list-item-content
+          height: $list-item-height - 15px
+
   .columns
     margin: 0
     padding: 0
@@ -78,9 +88,6 @@ $list-heading-height: 50px
             font-size: 20px
             margin-right: 5px
 
-        .tag
-          margin-top: 3px
-
         .icon-large
           font-size: 26px
           display: block
@@ -98,6 +105,56 @@ $list-heading-height: 50px
           display: block
           width: 16px
           height: 16px
+
+.sub-list-items
+  width: calc(100% - 20px)
+  margin-left: 15px
+  border-left: 1px solid $border-default
+  margin-bottom: 10px
+  margin-top: -11px
+  position: relative
+
+  &.is-closed
+    display: none
+
+  &::after
+    content: ''
+    width: 1px
+    height: 22px
+    border: 1px solid $white
+    position: absolute
+    left: -1px
+    bottom: 0
+
+  .sub-list-item
+    width: calc(100% - 15px)
+    height: 45px
+    border: 1px solid $border-default
+    margin-top: -1px
+    margin-left: 15px
+    position: relative
+
+    &::before
+      content: ''
+      position: absolute
+      width: 7px
+      border-top: 1px solid $border-default
+      top: 21px
+      left: -16px
+
+    .columns
+      margin: 0
+      height: 100%
+
+      .column
+        padding: 0 5px
+        height: 100%
+        display: flex
+        align-items: center
+
+    .text-light
+      +ellipsis
+      color: $text-secondary
 
 .list-heading
   width: 100%
@@ -133,11 +190,24 @@ $list-heading-height: 50px
   border-left: 2px solid transparent
   background: $background
 
+  +mobile
+    padding: 10px
+    height: auto
+
+    .columns
+      height: auto
+
   &.is-slim
     height: $list-item-condensed-height - 15px
 
     .columns
       height: $list-item-condensed-height - 15px
+
+    +mobile
+      height: auto
+
+      .columns
+        height: auto
 
   &:hover
     cursor: pointer

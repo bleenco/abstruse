@@ -9,6 +9,8 @@ import { Image } from '../shared/image.model';
 export class ImageListItemComponent implements OnInit {
   @Input() image!: Image;
 
+  items: boolean = false;
+
   constructor() {}
 
   ngOnInit(): void {}

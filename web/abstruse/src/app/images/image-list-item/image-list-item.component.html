@@ -1,8 +1,8 @@
-<div class="list-item" *ngIf="image">
+<div class="list-item is-slim" *ngIf="image">
   <div class="columns">
     <div class="column is-1">
       <div class="list-item-content">
-        <i class="fab fa-docker is-blue is-medium"></i>
+        <i class="fab fa-docker is-medium"></i>
       </div>
     </div>
     <div class="column is-2">
@@ -23,14 +23,92 @@
         <span class="text">{{ image.updatedAt | date:'medium' }}</span>
       </div>
     </div>
-    <div class="column is-5">
+    <div class="column is-4">
       <div class="list-item-content">
-        <span class="label">Tags</span>
         <span class="text">
-          <span class="tag is-gray" *ngFor="let tag of image.tags">
+          <span class="tag is-medium is-light" *ngFor="let tag of image.tags">
             {{ tag.tag }}
           </span>
+          <span class="tag is-medium is-light">v1.0.0</span>
+          <span class="tag is-medium is-light">canary</span>
         </span>
+      </div>
+    </div>
+    <div class="column is-1 justify-center align-center">
+      <button type="button" class="button is-small" (click)="items = !items">
+        <i class="fas fa-level-down-alt" *ngIf="!items"></i>
+        <span *ngIf="!items">Open</span>
+        <i class="fas fa-level-up-alt" *ngIf="items"></i>
+        <span *ngIf="items">Close</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="sub-list-items" [class.is-closed]="!items">
+  <div class="sub-list-item">
+    <div class="columns">
+      <div class="column is-1">
+        <span class="tag is-medium is-light">latest</span>
+      </div>
+      <div class="column is-6">
+        <span class="text-light">sha256:3e03ae5261bb3fecfc758b085101f62b348d2e312f68a0d306692da865a78f09</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-1">
+        <button type="button" class="button is-xsmall">
+          <i class="far fa-edit"></i>
+          <span>Edit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="sub-list-item">
+    <div class="columns">
+      <div class="column is-1">
+        <span class="tag is-medium is-light">canary</span>
+      </div>
+      <div class="column is-6">
+        <span class="text-light">sha256:3e03ae5261bb3fecfc758b085101f62b348d2e312f68a0d306692da865a78f09</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-1">
+        <button type="button" class="button is-xsmall">
+          <i class="far fa-edit"></i>
+          <span>Edit</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="sub-list-item">
+    <div class="columns">
+      <div class="column is-1">
+        <span class="tag is-medium is-light">v1.0.0</span>
+      </div>
+      <div class="column is-6">
+        <span class="text-light">sha256:3e03ae5261bb3fecfc758b085101f62b348d2e312f68a0d306692da865a78f09</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-2">
+        <span class="text-light">Jul 18, 2020, 6:40:50 PM</span>
+      </div>
+      <div class="column is-1">
+        <button type="button" class="button is-xsmall">
+          <i class="far fa-edit"></i>
+          <span>Edit</span>
+        </button>
       </div>
     </div>
   </div>

@@ -13,6 +13,12 @@
   i
     margin-right: 5px
 
+  &:not(:first-child)
+      margin-left: 5px
+
+  &:not(:last-child)
+    margin-right: 5px
+
   &.is-light
     border: 1px solid $border-default
     color: $text-secondary
@@ -26,7 +32,7 @@
     margin-left: auto
     margin-right: auto
     text-align: center
-    padding: 8px 10px
+    padding: 5px 10px
 
     i, img
       font-size: 14px !important
