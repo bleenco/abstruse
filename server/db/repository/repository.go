@@ -8,6 +8,7 @@ type Repo struct {
 	User     UserRepo
 	Build    BuildRepo
 	Job      JobRepo
+	Image    ImageRepo
 }
 
 // NewRepo initializes and returns Repo instance.
@@ -19,5 +20,6 @@ func NewRepo() Repo {
 		User:     NewUserRepo(),
 		Build:    NewBuildRepo(),
 		Job:      NewJobRepo(),
+		Image:    NewImageRepo(),
 	}
 }

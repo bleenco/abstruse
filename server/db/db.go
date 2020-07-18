@@ -42,6 +42,8 @@ func Connect(cfg *config.Db, logger *zap.Logger) {
 				model.Repository{},
 				model.Build{},
 				model.Job{},
+				model.Image{},
+				model.ImageTag{},
 			)
 			db = conn
 			log.Debugf("succesfully connected to database")

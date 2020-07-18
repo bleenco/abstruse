@@ -18,7 +18,6 @@ type Client struct {
 
 // NewClient returns new Docker image registry client.
 func NewClient(uri, username, password string) (*Client, error) {
-	fmt.Println(uri, username, password)
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
@@ -40,30 +39,31 @@ func NewClient(uri, username, password string) (*Client, error) {
 }
 
 // Find list all repositories with images and tags stored in registry.
-func (c *Client) Find() (Resp, error) {
-	var resp Resp
+func (c *Client) Find() ([]Image, error) {
+	var images []Image
 	ctx := context.Background()
+
 	repos, _, err := c.findRepos(ctx)
 	if err != nil {
-		return resp, err
+		return images, err
 	}
 	for _, name := range repos.Repositories {
 		image := Image{Name: name}
 		tags, _, err := c.findTags(ctx, name)
 		if err != nil {
-			return resp, err
+			return images, err
 		}
 		for _, tag := range tags.Tags {
 			manifest, err := c.findManifest(ctx, name, tag)
 			if err != nil {
-				return resp, err
+				return images, err
 			}
 			image.Tags = append(image.Tags, Tag{Tag: tag, Digest: manifest.Digest, Date: manifest.Date})
 		}
-		resp.Images = append(resp.Images, image)
+		images = append(images, image)
 	}
 
-	return resp, nil
+	return images, nil
 }
 
 func (c *Client) findManifest(ctx context.Context, name, tag string) (*manifestResp, error) {
@@ -101,12 +101,6 @@ func (c *Client) findRepos(ctx context.Context) (*reposResp, *httpclient.Respons
 	out := new(reposResp)
 	res, err := c.Client.Do(ctx, "GET", endpoint, nil, out)
 	return out, res, err
-}
-
-// Resp data structure for returning docker image registry
-// items and all its data to client.
-type Resp struct {
-	Images []Image `json:"images"`
 }
 
 // Image data struct for response.

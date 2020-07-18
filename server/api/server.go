@@ -57,15 +57,14 @@ func (s *Server) Run() error {
 
 	// go func() {
 	// 	time.Sleep(5 * time.Second)
-	// 	client, err := registry.NewClient("http://localhost/registry/v2/", s.config.Registry.Username, s.config.Registry.Password)
+	// 	service, err := service.NewImageService(s.config.Registry)
 	// 	if err != nil {
-	// 		s.logger.Errorf("error: %s", err.Error())
+	// 		s.logger.Errorf("error: %v", err)
 	// 	}
-	// 	images, err := client.Find()
-	// 	if err != nil {
-	// 		s.logger.Errorf("error: %s", err.Error())
+
+	// 	if err := service.Sync(); err != nil {
+	// 		s.logger.Errorf("error: %v", err)
 	// 	}
-	// 	fmt.Printf("%+v\n", images)
 	// }()
 
 	if s.config.HTTP.TLS {

@@ -4,7 +4,7 @@ import "time"
 
 // Build defines `builds` database table.
 type Build struct {
-	ID              uint        `gorm:"PRIMARY_KEY;AUTO_INCREMENT;NOT NULL" json:"id"`
+	ID              uint        `gorm:"primary_key;auto_increment;not null" json:"id"`
 	Branch          string      `json:"branch"`
 	Commit          string      `json:"commit"`
 	CommitMessage   string      `json:"commitMessage"`
@@ -23,8 +23,8 @@ type Build struct {
 	CommitterAvatar string      `gorm:"default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"committerAvatar"`
 	StartTime       *time.Time  `json:"startTime"`
 	EndTime         *time.Time  `json:"endTime"`
-	Jobs            []*Job      `gorm:"PRELOAD:false" json:"jobs,omitempty"`
-	Repository      *Repository `gorm:"PRELOAD:false" json:"repository,omitempty"`
+	Jobs            []*Job      `gorm:"preload:false" json:"jobs,omitempty"`
+	Repository      *Repository `gorm:"preload:false" json:"repository,omitempty"`
 	RepositoryID    uint        `json:"repositoryID"`
 	TimestampModel
 }

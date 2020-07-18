@@ -10,6 +10,16 @@ func Index(vs []string, t string) int {
 	return -1
 }
 
+// IndexUint returns the first index of the target uint t, or -1 if not match is found.
+func IndexUint(vs []uint, t uint) int {
+	for i, v := range vs {
+		if v == t {
+			return i
+		}
+	}
+	return -1
+}
+
 // Include returns true if the target string t is in the slice.
 func Include(vs []string, t string) bool {
 	return Index(vs, t) >= 0
