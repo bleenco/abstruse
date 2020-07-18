@@ -1,0 +1,45 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>Docker Image</h1>
+    <h2>Build Docker Image</h2>
+  </div>
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="building">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="columns is-multiline">
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Name</label>
+          <input type="text" name="name" class="input" placeholder="Image Name" formControlName="name"
+            autocomplete="off" />
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="field">
+          <label class="label">Tag</label>
+          <input type="text" name="tag" class="input" placeholder="Image Tag or Version" formControlName="tag"
+            autocomplete="off" />
+        </div>
+      </div>
+      <div class="column is-12">
+        <div class="field">
+          <label class="label">Dockerfile</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer space-between">
+    <div class="align-center"></div>
+    <div class="align-center">
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="building">Cancel</button>
+      <button type="submit" class="button is-green" [disabled]="!form.valid || building">
+        <span *ngIf="!building">Build Image</span>
+        <app-loader class="is-small" *ngIf="building"></app-loader>
+        <span *ngIf="building">Building Image...</span>
+      </button>
+    </div>
+  </div>
+</form>

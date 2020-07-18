@@ -3,6 +3,8 @@ import { ImagesService } from '../shared/images.service';
 import { Image } from '../shared/image.model';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
+import { ModalService } from 'src/app/shared/components/modal/modal.service';
+import { ImageModalComponent } from '../image-modal/image-modal.component';
 
 @UntilDestroy()
 @Component({
@@ -16,10 +18,18 @@ export class ImagesComponent implements OnInit {
   images: Image[] = [];
   error: string | null = null;
 
-  constructor(private imagesService: ImagesService) {}
+  constructor(private imagesService: ImagesService, private modal: ModalService) {}
 
   ngOnInit(): void {
     this.find();
+  }
+
+  openImageModal(): void {
+    const modalRef = this.modal.open(ImageModalComponent, { size: 'medium' });
+    modalRef.result.then(
+      ok => {},
+      () => {}
+    );
   }
 
   find(): void {

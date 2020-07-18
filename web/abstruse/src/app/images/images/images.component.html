@@ -15,7 +15,7 @@
           <app-loader class="is-small" *ngIf="syncing"></app-loader>
           <span *ngIf="syncing">Syncing Images...</span>
         </button>
-        <button type="button" class="button is-green">
+        <button type="button" class="button is-green" (click)="openImageModal()">
           <i class="fas fa-plus"></i>
           <span>Create New Image</span>
         </button>

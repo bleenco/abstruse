@@ -4,9 +4,11 @@ import { ImagesRoutingModule } from './images-routing.module';
 import { ImagesComponent } from './images/images.component';
 import { SharedModule } from '../shared';
 import { ImageListItemComponent } from './image-list-item/image-list-item.component';
+import { ImageModalComponent } from './image-modal/image-modal.component';
 
 @NgModule({
-  declarations: [ImagesComponent, ImageListItemComponent],
-  imports: [CommonModule, ImagesRoutingModule, SharedModule]
+  imports: [CommonModule, ImagesRoutingModule, SharedModule],
+  declarations: [ImagesComponent, ImageListItemComponent, ImageModalComponent],
+  entryComponents: [ImageModalComponent]
 })
 export class ImagesModule {}
