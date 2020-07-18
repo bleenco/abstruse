@@ -57,6 +57,7 @@ func (r *router) apiRouter() *chi.Mux {
 		router.Mount("/repos", r.reposRouter())
 		router.Mount("/builds", r.buildsRouter())
 		router.Mount("/workers", r.workersRouter())
+		router.Mount("/images", r.imagesRouter())
 		router.Mount("/system", r.systemRouter())
 	})
 
@@ -149,6 +150,17 @@ func (r *router) buildsRouter() *chi.Mux {
 	router.Get("/job/{id}", builds.findJob())
 	router.Put("/job/restart", builds.restartJob())
 	router.Put("/job/stop", builds.stopJob())
+
+	return router
+}
+
+func (r *router) imagesRouter() *chi.Mux {
+	router := chi.NewRouter()
+	cfg := r.app.GetConfig()
+	images := newImages(cfg.Registry)
+
+	router.Get("/", images.find())
+	router.Put("/sync", images.sync())
 
 	return router
 }

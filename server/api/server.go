@@ -55,18 +55,6 @@ func (s *Server) Run() error {
 
 	s.logger.Infof("starting HTTP server on %s://%s", scheme, addr)
 
-	// go func() {
-	// 	time.Sleep(5 * time.Second)
-	// 	service, err := service.NewImageService(s.config.Registry)
-	// 	if err != nil {
-	// 		s.logger.Errorf("error: %v", err)
-	// 	}
-
-	// 	if err := service.Sync(); err != nil {
-	// 		s.logger.Errorf("error: %v", err)
-	// 	}
-	// }()
-
 	if s.config.HTTP.TLS {
 		go s.closeWith(s.ServeTLS(listener, s.config.TLS.Cert, s.config.TLS.Key))
 	} else {
