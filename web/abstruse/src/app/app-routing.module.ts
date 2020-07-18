@@ -30,6 +30,16 @@ const routes: Routes = [
     canLoad: [AuthGuardService]
   },
   {
+    path: 'teams',
+    loadChildren: () => import('./teams/teams.module').then(m => m.TeamsModule),
+    canLoad: [AuthGuardService]
+  },
+  {
+    path: 'images',
+    loadChildren: () => import('./images/images.module').then(m => m.ImagesModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'setup',
     loadChildren: () => import('./setup/setup.module').then(m => m.SetupModule),
     canActivate: [SetupDoneGuardService]
