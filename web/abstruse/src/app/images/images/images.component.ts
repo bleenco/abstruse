@@ -25,7 +25,7 @@ export class ImagesComponent implements OnInit {
   }
 
   openImageModal(): void {
-    const modalRef = this.modal.open(ImageModalComponent, { size: 'medium' });
+    const modalRef = this.modal.open(ImageModalComponent, { size: 'large' });
     modalRef.result.then(
       ok => {},
       () => {}

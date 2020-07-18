@@ -27,6 +27,11 @@
       <div class="column is-12">
         <div class="field">
           <label class="label">Dockerfile</label>
+          <div class="editor-container">
+            <ngx-monaco-editor style="height: 100%; border-radius: 4px;" [options]="editorOptions"
+              formControlName="dockerfile">
+            </ngx-monaco-editor>
+          </div>
         </div>
       </div>
     </div>

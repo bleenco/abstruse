@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxUploaderModule } from 'ngx-uploader';
 import { CookieService } from 'ngx-cookie-service';
+import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor';
 
 import { SocketService } from './providers/socket.service';
 import { DataService } from './providers/data.service';
@@ -20,8 +21,25 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
 import { TerminalComponent } from './components/terminal/terminal.component';
 
+import { monacoEditorOptions, blackboardTheme } from './models/monaco.model';
+
+const monacoConfig: NgxMonacoEditorConfig = {
+  defaultOptions: monacoEditorOptions,
+  onMonacoLoad: () => {
+    monaco.editor.defineTheme('blackboard', blackboardTheme as any);
+  }
+};
+
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, ModalModule, NgxUploaderModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    ModalModule,
+    NgxUploaderModule,
+    MonacoEditorModule.forRoot(monacoConfig)
+  ],
   declarations: [
     CheckboxComponent,
     ProgressBarComponent,
@@ -40,6 +58,7 @@ import { TerminalComponent } from './components/terminal/terminal.component';
     ReactiveFormsModule,
     HttpClientModule,
     NgxUploaderModule,
+    MonacoEditorModule,
     CheckboxComponent,
     ProgressBarComponent,
     SelectboxComponent,

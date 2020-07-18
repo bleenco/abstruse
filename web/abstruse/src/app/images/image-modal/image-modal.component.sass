@@ -1,0 +1,19 @@
+@import 'colours'
+@import 'variables'
+
+.editor-container
+  display: block
+  width: 100%
+  height: 300px
+  border-radius: $border-radius
+
+  ::ng-deep
+    .editor-container
+      border-radius: $border-radius
+
+      .monaco-editor
+        border-radius: $border-radius
+        padding: 10px 0
+
+        .overflow-guard
+          border-radius: $border-radius !important

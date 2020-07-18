@@ -13,6 +13,10 @@ export class ImageModalComponent implements OnInit {
   tag!: Tag;
   building: boolean = false;
   form!: FormGroup;
+  editorOptions = {
+    theme: 'blackboard',
+    language: 'dockerfile'
+  };
 
   constructor(private fb: FormBuilder, public activeModal: ActiveModal) {}
 
