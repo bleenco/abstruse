@@ -5,12 +5,16 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/bleenco/abstruse/internal/auth"
+	"github.com/bleenco/abstruse/internal/common"
 	pb "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/bleenco/abstruse/server/db/model"
+	"github.com/bleenco/abstruse/server/registry"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -124,14 +128,15 @@ func (w *Worker) Run() error {
 	w.emitData()
 	w.app.scheduler.AddWorker(w)
 
-	// TODO: testing!
+	// // TODO: testing!
 	// tags := []string{
 	// 	"latest",
-	// 	"v0.1.0",
+	// 	"v4.0.0",
+	// 	"v4.1.0",
 	// }
 	// dockerFile := `
 	// FROM ubuntu:focal
-	// RUN apt update && apt install -y curl wget
+	// RUN apt update && apt install -y build-essential clang
 	// `
 
 	// if err := w.buildImage(context.Background(), "ubuntu-essential", dockerFile, tags); err != nil {
@@ -350,6 +355,8 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 				}
 
 				result[id].push = true
+				splitted := strings.Split(content, " ")
+				result[id].digest = splitted[2]
 			}
 		case pb.ImageOutput_PushError:
 			for _, tag := range tags {
@@ -365,8 +372,40 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 		}
 	}
 
+	client, err := registry.NewClient(common.RegistryURL, w.app.cfg.Registry.Username, w.app.cfg.Registry.Password)
+	if err != nil {
+		return err
+	}
+
 	for name, res := range result {
-		fmt.Printf("%s: %+v\n", name, res.digest)
+		splitted := strings.Split(name, ":")
+		name = splitted[0]
+		tag := splitted[1]
+
+		image := model.Image{Name: name}
+		image, err = w.app.repo.Image.CreateOrUpdate(image)
+		if err != nil {
+			return err
+		}
+
+		imageTag := &model.ImageTag{
+			Tag:        tag,
+			Dockerfile: strings.TrimSpace(dockerfile),
+			Digest:     strings.TrimSpace(res.digest),
+			ImageID:    image.ID,
+			BuildTime:  time.Now(),
+		}
+
+		manifest, err := client.FindManifest(context.Background(), name, tag)
+		if err != nil {
+			return err
+		}
+		imageTag.Size = manifest.Size
+
+		imageTag, err = w.app.repo.Image.CreateOrUpdateTag(imageTag)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

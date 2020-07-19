@@ -54,7 +54,7 @@ func (c *Client) Find() ([]Image, error) {
 			return images, err
 		}
 		for _, tag := range tags.Tags {
-			manifest, err := c.findManifest(ctx, name, tag)
+			manifest, err := c.FindManifest(ctx, name, tag)
 			if err != nil {
 				return images, err
 			}
@@ -66,9 +66,10 @@ func (c *Client) Find() ([]Image, error) {
 	return images, nil
 }
 
-func (c *Client) findManifest(ctx context.Context, name, tag string) (*manifestResp, error) {
+// FindManifest returns manifest info about image with specified tag.
+func (c *Client) FindManifest(ctx context.Context, name, tag string) (*ManifestResp, error) {
 	endpoint := fmt.Sprintf("/%s/manifests/%s", name, tag)
-	out := new(manifestResp)
+	out := new(ManifestResp)
 
 	req := &httpclient.Request{
 		Method: "GET",
@@ -136,7 +137,8 @@ type tagsResp struct {
 	Tags []string `json:"tags"`
 }
 
-type manifestResp struct {
+// ManifestResp manifest data.
+type ManifestResp struct {
 	Digest string `json:"digest"`
 	Size   int    `json:"size"`
 }

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"context"
 	"time"
 
+	"github.com/bleenco/abstruse/internal/common"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db/model"
@@ -18,8 +20,7 @@ type ImageService struct {
 
 // NewImageService returns new ImageService instance.
 func NewImageService(cfg *config.Registry) (ImageService, error) {
-	url := "http://localhost/registry/v2/"
-	client, err := registry.NewClient(url, cfg.Username, cfg.Password)
+	client, err := registry.NewClient(common.RegistryURL, cfg.Username, cfg.Password)
 	if err != nil {
 		return ImageService{}, err
 	}
@@ -28,6 +29,11 @@ func NewImageService(cfg *config.Registry) (ImageService, error) {
 		imageRepo: repository.NewImageRepo(),
 		client:    client,
 	}, nil
+}
+
+// FindManifest gets manifest info.
+func (s *ImageService) FindManifest(name, tag string) (*registry.ManifestResp, error) {
+	return s.client.FindManifest(context.Background(), name, tag)
 }
 
 // Sync synchronizes images from registry with database.

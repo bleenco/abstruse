@@ -31,10 +31,11 @@ func (r *ImageRepo) CreateOrUpdate(data model.Image) (model.Image, error) {
 		return data, err
 	}
 
-	err = db.Model(&data).Where("name = ?", data.Name).First(&data).Error
+	var image model.Image
+	err = db.Model(&image).Where("name = ?", data.Name).First(&image).Error
 	if err == nil {
-		err = db.Model(&data).Updates(&data).Error
-		return data, err
+		err = db.Model(&image).Updates(data).Error
+		return image, err
 	}
 
 	err = db.Create(&data).Error
@@ -48,10 +49,11 @@ func (r *ImageRepo) CreateOrUpdateTag(data *model.ImageTag) (*model.ImageTag, er
 		return data, err
 	}
 
-	err = db.Model(&data).Where("digest = ? AND image_id = ? AND tag = ?", data.Digest, data.ImageID, data.Tag).First(&data).Error
+	var tag model.ImageTag
+	err = db.Model(&tag).Where("image_id = ? AND tag = ?", data.ImageID, data.Tag).First(&tag).Error
 	if err == nil {
-		err = db.Model(&data).Updates(&data).Error
-		return data, err
+		err = db.Model(&tag).Updates(data).Error
+		return &tag, err
 	}
 
 	err = db.Create(&data).Error
