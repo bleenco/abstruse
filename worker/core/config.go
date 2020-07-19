@@ -11,6 +11,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/logger"
 	"github.com/bleenco/abstruse/pkg/tlsutil"
 	"github.com/bleenco/abstruse/worker/config"
+	"github.com/bleenco/abstruse/worker/docker"
 	"github.com/bleenco/abstruse/worker/id"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -138,6 +139,11 @@ func InitTLS() {
 func InitAuthentication() {
 	secret := viper.GetString("auth.jwtsecret")
 	auth.Init(secret, 0, 0)
+}
+
+// InitDocker initializes Docker registry related data.
+func InitDocker() {
+	docker.Init(Config.Registry)
 }
 
 func fatal(msg interface{}) {

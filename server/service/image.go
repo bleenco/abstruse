@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db/model"
@@ -62,14 +64,14 @@ func (s *ImageService) Sync() error {
 			}
 
 			if tt == nil {
-				t := &model.ImageTag{
+				tt = &model.ImageTag{
 					Tag:       tag.Tag,
 					Digest:    tag.Digest,
-					BuildTime: tag.Date,
+					Size:      tag.Size,
+					BuildTime: time.Now(),
 					ImageID:   imageModel.ID,
 				}
-
-				if _, err = s.imageRepo.CreateOrUpdateTag(t); err != nil {
+				if _, err = s.imageRepo.CreateOrUpdateTag(tt); err != nil {
 					return err
 				}
 			} else {

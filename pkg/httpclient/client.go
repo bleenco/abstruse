@@ -69,7 +69,7 @@ func (c *Client) Do(ctx context.Context, method, path string, in, out interface{
 // Req sends an API request and returns the API response.
 // The API reponse is JSON decoded and stored in the value,
 // or returned as an error if an API error has occured.
-func (c *Client) Req(ctx context.Context, in *Request) (*Response, error) {
+func (c *Client) Req(ctx context.Context, in *Request, headers ...http.Header) (*Response, error) {
 	u, err := url.Parse(c.BaseURL.String() + in.Path)
 	if err != nil {
 		return nil, err
@@ -83,6 +83,13 @@ func (c *Client) Req(ctx context.Context, in *Request) (*Response, error) {
 	req = req.WithContext(ctx)
 	if in.Header != nil {
 		req.Header = in.Header
+	}
+	for _, header := range headers {
+		for name, values := range header {
+			for _, value := range values {
+				req.Header.Add(name, value)
+			}
+		}
 	}
 
 	client := c.Client

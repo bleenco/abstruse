@@ -8,9 +8,12 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"io"
+	"path"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/jsonmessage"
 )
 
 // ImageBuildOutput defines log output when building image.
@@ -25,6 +28,7 @@ func BuildImage(tags []string, dockerFile string) (types.ImageBuildResponse, err
 	if err != nil {
 		panic(err)
 	}
+	tags = configureTags(tags)
 
 	dockerfile := []byte(dockerFile)
 	buf := new(bytes.Buffer)
@@ -61,19 +65,20 @@ func BuildImage(tags []string, dockerFile string) (types.ImageBuildResponse, err
 	)
 }
 
-// PushImage pushes image to the registry
-func PushImage(image, username, password string) (io.ReadCloser, error) {
+// PushImage pushes image to the registry.
+func PushImage(tag string) (io.ReadCloser, error) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
+	tag = prependTag(tag)
 
-	authConfig := types.AuthConfig{Username: username, Password: password}
+	authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
 	authJSON, _ := json.Marshal(authConfig)
 	auth := base64.URLEncoding.EncodeToString(authJSON)
 
-	return cli.ImagePush(ctx, image, types.ImagePushOptions{RegistryAuth: auth})
+	return cli.ImagePush(ctx, tag, types.ImagePushOptions{RegistryAuth: auth})
 }
 
 // ListImages returns all images.
@@ -88,4 +93,43 @@ func ListImages() []types.ImageSummary {
 	}
 
 	return images
+}
+
+// StreamImageEvents streams output of an operation on image to a given out channel
+// passed as a parameter.
+func StreamImageEvents(out chan<- jsonmessage.JSONMessage, events io.ReadCloser) {
+	var event jsonmessage.JSONMessage
+	decoder := json.NewDecoder(events)
+	defer close(out)
+
+	for {
+		if err := decoder.Decode(&event); err != nil {
+			break
+		}
+		out <- event
+	}
+}
+
+func configureTags(tags []string) []string {
+	for i, tag := range tags {
+		tags[i] = prependTag(tag)
+	}
+	return tags
+}
+
+func prependTag(tag string) string {
+	if !strings.HasPrefix(tag, cfg.Addr) {
+		tag = path.Clean(path.Join(cfg.Addr, tag))
+	}
+	return tag
+}
+
+func getImageName(tag string) string {
+	if strings.HasPrefix(tag, cfg.Addr) {
+		tag = path.Clean(strings.Replace(tag, cfg.Addr, "", -1))
+	}
+	if strings.HasPrefix(tag, "/") {
+		tag = tag[1:]
+	}
+	return tag
 }

@@ -48,7 +48,7 @@ func (r *ImageRepo) CreateOrUpdateTag(data *model.ImageTag) (*model.ImageTag, er
 		return data, err
 	}
 
-	err = db.Model(&data).Where("digest = ?", data.Digest).First(&data).Error
+	err = db.Model(&data).Where("digest = ? AND image_id = ? AND tag = ?", data.Digest, data.ImageID, data.Tag).First(&data).Error
 	if err == nil {
 		err = db.Model(&data).Updates(&data).Error
 		return data, err

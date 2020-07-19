@@ -59,41 +59,76 @@ func (app *App) Run() error {
 		}
 	}()
 
-	// go func() {
-	// 	tags := []string{
-	// 		"abstruse.jan.local/build-essential:v0.0.1",
-	// 		"abstruse.jan.local/build-essential:canary",
-	// 		"abstruse.jan.local/build-essential:legacy",
-	// 	}
-	// 	dockerFile := `
-	//   FROM ubuntu:focal
-	//   RUN apt update && apt install -y build-essential
-	//   `
+	go func() {
+		// tags := []string{
+		// 	"build-essential:v0.1.0",
+		// }
+		// dockerFile := `
+		// FROM ubuntu:focal
+		// RUN apt update && apt install -y curl wgetč
+		// `
 
-	// 	resp, err := docker.BuildImage(tags, dockerFile)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	defer resp.Body.Close()
+		// resp, err := docker.BuildImage(tags, dockerFile)
+		// if err != nil {
+		// 	panic(err)
+		// }
+		// defer resp.Body.Close()
 
-	// 	_, err = io.Copy(os.Stdout, resp.Body)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
+		// var ev jsonmessage.JSONMessage
+		// outch := make(chan jsonmessage.JSONMessage)
+		// go docker.StreamImageEvents(outch, resp.Body)
+		// for ev = range outch {
+		// 	fmt.Printf("%s", ev.Stream)
+		// }
+		// if strings.HasPrefix(ev.Stream, "Successfully") {
+		// 	fmt.Println("OK!")
+		// } else {
+		// 	fmt.Println("NOK!")
+		// 	if ev.Error != nil {
+		// 		fmt.Printf("error: %s\n", ev.ErrorMessage)
+		// 	}
+		// }
 
-	// 	for _, tag := range tags {
-	// 		out, err := docker.PushImage(tag, "abstruse", "xx2n5")
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 		defer out.Close()
-	// 		_, err = io.Copy(os.Stdout, out)
-	// 		if err != nil {
-	// 			panic(err)
-	// 		}
-	// 	}
+		// outch = make(chan jsonmessage.JSONMessage)
+		// for _, tag := range tags {
+		// 	out, err := docker.PushImage(tag)
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// 	defer out.Close()
+		// 	go docker.StreamImageEvents(outch, out)
+		// 	for ev = range outch {
+		// 		fmt.Printf("%s", ev.ProgressMessage)
+		// 	}
 
-	// }()
+		// 	if ev.Error != nil {
+		// 		fmt.Printf("error: %s\n", ev.Error.Message)
+		// 		fmt.Printf("error: %s\n", ev.ErrorMessage)
+		// 	} else {
+		// 		status := strings.Split(ev.Status, " ")
+		// 		digest := status[2]
+		// 		fmt.Printf("DIGEST: %s", digest)
+		// 	}
+		// }
+
+		// _, err = io.Copy(os.Stdout, resp.Body)
+		// if err != nil {
+		// 	panic(err)
+		// }
+
+		// for _, tag := range tags {
+		// 	out, err := docker.PushImage(tag, "abstruse", "xx2n5")
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// 	defer out.Close()
+		// 	_, err = io.Copy(os.Stdout, out)
+		// 	if err != nil {
+		// 		panic(err)
+		// 	}
+		// }
+
+	}()
 
 	return <-errch
 }

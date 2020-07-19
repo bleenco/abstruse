@@ -124,6 +124,22 @@ func (w *Worker) Run() error {
 	w.emitData()
 	w.app.scheduler.AddWorker(w)
 
+	// TODO: testing!
+	// tags := []string{
+	// 	"latest",
+	// 	"v0.1.0",
+	// }
+	// dockerFile := `
+	// FROM ubuntu:focal
+	// RUN apt update && apt install -y curl wget
+	// `
+
+	// if err := w.buildImage(context.Background(), "ubuntu-essential", dockerFile, tags); err != nil {
+	// 	fmt.Printf("ERROR: %+v\n", err)
+	// } else {
+	// 	fmt.Println("ALL GOOD, CONGRATS!")
+	// }
+
 	ch := make(chan error)
 
 	go func() {
@@ -255,6 +271,105 @@ func (w *Worker) hostInfo(ctx context.Context) (HostInfo, error) {
 		MaxParallel:          info.GetMaxParallel(),
 		ConnectedAt:          time.Now(),
 	}, err
+}
+
+// buildImage gRPC stream.
+func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags []string) error {
+	image := &pb.Image{Name: name, Dockerfile: dockerfile, Tags: tags}
+	stream, err := w.cli.BuildImage(ctx, image)
+	if err != nil {
+		return err
+	}
+	defer stream.CloseSend()
+
+	type img struct {
+		digest   string
+		buildLog []string
+		build    bool
+		pushLog  []string
+		push     bool
+		err      error
+	}
+
+	result := make(map[string]*img)
+
+	for {
+		output, err := stream.Recv()
+		if err != nil {
+			break
+		}
+
+		name := output.GetName()
+		tags := output.GetTags()
+		content := string(output.GetContent())
+
+		switch status := output.GetStatus(); status {
+		case pb.ImageOutput_BuildStream:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].buildLog = append(result[id].buildLog, content)
+			}
+		case pb.ImageOutput_PushStream:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].pushLog = append(result[id].pushLog, content)
+			}
+		case pb.ImageOutput_BuildOK:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].build = true
+			}
+		case pb.ImageOutput_BuildError:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].build = false
+				result[id].err = fmt.Errorf(content)
+				break
+			}
+		case pb.ImageOutput_PushOK:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].push = true
+			}
+		case pb.ImageOutput_PushError:
+			for _, tag := range tags {
+				id := fmt.Sprintf("%s:%s", name, tag)
+				if _, ok := result[id]; !ok {
+					result[id] = &img{}
+				}
+
+				result[id].push = false
+				result[id].err = fmt.Errorf(content)
+				break
+			}
+		}
+	}
+
+	for name, res := range result {
+		fmt.Printf("%s: %+v\n", name, res.digest)
+	}
+
+	return nil
 }
 
 // emitData broadcast newly created worker via websocket.

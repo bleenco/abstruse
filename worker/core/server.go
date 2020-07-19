@@ -3,12 +3,16 @@ package core
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
+	"strings"
 	"sync"
 	"time"
 
 	pb "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/pkg/stats"
+	"github.com/bleenco/abstruse/worker/docker"
+	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/golang/protobuf/ptypes/empty"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -149,4 +153,104 @@ func (s *APIServer) JobLog(in *pb.Job, stream pb.API_JobLogServer) error {
 		s.mu.Unlock()
 		return stream.Context().Err()
 	}
+}
+
+// BuildImage builds Docker image and streams current status of the build process.
+func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) error {
+	var tags []string
+	for _, tag := range in.Tags {
+		tags = append(tags, fmt.Sprintf("%s:%s", in.Name, tag))
+	}
+
+	resp, err := docker.BuildImage(tags, in.Dockerfile)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	var ev jsonmessage.JSONMessage
+	outch := make(chan jsonmessage.JSONMessage)
+
+	go docker.StreamImageEvents(outch, resp.Body)
+	for ev = range outch {
+		out := &pb.ImageOutput{
+			Name:    in.Name,
+			Tags:    in.Tags,
+			Content: []byte(ev.Stream),
+			Status:  pb.ImageOutput_BuildStream,
+		}
+		if err := stream.Send(out); err != nil {
+			return err
+		}
+	}
+	if !strings.HasPrefix(ev.Stream, "Successfully") {
+		out := &pb.ImageOutput{
+			Name:    in.Name,
+			Tags:    in.Tags,
+			Content: []byte(ev.ErrorMessage),
+			Status:  pb.ImageOutput_BuildError,
+		}
+		if serr := stream.Send(out); serr != nil {
+			return serr
+		}
+		return fmt.Errorf(ev.ErrorMessage)
+	}
+	out := &pb.ImageOutput{
+		Name:    in.Name,
+		Tags:    in.Tags,
+		Content: []byte{},
+		Status:  pb.ImageOutput_BuildOK,
+	}
+	if err := stream.Send(out); err != nil {
+		return err
+	}
+
+	for _, tag := range tags {
+		outch = make(chan jsonmessage.JSONMessage)
+		splitted := strings.Split(tag, ":")
+
+		out, err := docker.PushImage(tag)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+		go docker.StreamImageEvents(outch, out)
+		for ev = range outch {
+			out := &pb.ImageOutput{
+				Name:    in.Name,
+				Tags:    []string{splitted[1]},
+				Content: []byte(ev.ProgressMessage),
+				Status:  pb.ImageOutput_PushStream,
+			}
+			if err := stream.Send(out); err != nil {
+				return err
+			}
+		}
+
+		if ev.Error != nil {
+			out := &pb.ImageOutput{
+				Name:    in.Name,
+				Tags:    []string{splitted[1]},
+				Content: []byte(ev.ErrorMessage),
+				Status:  pb.ImageOutput_PushError,
+			}
+			if err := stream.Send(out); err != nil {
+				return err
+			}
+		} else {
+			// status := strings.Split(ev.Status, " ")
+			digest := fmt.Sprintf("%+v", ev.Status)
+			out := &pb.ImageOutput{
+				Name:    in.Name,
+				Tags:    []string{splitted[1]},
+				Content: []byte(digest),
+				Status:  pb.ImageOutput_PushOK,
+			}
+			if err := stream.Send(out); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

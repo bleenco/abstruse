@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/bleenco/abstruse/pkg/httpclient"
+	"github.com/bleenco/abstruse/pkg/lib"
 )
 
 // Client represents the Docker image registry client.
@@ -58,7 +58,7 @@ func (c *Client) Find() ([]Image, error) {
 			if err != nil {
 				return images, err
 			}
-			image.Tags = append(image.Tags, Tag{Tag: tag, Digest: manifest.Digest, Date: manifest.Date})
+			image.Tags = append(image.Tags, Tag{Tag: tag, Digest: manifest.Digest, Size: manifest.Size})
 		}
 		images = append(images, image)
 	}
@@ -71,21 +71,32 @@ func (c *Client) findManifest(ctx context.Context, name, tag string) (*manifestR
 	out := new(manifestResp)
 
 	req := &httpclient.Request{
-		Method: "HEAD",
+		Method: "GET",
 		Path:   endpoint,
 	}
 
-	resp, err := c.Req(ctx, req)
+	headers := make(http.Header)
+	headers.Add("Accept", "application/vnd.docker.distribution.manifest.v2+json")
+
+	resp, err := c.Req(ctx, req, headers)
 	if err != nil {
-		return nil, err
+		return out, err
+	}
+	defer resp.Body.Close()
+
+	var response manifest
+	if err := lib.DecodeJSON(resp.Body, &response); err != nil {
+		return out, err
 	}
 
-	out.Digest = resp.Header.Get("Docker-Content-Digest")
-	date, err := time.Parse(http.TimeFormat, resp.Header.Get("Date"))
-	if err != nil {
-		return nil, err
+	var size int
+	for _, layer := range response.Layers {
+		size += layer.Size
 	}
-	out.Date = date
+
+	out.Size = size
+	out.Digest = response.Config.Digest
+
 	return out, nil
 }
 
@@ -111,9 +122,9 @@ type Image struct {
 
 // Tag data struct for response.
 type Tag struct {
-	Tag    string    `json:"tag"`
-	Digest string    `json:"digest"`
-	Date   time.Time `json:"date"`
+	Tag    string `json:"tag"`
+	Digest string `json:"digest"`
+	Size   int    `json:"size"`
 }
 
 type reposResp struct {
@@ -126,6 +137,21 @@ type tagsResp struct {
 }
 
 type manifestResp struct {
-	Digest string    `json:"digest"`
-	Date   time.Time `json:"date"`
+	Digest string `json:"digest"`
+	Size   int    `json:"size"`
+}
+
+type manifest struct {
+	SchemaVersion int    `json:"schemaVersion"`
+	MediaType     string `json:"mediaType"`
+	Config        struct {
+		MediaType string `json:"mediaType"`
+		Size      int    `json:"size"`
+		Digest    string `json:"digest"`
+	} `json:"config"`
+	Layers []struct {
+		MediaType string `json:"mediaType"`
+		Size      int    `json:"size"`
+		Digest    string `json:"digest"`
+	} `json:"layers"`
 }

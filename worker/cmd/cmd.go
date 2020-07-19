@@ -48,7 +48,7 @@ func run() error {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication)
+	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitDocker)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-worker.json)")
 	rootCmd.PersistentFlags().String("grpc-listenaddr", "0.0.0.0:3330", "gRPC server listen address")
