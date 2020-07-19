@@ -38,16 +38,18 @@ export class ProvidersModalComponent implements OnInit {
     }
 
     this.saving = true;
-    const data = {
-      id: (this.provider && this.provider.id) || null,
+    let data: any = {
       name: this.form.controls.name.value,
       url: this.form.controls.url.value,
       host: this.form.controls.host.value,
       accessToken: this.form.controls.accessToken.value,
       secret: this.form.controls.secret.value
     };
+    if (this.provider && this.provider.id) {
+      data = { ...data, ...{ id: this.provider.id } };
+    }
 
-    if (this.provider.id) {
+    if (data.id) {
       this.providers
         .update(data)
         .pipe(
