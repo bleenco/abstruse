@@ -6,3 +6,4 @@ worker/data
 tmp/
 configs/testing/*.pem
 configs/testing/*.log
+testdata/

@@ -1,0 +1,80 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: abstruse-e2e-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=e2etest
+    volumes:
+      - "./testdata/mysql:/var/lib/mysql"
+    networks:
+      e2e_net:
+        ipv4_address: 10.20.20.10
+
+  abstruse-server:
+    image: abstruse/abstruse-server:latest
+    container_name: abstruse-e2e-server
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - "4400:80"
+    environment:
+      - ABSTRUSE_DB_HOST=10.20.20.10
+      - ABSTRUSE_DB_PORT=3306
+      - ABSTRUSE_DB_USER=root
+      - ABSTRUSE_DB_PASSWORD=e2etest
+      - ABSTRUSE_DB_NAME=abstruse_e2e
+      - ABSTRUSE_AUTH_JWT_SECRET=fa27ef3ef6570e32a79e74deca7c1bc3
+      - ABSTRUSE_ETCD_HOST=0.0.0.0
+      - ABSTRUSE_ETCD_DATADIR=etcd/
+      - ABSTRUSE_ETCD_USERNAME=abstruse
+      - ABSTRUSE_ETCD_PASSWORD=235c36984614ec1cbc9f6172a7ba8c9b
+      - ABSTRUSE_ETCD_ROOTPASSWORD=1c45154abbf67419b5a20c9258c71775
+      - ABSTRUSE_REGISTRY_DATADIR=registry/
+      - ABSTRUSE_REGISTRY_USERNAME=abstruse
+      - ABSTRUSE_REGISTRY_PASSWORD=fc066d0290bd670fa4f2b38609ebce3d
+    volumes:
+      - "./testdata/abstruse-server:/abstruse"
+    command:
+      - "--config=/abstruse/abstruse-server.json"
+      - "--log-level=debug"
+    networks:
+      e2e_net:
+        ipv4_address: 10.20.20.20
+
+  abstruse-worker:
+    image: abstruse/abstruse-worker:latest
+    container_name: abstruse-e2e-worker
+    restart: unless-stopped
+    depends_on:
+      - abstruse-server
+    environment:
+      - ABSTRUSE_GRPC_LISTENADDR=10.20.20.30:3330
+      - ABSTRUSE_ETCD_ADDR=10.20.20.20:2379
+      - ABSTRUSE_ETCD_USERNAME=abstruse
+      - ABSTRUSE_ETCD_PASSWORD=235c36984614ec1cbc9f6172a7ba8c9b
+      - ABSTRUSE_REGISTRY_ADDR=10.20.20.10
+      - ABSTRUSE_REGISTRY_USERNAME=abstruse
+      - ABSTRUSE_REGISTRY_PASSWORD=fc066d0290bd670fa4f2b38609ebce3d
+      - ABSTRUSE_SCHEDULER_MAXPARALLEL=2
+      - ABSTRUSE_AUTH_JWT_SECRET=fa27ef3ef6570e32a79e74deca7c1bc3
+    volumes:
+      - "./testdata/abstruse-worker:/abstruse"
+      - "./testdata/abstruse-worker/tmp:/tmp"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command:
+      - "--config=/abstruse/abstruse-worker.json"
+      - "--log-level=debug"
+    networks:
+      e2e_net:
+        ipv4_address: 10.20.20.30
+
+networks:
+  e2e_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.20.20.0/16
