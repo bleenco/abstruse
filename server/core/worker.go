@@ -128,23 +128,6 @@ func (w *Worker) Run() error {
 	w.emitData()
 	w.app.scheduler.AddWorker(w)
 
-	// // TODO: testing!
-	// tags := []string{
-	// 	"latest",
-	// 	"v4.0.0",
-	// 	"v4.1.0",
-	// }
-	// dockerFile := `
-	// FROM ubuntu:focal
-	// RUN apt update && apt install -y build-essential clang
-	// `
-
-	// if err := w.buildImage(context.Background(), "ubuntu-essential", dockerFile, tags); err != nil {
-	// 	fmt.Printf("ERROR: %+v\n", err)
-	// } else {
-	// 	fmt.Println("ALL GOOD, CONGRATS!")
-	// }
-
 	ch := make(chan error)
 
 	go func() {
