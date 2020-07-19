@@ -13,7 +13,7 @@ type Password struct {
 // HashPassword generates encrypted password from password string
 func HashPassword(passwd Password) (string, error) {
 	if passwd.Cost == 0 {
-		passwd.Cost = bcrypt.MaxCost
+		passwd.Cost = bcrypt.DefaultCost
 	}
 	bytes, err := bcrypt.GenerateFromPassword([]byte(passwd.Password), passwd.Cost)
 	return string(bytes), err
