@@ -59,5 +59,41 @@ func (app *App) Run() error {
 		}
 	}()
 
+	// go func() {
+	// 	tags := []string{
+	// 		"abstruse.jan.local/build-essential:v0.0.1",
+	// 		"abstruse.jan.local/build-essential:canary",
+	// 		"abstruse.jan.local/build-essential:legacy",
+	// 	}
+	// 	dockerFile := `
+	//   FROM ubuntu:focal
+	//   RUN apt update && apt install -y build-essential
+	//   `
+
+	// 	resp, err := docker.BuildImage(tags, dockerFile)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	defer resp.Body.Close()
+
+	// 	_, err = io.Copy(os.Stdout, resp.Body)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+
+	// 	for _, tag := range tags {
+	// 		out, err := docker.PushImage(tag, "abstruse", "xx2n5")
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 		defer out.Close()
+	// 		_, err = io.Copy(os.Stdout, out)
+	// 		if err != nil {
+	// 			panic(err)
+	// 		}
+	// 	}
+
+	// }()
+
 	return <-errch
 }
