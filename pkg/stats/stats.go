@@ -9,9 +9,5 @@ func GetUsageStats() (int32, int32) {
 
 // GetHostStats returns system information.
 func GetHostStats() (*host.InfoStat, error) {
-	info, err := host.Info()
-	if err != nil {
-		return nil, err
-	}
-	return info, nil
+	return host.Info()
 }
