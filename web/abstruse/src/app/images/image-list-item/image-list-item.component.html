@@ -62,7 +62,7 @@
         <span class="text-light">{{ t.buildTime | date:'medium' }}</span>
       </div>
       <div class="column is-1">
-        <button type="button" class="button is-xsmall">
+        <button type="button" class="button is-xsmall" (click)="openImageModal(t.tag)">
           <i class="far fa-edit"></i>
           <span>Edit</span>
         </button>

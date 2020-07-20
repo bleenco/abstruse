@@ -238,8 +238,7 @@ func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) err
 				return err
 			}
 		} else {
-			// status := strings.Split(ev.Status, " ")
-			digest := fmt.Sprintf("%+v", ev.Status)
+			digest := fmt.Sprintf("%s", ev.Status)
 			out := &pb.ImageOutput{
 				Name:    in.Name,
 				Tags:    []string{splitted[1]},

@@ -1,6 +1,9 @@
 package core
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/bleenco/abstruse/pkg/etcd/embed"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db/repository"
@@ -89,6 +92,24 @@ func (a *App) GetWorkers() map[string]*Worker {
 	a.scheduler.mu.Lock()
 	defer a.scheduler.mu.Unlock()
 	return a.scheduler.workers
+}
+
+// BuildImage builds Docker image.
+func (a *App) BuildImage(ctx context.Context, name, dockerfile string, tags []string) error {
+	a.scheduler.mu.Lock()
+	var worker *Worker
+	// TODO: find more available worker, not just first one.
+	for _, w := range a.scheduler.workers {
+		worker = w
+		break
+	}
+	a.scheduler.mu.Unlock()
+
+	if worker == nil {
+		return fmt.Errorf("no worker available")
+	}
+
+	return worker.buildImage(ctx, name, dockerfile, tags)
 }
 
 // RestartEtcd restarts etcd server.

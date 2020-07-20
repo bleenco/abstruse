@@ -9,6 +9,8 @@ type ImageTag struct {
 	Dockerfile string    `gorm:"type:text" json:"dockerfile"`
 	Digest     string    `gorm:"size:255,not null" json:"digest"`
 	Size       int       `gorm:"not null" json:"size"`
+	BuildLog   string    `gorm:"type:text" json:"buildLog"`
+	PushLog    string    `gorm:"type:text" json:"pushLog"`
 	BuildTime  time.Time `json:"buildTime"`
 	Image      *Image    `gorm:"preload:false" json:"image,omitempty"`
 	ImageID    uint      `json:"imageID"`

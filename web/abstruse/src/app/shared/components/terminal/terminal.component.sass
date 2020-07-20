@@ -2,28 +2,33 @@
 @import 'variables'
 @import 'typography'
 
-$terminal-height: 500px
-
-.terminal
+\:host
   display: block
   width: 100%
-  height: $terminal-height
-  position: relative
-  margin: 20px 0
+  height: 500px
 
-  .xterm
-    position: absolute
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
+  &.is-small
+    height: 300px
+
+  .terminal
+    display: block
     width: 100%
     height: 100%
-    padding: 10px
-    border-radius: $border-radius
-    height: $terminal-height
+    position: relative
+    margin: 20px 0
 
-    .xterm-viewport
+    .xterm
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      width: 100%
+      height: 100%
+      padding: 10px
       border-radius: $border-radius
-      height: $terminal-height
-      border: 1px solid $border-secondary
+
+      .xterm-viewport
+        border-radius: $border-radius
+        height: 100%
+        border: 1px solid $border-secondary

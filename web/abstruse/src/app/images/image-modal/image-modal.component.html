@@ -9,7 +9,11 @@
 </div>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="modal-body">
-    <div class="columns is-multiline">
+    <div class="tabs">
+      <span class="tab" (click)="tab = 'form'">Form</span>
+      <span class="tab" (click)="tab = 'log'">Build Log</span>
+    </div>
+    <div class="columns is-multiline" *ngIf="tab === 'form'">
       <div class="column is-6">
         <div class="field">
           <label class="label">Name</label>
@@ -35,6 +39,11 @@
         </div>
       </div>
     </div>
+    <div class="columns is-multiline" *ngIf="tab === 'log'">
+      <div class="column is-12" *ngIf="tag">
+        <app-terminal class="is-small" [data]="tag!.buildLog"></app-terminal>
+      </div>
+    </div>
   </div>
   <div class="modal-footer space-between">
     <div class="align-center"></div>
@@ -42,7 +51,7 @@
       <button type="button" class="button" (click)="activeModal.close()" [disabled]="building">Cancel</button>
       <button type="submit" class="button is-green" [disabled]="!form.valid || building">
         <span *ngIf="!building">Build Image</span>
-        <app-loader class="is-small" *ngIf="building"></app-loader>
+        <app-loader class="is-small is-white" *ngIf="building"></app-loader>
         <span *ngIf="building">Building Image...</span>
       </button>
     </div>

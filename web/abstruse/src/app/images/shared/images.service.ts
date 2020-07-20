@@ -20,4 +20,8 @@ export class ImagesService {
   sync(): Observable<void> {
     return this.http.put<void>('/images/sync', {});
   }
+
+  build(data: { name: string; tags: string[]; dockerfile: string }): Observable<void> {
+    return this.http.post<void>('/images/build', data);
+  }
 }

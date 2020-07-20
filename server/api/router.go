@@ -157,10 +157,11 @@ func (r *router) buildsRouter() *chi.Mux {
 func (r *router) imagesRouter() *chi.Mux {
 	router := chi.NewRouter()
 	cfg := r.app.GetConfig()
-	images := newImages(cfg.Registry)
+	images := newImages(cfg.Registry, r.app)
 
 	router.Get("/", images.find())
 	router.Put("/sync", images.sync())
+	router.Post("/build", images.build())
 
 	return router
 }

@@ -281,6 +281,7 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 
 	result := make(map[string]*img)
 
+loop:
 	for {
 		output, err := stream.Recv()
 		if err != nil {
@@ -291,52 +292,42 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 		tags := output.GetTags()
 		content := string(output.GetContent())
 
+		for _, tag := range tags {
+			id := fmt.Sprintf("%s:%s", name, tag)
+			if _, ok := result[id]; !ok {
+				result[id] = &img{}
+			}
+		}
+
 		switch status := output.GetStatus(); status {
 		case pb.ImageOutput_BuildStream:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
+				content = strings.TrimSpace(content)
+				if content != "" {
+					result[id].buildLog = append(result[id].buildLog, content+"\r\n")
 				}
-
-				result[id].buildLog = append(result[id].buildLog, content)
 			}
 		case pb.ImageOutput_PushStream:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
-				}
-
-				result[id].pushLog = append(result[id].pushLog, content)
+				result[id].pushLog = append(result[id].pushLog, strings.TrimSpace(content)+"\r\n")
 			}
 		case pb.ImageOutput_BuildOK:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
-				}
-
 				result[id].build = true
 			}
 		case pb.ImageOutput_BuildError:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
-				}
-
 				result[id].build = false
 				result[id].err = fmt.Errorf(content)
-				break
+				break loop
 			}
 		case pb.ImageOutput_PushOK:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
-				}
-
 				result[id].push = true
 				splitted := strings.Split(content, " ")
 				result[id].digest = splitted[2]
@@ -344,13 +335,9 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 		case pb.ImageOutput_PushError:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				if _, ok := result[id]; !ok {
-					result[id] = &img{}
-				}
-
 				result[id].push = false
 				result[id].err = fmt.Errorf(content)
-				break
+				break loop
 			}
 		}
 	}
@@ -375,6 +362,8 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 			Tag:        tag,
 			Dockerfile: strings.TrimSpace(dockerfile),
 			Digest:     strings.TrimSpace(res.digest),
+			BuildLog:   strings.Join(res.buildLog, ""),
+			PushLog:    strings.Join(res.pushLog, ""),
 			ImageID:    image.ID,
 			BuildTime:  time.Now(),
 		}
@@ -392,6 +381,11 @@ func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags [
 	}
 
 	return nil
+}
+
+// emit broadcasts data via websocket.
+func (w *Worker) emit(sub string, data map[string]interface{}) {
+	w.app.ws.App.Broadcast(sub, data)
 }
 
 // emitData broadcast newly created worker via websocket.
