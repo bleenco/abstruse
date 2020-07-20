@@ -10,6 +10,9 @@ RUN apk --no-cache add yarn && yarn install && yarn build
 # stage 2 build
 FROM golang:1.14-alpine as build
 
+ARG GIT_COMMIT=""
+ENV GIT_COMMIT=$GIT_COMMIT
+
 WORKDIR /app
 
 RUN apk --no-cache add git make protobuf protobuf-dev ca-certificates alpine-sdk

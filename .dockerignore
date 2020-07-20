@@ -8,3 +8,4 @@ configs/
 web/abstruse/node_modules
 web/abstruse/dist
 ./**/*/testdata/
+.git/

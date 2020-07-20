@@ -28,14 +28,8 @@
           </div>
           <div class="column is-1">
             <div class="list-item-content">
-              <span class="label">OS</span>
-              <span class="text">{{ system?.version?.os }}</span>
-            </div>
-          </div>
-          <div class="column is-1">
-            <div class="list-item-content">
-              <span class="label">Arch</span>
-              <span class="text">{{ system?.version?.arch }}</span>
+              <span class="label">OS / Arch</span>
+              <span class="text">{{ system?.version?.os }} {{ system?.version?.arch }}</span>
             </div>
           </div>
           <div class="column is-1">
@@ -62,7 +56,7 @@
               <span class="text">{{ system?.version?.buildDate | date: 'medium' }}</span>
             </div>
           </div>
-          <div class="column is-1">
+          <div class="column is-2">
             <div class="list-item-content">
               <span class="label">Author</span>
               <span class="text">

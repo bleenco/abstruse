@@ -1,6 +1,8 @@
 ABSTRUSE_UI_VERSION=$(shell cat web/abstruse/package.json | grep version | head -1 | awk -F: '{ print $$2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]')
 ABSTRUSE_VERSION_PATH=github.com/bleenco/abstruse/internal/version
-GIT_COMMIT=$(shell git rev-list -1 HEAD)
+ifndef GIT_COMMIT
+	GIT_COMMIT=$(shell git rev-list -1 HEAD)
+endif
 BUILD_DATE=$(shell date +%FT%T%z)
 UNAME=$(shell uname -s)
 CGO_ENABLED=0
@@ -50,10 +52,10 @@ protoc:
 docker: docker_server docker_worker
 
 docker_server:
-	@docker build --rm --compress -t abstruse/abstruse-server -f Dockerfile .
+	@docker build --rm --force-rm --compress --build-arg GIT_COMMIT=${GIT_COMMIT} -t abstruse/abstruse-server -f Dockerfile .
 
 docker_worker:
-	@docker build --rm --compress -t abstruse/abstruse-worker -f Dockerfile.worker .
+	@docker build --rm --force-rm --compress --build-arg GIT_COMMIT=${GIT_COMMIT} -t abstruse/abstruse-worker -f Dockerfile.worker .
 
 docker_push:
 	@docker push abstruse/abstruse-server
