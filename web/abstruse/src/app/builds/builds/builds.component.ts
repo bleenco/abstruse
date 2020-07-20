@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 import { Build } from '../shared/build.model';
 import { BuildsService } from '../shared/builds.service';
 import { finalize } from 'rxjs/operators';
@@ -6,6 +6,7 @@ import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { SocketEvent } from '../../shared/models/socket.model';
 import { Subscription } from 'rxjs';
 import { DataService } from 'src/app/shared/providers/data.service';
+import { BuildsOptions } from './builds-options.model';
 
 @UntilDestroy()
 @Component({
@@ -13,7 +14,9 @@ import { DataService } from 'src/app/shared/providers/data.service';
   templateUrl: './builds.component.html',
   styleUrls: ['./builds.component.sass']
 })
-export class BuildsComponent implements OnInit, OnDestroy {
+export class BuildsComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() options: BuildsOptions = { type: 'all' };
+
   builds: Build[] = [];
   fetchingBuilds: boolean = false;
   fetchingMore: boolean = false;
@@ -26,13 +29,20 @@ export class BuildsComponent implements OnInit, OnDestroy {
   constructor(private buildsService: BuildsService, private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.find();
     this.initDataEvents();
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.dataService.unsubscribeAll();
+  }
+
+  ngOnChanges(): void {
+    this.builds = [];
+    this.limit = 5;
+    this.offset = 0;
+    this.error = null;
+    this.find();
   }
 
   find(): void {

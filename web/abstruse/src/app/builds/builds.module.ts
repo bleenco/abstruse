@@ -7,9 +7,10 @@ import { BuildListItemComponent } from './build-list-item/build-list-item.compon
 import { BuildComponent } from './build/build.component';
 import { JobListItemComponent } from './job-list-item/job-list-item.component';
 import { JobComponent } from './job/job.component';
+import { IndexComponent } from './index/index.component';
 
 @NgModule({
-  declarations: [BuildsComponent, BuildListItemComponent, BuildComponent, JobListItemComponent, JobComponent],
+  declarations: [BuildsComponent, BuildListItemComponent, BuildComponent, JobListItemComponent, JobComponent, IndexComponent],
   imports: [CommonModule, BuildsRoutingModule, SharedModule]
 })
 export class BuildsModule {}
