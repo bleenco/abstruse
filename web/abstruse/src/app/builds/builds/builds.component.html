@@ -17,7 +17,18 @@
 
 <div class="container">
   <div class="columns is-multiline">
-    <div class="column is-12">
+    <div class="column is-12" *ngIf="fetchingBuilds">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="column is-6 is-offset-3" *ngIf="!fetchingBuilds && !builds.length">
+      <div class="notification">
+        <i class="far fa-list-alt"></i>
+        <p>No builds found at this point.</p>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="!fetchingBuilds && builds.length">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-1"><span class="text ml10">ID</span></div>
@@ -34,7 +45,7 @@
       </div>
     </div>
 
-    <div class="column is-12" *ngIf="builds?.length && !fetchingBuilds">
+    <div class="column is-12" *ngIf="builds.length && !fetchingBuilds">
       <div class="align-center justify-center mtb10" *ngIf="!hideMoreButton">
         <button type="button" class="button" (click)="find()">
           <app-loader class="is-small" *ngIf="fetchingMore"></app-loader>
