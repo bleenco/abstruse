@@ -5,7 +5,7 @@ COPY ./web/abstruse ./app/ui
 
 WORKDIR /app/ui
 
-RUN apk --no-cache add yarn && yarn install && yarn build
+RUN yarn install && yarn build
 
 # stage 2 build
 FROM golang:1.14-alpine as build
@@ -27,6 +27,14 @@ RUN make protoc && make statik && make server
 
 # stage 3 image
 FROM scratch
+
+LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.name="abstruse-server" \
+  org.label-schema.description="Distributed Continuous Intergration Platform" \
+  org.label-schema.url="https://ci.abstruse.cc/" \
+  org.label-schema.vcs-url="https://github.com/jkuri/abstruse" \
+  org.label-schema.vendor="abstruse"
 
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /app/build/abstruse-server /usr/bin/abstruse-server

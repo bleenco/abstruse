@@ -17,6 +17,14 @@ RUN make protoc && make statik_worker && make worker
 # stage 2 image
 FROM scratch
 
+LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
+  org.label-schema.schema-version="1.0" \
+  org.label-schema.name="abstruse-worker" \
+  org.label-schema.description="Distributed Continuous Intergration Platform" \
+  org.label-schema.url="https://ci.abstruse.cc/" \
+  org.label-schema.vcs-url="https://github.com/jkuri/abstruse" \
+  org.label-schema.vendor="abstruse"
+
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /app/build/abstruse-worker /usr/bin/abstruse-worker
 
