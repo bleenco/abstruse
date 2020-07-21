@@ -50,5 +50,12 @@ func (s *BuildService) StopJob(jobID uint) error {
 
 // FindJob finds job by ID.
 func (s *BuildService) FindJob(jobID uint) (*model.Job, error) {
-	return s.jobRepo.Find(jobID)
+	job, err := s.jobRepo.Find(jobID)
+	if err != nil {
+		return job, err
+	}
+	if job.Status == "running" {
+		job.Log = s.app.GetCurrentJobLog(job.ID)
+	}
+	return job, nil
 }

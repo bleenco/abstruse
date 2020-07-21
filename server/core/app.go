@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/bleenco/abstruse/pkg/etcd/embed"
 	"github.com/bleenco/abstruse/server/config"
@@ -110,6 +111,16 @@ func (a *App) BuildImage(ctx context.Context, name, dockerfile string, tags []st
 	}
 
 	return worker.buildImage(ctx, name, dockerfile, tags)
+}
+
+// GetCurrentJobLog returns current log for job which is still running.
+func (a *App) GetCurrentJobLog(jobID uint) string {
+	a.scheduler.mu.Lock()
+	defer a.scheduler.mu.Unlock()
+	if job, ok := a.scheduler.pending[jobID]; ok {
+		return strings.Join(job.Log, "")
+	}
+	return ""
 }
 
 // RestartEtcd restarts etcd server.
