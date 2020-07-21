@@ -41,7 +41,7 @@ services:
       - ABSTRUSE_DB_USER=root
       - ABSTRUSE_DB_PASSWORD=e2etest
       - ABSTRUSE_DB_NAME=abstruse_e2e
-      - ABSTRUSE_AUTH_JWT_SECRET=fa27ef3ef6570e32a79e74deca7c1bc3
+      - ABSTRUSE_AUTH_JWTSECRET=fa27ef3ef6570e32a79e74deca7c1bc3
       - ABSTRUSE_ETCD_HOST=0.0.0.0
       - ABSTRUSE_ETCD_DATADIR=etcd/
       - ABSTRUSE_ETCD_USERNAME=abstruse
@@ -74,7 +74,7 @@ services:
       - ABSTRUSE_REGISTRY_USERNAME=abstruse
       - ABSTRUSE_REGISTRY_PASSWORD=fc066d0290bd670fa4f2b38609ebce3d
       - ABSTRUSE_SCHEDULER_MAXPARALLEL=2
-      - ABSTRUSE_AUTH_JWT_SECRET=fa27ef3ef6570e32a79e74deca7c1bc3
+      - ABSTRUSE_AUTH_JWTSECRET=fa27ef3ef6570e32a79e74deca7c1bc3
     volumes:
       - "./testdata/abstruse-worker:/abstruse"
       - "/tmp:/tmp"
