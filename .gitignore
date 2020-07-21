@@ -4,6 +4,7 @@ server/ui
 worker/data
 .DS_Store
 tmp/
-configs/testing/*.pem
-configs/testing/*.log
+configs/testing/**/*.pem
+configs/testing/**/*.log
 testdata/
+
