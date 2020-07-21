@@ -303,40 +303,70 @@ loop:
 		case pb.ImageOutput_BuildStream:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				content = strings.TrimSpace(content)
-				if content != "" {
-					result[id].buildLog = append(result[id].buildLog, content+"\r\n")
-				}
+				result[id].buildLog = append(result[id].buildLog, content)
 			}
+			w.emit("/subs/images", map[string]interface{}{
+				"name":     name,
+				"tags":     tags,
+				"buildLog": content,
+			})
 		case pb.ImageOutput_PushStream:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].pushLog = append(result[id].pushLog, strings.TrimSpace(content)+"\r\n")
+				result[id].pushLog = append(result[id].pushLog, content)
 			}
+			w.emit("/subs/images", map[string]interface{}{
+				"name":    name,
+				"tags":    tags,
+				"pushLog": content,
+			})
 		case pb.ImageOutput_BuildOK:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
 				result[id].build = true
 			}
+			w.emit("/subs/images", map[string]interface{}{
+				"name":  name,
+				"tags":  tags,
+				"build": true,
+			})
 		case pb.ImageOutput_BuildError:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
 				result[id].build = false
 				result[id].err = fmt.Errorf(content)
+				w.emit("/subs/images", map[string]interface{}{
+					"name":  name,
+					"tags":  tags,
+					"build": false,
+					"error": content,
+				})
 				break loop
 			}
 		case pb.ImageOutput_PushOK:
+			splitted := strings.Split(content, " ")
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
 				result[id].push = true
-				splitted := strings.Split(content, " ")
 				result[id].digest = splitted[2]
 			}
+			w.emit("/subs/images", map[string]interface{}{
+				"name":   name,
+				"tags":   tags,
+				"push":   true,
+				"digest": splitted[2],
+			})
 		case pb.ImageOutput_PushError:
 			for _, tag := range tags {
 				id := fmt.Sprintf("%s:%s", name, tag)
 				result[id].push = false
 				result[id].err = fmt.Errorf(content)
+				w.emit("/subs/images", map[string]interface{}{
+					"name":  name,
+					"tags":  tags,
+					"push":  false,
+					"error": content,
+				})
 				break loop
 			}
 		}

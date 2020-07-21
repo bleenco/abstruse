@@ -114,7 +114,7 @@ export const customTheme = {
   ],
   colors: {
     'editor.foreground': '#4E5859',
-    'editor.background': '#FFFFFF',
+    'editor.background': '#fcfcfc',
     'editor.selectionBackground': '#f0fff4',
     'editor.lineHighlightBackground': '#48bb7812',
     'editorCursor.foreground': '#000000',

@@ -4,9 +4,9 @@ import { Image, generateImage } from './image.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+export const imagesSubEvent = '/subs/images';
+
+@Injectable({ providedIn: 'root' })
 export class ImagesService {
   constructor(private http: HttpClient) {}
 

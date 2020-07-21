@@ -27,9 +27,21 @@ export class ImagesComponent implements OnInit {
   openImageModal(): void {
     const modalRef = this.modal.open(ImageModalComponent, { size: 'large' });
     modalRef.result.then(
-      ok => {},
-      () => {}
+      ok => {
+        if (ok) {
+          this.find();
+        }
+      },
+      err => {
+        console.error(err);
+      }
     );
+  }
+
+  onImageBuildDone(ok: boolean): void {
+    if (ok) {
+      this.find();
+    }
   }
 
   find(): void {
@@ -45,6 +57,7 @@ export class ImagesComponent implements OnInit {
           this.images = resp;
         },
         err => {
+          console.error(err);
           this.error = err.message;
         }
       );

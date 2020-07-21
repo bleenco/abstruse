@@ -41,7 +41,8 @@
 
     <div class="column is-12" *ngIf="!loading && images.length">
       <div class="list-items">
-        <app-image-list-item [image]="image" *ngFor="let image of images"></app-image-list-item>
+        <app-image-list-item [image]="image" (onBuildDone)="onImageBuildDone($event)" *ngFor="let image of images">
+        </app-image-list-item>
       </div>
     </div>
   </div>

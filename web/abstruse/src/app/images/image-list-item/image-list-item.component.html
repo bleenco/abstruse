@@ -49,13 +49,13 @@
 <div class="sub-list-items" [class.is-closed]="!items" *ngIf="image">
   <div class="sub-list-item" *ngFor="let t of image.tags">
     <div class="columns">
-      <div class="column is-1">
-        <span class="tag is-medium is-light">{{ t.tag }}</span>
+      <div class="column is-2">
+        <span class="tag is-fullwidth is-light">{{ t.tag }}</span>
       </div>
       <div class="column is-6">
         <span class="text-light">{{ t.digest }}</span>
       </div>
-      <div class="column is-2">
+      <div class="column is-1">
         <span class="text-light">{{ t.fileSize }}</span>
       </div>
       <div class="column is-2">

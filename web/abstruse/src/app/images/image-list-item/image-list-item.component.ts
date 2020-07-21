@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Image } from '../shared/image.model';
 import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { ImageModalComponent } from '../image-modal/image-modal.component';
@@ -10,6 +10,7 @@ import { ImageModalComponent } from '../image-modal/image-modal.component';
 })
 export class ImageListItemComponent implements OnInit {
   @Input() image!: Image;
+  @Output() onBuildDone: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   items: boolean = false;
 
@@ -22,8 +23,12 @@ export class ImageListItemComponent implements OnInit {
     modalRef.componentInstance.image = this.image;
     modalRef.componentInstance.tag = this.image.tags.find(t => t.tag === tag);
     modalRef.result.then(
-      ok => {},
-      () => {}
+      ok => {
+        this.onBuildDone.emit(ok);
+      },
+      ok => {
+        this.onBuildDone.emit(ok);
+      }
     );
   }
 }

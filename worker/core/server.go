@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -170,13 +171,15 @@ func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) err
 
 	var ev jsonmessage.JSONMessage
 	outch := make(chan jsonmessage.JSONMessage)
+	re := regexp.MustCompile(`\r?\n`)
 
 	go docker.StreamImageEvents(outch, resp.Body)
 	for ev = range outch {
+		content := fmt.Sprintf("%s\r\n", re.ReplaceAllString(ev.Stream, ""))
 		out := &pb.ImageOutput{
 			Name:    in.Name,
 			Tags:    in.Tags,
-			Content: []byte(ev.Stream),
+			Content: []byte(content),
 			Status:  pb.ImageOutput_BuildStream,
 		}
 		if err := stream.Send(out); err != nil {
@@ -216,10 +219,11 @@ func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) err
 		defer out.Close()
 		go docker.StreamImageEvents(outch, out)
 		for ev = range outch {
+			content := fmt.Sprintf("%s\r\n", re.ReplaceAllString(ev.ProgressMessage, ""))
 			out := &pb.ImageOutput{
 				Name:    in.Name,
 				Tags:    []string{splitted[1]},
-				Content: []byte(ev.ProgressMessage),
+				Content: []byte(content),
 				Status:  pb.ImageOutput_PushStream,
 			}
 			if err := stream.Send(out); err != nil {
