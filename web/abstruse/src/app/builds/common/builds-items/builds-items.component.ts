@@ -1,21 +1,21 @@
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
-import { Build } from '../shared/build.model';
-import { BuildsService } from '../shared/builds.service';
-import { finalize } from 'rxjs/operators';
+import { Build } from '../../shared/build.model';
+import { BuildsService } from '../../shared/builds.service';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { SocketEvent } from '../../shared/models/socket.model';
+import { SocketEvent } from '../../../shared/models/socket.model';
+import { DataService } from '../../../shared/providers/data.service';
 import { Subscription } from 'rxjs';
-import { DataService } from 'src/app/shared/providers/data.service';
-import { BuildsOptions } from './builds-options.model';
+import { finalize } from 'rxjs/operators';
+import { BuildsItemsOptions } from './builds-items-options.model';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-builds',
-  templateUrl: './builds.component.html',
-  styleUrls: ['./builds.component.sass']
+  selector: 'app-builds-items',
+  templateUrl: './builds-items.component.html',
+  styleUrls: ['./builds-items.component.sass']
 })
-export class BuildsComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() options: BuildsOptions = { type: 'latest' };
+export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() options: BuildsItemsOptions = { type: 'latest' };
 
   builds: Build[] = [];
   fetchingBuilds: boolean = false;

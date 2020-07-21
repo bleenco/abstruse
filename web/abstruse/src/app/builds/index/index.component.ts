@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { BuildsOptions } from '../builds/builds-options.model';
+import { BuildsItemsOptions } from '../common/builds-items/builds-items-options.model';
 import { filter } from 'rxjs/operators';
 
 @UntilDestroy()
@@ -11,7 +11,7 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./index.component.sass']
 })
 export class IndexComponent implements OnInit {
-  options: BuildsOptions = { type: 'latest' };
+  options: BuildsItemsOptions = { type: 'latest' };
   title: string = 'Latest';
 
   constructor(private route: ActivatedRoute, private router: Router) {}

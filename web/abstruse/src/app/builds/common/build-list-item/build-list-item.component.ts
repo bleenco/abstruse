@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Build } from '../shared/build.model';
-import { BuildsService } from '../shared/builds.service';
+import { Build } from '../../shared/build.model';
+import { BuildsService } from '../../shared/builds.service';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 

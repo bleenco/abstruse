@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { BuildsItemsOptions } from '../../builds/common/builds-items/builds-items-options.model';
 
 @Component({
   selector: 'app-builds',
@@ -6,10 +8,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./builds.component.sass']
 })
 export class BuildsComponent implements OnInit {
+  options: BuildsItemsOptions = { type: 'latest' };
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor(private route: ActivatedRoute) {
+    this.options = { ...this.options, ...{ repoID: route.snapshot.parent!.params.id } };
+    console.log(this.options);
   }
 
+  ngOnInit(): void {}
 }
