@@ -10,14 +10,25 @@ const buildsSubEvent = '/subs/builds';
 const buildsSubJobEvent = '/subs/jobs';
 const buildsSubJobLogEvent = '/subs/logs/';
 
+export interface BuildsFindParams {
+  type: 'latest' | 'commits' | 'branches' | 'pull-requests';
+  limit: number;
+  offset: number;
+  repoID?: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BuildsService {
   constructor(private http: HttpClient, private dataService: DataService) {}
 
-  find(limit: number = 5, offset: number = 0): Observable<Build[]> {
+  find(data: BuildsFindParams): Observable<Build[]> {
     let params = new HttpParams();
-    params = params.append('limit', String(limit));
-    params = params.append('offset', String(offset));
+    params = params.append('type', data.type || 'latest');
+    params = params.append('limit', String(data.limit));
+    params = params.append('offset', String(data.offset));
+    if (data.repoID) {
+      params = params.append('repoID', String(data.repoID));
+    }
     return this.http
       .get<Build[]>('/builds', { params })
       .pipe(map(data => (data && data.length ? data.map(generateBuildModel) : [])));

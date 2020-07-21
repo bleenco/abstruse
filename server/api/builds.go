@@ -38,8 +38,16 @@ func (b *builds) find() http.HandlerFunc {
 		if err != nil {
 			offset = 0
 		}
+		repoID, err := strconv.Atoi(r.URL.Query().Get("repoID"))
+		if err != nil {
+			repoID = 0
+		}
+		kind := r.URL.Query().Get("type")
+		if kind == "" {
+			kind = "latest"
+		}
 
-		builds, err := b.buildRepo.FindBuilds(limit, offset)
+		builds, err := b.buildRepo.FindBuilds(limit, offset, repoID, kind)
 		if err != nil {
 			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
 			return

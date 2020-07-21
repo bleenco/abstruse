@@ -1,4 +1,4 @@
 export interface BuildsItemsOptions {
-  type: 'latest' | 'commits' | 'pull-requests';
+  type: 'latest' | 'commits' | 'branches' | 'pull-requests';
   repoID?: number;
 }

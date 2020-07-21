@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 import { Build } from '../../shared/build.model';
-import { BuildsService } from '../../shared/builds.service';
+import { BuildsService, BuildsFindParams } from '../../shared/builds.service';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { SocketEvent } from '../../../shared/models/socket.model';
 import { DataService } from '../../../shared/providers/data.service';
@@ -42,7 +42,9 @@ export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
     this.limit = 5;
     this.offset = 0;
     this.error = null;
-    this.find();
+    if (this.options.type) {
+      this.find();
+    }
   }
 
   find(): void {
@@ -52,8 +54,17 @@ export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
       this.fetchingMore = true;
     }
 
+    const params: BuildsFindParams = {
+      type: this.options.type,
+      limit: this.limit,
+      offset: this.offset
+    };
+    if (this.options.repoID) {
+      params.repoID = this.options.repoID;
+    }
+
     this.buildsService
-      .find(this.limit, this.offset)
+      .find(params)
       .pipe(
         finalize(() => {
           this.fetchingBuilds = false;

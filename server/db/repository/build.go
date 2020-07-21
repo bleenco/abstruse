@@ -36,12 +36,23 @@ func (r *BuildRepo) FindAll(id uint) (model.Build, error) {
 }
 
 // FindBuilds returns builds by user id with preloaded jobs and repo data.
-func (r *BuildRepo) FindBuilds(limit, offset int) ([]model.Build, error) {
+func (r *BuildRepo) FindBuilds(limit, offset, repoID int, kind string) ([]model.Build, error) {
 	var builds []model.Build
 	db, err := db.Instance()
 	if err != nil {
 		return builds, err
 	}
+
+	if repoID > 0 {
+		db = db.Where("repository_id = ?", uint(repoID))
+	}
+
+	if kind == "pull-requests" {
+		db = db.Where("pr != ?", 0)
+	} else if kind == "commits" || kind == "branches" {
+		db = db.Where("pr = ?", 0)
+	}
+
 	err = db.Preload("Jobs").Preload("Repository").Order("created_at desc").Limit(limit).Offset(offset).Find(&builds).Error
 	return builds, err
 }
