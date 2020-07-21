@@ -1,7 +1,7 @@
 <div class="selectbox-container" (click)="toggle()">
   <span class="selectbox-value">
     <i [class]="customIcon" *ngIf="customIcon"></i>
-    <span [class.placeholder]="placeholder === placeholderText">{{ placeholderText }}</span>
+    <span [class.text-placeholder]="placeholder === placeholderText">{{ placeholderText }}</span>
     <i class="fas fa-chevron-down"></i>
   </span>
   <div class="selectbox-options-container" *ngIf="isOpened">

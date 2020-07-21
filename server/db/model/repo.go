@@ -6,8 +6,8 @@ type Repository struct {
 	UID           string   `gorm:"not null" json:"uid"`
 	ProviderName  string   `gorm:"not null" json:"providerName"`
 	Namespace     string   `gorm:"not null" json:"namespace"`
-	Name          string   `gorm:"not null;varchar(255)" json:"name"`
-	FullName      string   `gorm:"not null;varchar(255)" json:"fullName"`
+	Name          string   `gorm:"not null;size:255" json:"name"`
+	FullName      string   `gorm:"not null;size:255" json:"fullName"`
 	Private       bool     `json:"private"`
 	Fork          bool     `json:"fork"`
 	URL           string   `json:"url"`

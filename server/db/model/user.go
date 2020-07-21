@@ -9,14 +9,15 @@ import (
 // User defines `users` database table.
 type User struct {
 	ID        uint       `gorm:"primary_key;auto_increment;not null" json:"id"`
-	Email     string     `gorm:"not null;varchar(255);unique_index" json:"email"`
-	Password  string     `gorm:"not null;varchar(255);column:password" json:"-"`
-	Name      string     `gorm:"not null;varchar(255)" json:"name"`
-	Avatar    string     `gorm:"not null;varchar(255);default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
-	Location  string     `gorm:"varchar(255)" json:"location"`
+	Email     string     `gorm:"not null;size:255;unique_index" json:"email"`
+	Password  string     `gorm:"not null;size:255;column:password" json:"-"`
+	Name      string     `gorm:"not null;size:255" json:"name"`
+	Avatar    string     `gorm:"not null;size:255;default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
+	Location  string     `gorm:"size:255" json:"location"`
 	Role      string     `gorm:"not null;default:'user'" json:"role"`
 	Active    bool       `gorm:"not null;default:true" json:"active"`
 	LastLogin *time.Time `json:"lastLogin"`
+	Teams     []*Team    `gorm:"many2many:team_users;" json:"users"`
 	TimestampModel
 }
 
