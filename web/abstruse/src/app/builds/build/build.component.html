@@ -1,7 +1,9 @@
 <header class="subheader">
   <nav class="subheader-links">
-    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'jobs' }" routerLinkActive="is-active">Jobs</a>
-    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'config' }" routerLinkActive="is-active">Config</a>
+    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'jobs' }"
+      [class.is-active]="isLinkActive('/builds/' + build?.id + '?tab=jobs')">Jobs</a>
+    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'config' }"
+      [class.is-active]="isLinkActive('/builds/' + build?.id + '?tab=config')">Config</a>
   </nav>
   <div class="container">
     <div class="subheader-container">

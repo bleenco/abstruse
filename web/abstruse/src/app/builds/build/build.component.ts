@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BuildsService } from '../shared/builds.service';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -22,7 +22,12 @@ export class BuildComponent implements OnInit, OnDestroy {
   title: string = 'Jobs';
   editorOptions = { language: 'yaml', theme: 'abstruse', readOnly: true };
 
-  constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private buildsService: BuildsService,
+    private dataService: DataService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
@@ -79,6 +84,10 @@ export class BuildComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe();
+  }
+
+  isLinkActive(url: string): boolean {
+    return this.router.url === url;
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {
