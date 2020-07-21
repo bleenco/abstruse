@@ -76,6 +76,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
 	rootCmd.PersistentFlags().String("http-uploaddir", "uploads/", "HTTP uploads directory")
+	rootCmd.PersistentFlags().Bool("http-compress", false, "enable HTTP response gzip compression")
 	rootCmd.PersistentFlags().String("websocket-addr", "127.0.0.1:2220", "WebSocket server listen address")
 	rootCmd.PersistentFlags().Bool("http-tls", false, "run HTTP server in TLS mode")
 	rootCmd.PersistentFlags().String("tls-cert", "cert.pem", "path to SSL certificate file")

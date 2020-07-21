@@ -33,6 +33,7 @@ func InitDefaults(cmd *cobra.Command, cfgFile string) {
 	viper.BindPFlag("http.addr", cmd.PersistentFlags().Lookup("http-addr"))
 	viper.BindPFlag("http.tls", cmd.PersistentFlags().Lookup("http-tls"))
 	viper.BindPFlag("http.uploaddir", cmd.PersistentFlags().Lookup("http-uploaddir"))
+	viper.BindPFlag("http.compress", cmd.PersistentFlags().Lookup("http-compress"))
 	viper.BindPFlag("websocket.addr", cmd.PersistentFlags().Lookup("websocket-addr"))
 	viper.BindPFlag("tls.cert", cmd.PersistentFlags().Lookup("tls-cert"))
 	viper.BindPFlag("tls.key", cmd.PersistentFlags().Lookup("tls-key"))

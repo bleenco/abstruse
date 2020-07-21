@@ -49,6 +49,7 @@ type HTTP struct {
 	Addr      string `json:"addr" valid:"host,required"`
 	TLS       bool   `json:"tls"`
 	UploadDir string `json:"uploadDir"`
+	Compress  bool   `json:"compress"`
 }
 
 // TLS config.

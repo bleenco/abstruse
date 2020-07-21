@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"time"
 
 	authpkg "github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/server/core"
@@ -31,7 +30,10 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *rou
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.Timeout(60 * time.Second))
+	router.Use(middleware.Heartbeat("/ping"))
+	if cfg.HTTP.Compress {
+		router.Use(middleware.Compress(5))
+	}
 
 	router.Mount("/api/v1", router.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(wsAddr))
