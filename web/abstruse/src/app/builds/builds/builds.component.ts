@@ -15,7 +15,7 @@ import { BuildsOptions } from './builds-options.model';
   styleUrls: ['./builds.component.sass']
 })
 export class BuildsComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() options: BuildsOptions = { type: 'all' };
+  @Input() options: BuildsOptions = { type: 'latest' };
 
   builds: Build[] = [];
   fetchingBuilds: boolean = false;

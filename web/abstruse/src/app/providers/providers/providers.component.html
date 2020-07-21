@@ -23,7 +23,10 @@
       <app-loader></app-loader>
     </div>
     <div class="column is-6 is-offset-3" *ngIf="!loading && !providers?.length">
-
+      <div class="notification">
+        <i class="fab fa-git"></i>
+        <p>No SCM providers found.</p>
+      </div>
     </div>
     <div class="column is-12" *ngIf="!loading && providers?.length">
       <div class="columns is-multiline">
