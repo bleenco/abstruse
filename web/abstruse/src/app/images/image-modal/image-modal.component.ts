@@ -17,10 +17,7 @@ export class ImageModalComponent implements OnInit {
   tag!: Tag;
   building: boolean = false;
   form!: FormGroup;
-  editorOptions = {
-    theme: 'blackboard',
-    language: 'dockerfile'
-  };
+  editorOptions = { language: 'dockerfile', theme: 'abstruse' };
   tab: 'form' | 'log' = 'form';
 
   constructor(private fb: FormBuilder, private imagesService: ImagesService, public activeModal: ActiveModal) {}

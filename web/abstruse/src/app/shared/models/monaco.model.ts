@@ -2,9 +2,8 @@ export const monacoEditorOptions = {
   theme: 'blackboard',
   language: 'dockerfile',
   minimap: { enabled: false },
-  fontFamily:
-    'Rubik, BlinkMacSystemFont, -apple-system, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif',
-  fontSize: '14px',
+  fontFamily: 'Roboto, sans-serif',
+  fontSize: '13px',
   fontWeight: '400',
   formatOnPaste: true,
   formatOnType: true,
@@ -31,88 +30,94 @@ export const monacoEditorOptions = {
   }
 };
 
-export const blackboardTheme = {
-  base: 'vs-dark',
+export const customTheme = {
+  base: 'vs',
   inherit: true,
   rules: [
     {
-      background: '0C1021',
-      token: ''
-    },
-    {
-      foreground: 'aeaeae',
+      foreground: '919191',
       token: 'comment'
     },
     {
-      foreground: 'd8fa3c',
-      token: 'constant'
-    },
-    {
-      foreground: 'ff6400',
-      token: 'entity'
-    },
-    {
-      foreground: 'fbde2d',
-      token: 'keyword'
-    },
-    {
-      foreground: 'fbde2d',
-      token: 'storage'
-    },
-    {
-      foreground: '61ce3c',
+      foreground: '4E5859',
       token: 'string'
     },
     {
-      foreground: '61ce3c',
-      token: 'meta.verbatim'
+      foreground: '48bb78',
+      token: 'type'
     },
     {
-      foreground: '8da6ce',
-      token: 'support'
+      foreground: '4E5859',
+      token: 'type.delimiter'
     },
     {
-      foreground: 'ab2a1d',
-      fontStyle: 'italic',
-      token: 'invalid.deprecated'
+      foreground: '4E5859',
+      token: 'predefined'
     },
     {
-      foreground: 'f8f8f8',
-      background: '9d1e15',
-      token: 'invalid.illegal'
+      foreground: '4E5859',
+      token: 'namespace'
     },
     {
-      foreground: 'ff6400',
-      fontStyle: 'italic',
-      token: 'entity.other.inherited-class'
+      foreground: '4E5859',
+      token: 'constructor'
     },
     {
-      foreground: 'ff6400',
-      token: 'string constant.other.placeholder'
+      foreground: 'a535ae',
+      token: 'constant.language'
     },
     {
-      foreground: '7f90aa',
-      token: 'meta.tag'
+      foreground: '48bb78',
+      token: 'keyword'
     },
     {
-      foreground: '7f90aa',
-      token: 'meta.tag entity'
+      foreground: '48bb78',
+      token: 'storage'
+    },
+    {
+      foreground: '21439c',
+      token: 'entity.name.type'
+    },
+    {
+      foreground: '21439c',
+      token: 'entity.name.function'
+    },
+    {
+      foreground: 'a535ae',
+      token: 'support.function'
+    },
+    {
+      foreground: 'a535ae',
+      token: 'support.constant'
+    },
+    {
+      foreground: 'a535ae',
+      token: 'support.type'
+    },
+    {
+      foreground: 'a535ae',
+      token: 'support.class'
+    },
+    {
+      foreground: 'a535ae',
+      token: 'support.variable'
     },
     {
       foreground: 'ffffff',
-      token: 'entity.name.section'
+      background: '990000',
+      token: 'invalid'
     },
     {
-      foreground: 'd5e0f3',
-      token: 'keyword.type.variant'
+      foreground: '990000',
+      token: 'constant.other.placeholder.py'
     }
   ],
   colors: {
-    'editor.foreground': '#F8F8F8',
-    'editor.background': '#2f3136',
-    'editor.selectionBackground': '#010101',
-    'editor.lineHighlightBackground': '#FFFFFF0F',
-    'editorCursor.foreground': '#FFFFFFA6',
-    'editorWhitespace.foreground': '#FFFFFF40'
+    'editor.foreground': '#4E5859',
+    'editor.background': '#FFFFFF',
+    'editor.selectionBackground': '#f0fff4',
+    'editor.lineHighlightBackground': '#48bb7812',
+    'editorCursor.foreground': '#000000',
+    'editorWhitespace.foreground': '#FFFFFF'
   }
 };

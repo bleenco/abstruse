@@ -1,4 +1,20 @@
-<div class="container">
+<header class="subheader" *ngIf="job">
+  <nav class="subheader-links">
+    <a>Job</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Job</h1>
+        <h2>{{ job?.build?.repository?.fullName }}</h2>
+        <h2>Job ID #{{ job?.build?.id }}.{{ job?.id }}</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container" *ngIf="job">
   <div class="columns is-multiline">
     <div class="column is-12" *ngIf="job && !fetching">
       <div class="console-output">

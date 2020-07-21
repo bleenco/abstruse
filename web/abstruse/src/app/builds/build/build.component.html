@@ -1,12 +1,13 @@
 <header class="subheader">
   <nav class="subheader-links">
-    <a [routerLink]="['/builds', build?.id]">Build</a>
+    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'jobs' }" routerLinkActive="is-active">Jobs</a>
+    <a [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'config' }" routerLinkActive="is-active">Config</a>
   </nav>
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Build</h1>
-        <h2>Build</h2>
+        <h2>{{ title }}</h2>
       </div>
       <div class="subheader-right"></div>
     </div>
@@ -19,7 +20,7 @@
       <app-loader></app-loader>
     </div>
 
-    <div class="column is-12" *ngIf="!loading && build">
+    <div class="column is-12" *ngIf="!loading && build && this.tab === 'jobs'">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-2"><span class="text mlr10">ID</span></div>
@@ -32,6 +33,14 @@
       </div>
       <div class="list-items">
         <app-job-list-item [build]="build" [job]="job" *ngFor="let job of build.jobs"></app-job-list-item>
+      </div>
+    </div>
+
+    <div class="column is-8 is-offset-2" *ngIf="!loading && build && this.tab === 'config'">
+      <div class="config-container">
+        <ngx-monaco-editor style="height: 100%; border-radius: 4px;" [options]="editorOptions"
+          [(ngModel)]="build.config">
+        </ngx-monaco-editor>
       </div>
     </div>
   </div>

@@ -4,7 +4,7 @@ import { BuildsService } from '../shared/builds.service';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Build } from '../shared/build.model';
-import { finalize } from 'rxjs/operators';
+import { finalize, filter } from 'rxjs/operators';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 
 @UntilDestroy()
@@ -18,6 +18,9 @@ export class BuildComponent implements OnInit, OnDestroy {
   build!: Build;
   loading: boolean = false;
   processing: boolean = false;
+  tab: 'jobs' | 'config' = 'jobs';
+  title: string = 'Jobs';
+  editorOptions = { language: 'yaml', theme: 'abstruse', readOnly: true };
 
   constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}
 
@@ -29,6 +32,16 @@ export class BuildComponent implements OnInit, OnDestroy {
       .pipe(untilDestroyed(this))
       .subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev));
     this.buildsService.subscribeToJobEvents();
+
+    this.route.queryParams
+      .pipe(
+        filter(ev => ev.tab),
+        untilDestroyed(this)
+      )
+      .subscribe(ev => {
+        this.tab = ev.tab;
+        this.title = this.tab === 'jobs' ? 'Jobs' : 'Build Config';
+      });
   }
 
   ngOnDestroy(): void {

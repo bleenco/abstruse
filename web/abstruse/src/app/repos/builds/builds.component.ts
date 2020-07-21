@@ -12,7 +12,6 @@ export class BuildsComponent implements OnInit {
 
   constructor(private route: ActivatedRoute) {
     this.options = { ...this.options, ...{ repoID: route.snapshot.parent!.params.id } };
-    console.log(this.options);
   }
 
   ngOnInit(): void {}

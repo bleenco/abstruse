@@ -21,12 +21,13 @@ import { ToggleComponent } from './widgets/toggle/toggle.component';
 import { StopPropagationDirective } from './directives/stop-propagation.directive';
 import { TerminalComponent } from './components/terminal/terminal.component';
 
-import { monacoEditorOptions, blackboardTheme } from './models/monaco.model';
+import { monacoEditorOptions, customTheme } from './models/monaco.model';
 
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: monacoEditorOptions,
   onMonacoLoad: () => {
-    monaco.editor.defineTheme('blackboard', blackboardTheme as any);
+    monaco.editor.defineTheme('abstruse', customTheme as any);
+    monaco.editor.setTheme('abstruse');
   }
 };
 
