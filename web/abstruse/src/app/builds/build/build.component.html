@@ -9,9 +9,21 @@
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Build</h1>
+        <h2 class="is-link" [routerLink]="['/repos', build?.repository?.id]">{{ build?.repository?.fullName }}</h2>
+        <h2>Build #{{ build?.id }}</h2>
         <h2>{{ title }}</h2>
       </div>
-      <div class="subheader-right"></div>
+      <div class="subheader-right">
+        <button type="button" class="button" (click)="restartBuild()" [disabled]="build?.processing">
+          <i class="fas fa-sync-alt"></i>
+          <span>Restart</span>
+        </button>
+        <button type="button" class="button" (click)="stopBuild()"
+          [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing">
+          <i class="fas fa-hand-paper"></i>
+          <span>Stop</span>
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -22,7 +34,57 @@
       <app-loader></app-loader>
     </div>
 
-    <div class="column is-12" *ngIf="!loading && build && this.tab === 'jobs'">
+    <div class="column is-12" *ngIf="!loading && build">
+      <div class="build-info-container">
+        <div class="columns">
+          <div class="column is-2">
+            <div class="build-info-content">
+              <span class="tag is-medium" [ngClass]="{
+                        'is-gray': build?.status === 'queued',
+                        'is-green': build?.status === 'passing',
+                        'is-red': build?.status === 'failing',
+                        'is-yellow': build?.status === 'running'
+                      }">
+                <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
+                <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
+                <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
+                <i *ngIf="build?.status === 'running'">
+                  <app-loader class="is-small is-yellow"></app-loader>
+                </i>
+                <span>{{ build?.status }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="build-info-content">
+              <img [src]="build?.committerAvatar" class="committer-avatar" />
+              <span class="desc-text">{{ build?.committerName }} authored and commited</span>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="build-info-content">
+              <i class="octicon octicon-git-commit"></i>
+              <span class="desc-text">{{ build?.commitShort }}</span>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="build-info-content">
+              <i class="far fa-comment-alt"></i>
+              <span class="desc-text" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
+              <span class="desc-text" *ngIf="build?.pr">{{ build?.prTitle }}</span>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="build-info-content">
+              <i class="far fa-clock time-icon"></i>
+              <span class="time-text">{{ build?.runningTime | async }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="!loading && build && tab === 'jobs'">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-2"><span class="text mlr10">ID</span></div>
@@ -38,10 +100,9 @@
       </div>
     </div>
 
-    <div class="column is-8 is-offset-2" *ngIf="!loading && build && this.tab === 'config'">
+    <div class="column is-12" *ngIf="!loading && build && tab === 'config'">
       <div class="config-container">
-        <ngx-monaco-editor style="height: 100%; border-radius: 4px;" [options]="editorOptions"
-          [(ngModel)]="build.config">
+        <ngx-monaco-editor style="height: 100%" [options]="editorOptions" [(ngModel)]="build.config">
         </ngx-monaco-editor>
       </div>
     </div>
