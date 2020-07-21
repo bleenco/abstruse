@@ -15,7 +15,9 @@ export class SetupDoneGuardService implements CanActivate {
       }
       return true;
     } catch (e) {
-      throw e;
+      console.error(e);
+      this.router.navigate(['/gateway-timeout']);
+      return false;
     }
   }
 }
