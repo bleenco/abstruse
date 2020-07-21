@@ -5,6 +5,8 @@ services:
     image: mysql:latest
     container_name: abstruse-e2e-mysql
     restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
     environment:
       - MYSQL_ROOT_PASSWORD=e2etest
     volumes:
@@ -15,12 +17,12 @@ services:
 
   gitea:
     image: gitea/gitea:latest
-    container_name: absstruse-e2e-gitea
+    container_name: abstruse-e2e-gitea
     restart: unless-stopped
     volumes:
       - ./data/gitea:/data
     ports:
-      - "3100:3000"
+      - "3200:3000"
     networks:
       e2e_net:
         ipv4_address: 10.20.20.50
@@ -75,7 +77,7 @@ services:
       - ABSTRUSE_AUTH_JWT_SECRET=fa27ef3ef6570e32a79e74deca7c1bc3
     volumes:
       - "./testdata/abstruse-worker:/abstruse"
-      - "./testdata/abstruse-worker/tmp:/tmp"
+      - "/tmp:/tmp"
       - "/var/run/docker.sock:/var/run/docker.sock"
     command:
       - "--config=/abstruse/abstruse-worker.json"

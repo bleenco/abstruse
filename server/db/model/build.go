@@ -16,11 +16,11 @@ type Build struct {
 	AuthorLogin     string      `json:"authorLogin"`
 	AuthorName      string      `json:"authorName"`
 	AuthorEmail     string      `json:"authorEmail"`
-	AuthorAvatar    string      `gorm:"default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"authorAvatar"`
+	AuthorAvatar    string      `gorm:"default:'/assets/images/avatars/avatar_1.svg'" json:"authorAvatar"`
 	CommitterLogin  string      `json:"committerLogin"`
 	CommitterName   string      `json:"committerName"`
 	CommitterEmail  string      `json:"committerEmail"`
-	CommitterAvatar string      `gorm:"default:'/assets/images/avatars/predefined/avatar_1.svg'" json:"committerAvatar"`
+	CommitterAvatar string      `gorm:"default:'/assets/images/avatars/avatar_1.svg'" json:"committerAvatar"`
 	StartTime       *time.Time  `json:"startTime"`
 	EndTime         *time.Time  `json:"endTime"`
 	Jobs            []*Job      `gorm:"preload:false" json:"jobs,omitempty"`

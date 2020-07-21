@@ -6,5 +6,7 @@ worker/data
 tmp/
 configs/testing/**/*.pem
 configs/testing/**/*.log
+configs/testing/**/*/indexers/
+configs/testing/**/*/log/
+configs/testing/**/*/queues/
 testdata/
-
