@@ -13,6 +13,18 @@ services:
       e2e_net:
         ipv4_address: 10.20.20.10
 
+  gitea:
+    image: gitea/gitea:latest
+    container_name: absstruse-e2e-gitea
+    restart: unless-stopped
+    volumes:
+      - ./data/gitea:/data
+    ports:
+      - "3100:3000"
+    networks:
+      e2e_net:
+        ipv4_address: 10.20.20.50
+
   abstruse-server:
     image: abstruse/abstruse-server:latest
     container_name: abstruse-e2e-server
