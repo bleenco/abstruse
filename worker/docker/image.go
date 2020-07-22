@@ -12,6 +12,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
@@ -28,6 +29,10 @@ func BuildImage(tags []string, dockerFile string) (types.ImageBuildResponse, err
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
+	}
+
+	if !lib.Include(tags, "latest") {
+		tags = append(tags, "latest")
 	}
 	tags = configureTags(tags)
 
