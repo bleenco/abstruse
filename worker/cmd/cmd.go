@@ -48,7 +48,7 @@ func run() error {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitDocker)
+	cobra.OnInitialize(initDefaults, core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitDocker)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-worker.json)")
 	rootCmd.PersistentFlags().String("grpc-listenaddr", "0.0.0.0:3330", "gRPC server listen address")
@@ -68,7 +68,9 @@ func init() {
 	rootCmd.PersistentFlags().Int("log-max-size", 500, "maximum log file size (in MB)")
 	rootCmd.PersistentFlags().Int("log-max-backups", 3, "maximum log file backups")
 	rootCmd.PersistentFlags().Int("log-max-age", 3, "maximum log age")
+}
 
+func initDefaults() {
 	core.InitDefaults(rootCmd, cfgFile)
 }
 

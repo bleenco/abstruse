@@ -71,7 +71,7 @@ func run() error {
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	cobra.OnInitialize(core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitRegistryAuthentication)
+	cobra.OnInitialize(initDefaults, core.InitConfig, core.InitTLS, core.InitAuthentication, core.InitRegistryAuthentication)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-server.json)")
 	rootCmd.PersistentFlags().String("http-addr", "0.0.0.0:80", "HTTP server listen address")
@@ -109,7 +109,9 @@ func init() {
 	rootCmd.PersistentFlags().Int("log-max-size", 500, "maximum log file size (in MB)")
 	rootCmd.PersistentFlags().Int("log-max-backups", 3, "maximum log file backups")
 	rootCmd.PersistentFlags().Int("log-max-age", 3, "maximum log age")
+}
 
+func initDefaults() {
 	core.InitDefaults(rootCmd, cfgFile)
 }
 
