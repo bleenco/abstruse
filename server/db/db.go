@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/jinzhu/gorm"
@@ -34,6 +36,9 @@ func Connect(cfg *config.Db, logger *zap.Logger) {
 		conn, err := gorm.Open(cfg.Driver, connString(cfg, true))
 		if err != nil {
 			log.Errorf("database connection issue: %v", err)
+			if strings.Contains(err.Error(), "could not establish a connection") || strings.Contains(err.Error(), "connection refused") {
+				go wait(cfg, logger)
+			}
 		} else {
 			conn.AutoMigrate(
 				model.User{},
@@ -119,4 +124,14 @@ func checkMySQL(cfg *config.Db) error {
 
 func credentials(cfg *config.Db) string {
 	return fmt.Sprintf("%s:%s@", cfg.User, cfg.Password)
+}
+
+// simple solution when running this from docker compose.
+func wait(cfg *config.Db, logger *zap.Logger) {
+	if err := lib.WaitTCP(time.Minute*1, cfg.Host, cfg.Port); err == nil {
+		if db == nil {
+			logger.Sugar().Debugf("database online, trying to reconnect")
+			Connect(cfg, logger)
+		}
+	}
 }
