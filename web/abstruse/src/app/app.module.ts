@@ -7,6 +7,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BuildsModule } from './builds/builds.module';
 import { NotFoundRoutingModule } from './core/not-found/not-found-routing.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   imports: [
@@ -16,7 +18,8 @@ import { NotFoundRoutingModule } from './core/not-found/not-found-routing.module
     SharedModule.forRoot(),
     AuthModule,
     BuildsModule,
-    NotFoundRoutingModule
+    NotFoundRoutingModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
