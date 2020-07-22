@@ -9,4 +9,5 @@ configs/testing/**/*.log
 configs/testing/**/*/indexers/
 configs/testing/**/*/log/
 configs/testing/**/*/queues/
+configs/testing/**/*/sessions/
 testdata/
