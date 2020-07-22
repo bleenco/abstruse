@@ -96,7 +96,10 @@ export class ImageModalComponent implements OnInit, OnDestroy {
       });
     this.activeTag = this.tags[0];
 
-    this.tag.buildLog = '__CLEAR__';
+    if (this.tag) {
+      this.tag.buildLog = '__CLEAR__';
+    }
+
     this.imagesService
       .build(data)
       .pipe(
