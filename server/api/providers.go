@@ -87,7 +87,7 @@ func (p *providers) update() http.HandlerFunc {
 		Name        string `json:"name" valid:"stringlength(5|12),required"`
 		URL         string `json:"url" valid:"url,required"`
 		Host        string `json:"host" valid:"url,required"`
-		AccessToken string `json:"accessToken" valid:"stringlength(12|50),required"`
+		AccessToken string `json:"accessToken" valid:"stringlength(12|50)"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
 	}
 

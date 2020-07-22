@@ -107,7 +107,7 @@ export class ProvidersModalComponent implements OnInit {
       name: [(this.provider && this.provider.name) || null, [Validators.required]],
       url: [(this.provider && this.provider.url) || null, [Validators.required]],
       host: [(this.provider && this.provider.host) || window.location.origin, [Validators.required]],
-      accessToken: [(this.provider && this.provider.accessToken) || null, [Validators.required]],
+      accessToken: [(this.provider && this.provider.accessToken) || null],
       secret: [(this.provider && this.provider.secret) || null, [Validators.required]]
     });
   }
