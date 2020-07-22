@@ -75,8 +75,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
-    this.terminal.setOption('fontFamily', 'Monaco, Menlo, Consolas, "Liberation Mono", "Courier New", monospace');
+    this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
     this.terminal.setOption('fontSize', 13);
+    this.terminal.setOption('fontWeight', 400);
+    this.terminal.setOption('fontWeightBold', 400);
     this.terminal.setOption('theme', this.themeLight);
     this.fitAddon.fit();
     this.terminal.onData(() => {
