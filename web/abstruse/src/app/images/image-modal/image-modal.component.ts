@@ -85,6 +85,10 @@ export class ImageModalComponent implements OnInit, OnDestroy {
       dockerfile: this.form.controls.dockerfile.value
     };
 
+    if (!data.tags.includes('latest')) {
+      data.tags.push('latest');
+    }
+
     this.building = true;
     this.tab = 'log';
 
