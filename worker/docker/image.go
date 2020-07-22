@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"io"
 	"path"
 	"strings"
@@ -79,6 +80,26 @@ func PushImage(tag string) (io.ReadCloser, error) {
 	auth := base64.URLEncoding.EncodeToString(authJSON)
 
 	return cli.ImagePush(ctx, tag, types.ImagePushOptions{RegistryAuth: auth})
+}
+
+// PullImage pulls image from the registry.
+func PullImage(tag string) error {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+	if len(strings.Split(tag, ":")) == 1 {
+		tag = fmt.Sprintf("%s:latest", tag)
+	}
+
+	tag = prependTag(tag)
+	authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
+	authJSON, _ := json.Marshal(authConfig)
+	auth := base64.URLEncoding.EncodeToString(authJSON)
+
+	_, err = cli.ImagePull(ctx, tag, types.ImagePullOptions{RegistryAuth: auth})
+	return err
 }
 
 // ListImages returns all images.

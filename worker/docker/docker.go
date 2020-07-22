@@ -54,6 +54,10 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 	}
 	defer close(logch)
 
+	if err = PullImage(image); err == nil {
+		image = prependTag(image)
+	}
+
 	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env)
 	if err != nil {
 		logch <- []byte(err.Error())
