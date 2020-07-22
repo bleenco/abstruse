@@ -50,18 +50,3 @@ func NewClient(c ClientConfig) (*clientv3.Client, error) {
 
 	return clientv3.New(cfg)
 }
-
-// type credentials struct {
-// 	Username, Password string
-// }
-
-// func (c *credentials) GetRequestMetadata(context.Context, ...string) (map[string]string, error) {
-// 	return map[string]string{
-// 		"username": c.Username,
-// 		"password": c.Password,
-// 	}, nil
-// }
-
-// func (c *credentials) RequireTransportSecurity() bool {
-// 	return true
-// }
