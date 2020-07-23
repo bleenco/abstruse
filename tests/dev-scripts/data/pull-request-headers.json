@@ -1,6 +1,0 @@
-{
-  "content-type": "application/json",
-  "X-GitHub-Event": "pull_request",
-  "X-Hub-Signature": "sha1=562c43c2ad50a9307190eab6e8ef9b087bcd5e90",
-  "X-GitHub-Delivery": "47ddbee0-8680-11e7-9118-9afbec9a915b"
-}

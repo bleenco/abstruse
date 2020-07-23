@@ -1,1 +1,0 @@
-x11vnc -xkb -noxrecord -noxfixes -noxdamage -display :99 -forever -bg -rfbauth /home/abstruse/.vnc/passwd -rfbport 5900
