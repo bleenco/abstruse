@@ -7,8 +7,8 @@ import { finalize, filter } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { DataService } from 'src/app/shared/providers/data.service';
 
-interface ITag {
-  tag: string;
+interface IBuild {
+  tags: string[];
   buildLog: string;
   pushLog: string;
   build: boolean | null;
@@ -29,8 +29,7 @@ export class ImageModalComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   editorOptions = { language: 'dockerfile', theme: 'abstruse' };
   tab: 'form' | 'log' = 'form';
-  tags: ITag[] = [];
-  activeTag: ITag | null = null;
+  build: IBuild | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -41,6 +40,8 @@ export class ImageModalComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.createForm();
+    this.build = null;
+
     this.dataService.socketOutput
       .pipe(
         filter(ev => ev.type.startsWith(imagesSubEvent)),
@@ -48,26 +49,39 @@ export class ImageModalComponent implements OnInit, OnDestroy {
       )
       .subscribe(ev => {
         if (ev.data && ev.data.buildLog) {
-          this.tags.map(tag => (tag.buildLog += ev.data.buildLog));
+          this.build!.buildLog = ev.data.buildLog;
         }
         if (ev.data && typeof ev.data.build !== 'undefined') {
-          this.tags.map(tag => (tag.build += ev.data.build));
+          this.build!.build = ev.data.build;
           if (!ev.data.build) {
-            this.tags.map(tag => (tag.error += ev.data.error));
+            this.tab = 'form';
+            this.build!.error = ev.data.error;
           }
         }
-
         if (ev.data && ev.data.pushLog) {
-          this.tags.map(tag => (tag.pushLog += ev.data.pushLog));
+          this.build!.buildLog = ev.data.pushLog;
         }
         if (ev.data && typeof ev.data.push !== 'undefined') {
-          this.tags.map(tag => (tag.push = ev.data.push));
+          this.build!.push = ev.data.push;
           if (!ev.data.push) {
-            this.tags.map(tag => (tag.error = ev.data.error));
+            this.tab = 'form';
+            this.build!.error = ev.data.error;
           }
         }
       });
     this.dataService.subscribeToEvent(imagesSubEvent);
+
+    if (!this.tag) {
+      return;
+    }
+    this.build = {
+      tags: [this.tag.tag],
+      buildLog: this.tag.buildLog,
+      pushLog: this.tag.pushLog,
+      build: null,
+      push: null,
+      error: null
+    };
   }
 
   ngOnDestroy(): void {
@@ -91,18 +105,7 @@ export class ImageModalComponent implements OnInit, OnDestroy {
 
     this.building = true;
     this.tab = 'log';
-
-    this.tags = this.form.controls.tag.value
-      .split(',')
-      .map((t: string) => t.trim())
-      .map((t: string) => {
-        return { tag: t, buildLog: '', pushLog: '', build: null, push: null, error: null };
-      });
-    this.activeTag = this.tags[0];
-
-    if (this.tag) {
-      this.tag.buildLog = '__CLEAR__';
-    }
+    this.build = { tags: data.tags, buildLog: '', pushLog: '', build: null, push: null, error: null };
 
     this.imagesService
       .build(data)
@@ -116,7 +119,7 @@ export class ImageModalComponent implements OnInit, OnDestroy {
   }
 
   private checkDone(): void {
-    if (this.tags.filter(t => t.build && t.push).length === this.tags.length) {
+    if (this.build!.build && this.build!.push) {
       this.activeModal.close(true);
     }
   }

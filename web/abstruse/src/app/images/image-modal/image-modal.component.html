@@ -11,7 +11,9 @@
   <div class="modal-body">
     <div class="tabs">
       <span class="tab" [class.is-active]="tab === 'form'" (click)="tab = 'form'">Form</span>
-      <span class="tab" [class.is-active]="tab === 'log'" (click)="tab = 'log'">Build Log</span>
+      <span class="tab" [class.is-active]="tab === 'log'" (click)="tab = 'log'" [class.events-none]="!build">
+        Build Log
+      </span>
     </div>
     <div class="columns is-multiline" *ngIf="tab === 'form'">
       <div class="column is-6">
@@ -41,13 +43,20 @@
       </div>
     </div>
     <div class="columns is-multiline" *ngIf="tab === 'log'">
-      <div class="column is-12" *ngIf="tag || tags.length">
-        <div class="tabs mt10" *ngIf="tags.length">
-          <span class="tab" [class.is-active]="activeTag === t" *ngFor="let t of tags"
-            (click)="activeTag = t">{{ t.tag }}</span>
+      <div class="column is-12" *ngIf="build">
+        <app-terminal class="is-small" [data]="build!.buildLog"></app-terminal>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column is-12">
+        <div class="notification is-red is-small" *ngIf="build && build!.error && build!.error !== ''">
+          <i class="fab fa-docker"></i>
+          <p>Error building image: {{ build!.error }}</p>
         </div>
-        <app-terminal class="is-small" [data]="activeTag!.buildLog" *ngIf="activeTag && tags.length"></app-terminal>
-        <app-terminal class="is-small" [data]="tag!.buildLog" *ngIf="!tags.length"></app-terminal>
+        <div class="notification is-small" *ngIf="building">
+          <i class="fab fa-docker"></i>
+          <p>Building image in progress, please do not close the modal or refresh the browser.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -55,7 +64,7 @@
     <div class="align-center"></div>
     <div class="align-center">
       <button type="button" class="button" (click)="activeModal.close()" [disabled]="building">Cancel</button>
-      <button type="submit" class="button is-green" [disabled]="!form.valid || building">
+      <button type="submit" class="button is-green" [class.events-none]="!form.valid || building">
         <span *ngIf="!building">Build Image</span>
         <app-loader class="is-small is-white" *ngIf="building"></app-loader>
         <span *ngIf="building">Building Image...</span>

@@ -378,6 +378,10 @@ loop:
 	}
 
 	for name, res := range result {
+		if res.err != nil {
+			continue
+		}
+
 		splitted := strings.Split(name, ":")
 		name = splitted[0]
 		tag := splitted[1]

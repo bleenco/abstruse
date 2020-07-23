@@ -35,12 +35,12 @@
     padding: 10px 16px
 
     i
-      font-size: 16px
-      margin: 0 16px 0 0
+      font-size: 16px !important
+      margin: 0 16px 0 0 !important
 
     p
-      font-size: 13px
-      line-height: 1.5
+      font-size: 13px !important
+      line-height: 1.5 !important
 
   @each $name, $color in $colors
     &.is-#{$name}
@@ -48,8 +48,8 @@
       border: 1px solid $color
 
       i
-        color: $color
+        color: $color !important
 
       p
-        color: $color
+        color: $color !important
 

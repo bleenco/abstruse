@@ -175,7 +175,11 @@ func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) err
 
 	go docker.StreamImageEvents(outch, resp.Body)
 	for ev = range outch {
-		content := fmt.Sprintf("%s\r\n", re.ReplaceAllString(ev.Stream, ""))
+		content := re.ReplaceAllString(ev.Stream, "")
+		if content == "" {
+			continue
+		}
+		content = fmt.Sprintf("%s\r\n", content)
 		out := &pb.ImageOutput{
 			Name:    in.Name,
 			Tags:    in.Tags,
@@ -216,10 +220,13 @@ func (s *APIServer) BuildImage(in *pb.Image, stream pb.API_BuildImageServer) err
 		if err != nil {
 			return err
 		}
-		defer out.Close()
 		go docker.StreamImageEvents(outch, out)
 		for ev = range outch {
-			content := fmt.Sprintf("%s\r\n", re.ReplaceAllString(ev.ProgressMessage, ""))
+			content := re.ReplaceAllString(ev.ProgressMessage, "")
+			if content == "" {
+				continue
+			}
+			content = fmt.Sprintf("%s\r\n", content)
 			out := &pb.ImageOutput{
 				Name:    in.Name,
 				Tags:    []string{splitted[1]},
