@@ -1,0 +1,67 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/teams']" routerLinkActive="is-active">Teams</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Teams</h1>
+        <h2>Team Management</h2>
+      </div>
+      <div class="subheader-right">
+        <button type="button" class="button">
+          <span>Add New Team</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12">
+      <div class="list-items">
+        <div class="list-item">
+          <div class="columns">
+            <div class="column is-1">
+              <div class="list-item-content">
+                <span class="placeholder is-green">AB</span>
+              </div>
+            </div>
+            <div class="column is-3">
+              <div class="list-item-content">
+                <span class="label">Name</span>
+                <span class="text">Abstruse CI Team</span>
+              </div>
+            </div>
+            <div class="column is-3">
+              <div class="list-item-content">
+                <span class="label">Description</span>
+                <span class="text">Small team but efficient.</span>
+              </div>
+            </div>
+            <div class="column is-4">
+              <div class="list-item-content">
+                <div class="members-container">
+                  <img src="/assets/images/avatars/avatar_8.svg" class="member-avatar" />
+                  <img src="/assets/images/avatars/avatar_2.svg" class="member-avatar" />
+                  <img src="/assets/images/avatars/avatar_1.svg" class="member-avatar" />
+                  <img src="/assets/images/avatars/avatar_11.svg" class="member-avatar" />
+                  <img src="/assets/images/avatars/avatar_15.svg" class="member-avatar" />
+                  <span class="plus-more">+ 21</span>
+                </div>
+              </div>
+            </div>
+            <div class="column is-1">
+              <div class="list-item-content">
+                <button type="button" class="button">
+                  <span>Edit</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

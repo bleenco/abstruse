@@ -1,0 +1,40 @@
+<div class="list-item">
+  <div class="columns">
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">OS</span>
+        <span class="text">{{ session?.os }} ({{ session?.platform }})</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="list-item-content">
+        <span class="label">Browser</span>
+        <span class="text">{{ session?.browser }} ({{ session?.engine }})</span>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="list-item-content">
+        <span class="label">IP</span>
+        <span class="text">{{ session?.ip }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Login At</span>
+        <span class="text">{{ session?.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Expires At</span>
+        <span class="text">{{ session?.expiresAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="list-item-content">
+        <span class="label">Updated At</span>
+        <span class="text">{{ session?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+  </div>
+</div>

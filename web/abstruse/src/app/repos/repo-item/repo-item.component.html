@@ -1,0 +1,47 @@
+<div class="list-item-condensed is-slim" [routerLink]="['/repos', repo?.id]">
+  <div class="columns">
+    <div class="column is-1 data-column">
+      <div class="data-text no-padding has-text-left">
+        <span class="status-line" [class.is-passing]="repo.active" [class.is-running]="!repo.active"></span>
+      </div>
+      <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
+        <i class="fab fa-github is-medium is-gray" *ngSwitchCase="'github'"></i>
+        <i class="fab fa-gitlab is-medium is-gray" *ngSwitchCase="'gitlab'"></i>
+        <i class="fab fa-bitbucket is-medium is-gray" *ngSwitchCase="'bitbucket'"></i>
+        <img src="/assets/images/icons/gitea-gray.svg" *ngSwitchCase="'gitea'" />
+        <i class="fab fa-git is-medium is-gray" *ngSwitchDefault></i>
+      </div>
+    </div>
+    <div class="column is-4 data-column direction-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text is-title">{{ repo?.fullName }}</span>
+      </div>
+      <div class="info-text has-text-left align-center">
+        <span class="data-text is-subtitle">{{ repo?.clone }}</span>
+      </div>
+    </div>
+    <div class="column is-2 data-column justify-center">
+      <div class="info-text justify-center align-center">
+        <div class="tag is-small">
+          <i class="octicon octicon-git-branch is-medium"></i>
+          <span>{{ repo?.defaultBranch }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="column is-1 data-column">
+      <div class="info-text justify-center align-center" [ngSwitch]="repo?.isPrivate">
+        <i class="octicon octicon-check is-medium is-green" *ngSwitchCase="false"></i>
+        <i class="octicon octicon-x is-medium is-yellow" *ngSwitchCase="true"></i>
+      </div>
+    </div>
+    <div class="column is-3 data-column justify-center">
+      <div class="info-text justify-center align-center">
+        <i class="far fa-clock is-medium is-gray"></i>
+        <span class="data-text is-small">{{ repo?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column justify-center" appStopPropagation>
+      <app-toggle [(ngModel)]="repo.active" (ngModelChange)="onActiveChange()"></app-toggle>
+    </div>
+  </div>
+</div>

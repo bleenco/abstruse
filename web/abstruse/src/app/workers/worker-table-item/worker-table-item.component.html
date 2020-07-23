@@ -1,0 +1,56 @@
+<div class="table-item" *ngIf="worker">
+  <div class="columns">
+    <div class="column is-1">
+      <div class="table-data justify-center">
+        <span class="tag is-green">{{ worker.id }}</span>
+      </div>
+    </div>
+    <div class="column is-3">
+      <div class="table-data">
+        <span class="ui-icon">
+          <i class="fab fa-linux" *ngIf="worker.os === 'linux'"></i>
+          <i class="fab fa-apple" *ngIf="worker.os === 'darwin'"></i>
+        </span>
+        <div class="table-text">
+          <span class="text-strong">{{ worker.os }} {{ worker.platformVersion }}</span>
+          <span class="text-light">{{ worker.platform }} {{ worker.kernelArch }} {{ worker.kernelVersion }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="table-data">
+        <span class="tag is-light is-fullwidth">{{ worker.addr }}</span>
+      </div>
+    </div>
+    <div class="column is-2">
+      <div class="table-data">
+        <span class="text-secondary justify-center">{{ worker.getUptime }}</span>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="table-data">
+        <app-progress-bar [percent]="worker.jobsPercent" [placeholder]="worker.jobsUsage"
+          [options]="{ color: 'green' }">
+        </app-progress-bar>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="table-data">
+        <app-progress-bar [percent]="worker.currentCPU" [options]="{ color: 'green' }"></app-progress-bar>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="table-data">
+        <app-progress-bar [percent]="worker.currentMem" [options]="{ color: 'green' }"></app-progress-bar>
+      </div>
+    </div>
+    <div class="column is-1">
+      <div class="table-data justify-center">
+        <button type="button" class="button is-small">
+          <i class="far fa-chart-bar"></i>
+          <span>Stats</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

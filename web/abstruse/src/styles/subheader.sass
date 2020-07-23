@@ -1,0 +1,113 @@
+$subheader-height: 70px
+
+.subheader
+  display: block
+  width: 100%
+  margin-bottom: 20px
+
+  .subheader-links
+    width: 100%
+    display: flex
+    justify-content: center
+    border-bottom: 1px solid $border-default
+    font-family: $font-family-roboto
+
+    a
+      +unselectable
+      color: $text-secondary
+      font-size: 13px
+      text-transform: uppercase
+      padding: 15px 5px
+      margin: 0 10px -1px 0
+      font-weight: $weight-medium
+      border-bottom: 2px solid transparent
+
+      &:hover, &.is-active
+        color: $green
+        border-bottom: 2px solid $green
+
+  .subheader-container
+    display: flex
+    width: 100%
+    align-items: center
+    justify-content: space-between
+    border-bottom: 1px solid $border-default
+    height: $subheader-height
+
+    .subheader-left, .subheader-right
+      display: flex
+      align-items: center
+
+    .subheader-left
+
+      h1
+        padding-right: 20px
+        padding-top: 3px
+        padding-bottom: 3px
+        margin-right: 20px
+        border-right: 1px solid $border-default
+        font-size: 22px
+        color: $heading-primary
+        font-weight: $weight-light
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            cursor: pointer
+
+      h2
+        color: $heading-light
+        text-transform: none
+        margin-right: 15px
+        padding-right: 15px
+        font-weight: $weight-medium
+        display: inline-flex
+        align-items: center
+        font-size: 13px
+        text-transform: uppercase
+
+        &:not(:last-child)
+          border-right: 1px solid $border-default
+
+        &.is-link
+          outline: none
+
+          &:hover, &.is-active
+            color: $green
+            cursor: pointer
+
+        i
+          margin-right: 10px
+          padding-top: 2px
+
+        img
+          display: block
+          width: 18px
+          height: 18px
+          margin-right: 10px
+
+    .subheader-right
+
+      .link
+        +unselectable
+        padding: 10px 0
+        margin: 0 15px
+        color: $text-primary
+        font-size: 13px
+        text-transform: uppercase
+        color: $text-secondary
+        text-decoration: none
+        cursor: pointer
+        display: inline-flex
+        align-items: center
+
+        &:last-child
+          margin-right: 0
+
+        &:hover, &.is-active
+          color: $text-primary
+
+        i
+          font-size: 16px
+          margin-right: 10px

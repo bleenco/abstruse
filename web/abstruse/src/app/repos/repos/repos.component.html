@@ -1,0 +1,54 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/repos']" routerLinkActive="is-active">My Repositories</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Repositories</h1>
+        <h2>My Repositories</h2>
+      </div>
+      <div class="subheader-right">
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading && !loaded">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-6 is-offset-3" *ngIf="(!loading || loaded) && !repos?.length">
+      <div class="notification">
+        <p class="has-text-centered">
+          <span class="title">No repositories found!</span><br />
+          In order to your repositories show here, you need to add git SCM provider and sync repos.
+          <span class="justify-center mt20 mb10">
+            <a [routerLink]="['/providers']" class="button is-small is-green">Add SCM Provider</a>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="column is-12" *ngIf="(!loading || loaded) && repos?.length">
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-1"><span class="text justify-center ml10">Provider</span></div>
+          <div class="column is-4"><span class="text ml10">Name</span></div>
+          <div class="column is-2"><span class="text justify-center">Default Branch</span></div>
+          <div class="column is-1"><span class="text justify-center">Public</span></div>
+          <div class="column is-3"><span class="text justify-center">Last Update</span></div>
+          <div class="column is-1"><span class="text justify-center">Enabled</span></div>
+        </div>
+      </div>
+      <div class="list-items">
+        <app-repo-item [repo]="r" *ngFor="let r of repos"></app-repo-item>
+      </div>
+      <div class="pagination" *ngIf="count > limit">
+        <span class="btn" (click)="back()">Back</span>
+        <span class="page" *ngFor="let p of pages" (click)="setPage(p)" [class.is-active]="page === p">{{ p }}</span>
+        <span class="btn" (click)="next()">Next</span>
+      </div>
+    </div>
+  </div>
+</div>

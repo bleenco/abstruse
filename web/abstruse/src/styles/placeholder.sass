@@ -1,0 +1,19 @@
+.placeholder
+  +unselectable
+  width: 45px
+  height: 45px
+  border-radius: 50%
+  display: inline-flex
+  align-items: center
+  justify-content: center
+  color: $text-secondary
+  background: $white
+  border: 1px solid $border-default
+  font-size: 20px
+  font-weight: $weight-medium
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      color: $color
+      background: rgba($color, .2)
+      border-color: $color

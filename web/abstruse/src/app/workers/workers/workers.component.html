@@ -1,0 +1,65 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/workers']" routerLinkActive="is-active">Worker Nodes</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Workers</h1>
+        <h2>Workers Nodes</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="column is-8 is-offset-2" *ngIf="!loading && !workers.length">
+      <div class="notification">
+        <i class="fas fa-network-wired"></i>
+        <p>
+          There are no workers currently online. In order to run builds you need at least one worker node connected.
+        </p>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="!loading && workers.length">
+      <div class="table-container">
+        <div class="table-header">
+          <div class="columns">
+            <div class="column is-1">
+              <span class="table-header-title justify-center">ID</span>
+            </div>
+            <div class="column is-3">
+              <span class="table-header-title justify-center">OS</span>
+            </div>
+            <div class="column is-2">
+              <span class="table-header-title justify-center">Server</span>
+            </div>
+            <div class="column is-2">
+              <span class="table-header-title justify-center">Uptime</span>
+            </div>
+            <div class="column is-1">
+              <span class="table-header-title justify-center">Jobs</span>
+            </div>
+            <div class="column is-1">
+              <span class="table-header-title justify-center">CPU</span>
+            </div>
+            <div class="column is-1">
+              <span class="table-header-title justify-center">Memory</span>
+            </div>
+            <div class="column is-1"></div>
+          </div>
+        </div>
+        <div class="table-content">
+          <app-worker-table-item [worker]="w" *ngFor="let w of workers"></app-worker-table-item>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

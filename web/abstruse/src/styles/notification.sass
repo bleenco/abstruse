@@ -1,0 +1,55 @@
+.notification
+  display: flex
+  align-items: center
+  border-radius: 3px
+  flex-direction: row
+  flex-wrap: nowrap
+  margin: 20px 0 10px
+  padding: 16px 24px
+  background: $background
+  border: 1px solid $border-default
+
+  i
+    font-size: 24px
+    margin: 0 24px 0 0
+    padding: 0
+    color: $text-secondary
+
+  p
+    color: $text-secondary
+    flex-grow: 1
+    flex-shrink: 1
+    font-size: 14px
+    line-height: 1.5
+    margin: 0
+    padding: 0
+
+    .title
+      display: inline-block
+      font-size: 15px
+      font-weight: $weight-medium
+      font-family: $font-family-roboto
+      margin-bottom: 10px
+
+  &.is-small
+    padding: 10px 16px
+
+    i
+      font-size: 16px !important
+      margin: 0 16px 0 0 !important
+
+    p
+      font-size: 13px !important
+      line-height: 1.5 !important
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      background: rgba($color, .1)
+      border: 1px solid $color
+
+      i
+        color: $color !important
+
+      p
+        color: $color !important
+

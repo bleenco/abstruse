@@ -1,0 +1,88 @@
+<header class="subheader mt20" *ngIf="job">
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Job</h1>
+        <h2 class="is-link" [routerLink]="['/repos', job?.build?.repository?.id]">{{ job?.build?.repository?.fullName }}
+        </h2>
+        <h2 class="is-link" [routerLink]="['/builds', job?.build?.id]">Build #{{ job?.build?.id }}</h2>
+        <h2>Job #{{ job?.id }}</h2>
+      </div>
+      <div class="subheader-right">
+        <button type="button" class="button" (click)="restartJob()" [disabled]="job?.processing">
+          <i class="fas fa-sync-alt"></i>
+          <span>Restart</span>
+        </button>
+        <button type="button" class="button" (click)="stopJob()"
+          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing">
+          <i class="fas fa-hand-paper"></i>
+          <span>Stop</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container" *ngIf="job">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="fetching">
+      <app-loader></app-loader>
+    </div>
+
+    <div class="column is-12" *ngIf="!fetching && job">
+      <div class="job-info-container">
+        <div class="columns">
+          <div class="column is-2">
+            <div class="build-info-content">
+              <span class="tag is-medium" [ngClass]="{
+                            'is-gray': job?.status === 'queued',
+                            'is-green': job?.status === 'passing',
+                            'is-red': job?.status === 'failing',
+                            'is-yellow': job?.status === 'running'
+                          }">
+                <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
+                <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
+                <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
+                <i *ngIf="job?.status === 'running'">
+                  <app-loader class="is-small is-yellow"></app-loader>
+                </i>
+                <span>{{ job?.status }}</span>
+              </span>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="build-info-content">
+              <img [src]="job?.build?.committerAvatar" class="committer-avatar" />
+              <span class="desc-text">{{ job?.build?.committerName }} authored and commited</span>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="build-info-content">
+              <i class="octicon octicon-git-commit"></i>
+              <span class="desc-text">{{ job?.build?.commitShort }}</span>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="build-info-content">
+              <i class="far fa-comment-alt"></i>
+              <span class="desc-text" *ngIf="!job?.build?.pr">{{ job?.build?.commitMessage }}</span>
+              <span class="desc-text" *ngIf="job?.build?.pr">{{ job?.build?.prTitle }}</span>
+            </div>
+          </div>
+          <div class="column is-1">
+            <div class="build-info-content">
+              <i class="far fa-clock time-icon"></i>
+              <span class="time-text">{{ job?.runningTime | async }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-12" *ngIf="job && !fetching">
+      <div class="console-output">
+        <app-terminal [data]="job!.log"></app-terminal>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+{
+  "/api": {
+    "target": "http://localhost",
+    "secure": false
+  },
+  "/ws": {
+    "target": "ws://localhost",
+    "secure": false,
+    "ws": true
+  },
+  "/uploads": {
+    "target": "http://localhost",
+    "secure": false
+  }
+}

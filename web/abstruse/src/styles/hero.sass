@@ -1,0 +1,47 @@
+.hero
+  align-items: stretch
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+  .navbar
+    background: none
+  .tabs
+    ul
+      border-bottom: none
+
+  &.is-small
+    .hero-body
+      padding-bottom: 1.5rem
+      padding-top: 1.5rem
+  &.is-medium
+    +tablet
+      .hero-body
+        padding-bottom: 9rem
+        padding-top: 9rem
+  &.is-large
+    +tablet
+      .hero-body
+        padding-bottom: 18rem
+        padding-top: 18rem
+  &.is-halfheight,
+  &.is-fullheight
+    .hero-body
+      align-items: center
+      display: flex
+      & > .container
+        flex-grow: 1
+        flex-shrink: 1
+  &.is-halfheight
+    min-height: 50vh
+  &.is-fullheight
+    min-height: 100vh
+
+.hero-head,
+.hero-foot
+  flex-grow: 0
+  flex-shrink: 0
+
+.hero-body
+  flex-grow: 1
+  flex-shrink: 0
+  padding: 3rem 1.5rem

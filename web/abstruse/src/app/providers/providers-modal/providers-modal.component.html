@@ -1,0 +1,59 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>Provider</h1>
+    <h2>Git SCM Provider Integration</h2>
+  </div>
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="saving">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="field">
+      <label class="label">SCM Provider</label>
+      <app-selectbox [values]="providerList" placeholder="Choose Your Git SCM Provider"
+        (ngModelChange)="updateProviderURL()" formControlName="name"></app-selectbox>
+    </div>
+    <div class="field">
+      <label class="label">URL</label>
+      <input type="text" name="url" class="input" placeholder="SCM Provider API URL" formControlName="url"
+        autocomplete="off" />
+    </div>
+    <div class="field">
+      <label class="label">Host URL</label>
+      <input type="text" name="url" class="input" placeholder="Host URL" formControlName="host" autocomplete="off" />
+      <span class="form-helper">
+        Host URL is URL where SCM provider can access Abstruse to trigger webhooks.
+      </span>
+    </div>
+    <div class="field">
+      <label class="label">Access Token</label>
+      <input type="text" name="access_token" class="input" formControlName="accessToken" autocomplete="off" />
+      <span class="form-helper">
+        Personal access token is mandatory for access to your repositories.
+        <a target="_blank"
+          href="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line"
+          *ngIf="form.controls.name.value === 'github'">Create access token.</a>
+      </span>
+    </div>
+    <div class="field">
+      <label class="label">Secret</label>
+      <input type="text" name="secret" class="input" formControlName="secret" autocomplete="off" />
+      <button type="button" class="button is-small input-button" (click)="generateSecret()">
+        <i class="fas fa-key"></i>
+        <span>Generate Secret</span>
+      </button>
+      <span class="form-helper">Secret is used for authentication when provider triggers webhook.</span>
+    </div>
+  </div>
+  <div class="modal-footer space-between">
+    <div class="align-center"></div>
+    <div class="align-center">
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
+      <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
+        <span *ngIf="!saving">Save</span>
+        <span *ngIf="saving">Saving...</span>
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,28 @@
+.tabs
+  display: flex
+  width: 100%
+  justify-content: flex-end
+  padding: 0 10px
+  border-bottom: 1px solid $border-default
+
+  .tab
+    display: inline-flex
+    justify-content: center
+    align-content: center
+    padding: 10px 25px
+    cursor: pointer
+    border: 1px solid transparent
+    border-top-left-radius: $border-radius
+    border-top-right-radius: $border-radius
+    margin-bottom: -1px
+    margin-left: 3px
+    font-size: 13px
+    text-transform: uppercase
+    color: $text-secondary
+
+    &:hover, &.is-active
+      border-top: 1px solid $border-default
+      border-left: 1px solid $border-default
+      border-right: 1px solid $border-default
+      border-bottom: 1px solid $white
+      color: $text-primary

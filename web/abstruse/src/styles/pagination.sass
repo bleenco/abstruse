@@ -1,0 +1,33 @@
+.pagination
+  +unselectable
+  display: flex
+  margin: 30px 0 0 0
+  align-items: center
+  justify-content: center
+
+  .page
+    display: inline-block
+    cursor: pointer
+    padding: 5px 10px
+    border: 1px solid transparent
+    border-radius: $border-radius
+
+    &:hover
+      border: 1px solid $border-secondary
+      color: $text-primary
+
+    &.is-active
+      background: rgba($gray, .2)
+      color: $text-primary
+      border: 1px solid $gray
+
+  .btn
+    padding: 5px 10px
+    margin: 0 5px
+    cursor: pointer
+    border: 1px solid transparent
+    border-radius: $border-radius
+
+    &:hover
+      border: 1px solid $border-secondary
+      color: $text-primary

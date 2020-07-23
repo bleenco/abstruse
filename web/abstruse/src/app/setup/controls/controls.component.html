@@ -1,0 +1,24 @@
+<div class="setup-controls">
+  <div class="setup-controls-column">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-6 is-offset-3">
+          <div class="setup-controls-container">
+            <div class="left">
+              <button type="button" class="button" [disabled]="!wizard.steps[wizard.step - 1].backEnabled"
+                (click)="back()">
+                Back
+              </button>
+            </div>
+            <div class="right">
+              <button type="button" class="button is-green" [disabled]="!wizard.steps[wizard.step - 1].nextEnabled"
+                (click)="next()">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

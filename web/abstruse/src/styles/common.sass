@@ -1,0 +1,96 @@
+[hidden]
+  display: none !important
+
+.events-none
+  pointer-events: none !important
+  user-select: none !important
+
+.has-text-centered
+  text-align: center
+
+.justify-center
+  display: flex !important
+  justify-content: center !important
+
+.justify-start
+  display: flex !important
+  justify-content: flex-start
+
+.justify-end
+  display: flex !important
+  justify-content: flex-end
+
+.space-between
+  display: flex !important
+  justify-content: space-between
+
+.align-center
+  display: flex !important
+  align-items: center
+
+.border-top
+  border-top: 1px solid $border-default
+
+.mt10
+  margin-top: 10px
+
+.mb10
+  margin-bottom: 10px
+
+.mt20
+  margin-top: 20px
+
+.mb20
+  margin-bottom: 20px
+
+.mt30
+  margin-top: 30px
+
+.mb30
+  margin-bottom: 30px
+
+.mr10
+  margin-right: 10px
+
+.ml10
+  margin-left: 10px
+
+.pt10
+  padding-top: 10px
+
+.pt0
+  padding-top: 0
+
+.pb0
+  padding-bottom: 0
+
+.pb10
+  padding-bottom: 10px
+
+.pt20
+  padding-top: 20px
+
+.pb20
+  padding-bottom: 20px
+
+.pl20
+  padding-left: 20px
+
+.pr20
+  padding-right: 20px
+
+i
+  font-size: 16px
+
+  &.is-small
+    font-size: 12px
+
+  &.is-medium
+    font-size: 20px
+
+  &.is-large
+    font-size: 28px
+
+  @each $name, $color in $colors
+    &.is-#{$name}
+      color: $color !important

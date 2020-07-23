@@ -1,0 +1,64 @@
+syntax = "proto3";
+package api;
+option go_package = ".;api";
+
+import "google/protobuf/empty.proto";
+
+service API {
+  rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
+  rpc Usage(stream google.protobuf.Empty) returns (stream UsageStatsReply) {}
+  rpc JobLog(Job) returns (stream JobOutput) {}
+  rpc BuildImage(Image) returns (stream ImageOutput) {}
+}
+
+message Job { uint64 id = 1; }
+
+message JobOutput {
+  uint64 id = 1;
+  bytes content = 2;
+}
+
+message HostInfoReply {
+  string id = 1;
+  string addr = 2;
+  string hostname = 3;
+  uint64 uptime = 4;
+  uint64 bootTime = 5;
+  uint64 procs = 6;
+  string os = 7;
+  string platform = 8;
+  string platformFamily = 9;
+  string platformVersion = 10;
+  string kernelVersion = 11;
+  string kernelArch = 12;
+  string virtualizationSystem = 13;
+  string virtualizationRole = 14;
+  string hostID = 15;
+  uint64 maxParallel = 16;
+}
+
+message UsageStatsReply {
+  int32 cpu = 1;
+  int32 mem = 2;
+}
+
+message Image {
+  string name = 1;
+  repeated string tags = 2;
+  string dockerfile = 3;
+}
+
+message ImageOutput {
+  enum ImageBuildStatus {
+    BuildStream = 0;
+    PushStream = 1;
+    BuildOK = 2;
+    BuildError = 3;
+    PushOK = 4;
+    PushError = 5;
+  }
+  string name = 1;
+  repeated string tags = 2;
+  bytes content = 3;
+  ImageBuildStatus status = 4;
+}

@@ -1,0 +1,24 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/builds']" [queryParams]="{ type: 'latest' }" routerLinkActive="is-active">
+      Latest Builds
+    </a>
+    <a [routerLink]="['/builds']" [queryParams]="{ type: 'commits' }" routerLinkActive="is-active">
+      Commits
+    </a>
+    <a [routerLink]="['/builds']" [queryParams]="{ type: 'pull-requests' }" routerLinkActive="is-active">
+      Pull Requests
+    </a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Builds</h1>
+        <h2>{{ title }}</h2>
+      </div>
+      <div class="subheader-right"></div>
+    </div>
+  </div>
+</header>
+
+<app-builds-items [options]="options"></app-builds-items>
