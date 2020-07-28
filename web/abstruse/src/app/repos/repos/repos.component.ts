@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
 import { Repo } from '../shared/repo.model';
-import { finalize, filter, debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
+import { finalize, debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { fromEvent } from 'rxjs';
 
