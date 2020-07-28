@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
 import { Repo } from '../shared/repo.model';
-import { finalize } from 'rxjs/operators';
+import { finalize, filter, debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { fromEvent } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -10,7 +11,9 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
   templateUrl: './repos.component.html',
   styleUrls: ['./repos.component.sass']
 })
-export class ReposComponent implements OnInit {
+export class ReposComponent implements OnInit, AfterViewInit {
+  @ViewChild('keyword') keyword!: ElementRef;
+
   repos: Repo[] = [];
   loading: boolean = false;
   loaded: boolean = false;
@@ -26,10 +29,27 @@ export class ReposComponent implements OnInit {
     this.find();
   }
 
-  find(): void {
+  ngAfterViewInit(): void {
+    fromEvent(this.keyword.nativeElement, 'keyup')
+      .pipe(
+        map(() => this.keyword.nativeElement.value),
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap(() => {
+          this.limit = 10;
+          this.page = 1;
+        }),
+        untilDestroyed(this)
+      )
+      .subscribe(keyword => {
+        this.find(keyword);
+      });
+  }
+
+  find(keyword: string = ''): void {
     this.loading = true;
     this.reposService
-      .find(this.limit, (this.page - 1) * this.limit)
+      .find(this.limit, (this.page - 1) * this.limit, keyword)
       .pipe(
         finalize(() => {
           this.loading = false;

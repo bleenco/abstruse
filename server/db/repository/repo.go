@@ -31,11 +31,12 @@ func (r RepoRepository) Find(userID uint, limit, offset int, keyword string) ([]
 		err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Order("active desc, name asc").Count(&count).Error
 		return repos, count, err
 	}
-	err = db.Limit(limit).Offset(offset).Where("user_id = ? AND fullname LIKE ?", userID, fmt.Sprintf("%%%s%%", keyword)).Order("active desc, name asc").Find(&repos).Error
+	keyword = fmt.Sprintf("%%%s%%", keyword)
+	err = db.Limit(limit).Offset(offset).Where("user_id = ? AND full_name LIKE ?", userID, keyword).Order("active desc, name asc").Find(&repos).Error
 	if err != nil {
 		return repos, count, err
 	}
-	err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Order("active desc, name asc").Count(&count).Error
+	err = db.Model(&model.Repository{}).Where("user_id = ? AND full_name LIKE ?", userID, keyword).Order("active desc, name asc").Count(&count).Error
 	return repos, count, err
 }
 
