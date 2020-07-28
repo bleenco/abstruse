@@ -16,14 +16,22 @@ func NewRepoRepository() RepoRepository {
 }
 
 // Find finds repositories by userID.
-func (r RepoRepository) Find(userID uint, limit, offset int) ([]model.Repository, int, error) {
+func (r RepoRepository) Find(userID uint, limit, offset int, keyword string) ([]model.Repository, int, error) {
 	var repos []model.Repository
 	var count int
 	db, err := db.Instance()
 	if err != nil {
 		return repos, count, err
 	}
-	err = db.Limit(limit).Offset(offset).Where("user_id = ?", userID).Order("active desc, name asc").Find(&repos).Error
+	if keyword == "" {
+		err = db.Limit(limit).Offset(offset).Where("user_id = ?", userID).Order("active desc, name asc").Find(&repos).Error
+		if err != nil {
+			return repos, count, err
+		}
+		err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Order("active desc, name asc").Count(&count).Error
+		return repos, count, err
+	}
+	err = db.Limit(limit).Offset(offset).Where("user_id = ? AND fullname LIKE ?", userID, fmt.Sprintf("%%%s%%", keyword)).Order("active desc, name asc").Find(&repos).Error
 	if err != nil {
 		return repos, count, err
 	}

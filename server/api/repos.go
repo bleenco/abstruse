@@ -45,8 +45,9 @@ func (r *repos) find() http.HandlerFunc {
 		if err != nil {
 			offset = 10
 		}
+		keyword := req.URL.Query().Get("keyword")
 
-		repositories, count, err := r.repoRepository.Find(claims.ID, limit, offset)
+		repositories, count, err := r.repoRepository.Find(claims.ID, limit, offset, keyword)
 		if err != nil {
 			render.JSON(w, http.StatusNotFound, render.Error{Message: err.Error()})
 			return
