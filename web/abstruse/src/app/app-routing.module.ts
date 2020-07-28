@@ -5,6 +5,7 @@ import { AuthGuardService } from './auth/shared/auth-guard.service';
 import { SetupDoneGuardService } from './setup/shared/setup-done-guard.service';
 import { NotFoundComponent, GatewayTimeoutComponent } from './core';
 import { AlreadyAuthGuardService } from './auth/shared/already-auth-guard.service';
+import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
 
 const routes: Routes = [
   { path: '', redirectTo: 'builds', pathMatch: 'full' },
@@ -54,7 +55,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
+  imports: [QuicklinkModule, RouterModule.forRoot(routes, { preloadingStrategy: QuicklinkStrategy })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}
