@@ -23,11 +23,11 @@ func (r RepoRepository) Find(userID uint, limit, offset int) ([]model.Repository
 	if err != nil {
 		return repos, count, err
 	}
-	err = db.Limit(limit).Offset(offset).Where("user_id = ?", userID).Find(&repos).Error
+	err = db.Limit(limit).Offset(offset).Where("user_id = ?", userID).Order("active desc, name asc").Find(&repos).Error
 	if err != nil {
 		return repos, count, err
 	}
-	err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Count(&count).Error
+	err = db.Model(&model.Repository{}).Where("user_id = ?", userID).Order("active desc, name asc").Count(&count).Error
 	return repos, count, err
 }
 
