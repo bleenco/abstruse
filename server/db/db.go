@@ -6,17 +6,22 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/db/model"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mssql"    // mssql driver
 	_ "github.com/jinzhu/gorm/dialects/mysql"    // mysql driver
 	_ "github.com/jinzhu/gorm/dialects/postgres" // postres driver
+	"github.com/jpillora/backoff"
 	"go.uber.org/zap"
 )
 
 var db *gorm.DB
+var b = &backoff.Backoff{
+	Min:    5 * time.Second,
+	Max:    10 * time.Second,
+	Jitter: false,
+}
 
 // Instance returns db connection.
 func Instance() (*gorm.DB, error) {
@@ -32,13 +37,13 @@ func Connect(cfg *config.Db, logger *zap.Logger) {
 
 	if err := check(cfg); err != nil {
 		log.Errorf("database connection issue: %v", err)
+		if strings.Contains(err.Error(), "could not establish a connection") || strings.Contains(err.Error(), "connection refused") {
+			go reconnectLoop(cfg, logger)
+		}
 	} else {
 		conn, err := gorm.Open(cfg.Driver, connString(cfg, true))
 		if err != nil {
 			log.Errorf("database connection issue: %v", err)
-			if strings.Contains(err.Error(), "could not establish a connection") || strings.Contains(err.Error(), "connection refused") {
-				go wait(cfg, logger)
-			}
 		} else {
 			conn.AutoMigrate(
 				model.User{},
@@ -126,12 +131,17 @@ func credentials(cfg *config.Db) string {
 	return fmt.Sprintf("%s:%s@", cfg.User, cfg.Password)
 }
 
-// simple solution when running this from docker compose.
-func wait(cfg *config.Db, logger *zap.Logger) {
-	if err := lib.WaitTCP(time.Minute*1, cfg.Host, cfg.Port); err == nil {
-		if db == nil {
-			logger.Sugar().Debugf("database online, trying to reconnect")
+func reconnectLoop(cfg *config.Db, logger *zap.Logger) {
+	if b.Attempt() == 0 {
+		for {
+			dur := b.Duration()
+			logger.Sugar().Debugf("reconnecting to database in %v...", dur)
+			time.Sleep(dur)
 			Connect(cfg, logger)
+			if db != nil {
+				b.Reset()
+				break
+			}
 		}
 	}
 }
