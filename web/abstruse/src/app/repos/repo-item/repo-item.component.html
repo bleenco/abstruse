@@ -1,9 +1,6 @@
 <div class="list-item-condensed is-slim" [routerLink]="['/repos', repo?.id]">
   <div class="columns">
     <div class="column is-1 data-column">
-      <div class="data-text no-padding has-text-left">
-        <span class="status-line" [class.is-passing]="repo.active" [class.is-running]="!repo.active"></span>
-      </div>
       <div class="info-text justify-center align-center" [ngSwitch]="repo?.providerName">
         <i class="fab fa-github is-medium is-gray" *ngSwitchCase="'github'"></i>
         <i class="fab fa-gitlab is-medium is-gray" *ngSwitchCase="'gitlab'"></i>
