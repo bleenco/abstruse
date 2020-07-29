@@ -36,6 +36,7 @@ func newRouter(logger *zap.Logger, app *core.App, uploadDir, wsAddr string) *rou
 	}
 
 	router.Mount("/api/v1", router.apiRouter())
+	router.Mount("/webhooks", router.webhooksRouter())
 	router.Get("/ws", ws.UpstreamHandler(wsAddr))
 	router.Mount("/uploads", router.fileServer())
 	router.Mount("/registry", registry.Handler(cfg.Registry))
@@ -182,6 +183,15 @@ func (r *router) workersRouter() *chi.Mux {
 	workers := newWorkers(r.app)
 
 	router.Get("/", workers.find())
+
+	return router
+}
+
+func (r *router) webhooksRouter() *chi.Mux {
+	router := chi.NewRouter()
+	webhooks := newWebhooks(r.logger)
+
+	router.Post("/", webhooks.hook())
 
 	return router
 }
