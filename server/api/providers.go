@@ -39,7 +39,7 @@ func (p *providers) find() http.HandlerFunc {
 
 func (p *providers) create() http.HandlerFunc {
 	type form struct {
-		Name        string `json:"name" valid:"stringlength(5|12),required"`
+		Name        string `json:"name" valid:"stringlength(4|12),required"`
 		URL         string `json:"url" valid:"url,required"`
 		Host        string `json:"host" valid:"url,required"`
 		AccessToken string `json:"accessToken" valid:"stringlength(12|50),required"`
@@ -84,10 +84,10 @@ func (p *providers) create() http.HandlerFunc {
 func (p *providers) update() http.HandlerFunc {
 	type form struct {
 		ID          uint   `json:"id" valid:"required"`
-		Name        string `json:"name" valid:"stringlength(5|12),required"`
+		Name        string `json:"name" valid:"stringlength(4|12),required"`
 		URL         string `json:"url" valid:"url,required"`
 		Host        string `json:"host" valid:"url,required"`
-		AccessToken string `json:"accessToken" valid:"stringlength(12|50)"`
+		AccessToken string `json:"accessToken" valid:"optional"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
 	}
 

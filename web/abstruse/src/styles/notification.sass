@@ -12,7 +12,7 @@
   i
     font-size: 24px
     margin: 0 24px 0 0
-    padding: 0
+    padding: 0 !important
     color: $text-secondary
 
   p
@@ -20,9 +20,8 @@
     flex-grow: 1
     flex-shrink: 1
     font-size: 14px
-    line-height: 1.5
-    margin: 0
-    padding: 0
+    margin: 0 !important
+    padding: 0 !important
 
     .title
       display: inline-block
@@ -40,7 +39,6 @@
 
     p
       font-size: 13px !important
-      line-height: 1.5 !important
 
   @each $name, $color in $colors
     &.is-#{$name}

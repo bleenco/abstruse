@@ -25,6 +25,7 @@ export class ProvidersModalComponent implements OnInit {
   saving: boolean = false;
   checking: boolean = false;
   form!: FormGroup;
+  error: string | null = null;
 
   constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {}
 
@@ -37,6 +38,7 @@ export class ProvidersModalComponent implements OnInit {
       return;
     }
 
+    this.error = null;
     this.saving = true;
     let data: any = {
       name: this.form.controls.name.value,
@@ -61,7 +63,7 @@ export class ProvidersModalComponent implements OnInit {
             this.activeModal.close(true);
           },
           err => {
-            this.activeModal.close(err.message);
+            this.error = err.message;
           }
         );
     } else {
@@ -76,7 +78,7 @@ export class ProvidersModalComponent implements OnInit {
             this.activeModal.close(true);
           },
           err => {
-            this.activeModal.close(err.message);
+            this.error = err.message;
           }
         );
     }

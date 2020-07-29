@@ -9,6 +9,10 @@
 </div>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="modal-body">
+    <div class="notification is-red" *ngIf="error">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ error }}</p>
+    </div>
     <div class="field">
       <label class="label">SCM Provider</label>
       <app-selectbox [values]="providerList" placeholder="Choose Your Git SCM Provider"
