@@ -16,7 +16,7 @@ import (
 // StartBuild temp func.
 func (app *App) StartBuild(b common.Build) error {
 	app.logBuild(b)
-	repo, err := app.repo.Repo.FindByURL(b.RepoURL)
+	repo, err := app.repo.Repo.FindByClone(b.RepoURL)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,11 @@ func (app *App) StartBuild(b common.Build) error {
 	if err != nil {
 		return err
 	}
-	if b.CommitSHA == "" || b.CommitMessage == "" {
+	reference := ref.Path
+	if b.PrNumber != 0 {
+		reference = b.Ref
+	}
+	if b.CommitSHA == "" || (b.CommitMessage == "" && b.PrNumber == 0) {
 		commit, err := scm.LastCommit(repo.FullName, b.Branch)
 		if err != nil {
 			return err
@@ -55,7 +59,7 @@ func (app *App) StartBuild(b common.Build) error {
 
 	buildModel := model.Build{
 		Branch:          b.Branch,
-		Ref:             ref.Path,
+		Ref:             reference,
 		Commit:          b.CommitSHA,
 		CommitMessage:   b.CommitMessage,
 		PR:              b.PrNumber,

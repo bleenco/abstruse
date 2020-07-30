@@ -73,7 +73,7 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
-	fmt.Printf("status: %d", resp.StatusCode)
+	fmt.Printf("status: %d\n", resp.StatusCode)
 	os.Exit(0)
 }
 

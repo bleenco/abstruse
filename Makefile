@@ -41,10 +41,10 @@ clean:
 	@rm -rf build/ web/abstruse/dist server/ui/ worker/data pb/api.pb.go
 
 dev:
-	@reflex -sr '\.go$$' -R '^web/' -R '^server/ui' -R '^worker/' -R '^configs/' -- sh -c 'make server && ./build/abstruse-server --log-level debug'
+	@reflex -sr '\.go$$' -R '^web/' -R '^server/ui' -R '^worker/' -R '^configs/' -R '^tests/' -- sh -c 'make server && ./build/abstruse-server --log-level debug'
 
 dev_worker:
-	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -R '^configs/' -- sh -c 'make worker && ./build/abstruse-worker --log-level debug'
+	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -R '^configs/' -R '^tests/' -- sh -c 'make worker && ./build/abstruse-worker --log-level debug'
 
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/

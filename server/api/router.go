@@ -189,7 +189,7 @@ func (r *router) workersRouter() *chi.Mux {
 
 func (r *router) webhooksRouter() *chi.Mux {
 	router := chi.NewRouter()
-	webhooks := newWebhooks(r.logger)
+	webhooks := newWebhooks(r.logger, r.app)
 
 	router.Post("/", webhooks.hook())
 
