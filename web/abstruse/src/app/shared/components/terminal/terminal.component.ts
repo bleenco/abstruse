@@ -15,11 +15,11 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   themeLight: ITheme = {
     foreground: '#615f51',
-    background: '#fcfcfc',
+    background: '#ffffff',
     black: '#050505',
     red: '#b0263f',
     green: '#4b862c',
-    yellow: '#ecc94b',
+    yellow: '#d69e2e',
     blue: '#3b62d9',
     magenta: '#a431c4',
     cyan: '#178262',
@@ -27,7 +27,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     brightBlack: '#0e0e0c',
     brightRed: '#b72424',
     brightGreen: '#4b862c',
-    brightYellow: '#ecc94b',
+    brightYellow: '#d69e2e',
     brightBlue: '#3b62d9',
     brightMagenta: '#a431c4',
     brightCyan: '#178262',
