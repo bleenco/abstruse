@@ -1,4 +1,4 @@
-export const AUTH_TOKEN_DATA = 'abstruse-auth-data';
+export const AUTH_TOKEN_KEY = 'abstruse-auth-data';
 export const TIMEOUT_FACTOR = 0.75;
 
 export interface Login {
@@ -9,18 +9,11 @@ export interface Login {
 export interface UserData {
   email: string;
   name: string;
+  lastname: string;
   location: string;
   avatar: string;
-  role: string;
-  lastLogin: Date;
-  tokens: {
-    accessToken: string;
-    refreshToken: string;
-    storedAt: number;
-  };
 }
 
 export interface TokenResponse {
-  accessToken: string;
-  refreshToken: string;
+  token: string;
 }

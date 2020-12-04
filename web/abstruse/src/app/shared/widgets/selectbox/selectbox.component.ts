@@ -40,7 +40,7 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
     this.onChangeCallback(this.innerValue);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isOpened = false;
     this.placeholderText = this.placeholder;
   }
@@ -54,7 +54,7 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
     this.isOpened = false;
   }
 
-  writeValue(val: number | string | boolean) {
+  writeValue(val: number | string | boolean): void {
     if (!val && typeof val !== 'boolean') {
       return;
     }
@@ -68,15 +68,15 @@ export class SelectboxComponent implements ControlValueAccessor, OnInit {
     this.innerValue = val;
   }
 
-  registerOnChange(fn: any) {
+  registerOnChange(fn: any): void {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
+  registerOnTouched(fn: any): void {
     this.onTouchedCallback = fn;
   }
 
-  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent) {
+  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent): void {
     if (!this.isOpened) {
       return;
     }

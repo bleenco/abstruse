@@ -1,50 +1,58 @@
 package config
 
-import "github.com/bleenco/abstruse/pkg/logger"
+type (
+	// Config holds data about worker configuration.
+	Config struct {
+		ID        string     `json:"id"`
+		Server    *Server    `json:"server"`
+		TLS       *TLS       `json:"tls"`
+		GRPC      *GRPC      `json:"grpc"`
+		Scheduler *Scheduler `json:"scheduler"`
+		Auth      *Auth      `json:"auth"`
+		Registry  *Registry  `json:"registry"`
+		Logger    *Logger    `json:"logger"`
+	}
 
-// Config is worker configuration.
-type Config struct {
-	ID        string
-	TLS       *TLS
-	Etcd      *Etcd
-	GRPC      *GRPC
-	Scheduler *Scheduler
-	Auth      *Auth
-	Registry  *Registry
-	Log       *logger.Config
-}
+	// Server configuration.
+	Server struct {
+		Addr string `json:"addr"`
+	}
 
-// TLS configuration.
-type TLS struct {
-	Cert string
-	Key  string
-}
+	// TLS configuration.
+	TLS struct {
+		Cert string `json:"cert"`
+		Key  string `json:"key"`
+	}
 
-// Etcd configuration.
-type Etcd struct {
-	Addr     string
-	Username string
-	Password string
-}
+	// GRPC configuration.
+	GRPC struct {
+		Addr string `json:"addr"`
+	}
 
-// GRPC configuration.
-type GRPC struct {
-	ListenAddr string
-}
+	// Scheduler configuration.
+	Scheduler struct {
+		MaxParallel int `json:"maxparallel"`
+	}
 
-// Scheduler configuration.
-type Scheduler struct {
-	MaxParallel int
-}
+	// Auth authentication config.
+	Auth struct {
+		JWTSecret string `json:"jwtsecret"`
+	}
 
-// Auth authentication config.
-type Auth struct {
-	JWTSecret string `json:"jwtSecret"`
-}
+	// Registry docker image registry configuration.
+	Registry struct {
+		Addr     string `json:"addr"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
 
-// Registry docker image registry configuration.
-type Registry struct {
-	Addr     string `json:"addr"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
+	// Logger config.
+	Logger struct {
+		Filename   string `json:"filename"`
+		MaxSize    int    `json:"maxsize"`
+		MaxBackups int    `json:"maxbackups"`
+		MaxAge     int    `json:"maxage"`
+		Level      string `json:"level"`
+		Stdout     bool   `json:"stdout"`
+	}
+)

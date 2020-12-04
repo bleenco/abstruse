@@ -5,20 +5,13 @@ option go_package = ".;api";
 import "google/protobuf/empty.proto";
 
 service API {
-  rpc HostInfo(google.protobuf.Empty) returns (HostInfoReply) {}
-  rpc Usage(stream google.protobuf.Empty) returns (stream UsageStatsReply) {}
-  rpc JobLog(Job) returns (stream JobOutput) {}
-  rpc BuildImage(Image) returns (stream ImageOutput) {}
+  rpc Connect(google.protobuf.Empty) returns (HostInfo) {}
+  rpc Usage(stream google.protobuf.Empty) returns (stream UsageStats) {}
+  rpc StartJob(Job) returns (stream JobResp) {}
+  rpc StopJob(Job) returns (JobStopResp) {}
 }
 
-message Job { uint64 id = 1; }
-
-message JobOutput {
-  uint64 id = 1;
-  bytes content = 2;
-}
-
-message HostInfoReply {
+message HostInfo {
   string id = 1;
   string addr = 2;
   string hostname = 3;
@@ -37,28 +30,55 @@ message HostInfoReply {
   uint64 maxParallel = 16;
 }
 
-message UsageStatsReply {
+message UsageStats {
   int32 cpu = 1;
   int32 mem = 2;
 }
 
-message Image {
-  string name = 1;
-  repeated string tags = 2;
-  string dockerfile = 3;
+message Job {
+  enum JobAction {
+    JobStart = 0;
+    JobStop = 1;
+  }
+  uint64 id = 1;
+  uint64 buildId = 2;
+  string name = 3;
+  string commands = 4;
+  string image = 5;
+  string env = 6;
+  string url = 7;
+  string providerName = 8;
+  string providerURL = 9;
+  string providerToken = 10;
+  string ref = 11;
+  string commitSHA = 12;
+  string repoName = 13;
+  repeated string log = 14;
+  string status = 15;
+  string workerId = 16;
+  JobAction action = 17;
 }
 
-message ImageOutput {
-  enum ImageBuildStatus {
-    BuildStream = 0;
-    PushStream = 1;
-    BuildOK = 2;
-    BuildError = 3;
-    PushOK = 4;
-    PushError = 5;
+message JobResp {
+  enum JobStatus {
+    StatusUnknown = 0;
+    StatusQueued = 1;
+    StatusRunning = 2;
+    StatusPassing = 3;
+    StatusFailing = 4;
   }
-  string name = 1;
-  repeated string tags = 2;
-  bytes content = 3;
-  ImageBuildStatus status = 4;
+
+  enum JobRespType {
+    Log = 0;
+    Done = 1;
+  }
+
+  uint64 id = 1;
+  bytes content = 2;
+  JobStatus status = 3;
+  JobRespType type = 4;
+}
+
+message JobStopResp {
+  bool stopped = 1;
 }

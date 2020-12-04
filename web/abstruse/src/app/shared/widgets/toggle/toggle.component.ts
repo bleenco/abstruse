@@ -8,7 +8,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: ToggleComponent, multi: true }]
 })
 export class ToggleComponent implements ControlValueAccessor {
-  @Input() label: string = '';
+  @Input() label = '';
 
   isEnabled!: boolean;
 
@@ -28,15 +28,15 @@ export class ToggleComponent implements ControlValueAccessor {
     this.value = !this.value;
   }
 
-  writeValue(val: boolean) {
+  writeValue(val: boolean): void {
     this.isEnabled = val;
   }
 
-  registerOnChange(fn: any) {
+  registerOnChange(fn: any): void {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
+  registerOnTouched(fn: any): void {
     this.onTouchedCallback = fn;
   }
 }

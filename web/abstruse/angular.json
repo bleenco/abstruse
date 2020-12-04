@@ -27,7 +27,7 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "assets": [
-              "src/favicon.png",
+              "src/favicon.ico",
               "src/assets",
               {
                 "glob": "**/*",
@@ -38,15 +38,13 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
-              },
-              "src/manifest.webmanifest"
+              }
             ],
             "styles": ["src/styles/app.sass"],
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
-            "scripts": [],
-            "allowedCommonJsDependencies": ["jwt-decode"]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -59,7 +57,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -67,17 +64,15 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "4mb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "1mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "5kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "4kb",
+                  "maximumError": "6kb"
                 }
-              ],
-              "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json"
+              ]
             }
           }
         },
@@ -106,7 +101,7 @@
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "assets": [
-              "src/favicon.png",
+              "src/favicon.ico",
               "src/assets",
               {
                 "glob": "**/*",
@@ -117,8 +112,7 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
-              },
-              "src/manifest.webmanifest"
+              }
             ],
             "styles": ["src/styles/app.sass"],
             "stylePreprocessorOptions": {

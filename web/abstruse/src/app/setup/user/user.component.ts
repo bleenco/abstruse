@@ -15,9 +15,9 @@ import { Router } from '@angular/router';
 })
 export class UserComponent implements OnInit {
   userForm!: FormGroup;
-  submitted: boolean = false;
-  saved: boolean = false;
-  saving: boolean = false;
+  submitted = false;
+  saved = false;
+  saving = false;
 
   constructor(private fb: FormBuilder, private setup: SetupService, private router: Router) {
     this.createForm();

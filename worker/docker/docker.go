@@ -3,47 +3,15 @@ package docker
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"path"
 	"strings"
 
-	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/lib"
-	_ "github.com/bleenco/abstruse/worker/data" // Compressed static files.
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
-	sfs "github.com/jkuri/statik/fs"
 )
-
-var mountFolder string
-
-func init() {
-	dir, err := fs.TempDir()
-	if err != nil {
-		panic(err)
-	}
-	mountFolder = dir
-	statikFS, err := sfs.New()
-	if err != nil {
-		panic(err)
-	}
-	files, err := statikFS.Readdir("/")
-	if err != nil {
-		panic(err)
-	}
-	for _, file := range files {
-		fileData, err := statikFS.Readfile(path.Join(file))
-		if err != nil {
-			panic(err)
-		}
-		filePath := path.Clean(path.Join(dir, file))
-		if err := ioutil.WriteFile(filePath, fileData, 0765); err != nil {
-			panic(err)
-		}
-	}
-}
 
 // RunContainer runs container.
 func RunContainer(name, image string, commands [][]string, env []string, dir string, logch chan<- []byte) error {
@@ -86,7 +54,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		}
 		str := yellow("\r==> " + strings.Join(command, " ") + "\n\r")
 		logch <- []byte(str)
-		command = append([]string{"/bin/abstruse-pty"}, command...)
+		command = []string{"bash", "-ci", strings.Join(command, " ")}
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
 			logch <- []byte(err.Error())
@@ -139,7 +107,7 @@ func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedRespo
 	ctx := context.Background()
 	exec, err := cli.ContainerExecCreate(ctx, id, types.ExecConfig{
 		AttachStderr: true,
-		AttachStdin:  false,
+		AttachStdin:  true,
 		AttachStdout: true,
 		Cmd:          cmd,
 		Env:          env,
@@ -185,7 +153,6 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 	}
 
 	mounts := []mount.Mount{
-		{Type: mount.TypeBind, Source: path.Join(mountFolder, "abstruse-pty"), Target: "/bin/abstruse-pty"},
 		{Type: mount.TypeBind, Source: path.Join(dir), Target: "/build"},
 		{Type: mount.TypeBind, Source: "/var/run/docker.sock", Target: "/var/run/docker.sock"},
 	}

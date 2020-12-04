@@ -26,7 +26,7 @@
               <img src="/assets/images/abstruse.svg" class="abstruse-logo" />
             </div>
           </div>
-          <div class="column is-1">
+          <div class="column is-2">
             <div class="list-item-content">
               <span class="label">OS / Arch</span>
               <span class="text">{{ system?.version?.os }} {{ system?.version?.arch }}</span>
@@ -44,7 +44,7 @@
               <span class="text">{{ system?.version?.ui }}</span>
             </div>
           </div>
-          <div class="column is-3">
+          <div class="column is-4">
             <div class="list-item-content">
               <span class="label">Commit Hash</span>
               <span class="text">{{ system?.version?.commitHash }}</span>
@@ -54,14 +54,6 @@
             <div class="list-item-content">
               <span class="label">Build Date</span>
               <span class="text">{{ system?.version?.buildDate | date: 'medium' }}</span>
-            </div>
-          </div>
-          <div class="column is-2">
-            <div class="list-item-content">
-              <span class="label">Author</span>
-              <span class="text">
-                <a target="_blank" href="https://github.com/jkuri">Jan Kuri</a>
-              </span>
             </div>
           </div>
         </div>

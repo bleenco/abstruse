@@ -1,4 +1,9 @@
 <div class="columns is-multiline">
+  <div class="column is-12">
+    <div class="setup-heading">
+      <h1>Create Admin</h1>
+    </div>
+  </div>
   <div class="column is-12 pt0 pb0">
     <form class="form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
       <div class="field">
@@ -43,7 +48,7 @@
       </div>
       <div class="form-buttons justify-end">
         <button type="button" class="button" [disabled]="userForm.pristine" (click)="resetValues()">Reset</button>
-        <button type="submit" class="button is-green" [disabled]="!userForm.valid">Save</button>
+        <button type="submit" class="button is-green" [disabled]="!userForm.valid">Create User</button>
       </div>
     </form>
   </div>

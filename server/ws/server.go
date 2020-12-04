@@ -17,18 +17,18 @@ import (
 // websocket server on straight TCP connection. Use in a combination
 // of UpstreamHandler.
 type Server struct {
-	cfg       *config.Config
+	config    *config.Config
 	logger    *zap.SugaredLogger
 	ioTimeout time.Duration
 	exit      chan struct{}
 	App       *App
 }
 
-// NewServer initializes and returns a new websocket server instance.
-func NewServer(cfg *config.Config, logger *zap.Logger) *Server {
+// New initializes and returns a new websocket server instance.
+func New(config *config.Config, logger *zap.Logger) *Server {
 	log := logger.With(zap.String("type", "websocket")).Sugar()
 	return &Server{
-		cfg:       cfg,
+		config:    config,
 		logger:    log,
 		ioTimeout: 100 * time.Millisecond,
 		exit:      make(chan struct{}),
@@ -38,11 +38,11 @@ func NewServer(cfg *config.Config, logger *zap.Logger) *Server {
 
 // Run starts the websocket server.
 func (s *Server) Run() error {
-	listener, err := net.Listen("tcp", s.cfg.WebSocket.Addr)
+	listener, err := net.Listen("tcp", s.config.Websocket.Addr)
 	if err != nil {
 		return err
 	}
-	s.logger.Debugf("starting websocket server on ws://%s", s.cfg.WebSocket.Addr)
+	s.logger.Debugf("starting websocket server on ws://%s", s.config.Websocket.Addr)
 
 	go func() {
 		for {
@@ -76,7 +76,7 @@ func (s *Server) handle(conn net.Conn) {
 				return nil
 			}
 			ok := httphead.ScanCookie(value, func(key, value []byte) bool {
-				if string(key) == "jwt" && string(value) != "" {
+				if string(key) == "abstruse-auth-data" && string(value) != "" {
 					claims, err = auth.UserClaimsFromJWT(string(value))
 				}
 				return true

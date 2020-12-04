@@ -11,7 +11,7 @@ export class AlreadyAuthGuardService implements CanActivate {
   }
 
   private authGuard(): boolean {
-    if (!this.auth.userData) {
+    if (!this.auth.data) {
       return true;
     }
 

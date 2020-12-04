@@ -2,6 +2,8 @@ build/
 pb/api.pb.go
 server/ui
 worker/data
+server/cmd/wire_gen.go
+worker/cmd/wire_gen.go
 .DS_Store
 tmp/
 configs/

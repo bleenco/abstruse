@@ -32,32 +32,19 @@ func NewJWTAuth(alg string) *JWTAuth {
 	}
 }
 
-// GenerateTokenPair returns both an access token and a refresh token.
-func (a *JWTAuth) GenerateTokenPair(userClaims UserClaims, refreshClaims RefreshClaims) (string, string, error) {
-	user, err := a.CreateJWT(userClaims)
-	if err != nil {
-		return "", "", err
-	}
-	refresh, err := a.CreateRefreshJWT(refreshClaims)
-	if err != nil {
-		return "", "", err
-	}
-	return user, refresh, nil
-}
-
 // CreateJWT returns an access token for provided user claims.
 func (a *JWTAuth) CreateJWT(c UserClaims) (string, error) {
 	c.IssuedAt = time.Now().Unix()
-	c.ExpiresAt = time.Now().Add(JWTExpiry).Unix()
+	c.ExpiresAt = time.Now().Add(time.Hour * 24 * 365).Unix()
 	c.Issuer = "Abstruse CI"
 	_, tokenString, err := a.encode(c)
 	return tokenString, err
 }
 
-// CreateRefreshJWT returns a refresh token for provided token claims.
-func (a *JWTAuth) CreateRefreshJWT(c RefreshClaims) (string, error) {
+// CreateWorkerJWT returns an access token for provided worker claims.
+func (a *JWTAuth) CreateWorkerJWT(c WorkerClaims) (string, error) {
 	c.IssuedAt = time.Now().Unix()
-	c.ExpiresAt = time.Now().Add(JWTRefreshExpiry).Unix()
+	c.ExpiresAt = time.Now().Add(time.Hour * 24 * 365).Unix()
 	c.Issuer = "Abstruse CI"
 	_, tokenString, err := a.encode(c)
 	return tokenString, err
@@ -66,6 +53,31 @@ func (a *JWTAuth) CreateRefreshJWT(c RefreshClaims) (string, error) {
 // UserClaimsFromJWT returns user data included in token.
 func UserClaimsFromJWT(tokenString string) (UserClaims, error) {
 	var c UserClaims
+	if tokenString == "" {
+		return c, fmt.Errorf("invalid token")
+	}
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return c, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return JWTSecret, nil
+	})
+	if err != nil {
+		return c, fmt.Errorf("invalid token")
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		err := c.ParseClaims(claims)
+		return c, err
+	}
+
+	return c, fmt.Errorf("invalid token")
+}
+
+// WorkerClaimsFromJWT returns user data included in token.
+func WorkerClaimsFromJWT(tokenString string) (WorkerClaims, error) {
+	var c WorkerClaims
 	if tokenString == "" {
 		return c, fmt.Errorf("invalid token")
 	}
@@ -190,7 +202,7 @@ func FromContext(ctx context.Context) (*jwt.Token, jwt.MapClaims, error) {
 }
 
 func tokenFromCookie(r *http.Request) string {
-	cookie, err := r.Cookie("jwt")
+	cookie, err := r.Cookie("abstruse-auth-data")
 	if err != nil {
 		return ""
 	}
@@ -206,7 +218,7 @@ func tokenFromHeader(r *http.Request) string {
 }
 
 func tokenFromQuery(r *http.Request) string {
-	return r.URL.Query().Get("jwt")
+	return r.URL.Query().Get("abstruse-auth-data")
 }
 
 type contextKey struct {

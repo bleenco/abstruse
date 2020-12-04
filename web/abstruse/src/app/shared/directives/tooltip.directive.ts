@@ -38,7 +38,7 @@ export class TooltipDirective implements OnChanges, OnDestroy {
     this.setBodyPosition();
 
     this.tooltip = this.renderer.createElement('div');
-    this.tooltip.innerHTML = this.text!;
+    this.tooltip.innerHTML = this.text as string;
     this.renderer.setStyle(this.tooltip, 'display', 'inline-flex');
     this.renderer.setStyle(this.tooltip, 'position', 'absolute');
     this.renderer.addClass(this.tooltip, 'tooltip-container');
@@ -66,11 +66,11 @@ export class TooltipDirective implements OnChanges, OnDestroy {
     }
   }
 
-  @HostListener('mouseover', ['$event']) onMouseOver() {
+  @HostListener('mouseover', ['$event']) onMouseOver(): void {
     this.setup();
   }
 
-  @HostListener('mouseout', ['$event']) onMouseOut() {
+  @HostListener('mouseout', ['$event']) onMouseOut(): void {
     this.destroy();
   }
 }

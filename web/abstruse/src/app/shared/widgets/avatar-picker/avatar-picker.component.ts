@@ -40,7 +40,7 @@ export class AvatarPickerComponent implements ControlValueAccessor, OnInit {
     this.onChangeCallback(this.innerValue);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isOpened = false;
 
     if (this.values && this.values.length) {
@@ -62,28 +62,28 @@ export class AvatarPickerComponent implements ControlValueAccessor, OnInit {
     this.isOpened = false;
   }
 
-  writeValue(val: string) {
+  writeValue(val: string): void {
     if (!val) {
       return;
     }
     this.innerValue = val;
   }
 
-  registerOnChange(fn: any) {
+  registerOnChange(fn: any): void {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
+  registerOnTouched(fn: any): void {
     this.onTouchedCallback = fn;
   }
 
-  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent) {
+  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent): void {
     if (!this.isOpened) {
       return;
     }
 
     const input = this.elementRef.nativeElement.querySelector('.avatars-picker');
-    if (!input || e.target === input || input.contains(<any>e.target)) {
+    if (!input || e.target === input || input.contains(e.target)) {
       return;
     }
 

@@ -1,5 +1,5 @@
 # stage 1 build
-FROM golang:1.14-alpine as build
+FROM golang:1.15-alpine as build
 
 ARG GIT_COMMIT=""
 ENV GIT_COMMIT=$GIT_COMMIT
@@ -10,9 +10,9 @@ RUN apk --no-cache add git make protobuf protobuf-dev ca-certificates alpine-sdk
 
 COPY . /app/
 
-RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go@v1.3
+RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/google/wire/...
 
-RUN make protoc && make statik_worker && make worker
+RUN make protoc && make wire && make worker
 
 # stage 2 image
 FROM scratch
@@ -22,7 +22,7 @@ LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
   org.label-schema.name="abstruse-worker" \
   org.label-schema.description="Distributed Continuous Intergration Platform" \
   org.label-schema.url="https://ci.abstruse.cc/" \
-  org.label-schema.vcs-url="https://github.com/jkuri/abstruse" \
+  org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
   org.label-schema.vendor="abstruse"
 
 COPY --from=build /etc/ssl/certs /etc/ssl/certs

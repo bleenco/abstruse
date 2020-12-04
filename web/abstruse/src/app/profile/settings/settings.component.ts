@@ -17,10 +17,10 @@ import { environment } from 'src/environments/environment';
 })
 export class SettingsComponent implements OnInit {
   form!: FormGroup;
-  saving: boolean = false;
-  saved: boolean = false;
+  saving = false;
+  saved = false;
   error: string | null = null;
-  loading: boolean = false;
+  loading = false;
 
   files: UploadFile[] = [];
   uploadInput: EventEmitter<UploadInput> = new EventEmitter<UploadInput>();
@@ -29,8 +29,8 @@ export class SettingsComponent implements OnInit {
     maxFileSize: 3000000,
     allowedContentTypes: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif']
   };
-  uploadUrl: string = `${environment.apiURL}/users/avatar`;
-  uploadingAvatar: boolean = false;
+  uploadUrl = `${environment.apiURL}/users/avatar`;
+  uploadingAvatar = false;
 
   constructor(private fb: FormBuilder, private profile: ProfileService, private auth: AuthService) {
     this.createForm();
@@ -54,7 +54,6 @@ export class SettingsComponent implements OnInit {
       .updateProfile(this.generateModel())
       .pipe(
         finalize(() => (this.saving = false)),
-        switchMap(user => this.auth.refreshTokens().pipe(flatMap(() => of(user)))),
         untilDestroyed(this)
       )
       .subscribe(
@@ -62,7 +61,6 @@ export class SettingsComponent implements OnInit {
           this.updateValues(resp);
           this.form.markAsPristine();
           this.saved = true;
-          this.auth.restartRefreshTimer();
         },
         err => {
           this.error = err.message;
@@ -77,7 +75,7 @@ export class SettingsComponent implements OnInit {
         url: this.uploadUrl,
         method: 'POST',
         fieldName: 'file',
-        headers: { Authorization: `Bearer ${this.auth.userData!.tokens.accessToken}` }
+        headers: { Authorization: `Bearer ${this.auth.token}` }
       };
       this.uploadInput.emit(event);
       this.uploadingAvatar = true;
@@ -90,7 +88,7 @@ export class SettingsComponent implements OnInit {
       this.files = this.files.filter((file: UploadFile) => file !== output.file);
     } else if (output.type === 'done') {
       this.files = this.files.filter(file => file.progress.status !== UploadStatus.Done);
-      this.form.patchValue({ avatar: output.file!.response });
+      this.form.patchValue({ avatar: output.file?.response });
       this.form.markAsDirty();
       this.uploadingAvatar = false;
     }

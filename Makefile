@@ -13,38 +13,35 @@ endif
 
 all: build
 
-build: build_ui statik statik_worker protoc server worker
+build: build_ui statik wire protoc server worker
 
 server:
 	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-server ./cmd/abstruse-server
 
 worker:
-	@CGO_ENABLED=${CGO_ENABLED} go build -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-worker ./cmd/abstruse-worker
+	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-worker ./cmd/abstruse-worker
 
 build_ui:
 	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && yarn build; fi
 
-build_pty:
-	@if [ ! -r "build/worker-data/abstruse-pty" ]; then GOOS=linux GOARCH=amd64 go build -o build/worker-data/abstruse-pty ./cmd/abstruse-pty; fi
-
 statik:
 	@if [ ! -r "server/ui/statik.go" ]; then statik -dest ./server -p ui -src ./web/abstruse/dist; fi
 
-statik_worker: build_pty
-	@if [ ! -r "worker/data/statik.go" ]; then statik -dest ./worker -p data -src ./build/worker-data; fi
+wire:
+	@wire ./server/cmd/... ./worker/cmd/...
 
 install_dependencies:
-	@go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go@v1.3 github.com/cespare/reflex
+	@cd /tmp && go get github.com/golang/protobuf/protoc-gen-go github.com/jkuri/statik github.com/cespare/reflex github.com/google/wire/... && cd -
 	@cd web/abstruse && yarn install
 
 clean:
-	@rm -rf build/ web/abstruse/dist server/ui/ worker/data pb/api.pb.go
+	@rm -rf build/ web/abstruse/dist server/ui/ server/cmd/wire_gen.go worker/cmd/wire_gen.go
 
 dev:
-	@reflex -sr '\.go$$' -R '^web/' -R '^server/ui' -R '^worker/' -R '^configs/' -R '^tests/' -- sh -c 'make server && ./build/abstruse-server --log-level debug'
+	@reflex -sr '\.go$$' -R '^web/' -R '^server/ui' -R '^worker/' -R '^configs/' -R '^tests/' -- sh -c 'make server && ./build/abstruse-server --logger-level debug'
 
 dev_worker:
-	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -R '^configs/' -R '^tests/' -- sh -c 'make worker && ./build/abstruse-worker --log-level debug'
+	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -R '^configs/' -R '^tests/' -- sh -c 'make worker && ./build/abstruse-worker --logger-level debug'
 
 protoc:
 	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
@@ -70,4 +67,4 @@ test-unit:
 test-e2e:
 	go run ./tests/e2e
 
-.PHONY: build server build_ui statik install_dependencies clean protoc dev test test-unit test-e2e statik_worker build_pty worker dev_worker docker docker_server docker_worker docker_push
+.PHONY: build server worker build_ui statik wire install_dependencies clean dev dev_worker protoc docker docker_server docker_worker docker_push test test-unit test-e2e

@@ -26,8 +26,8 @@ import { monacoEditorOptions, customTheme } from './models/monaco.model';
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: monacoEditorOptions,
   onMonacoLoad: () => {
-    monaco.editor.defineTheme('abstruse', customTheme as any);
-    monaco.editor.setTheme('abstruse');
+    (window as any).monaco.editor.defineTheme('abstruse', customTheme as any);
+    (window as any).monaco.editor.setTheme('abstruse');
   }
 };
 

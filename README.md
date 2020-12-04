@@ -6,7 +6,7 @@
 
 [![Slack](https://slackin-xxrlxvwnmd.now.sh/badge.svg)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
 
-**Abstruse 2.x.x** is a lightweight, yet powerful distributed CI/CD written in Golang. It features embedded `etcd` server for scheduling and service discovery, integrated private `Docker Registry` for synchronization of nodes, and a new frontend design with useful features for better user experience. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary. We used `gorm` package for implementing the storage, users can choose between `mysql`, `postgresql` and `mssql`.
+**Abstruse 2.x.x** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
 
 This is a work in progress for v2.0.0 relase, if you are looking for Node.JS based v1.x.x version please check [here](https://github.com/bleenco/abstruse/tree/v1).
 

@@ -18,9 +18,9 @@ export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
   @Input() options: BuildsItemsOptions = { type: 'latest' };
 
   builds: Build[] = [];
-  fetchingBuilds: boolean = false;
-  fetchingMore: boolean = false;
-  hideMoreButton: boolean = false;
+  fetchingBuilds = false;
+  fetchingMore = false;
+  hideMoreButton = false;
   limit = 5;
   offset = 0;
   error: string | null = null;

@@ -16,7 +16,7 @@ export class HeaderComponent implements OnInit {
   dropdownOpened = false;
 
   constructor(private auth: AuthService, private elementRef: ElementRef, private router: Router) {
-    this.user = generateUser(this.auth.userData);
+    this.user = generateUser(this.auth.data);
   }
 
   ngOnInit(): void {
@@ -26,10 +26,6 @@ export class HeaderComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(() => (this.dropdownOpened = false));
-
-    this.auth.updated.pipe(untilDestroyed(this)).subscribe(data => {
-      this.user = generateUser(data);
-    });
   }
 
   logout(): void {
@@ -40,7 +36,7 @@ export class HeaderComponent implements OnInit {
     this.dropdownOpened = !this.dropdownOpened;
   }
 
-  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent) {
+  @HostListener('document:click', ['$event']) onBlur(e: MouseEvent): void {
     if (!this.dropdownOpened) {
       return;
     }

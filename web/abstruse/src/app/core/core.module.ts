@@ -5,16 +5,16 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared';
 import { ApiInterceptorProvider } from './interceptors/api.interceptor';
 import { ErrorInterceptorProvider } from './interceptors/error.interceptor';
-import { TokenInterceptorProvider } from './interceptors/token.interceptor';
 import { HeaderComponent } from './header/header.component';
 import { AuthService } from '../auth/shared/auth.service';
 import { GatewayTimeoutComponent } from './gateway-timeout/gateway-timeout.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
-  declarations: [HeaderComponent, GatewayTimeoutComponent],
+  declarations: [HeaderComponent, GatewayTimeoutComponent, NotFoundComponent],
   imports: [CommonModule, FormsModule, RouterModule, SharedModule],
-  exports: [HeaderComponent],
-  providers: [AuthService, ApiInterceptorProvider, ErrorInterceptorProvider, TokenInterceptorProvider]
+  exports: [HeaderComponent, GatewayTimeoutComponent, NotFoundComponent],
+  providers: [AuthService, ApiInterceptorProvider, ErrorInterceptorProvider]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

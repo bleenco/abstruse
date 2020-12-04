@@ -4,37 +4,44 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"io"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/bleenco/abstruse/internal/auth"
-	"github.com/bleenco/abstruse/internal/common"
 	pb "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/server/config"
-	"github.com/bleenco/abstruse/server/db/model"
-	"github.com/bleenco/abstruse/server/registry"
-	"github.com/golang/protobuf/ptypes/empty"
-	"go.uber.org/zap"
+	"github.com/bleenco/abstruse/server/ws"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type (
-	// Worker represents gRPC worker node client.
+	// WorkerRegistry represents registry of operational worker nodes.
+	WorkerRegistry interface {
+		// Add adds new worker node to the registry.
+		Add(*Worker) error
+
+		// Delete removes worker node from the registry.
+		Delete(string) error
+
+		// List returns list of active worker nodes in registry.
+		List() ([]*Worker, error)
+	}
+
+	// Worker represents connected worker node.
 	Worker struct {
-		mu      sync.Mutex
-		id      string
-		addr    string
-		max     int
-		running int
-		host    HostInfo
-		usage   []Usage
-		conn    *grpc.ClientConn
-		cli     pb.APIClient
-		app     *App
-		logger  *zap.SugaredLogger
+		sync.Mutex
+		ID       string
+		Addr     string
+		Max      int
+		Running  int
+		Host     HostInfo
+		Usage    []WorkerUsage
+		Conn     *grpc.ClientConn
+		CLI      pb.APIClient
+		Registry WorkerRegistry
+		WS       *ws.App
 	}
 
 	// HostInfo holds host information about remote worker node.
@@ -58,24 +65,24 @@ type (
 		ConnectedAt          time.Time `json:"connectedAt"`
 	}
 
-	// Usage holds remote workers node usage information.
-	Usage struct {
-		CPU       int32     `json:"cpu"`
-		Mem       int32     `json:"mem"`
+	// WorkerUsage holds remote worker node usage information.
+	WorkerUsage struct {
+		CPU       int       `json:"cpu"`
+		Mem       int       `json:"mem"`
 		Max       int       `json:"jobsMax"`
 		Running   int       `json:"jobsRunning"`
 		Timestamp time.Time `json:"timestamp"`
 	}
 )
 
-// NewWorker initializes new worker and returns it.
-func NewWorker(id, addr string, cfg *config.Config, logger *zap.Logger, app *App) (*Worker, error) {
-	if cfg.TLS.Cert == "" || cfg.TLS.Key == "" {
+// NewWorker returns new worker instance.
+func NewWorker(id, addr string, config *config.Config, registry WorkerRegistry, ws *ws.App) (*Worker, error) {
+	if config.TLS.Cert == "" || config.TLS.Key == "" {
 		return nil, fmt.Errorf("certificate and key must be specified")
 	}
 
 	grpcOpts := []grpc.DialOption{}
-	certificate, err := tls.LoadX509KeyPair(cfg.TLS.Cert, cfg.TLS.Key)
+	certificate, err := tls.LoadX509KeyPair(config.TLS.Cert, config.TLS.Key)
 	if err != nil {
 		return nil, err
 	}
@@ -103,144 +110,24 @@ func NewWorker(id, addr string, cfg *config.Config, logger *zap.Logger, app *App
 	cli := pb.NewAPIClient(conn)
 
 	return &Worker{
-		id:     id,
-		addr:   addr,
-		conn:   conn,
-		cli:    cli,
-		app:    app,
-		logger: logger.With(zap.String("worker", id)).Sugar(),
+		ID:       id,
+		Addr:     addr,
+		Conn:     conn,
+		CLI:      cli,
+		Registry: registry,
+		WS:       ws,
 	}, nil
 }
 
-// Run starts the worker.
-func (w *Worker) Run() error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	defer w.conn.Close()
-
-	host, err := w.hostInfo(ctx)
+// Connect attept connect to worker node and retrieve
+// worker information.
+func (w *Worker) Connect(ctx context.Context) error {
+	info, err := w.CLI.Connect(ctx, &emptypb.Empty{})
 	if err != nil {
 		return err
 	}
-	w.host = host
-	w.max = int(w.host.MaxParallel)
-	w.logger.Infof("connected to worker %s %s with capacity %d", w.id, w.addr, w.max)
-	w.emitData()
-	w.app.scheduler.AddWorker(w)
 
-	ch := make(chan error)
-
-	go func() {
-		if err := w.usageStats(context.Background()); err != nil {
-			ch <- err
-		}
-	}()
-
-	err = <-ch
-	w.logger.Infof("closed connection to worker %s %s", w.id, w.addr)
-	return err
-}
-
-// SetCapacity sets current capacity.
-func (w *Worker) SetCapacity(n int) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	w.running = n
-}
-
-// Capacity returns current capacity.
-func (w *Worker) Capacity() int {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	return int(w.max - w.running)
-}
-
-// ID returns workers id.
-func (w *Worker) ID() string {
-	return w.id
-}
-
-// Addr returns remote address.
-func (w *Worker) Addr() string {
-	return w.addr
-}
-
-// Host returns host info.
-func (w *Worker) Host() HostInfo {
-	return w.host
-}
-
-// Usage returns worker usage.
-func (w *Worker) Usage() []Usage {
-	return w.usage
-}
-
-// usageStats gRPC stream.
-func (w *Worker) usageStats(ctx context.Context) error {
-	stream, err := w.cli.Usage(ctx)
-	if err != nil {
-		return err
-	}
-	defer stream.CloseSend()
-
-	for {
-		stats, err := stream.Recv()
-		if err != nil {
-			return err
-		}
-		usage := Usage{
-			CPU:       stats.GetCpu(),
-			Mem:       stats.GetMem(),
-			Max:       w.max,
-			Running:   w.running,
-			Timestamp: time.Now(),
-		}
-
-		w.mu.Lock()
-		w.usage = append(w.usage, usage)
-		if len(w.usage) > 120 {
-			// TODO save to db.
-			w.usage = w.usage[len(w.usage)-120:]
-		}
-		w.emitUsage()
-		w.mu.Unlock()
-	}
-}
-
-// logOutput gRPC stream.
-func (w *Worker) logOutput(ctx context.Context, jobID, buildID uint) error {
-	job := &pb.Job{Id: uint64(jobID)}
-	stream, err := w.cli.JobLog(ctx, job)
-	if err != nil {
-		return err
-	}
-	defer stream.CloseSend()
-
-	for {
-		output, err := stream.Recv()
-		if err != nil {
-			if err == io.EOF {
-				return nil
-			}
-			return err
-		}
-		id, log := uint(output.GetId()), string(output.GetContent())
-		w.app.scheduler.mu.Lock()
-		if j, ok := w.app.scheduler.pending[id]; ok {
-			j.Log = append(j.Log, log)
-		}
-		w.app.scheduler.mu.Unlock()
-		w.app.ws.App.Broadcast(fmt.Sprintf("/subs/logs/%d", id), map[string]interface{}{
-			"id":  id,
-			"log": log,
-		})
-	}
-}
-
-// hostInfo returns remote workers systme information.
-func (w *Worker) hostInfo(ctx context.Context) (HostInfo, error) {
-	info, err := w.cli.HostInfo(ctx, &empty.Empty{})
-	return HostInfo{
+	w.Host = HostInfo{
 		ID:                   info.GetId(),
 		Addr:                 info.GetAddr(),
 		Hostname:             info.GetHostname(),
@@ -258,193 +145,139 @@ func (w *Worker) hostInfo(ctx context.Context) (HostInfo, error) {
 		HostID:               info.GetHostID(),
 		MaxParallel:          info.GetMaxParallel(),
 		ConnectedAt:          time.Now(),
-	}, err
+	}
+	w.Max = int(info.GetMaxParallel())
+
+	go func() {
+		if err := w.usageStats(ctx); err != nil {
+			w.emitDisconnected()
+			w.Registry.Delete(w.Host.ID)
+		}
+	}()
+
+	w.emitData()
+
+	return nil
 }
 
-// buildImage gRPC stream.
-func (w *Worker) buildImage(ctx context.Context, name, dockerfile string, tags []string) error {
-	image := &pb.Image{Name: name, Dockerfile: dockerfile, Tags: tags}
-	stream, err := w.cli.BuildImage(ctx, image)
+// StartJob starts the job.
+func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
+	w.Lock()
+	w.Running++
+	w.Unlock()
+
+	stream, err := w.CLI.StartJob(context.Background(), job)
+	if err != nil {
+		return job, err
+	}
+	defer stream.CloseSend()
+
+	for {
+		resp, err := stream.Recv()
+		if err != nil {
+			break
+		}
+
+		switch resp.GetType() {
+		case pb.JobResp_Log:
+			id, log := resp.GetId(), string(resp.GetContent())
+			job.Log = append(job.Log, log)
+			w.WS.Broadcast(fmt.Sprintf("/subs/logs/%d", id), map[string]interface{}{
+				"id":  id,
+				"log": log,
+			})
+		case pb.JobResp_Done:
+			status := "unknown"
+			switch resp.GetStatus() {
+			case pb.JobResp_StatusUnknown:
+				status = "unknown"
+			case pb.JobResp_StatusFailing:
+				status = "failing"
+			case pb.JobResp_StatusPassing:
+				status = "passing"
+			case pb.JobResp_StatusQueued:
+				status = "queued"
+			case pb.JobResp_StatusRunning:
+				status = "running"
+			}
+			job.Status = status
+			break
+		}
+	}
+
+	w.Lock()
+	w.Running--
+	w.Unlock()
+
+	return job, nil
+}
+
+// usageStats gRPC stream.
+func (w *Worker) usageStats(ctx context.Context) error {
+	stream, err := w.CLI.Usage(ctx)
 	if err != nil {
 		return err
 	}
 	defer stream.CloseSend()
 
-	type img struct {
-		digest   string
-		buildLog []string
-		build    bool
-		pushLog  []string
-		push     bool
-		err      error
-	}
-
-	result := make(map[string]*img)
-
-loop:
 	for {
-		output, err := stream.Recv()
-		if err != nil {
-			break
-		}
-
-		name := output.GetName()
-		tags := output.GetTags()
-		content := string(output.GetContent())
-
-		for _, tag := range tags {
-			id := fmt.Sprintf("%s:%s", name, tag)
-			if _, ok := result[id]; !ok {
-				result[id] = &img{}
-			}
-		}
-
-		switch status := output.GetStatus(); status {
-		case pb.ImageOutput_BuildStream:
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].buildLog = append(result[id].buildLog, content)
-			}
-			w.emit("/subs/images", map[string]interface{}{
-				"name":     name,
-				"tags":     tags,
-				"buildLog": content,
-			})
-		case pb.ImageOutput_PushStream:
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].pushLog = append(result[id].pushLog, content)
-			}
-			w.emit("/subs/images", map[string]interface{}{
-				"name":    name,
-				"tags":    tags,
-				"pushLog": content,
-			})
-		case pb.ImageOutput_BuildOK:
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].build = true
-			}
-			w.emit("/subs/images", map[string]interface{}{
-				"name":  name,
-				"tags":  tags,
-				"build": true,
-			})
-		case pb.ImageOutput_BuildError:
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].build = false
-				result[id].err = fmt.Errorf(content)
-				w.emit("/subs/images", map[string]interface{}{
-					"name":  name,
-					"tags":  tags,
-					"build": false,
-					"error": content,
-				})
-				break loop
-			}
-		case pb.ImageOutput_PushOK:
-			splitted := strings.Split(content, " ")
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].push = true
-				result[id].digest = splitted[2]
-			}
-			w.emit("/subs/images", map[string]interface{}{
-				"name":   name,
-				"tags":   tags,
-				"push":   true,
-				"digest": splitted[2],
-			})
-		case pb.ImageOutput_PushError:
-			for _, tag := range tags {
-				id := fmt.Sprintf("%s:%s", name, tag)
-				result[id].push = false
-				result[id].err = fmt.Errorf(content)
-				w.emit("/subs/images", map[string]interface{}{
-					"name":  name,
-					"tags":  tags,
-					"push":  false,
-					"error": content,
-				})
-				break loop
-			}
-		}
-	}
-
-	client, err := registry.NewClient(common.RegistryURL, w.app.cfg.Registry.Username, w.app.cfg.Registry.Password)
-	if err != nil {
-		return err
-	}
-
-	for name, res := range result {
-		if res.err != nil {
-			continue
-		}
-
-		splitted := strings.Split(name, ":")
-		name = splitted[0]
-		tag := splitted[1]
-
-		image := model.Image{Name: name}
-		image, err = w.app.repo.Image.CreateOrUpdate(image)
+		stats, err := stream.Recv()
 		if err != nil {
 			return err
 		}
 
-		imageTag := &model.ImageTag{
-			Tag:        tag,
-			Dockerfile: strings.TrimSpace(dockerfile),
-			Digest:     strings.TrimSpace(res.digest),
-			BuildLog:   strings.Join(res.buildLog, ""),
-			PushLog:    strings.Join(res.pushLog, ""),
-			ImageID:    image.ID,
-			BuildTime:  time.Now(),
+		w.Lock()
+		usage := WorkerUsage{
+			CPU:       int(stats.GetCpu()),
+			Mem:       int(stats.GetMem()),
+			Max:       w.Max,
+			Running:   w.Running,
+			Timestamp: time.Now(),
 		}
-
-		manifest, err := client.FindManifest(context.Background(), name, tag)
-		if err != nil {
-			return err
+		w.Usage = append(w.Usage, usage)
+		if len(w.Usage) > 120 {
+			w.Usage = w.Usage[len(w.Usage)-120:]
 		}
-		imageTag.Size = manifest.Size
-
-		imageTag, err = w.app.repo.Image.CreateOrUpdateTag(imageTag)
-		if err != nil {
-			return err
-		}
+		w.emitUsage()
+		w.Unlock()
 	}
-
-	return nil
 }
 
 // emit broadcasts data via websocket.
 func (w *Worker) emit(sub string, data map[string]interface{}) {
-	w.app.ws.App.Broadcast(sub, data)
+	w.WS.Broadcast(sub, data)
 }
 
 // emitData broadcast newly created worker via websocket.
 func (w *Worker) emitData() {
-	w.app.ws.App.Broadcast("/subs/workers_add", map[string]interface{}{
-		"id":    w.id,
-		"addr":  w.Addr(),
-		"host":  w.Host(),
-		"usage": w.Usage(),
+	w.WS.Broadcast("/subs/workers_add", map[string]interface{}{
+		"id":    w.ID,
+		"addr":  w.Addr,
+		"host":  w.Host,
+		"usage": w.Usage,
+	})
+}
+
+// emitDisconnected broadcast disconnected worker via websocket
+func (w *Worker) emitDisconnected() {
+	w.WS.Broadcast("/subs/workers_delete", map[string]interface{}{
+		"id": w.ID,
 	})
 }
 
 // emitUsage broadcast workers usage info.
 func (w *Worker) emitUsage() {
-	if len(w.usage) < 1 {
+	if len(w.Usage) < 1 {
 		return
 	}
-	usage := w.usage[len(w.usage)-1]
-	w.app.ws.App.Broadcast("/subs/workers_usage", map[string]interface{}{
-		"id":          w.id,
-		"addr":        w.addr,
+	usage := w.Usage[len(w.Usage)-1]
+	w.WS.Broadcast("/subs/workers_usage", map[string]interface{}{
+		"id":          w.ID,
+		"addr":        w.Addr,
 		"cpu":         usage.CPU,
 		"mem":         usage.Mem,
-		"jobsMax":     w.max,
-		"jobsRunning": w.running,
+		"jobsMax":     w.Max,
+		"jobsRunning": w.Running,
 		"timestamp":   time.Now(),
 	})
 }

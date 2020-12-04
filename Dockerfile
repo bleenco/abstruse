@@ -8,7 +8,7 @@ WORKDIR /app/ui
 RUN yarn install && yarn build
 
 # stage 2 build
-FROM golang:1.14-alpine as build
+FROM golang:1.15-alpine as build
 
 ARG GIT_COMMIT=""
 ENV GIT_COMMIT=$GIT_COMMIT
@@ -21,9 +21,9 @@ COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
-RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go@v1.3
+RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/google/wire/...
 
-RUN make protoc && make statik && make server
+RUN make protoc && make statik && make wire && make server
 
 # stage 3 image
 FROM scratch
@@ -33,7 +33,7 @@ LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
   org.label-schema.name="abstruse-server" \
   org.label-schema.description="Distributed Continuous Intergration Platform" \
   org.label-schema.url="https://ci.abstruse.cc/" \
-  org.label-schema.vcs-url="https://github.com/jkuri/abstruse" \
+  org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
   org.label-schema.vendor="abstruse"
 
 COPY --from=build /etc/ssl/certs /etc/ssl/certs
@@ -41,4 +41,4 @@ COPY --from=build /app/build/abstruse-server /usr/bin/abstruse-server
 
 ENTRYPOINT [ "/usr/bin/abstruse-server" ]
 
-EXPOSE 80 2379 2380
+EXPOSE 80

@@ -22,7 +22,8 @@ export class ProgressBarComponent implements OnInit, OnChanges {
     purple: 'is-purple',
     indigo: 'is-indigo',
     teal: 'is-teal',
-    pink: 'is-pink'
+    pink: 'is-pink',
+    gray: 'is-gray'
   };
 
   get percentage(): string {
@@ -35,13 +36,13 @@ export class ProgressBarComponent implements OnInit, OnChanges {
 
   constructor(public elementRef: ElementRef, public renderer: Renderer2) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.container = this.elementRef.nativeElement.querySelector('.progress-bar-container') as HTMLElement;
     this.bar = this.container.querySelector('.progress-bar') as HTMLElement;
     this.initSettings();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (!this.container || !this.bar) {
       return;
     }

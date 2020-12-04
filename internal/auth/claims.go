@@ -8,12 +8,11 @@ import (
 
 // UserClaims represent the claims parsed from JWT access token.
 type UserClaims struct {
-	ID       uint   `json:"id"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Location string `json:"location"`
-	Avatar   string `json:"avatar"`
-	Role     string `json:"role"`
+	ID     uint   `json:"id"`
+	Email  string `json:"email"`
+	Name   string `json:"name"`
+	Avatar string `json:"avatar"`
+	Role   string `json:"role"`
 	jwt.StandardClaims
 }
 
@@ -37,47 +36,42 @@ func (c *UserClaims) ParseClaims(claims jwt.MapClaims) error {
 	}
 	c.Name = name.(string)
 
-	location, ok := claims["location"]
-	if !ok {
-		return fmt.Errorf("could not parse location claim")
-	}
-	c.Location = location.(string)
-
 	avatar, ok := claims["avatar"]
 	if !ok {
-		return fmt.Errorf("could not parse email claim")
+		return fmt.Errorf("could not parse avatar claim")
 	}
 	c.Avatar = avatar.(string)
 
 	role, ok := claims["role"]
 	if !ok {
-		return fmt.Errorf("could not parse email claim")
+		return fmt.Errorf("could not parse role claim")
 	}
 	c.Role = role.(string)
 
 	return nil
 }
 
-// RefreshClaims represents the claims parsed from JWT refresh token.
-type RefreshClaims struct {
-	ID    uint   `json:"id"`
-	Token string `json:"token"`
+// WorkerClaims represent the claims parsed from JWT access token
+// on worker node connection.
+type WorkerClaims struct {
+	ID   string `json:"id"`
+	Addr string `json:"addr"`
 	jwt.StandardClaims
 }
 
-// ParseClaims parses JWT claims into RefreshClaims.
-func (c *RefreshClaims) ParseClaims(claims jwt.MapClaims) error {
+// ParseClaims parses JWT claims into WorkerClaims.
+func (c *WorkerClaims) ParseClaims(claims jwt.MapClaims) error {
 	id, ok := claims["id"]
 	if !ok {
 		return fmt.Errorf("could not parse id claim")
 	}
-	c.ID = uint(id.(float64))
+	c.ID = id.(string)
 
-	token, ok := claims["token"]
+	addr, ok := claims["addr"]
 	if !ok {
-		return fmt.Errorf("could not parse token claim")
+		return fmt.Errorf("could not parse addr claim")
 	}
-	c.Token = token.(string)
+	c.Addr = addr.(string)
 
 	return nil
 }

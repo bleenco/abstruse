@@ -33,15 +33,15 @@ export class CheckboxComponent implements ControlValueAccessor {
     this.onTouchedCallback();
   }
 
-  writeValue(val: boolean) {
+  writeValue(val: boolean): void {
     this.value = val;
   }
 
-  registerOnChange(fn: any) {
+  registerOnChange(fn: any): void {
     this.onChangeCallback = fn;
   }
 
-  registerOnTouched(fn: any) {
+  registerOnTouched(fn: any): void {
     this.onTouchedCallback = fn;
   }
 }

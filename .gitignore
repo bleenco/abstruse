@@ -1,7 +1,9 @@
-/build
-pb/api.pb.go
-server/ui
-worker/data
+/build/
+/server/ui/
+/worker/data
+/server/cmd/wire_gen.go
+/worker/cmd/wire_gen.go
+/pb/api.pb.go
 .DS_Store
 tmp/
 configs/testing/**/*.pem

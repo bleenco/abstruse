@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { environment } from 'src/environments/environment';
 import { Logger } from './core/shared/logger.service';
-import { Router, NavigationStart } from '@angular/router';
 
 @UntilDestroy()
 @Component({

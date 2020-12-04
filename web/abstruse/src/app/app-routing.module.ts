@@ -1,15 +1,16 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
-import { AuthGuardService } from './auth/shared/auth-guard.service';
-import { SetupDoneGuardService } from './setup/shared/setup-done-guard.service';
-import { NotFoundComponent, GatewayTimeoutComponent } from './core';
 import { AlreadyAuthGuardService } from './auth/shared/already-auth-guard.service';
-import { QuicklinkModule, QuicklinkStrategy } from 'ngx-quicklink';
+import { AuthGuardService } from './auth/shared/auth-guard.service';
+import { GatewayTimeoutComponent, NotFoundComponent } from './core';
+import { SetupDoneGuardService } from './setup/shared/setup-done-guard.service';
 
 const routes: Routes = [
   { path: '', redirectTo: 'builds', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [AlreadyAuthGuardService] },
+  { path: 'not-found', component: NotFoundComponent },
+  { path: 'gateway-timeout', component: GatewayTimeoutComponent },
   {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule),
@@ -49,13 +50,11 @@ const routes: Routes = [
     path: 'system',
     loadChildren: () => import('./system/system.module').then(m => m.SystemModule),
     canLoad: [AuthGuardService]
-  },
-  { path: 'not-found', component: NotFoundComponent },
-  { path: 'gateway-timeout', component: GatewayTimeoutComponent }
+  }
 ];
 
 @NgModule({
-  imports: [QuicklinkModule, RouterModule.forRoot(routes, { preloadingStrategy: QuicklinkStrategy })],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

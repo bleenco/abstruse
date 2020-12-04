@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.sass']
 })
 export class LoginComponent implements OnInit {
-  displayForm: boolean = false;
+  displayForm = false;
   error: string | undefined;
   loginForm!: FormGroup;
   isLoading = false;
@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(
-        tokens => this.auth.login(tokens),
+        resp => this.auth.login(resp.token),
         error => (this.error = error.message)
       );
   }
