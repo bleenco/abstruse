@@ -43,7 +43,7 @@ services:
       - "./testdata/abstruse-server:/abstruse"
     command:
       - "--config=/abstruse/abstruse-server.json"
-      - "--log-level=debug"
+      - "--logger-level=debug"
     networks:
       demo_net:
         ipv4_address: 10.20.20.20
@@ -70,7 +70,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     command:
       - "--config=/abstruse/abstruse-worker.json"
-      - "--log-level=debug"
+      - "--logger-level=debug"
     networks:
       demo_net:
         ipv4_address: 10.20.20.30
