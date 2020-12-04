@@ -6,9 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BuildsModule } from './builds/builds.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
-  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule.forRoot(), AuthModule, BuildsModule],
+  imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule.forRoot(), AuthModule, BuildsModule, ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })],
   declarations: [AppComponent],
   bootstrap: [AppComponent]
 })

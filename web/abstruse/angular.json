@@ -38,7 +38,8 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": ["src/styles/app.sass"],
             "stylePreprocessorOptions": {
@@ -72,7 +73,9 @@
                   "maximumWarning": "4kb",
                   "maximumError": "6kb"
                 }
-              ]
+              ],
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
             }
           }
         },
@@ -112,7 +115,8 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
-              }
+              },
+              "src/manifest.webmanifest"
             ],
             "styles": ["src/styles/app.sass"],
             "stylePreprocessorOptions": {
