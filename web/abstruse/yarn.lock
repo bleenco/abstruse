@@ -5827,12 +5827,10 @@ ngx-cookie-service@^10.1.1:
   dependencies:
     tslib "^2.0.0"
 
-ngx-monaco-editor@^10.0.0-beta.1:
-  version "10.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/ngx-monaco-editor/-/ngx-monaco-editor-10.0.0-beta.1.tgz#eb588862f18b7056bd5777658be22a69fe2e4b9c"
-  integrity sha512-U5p7YLhQB9yRnbQ8a/gq97PvAokwfot69In7wc4rkItD4ocTY/xvfaJXSAm2zQdm9MWRuwiis3iWb+CbVSaSLA==
-  dependencies:
-    tslib "^2.0.0"
+ngx-monaco-editor@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/ngx-monaco-editor/-/ngx-monaco-editor-9.0.0.tgz#bb69784606f549e369cee3f483ecf26bab2fcc97"
+  integrity sha512-fPXT3M8W920Vs0KPMX6iA7GJYjBRnl9naug9A7D2inPPzxQGtgPZrSEatIPf37a6ir9Ts+8fwt1bTkFzfTgIpQ==
 
 ngx-uploader@^10.0.0:
   version "10.0.0"
