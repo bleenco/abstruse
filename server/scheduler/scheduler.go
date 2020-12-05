@@ -83,7 +83,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		s.removeJob(id)
 		job.Status = "failing"
 		job.EndTime = lib.TimeNow()
-		s.logger.Infof("job %d removed from queue")
+		s.logger.Infof("job %d removed from queue", id)
 		if err := s.saveJob(job); err == nil {
 			return true, nil
 		}
@@ -96,7 +96,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 			return false, err
 		}
 
-		res, err := worker.CLI.StopJob(context.Background(), job.pb)
+		stopped, err := worker.StopJob(job.pb)
 		if err != nil {
 			return false, err
 		}
@@ -106,7 +106,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		job.job.EndTime = lib.TimeNow()
 		s.saveJob(job.job)
 
-		return res.GetStopped(), nil
+		return stopped, nil
 	}
 
 	return false, nil

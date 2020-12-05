@@ -162,15 +162,21 @@ func (w *Worker) Connect(ctx context.Context) error {
 
 // StartJob starts the job.
 func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
-	w.Lock()
-	w.Running++
-	w.Unlock()
-
 	stream, err := w.CLI.StartJob(context.Background(), job)
 	if err != nil {
 		return job, err
 	}
-	defer stream.CloseSend()
+
+	w.Lock()
+	w.Running++
+	w.Unlock()
+
+	defer func() {
+		stream.CloseSend()
+		w.Lock()
+		w.Running--
+		w.Unlock()
+	}()
 
 	for {
 		resp, err := stream.Recv()
@@ -205,11 +211,16 @@ func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
 		}
 	}
 
-	w.Lock()
-	w.Running--
-	w.Unlock()
-
 	return job, nil
+}
+
+// StopJob stops the running job.
+func (w *Worker) StopJob(job *pb.Job) (bool, error) {
+	res, err := w.CLI.StopJob(context.Background(), job)
+	if err != nil {
+		return false, err
+	}
+	return res.GetStopped(), nil
 }
 
 // usageStats gRPC stream.
