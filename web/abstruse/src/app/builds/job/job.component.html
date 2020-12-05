@@ -1,4 +1,7 @@
-<header class="subheader mt20" *ngIf="job">
+<header class="subheader" *ngIf="job">
+  <nav class="subheader-links">
+    <a class="is-active">Job #{{ job?.id }}</a>
+  </nav>
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
