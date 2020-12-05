@@ -59,7 +59,7 @@ type jobType struct {
 }
 
 func (s *scheduler) Next(job *core.Job) error {
-	s.logger.Infof("scheduling job %d from build %d", job.ID, job.BuildID)
+	s.logger.Infof("scheduling job %d from build %d...", job.ID, job.BuildID)
 	s.Stop(job.ID)
 	s.mu.Lock()
 	s.queued = append(s.queued, job)
@@ -71,6 +71,7 @@ func (s *scheduler) Next(job *core.Job) error {
 	if err := s.saveJob(job); err != nil {
 		return err
 	}
+	s.logger.Infof("job %d scheduled", job.ID)
 
 	s.next(s.ctx)
 
@@ -82,7 +83,8 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		s.removeJob(id)
 		job.Status = "failing"
 		job.EndTime = lib.TimeNow()
-		if err := s.saveJob(job); err != nil {
+		s.logger.Infof("job %d removed from queue")
+		if err := s.saveJob(job); err == nil {
 			return true, nil
 		}
 		return false, nil
@@ -99,6 +101,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 			return false, err
 		}
 
+		s.logger.Infof("job %d stopped", id)
 		job.job.Status = "failing"
 		job.job.EndTime = lib.TimeNow()
 		s.saveJob(job.job)
@@ -142,8 +145,7 @@ func (s *scheduler) StopBuild(id uint) error {
 		}(job)
 	}
 	wg.Wait()
-	build.EndTime = lib.TimeNow()
-	return s.buildStore.Update(build)
+	return s.updateBuildTime(id)
 }
 
 func (s *scheduler) Pause() error {
