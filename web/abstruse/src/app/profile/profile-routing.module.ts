@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { ProfileComponent } from './profile/profile.component';
 import { SecurityComponent } from './security/security.component';
 import { SettingsComponent } from './settings/settings.component';
-import { SessionsComponent } from './sessions/sessions.component';
 
 const routes: Routes = [
   {
@@ -12,8 +11,7 @@ const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'settings' },
       { path: 'settings', component: SettingsComponent },
-      { path: 'security', component: SecurityComponent },
-      { path: 'sessions', component: SessionsComponent }
+      { path: 'security', component: SecurityComponent }
     ]
   }
 ];

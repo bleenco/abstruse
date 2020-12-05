@@ -3,9 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProfileService } from '../shared/profile.service';
 import { Profile, User } from '../../users/shared/user.model';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { finalize, switchMap, flatMap } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../auth/shared/auth.service';
-import { of } from 'rxjs';
 import { UploadFile, UploadInput, UploaderOptions, UploadOutput, UploadStatus } from 'ngx-uploader';
 import { environment } from 'src/environments/environment';
 
@@ -113,20 +112,14 @@ export class SettingsComponent implements OnInit {
   }
 
   private generateModel(): Profile {
-    return new Profile(
-      this.form.controls.email.value,
-      this.form.controls.name.value,
-      this.form.controls.avatar.value,
-      this.form.controls.location.value
-    );
+    return new Profile(this.form.controls.email.value, this.form.controls.name.value, this.form.controls.avatar.value);
   }
 
   private updateValues(user: User): void {
     this.form.patchValue({
       email: user.email,
       name: user.name,
-      avatar: user.avatar,
-      location: user.location
+      avatar: user.avatar
     });
   }
 
@@ -134,8 +127,7 @@ export class SettingsComponent implements OnInit {
     this.form = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       name: [null, [Validators.required]],
-      avatar: [null, [Validators.required]],
-      location: [null, []]
+      avatar: [null, [Validators.required]]
     });
   }
 }

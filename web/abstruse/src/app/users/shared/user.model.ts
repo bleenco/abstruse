@@ -1,5 +1,5 @@
 export class Profile {
-  constructor(public email: string, public name: string, public avatar: string, public location: string) {}
+  constructor(public email: string, public name: string, public avatar: string) {}
 }
 
 export class User extends Profile {
@@ -8,18 +8,16 @@ export class User extends Profile {
     public email: string,
     public name: string,
     public avatar: string,
-    public location: string,
-    public role: string,
-    public lastLogin: Date
+    public role: string
   ) {
-    super(email, name, avatar, location);
+    super(email, name, avatar);
   }
 }
 
 export const generateProfile = (data: any): Profile => {
-  return new Profile(data.email, data.name, data.avatar, data.location);
+  return new Profile(data.email, data.name, data.avatar);
 };
 
 export const generateUser = (data: any): User => {
-  return new User(data.id, data.email, data.name, data.avatar, data.location, data.role, data.lastLogin);
+  return new User(data.id, data.email, data.name, data.avatar, data.role);
 };

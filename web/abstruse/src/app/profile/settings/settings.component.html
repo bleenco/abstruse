@@ -31,10 +31,6 @@
             <label class="label">Full Name</label>
             <input type="text" class="input" placeholder="John Smith" formControlName="name" />
           </div>
-          <div class="field">
-            <label class="label">Location</label>
-            <input type="text" class="input" placeholder="Florida, US" formControlName="location" />
-          </div>
           <div class="form-buttons justify-end">
             <button type="submit" class="button" [disabled]="(form.pristine && !saved) || saving"
               [class.events-none]="saved">

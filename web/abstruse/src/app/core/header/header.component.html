@@ -11,9 +11,6 @@
         <a class="header-item" [routerLink]="['/teams']" routerLinkActive="is-active">
           <span>Teams</span>
         </a>
-        <a class="header-item" [routerLink]="['/images']" routerLinkActive="is-active">
-          <span>Images</span>
-        </a>
         <a class="header-item" [routerLink]="['/workers']" routerLinkActive="is-active">
           <span>Workers</span>
         </a>
@@ -34,17 +31,14 @@
               <a class="hd-item">
                 <span>Dashboard</span>
               </a>
-              <a class="hd-item">
+              <a class="hd-item" [routerLink]="['/workers']">
                 <span>Worker Nodes</span>
               </a>
-              <a class="hd-item">
+              <a class="hd-item" [routerLink]="['/teams']">
                 <span>Teams</span>
               </a>
               <a class="hd-item" [routerLink]="['/providers']">
                 <span>Providers</span>
-              </a>
-              <a class="hd-item">
-                <span>Administration</span>
               </a>
               <a class="hd-item">
                 <span>Help & Support</span>

@@ -1,8 +1,0 @@
-<div class="columns is-multiline">
-  <div class="column is-12" *ngIf="loading">
-    <app-loader></app-loader>
-  </div>
-  <div class="column is-12" *ngIf="!loading && sessions.length">
-    <app-session-list-item [session]="session" *ngFor="let session of sessions"></app-session-list-item>
-  </div>
-</div>
