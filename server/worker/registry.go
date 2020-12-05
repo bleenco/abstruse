@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/bleenco/abstruse/server/core"
@@ -47,14 +46,4 @@ func (wr *workerRegistry) List() ([]*core.Worker, error) {
 		workers = append(workers, w)
 	}
 	return workers, nil
-}
-
-func (wr *workerRegistry) findWorker(id string) (*core.Worker, error) {
-	for wid, worker := range wr.workers {
-		if wid == id {
-			return worker, nil
-		}
-	}
-
-	return nil, fmt.Errorf("worker %s not found", id)
 }

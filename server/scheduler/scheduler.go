@@ -382,7 +382,7 @@ func (s *scheduler) updateBuildTime(id uint) error {
 }
 
 func (s *scheduler) run() error {
-	s.logger.Infof("starting scheduler scheduler loop")
+	s.logger.Infof("starting scheduler loop")
 	for {
 		select {
 		case <-s.ctx.Done():
