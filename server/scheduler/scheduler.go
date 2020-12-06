@@ -227,7 +227,10 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
 	job.Status = j.GetStatus()
 	job.Log = strings.Join(j.GetLog(), "")
 	job.EndTime = lib.TimeNow()
-	s.saveJob(job)
+	if err := s.saveJob(job); err != nil {
+		job.Log = strings.Join(j.GetLog(), "")[0:65536]
+		s.saveJob(job)
+	}
 
 	s.mu.Lock()
 	delete(s.pending, job.ID)
