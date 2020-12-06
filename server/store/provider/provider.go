@@ -27,6 +27,12 @@ func (s providerStore) Find(id uint) (core.Provider, error) {
 	return provider, err
 }
 
+func (s providerStore) List() ([]*core.Provider, error) {
+	var providers []*core.Provider
+	err := s.db.Find(&providers).Error
+	return providers, err
+}
+
 func (s providerStore) ListUser(userID uint) ([]core.Provider, error) {
 	var providers []core.Provider
 	err := s.db.Find(&providers).Where("user_id = ?", userID).Error

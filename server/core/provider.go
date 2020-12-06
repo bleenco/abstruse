@@ -22,6 +22,9 @@ type (
 		// Find returns provider from datastore.
 		Find(uint) (Provider, error)
 
+		// List returns providers from datastore.
+		List() ([]*Provider, error)
+
 		// ListUser returns providers from datastore based
 		// by user ID.
 		ListUser(uint) ([]Provider, error)

@@ -13,6 +13,7 @@ import (
 	"github.com/bleenco/abstruse/server/api/setup"
 	"github.com/bleenco/abstruse/server/api/system"
 	"github.com/bleenco/abstruse/server/api/user"
+	"github.com/bleenco/abstruse/server/api/webhook"
 	"github.com/bleenco/abstruse/server/api/worker"
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/core"
@@ -90,6 +91,7 @@ func (r Router) Handler() http.Handler {
 	router.Mount("/api/v1", r.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
 	router.Mount("/uploads", r.fileServer())
+	router.Post("/webhooks", webhook.HandleHook(r.Repos))
 	router.NotFound(r.ui())
 
 	return router

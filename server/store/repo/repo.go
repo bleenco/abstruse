@@ -27,6 +27,12 @@ func (s repositoryStore) Find(id uint) (core.Repository, error) {
 	return repo, err
 }
 
+func (s repositoryStore) FindUID(uid string) (core.Repository, error) {
+	var repo core.Repository
+	err := s.db.Model(&repo).Where("uid = ?", uid).Preload("Provider").First(&repo).Error
+	return repo, err
+}
+
 func (s repositoryStore) FindClone(clone string) (core.Repository, error) {
 	var repo core.Repository
 	err := s.db.Model(&repo).Where("clone = ?", clone).Preload("Provider").First(&repo).Error
@@ -38,20 +44,29 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 	var count int
 	var err error
 
+	db := s.db.Preload("Provider")
+
+	if filters.Limit != 0 && filters.Offset != 0 {
+		db = db.Limit(filters.Limit).Offset(filters.Offset)
+	}
+	if filters.UserID != 0 {
+		db = db.Where("user_id = ?", filters.UserID)
+	}
+
 	if filters.Keyword == "" {
-		err = s.db.Limit(filters.Limit).Offset(filters.Offset).Where("user_id = ?", filters.UserID).Order("active desc, name asc").Find(&repos).Error
+		err = db.Order("active desc, name asc").Find(&repos).Error
 		if err != nil {
 			return repos, count, err
 		}
-		err = s.db.Model(&core.Repository{}).Where("user_id = ?", filters.UserID).Order("active desc, name asc").Count(&count).Error
+		err = db.Model(&core.Repository{}).Order("active desc, name asc").Count(&count).Error
 		return repos, count, err
 	}
 	keyword := fmt.Sprintf("%%%s%%", filters.Keyword)
-	err = s.db.Limit(filters.Limit).Offset(filters.Offset).Where("user_id = ? AND full_name LIKE ?", filters.UserID, keyword).Order("active desc, name asc").Find(&repos).Error
+	err = db.Where("full_name LIKE ?", keyword).Order("active desc, name asc").Find(&repos).Error
 	if err != nil {
 		return repos, count, err
 	}
-	err = s.db.Model(&core.Repository{}).Where("user_id = ? AND full_name LIKE ?", filters.UserID, keyword).Order("active desc, name asc").Count(&count).Error
+	err = db.Model(&core.Repository{}).Where("full_name LIKE ?", keyword).Order("active desc, name asc").Count(&count).Error
 	return repos, count, err
 }
 

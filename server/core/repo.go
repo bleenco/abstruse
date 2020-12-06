@@ -42,6 +42,9 @@ type (
 		// Find returns repository from the datastore.
 		Find(uint) (Repository, error)
 
+		// FindUID returns repository from datastore based by uid.
+		FindUID(string) (Repository, error)
+
 		// FindClone returns repository by clone URL from the datastore
 		FindClone(string) (Repository, error)
 
