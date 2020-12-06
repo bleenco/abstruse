@@ -211,6 +211,34 @@ func (s SCM) DeleteHook(repo string, ID string) error {
 	return err
 }
 
+// CreateStatus sends build status to SCM provider.
+func (s SCM) CreateStatus(repo, sha, url string, state scm.State) error {
+	var message string
+	switch state {
+	case scm.StateSuccess:
+		message = "Abstruse CI build successful."
+	case scm.StatePending:
+		message = "Abstruse CI build running."
+	case scm.StateFailure:
+		message = "Abstruse CI build failed."
+	case scm.StateRunning:
+		message = "Abstruse CI build running."
+	case scm.StateError:
+		message = "Abstruse CI build errored."
+	case scm.StateCanceled:
+		message = "Abstruse CI build cancelled."
+	}
+
+	input := &scm.StatusInput{
+		State:  state,
+		Label:  "continuous-integration",
+		Desc:   message,
+		Target: url,
+	}
+	_, _, err := s.client.Repositories.CreateStatus(s.ctx, repo, sha, input)
+	return err
+}
+
 // Client returns underlying scm client.
 func (s SCM) Client() *scm.Client {
 	return s.client

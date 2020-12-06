@@ -9,9 +9,11 @@ import (
 	"time"
 
 	pb "github.com/bleenco/abstruse/pb"
+	"github.com/bleenco/abstruse/pkg/gitscm"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/ws"
+	"github.com/drone/go-scm/scm"
 	"go.uber.org/zap"
 )
 
@@ -383,6 +385,49 @@ func (s *scheduler) updateBuildTime(id uint) error {
 			return err
 		}
 	}
+
+	if build.EndTime != nil {
+		success := true
+		for _, j := range build.Jobs {
+			if j.Status != "success" {
+				success = false
+				break
+			}
+		}
+		var status scm.State
+		if success {
+			status = scm.StateSuccess
+		} else {
+			status = scm.StateError
+		}
+		if err := s.sendStatus(build, status); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *scheduler) sendStatus(build *core.Build, status scm.State) error {
+	scm, err := gitscm.New(
+		context.Background(),
+		build.Repository.Provider.Name,
+		build.Repository.Provider.URL,
+		build.Repository.Provider.AccessToken,
+	)
+	if err != nil {
+		return err
+	}
+
+	if err := scm.CreateStatus(
+		build.Repository.FullName,
+		build.Commit,
+		fmt.Sprintf("%s/builds/%d", build.Repository.Provider.Host, build.ID),
+		status,
+	); err != nil {
+		return err
+	}
+
 	return nil
 }
 
