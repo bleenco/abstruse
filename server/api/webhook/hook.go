@@ -12,11 +12,12 @@ import (
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/service/githook"
+	"github.com/bleenco/abstruse/server/ws"
 )
 
 // HandleHook returns an http.HandlerFunc that writes JSON encoded
 // result to the http response body.
-func HandleHook(repos core.RepositoryStore) http.HandlerFunc {
+func HandleHook(repos core.RepositoryStore, builds core.BuildStore, scheduler core.Scheduler, ws *ws.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		repositories, _, err := repos.List(core.RepositoryFilter{})
 		if err != nil {
@@ -34,7 +35,12 @@ func HandleHook(repos core.RepositoryStore) http.HandlerFunc {
 		}
 
 		for _, repo := range repositories {
-			gitscm, err := gitscm.New(context.Background(), repo.Provider.Name, repo.Provider.URL, repo.Provider.AccessToken)
+			gitscm, err := gitscm.New(
+				context.Background(),
+				repo.Provider.Name,
+				repo.Provider.URL,
+				repo.Provider.AccessToken,
+			)
 			if err != nil {
 				continue
 			}
@@ -60,7 +66,6 @@ func HandleHook(repos core.RepositoryStore) http.HandlerFunc {
 				break
 			}
 
-			// all good, trigger build.
 			fmt.Printf("%+v\n", hook)
 			fmt.Printf("%+v\n", repo)
 
@@ -72,6 +77,25 @@ func HandleHook(repos core.RepositoryStore) http.HandlerFunc {
 			if hook.Event == core.EventPullRequest && hook.Action == core.ActionClose {
 				log.Printf("ref %s pull request closed\n", hook.Ref)
 				break
+			}
+
+			// all good, trigger build.
+			jobs, id, err := builds.GenerateBuild(&repo, hook)
+			if err != nil {
+				render.InternalServerError(w, err.Error())
+				return
+			}
+
+			for _, job := range jobs {
+				if err := scheduler.Next(job); err != nil {
+					render.InternalServerError(w, err.Error())
+					return
+				}
+			}
+
+			// broadcast new build
+			if build, err := builds.Find(id); err == nil {
+				ws.App.Broadcast("/subs/builds", map[string]interface{}{"build": build})
 			}
 
 			render.JSON(w, http.StatusOK, render.Empty{})

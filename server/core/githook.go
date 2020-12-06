@@ -33,9 +33,12 @@ type (
 		Before       string    `json:"before"`
 		After        string    `json:"after"`
 		Ref          string    `json:"ref"`
-		Fork         string    `json:"hook"`
+		Fork         string    `json:"fork"`
 		Source       string    `json:"source"`
 		Target       string    `json:"target"`
+		PrNumber     int       `json:"pr"`
+		PrTitle      string    `json:"pr_title"`
+		PrBody       string    `json:"pr_body"`
 		AuthorEmail  string    `json:"author_email"`
 		AuthorAvatar string    `json:"author_avatar"`
 		AuthorName   string    `json:"author_name"`

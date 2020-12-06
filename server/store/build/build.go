@@ -136,3 +136,87 @@ func (s buildStore) TriggerBuild(repoID uint) ([]*core.Job, error) {
 
 	return jobs, nil
 }
+
+func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]*core.Job, uint, error) {
+	scm, err := gitscm.New(context.Background(), repo.Provider.Name, repo.Provider.URL, repo.Provider.AccessToken)
+	if err != nil {
+		return nil, 0, err
+	}
+	ref, err := scm.FindBranch(repo.FullName, base.Target)
+	if err != nil {
+		return nil, 0, err
+	}
+	reference := ref.Path
+	if base.PrNumber != 0 {
+		reference = base.Ref
+	}
+	if base.After == "" || (base.Message == "" && base.PrNumber == 0) {
+		commit, err := scm.LastCommit(repo.FullName, base.Target)
+		if err != nil {
+			return nil, 0, err
+		}
+		if base.After == "" {
+			base.After = commit.Sha
+		}
+		if base.Message == "" {
+			base.Message = commit.Message
+		}
+	}
+	content, err := scm.FindContent(repo.FullName, base.After, ".abstruse.yml")
+	if err != nil {
+		return nil, 0, err
+	}
+	config := parser.ConfigParser{Raw: string(content.Data)}
+	if err := config.Parse(); err != nil {
+		return nil, 0, err
+	}
+	commandsJSON, err := json.Marshal(config.Commands)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	build := &core.Build{
+		Branch:          base.Target,
+		Ref:             reference,
+		Commit:          base.After,
+		CommitMessage:   base.Message,
+		PR:              base.PrNumber,
+		PRTitle:         base.PrTitle,
+		Config:          string(content.Data),
+		AuthorLogin:     base.AuthorLogin,
+		AuthorName:      base.AuthorName,
+		AuthorEmail:     base.AuthorEmail,
+		AuthorAvatar:    base.AuthorAvatar,
+		CommitterLogin:  base.SenderLogin,
+		CommitterName:   base.SenderName,
+		CommitterEmail:  base.SenderEmail,
+		CommitterAvatar: base.SenderAvatar,
+		RepositoryID:    repo.ID,
+		StartTime:       lib.TimeNow(),
+	}
+	if err := s.Create(build); err != nil {
+		return nil, 0, err
+	}
+
+	var jobs []*core.Job
+
+	for _, env := range config.Env {
+		job := &core.Job{
+			Image:    config.Parsed.Image,
+			Commands: string(commandsJSON),
+			Env:      env,
+			BuildID:  build.ID,
+		}
+		if err := s.jobs.Create(job); err != nil {
+			return nil, 0, err
+		}
+		job, err := s.jobs.Find(job.ID)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		jobs = append(jobs, job)
+	}
+
+	return jobs, build.ID, nil
+}

@@ -7,11 +7,12 @@ import (
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/bleenco/abstruse/server/ws"
 )
 
 // HandleTrigger returns an http.HandlerFunc that writes JSON encoded
 // result about triggering build to http response body.
-func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler) http.HandlerFunc {
+func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler, ws *ws.Server) http.HandlerFunc {
 	type form struct {
 		ID uint `json:"id" valid:"required"`
 	}
@@ -43,6 +44,11 @@ func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler) http.Handle
 				render.InternalServerError(w, err.Error())
 				return
 			}
+		}
+
+		// broadcast new build
+		if build, err := builds.Find(f.ID); err == nil {
+			ws.App.Broadcast("/subs/builds", map[string]interface{}{"build": build})
 		}
 
 		render.JSON(w, http.StatusOK, render.Empty{})

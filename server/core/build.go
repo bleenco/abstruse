@@ -57,5 +57,8 @@ type (
 
 		// TriggerBuild creates new build and returns associated jobs.
 		TriggerBuild(uint) ([]*Job, error)
+
+		// GenerateBuild generates and triggers build based on post-commit hook.
+		GenerateBuild(repo *Repository, base *GitHook) ([]*Job, uint, error)
 	}
 )

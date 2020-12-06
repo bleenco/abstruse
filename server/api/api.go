@@ -91,7 +91,7 @@ func (r Router) Handler() http.Handler {
 	router.Mount("/api/v1", r.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
 	router.Mount("/uploads", r.fileServer())
-	router.Post("/webhooks", webhook.HandleHook(r.Repos))
+	router.Post("/webhooks", webhook.HandleHook(r.Repos, r.Builds, r.Scheduler, r.WS))
 	router.NotFound(r.ui())
 
 	return router
@@ -178,7 +178,7 @@ func (r Router) buildsRouter() *chi.Mux {
 
 	router.Get("/", build.HandleList(r.Builds))
 	router.Get("/{id}", build.HandleFind(r.Builds))
-	router.Put("/trigger", build.HandleTrigger(r.Builds, r.Scheduler))
+	router.Put("/trigger", build.HandleTrigger(r.Builds, r.Scheduler, r.WS))
 	router.Put("/restart", build.HandleRestart(r.Builds, r.Scheduler))
 	router.Put("/stop", build.HandleStop(r.Builds, r.Scheduler))
 	router.Get("/job/{id}", build.HandleFindJob(r.Jobs, r.Scheduler))
