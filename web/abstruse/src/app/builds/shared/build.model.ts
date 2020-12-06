@@ -9,7 +9,7 @@ export class Build {
   public createdAtWords: BehaviorSubject<string>;
   public buildStatus: BehaviorSubject<string>;
   public status: string;
-  public processing: boolean = false;
+  public processing = false;
 
   constructor(
     public id: number,
@@ -27,22 +27,24 @@ export class Build {
     public authorAvatar: string,
     public authorName: string,
     public authorEmail: string,
+    public authorLogin: string,
     public committerAvatar: string,
     public committerName: string,
     public committerEmail: string,
+    public committerLogin: string,
     public jobs: Job[]
   ) {
     this.time = new TimeService();
     this.status = this.getBuildStatus;
     this.buildStatus = new BehaviorSubject<string>(this.status);
     this.runningTime = new BehaviorSubject<string>(this.getTimeRunning);
-    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt!) + ' ago');
+    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt as Date) + ' ago');
 
     this.time.getCurrentTime().subscribe(() => {
       this.status = this.getBuildStatus;
       this.buildStatus.next(this.status);
       this.runningTime.next(this.getTimeRunning);
-      this.createdAtWords.next(formatDistanceToNow(this.createdAt!) + ' ago');
+      this.createdAtWords.next(formatDistanceToNow(this.createdAt as Date) + ' ago');
     });
   }
 
@@ -57,7 +59,7 @@ export class Build {
   }
 
   get createdAtFormatted(): string {
-    return format(this.createdAt!, 'Do MMMM YYYY [at] HH:mm');
+    return format(this.createdAt as Date, 'Do MMMM YYYY [at] HH:mm');
   }
 
   get getBuildStatus(): string {
@@ -88,7 +90,7 @@ export class Build {
     }
 
     if (!this.endTime && this.jobs.every(job => job.endTime)) {
-      this.endTime = new Date(Math.max(...this.jobs.map(job => job.endTime!.getTime())));
+      this.endTime = new Date(Math.max(...this.jobs.map(job => (job.endTime as Date).getTime())));
     }
 
     const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
@@ -99,7 +101,7 @@ export class Build {
 export class Job {
   private time: TimeService;
   public runningTime: BehaviorSubject<string>;
-  public processing: boolean = false;
+  public processing = false;
 
   constructor(
     public id: number,
@@ -150,9 +152,11 @@ export function generateBuildModel(data: any): Build {
     data.authorAvatar,
     data.authorName,
     data.authorEmail,
+    data.authorLogin,
     data.committerAvatar,
     data.committerName,
     data.committerEmail,
+    data.committerLogin,
     data.jobs && data.jobs.length ? data.jobs.map(generateJobModel) : []
   );
 }

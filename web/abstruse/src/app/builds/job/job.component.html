@@ -56,7 +56,15 @@
           <div class="column is-4">
             <div class="build-info-content">
               <img [src]="job?.build?.committerAvatar" class="committer-avatar" />
-              <span class="desc-text">{{ job?.build?.committerName }} authored and commited</span>
+              <span class="desc-text"
+                *ngIf="job?.build?.pr === 0">{{ job?.build?.committerName || job?.build?.committerLogin }} authored and
+                commited</span>
+              <span class="desc-text"
+                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin === job?.build?.authorLogin">{{ job?.build?.committerName || job?.build?.committerLogin }}
+                authored and commited</span>
+              <span class="desc-text"
+                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin">{{ job?.build?.authorName || job?.build?.authorLogin }}
+                authored with {{ job?.build?.committerName || job?.build?.committerLogin }}</span>
             </div>
           </div>
           <div class="column is-1">
