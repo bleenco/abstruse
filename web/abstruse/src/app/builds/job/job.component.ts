@@ -18,8 +18,8 @@ export class JobComponent implements OnInit, OnDestroy {
   jobID!: number;
   buildID!: number;
   job!: Job;
-  fetching: boolean = false;
-  processing: boolean = false;
+  fetching = false;
+  processing = false;
   sub: Subscription = new Subscription();
 
   constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}

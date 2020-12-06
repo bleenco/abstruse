@@ -26,7 +26,7 @@
     <div class="column is-2 data-column">
       <div class="align-center justify-start mlr10">
         <img [src]="build?.committerAvatar" class="committer-avatar" appTooltip
-          [text]="build?.committerName || build?.committerLogin" />
+          [text]="build?.committerName || build?.committerLogin || null" />
       </div>
       <div class="data-column direction-column">
         <div class="info-text align-center justify-start">
