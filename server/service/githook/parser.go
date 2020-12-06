@@ -3,6 +3,7 @@ package githook
 import (
 	"fmt"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/bleenco/abstruse/server/core"
@@ -44,19 +45,19 @@ func (p *parser) Parse(req *http.Request, secretFunc func(string) *core.Reposito
 
 	switch h := payload.(type) {
 	case *scm.PushHook:
-		return parsePushHook(h)
+		return p.parsePushHook(h)
 	case *scm.TagHook:
-		return nil, nil, nil
+		return p.parseTagHook(h)
 	case *scm.PullRequestHook:
-		return nil, nil, nil
+		return p.parsePRHook(h)
 	case *scm.BranchHook:
-		return nil, nil, nil
+		return p.parseBranchHook(h)
 	default:
 		return nil, nil, nil
 	}
 }
 
-func parsePushHook(h *scm.PushHook) (*core.GitHook, *core.Repository, error) {
+func (p *parser) parsePushHook(h *scm.PushHook) (*core.GitHook, *core.Repository, error) {
 	repo := &core.Repository{}
 	githook := &core.GitHook{}
 
@@ -121,6 +122,138 @@ func parsePushHook(h *scm.PushHook) (*core.GitHook, *core.Repository, error) {
 
 	if githook.AuthorAvatar == "" {
 		githook.AuthorAvatar = h.Sender.Avatar
+	}
+
+	return githook, repo, nil
+}
+
+func (p *parser) parseTagHook(h *scm.TagHook) (*core.GitHook, *core.Repository, error) {
+	repo := &core.Repository{}
+	githook := &core.GitHook{}
+
+	if h.Action != scm.ActionCreate {
+		return nil, nil, nil
+	}
+
+	// When tag is created github, gitea and gitlab sends both a push
+	// and a tag hook. Push hook contains more info so we use that.
+	if p.client.Driver == scm.DriverGithub ||
+		p.client.Driver == scm.DriverGitea ||
+		p.client.Driver == scm.DriverGitlab {
+		return nil, nil, nil
+	}
+
+	githook = &core.GitHook{
+		Event:        core.EventTag,
+		Action:       core.ActionCreate,
+		Link:         "",
+		Message:      path.Base(h.Ref.Path),
+		After:        h.Ref.Sha,
+		Ref:          h.Ref.Name,
+		Source:       h.Ref.Name,
+		Target:       h.Ref.Name,
+		AuthorLogin:  h.Sender.Login,
+		AuthorName:   h.Sender.Name,
+		AuthorEmail:  h.Sender.Email,
+		AuthorAvatar: h.Sender.Avatar,
+		SenderEmail:  h.Sender.Email,
+		SenderAvatar: h.Sender.Avatar,
+		SenderName:   h.Sender.Name,
+		SenderLogin:  h.Sender.Login,
+	}
+	repo = &core.Repository{
+		UID:       h.Repo.ID,
+		Namespace: h.Repo.Namespace,
+		Name:      h.Repo.Name,
+		FullName:  fmt.Sprintf("%s/%s", h.Repo.Namespace, h.Repo.Name),
+		URL:       h.Repo.Link,
+		Private:   h.Repo.Private,
+		Clone:     h.Repo.Clone,
+		CloneSSH:  h.Repo.CloneSSH,
+	}
+
+	if !strings.HasPrefix(githook.Ref, "refs/tags/") {
+		githook.Ref = fmt.Sprintf("refs/tags/%s", githook.Ref)
+	}
+
+	return githook, repo, nil
+}
+
+func (p *parser) parsePRHook(h *scm.PullRequestHook) (*core.GitHook, *core.Repository, error) {
+	if h.Action == scm.ActionClose {
+		return nil, nil, nil
+	}
+
+	githook := &core.GitHook{
+		Event:        core.EventPullRequest,
+		Action:       h.Action.String(),
+		Link:         h.PullRequest.Link,
+		Timestamp:    h.PullRequest.Created,
+		Title:        h.PullRequest.Title,
+		Message:      h.PullRequest.Body,
+		Before:       h.PullRequest.Base.Sha,
+		After:        h.PullRequest.Sha,
+		Ref:          h.PullRequest.Ref,
+		Fork:         h.PullRequest.Fork,
+		Source:       h.PullRequest.Source,
+		Target:       h.PullRequest.Target,
+		AuthorLogin:  h.PullRequest.Author.Login,
+		AuthorName:   h.PullRequest.Author.Name,
+		AuthorEmail:  h.PullRequest.Author.Email,
+		AuthorAvatar: h.PullRequest.Author.Avatar,
+		SenderEmail:  h.Sender.Email,
+		SenderAvatar: h.Sender.Avatar,
+		SenderName:   h.Sender.Name,
+		SenderLogin:  h.Sender.Login,
+		PrNumber:     h.PullRequest.Number,
+		PrTitle:      h.PullRequest.Title,
+		PrBody:       h.PullRequest.Body,
+	}
+	repo := &core.Repository{
+		UID:       h.Repo.ID,
+		Namespace: h.Repo.Namespace,
+		Name:      h.Repo.Name,
+		FullName:  fmt.Sprintf("%s/%s", h.Repo.Namespace, h.Repo.Name),
+		URL:       h.Repo.Link,
+		Private:   h.Repo.Private,
+		Clone:     h.Repo.Clone,
+		CloneSSH:  h.Repo.CloneSSH,
+	}
+
+	return githook, repo, nil
+}
+
+func (p *parser) parseBranchHook(h *scm.BranchHook) (*core.GitHook, *core.Repository, error) {
+	if h.Action != scm.ActionCreate {
+		return nil, nil, nil
+	}
+
+	githook := &core.GitHook{
+		Event:        core.EventPush,
+		Link:         "",
+		Message:      "",
+		After:        h.Ref.Sha,
+		Ref:          h.Ref.Name,
+		Source:       h.Ref.Name,
+		Target:       h.Ref.Name,
+		AuthorLogin:  h.Sender.Login,
+		AuthorName:   h.Sender.Name,
+		AuthorEmail:  h.Sender.Email,
+		AuthorAvatar: h.Sender.Avatar,
+		SenderLogin:  h.Sender.Login,
+		SenderName:   h.Sender.Name,
+		SenderEmail:  h.Sender.Email,
+		SenderAvatar: h.Sender.Avatar,
+	}
+	repo := &core.Repository{
+		UID:       h.Repo.ID,
+		Namespace: h.Repo.Namespace,
+		Name:      h.Repo.Name,
+		FullName:  fmt.Sprintf("%s/%s", h.Repo.Namespace, h.Repo.Name),
+		URL:       h.Repo.Link,
+		Private:   h.Repo.Private,
+		Clone:     h.Repo.Clone,
+		CloneSSH:  h.Repo.CloneSSH,
 	}
 
 	return githook, repo, nil
