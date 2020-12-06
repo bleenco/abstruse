@@ -213,11 +213,14 @@ func (s *Server) StopJob(ctx context.Context, job *pb.Job) (*pb.JobStopResp, err
 	}()
 
 	name := fmt.Sprintf("abstruse-job-%d", job.GetId())
-	if err := docker.StopContainer(name); err != nil {
-		return &pb.JobStopResp{Stopped: false}, nil
+	if _, exists := docker.ContainerExists(name); exists {
+		if err := docker.StopContainer(name); err != nil {
+			return &pb.JobStopResp{Stopped: false}, nil
+		}
+		return &pb.JobStopResp{Stopped: true}, nil
 	}
 
-	return &pb.JobStopResp{Stopped: true}, nil
+	return &pb.JobStopResp{Stopped: false}, nil
 }
 
 func (s *Server) Error() chan error {

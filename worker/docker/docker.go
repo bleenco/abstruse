@@ -129,6 +129,22 @@ func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedRespo
 	return conn, exec.ID, nil
 }
 
+// ContainerExists finds container by name and if exists returns id.
+func ContainerExists(name string) (string, bool) {
+	cli, _ := client.NewEnvClient()
+
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
+	if err != nil {
+		return "", false
+	}
+	for _, container := range containers {
+		if lib.Include(container.Names, fmt.Sprintf("/%s", name)) {
+			return container.ID, true
+		}
+	}
+	return "", false
+}
+
 // RemoveContainer removes Docker container.
 func removeContainer(cli *client.Client, id string, force bool) error {
 	return cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: force})
@@ -146,7 +162,7 @@ func startContainer(cli *client.Client, id string) error {
 
 // CreateContainer creates new Docker container.
 func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string) (container.ContainerCreateCreatedBody, error) {
-	if id, exists := containerExists(cli, name); exists {
+	if id, exists := ContainerExists(name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
 			return container.ContainerCreateCreatedBody{}, err
 		}
@@ -176,20 +192,6 @@ func isContainerRunning(cli *client.Client, id string) bool {
 	}
 
 	return lib.Include(containers, id)
-}
-
-// containerExists finds container by name and if exists returns id.
-func containerExists(cli *client.Client, name string) (string, bool) {
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
-	if err != nil {
-		return "", false
-	}
-	for _, container := range containers {
-		if lib.Include(container.Names, fmt.Sprintf("/%s", name)) {
-			return container.ID, true
-		}
-	}
-	return "", false
 }
 
 func findContainer(cli *client.Client, name string) (string, error) {
