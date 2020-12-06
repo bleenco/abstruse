@@ -16,10 +16,10 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
 export class BuildComponent implements OnInit, OnDestroy {
   id!: number;
   build!: Build;
-  loading: boolean = false;
-  processing: boolean = false;
+  loading = false;
+  processing = false;
   tab: 'jobs' | 'config' = 'jobs';
-  title: string = 'Jobs';
+  title = 'Jobs';
   editorOptions = { language: 'yaml', theme: 'abstruse', readOnly: true };
 
   constructor(

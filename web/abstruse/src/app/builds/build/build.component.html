@@ -57,7 +57,12 @@
           </div>
           <div class="column is-4">
             <div class="build-info-content">
-              <img [src]="build?.committerAvatar" class="committer-avatar" />
+              <img [src]="build?.committerAvatar" class="committer-avatar"
+                *ngIf="build?.pr === 0 || build?.committerLogin === build?.authorLogin" />
+              <div class="avatars-container" *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin">
+                <img [src]="build?.committerAvatar" class="committer-avatar">
+                <img [src]="build?.authorAvatar" class="author-avatar">
+              </div>
               <span class="desc-text" *ngIf="build?.pr === 0">{{ build?.committerName || build?.committerLogin }}
                 authored and
                 commited</span>
