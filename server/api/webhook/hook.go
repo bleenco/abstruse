@@ -3,7 +3,6 @@ package webhook
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -65,9 +64,6 @@ func HandleHook(repos core.RepositoryStore, builds core.BuildStore, scheduler co
 				log.Println("webhook ignored, repository not active")
 				break
 			}
-
-			fmt.Printf("%+v\n", hook)
-			fmt.Printf("%+v\n", repo)
 
 			if hook.Event == core.EventPush && hook.Action == core.ActionDelete {
 				log.Printf("branch %s deleted\n", hook.Target)

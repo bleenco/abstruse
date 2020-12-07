@@ -96,12 +96,19 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 	if job, ok := s.pending[id]; ok {
 		worker, err := s.getWorker(job.pb.WorkerId)
 		if err != nil {
+			job.job.Status = "failing"
+			job.job.EndTime = lib.TimeNow()
+			if err := s.saveJob(job.job); err != nil {
+				s.logger.Errorf("error saving job %d: %v", job.job.ID, err.Error())
+			}
 			return false, err
 		}
 
 		stopped, err := worker.StopJob(job.pb)
 		if err != nil {
-			return false, err
+			s.mu.Lock()
+			delete(s.pending, job.job.ID)
+			s.mu.Unlock()
 		}
 
 		s.logger.Infof("job %d stopped", id)
@@ -170,6 +177,9 @@ func (s *scheduler) Resume() error {
 }
 
 func (s *scheduler) JobLog(id uint) (string, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	if job, ok := s.pending[id]; ok {
 		return strings.Join(job.pb.GetLog(), ""), nil
 	}
@@ -195,7 +205,7 @@ func (s *scheduler) process() error {
 	return nil
 }
 
-func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
+func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	s.removeJob(job.ID)
 
 	job.Status = "running"
@@ -229,7 +239,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
 
 	j, err := worker.StartJob(j)
 	if err != nil {
-		return err
+		s.logger.Errorf("job %d errored: %v", job.ID, err.Error())
 	}
 
 	job.Status = j.GetStatus()
@@ -249,8 +259,6 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
 	s.mu.Unlock()
 
 	s.next(s.ctx)
-
-	return nil
 }
 
 func (s *scheduler) next(ctx context.Context) {
@@ -263,6 +271,7 @@ func (s *scheduler) next(ctx context.Context) {
 func (s *scheduler) enqueueJob() (*core.Job, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	if len(s.queued) > 0 {
 		job := s.queued[0]
 		s.queued = s.queued[1:]
@@ -297,6 +306,9 @@ func (s *scheduler) removeJob(id uint) {
 }
 
 func (s *scheduler) findWorker() (*core.Worker, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	workers, err := s.workers.List()
 	if err != nil {
 		return nil, err
@@ -307,7 +319,7 @@ func (s *scheduler) findWorker() (*core.Worker, error) {
 	for _, w := range workers {
 		w.Lock()
 		diff := w.Max - w.Running
-		if diff > c {
+		if diff > c && diff > 0 {
 			worker, c = w, diff
 		}
 		w.Unlock()
@@ -317,6 +329,9 @@ func (s *scheduler) findWorker() (*core.Worker, error) {
 }
 
 func (s *scheduler) getWorker(id string) (*core.Worker, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	workers, err := s.workers.List()
 	if err != nil {
 		return nil, err
