@@ -18,7 +18,7 @@ export class RepoItemComponent implements OnInit {
 
   onActiveChange(): void {
     this.reposService
-      .setActive(this.repo.id!, this.repo.active!)
+      .setActive(this.repo.id as number, this.repo.active as boolean)
       .pipe(untilDestroyed(this))
       .subscribe(
         () => {},

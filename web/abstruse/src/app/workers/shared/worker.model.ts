@@ -9,13 +9,13 @@ export interface WorkerUsage {
 }
 
 export class Worker {
-  currentCPU: number = 0;
-  currentMem: number = 0;
+  currentCPU = 0;
+  currentMem = 0;
   cpu: { date?: Date; value: number }[][] = [[]];
   memory: { date?: Date; value: number }[][] = [[]];
-  jobsMax: number = 0;
-  jobsRunning: number = 0;
-  jobsPercent: number = 0;
+  jobsMax = 0;
+  jobsRunning = 0;
+  jobsPercent = 0;
 
   constructor(
     public id: string,
@@ -40,7 +40,7 @@ export class Worker {
   }
 
   get getUptime(): string {
-    return formatDistanceToNow(this.connectedAt!);
+    return formatDistanceToNow(this.connectedAt as Date);
   }
 
   get jobsUsage(): string {

@@ -17,7 +17,7 @@ export class ModalService {
     return this.modalStack.open(this.moduleComponentFactoryResolver, this.injector, content, combinedOptions);
   }
 
-  dismissAll(reason?: any) {
+  dismissAll(reason?: any): void {
     this.modalStack.dismissAll(reason);
   }
   hasOpenModals(): boolean {

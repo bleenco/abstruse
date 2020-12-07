@@ -14,7 +14,7 @@ import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 })
 export class ProvidersComponent implements OnInit {
   providers: Provider[] = [];
-  loading: boolean = false;
+  loading = false;
   error: string | null = null;
 
   constructor(public providersService: ProvidersService, public modal: ModalService) {}

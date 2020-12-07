@@ -17,11 +17,11 @@ export class ProgressWizardComponent implements OnInit, OnChanges {
 
   constructor() {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.progressPercent = this.calcPercent();
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.progressPercent = this.calcPercent();
   }
 

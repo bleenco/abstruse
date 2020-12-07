@@ -11,7 +11,7 @@ export class PullRequestsComponent implements OnInit {
   options: BuildsItemsOptions = { type: 'pull-requests' };
 
   constructor(private route: ActivatedRoute) {
-    this.options = { ...this.options, ...{ repoID: route.snapshot.parent!.params.id } };
+    this.options = { ...this.options, ...{ repoID: route.snapshot.parent?.params.id } };
   }
 
   ngOnInit(): void {}

@@ -16,7 +16,7 @@ export class ReposService {
     filter(repo => !!repo),
     share()
   );
-  loading: boolean = false;
+  loading = false;
   error: string | null = null;
 
   constructor(private http: HttpClient) {}
@@ -55,7 +55,7 @@ export class ReposService {
   findHooks(): Observable<Hook[]> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),
-      switchMap(repo => this.http.get<any>(`/repos/${repo!.id}/hooks`)),
+      switchMap(repo => this.http.get<any>(`/repos/${repo?.id}/hooks`)),
       map(resp => (resp && resp.length ? resp.map(generateHook) : []))
     );
   }
@@ -63,7 +63,7 @@ export class ReposService {
   saveHooks(data: HookData): Observable<void> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),
-      switchMap(repo => this.http.put<void>(`/repos/${repo!.id}/hooks`, data))
+      switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/hooks`, data))
     );
   }
 

@@ -37,9 +37,9 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(@Inject(DOCUMENT) private document: HTMLDocument, private ngZone: NgZone) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     fromEvent<KeyboardEvent>(this.document, 'keydown')
       .pipe(
         takeUntil(this.dismissEvent),
@@ -54,5 +54,5 @@ export class ModalComponent implements OnInit, OnDestroy, AfterViewInit {
       );
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy(): void {}
 }

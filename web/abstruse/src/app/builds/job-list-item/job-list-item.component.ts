@@ -14,11 +14,11 @@ export class JobListItemComponent implements OnInit {
   @Input() job!: Job;
   @Input() build!: Build;
 
-  processing: boolean = false;
+  processing = false;
 
   constructor(public buildsService: BuildsService) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
   restartJob(): void {
     this.processing = true;

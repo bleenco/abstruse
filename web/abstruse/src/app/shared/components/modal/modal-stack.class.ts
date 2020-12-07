@@ -86,7 +86,7 @@ export class ModalStack {
     return modalRef;
   }
 
-  dismissAll(reason?: any) {
+  dismissAll(reason?: any): void {
     this.modalRefs.forEach(modalRef => modalRef.dismiss(reason));
   }
 
@@ -126,10 +126,10 @@ export class ModalStack {
   private createFromTemplateRef(content: TemplateRef<any>, activeModal: ActiveModal): ContentRef {
     const context = {
       $implicit: activeModal,
-      close(result: any) {
+      close(result: any): void {
         activeModal.close(result);
       },
-      dismiss(reason: any) {
+      dismiss(reason: any): void {
         activeModal.dismiss(reason);
       }
     };

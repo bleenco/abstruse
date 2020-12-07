@@ -15,11 +15,11 @@ export class ReposComponent implements OnInit, AfterViewInit {
   @ViewChild('keyword') keyword!: ElementRef;
 
   repos: Repo[] = [];
-  loading: boolean = false;
-  loaded: boolean = false;
+  loading = false;
+  loaded = false;
   error: string | null = null;
-  limit: number = 10;
-  page: number = 1;
+  limit = 10;
+  page = 1;
   count!: number;
   pages: number[] = [];
 

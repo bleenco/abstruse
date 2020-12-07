@@ -18,7 +18,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
   styleUrls: ['./workers.component.sass']
 })
 export class WorkersComponent implements OnInit, OnDestroy {
-  loading: boolean = false;
+  loading = false;
   workers: Worker[] = [];
 
   constructor(private workersService: WorkersService, private dataService: DataService) {}

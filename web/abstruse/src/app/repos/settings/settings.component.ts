@@ -14,9 +14,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SettingsComponent implements OnInit {
   id!: number;
-  loading: boolean = false;
-  saving: boolean = false;
-  triggeringBuild: boolean = false;
+  loading = false;
+  saving = false;
+  triggeringBuild = false;
   hooks: { push: boolean; pullRequest: boolean; tag: boolean } = {
     push: false,
     pullRequest: false,

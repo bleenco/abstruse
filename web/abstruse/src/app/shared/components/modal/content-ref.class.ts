@@ -40,14 +40,14 @@ export class PopupService<T> {
     return this.windowRef;
   }
 
-  close() {
+  close(): void {
     if (this.windowRef) {
       this.viewContainerRef.remove(this.viewContainerRef.indexOf(this.windowRef.hostView));
       this.windowRef = null;
 
-      if (this.contentRef!.viewRef) {
-        this.applicationRef.detachView(this.contentRef!.viewRef);
-        this.contentRef!.viewRef.destroy();
+      if (this.contentRef?.viewRef) {
+        this.applicationRef.detachView(this.contentRef.viewRef);
+        this.contentRef.viewRef.destroy();
         this.contentRef = null;
       }
     }

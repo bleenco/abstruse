@@ -22,8 +22,8 @@ export class ProvidersModalComponent implements OnInit {
     { value: 'gitea', placeholder: 'Gitea' },
     { value: 'gogs', placeholder: 'Gogs' }
   ];
-  saving: boolean = false;
-  checking: boolean = false;
+  saving = false;
+  checking = false;
   form!: FormGroup;
   error: string | null = null;
 

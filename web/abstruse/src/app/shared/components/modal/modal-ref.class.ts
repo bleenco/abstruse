@@ -25,7 +25,7 @@ export class ModalRef<T = any> {
     private contentRef: ContentRef | null,
     private beforeDismiss?: () => boolean | Promise<boolean>
   ) {
-    this.windowComponentRef!.instance.dismissEvent.subscribe((reason: any) => this.dismiss(reason));
+    this.windowComponentRef?.instance.dismissEvent.subscribe((reason: any) => this.dismiss(reason));
     this.result = new Promise((resolve, reject) => ([this.resolve, this.reject] = [resolve, reject]));
     this.result.then(null, () => {});
     this.body = document.querySelector('body') as HTMLBodyElement;
@@ -69,9 +69,9 @@ export class ModalRef<T = any> {
   }
 
   private removeModalElements(): void {
-    const windowNativeEl = this.windowComponentRef!.location.nativeElement;
+    const windowNativeEl = this.windowComponentRef?.location.nativeElement;
     windowNativeEl.parentNode.removeChild(windowNativeEl);
-    this.windowComponentRef!.destroy();
+    this.windowComponentRef?.destroy();
 
     if (this.contentRef && this.contentRef.viewRef) {
       this.contentRef.viewRef.destroy();

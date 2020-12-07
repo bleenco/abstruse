@@ -31,7 +31,7 @@ export class BuildsService {
     }
     return this.http
       .get<Build[]>('/builds', { params })
-      .pipe(map(data => (data && data.length ? data.map(generateBuildModel) : [])));
+      .pipe(map(d => (data && d.length ? d.map(generateBuildModel) : [])));
   }
 
   findBuild(id: number): Observable<Build> {

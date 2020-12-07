@@ -14,8 +14,8 @@ import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 })
 export class SecurityComponent implements OnInit {
   form!: FormGroup;
-  saving: boolean = false;
-  ok: boolean = false;
+  saving = false;
+  ok = false;
   error!: string | null;
 
   constructor(private fb: FormBuilder, private profile: ProfileService) {

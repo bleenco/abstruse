@@ -1,4 +1,4 @@
-import { TestBed, ComponentFixture, async } from '@angular/core/testing';
+import { TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Component } from '@angular/core';
 import { TooltipDirective } from './tooltip.directive';
@@ -7,7 +7,7 @@ import { TooltipDirective } from './tooltip.directive';
   template: `<span appTooltip [text]="text">Text</span>`
 })
 class TestComponent {
-  text: string = 'This is tooltip content';
+  text = 'This is tooltip content';
 }
 
 const mouseEvent = (el: HTMLElement, ev: string) => {
@@ -20,11 +20,13 @@ describe('TooltipDirective', () => {
   let el: HTMLElement;
   let tooltip: HTMLElement;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [TestComponent, TooltipDirective]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [TestComponent, TooltipDirective]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TestComponent);

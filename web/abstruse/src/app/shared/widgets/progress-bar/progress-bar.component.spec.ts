@@ -1,4 +1,4 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { TestBed, waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ProgressBarComponent } from './progress-bar.component';
 import { defaultProgressBarSettings, ProgressBarSettings } from './progress-bar.interface';
@@ -8,11 +8,13 @@ describe('ProgressBarComponent', () => {
   let component: ProgressBarComponent;
   let fixture: ComponentFixture<ProgressBarComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ProgressBarComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ProgressBarComponent]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ProgressBarComponent);
@@ -52,11 +54,13 @@ describe('ProgressBarComponent under TestComponent', () => {
   let bar: HTMLElement;
   let text: HTMLElement;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ProgressBarComponent, TestComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ProgressBarComponent, TestComponent]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     testFixture = TestBed.createComponent(TestComponent);
@@ -95,7 +99,7 @@ describe('ProgressBarComponent under TestComponent', () => {
   });
 
   @Component({
-    selector: 'test-component',
+    selector: 'app-test-component',
     template: `<app-progress-bar
       [options]="options"
       [placeholder]="placeholder"
@@ -104,7 +108,7 @@ describe('ProgressBarComponent under TestComponent', () => {
   })
   class TestComponent {
     percent!: number;
-    placeholder: string = 'Usage';
+    placeholder = 'Usage';
     options: ProgressBarSettings = defaultProgressBarSettings;
   }
 });

@@ -8,7 +8,7 @@ import { Version, generateVersion } from './version.class';
 })
 export class SystemService {
   version!: Version;
-  fetchingVersion: boolean = false;
+  fetchingVersion = false;
 
   constructor(public http: HttpClient) {}
 

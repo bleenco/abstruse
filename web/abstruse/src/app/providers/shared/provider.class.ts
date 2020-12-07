@@ -39,7 +39,7 @@ export class Provider {
   }
 
   get lastSynced(): string {
-    return `${formatDistanceToNow(this.lastSync!)} ago`;
+    return `${formatDistanceToNow(this.lastSync as Date)} ago`;
   }
 }
 

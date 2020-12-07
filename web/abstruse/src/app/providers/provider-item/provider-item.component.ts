@@ -16,7 +16,7 @@ export class ProviderItemComponent implements OnInit {
   @Input() provider!: Provider;
   @Output() saved: EventEmitter<void> = new EventEmitter<void>();
 
-  synchronizing: boolean = false;
+  synchronizing = false;
   error: string | null = null;
 
   constructor(private providersService: ProvidersService, public modal: ModalService) {}
@@ -39,7 +39,7 @@ export class ProviderItemComponent implements OnInit {
   sync(): void {
     this.synchronizing = true;
     this.providersService
-      .sync(this.provider.id!)
+      .sync(this.provider.id as number)
       .pipe(
         finalize(() => (this.synchronizing = false)),
         untilDestroyed(this)

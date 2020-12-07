@@ -1,4 +1,4 @@
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { TestBed, waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { CheckboxComponent } from './checkbox.component';
@@ -9,12 +9,14 @@ describe('CheckboxComponent', () => {
   let fixture: ComponentFixture<CheckboxComponent>;
   let input: HTMLInputElement;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [CheckboxComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [FormsModule],
+        declarations: [CheckboxComponent]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CheckboxComponent);
@@ -64,12 +66,14 @@ describe('CheckboxComponent under TestHostComponent', () => {
   let testHostFixture: ComponentFixture<TestHostComponent>;
   let input: HTMLInputElement;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [CheckboxComponent, TestHostComponent]
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [FormsModule],
+        declarations: [CheckboxComponent, TestHostComponent]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     testHostFixture = TestBed.createComponent(TestHostComponent);
@@ -95,19 +99,22 @@ describe('CheckboxComponent under TestHostComponent', () => {
     expect(input.checked).toBeFalsy();
   });
 
-  it('should change value when ngModel changed', async(() => {
-    expect(input.checked).toBeFalsy();
-    testHostComponent.checked = true;
-    testHostFixture.detectChanges();
-
-    testHostFixture.whenStable().then(() => {
+  it(
+    'should change value when ngModel changed',
+    waitForAsync(() => {
+      expect(input.checked).toBeFalsy();
+      testHostComponent.checked = true;
       testHostFixture.detectChanges();
-      expect(input.checked).toBeTruthy();
-    });
-  }));
+
+      testHostFixture.whenStable().then(() => {
+        testHostFixture.detectChanges();
+        expect(input.checked).toBeTruthy();
+      });
+    })
+  );
 
   @Component({
-    selector: 'host-component',
+    selector: 'app-host-component',
     template: `<app-checkbox [(ngModel)]="checked" [label]="label"></app-checkbox>`
   })
   class TestHostComponent {

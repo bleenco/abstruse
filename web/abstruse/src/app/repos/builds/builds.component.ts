@@ -11,7 +11,7 @@ export class BuildsComponent implements OnInit {
   options: BuildsItemsOptions = { type: 'latest' };
 
   constructor(private route: ActivatedRoute) {
-    this.options = { ...this.options, ...{ repoID: route.snapshot.parent!.params.id } };
+    this.options = { ...this.options, ...{ repoID: route.snapshot.parent?.params.id } };
   }
 
   ngOnInit(): void {}

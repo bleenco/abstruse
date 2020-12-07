@@ -73,7 +73,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     this.terminal.loadAddon(this.fitAddon);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
     this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
     this.terminal.setOption('fontSize', 13);
@@ -86,7 +86,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (!this.data || !this.terminal) {
       return;
     }
@@ -98,7 +98,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     this.terminal.write(this.data);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.data = null;
     this.terminal.dispose();
   }
