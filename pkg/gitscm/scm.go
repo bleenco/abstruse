@@ -218,7 +218,7 @@ func (s SCM) CreateStatus(repo, sha, url string, state scm.State) error {
 	case scm.StateSuccess:
 		message = "Abstruse CI build successful."
 	case scm.StatePending:
-		message = "Abstruse CI build running."
+		message = "Abstruse CI build is running."
 	case scm.StateFailure:
 		message = "Abstruse CI build failed."
 	case scm.StateRunning:

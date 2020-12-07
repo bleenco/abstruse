@@ -25,7 +25,7 @@ type buildStore struct {
 
 func (s buildStore) Find(id uint) (*core.Build, error) {
 	var build core.Build
-	err := s.db.Model(&build).Preload("Jobs").Preload("Repository").Where("id = ?", id).First(&build).Error
+	err := s.db.Model(&build).Preload("Jobs").Preload("Repository.Provider").Where("id = ?", id).First(&build).Error
 	return &build, err
 }
 

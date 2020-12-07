@@ -71,7 +71,7 @@ func (s *scheduler) Next(job *core.Job) error {
 	job.StartTime = nil
 	job.EndTime = nil
 	if err := s.saveJob(job); err != nil {
-		return err
+		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
 	s.logger.Infof("job %d scheduled", job.ID)
 
@@ -89,6 +89,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		if err := s.saveJob(job); err == nil {
 			return true, nil
 		}
+		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 		return false, nil
 	}
 
@@ -106,7 +107,9 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		s.logger.Infof("job %d stopped", id)
 		job.job.Status = "failing"
 		job.job.EndTime = lib.TimeNow()
-		s.saveJob(job.job)
+		if err := s.saveJob(job.job); err != nil {
+			s.logger.Errorf("error saving job %d: %v", job.job.ID, err.Error())
+		}
 
 		return stopped, nil
 	}
@@ -122,6 +125,7 @@ func (s *scheduler) RestartBuild(id uint) error {
 	build.StartTime = nil
 	build.EndTime = nil
 	if err := s.buildStore.Update(build); err != nil {
+		s.logger.Errorf("error saving build %d: %v", build.ID, err.Error())
 		return err
 	}
 	for _, job := range build.Jobs {
@@ -198,7 +202,9 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
 	job.Log = ""
 	job.StartTime = lib.TimeNow()
 	job.EndTime = nil
-	s.saveJob(job)
+	if err := s.saveJob(job); err != nil {
+		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
+	}
 
 	j := &pb.Job{
 		Id:            uint64(job.ID),
@@ -230,8 +236,12 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) error {
 	job.Log = strings.Join(j.GetLog(), "")
 	job.EndTime = lib.TimeNow()
 	if err := s.saveJob(job); err != nil {
-		job.Log = strings.Join(j.GetLog(), "")[0:65536]
-		s.saveJob(job)
+		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
+		log := strings.Join(j.GetLog(), "")
+		job.Log = log[len(log)-65536:]
+		if err := s.saveJob(job); err != nil {
+			s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
+		}
 	}
 
 	s.mu.Lock()
@@ -287,9 +297,6 @@ func (s *scheduler) removeJob(id uint) {
 }
 
 func (s *scheduler) findWorker() (*core.Worker, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
 	workers, err := s.workers.List()
 	if err != nil {
 		return nil, err
@@ -326,7 +333,7 @@ func (s *scheduler) getWorker(id string) (*core.Worker, error) {
 
 func (s *scheduler) saveJob(job *core.Job) error {
 	if err := s.jobStore.Update(job); err != nil {
-		return err
+		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
 	go s.broadcastJobStatus(job)
 	return s.updateBuildTime(job.BuildID)
@@ -376,20 +383,21 @@ func (s *scheduler) updateBuildTime(id uint) error {
 	if startTime != nil {
 		build.StartTime = startTime
 		if err := s.buildStore.Update(build); err != nil {
-			return err
-		}
-	}
-	if alldone && endTime != nil {
-		build.EndTime = endTime
-		if err := s.buildStore.Update(build); err != nil {
+			s.logger.Errorf("error saving build %d: %v", build.ID, err.Error())
 			return err
 		}
 	}
 
-	if build.EndTime != nil {
+	if alldone && endTime != nil {
+		build.EndTime = endTime
+		if err := s.buildStore.Update(build); err != nil {
+			s.logger.Errorf("error saving build %d: %v", build.ID, err.Error())
+			return err
+		}
+
 		success := true
 		for _, j := range build.Jobs {
-			if j.Status != "success" {
+			if j.Status != "passing" {
 				success = false
 				break
 			}
@@ -425,8 +433,10 @@ func (s *scheduler) sendStatus(build *core.Build, status scm.State) error {
 		fmt.Sprintf("%s/builds/%d", build.Repository.Provider.Host, build.ID),
 		status,
 	); err != nil {
+		s.logger.Errorf("error sending build status to scm provider: %v", err.Error())
 		return err
 	}
+	s.logger.Debugf("successfully sent build status to scm provider for repo %s", build.Repository.FullName)
 
 	return nil
 }
