@@ -461,7 +461,7 @@ func (s *scheduler) sendStatus(build *core.Build, status scm.State) error {
 		s.logger.Errorf("error sending build status to scm provider: %v", err.Error())
 		return err
 	}
-	s.logger.Debugf("successfully sent build status to scm provider for repo %s", build.Repository.FullName)
+	s.logger.Debugf("successfully sent build status to scm provider for repo %s and build %d", build.Repository.FullName, build.ID)
 
 	return nil
 }
