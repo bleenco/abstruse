@@ -206,6 +206,16 @@ func (s *scheduler) process() error {
 }
 
 func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
+	worker.Lock()
+	worker.Running++
+	worker.Unlock()
+
+	defer func() {
+		worker.Lock()
+		worker.Running--
+		worker.Unlock()
+	}()
+
 	s.removeJob(job.ID)
 
 	job.Status = "running"
@@ -319,7 +329,7 @@ func (s *scheduler) findWorker() (*core.Worker, error) {
 	for _, w := range workers {
 		w.Lock()
 		diff := w.Max - w.Running
-		if diff > c && diff > 0 {
+		if diff > c {
 			worker, c = w, diff
 		}
 		w.Unlock()

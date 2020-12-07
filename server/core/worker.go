@@ -167,17 +167,6 @@ func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
 		return job, err
 	}
 
-	w.Lock()
-	w.Running++
-	w.Unlock()
-
-	defer func() {
-		stream.CloseSend()
-		w.Lock()
-		w.Running--
-		w.Unlock()
-	}()
-
 	for {
 		resp, err := stream.Recv()
 		if err != nil {
