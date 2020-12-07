@@ -12,7 +12,7 @@ import { filter } from 'rxjs/operators';
 })
 export class IndexComponent implements OnInit {
   options: BuildsItemsOptions = { type: 'latest' };
-  title: string = 'Latest';
+  title = 'Latest';
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 

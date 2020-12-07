@@ -18,7 +18,7 @@ export class RxWebSocket {
 
   constructor() {}
 
-  selector(e: MessageEvent) {
+  selector(e: MessageEvent): void {
     return JSON.parse(e.data);
   }
 
@@ -53,8 +53,10 @@ export class RxWebSocket {
         this.socket.onmessage = (e: any) => subscriber.next(this.selector(e));
 
         return () => {
-          this.socket!.close();
-          this.socket = null;
+          if (this.socket) {
+            this.socket.close();
+            this.socket = null;
+          }
           this.out$ = null;
         };
       });
@@ -63,7 +65,7 @@ export class RxWebSocket {
     return this.out$;
   }
 
-  send(message: any) {
+  send(message: any): void {
     const data = typeof message === 'string' ? message : JSON.stringify(message);
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(data);
@@ -84,12 +86,16 @@ export class RxWebSocket {
           }
         },
         error: (err: any) => {
-          this.socket!.close(3000, err);
-          this.socket = null;
+          if (this.socket) {
+            this.socket.close(3000, err);
+            this.socket = null;
+          }
         },
         complete: () => {
-          this.socket!.close();
-          this.socket = null;
+          if (this.socket) {
+            this.socket.close();
+            this.socket = null;
+          }
         }
       };
     }
@@ -108,10 +114,13 @@ export class RxWebSocket {
     }
   }
 
-  flushMessages() {
+  flushMessages(): void {
+    if (!this.socket) {
+      return;
+    }
     const messageQueue = this.messageQueue;
-    while (messageQueue.length > 0 && this.socket!.readyState === WebSocket.OPEN) {
-      this.socket!.send(messageQueue.shift() as string);
+    while (messageQueue.length > 0 && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(messageQueue.shift() as string);
     }
   }
 }

@@ -1,26 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './auth/shared/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { environment } from 'src/environments/environment';
-import { Logger } from './core/shared/logger.service';
+import { DataService } from './shared/providers/data.service';
 
 @UntilDestroy()
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   loggedIn: Observable<boolean>;
-  logger = new Logger('websocket');
+  sub = new Subscription();
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private dataService: DataService) {
     this.loggedIn = this.auth.authenticated.asObservable().pipe(untilDestroyed(this));
   }
 
   ngOnInit(): void {
-    if (environment.production) {
-      Logger.enableProductionMode();
-    }
+    this.loggedIn.pipe(untilDestroyed(this)).subscribe(loggedIn => {
+      if (loggedIn) {
+        this.sub = new Subscription();
+        this.sub.add(this.dataService.socketOutput.subscribe());
+      } else {
+        this.sub.unsubscribe();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 }
