@@ -6,6 +6,10 @@ import { map, finalize, switchMap, share, filter } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, generateHook, HookData } from './hook.model';
 
+interface ConfigResp {
+  content: string;
+}
+
 @UntilDestroy()
 @Injectable({
   providedIn: 'root'
@@ -69,5 +73,9 @@ export class ReposService {
 
   setActive(id: number, status: boolean): Observable<void> {
     return this.http.put<void>(`/repos/${id}/active`, { active: status });
+  }
+
+  findConfig(id: number): Observable<ConfigResp> {
+    return this.http.get<ConfigResp>(`/repos/${id}/config`);
   }
 }

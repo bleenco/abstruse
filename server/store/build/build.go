@@ -59,84 +59,6 @@ func (s buildStore) Delete(build *core.Build) error {
 	return s.db.Delete(build).Error
 }
 
-func (s buildStore) TriggerBuild(repoID uint) ([]*core.Job, error) {
-	repo, err := s.repos.Find(repoID)
-	if err != nil {
-		return nil, err
-	}
-	scm, err := gitscm.New(context.Background(), repo.Provider.Name, repo.Provider.URL, repo.Provider.AccessToken)
-	if err != nil {
-		return nil, err
-	}
-	ref, err := scm.FindBranch(repo.FullName, repo.DefaultBranch)
-	if err != nil {
-		fmt.Println("branch", repo.DefaultBranch)
-		return nil, err
-	}
-	commit, err := scm.LastCommit(repo.FullName, repo.DefaultBranch)
-	if err != nil {
-		fmt.Println("last commit")
-		return nil, err
-	}
-	content, err := scm.FindContent(repo.FullName, commit.Sha, ".abstruse.yml")
-	if err != nil {
-		fmt.Println("content")
-		return nil, err
-	}
-	config := parser.ConfigParser{Raw: string(content.Data)}
-	if err := config.Parse(); err != nil {
-		return nil, err
-	}
-	commandsJSON, err := json.Marshal(config.Commands)
-	if err != nil {
-		return nil, err
-	}
-
-	build := &core.Build{
-		Branch:          repo.DefaultBranch,
-		Ref:             ref.Path,
-		Commit:          commit.Sha,
-		CommitMessage:   commit.Message,
-		Config:          string(content.Data),
-		AuthorLogin:     commit.Author.Login,
-		AuthorName:      commit.Author.Name,
-		AuthorEmail:     commit.Author.Email,
-		AuthorAvatar:    commit.Author.Avatar,
-		CommitterLogin:  commit.Committer.Name,
-		CommitterName:   commit.Committer.Name,
-		CommitterEmail:  commit.Committer.Email,
-		CommitterAvatar: commit.Committer.Avatar,
-		RepositoryID:    repo.ID,
-		StartTime:       lib.TimeNow(),
-	}
-
-	if err := s.Create(build); err != nil {
-		return nil, err
-	}
-
-	var jobs []*core.Job
-
-	for _, env := range config.Env {
-		job := &core.Job{
-			Image:    config.Parsed.Image,
-			Commands: string(commandsJSON),
-			Env:      env,
-			BuildID:  build.ID,
-		}
-		if err := s.jobs.Create(job); err != nil {
-			return nil, err
-		}
-		job, err := s.jobs.Find(job.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		jobs = append(jobs, job)
-	}
-
-	return jobs, nil
-}
-
 func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]*core.Job, uint, error) {
 	scm, err := gitscm.New(context.Background(), repo.Provider.Name, repo.Provider.URL, repo.Provider.AccessToken)
 	if err != nil {
@@ -219,4 +141,119 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 	}
 
 	return jobs, build.ID, nil
+}
+
+func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error) {
+	repo, err := s.repos.Find(opts.ID)
+	if err != nil {
+		return nil, err
+	}
+	scm, err := gitscm.New(context.Background(), repo.Provider.Name, repo.Provider.URL, repo.Provider.AccessToken)
+	if err != nil {
+		return nil, err
+	}
+
+	build := &core.Build{}
+
+	branch := opts.Branch
+	sha := opts.SHA
+	content := opts.Config
+
+	if branch == "" {
+		branch = repo.DefaultBranch
+		build.Branch = branch
+	}
+
+	ref, err := scm.FindBranch(repo.FullName, branch)
+	if err != nil {
+		fmt.Println("branch", repo.DefaultBranch)
+		return nil, err
+	}
+	build.Ref = ref.Path
+
+	if sha == "" {
+		commit, err := scm.LastCommit(repo.FullName, branch)
+		if err != nil {
+			fmt.Println("last commit")
+			return nil, err
+		}
+		sha = commit.Sha
+
+		build.Commit = commit.Sha
+		build.CommitMessage = commit.Message
+		build.AuthorLogin = commit.Author.Login
+		build.AuthorName = commit.Author.Name
+		build.AuthorEmail = commit.Author.Email
+		build.AuthorAvatar = commit.Author.Avatar
+		build.CommitterLogin = commit.Committer.Login
+		build.CommitterName = commit.Committer.Name
+		build.CommitterEmail = commit.Committer.Email
+		build.CommitterAvatar = commit.Committer.Avatar
+	} else {
+		commit, err := scm.FindCommit(repo.FullName, sha)
+		if err != nil {
+			fmt.Println("find commit")
+			return nil, err
+		}
+
+		build.Commit = commit.Sha
+		build.CommitMessage = commit.Message
+		build.AuthorLogin = commit.Author.Login
+		build.AuthorName = commit.Author.Name
+		build.AuthorEmail = commit.Author.Email
+		build.AuthorAvatar = commit.Author.Avatar
+		build.CommitterLogin = commit.Committer.Login
+		build.CommitterName = commit.Committer.Name
+		build.CommitterEmail = commit.Committer.Email
+		build.CommitterAvatar = commit.Committer.Avatar
+	}
+
+	if content == "" {
+		raw, err := scm.FindContent(repo.FullName, sha, ".abstruse.yml")
+		if err != nil {
+			fmt.Println("content")
+			return nil, err
+		}
+		content = string(raw.Data)
+	}
+
+	build.Config = content
+
+	config := parser.ConfigParser{Raw: content}
+	if err := config.Parse(); err != nil {
+		return nil, err
+	}
+	commandsJSON, err := json.Marshal(config.Commands)
+	if err != nil {
+		return nil, err
+	}
+
+	build.RepositoryID = repo.ID
+	build.StartTime = lib.TimeNow()
+
+	if err := s.Create(build); err != nil {
+		return nil, err
+	}
+
+	var jobs []*core.Job
+
+	for _, env := range config.Env {
+		job := &core.Job{
+			Image:    config.Parsed.Image,
+			Commands: string(commandsJSON),
+			Env:      env,
+			BuildID:  build.ID,
+		}
+		if err := s.jobs.Create(job); err != nil {
+			return nil, err
+		}
+		job, err := s.jobs.Find(job.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		jobs = append(jobs, job)
+	}
+
+	return jobs, nil
 }

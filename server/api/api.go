@@ -169,6 +169,7 @@ func (r Router) reposRouter() *chi.Mux {
 	router.Put("/{id}/active", repo.HandleActive(r.Repos))
 	router.Get("/{id}/hooks", repo.HandleListHooks(r.Repos))
 	router.Put("/{id}/hooks", repo.HandleCreateHooks(r.Repos))
+	router.Get("/{id}/config", repo.HandleConfig(r.Repos))
 
 	return router
 }

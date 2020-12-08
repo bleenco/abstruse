@@ -22,6 +22,9 @@ export class SettingsComponent implements OnInit {
     pullRequest: false,
     tag: false
   };
+  config = '';
+  fetchingConfig = false;
+  editorOptions = { language: 'yaml', theme: 'abstruse' };
 
   constructor(public reposService: ReposService, private buildsService: BuildsService, private route: ActivatedRoute) {}
 
@@ -75,12 +78,30 @@ export class SettingsComponent implements OnInit {
   triggerBuild(): void {
     this.triggeringBuild = true;
     this.buildsService
-      .triggerBuild(this.id)
+      .triggerBuild({ id: this.id, config: this.config })
       .pipe(
         finalize(() => (this.triggeringBuild = false)),
         untilDestroyed(this)
       )
       .subscribe();
+  }
+
+  fetchConfig(): void {
+    this.fetchingConfig = true;
+    this.reposService
+      .findConfig(this.id)
+      .pipe(
+        finalize(() => (this.fetchingConfig = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => {
+          this.config = resp.content;
+        },
+        err => {
+          console.error(err);
+        }
+      );
   }
 
   private applySettings(hooks: Hook[]): void {

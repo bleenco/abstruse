@@ -14,7 +14,10 @@ import (
 // result about triggering build to http response body.
 func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler, ws *ws.Server) http.HandlerFunc {
 	type form struct {
-		ID uint `json:"id" valid:"required"`
+		ID     uint   `json:"id" valid:"required"`
+		Config string `json:"config"`
+		SHA    string `json:"sha"`
+		Branch string `json:"branch"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +36,14 @@ func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler, ws *ws.Serv
 			return
 		}
 
-		jobs, err := builds.TriggerBuild(f.ID)
+		opts := core.TriggerBuildOpts{
+			ID:     f.ID,
+			Config: f.Config,
+			SHA:    f.SHA,
+			Branch: f.Branch,
+		}
+
+		jobs, err := builds.TriggerBuild(opts)
 		if err != nil {
 			render.InternalServerError(w, err.Error())
 			return

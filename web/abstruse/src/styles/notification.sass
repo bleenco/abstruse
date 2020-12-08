@@ -22,6 +22,7 @@
     font-size: 14px
     margin: 0 !important
     padding: 0 !important
+    line-height: 18px
 
     .title
       display: inline-block
@@ -29,6 +30,11 @@
       font-weight: $weight-medium
       font-family: $font-family-roboto
       margin-bottom: 10px
+
+    code
+      border: 1px solid $border-default
+      padding: 2px
+      border-radius: $border-radius
 
   &.is-small
     padding: 10px 16px
@@ -50,4 +56,7 @@
 
       p
         color: $color !important
+
+        code
+          border-color: rgba($color, .5) !important
 

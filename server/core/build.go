@@ -38,6 +38,14 @@ type (
 		Kind         string
 	}
 
+	// TriggerBuildOpts defines options to trigger build.
+	TriggerBuildOpts struct {
+		ID     uint
+		Config string
+		SHA    string
+		Branch string
+	}
+
 	// BuildStore defines methods to work with builds
 	BuildStore interface {
 		// Find returns build by id from datastore.
@@ -56,7 +64,7 @@ type (
 		Delete(*Build) error
 
 		// TriggerBuild creates new build and returns associated jobs.
-		TriggerBuild(uint) ([]*Job, error)
+		TriggerBuild(TriggerBuildOpts) ([]*Job, error)
 
 		// GenerateBuild generates and triggers build based on post-commit hook.
 		GenerateBuild(repo *Repository, base *GitHook) ([]*Job, uint, error)

@@ -17,6 +17,13 @@ export interface BuildsFindParams {
   repoID?: number;
 }
 
+export interface TriggerBuildParams {
+  id: number;
+  config?: string;
+  sha?: string;
+  branch?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BuildsService {
   constructor(private http: HttpClient, private dataService: DataService) {}
@@ -38,8 +45,8 @@ export class BuildsService {
     return this.http.get<Build>(`/builds/${id}`).pipe(map(generateBuildModel));
   }
 
-  triggerBuild(id: number): Observable<void> {
-    return this.http.put<void>('/builds/trigger', { id });
+  triggerBuild(params: TriggerBuildParams): Observable<void> {
+    return this.http.put<void>('/builds/trigger', params);
   }
 
   restartBuild(id: number): Observable<void> {
