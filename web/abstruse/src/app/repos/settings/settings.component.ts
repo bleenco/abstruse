@@ -17,6 +17,7 @@ export class SettingsComponent implements OnInit {
   loading = false;
   saving = false;
   triggeringBuild = false;
+  buildTriggered = false;
   hooks: { push: boolean; pullRequest: boolean; tag: boolean } = {
     push: false,
     pullRequest: false,
@@ -83,7 +84,9 @@ export class SettingsComponent implements OnInit {
         finalize(() => (this.triggeringBuild = false)),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {
+        this.buildTriggered = true;
+      });
   }
 
   fetchConfig(): void {
