@@ -2,11 +2,11 @@
   <img height="80" src="https://user-images.githubusercontent.com/1796022/87736445-6b94d200-c7d8-11ea-8f98-fb0d5bf87081.png" />
 </p>
 
-# Abstruse 2.x.x
+# Abstruse CI
 
-[![Slack](https://slackin-xxrlxvwnmd.now.sh/badge.svg)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
+[![Slack](https://img.shields.io/badge/slack-abstruse-black.svg?logo=slack)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
 
-**Abstruse 2.x.x** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
+**Abstruse CI** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
 
 This is a work in progress for v2.0.0 relase, if you are looking for Node.JS based v1.x.x version please check [here](https://github.com/bleenco/abstruse/tree/v1).
 
@@ -22,7 +22,7 @@ $ docker-compose -f configs/demo/default/docker-compose.yml up -d
 ```
 
 This command will run `abstruse-server` with a single worker node `abstruse-worker` and MySQL database.
-You should be able to open up the installation wizard in your browser at http://localhost:4400 and finish the setup.
+You should be able to open up the installation wizard in your browser at http://localhost and finish the setup.
 
 ## Building the Project from Source
 
