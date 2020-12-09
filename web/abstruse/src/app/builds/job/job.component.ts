@@ -80,15 +80,9 @@ export class JobComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (ev.data.startTime) {
-      this.job.startTime = ev.data.startTime;
-    }
-    if (ev.data.endTime) {
-      this.job.endTime = ev.data.endTime;
-    }
-    if (ev.data.status) {
-      this.job.status = ev.data.status;
-    }
+    this.job.startTime = ev.data.startTime ? new Date(ev.data.startTime) : null;
+    this.job.endTime = ev.data.endTime ? new Date(ev.data.endTime) : null;
+    this.job.status = ev.data.status;
   }
 
   private updateJobLogFromEvent(ev: SocketEvent): void {

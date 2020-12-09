@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"path"
 	"strings"
 
@@ -83,22 +84,33 @@ func PushImage(tag string) (io.ReadCloser, error) {
 }
 
 // PullImage pulls image from the registry.
-func PullImage(tag string) error {
+func PullImage(image string) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
-	if len(strings.Split(tag, ":")) == 1 {
-		tag = fmt.Sprintf("%s:latest", tag)
+	// if len(strings.Split(tag, ":")) == 1 {
+	// 	tag = fmt.Sprintf("%s:latest", tag)
+	// }
+
+	// tag = prependTag(tag)
+	// authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
+	// authJSON, _ := json.Marshal(authConfig)
+	// auth := base64.URLEncoding.EncodeToString(authJSON)
+
+	if !strings.Contains(image, "/") && !strings.HasPrefix(image, "docker.io") {
+		image = fmt.Sprintf("docker.io/library/%s", image)
+	} else if strings.Contains(image, "/") && !strings.HasPrefix(image, "docker.io") {
+		image = fmt.Sprintf("docker.io/%s", image)
 	}
 
-	tag = prependTag(tag)
-	authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
-	authJSON, _ := json.Marshal(authConfig)
-	auth := base64.URLEncoding.EncodeToString(authJSON)
+	out, err := cli.ImagePull(ctx, image, types.ImagePullOptions{})
+	defer out.Close()
+	if _, rerr := ioutil.ReadAll(out); rerr != nil {
+		return rerr
+	}
 
-	_, err = cli.ImagePull(ctx, tag, types.ImagePullOptions{RegistryAuth: auth})
 	return err
 }
 

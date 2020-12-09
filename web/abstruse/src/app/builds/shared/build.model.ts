@@ -130,7 +130,7 @@ export class Job {
       return { millis: 0, time: '00:00' };
     }
 
-    const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
+    const millis = Number(differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime));
     return { millis, time: format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss') };
   }
 }

@@ -194,6 +194,19 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 		}
 	}()
 
+	if err := docker.PullImage(image); err != nil {
+		logch <- []byte(err.Error())
+	}
+
+	ok := true
+	s.mu.Lock()
+	_, ok = s.jobs[job.Id]
+	s.mu.Unlock()
+
+	if !ok {
+		return nil
+	}
+
 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
 		return err
