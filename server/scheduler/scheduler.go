@@ -253,15 +253,10 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	job.Status = j.GetStatus()
-	job.Log = strings.Join(j.GetLog(), "")
 	job.EndTime = lib.TimeNow()
+	job.Log = strings.Join(j.GetLog(), "")
 	if err := s.saveJob(job); err != nil {
 		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
-		log := strings.Join(j.GetLog(), "")
-		job.Log = log[len(log)-65536:]
-		if err := s.saveJob(job); err != nil {
-			s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
-		}
 	}
 
 	s.mu.Lock()
