@@ -39,6 +39,7 @@ func New(
 	config *config.Config,
 	ws *ws.Server,
 	users core.UserStore,
+	teams core.TeamStore,
 	providers core.ProviderStore,
 	builds core.BuildStore,
 	jobs core.JobStore,
@@ -50,6 +51,7 @@ func New(
 		Config:    config,
 		WS:        ws,
 		Users:     users,
+		Teams:     teams,
 		Providers: providers,
 		Builds:    builds,
 		Jobs:      jobs,
@@ -64,6 +66,7 @@ type Router struct {
 	Config    *config.Config
 	WS        *ws.Server
 	Users     core.UserStore
+	Teams     core.TeamStore
 	Providers core.ProviderStore
 	Builds    core.BuildStore
 	Jobs      core.JobStore

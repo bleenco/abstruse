@@ -5,13 +5,14 @@ import "github.com/bleenco/abstruse/internal/auth"
 type (
 	// User represents user of the system.
 	User struct {
-		ID       uint   `gorm:"primary_key;auto_increment;not null" json:"id"`
-		Email    string `gorm:"not null;size:255;unique_index" json:"email"`
-		Password string `gorm:"not null;size:255;column:password" json:"-"`
-		Name     string `gorm:"not null;size:255" json:"name"`
-		Avatar   string `gorm:"not null;size:255;default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
-		Role     string `gorm:"not null;size:20;default:'user'" json:"role"`
-		Active   bool   `gorm:"not null;default:true" json:"active"`
+		ID       uint    `gorm:"primary_key;auto_increment;not null" json:"id"`
+		Email    string  `gorm:"not null;size:255;unique_index" json:"email"`
+		Password string  `gorm:"not null;size:255;column:password" json:"-"`
+		Name     string  `gorm:"not null;size:255" json:"name"`
+		Avatar   string  `gorm:"not null;size:255;default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
+		Role     string  `gorm:"not null;size:20;default:'user'" json:"role"`
+		Active   bool    `gorm:"not null;default:true" json:"active"`
+		Teams    []*Team `gorm:"many2many:team_users;" json:"users"`
 		Timestamp
 	}
 

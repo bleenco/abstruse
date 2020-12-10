@@ -53,6 +53,7 @@ func connect(cfg *config.DB, logger *zap.Logger) {
 		} else {
 			conn.AutoMigrate(
 				core.User{},
+				core.Team{},
 				core.Repository{},
 				core.Provider{},
 				core.Job{},
