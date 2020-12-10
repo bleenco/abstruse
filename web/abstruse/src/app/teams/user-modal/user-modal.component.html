@@ -23,6 +23,21 @@
       <label class="label">Name</label>
       <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name" autocomplete="off" />
     </div>
+    <div class="field">
+      <label class="label">Role</label>
+      <!-- <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name" autocomplete="off" /> -->
+      <app-selectbox [values]="roleList" placeholder="Role" formControlName="role"></app-selectbox>
+    </div>
+    <div class="field">
+      <label class="label">Password</label>
+      <input type="password" name="password" class="input" placeholder="New Password" formControlName="password"
+        autocomplete="new-password" />
+    </div>
+    <div class="field">
+      <label class="label">Repeat Password</label>
+      <input type="password" name="repeatPassword" class="input" placeholder="Repeat Password"
+        formControlName="repeatPassword" autocomplete="new-password" />
+    </div>
   </div>
   <div class="modal-footer space-between">
     <div class="align-center"></div>

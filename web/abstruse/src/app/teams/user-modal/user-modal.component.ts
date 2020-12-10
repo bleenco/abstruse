@@ -19,6 +19,11 @@ export class UserModalComponent implements OnInit {
   error: string | null = null;
   form!: FormGroup;
 
+  roleList = [
+    { value: 'admin', placeholder: 'Admin' },
+    { value: 'user', placeholder: 'User' }
+  ];
+
   files: UploadFile[] = [];
   uploadInput: EventEmitter<UploadInput> = new EventEmitter<UploadInput>();
   uploadOptions: UploaderOptions = {
@@ -74,14 +79,10 @@ export class UserModalComponent implements OnInit {
       email: [(this.user && this.user.email) || null, [Validators.required, Validators.email]],
       name: [(this.user && this.user.name) || null, [Validators.required]],
       role: [(this.user && this.user.role) || 'user', [Validators.required]],
-      password: [null, [Validators.required, Validators.minLength(8)]],
-      repeatPassword: [null, [Validators.required]]
+      password: [null, []],
+      repeatPassword: [null, []]
     });
 
-    this.form.controls.repeatPassword.setValidators([
-      Validators.required,
-      Validators.minLength(8),
-      equalValidator(this.form.controls.password)
-    ]);
+    this.form.controls.repeatPassword.setValidators([equalValidator(this.form.controls.password)]);
   }
 }
