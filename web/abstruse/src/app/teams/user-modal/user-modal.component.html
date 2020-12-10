@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>User</h1>
+    <h2 *ngIf="!user?.id">Create New User</h2>
+    <h2 *ngIf="user?.id">Edit User</h2>
+  </div>
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="saving">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="notification is-red" *ngIf="error">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ error }}</p>
+    </div>
+    <div class="field">
+      <label class="label">Email</label>
+      <input type="text" name="email" class="input" placeholder="Email (Username)" formControlName="email"
+        autocomplete="off" />
+    </div>
+    <div class="field">
+      <label class="label">Name</label>
+      <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name" autocomplete="off" />
+    </div>
+  </div>
+  <div class="modal-footer space-between">
+    <div class="align-center"></div>
+    <div class="align-center">
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
+      <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
+        <span *ngIf="!saving && !user?.id">Create</span>
+        <span *ngIf="saving && !user?.id">Creating...</span>
+        <span *ngIf="!saving && user?.id">Save</span>
+        <span *ngIf="saving && user?.id">Saving...</span>
+      </button>
+    </div>
+  </div>
+</form>

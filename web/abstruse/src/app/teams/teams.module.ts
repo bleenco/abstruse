@@ -8,10 +8,19 @@ import { TeamModalComponent } from './team-modal/team-modal.component';
 import { TeamComponent } from './team/team.component';
 import { UsersComponent } from './users/users.component';
 import { UserListItemComponent } from './user-list-item/user-list-item.component';
+import { UserModalComponent } from './user-modal/user-modal.component';
 
 @NgModule({
-  declarations: [TeamsComponent, TeamListItemComponent, TeamModalComponent, TeamComponent, UsersComponent, UserListItemComponent],
+  declarations: [
+    TeamsComponent,
+    TeamListItemComponent,
+    TeamModalComponent,
+    TeamComponent,
+    UsersComponent,
+    UserListItemComponent,
+    UserModalComponent
+  ],
   imports: [CommonModule, TeamsRoutingModule, SharedModule],
-  entryComponents: [TeamModalComponent]
+  entryComponents: [TeamModalComponent, UserModalComponent]
 })
 export class TeamsModule {}
