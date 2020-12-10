@@ -19,19 +19,19 @@ type userStore struct {
 
 func (s userStore) Find(id uint) (*core.User, error) {
 	var user core.User
-	err := s.db.Model(&user).Where("id = ?", id).First(&user).Error
+	err := s.db.Model(&user).Preload("Teams").Where("id = ?", id).First(&user).Error
 	return &user, err
 }
 
 func (s userStore) FindEmail(email string) (*core.User, error) {
 	var user core.User
-	err := s.db.Model(&user).Where("email = ?", email).First(&user).Error
+	err := s.db.Model(&user).Preload("Teams").Where("email = ?", email).First(&user).Error
 	return &user, err
 }
 
 func (s userStore) List() ([]*core.User, error) {
 	var users []*core.User
-	err := s.db.Model(users).Find(&users).Error
+	err := s.db.Model(users).Preload("Teams").Find(&users).Error
 	return users, err
 }
 

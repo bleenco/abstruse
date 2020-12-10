@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ProfileService } from '../shared/profile.service';
-import { Profile, User } from '../../users/shared/user.model';
+import { Profile, User } from '../../teams/shared/user.model';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../auth/shared/auth.service';

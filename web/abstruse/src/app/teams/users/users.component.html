@@ -1,17 +1,17 @@
 <header class="subheader">
   <nav class="subheader-links">
-    <a [routerLink]="['/teams']" routerLinkActive="is-active">Teams</a>
-    <a [routerLink]="['/teams/users']">Users</a>
+    <a [routerLink]="['/teams']">Teams</a>
+    <a [routerLink]="['/teams/users']" routerLinkActive="is-active">Users</a>
   </nav>
   <div class="container">
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Teams</h1>
-        <h2>Team Management</h2>
+        <h2>User Management</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button" (click)="openTeamModal()">
-          <span>Add New Team</span>
+        <button type="button" class="button">
+          <span>Add New User</span>
         </button>
       </div>
     </div>
@@ -20,28 +20,28 @@
 
 <div class="container">
   <div class="columns is-multiline">
-    <div class="column is-12" *ngIf="fetchingTeams">
+    <div class="column is-12" *ngIf="fetchingUsers">
       <app-loader></app-loader>
     </div>
-    <div class="column is-6 is-offset-3" *ngIf="!fetchingTeams && !teams?.length">
+    <div class="column is-6 is-offset-3" *ngIf="!fetchingUsers && !users?.length">
       <div class="notification">
         <i class="far fa-list-alt"></i>
-        <p>No teams found.</p>
+        <p>No users found.</p>
       </div>
     </div>
-    <div class="column is-12" *ngIf="!fetchingTeams && teams?.length">
+    <div class="column is-12" *ngIf="!fetchingUsers && users?.length">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-1"></div>
           <div class="column is-2"><span class="text ml10">Name</span></div>
           <div class="column is-4"><span class="text ml10">About</span></div>
-          <div class="column is-2"><span class="text ml10">Members</span></div>
-          <div class="column is-2"><span class="text ml10">Repositories</span></div>
+          <div class="column is-2"><span class="text ml10">Role</span></div>
+          <div class="column is-2"><span class="text justify-center">Teams</span></div>
           <div class="column is-1"><span class="text justify-center">Actions</span></div>
         </div>
       </div>
       <div class="list-items">
-        <app-team-list-item *ngFor="let team of teams; let i = index;" [team]="team"></app-team-list-item>
+        <app-user-list-item *ngFor="let user of users; let i = index;" [user]="user"></app-user-list-item>
       </div>
     </div>
   </div>

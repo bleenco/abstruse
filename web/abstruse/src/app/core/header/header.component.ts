@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, ElementRef } from '@angular/core';
 import { AuthService } from '../../auth/shared/auth.service';
-import { User, generateUser } from '../../users/shared/user.model';
+import { User, generateUser } from '../../teams/shared/user.model';
 import { Router, NavigationStart } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter } from 'rxjs/operators';

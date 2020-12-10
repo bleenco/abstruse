@@ -1,4 +1,4 @@
-import { User } from '../../users/shared/user.model';
+import { User } from '../../teams/shared/user.model';
 import { randomHash } from '../../shared';
 import { formatDistanceToNow } from 'date-fns';
 

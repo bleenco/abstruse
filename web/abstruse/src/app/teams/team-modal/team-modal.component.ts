@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize } from 'rxjs/operators';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
-import { Team } from '../shared/team.model';
+import { Team } from '../shared/user.model';
 import { TeamsService } from '../shared/teams.service';
 
 @UntilDestroy()

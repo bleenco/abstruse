@@ -1,0 +1,65 @@
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/teams']" routerLinkActive="is-active">Teams</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Teams</h1>
+        <h2 class="is-link" [routerLink]="['/teams']">Team Management</h2>
+        <h2>{{ team?.name }}</h2>
+      </div>
+      <div class="subheader-right">
+        <button type="button" class="button is-red">
+          <span>Delete Team</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="fetchingTeam">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-12">
+      <h4>Members</h4>
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-4"><span class="text">Name</span></div>
+          <div class="column is-4"><span class="text ml10">Email</span></div>
+          <div class="column is-2"><span class="text ml10">Role</span></div>
+          <div class="column is-2"><span class="text justify-center">Actions</span></div>
+        </div>
+      </div>
+      <div class="list-items has-border">
+        <div class="list-item-condensed is-slim" *ngFor="let u of team?.users">
+          <div class="columns">
+            <div class="column is-4 data-column">
+              <div class="info-text has-text-left align-center">
+                <img [src]="u?.avatar" class="committer-avatar" />
+                <span class="data-text">{{ u?.name }}</span>
+              </div>
+            </div>
+            <div class="column is-4 data-column">
+              <div class="info-text has-text-left align-center">
+                <span class="data-text">{{ u?.email }}</span>
+              </div>
+            </div>
+            <div class="column is-2 data-column">
+              <div class="info-text has-text-left align-center">
+                <span class="data-text">{{ u?.role }}</span>
+              </div>
+            </div>
+            <div class="column is-2 data-column justify-center">
+              <button type="button" class="button is-small is-red">
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
