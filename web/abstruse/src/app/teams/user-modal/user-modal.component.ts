@@ -79,6 +79,7 @@ export class UserModalComponent implements OnInit {
       email: [(this.user && this.user.email) || null, [Validators.required, Validators.email]],
       name: [(this.user && this.user.name) || null, [Validators.required]],
       role: [(this.user && this.user.role) || 'user', [Validators.required]],
+      avatar: [(this.user && this.user.avatar) || null, [Validators.required]],
       password: [null, []],
       repeatPassword: [null, []]
     });

@@ -15,6 +15,17 @@
       <p>Error: {{ error }}</p>
     </div>
     <div class="field">
+      <app-avatar-picker formControlName="avatar"></app-avatar-picker>
+      <div class="justify-center mt10">
+        <label class="button is-small" [class.events-none]="uploadingAvatar">
+          <span *ngIf="!uploadingAvatar">Upload Avatar</span>
+          <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
+          <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
+            [uploadInput]="uploadInput" />
+        </label>
+      </div>
+    </div>
+    <div class="field">
       <label class="label">Email</label>
       <input type="text" name="email" class="input" placeholder="Email (Username)" formControlName="email"
         autocomplete="off" />
@@ -25,7 +36,6 @@
     </div>
     <div class="field">
       <label class="label">Role</label>
-      <!-- <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name" autocomplete="off" /> -->
       <app-selectbox [values]="roleList" placeholder="Role" formControlName="role"></app-selectbox>
     </div>
     <div class="field">
