@@ -158,6 +158,7 @@ func (r Router) teamsRouter() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/", team.HandleList(r.Teams))
+	router.Post("/", team.HandleCreate(r.Teams))
 
 	return router
 }
