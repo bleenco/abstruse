@@ -1,0 +1,18 @@
+@import 'variables'
+@import 'colours'
+
+.colors-container
+  display: block
+
+  .color-item
+    display: block
+    float: left
+    border-radius: $border-radius
+    width: 20px
+    height: 20px
+    border: 2px solid transparent
+    margin: 0 2px 2px 0
+    cursor: pointer
+
+    &.is-active
+      border-color: $border-dark

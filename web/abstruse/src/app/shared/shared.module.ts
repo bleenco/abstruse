@@ -22,6 +22,7 @@ import { StopPropagationDirective } from './directives/stop-propagation.directiv
 import { TerminalComponent } from './components/terminal/terminal.component';
 
 import { monacoEditorOptions, customTheme } from './models/monaco.model';
+import { ColorPickerComponent } from './widgets/color-picker/color-picker.component';
 
 const monacoConfig: NgxMonacoEditorConfig = {
   defaultOptions: monacoEditorOptions,
@@ -51,7 +52,8 @@ const monacoConfig: NgxMonacoEditorConfig = {
     AvatarPickerComponent,
     ToggleComponent,
     StopPropagationDirective,
-    TerminalComponent
+    TerminalComponent,
+    ColorPickerComponent
   ],
   exports: [
     CommonModule,
@@ -69,7 +71,8 @@ const monacoConfig: NgxMonacoEditorConfig = {
     AvatarPickerComponent,
     ToggleComponent,
     StopPropagationDirective,
-    TerminalComponent
+    TerminalComponent,
+    ColorPickerComponent
   ]
 })
 export class SharedModule {
