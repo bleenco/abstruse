@@ -9,7 +9,7 @@
         <h2>Team Management</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button">
+        <button type="button" class="button" (click)="openTeamModal()">
           <span>Add New Team</span>
         </button>
       </div>
@@ -19,48 +19,28 @@
 
 <div class="container">
   <div class="columns is-multiline">
-    <div class="column is-12">
-      <div class="list-items">
-        <div class="list-item">
-          <div class="columns">
-            <div class="column is-1">
-              <div class="list-item-content">
-                <span class="placeholder is-green">AB</span>
-              </div>
-            </div>
-            <div class="column is-3">
-              <div class="list-item-content">
-                <span class="label">Name</span>
-                <span class="text">Abstruse CI Team</span>
-              </div>
-            </div>
-            <div class="column is-3">
-              <div class="list-item-content">
-                <span class="label">Description</span>
-                <span class="text">Small team but efficient.</span>
-              </div>
-            </div>
-            <div class="column is-4">
-              <div class="list-item-content">
-                <div class="members-container">
-                  <img src="/assets/images/avatars/avatar_8.svg" class="member-avatar" />
-                  <img src="/assets/images/avatars/avatar_2.svg" class="member-avatar" />
-                  <img src="/assets/images/avatars/avatar_1.svg" class="member-avatar" />
-                  <img src="/assets/images/avatars/avatar_11.svg" class="member-avatar" />
-                  <img src="/assets/images/avatars/avatar_15.svg" class="member-avatar" />
-                  <span class="plus-more">+ 21</span>
-                </div>
-              </div>
-            </div>
-            <div class="column is-1">
-              <div class="list-item-content">
-                <button type="button" class="button">
-                  <span>Edit</span>
-                </button>
-              </div>
-            </div>
-          </div>
+    <div class="column is-12" *ngIf="fetchingTeams">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-6 is-offset-3" *ngIf="!fetchingTeams && !teams?.length">
+      <div class="notification">
+        <i class="far fa-list-alt"></i>
+        <p>No teams found.</p>
+      </div>
+    </div>
+    <div class="column is-12" *ngIf="!fetchingTeams && teams?.length">
+      <div class="list-heading">
+        <div class="columns">
+          <div class="column is-1"></div>
+          <div class="column is-2"><span class="text ml10">Name</span></div>
+          <div class="column is-4"><span class="text ml10">About</span></div>
+          <div class="column is-2"><span class="text ml10">Members</span></div>
+          <div class="column is-2"><span class="text ml10">Repositories</span></div>
+          <div class="column is-1"><span class="text justify-center">Actions</span></div>
         </div>
+      </div>
+      <div class="list-items">
+        <app-team-list-item *ngFor="let team of teams; let i = index;" [team]="team"></app-team-list-item>
       </div>
     </div>
   </div>

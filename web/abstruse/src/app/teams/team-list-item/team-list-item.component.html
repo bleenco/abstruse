@@ -1,0 +1,34 @@
+<div class="list-item-condensed is-slim">
+  <div class="columns">
+    <div class="column is-1 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text is-placeholder" [style.background]="team?.color">{{ team?.placeholder }}</span>
+      </div>
+    </div>
+    <div class="column is-2 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text">{{ team?.name }}</span>
+      </div>
+    </div>
+    <div class="column is-4 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text">{{ team?.about }}</span>
+      </div>
+    </div>
+    <div class="column is-2 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text">{{ team?.membersCount }}</span>
+      </div>
+    </div>
+    <div class="column is-2 data-column">
+      <div class="info-text has-text-left align-center">
+        <span class="data-text">12 repositories</span>
+      </div>
+    </div>
+    <div class="column is-1 data-column justify-center">
+      <button type="button" class="button">
+        <span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
