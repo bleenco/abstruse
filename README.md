@@ -4,7 +4,9 @@
 
 # Abstruse CI
 
-[![Slack](https://img.shields.io/badge/slack-abstruse-black.svg?logo=slack)](https://join.slack.com/t/abstruse/shared_invite/enQtNDI0MzUxMTQ1OTExLTMyNGRiYjllMTQ4NjkzZDkwNDM4NGIwMGM2YjA5NjFmNzI3MzdkMWExYWRlNWQ1N2NjNzI4NDlhOTFmNGM5ZTM)
+<a href="https://discord.gg/dfDXn8dPEA">
+  <img src="https://img.shields.io/discord/786173138181685248.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8" alt="Discord conversation" />
+</a>
 
 **Abstruse CI** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
 
