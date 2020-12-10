@@ -27,5 +27,11 @@ type (
 
 		// Delete deletes a team from the datastore.
 		Delete(*Team) error
+
+		// AddUsers appends users to team.
+		AddUsers(uint, []*User) error
+
+		// DeleteUsers removes users from team.
+		DeleteUsers(uint, []*User) error
 	}
 )

@@ -35,7 +35,7 @@ func HandleUser(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
-		user := core.User{
+		user := &core.User{
 			Email:    f.Email,
 			Name:     f.Name,
 			Avatar:   f.Avatar,

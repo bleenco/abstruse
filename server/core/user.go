@@ -12,32 +12,32 @@ type (
 		Avatar   string  `gorm:"not null;size:255;default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
 		Role     string  `gorm:"not null;size:20;default:'user'" json:"role"`
 		Active   bool    `gorm:"not null;default:true" json:"active"`
-		Teams    []*Team `gorm:"many2many:team_users;" json:"users"`
+		Teams    []*Team `gorm:"many2many:team_users;" json:"teams"`
 		Timestamp
 	}
 
 	// UserStore defines operations for working with users.
 	UserStore interface {
 		// Find returns a user from the datastore.
-		Find(uint) (User, error)
+		Find(uint) (*User, error)
 
 		// FindEmail returns a user from the datastore by email.
-		FindEmail(string) (User, error)
+		FindEmail(string) (*User, error)
 
 		// List returns a list of users from datastore.
-		List() ([]User, error)
+		List() ([]*User, error)
 
 		// Create persists a new user to the datastore.
-		Create(User) error
+		Create(*User) error
 
 		// Update persists updated user to the datastore.
-		Update(User) error
+		Update(*User) error
 
 		// UpdatePassword persists new user password to the datastore.
 		UpdatePassword(uint, string, string) error
 
 		// Delete deletes a user from the datastore.
-		Delete(User) error
+		Delete(*User) error
 
 		// Login checks user credentials and returns true if valid.
 		Login(string, string) bool

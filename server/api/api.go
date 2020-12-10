@@ -12,6 +12,7 @@ import (
 	"github.com/bleenco/abstruse/server/api/repo"
 	"github.com/bleenco/abstruse/server/api/setup"
 	"github.com/bleenco/abstruse/server/api/system"
+	"github.com/bleenco/abstruse/server/api/team"
 	"github.com/bleenco/abstruse/server/api/user"
 	"github.com/bleenco/abstruse/server/api/webhook"
 	"github.com/bleenco/abstruse/server/api/worker"
@@ -107,6 +108,7 @@ func (r Router) apiRouter() *chi.Mux {
 	router.Mount("/auth", r.authRouter())
 
 	router.Mount("/workers", r.workersRouter())
+	router.Mount("/teams", r.teamsRouter())
 
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.Authenticator)
@@ -148,6 +150,14 @@ func (r Router) usersRouter() *chi.Mux {
 	router.Put("/profile", user.HandleUpdate(r.Users))
 	router.Put("/password", user.HandlePassword(r.Users))
 	router.Post("/avatar", user.HandleAvatar(r.Config.HTTP.UploadDir))
+
+	return router
+}
+
+func (r Router) teamsRouter() *chi.Mux {
+	router := chi.NewRouter()
+
+	router.Get("/", team.HandleList(r.Teams))
 
 	return router
 }

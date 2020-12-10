@@ -35,7 +35,7 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
-		user := core.User{
+		user := &core.User{
 			ID:     claims.ID,
 			Email:  f.Email,
 			Name:   f.Name,

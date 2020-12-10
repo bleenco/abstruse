@@ -17,36 +17,36 @@ type userStore struct {
 	db *gorm.DB
 }
 
-func (s userStore) Find(id uint) (core.User, error) {
+func (s userStore) Find(id uint) (*core.User, error) {
 	var user core.User
 	err := s.db.Model(&user).Where("id = ?", id).First(&user).Error
-	return user, err
+	return &user, err
 }
 
-func (s userStore) FindEmail(email string) (core.User, error) {
+func (s userStore) FindEmail(email string) (*core.User, error) {
 	var user core.User
 	err := s.db.Model(&user).Where("email = ?", email).First(&user).Error
-	return user, err
+	return &user, err
 }
 
-func (s userStore) List() ([]core.User, error) {
-	var users []core.User
-	err := s.db.Find(&users).Error
+func (s userStore) List() ([]*core.User, error) {
+	var users []*core.User
+	err := s.db.Model(users).Find(&users).Error
 	return users, err
 }
 
-func (s userStore) Create(user core.User) error {
+func (s userStore) Create(user *core.User) error {
 	hash, err := auth.HashPassword(auth.Password{Password: user.Password})
 	if err != nil {
 		return err
 	}
 	user.Password = hash
 
-	return s.db.Create(&user).Error
+	return s.db.Create(user).Error
 }
 
-func (s userStore) Update(user core.User) error {
-	return s.db.Model(&user).Updates(&user).Error
+func (s userStore) Update(user *core.User) error {
+	return s.db.Model(user).Updates(&user).Error
 }
 
 func (s userStore) UpdatePassword(id uint, curr, password string) error {
@@ -68,7 +68,7 @@ func (s userStore) UpdatePassword(id uint, curr, password string) error {
 	return s.Update(user)
 }
 
-func (s userStore) Delete(user core.User) error {
+func (s userStore) Delete(user *core.User) error {
 	return s.db.Delete(&user).Error
 }
 
