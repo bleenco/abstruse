@@ -53,3 +53,11 @@ func (s teamStore) DeleteUsers(id uint, users []*core.User) error {
 	}
 	return s.db.Model(&team).Association("Users").Delete(users).Error
 }
+
+func (s teamStore) UpdateUsers(id uint, users []*core.User) error {
+	team, err := s.Find(id)
+	if err != nil {
+		return err
+	}
+	return s.db.Model(&team).Association("Users").Clear().Append(users).Error
+}

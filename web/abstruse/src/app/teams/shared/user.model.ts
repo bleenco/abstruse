@@ -38,24 +38,18 @@ export const generateUser = (data: any): User => {
 
 export class Team {
   constructor(
-    public id: number,
-    public name: string,
-    public about: string,
-    public color: string,
-    public users: User[]
+    public id?: number,
+    public name?: string,
+    public about?: string,
+    public color?: string,
+    public users?: User[]
   ) {}
 
-  get placeholder(): string {
-    const splitted = this.name.split('');
-    const len = splitted.length;
-    if (len === 1) {
-      return this.name.substring(0, 2).toUpperCase();
-    } else {
-      return `${splitted[0].substring(0, 1)}${splitted[1].substring(0, 1)}`.toUpperCase();
-    }
-  }
-
   get membersCount(): string {
+    if (!this.users || !this.users.length) {
+      return '0 Members';
+    }
+
     if (this.users.length === 1) {
       return '1 Member';
     } else {

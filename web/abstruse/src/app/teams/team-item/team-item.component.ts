@@ -18,7 +18,7 @@ export class TeamItemComponent implements OnInit {
   ngOnInit(): void {}
 
   openTeamModal(): void {
-    const modalRef = this.modal.open(TeamModalComponent, { size: 'small' });
+    const modalRef = this.modal.open(TeamModalComponent, { size: 'medium' });
     modalRef.componentInstance.team = { ...this.team };
     modalRef.result.then(
       ok => {

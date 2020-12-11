@@ -33,5 +33,8 @@ type (
 
 		// DeleteUsers removes users from team.
 		DeleteUsers(uint, []*User) error
+
+		// UpdateUsers updates users for team.
+		UpdateUsers(uint, []*User) error
 	}
 )

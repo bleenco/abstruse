@@ -8,8 +8,13 @@
     <i class="fas fa-times"></i>
   </span>
 </div>
+<div class="tabs is-centered">
+  <span class="tab" [class.is-active]="tab === 'general'" (click)="tab = 'general'">General</span>
+  <span class="tab" [class.is-active]="tab === 'members'" (click)="tab = 'members'">Members</span>
+  <span class="tab" [class.is-active]="tab === 'access'" (click)="tab = 'access'">Manage Access</span>
+</div>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  <div class="modal-body">
+  <div class="modal-body" *ngIf="tab === 'general'">
     <div class="notification is-red" *ngIf="error">
       <i class="far fa-comment"></i>
       <p>Error: {{ error }}</p>
@@ -25,6 +30,74 @@
     <div class="field">
       <label class="label">Color</label>
       <app-color-picker name="color" formControlName="color"></app-color-picker>
+    </div>
+  </div>
+  <div class="modal-body" *ngIf="tab === 'members'">
+    <div class="notification is-red" *ngIf="error">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ error }}</p>
+    </div>
+    <div class="members-add-container mb10" *ngIf="!fetchingUsers">
+      <div class="members-list">
+        <article class="member-item is-small" *ngFor="let u of displayedUsers">
+          <div class="columns is-marginless is-paddingless">
+            <div class="column is-1">
+              <img [src]="u.avatar" class="avatar-img" />
+            </div>
+            <div class="column is-3">
+              <span>{{ u.name }}</span>
+            </div>
+            <div class="column is-4">
+              <span>{{ u.email }}</span>
+            </div>
+            <div class="column is-2">
+              <span>{{ u.role }}</span>
+            </div>
+            <div class="column is-2 justify-end">
+              <button type="button" class="button is-green is-small" (click)="addUser(u.id)">
+                <span>Add</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="h250" *ngIf="!team?.users?.length">
+      <div class="notification">
+        <i class="fas fa-users"></i>
+        <p>This team has no members, add some above.</p>
+      </div>
+    </div>
+    <div class="members-container" *ngIf="team?.users?.length">
+      <div class="members-list">
+        <article class="member-item" *ngFor="let u of team?.users; let i = index;">
+          <div class="columns is-marginless">
+            <div class="column is-1">
+              <img [src]="u.avatar" class="avatar-img" />
+            </div>
+            <div class="column is-3">
+              <span>{{ u.name }}</span>
+            </div>
+            <div class="column is-4">
+              <span>{{ u.email }}</span>
+            </div>
+            <div class="column is-2">
+              <span>{{ u.role }}</span>
+            </div>
+            <div class="column is-2 justify-end">
+              <button type="button" class="button is-red is-small" (click)="removeUser(u.id)">
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+  <div class="modal-body" *ngIf="tab === 'access'">
+    <div class="notification is-red" *ngIf="error">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ error }}</p>
     </div>
   </div>
   <div class="modal-footer space-between">

@@ -46,7 +46,7 @@ export class TeamsListComponent implements OnInit, AfterViewInit {
   }
 
   openTeamModal(): void {
-    const modalRef = this.modal.open(TeamModalComponent, { size: 'small' });
+    const modalRef = this.modal.open(TeamModalComponent, { size: 'medium' });
     modalRef.result.then(
       ok => {
         if (ok) {

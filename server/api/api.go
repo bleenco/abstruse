@@ -161,8 +161,8 @@ func (r Router) teamsRouter() *chi.Mux {
 
 	router.Get("/", team.HandleList(r.Teams))
 	router.Get("/{id}", team.HandleFind(r.Teams))
-	router.Post("/", team.HandleCreate(r.Teams))
-	router.Put("/", team.HandleUpdate(r.Teams))
+	router.Post("/", team.HandleCreate(r.Teams, r.Users))
+	router.Put("/", team.HandleUpdate(r.Teams, r.Users))
 
 	return router
 }

@@ -3,8 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize } from 'rxjs/operators';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
-import { Team } from '../shared/user.model';
+import { Team, User } from '../shared/user.model';
 import { TeamsService } from '../shared/teams.service';
+import { UsersService } from '../shared/users.service';
 
 @UntilDestroy()
 @Component({
@@ -17,11 +18,27 @@ export class TeamModalComponent implements OnInit {
   saving = false;
   error: string | null = null;
   form!: FormGroup;
+  tab: 'general' | 'members' | 'access' = 'general';
+  users: User[] = [];
+  fetchingUsers = false;
+  fetchingUsersError: string | null = null;
 
-  constructor(private fb: FormBuilder, private teamsService: TeamsService, public activeModal: ActiveModal) {}
+  get displayedUsers(): User[] {
+    return this.users && this.team && this.team.users
+      ? this.users.filter(u => !this.team.users || !this.team.users.find(j => j.id === u.id))
+      : this.users;
+  }
+
+  constructor(
+    private fb: FormBuilder,
+    private teamsService: TeamsService,
+    private usersService: UsersService,
+    public activeModal: ActiveModal
+  ) {}
 
   ngOnInit(): void {
     this.createForm();
+    this.listUsers();
   }
 
   onSubmit(): void {
@@ -34,7 +51,8 @@ export class TeamModalComponent implements OnInit {
     let data: any = {
       name: this.form.controls.name.value,
       about: this.form.controls.about.value,
-      color: this.form.controls.color.value
+      color: this.form.controls.color.value,
+      members: this.team && this.team.users && this.team.users.length ? this.team.users.map(u => u.id) : []
     };
     if (this.team && this.team.id) {
       data = { ...data, ...{ id: this.team.id } };
@@ -71,6 +89,45 @@ export class TeamModalComponent implements OnInit {
           }
         );
     }
+  }
+
+  listUsers(): void {
+    this.fetchingUsers = true;
+    this.usersService
+      .list()
+      .pipe(
+        finalize(() => (this.fetchingUsers = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => {
+          this.users = resp;
+        },
+        err => {
+          this.fetchingUsersError = err.message;
+        }
+      );
+  }
+
+  addUser(id: number): void {
+    const user = this.users.find(u => u.id === id);
+    if (!user) {
+      return;
+    }
+    if (!this.team) {
+      this.team = new Team();
+    }
+    if (!this.team || !this.team.users) {
+      this.team.users = [];
+    }
+    this.team.users.push(user);
+  }
+
+  removeUser(id: number): void {
+    if (!this.team || !this.team.users) {
+      return;
+    }
+    this.team.users = this.team.users.filter(u => u.id !== id);
   }
 
   private createForm(): void {

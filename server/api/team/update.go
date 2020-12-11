@@ -11,12 +11,13 @@ import (
 
 // HandleUpdate returns an http.HandlerFunc that writes JSON encoded
 // result about updating team to the http response body.
-func HandleUpdate(teams core.TeamStore) http.HandlerFunc {
+func HandleUpdate(teams core.TeamStore, users core.UserStore) http.HandlerFunc {
 	type form struct {
-		ID    uint   `json:"id" valid:"required"`
-		Name  string `json:"name" valid:"required"`
-		About string `json:"about" valid:"required"`
-		Color string `json:"color" valid:"required"`
+		ID      uint   `json:"id" valid:"required"`
+		Name    string `json:"name" valid:"required"`
+		About   string `json:"about" valid:"required"`
+		Color   string `json:"color" valid:"required"`
+		Members []uint `json:"members"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -44,6 +45,18 @@ func HandleUpdate(teams core.TeamStore) http.HandlerFunc {
 		team.Color = f.Color
 
 		if err := teams.Update(team); err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
+
+		var members []*core.User
+		for _, id := range f.Members {
+			if user, err := users.Find(id); err == nil {
+				members = append(members, user)
+			}
+		}
+
+		if err := teams.UpdateUsers(team.ID, members); err != nil {
 			render.InternalServerError(w, err.Error())
 			return
 		}

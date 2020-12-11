@@ -1,0 +1,43 @@
+@import 'variables'
+@import 'colours'
+@import 'mixins'
+
+$member-item-height-small: 40px
+
+.h250
+  height: 250px
+
+.members-list
+  height: 250px
+  overflow-y: scroll
+  border: 1px solid $border-default
+
+  .member-item
+    padding: 10px
+    border-bottom: 1px solid $border-default
+
+    &.is-small
+      height: $member-item-height-small
+      padding: 0 0 0 5px
+
+      .columns
+        height: $member-item-height-small
+
+        .column
+          height: $member-item-height-small
+
+          .avatar-img
+            width: 20px
+            height: 20px
+
+    .columns
+
+      .column
+        display: flex
+        align-items: center
+
+        .avatar-img
+          display: block
+          width: 30px
+          heght: 30px
+          border-radius: 50%
