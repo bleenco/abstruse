@@ -19,6 +19,7 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 		Password string `json:"password"`
 		Name     string `json:"name" valid:"stringlength(3|50),required"`
 		Avatar   string `json:"avatar" valid:"stringlength(5|255),required"`
+		Role     string `json:"role" valid:"required"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +48,7 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 		user.Email = f.Email
 		user.Name = f.Name
 		user.Avatar = f.Avatar
+		user.Role = f.Role
 
 		if f.Password != "" {
 			hash, err := auth.HashPassword(auth.Password{Password: f.Password})

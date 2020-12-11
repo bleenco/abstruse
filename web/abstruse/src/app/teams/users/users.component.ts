@@ -24,7 +24,7 @@ export class UsersComponent implements OnInit {
   }
 
   openUserModal(): void {
-    const modalRef = this.modal.open(UserModalComponent, { size: 'small' });
+    const modalRef = this.modal.open(UserModalComponent, { size: 'medium' });
     modalRef.result.then(
       ok => {
         if (ok) {
@@ -33,6 +33,10 @@ export class UsersComponent implements OnInit {
       },
       () => {}
     );
+  }
+
+  onUserUpdated(): void {
+    this.list();
   }
 
   list(): void {

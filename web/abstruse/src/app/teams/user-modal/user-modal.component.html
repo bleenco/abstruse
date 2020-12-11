@@ -14,39 +14,46 @@
       <i class="far fa-comment"></i>
       <p>Error: {{ error }}</p>
     </div>
-    <div class="field">
-      <app-avatar-picker formControlName="avatar"></app-avatar-picker>
-      <div class="justify-center mt10">
-        <label class="button is-small" [class.events-none]="uploadingAvatar">
-          <span *ngIf="!uploadingAvatar">Upload Avatar</span>
-          <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
-          <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
-            [uploadInput]="uploadInput" />
-        </label>
+    <div class="columns">
+      <div class="column is-4">
+        <div class="field">
+          <app-avatar-picker formControlName="avatar"></app-avatar-picker>
+          <div class="justify-center mt10">
+            <label class="button is-small" [class.events-none]="uploadingAvatar">
+              <span *ngIf="!uploadingAvatar">Upload Avatar</span>
+              <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
+              <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
+                [uploadInput]="uploadInput" />
+            </label>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label class="label">Email</label>
-      <input type="text" name="email" class="input" placeholder="Email (Username)" formControlName="email"
-        autocomplete="off" />
-    </div>
-    <div class="field">
-      <label class="label">Name</label>
-      <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name" autocomplete="off" />
-    </div>
-    <div class="field">
-      <label class="label">Role</label>
-      <app-selectbox [values]="roleList" placeholder="Role" formControlName="role"></app-selectbox>
-    </div>
-    <div class="field">
-      <label class="label">Password</label>
-      <input type="password" name="password" class="input" placeholder="New Password" formControlName="password"
-        autocomplete="new-password" />
-    </div>
-    <div class="field">
-      <label class="label">Repeat Password</label>
-      <input type="password" name="repeatPassword" class="input" placeholder="Repeat Password"
-        formControlName="repeatPassword" autocomplete="new-password" />
+      <div class="column is-8">
+        <div class="field">
+          <label class="label">Email</label>
+          <input type="text" name="email" class="input" placeholder="Email (Username)" formControlName="email"
+            autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="label">Name</label>
+          <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name"
+            autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="label">Role</label>
+          <app-selectbox [values]="roleList" placeholder="Role" formControlName="role"></app-selectbox>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <input type="password" name="password" class="input" placeholder="New Password" formControlName="password"
+            autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label class="label">Repeat Password</label>
+          <input type="password" name="repeatPassword" class="input" placeholder="Repeat Password"
+            formControlName="repeatPassword" autocomplete="new-password" />
+        </div>
+      </div>
     </div>
   </div>
   <div class="modal-footer space-between">

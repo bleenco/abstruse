@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { User } from '../shared/user.model';
 import { UserModalComponent } from '../user-modal/user-modal.component';
@@ -10,18 +10,19 @@ import { UserModalComponent } from '../user-modal/user-modal.component';
 })
 export class UserListItemComponent implements OnInit {
   @Input() user!: User;
+  @Output() updated = new EventEmitter<void>();
 
   constructor(public modal: ModalService) {}
 
   ngOnInit(): void {}
 
   openUserModal(): void {
-    const modalRef = this.modal.open(UserModalComponent, { size: 'small' });
+    const modalRef = this.modal.open(UserModalComponent, { size: 'medium' });
     modalRef.componentInstance.user = this.user;
     modalRef.result.then(
       ok => {
         if (ok) {
-          console.log('ok');
+          this.updated.next();
         }
       },
       () => {}

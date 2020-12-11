@@ -13,4 +13,12 @@ export class UsersService {
   list(): Observable<User[]> {
     return this.http.get('/users').pipe(map((resp: any) => (resp && resp.length ? resp.map(generateUser) : [])));
   }
+
+  create(data: any): Observable<User> {
+    return this.http.post<User>('/users', data);
+  }
+
+  update(data: any): Observable<User> {
+    return this.http.put<User>('/users', data);
+  }
 }

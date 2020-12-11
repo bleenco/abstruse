@@ -14,13 +14,20 @@
       </div>
     </div>
     <div class="column is-2 data-column">
-      <div class="info-text has-text-left align-center">
-        <span class="data-text">{{ user?.role }}</span>
+      <div class="info-text justify-center align-center">
+        <div class="tag is-green is-small">
+          <i class="fas fa-user-tie" *ngIf="user?.role === 'admin'"></i>
+          <i class="fas fa-user" *ngIf="user?.role === 'user'"></i>
+          <span>{{ user?.role }}</span>
+        </div>
       </div>
     </div>
     <div class="column is-2 data-column">
       <div class="info-text has-text-left align-center justify-center">
-        <span class="data-text">{{ user?.teamsCount }}</span>
+        <div class="tag is-yellow is-small">
+          <i class="fas fa-users"></i>
+          <span>{{ user?.teamsCount }}</span>
+        </div>
       </div>
     </div>
     <div class="column is-1 data-column justify-center">

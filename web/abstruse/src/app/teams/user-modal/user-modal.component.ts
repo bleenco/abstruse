@@ -7,7 +7,10 @@ import { UsersService } from '../shared/users.service';
 import { environment } from 'src/environments/environment';
 import { AuthService } from 'src/app/auth/shared/auth.service';
 import { equalValidator } from 'src/app/shared';
+import { finalize } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-user-modal',
   templateUrl: './user-modal.component.html',
@@ -45,7 +48,56 @@ export class UserModalComponent implements OnInit {
     this.createForm();
   }
 
-  onSubmit(): void {}
+  onSubmit(): void {
+    if (!this.form.valid) {
+      return;
+    }
+
+    this.error = null;
+    this.saving = true;
+    let data: any = {
+      name: this.form.controls.name.value,
+      email: this.form.controls.email.value,
+      password: this.form.controls.password.value,
+      avatar: this.form.controls.avatar.value,
+      role: this.form.controls.role.value
+    };
+    if (this.user && this.user.id) {
+      data = { ...data, ...{ id: this.user.id } };
+    }
+
+    if (data.id) {
+      this.usersService
+        .update(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.error = err.message;
+          }
+        );
+    } else {
+      this.usersService
+        .create(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.error = err.message;
+          }
+        );
+    }
+  }
 
   onUploadOutput(output: UploadOutput): void {
     if (output.type === 'allAddedToQueue') {
@@ -79,7 +131,7 @@ export class UserModalComponent implements OnInit {
       email: [(this.user && this.user.email) || null, [Validators.required, Validators.email]],
       name: [(this.user && this.user.name) || null, [Validators.required]],
       role: [(this.user && this.user.role) || 'user', [Validators.required]],
-      avatar: [(this.user && this.user.avatar) || null, [Validators.required]],
+      avatar: [(this.user && this.user.avatar) || '/assets/images/avatars/avatar_7.svg', [Validators.required]],
       password: [null, []],
       repeatPassword: [null, []]
     });
