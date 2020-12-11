@@ -1,7 +1,8 @@
 <div class="modal-header">
   <div class="header-title">
     <h1>Team</h1>
-    <h2>Create New Team</h2>
+    <h2 *ngIf="!team?.id">Create New Team</h2>
+    <h2 *ngIf="team?.id">Edit Team</h2>
   </div>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="saving">
     <i class="fas fa-times"></i>
@@ -23,7 +24,6 @@
     </div>
     <div class="field">
       <label class="label">Color</label>
-      <!-- <input type="text" name="color" class="input" placeholder="Color" formControlName="color" /> -->
       <app-color-picker name="color" formControlName="color"></app-color-picker>
     </div>
   </div>
@@ -32,8 +32,10 @@
     <div class="align-center">
       <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
       <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
-        <span *ngIf="!saving">Create</span>
-        <span *ngIf="saving">Creating...</span>
+        <span *ngIf="!saving && !team?.id">Create</span>
+        <span *ngIf="saving && !team?.id">Creating...</span>
+        <span *ngIf="!saving && team?.id">Save</span>
+        <span *ngIf="saving && team?.id">Saving...</span>
       </button>
     </div>
   </div>

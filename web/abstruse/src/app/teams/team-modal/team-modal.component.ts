@@ -31,33 +31,54 @@ export class TeamModalComponent implements OnInit {
 
     this.error = null;
     this.saving = true;
-    const data = {
+    let data: any = {
       name: this.form.controls.name.value,
       about: this.form.controls.about.value,
       color: this.form.controls.color.value
     };
+    if (this.team && this.team.id) {
+      data = { ...data, ...{ id: this.team.id } };
+    }
 
-    this.teamsService
-      .create(data)
-      .pipe(
-        finalize(() => (this.saving = false)),
-        untilDestroyed(this)
-      )
-      .subscribe(
-        () => {
-          this.activeModal.close(true);
-        },
-        err => {
-          this.error = err.message;
-        }
-      );
+    if (data.id) {
+      this.teamsService
+        .update(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.error = err.message;
+          }
+        );
+    } else {
+      this.teamsService
+        .create(data)
+        .pipe(
+          finalize(() => (this.saving = false)),
+          untilDestroyed(this)
+        )
+        .subscribe(
+          () => {
+            this.activeModal.close(true);
+          },
+          err => {
+            this.error = err.message;
+          }
+        );
+    }
   }
 
   private createForm(): void {
     this.form = this.fb.group({
-      name: [null, [Validators.required]],
-      about: [null, [Validators.required]],
-      color: [null, [Validators.required]]
+      id: [(this.team && this.team.id) || null, []],
+      name: [(this.team && this.team.name) || null, [Validators.required]],
+      about: [(this.team && this.team.about) || null, [Validators.required]],
+      color: [(this.team && this.team.color) || null, [Validators.required]]
     });
   }
 }

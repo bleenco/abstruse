@@ -1,9 +1,9 @@
 <article class="team-item">
-  <div class="team-item-bg" [ngSwitch]="team?.name">
-    <i class="fas fa-user-friends bg-icon" [style.color]="team?.brightColor"></i>
+  <div class="team-item-bg">
+    <i class="fas fa-user-friends bg-icon"></i>
   </div>
   <div class="team-item-container">
-    <h2>{{ team?.name }}</h2>
+    <h2 [style.color]="team?.color">{{ team?.name }}</h2>
     <span class="about">{{ team?.about }}</span>
     <span class="data-text">
       <span>{{ team?.membersCount }}</span>

@@ -18,7 +18,11 @@ export class TeamsService {
     return this.http.get('/teams').pipe(map((resp: any) => (resp && resp.length ? resp.map(generateTeam) : [])));
   }
 
-  create(data: any): Observable<void> {
-    return this.http.post<void>('/teams', data);
+  create(data: any): Observable<Team> {
+    return this.http.post<Team>('/teams', data).pipe(map(generateTeam));
+  }
+
+  update(data: any): Observable<Team> {
+    return this.http.put<Team>('/teams', data).pipe(map(generateTeam));
   }
 }

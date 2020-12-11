@@ -62,10 +62,6 @@ export class Team {
       return `${this.users.length} Members`;
     }
   }
-
-  get brightColor(): string {
-    return hexToRgba(this.color, 1);
-  }
 }
 
 export function generateTeam(data: any): Team {
