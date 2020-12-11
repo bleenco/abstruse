@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { fromEvent } from 'rxjs';
-import { debounceTime, distinctUntilChanged, finalize, map } from 'rxjs/operators';
+import { distinctUntilChanged, finalize, map } from 'rxjs/operators';
 import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { User } from '../shared/user.model';
 import { UsersService } from '../shared/users.service';
@@ -33,7 +33,6 @@ export class UsersComponent implements OnInit, AfterViewInit {
     fromEvent(this.keyword.nativeElement, 'keyup')
       .pipe(
         map(() => this.keyword.nativeElement.value),
-        debounceTime(300),
         distinctUntilChanged(),
         untilDestroyed(this)
       )

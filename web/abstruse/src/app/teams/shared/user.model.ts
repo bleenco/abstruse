@@ -1,3 +1,5 @@
+import { hexToRgba } from 'src/app/shared/common/colors';
+
 export class Profile {
   constructor(public email: string, public name: string, public avatar: string) {}
 }
@@ -55,10 +57,14 @@ export class Team {
 
   get membersCount(): string {
     if (this.users.length === 1) {
-      return '1 member';
+      return '1 Member';
     } else {
-      return `${this.users.length} members`;
+      return `${this.users.length} Members`;
     }
+  }
+
+  get brightColor(): string {
+    return hexToRgba(this.color, 1);
   }
 }
 
@@ -68,6 +74,6 @@ export function generateTeam(data: any): Team {
     data.name,
     data.about,
     data.color,
-    data.users && data.users.lenth ? data.users.map(generateUser) : []
+    data.users && data.users.length ? data.users.map(generateUser) : []
   );
 }

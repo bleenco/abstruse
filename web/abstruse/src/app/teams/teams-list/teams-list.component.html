@@ -10,6 +10,8 @@
         <h2>Team Management</h2>
       </div>
       <div class="subheader-right">
+        <i class="fas fa-search"></i>
+        <input type="text" class="input search-input" placeholder="Search teams..." autocomplete="off" #keyword />
         <button type="button" class="button" (click)="openTeamModal()">
           <span>Add New Team</span>
         </button>
@@ -23,25 +25,17 @@
     <div class="column is-12" *ngIf="fetchingTeams">
       <app-loader></app-loader>
     </div>
-    <div class="column is-6 is-offset-3" *ngIf="!fetchingTeams && !teams?.length">
+    <div class="column is-6 is-offset-3" *ngIf="!fetchingTeams && !displayedTeams?.length">
       <div class="notification">
-        <i class="far fa-list-alt"></i>
+        <i class="fab fa-git"></i>
         <p>No teams found.</p>
       </div>
     </div>
-    <div class="column is-12" *ngIf="!fetchingTeams && teams?.length">
-      <div class="list-heading">
-        <div class="columns">
-          <div class="column is-1"></div>
-          <div class="column is-2"><span class="text ml10">Name</span></div>
-          <div class="column is-4"><span class="text ml10">About</span></div>
-          <div class="column is-2"><span class="text ml10">Members</span></div>
-          <div class="column is-2"><span class="text ml10">Repositories</span></div>
-          <div class="column is-1"><span class="text justify-center">Actions</span></div>
+    <div class="column is-12" *ngIf="!fetchingTeams && displayedTeams?.length">
+      <div class="columns is-multiline">
+        <div class="column is-4" *ngFor="let team of displayedTeams">
+          <app-team-item [team]="team" (saved)="onSaved()"></app-team-item>
         </div>
-      </div>
-      <div class="list-items">
-        <app-team-list-item *ngFor="let team of teams; let i = index;" [team]="team"></app-team-list-item>
       </div>
     </div>
   </div>

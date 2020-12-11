@@ -1,0 +1,21 @@
+<article class="team-item">
+  <div class="team-item-bg" [ngSwitch]="team?.name">
+    <i class="fas fa-user-friends bg-icon" [style.color]="team?.brightColor"></i>
+  </div>
+  <div class="team-item-container">
+    <h2>{{ team?.name }}</h2>
+    <span class="about">{{ team?.about }}</span>
+    <span class="data-text">
+      <span>{{ team?.membersCount }}</span>
+    </span>
+    <span class="data-text">
+      <span>12 Repositories</span>
+    </span>
+    <div class="buttons justify-end">
+      <button type="button" class="button is-small" (click)="openTeamModal()" [disabled]="!this.auth.isAdmin">
+        <i class="fas fa-edit"></i>
+        <span>Edit</span>
+      </button>
+    </div>
+  </div>
+</article>

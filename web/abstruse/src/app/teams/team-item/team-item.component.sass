@@ -1,0 +1,65 @@
+@import 'colours'
+@import 'variables'
+@import 'mixins'
+
+$team-item-height: 220px
+
+.team-item
+  display: block
+  border: 1px solid $border-default
+  border-radius: $border-radius
+  width: 100%
+  height: $team-item-height
+  position: relative
+
+  .team-item-bg, .team-item-container
+    position: absolute
+    width: 100%
+    height: $team-item-height
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+
+  .team-item-bg
+    z-index: 1
+
+    i, img
+      position: absolute
+      display: block
+      top: 20px
+      right: 20px
+      color: $background-gray
+      font-size: 80px
+
+    img
+      top: -15px
+      right: 0
+      width: 150px
+
+  .team-item-container
+    z-index: 2
+
+  .team-item-container
+    padding: 20px 20px 10px
+
+    h2
+      font-size: 16px
+      font-weight: $weight-medium
+      text-transform: uppercase
+      margin-bottom: 10px
+
+    .about, .data-text
+      display: block
+      font-size: 14px
+      font-weight: $weight-normal
+      color: $text-secondary
+      margin-bottom: 10px
+
+    .about
+      margin-bottom: 40px
+
+    .data-text
+      +unselectable
+      border-bottom: 1px solid $border-default
+      padding-bottom: 5px
