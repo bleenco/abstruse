@@ -4,26 +4,24 @@ import (
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 )
 
-// HandleUpdate returns http.HandlerFunc that writes JSON encoded
-// result about updated user to the http response body.
-func HandleUpdate(users core.UserStore) http.HandlerFunc {
+// HandleCreate returns an http.HandlerFunc that write JSON encoded
+// result about creating user to the http response body.
+func HandleCreate(users core.UserStore) http.HandlerFunc {
 	type form struct {
-		ID       uint   `json:"id" valid:"required"`
 		Email    string `json:"email" valid:"email,required"`
-		Password string `json:"password"`
+		Password string `json:"password" valid:"stringlength(8|50),required"`
 		Name     string `json:"name" valid:"stringlength(3|50),required"`
 		Avatar   string `json:"avatar" valid:"stringlength(5|255),required"`
+		Role     string `json:"role" valid:"required"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		// claims := middlewares.ClaimsFromCtx(r.Context())
-
 		var f form
 		var err error
 		defer r.Body.Close()
@@ -38,26 +36,15 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
-		user, err := users.Find(f.ID)
-		if err != nil {
-			render.NotFoundError(w, err.Error())
-			return
+		user := &core.User{
+			Email:    f.Email,
+			Password: f.Password,
+			Name:     f.Name,
+			Avatar:   f.Avatar,
+			Role:     f.Role,
 		}
 
-		user.Email = f.Email
-		user.Name = f.Name
-		user.Avatar = f.Avatar
-
-		if f.Password != "" {
-			hash, err := auth.HashPassword(auth.Password{Password: f.Password})
-			if err != nil {
-				render.InternalServerError(w, err.Error())
-				return
-			}
-			user.Password = hash
-		}
-
-		err = users.Update(user)
+		err = users.Create(user)
 		if err != nil {
 			render.InternalServerError(w, err.Error())
 			return

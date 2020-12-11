@@ -146,8 +146,10 @@ func (r Router) usersRouter() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/", user.HandleList(r.Users))
+	router.Post("/", user.HandleCreate(r.Users))
+	router.Put("/", user.HandleUpdate(r.Users))
 	router.Get("/profile", user.HandleProfile(r.Users))
-	router.Put("/profile", user.HandleUpdate(r.Users))
+	router.Put("/profile", user.HandleUpdateProfile(r.Users))
 	router.Put("/password", user.HandlePassword(r.Users))
 	router.Post("/avatar", user.HandleAvatar(r.Config.HTTP.UploadDir))
 
