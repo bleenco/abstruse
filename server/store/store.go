@@ -54,6 +54,7 @@ func connect(cfg *config.DB, logger *zap.Logger) {
 			conn.AutoMigrate(
 				core.User{},
 				core.Team{},
+				core.Permission{},
 				core.Repository{},
 				core.Provider{},
 				core.Job{},

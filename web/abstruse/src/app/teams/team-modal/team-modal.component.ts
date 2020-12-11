@@ -65,7 +65,11 @@ export class TeamModalComponent implements OnInit {
       name: this.form.controls.name.value,
       about: this.form.controls.about.value,
       color: this.form.controls.color.value,
-      members: this.team && this.team.users && this.team.users.length ? this.team.users.map(u => u.id) : []
+      members: this.team && this.team.users && this.team.users.length ? this.team.users.map(u => u.id) : [],
+      repos:
+        this.team && this.team.repos && this.team.repos.length
+          ? this.team.repos.map(r => ({ id: r.repoID, read: r.read, write: r.write, exec: r.exec }))
+          : []
     };
     if (this.team && this.team.id) {
       data = { ...data, ...{ id: this.team.id } };

@@ -41,6 +41,7 @@ func New(
 	ws *ws.Server,
 	users core.UserStore,
 	teams core.TeamStore,
+	permissions core.PermissionStore,
 	providers core.ProviderStore,
 	builds core.BuildStore,
 	jobs core.JobStore,
@@ -49,31 +50,33 @@ func New(
 	scheduler core.Scheduler,
 ) *Router {
 	return &Router{
-		Config:    config,
-		WS:        ws,
-		Users:     users,
-		Teams:     teams,
-		Providers: providers,
-		Builds:    builds,
-		Jobs:      jobs,
-		Repos:     repos,
-		Workers:   workers,
-		Scheduler: scheduler,
+		Config:      config,
+		WS:          ws,
+		Users:       users,
+		Teams:       teams,
+		Permissions: permissions,
+		Providers:   providers,
+		Builds:      builds,
+		Jobs:        jobs,
+		Repos:       repos,
+		Workers:     workers,
+		Scheduler:   scheduler,
 	}
 }
 
 // Router is an API http.Handler.
 type Router struct {
-	Config    *config.Config
-	WS        *ws.Server
-	Users     core.UserStore
-	Teams     core.TeamStore
-	Providers core.ProviderStore
-	Builds    core.BuildStore
-	Jobs      core.JobStore
-	Repos     core.RepositoryStore
-	Workers   core.WorkerRegistry
-	Scheduler core.Scheduler
+	Config      *config.Config
+	WS          *ws.Server
+	Users       core.UserStore
+	Teams       core.TeamStore
+	Permissions core.PermissionStore
+	Providers   core.ProviderStore
+	Builds      core.BuildStore
+	Jobs        core.JobStore
+	Repos       core.RepositoryStore
+	Workers     core.WorkerRegistry
+	Scheduler   core.Scheduler
 }
 
 // Handler returns the http.Handler.
@@ -161,8 +164,8 @@ func (r Router) teamsRouter() *chi.Mux {
 
 	router.Get("/", team.HandleList(r.Teams))
 	router.Get("/{id}", team.HandleFind(r.Teams))
-	router.Post("/", team.HandleCreate(r.Teams, r.Users))
-	router.Put("/", team.HandleUpdate(r.Teams, r.Users))
+	router.Post("/", team.HandleCreate(r.Teams, r.Users, r.Permissions))
+	router.Put("/", team.HandleUpdate(r.Teams, r.Users, r.Permissions))
 
 	return router
 }

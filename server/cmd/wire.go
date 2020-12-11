@@ -10,6 +10,7 @@ import (
 	"github.com/bleenco/abstruse/server/store"
 	"github.com/bleenco/abstruse/server/store/build"
 	"github.com/bleenco/abstruse/server/store/job"
+	"github.com/bleenco/abstruse/server/store/permission"
 	"github.com/bleenco/abstruse/server/store/provider"
 	"github.com/bleenco/abstruse/server/store/repo"
 	"github.com/bleenco/abstruse/server/store/team"
@@ -25,6 +26,7 @@ func CreateApp() (*app, error) {
 		wire.NewSet(api.New),
 		wire.NewSet(user.New),
 		wire.NewSet(team.New),
+		wire.NewSet(permission.New),
 		wire.NewSet(provider.New),
 		wire.NewSet(build.New),
 		wire.NewSet(job.New),

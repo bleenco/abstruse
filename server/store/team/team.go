@@ -16,13 +16,13 @@ type teamStore struct {
 
 func (s teamStore) Find(id uint) (*core.Team, error) {
 	team := &core.Team{}
-	err := s.db.Model(team).Where("id = ?", id).Preload("Users").First(team).Error
+	err := s.db.Model(team).Where("id = ?", id).Preload("Users").Preload("Permissions.Repository").First(team).Error
 	return team, err
 }
 
 func (s teamStore) List() ([]*core.Team, error) {
 	var teams []*core.Team
-	err := s.db.Model(teams).Preload("Users").Find(&teams).Error
+	err := s.db.Model(teams).Preload("Users").Preload("Permissions.Repository").Find(&teams).Error
 	return teams, err
 }
 

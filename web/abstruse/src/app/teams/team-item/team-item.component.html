@@ -9,7 +9,7 @@
       <span>{{ team?.membersCount }}</span>
     </span>
     <span class="data-text">
-      <span>12 Repositories</span>
+      <span>{{ team?.reposCount }}</span>
     </span>
     <div class="buttons justify-end">
       <button type="button" class="button is-small" (click)="openTeamModal()" [disabled]="!this.auth.isAdmin">

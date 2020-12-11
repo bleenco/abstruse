@@ -55,6 +55,17 @@ export class Team {
       return `${this.users.length} Members`;
     }
   }
+
+  get reposCount(): string {
+    if (!this.repos || !this.repos.length) {
+      return '0 Repositories';
+    }
+    if (this.repos.length === 1) {
+      return '1 Repository';
+    } else {
+      return `${this.repos.length} Repositories`;
+    }
+  }
 }
 
 export function generateTeam(data: any): Team {
@@ -63,7 +74,8 @@ export function generateTeam(data: any): Team {
     data.name,
     data.about,
     data.color,
-    data.users && data.users.length ? data.users.map(generateUser) : []
+    data.users && data.users.length ? data.users.map(generateUser) : [],
+    data.perms && data.perms.length ? data.perms.map(generatePerms) : []
   );
 }
 
@@ -75,4 +87,14 @@ export class RepoPermission {
     public write: boolean,
     public exec: boolean
   ) {}
+}
+
+export function generatePerms(data: any): RepoPermission {
+  return new RepoPermission(
+    data.repository.id,
+    data.repository.fullName,
+    Boolean(data.read),
+    Boolean(data.write),
+    Boolean(data.exec)
+  );
 }
