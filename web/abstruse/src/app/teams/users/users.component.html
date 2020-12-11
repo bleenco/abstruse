@@ -10,6 +10,8 @@
         <h2>User Management</h2>
       </div>
       <div class="subheader-right">
+        <i class="fas fa-search"></i>
+        <input type="text" class="input search-input" placeholder="Search users..." autocomplete="off" #keyword />
         <button type="button" class="button" (click)="openUserModal()">
           <span>Add New User</span>
         </button>
@@ -23,25 +25,25 @@
     <div class="column is-12" *ngIf="fetchingUsers">
       <app-loader></app-loader>
     </div>
-    <div class="column is-6 is-offset-3" *ngIf="!fetchingUsers && !users?.length">
+    <div class="column is-6 is-offset-3" *ngIf="!fetchingUsers && !displayedUsers?.length">
       <div class="notification">
         <i class="far fa-list-alt"></i>
         <p>No users found.</p>
       </div>
     </div>
-    <div class="column is-12" *ngIf="!fetchingUsers && users?.length">
+    <div class="column is-12" *ngIf="!fetchingUsers && displayedUsers?.length">
       <div class="list-heading">
         <div class="columns">
           <div class="column is-1"></div>
           <div class="column is-2"><span class="text ml10">Name</span></div>
-          <div class="column is-4"><span class="text ml10">Email</span></div>
+          <div class="column is-3"><span class="text ml10">Email</span></div>
           <div class="column is-2"><span class="text justify-center">Role</span></div>
-          <div class="column is-2"><span class="text justify-center">Teams</span></div>
+          <div class="column is-3"><span class="text justify-center">Teams</span></div>
           <div class="column is-1"><span class="text justify-center">Actions</span></div>
         </div>
       </div>
       <div class="list-items">
-        <app-user-list-item *ngFor="let user of users; let i = index;" [user]="user" (updated)="onUserUpdated()">
+        <app-user-list-item *ngFor="let user of displayedUsers" [user]="user" (updated)="onUserUpdated()">
         </app-user-list-item>
       </div>
     </div>

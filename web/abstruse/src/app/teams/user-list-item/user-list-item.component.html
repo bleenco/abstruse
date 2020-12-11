@@ -8,7 +8,7 @@
         <span class="data-text">{{ user?.name }}</span>
       </div>
     </div>
-    <div class="column is-4 data-column">
+    <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center">
         <span class="data-text">{{ user?.email }}</span>
       </div>
@@ -22,7 +22,7 @@
         </div>
       </div>
     </div>
-    <div class="column is-2 data-column">
+    <div class="column is-3 data-column">
       <div class="info-text has-text-left align-center justify-center">
         <div class="tag is-yellow is-small">
           <i class="fas fa-users"></i>
@@ -31,7 +31,8 @@
       </div>
     </div>
     <div class="column is-1 data-column justify-center">
-      <button type="button" class="button" (click)="openUserModal()">
+      <button type="button" class="button is-small" (click)="openUserModal()">
+        <i class="fas fa-user-edit"></i>
         <span>Edit</span>
       </button>
     </div>
