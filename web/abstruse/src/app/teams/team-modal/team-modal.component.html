@@ -37,6 +37,11 @@
       <i class="far fa-comment"></i>
       <p>Error: {{ error }}</p>
     </div>
+    <div class="notification is-red" *ngIf="fetchingUsersError">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ fetchingUsersError }}</p>
+    </div>
+    <app-loader *ngIf="fetchingUsers"></app-loader>
     <div class="members-add-container mb10" *ngIf="!fetchingUsers">
       <div class="members-list">
         <article class="member-item is-small" *ngFor="let u of displayedUsers">
@@ -98,6 +103,64 @@
     <div class="notification is-red" *ngIf="error">
       <i class="far fa-comment"></i>
       <p>Error: {{ error }}</p>
+    </div>
+    <div class="notification is-red" *ngIf="fetchingReposError">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ fetchingReposError }}</p>
+    </div>
+    <app-loader *ngIf="fetchingRepos"></app-loader>
+    <div class="members-add-container mb10" *ngIf="!fetchingRepos">
+      <div class="members-list">
+        <article class="member-item is-small" *ngFor="let r of displayedRepos">
+          <div class="columns is-marginless is-paddingless">
+            <div class="column is-1 justify-center">
+              <i class="octicon octicon-repo"></i>
+            </div>
+            <div class="column is-4">
+              <span>{{ r.fullName }}</span>
+            </div>
+            <div class="column is-5">
+              <span>{{ r.url }}</span>
+            </div>
+            <div class="column is-2 justify-end">
+              <button type="button" class="button is-green is-small" (click)="addRepo(r.id)">
+                <span>Add</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <div class="h250" *ngIf="!team?.repos?.length">
+      <div class="notification">
+        <i class="octicon octicon-repo"></i>
+        <p>This team has no repository access ATM, add some above.</p>
+      </div>
+    </div>
+    <div class="members-container" *ngIf="team?.repos?.length">
+      <div class="members-list">
+        <article class="member-item" *ngFor="let r of team?.repos">
+          <div class="columns is-marginless">
+            <div class="column is-4">
+              <span>{{ r.repoFullName }}</span>
+            </div>
+            <div class="column is-2">
+              <app-checkbox [(ngModel)]="r.read" [ngModelOptions]="{standalone: true}" label="Read"></app-checkbox>
+            </div>
+            <div class="column is-2">
+              <app-checkbox [(ngModel)]="r.write" [ngModelOptions]="{standalone: true}" label="Write"></app-checkbox>
+            </div>
+            <div class="column is-2">
+              <app-checkbox [(ngModel)]="r.exec" [ngModelOptions]="{standalone: true}" label="Execute"></app-checkbox>
+            </div>
+            <div class="column is-2 justify-end">
+              <button type="button" class="button is-red is-small" (click)="removeRepo(r.repoID)">
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
     </div>
   </div>
   <div class="modal-footer space-between">

@@ -1,5 +1,3 @@
-import { hexToRgba } from 'src/app/shared/common/colors';
-
 export class Profile {
   constructor(public email: string, public name: string, public avatar: string) {}
 }
@@ -42,7 +40,8 @@ export class Team {
     public name?: string,
     public about?: string,
     public color?: string,
-    public users?: User[]
+    public users?: User[],
+    public repos?: RepoPermission[]
   ) {}
 
   get membersCount(): string {
@@ -66,4 +65,14 @@ export function generateTeam(data: any): Team {
     data.color,
     data.users && data.users.length ? data.users.map(generateUser) : []
   );
+}
+
+export class RepoPermission {
+  constructor(
+    public repoID: number,
+    public repoFullName: string,
+    public read: boolean,
+    public write: boolean,
+    public exec: boolean
+  ) {}
 }

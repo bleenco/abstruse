@@ -6,6 +6,8 @@ import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { Team, User } from '../shared/user.model';
 import { TeamsService } from '../shared/teams.service';
 import { UsersService } from '../shared/users.service';
+import { ReposService } from 'src/app/repos/shared/repos.service';
+import { Repo } from 'src/app/repos/shared/repo.model';
 
 @UntilDestroy()
 @Component({
@@ -22,6 +24,9 @@ export class TeamModalComponent implements OnInit {
   users: User[] = [];
   fetchingUsers = false;
   fetchingUsersError: string | null = null;
+  repos: Repo[] = [];
+  fetchingRepos = false;
+  fetchingReposError: string | null = null;
 
   get displayedUsers(): User[] {
     return this.users && this.team && this.team.users
@@ -29,16 +34,24 @@ export class TeamModalComponent implements OnInit {
       : this.users;
   }
 
+  get displayedRepos(): Repo[] {
+    return this.repos && this.team && this.team.repos
+      ? this.repos.filter(r => !this.team.repos || !this.team.repos.find(j => j.repoID === r.id))
+      : this.repos;
+  }
+
   constructor(
     private fb: FormBuilder,
     private teamsService: TeamsService,
     private usersService: UsersService,
+    private reposService: ReposService,
     public activeModal: ActiveModal
   ) {}
 
   ngOnInit(): void {
     this.createForm();
     this.listUsers();
+    this.listRepos();
   }
 
   onSubmit(): void {
@@ -109,7 +122,10 @@ export class TeamModalComponent implements OnInit {
       );
   }
 
-  addUser(id: number): void {
+  addUser(id: number | undefined): void {
+    if (!id) {
+      return;
+    }
     const user = this.users.find(u => u.id === id);
     if (!user) {
       return;
@@ -117,7 +133,7 @@ export class TeamModalComponent implements OnInit {
     if (!this.team) {
       this.team = new Team();
     }
-    if (!this.team || !this.team.users) {
+    if (!this.team.users) {
       this.team.users = [];
     }
     this.team.users.push(user);
@@ -128,6 +144,50 @@ export class TeamModalComponent implements OnInit {
       return;
     }
     this.team.users = this.team.users.filter(u => u.id !== id);
+  }
+
+  listRepos(): void {
+    this.fetchingRepos = true;
+    this.reposService
+      .find(0, 0)
+      .pipe(
+        finalize(() => (this.fetchingRepos = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => (this.repos = resp.data),
+        err => (this.fetchingReposError = err.message)
+      );
+  }
+
+  addRepo(id: number | undefined): void {
+    if (!id) {
+      return;
+    }
+    const repo = this.repos.find(r => r.id === id);
+    if (!repo) {
+      return;
+    }
+    if (!this.team) {
+      this.team = new Team();
+    }
+    if (!this.team.repos) {
+      this.team.repos = [];
+    }
+    this.team.repos.push({
+      repoID: repo.id as number,
+      repoFullName: repo.fullName as string,
+      read: true,
+      write: true,
+      exec: true
+    });
+  }
+
+  removeRepo(id: number): void {
+    if (!this.team || !this.team.repos) {
+      return;
+    }
+    this.team.repos = this.team.repos.filter(r => r.repoID !== id);
   }
 
   private createForm(): void {
