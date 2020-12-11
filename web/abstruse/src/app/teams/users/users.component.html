@@ -12,7 +12,7 @@
       <div class="subheader-right">
         <i class="fas fa-search"></i>
         <input type="text" class="input search-input" placeholder="Search users..." autocomplete="off" #keyword />
-        <button type="button" class="button" (click)="openUserModal()">
+        <button type="button" class="button" (click)="openUserModal()" [disabled]="!this.auth.isAdmin">
           <span>Add New User</span>
         </button>
       </div>

@@ -10,7 +10,7 @@ export interface UserData {
   email: string;
   name: string;
   lastname: string;
-  location: string;
+  role: string;
   avatar: string;
 }
 

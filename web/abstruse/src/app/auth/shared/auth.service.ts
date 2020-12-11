@@ -19,6 +19,10 @@ export class AuthService {
     return localStorage.getItem(AUTH_TOKEN_KEY) || false;
   }
 
+  get isAdmin(): boolean {
+    return !!this.data && this.data.role === 'admin';
+  }
+
   constructor(private http: HttpClient, private router: Router, private cookie: CookieService) {
     const data = localStorage.getItem(AUTH_TOKEN_KEY);
     this.data = (data && jwtDecode<any>(data)) || null;

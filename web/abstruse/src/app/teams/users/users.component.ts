@@ -6,6 +6,7 @@ import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { User } from '../shared/user.model';
 import { UsersService } from '../shared/users.service';
 import { UserModalComponent } from '../user-modal/user-modal.component';
+import { AuthService } from 'src/app/auth/shared/auth.service';
 import Fuse from 'fuse.js';
 
 @UntilDestroy()
@@ -22,7 +23,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
   fetchingUsers = false;
   error: string | null = null;
 
-  constructor(private usersService: UsersService, public modal: ModalService) {}
+  constructor(private usersService: UsersService, public auth: AuthService, public modal: ModalService) {}
 
   ngOnInit(): void {
     this.list();

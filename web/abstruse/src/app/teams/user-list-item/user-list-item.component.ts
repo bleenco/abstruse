@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AuthService } from 'src/app/auth/shared/auth.service';
 import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { User } from '../shared/user.model';
 import { UserModalComponent } from '../user-modal/user-modal.component';
@@ -12,7 +13,7 @@ export class UserListItemComponent implements OnInit {
   @Input() user!: User;
   @Output() updated = new EventEmitter<void>();
 
-  constructor(public modal: ModalService) {}
+  constructor(public modal: ModalService, public auth: AuthService) {}
 
   ngOnInit(): void {}
 
