@@ -21,9 +21,22 @@ type repositoryStore struct {
 	db *gorm.DB
 }
 
-func (s repositoryStore) Find(id uint) (core.Repository, error) {
+func (s repositoryStore) Find(id, userID uint) (core.Repository, error) {
 	var repo core.Repository
-	err := s.db.Model(&repo).Where("id = ?", id).Preload("Provider").First(&repo).Error
+
+	db := s.db.Preload("Provider")
+	db = db.Joins("LEFT JOIN permissions ON permissions.repository_id = repositories.id").
+		Joins("LEFT JOIN teams ON teams.id = permissions.team_id").
+		Joins("LEFT JOIN team_users ON team_users.team_id = teams.id")
+	db = db.Where("repositories.id = ? AND repositories.user_id = ?", id, userID).
+		Or("repositories.id = ? AND team_users.user_id = ? AND permissions.read = ?", id, userID, true)
+
+	err := db.First(&repo).Error
+	if err != nil {
+		return repo, err
+	}
+	repo.Perms = s.GetPermissions(repo.ID, userID)
+
 	return repo, err
 }
 
@@ -62,6 +75,14 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 	}
 
 	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Count(&count).Error
+	if err != nil || count == 0 {
+		return repos, count, err
+	}
+
+	for i, repo := range repos {
+		repos[i].Perms = s.GetPermissions(repo.ID, filters.UserID)
+	}
+
 	return repos, count, err
 }
 
@@ -94,8 +115,59 @@ func (s repositoryStore) SetActive(id uint, active bool) error {
 	return s.db.Model(&repo).Update("active", active).Error
 }
 
-func (s repositoryStore) ListHooks(id uint) ([]*scm.Hook, error) {
-	repo, err := s.Find(id)
+func (s repositoryStore) GetPermissions(id, userID uint) core.Perms {
+	perms := core.Perms{Read: false, Write: false, Exec: false}
+
+	var user core.User
+	err := s.db.Model(&user).Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		return perms
+	}
+	if user.Role == "admin" {
+		return core.Perms{Read: true, Write: true, Exec: true}
+	}
+
+	var repo core.Repository
+	if err := s.db.Where("id = ?", id).First(&repo).Error; err == nil {
+		if repo.UserID == userID {
+			perms.Read = true
+			perms.Write = true
+			perms.Exec = true
+			return perms
+		}
+	}
+
+	db := s.db
+
+	db = db.
+		Joins("LEFT JOIN team_users ON team_users.team_id = permissions.team_id").
+		Where("team_users.user_id = ? AND permissions.repository_id = ?", userID, id)
+
+	var permissions []*core.Permission
+	err = db.Find(&permissions).Error
+	if err != nil {
+		return perms
+	}
+
+	r, w, x := false, false, false
+
+	for _, p := range permissions {
+		if p.Read {
+			r = true
+		}
+		if p.Write {
+			w = true
+		}
+		if p.Exec {
+			x = true
+		}
+	}
+
+	return core.Perms{Read: r, Write: w, Exec: x}
+}
+
+func (s repositoryStore) ListHooks(id, userID uint) ([]*scm.Hook, error) {
+	repo, err := s.Find(id, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,12 +185,12 @@ func (s repositoryStore) ListHooks(id uint) ([]*scm.Hook, error) {
 	return filterHooks(hooks, repo.Provider), nil
 }
 
-func (s repositoryStore) CreateHook(id uint, data gitscm.HookForm) error {
-	if err := s.DeleteHooks(id); err != nil {
+func (s repositoryStore) CreateHook(id, userID uint, data gitscm.HookForm) error {
+	if err := s.DeleteHooks(id, userID); err != nil {
 		return err
 	}
 
-	repo, err := s.Find(id)
+	repo, err := s.Find(id, userID)
 	if err != nil {
 		return err
 	}
@@ -137,8 +209,8 @@ func (s repositoryStore) CreateHook(id uint, data gitscm.HookForm) error {
 	return err
 }
 
-func (s repositoryStore) DeleteHooks(id uint) error {
-	repo, err := s.Find(id)
+func (s repositoryStore) DeleteHooks(id, userID uint) error {
+	repo, err := s.Find(id, userID)
 	if err != nil {
 		return err
 	}

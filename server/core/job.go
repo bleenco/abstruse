@@ -23,6 +23,9 @@ type (
 		// Find returns job by id from datastore.
 		Find(uint) (*Job, error)
 
+		// FindUser returns job by id and user id.
+		FindUser(uint, uint) (*Job, error)
+
 		// Create persists job to the datastore.
 		Create(*Job) error
 

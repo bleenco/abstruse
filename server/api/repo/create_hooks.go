@@ -6,6 +6,7 @@ import (
 
 	"github.com/bleenco/abstruse/pkg/gitscm"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/go-chi/chi"
@@ -15,6 +16,7 @@ import (
 // result about creating webhooks on repository to the http response body.
 func HandleCreateHooks(repos core.RepositoryStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f gitscm.HookForm
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
@@ -28,7 +30,7 @@ func HandleCreateHooks(repos core.RepositoryStore) http.HandlerFunc {
 			return
 		}
 
-		if err := repos.CreateHook(uint(id), f); err != nil {
+		if err := repos.CreateHook(uint(id), claims.ID, f); err != nil {
 			render.InternalServerError(w, err.Error())
 			return
 		}

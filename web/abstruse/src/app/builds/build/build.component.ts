@@ -6,6 +6,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { Build } from '../shared/build.model';
 import { finalize, filter } from 'rxjs/operators';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
+import { AuthService } from 'src/app/auth/shared/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -26,7 +27,8 @@ export class BuildComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private buildsService: BuildsService,
     private dataService: DataService,
-    private router: Router
+    private router: Router,
+    public auth: AuthService
   ) {}
 
   ngOnInit(): void {

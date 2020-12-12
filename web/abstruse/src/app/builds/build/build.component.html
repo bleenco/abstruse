@@ -14,12 +14,13 @@
         <h2>{{ title }}</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button" (click)="restartBuild()" [disabled]="build?.processing">
+        <button type="button" class="button" (click)="restartBuild()"
+          [disabled]="build?.processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)">
           <i class="fas fa-sync-alt"></i>
           <span>Restart</span>
         </button>
         <button type="button" class="button" (click)="stopBuild()"
-          [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing">
+          [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)">
           <i class="fas fa-hand-paper"></i>
           <span>Stop</span>
         </button>
@@ -66,11 +67,11 @@
               <span class="desc-text" *ngIf="build?.pr === 0">{{ build?.committerName || build?.committerLogin }}
                 authored and
                 commited</span>
-              <span class="desc-text"
-                *ngIf="build?.pr !== 0 && build?.committerLogin === build?.authorLogin">{{ build?.committerName || build?.committerLogin }}
+              <span class="desc-text" *ngIf="build?.pr !== 0 && build?.committerLogin === build?.authorLogin">{{
+                build?.committerName || build?.committerLogin }}
                 authored and commited</span>
-              <span class="desc-text"
-                *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin">{{ build?.authorName || build?.authorLogin }}
+              <span class="desc-text" *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin">{{
+                build?.authorName || build?.authorLogin }}
                 authored with {{ build?.committerName || build?.committerLogin }}</span>
             </div>
           </div>

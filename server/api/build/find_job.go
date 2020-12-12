@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/go-chi/chi"
@@ -18,13 +19,14 @@ func HandleFindJob(jobs core.JobStore, scheduler core.Scheduler) http.HandlerFun
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
 			render.BadRequestError(w, err.Error())
 			return
 		}
 
-		job, err := jobs.Find(uint(id))
+		job, err := jobs.FindUser(uint(id), claims.ID)
 		if err != nil {
 			render.NotFoundError(w, err.Error())
 			return

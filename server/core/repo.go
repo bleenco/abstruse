@@ -25,6 +25,7 @@ type (
 		User          User     `json:"-"`
 		ProviderID    uint     `gorm:"not null" json:"providerID"`
 		Provider      Provider `json:"-"`
+		Perms         Perms    `json:"perms"`
 		Timestamp
 	}
 
@@ -40,7 +41,7 @@ type (
 	// RepositoryStore defines operations on repositories in datastorage.
 	RepositoryStore interface {
 		// Find returns repository from the datastore.
-		Find(uint) (Repository, error)
+		Find(uint, uint) (Repository, error)
 
 		// FindUID returns repository from datastore based by uid.
 		FindUID(string) (Repository, error)
@@ -64,17 +65,20 @@ type (
 		// Delete deletes repository from the datastore.
 		Delete(Repository) error
 
+		// GetPermissions returns repo permissions based by user id.
+		GetPermissions(uint, uint) Perms
+
 		// SetActive persists new active status to the repository in the datastore.
 		SetActive(uint, bool) error
 
 		// ListHooks returns webhooks for specified repository.
-		ListHooks(uint) ([]*scm.Hook, error)
+		ListHooks(uint, uint) ([]*scm.Hook, error)
 
 		// CreateHook creates webhook for specified repository.
-		CreateHook(uint, gitscm.HookForm) error
+		CreateHook(uint, uint, gitscm.HookForm) error
 
 		// DeleteHooks deletes all related webhooks for specified repository
-		DeleteHooks(uint) error
+		DeleteHooks(uint, uint) error
 	}
 )
 

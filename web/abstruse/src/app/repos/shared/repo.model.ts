@@ -16,7 +16,8 @@ export class Repo {
     public userID?: number,
     public providerID?: number,
     public createdAt?: Date,
-    public updatedAt?: Date
+    public updatedAt?: Date,
+    public perms?: Perms
   ) {}
 }
 
@@ -38,6 +39,13 @@ export function generateRepoModel(data: any): Repo {
     Number(data.userID),
     Number(data.providerID),
     new Date(data.createdAt ? data.createdAt : null),
-    new Date(data.updatedAt ? data.updatedAt : null)
+    new Date(data.updatedAt ? data.updatedAt : null),
+    data.perms || { read: false, write: false, exec: false }
   );
+}
+
+export interface Perms {
+  read: boolean;
+  write: boolean;
+  exec: boolean;
 }

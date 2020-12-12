@@ -36,6 +36,7 @@ type (
 		Offset       int
 		RepositoryID int
 		Kind         string
+		UserID       uint
 	}
 
 	// TriggerBuildOpts defines options to trigger build.
@@ -44,12 +45,16 @@ type (
 		Config string
 		SHA    string
 		Branch string
+		UserID uint
 	}
 
 	// BuildStore defines methods to work with builds
 	BuildStore interface {
 		// Find returns build by id from datastore.
 		Find(uint) (*Build, error)
+
+		// FindUser returns build by id and user id.
+		FindUser(uint, uint) (*Build, error)
 
 		// List returns list of builds from datastore
 		List(BuildFilter) ([]*Build, error)

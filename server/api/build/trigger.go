@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/ws"
@@ -21,7 +22,7 @@ func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler, ws *ws.Serv
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// claims := middlewares.ClaimsFromCtx(r.Context())
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
 		var err error
 		defer r.Body.Close()
@@ -41,6 +42,7 @@ func HandleTrigger(builds core.BuildStore, scheduler core.Scheduler, ws *ws.Serv
 			Config: f.Config,
 			SHA:    f.SHA,
 			Branch: f.Branch,
+			UserID: claims.ID,
 		}
 
 		jobs, err := builds.TriggerBuild(opts)

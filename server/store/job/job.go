@@ -6,17 +6,28 @@ import (
 )
 
 // New returns new JobStore.
-func New(db *gorm.DB) core.JobStore {
-	return jobStore{db}
+func New(db *gorm.DB, repos core.RepositoryStore) core.JobStore {
+	return jobStore{db, repos}
 }
 
 type jobStore struct {
-	db *gorm.DB
+	db    *gorm.DB
+	repos core.RepositoryStore
 }
 
 func (s jobStore) Find(id uint) (*core.Job, error) {
 	var job core.Job
 	err := s.db.Model(&job).Where("id = ?", id).Preload("Build.Repository.Provider").First(&job).Error
+	return &job, err
+}
+
+func (s jobStore) FindUser(id, userID uint) (*core.Job, error) {
+	var job core.Job
+	err := s.db.Model(&job).Where("id = ?", id).Preload("Build.Repository.Provider").First(&job).Error
+	if err != nil {
+		return &job, err
+	}
+	job.Build.Repository.Perms = s.repos.GetPermissions(job.Build.RepositoryID, userID)
 	return &job, err
 }
 

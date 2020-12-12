@@ -29,21 +29,44 @@ func (s buildStore) Find(id uint) (*core.Build, error) {
 	return &build, err
 }
 
+func (s buildStore) FindUser(id, userID uint) (*core.Build, error) {
+	var build core.Build
+	err := s.db.Model(&build).Preload("Jobs").Preload("Repository.Provider").Where("id = ?", id).First(&build).Error
+	if err != nil {
+		return &build, err
+	}
+	build.Repository.Perms = s.repos.GetPermissions(build.RepositoryID, userID)
+	return &build, err
+}
+
 func (s buildStore) List(filters core.BuildFilter) ([]*core.Build, error) {
 	var builds []*core.Build
 	db := s.db
 
+	db = db.Preload("Jobs").Preload("Repository")
+	db = db.Joins("LEFT JOIN repositories ON repositories.id = builds.repository_id").
+		Joins("LEFT JOIN permissions ON permissions.repository_id = repositories.id").
+		Joins("LEFT JOIN teams ON teams.id = permissions.team_id").
+		Joins("LEFT JOIN team_users ON team_users.team_id = teams.id")
+
 	if filters.RepositoryID > 0 {
-		db = db.Where("repository_id = ?", uint(filters.RepositoryID))
+		db = db.Where("builds.repository_id = ?", uint(filters.RepositoryID))
 	}
 
 	if filters.Kind == "pull-requests" {
-		db = db.Where("pr != ?", 0)
+		db = db.Where("builds.pr != ?", 0)
 	} else if filters.Kind == "commits" || filters.Kind == "branches" {
-		db = db.Where("pr = ?", 0)
+		db = db.Where("builds.pr = ?", 0)
 	}
 
-	err := db.Preload("Jobs").Preload("Repository").Order("created_at desc").Limit(filters.Limit).Offset(filters.Offset).Find(&builds).Error
+	db = db.Where(db.Where("repositories.user_id = ?", filters.UserID).Or("team_users.user_id = ? AND permissions.read = ?", filters.UserID, true))
+
+	err := db.Order("created_at desc").Group("builds.id").Limit(filters.Limit).Offset(filters.Offset).Find(&builds).Error
+
+	for i, build := range builds {
+		builds[i].Repository.Perms = s.repos.GetPermissions(build.RepositoryID, filters.UserID)
+	}
+
 	return builds, err
 }
 
@@ -144,7 +167,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 }
 
 func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error) {
-	repo, err := s.repos.Find(opts.ID)
+	repo, err := s.repos.Find(opts.ID, opts.UserID)
 	if err != nil {
 		return nil, err
 	}

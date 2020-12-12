@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 )
@@ -12,6 +13,7 @@ import (
 // list of builds to the http response body.
 func HandleList(builds core.BuildStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
 		if err != nil {
 			limit = 5
@@ -34,6 +36,7 @@ func HandleList(builds core.BuildStore) http.HandlerFunc {
 			Offset:       offset,
 			RepositoryID: repoID,
 			Kind:         kind,
+			UserID:       claims.ID,
 		}
 
 		builds, err := builds.List(filters)

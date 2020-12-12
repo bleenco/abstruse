@@ -12,12 +12,13 @@
         <h2>Job #{{ job?.id }}</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button" (click)="restartJob()" [disabled]="job?.processing">
+        <button type="button" class="button" (click)="restartJob()"
+          [disabled]="job?.processing || (!this.auth.isAdmin && !job?.build?.repository?.perms?.exec)">
           <i class="fas fa-sync-alt"></i>
           <span>Restart</span>
         </button>
         <button type="button" class="button" (click)="stopJob()"
-          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing">
+          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing || (!this.auth.isAdmin && !job?.build?.repository?.perms?.exec)">
           <i class="fas fa-hand-paper"></i>
           <span>Stop</span>
         </button>
@@ -62,14 +63,16 @@
                 <img [src]="job?.build?.committerAvatar" class="committer-avatar">
                 <img [src]="job?.build?.authorAvatar" class="author-avatar">
               </div>
-              <span class="desc-text"
-                *ngIf="job?.build?.pr === 0">{{ job?.build?.committerName || job?.build?.committerLogin }} authored and
+              <span class="desc-text" *ngIf="job?.build?.pr === 0">{{ job?.build?.committerName ||
+                job?.build?.committerLogin }} authored and
                 commited</span>
               <span class="desc-text"
-                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin === job?.build?.authorLogin">{{ job?.build?.committerName || job?.build?.committerLogin }}
+                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin === job?.build?.authorLogin">{{
+                job?.build?.committerName || job?.build?.committerLogin }}
                 authored and commited</span>
               <span class="desc-text"
-                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin">{{ job?.build?.authorName || job?.build?.authorLogin }}
+                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin">{{
+                job?.build?.authorName || job?.build?.authorLogin }}
                 authored with {{ job?.build?.committerName || job?.build?.committerLogin }}</span>
             </div>
           </div>
