@@ -14,7 +14,13 @@ This is a work in progress for v2.0.0 relase, if you are looking for Node.JS bas
 
 ![Screenshot](https://user-images.githubusercontent.com/1796022/87736550-af87d700-c7d8-11ea-9e9a-c23c2b5e02d1.png)
 
-## Get the Demo Running
+## Check Out Live Demo
+
+Go to https://ci.abstruse.cc and login with username `demo@bleenco.com` and password `abstruse`.
+
+Note that demo user only have read permissions on added repositories.
+
+## Get the Demo Running Locally
 
 If you are interested about the status of this project, the easiest way to get Abstruse 2.x running is:
 
