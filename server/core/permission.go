@@ -13,6 +13,13 @@ type (
 		Exec         bool        `json:"exec"`
 	}
 
+	// Perms defines permisson result or addition to response.
+	Perms struct {
+		Read  bool `json:"read"`
+		Write bool `json:"write"`
+		Exec  bool `json:"exec"`
+	}
+
 	// PermissionStore defines operations on permissions.
 	PermissionStore interface {
 		// Find returns permission based by team id and repository id.

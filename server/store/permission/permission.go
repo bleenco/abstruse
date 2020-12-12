@@ -6,14 +6,12 @@ import (
 )
 
 // New returns new PermissionStore.
-func New(db *gorm.DB, users core.UserStore, repos core.RepositoryStore) core.PermissionStore {
-	return permissionStore{db, users, repos}
+func New(db *gorm.DB) core.PermissionStore {
+	return permissionStore{db}
 }
 
 type permissionStore struct {
-	db    *gorm.DB
-	users core.UserStore
-	repos core.RepositoryStore
+	db *gorm.DB
 }
 
 func (s permissionStore) Find(teamID, repoID uint) (*core.Permission, error) {

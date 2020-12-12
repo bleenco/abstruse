@@ -43,30 +43,25 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 	var repos []core.Repository
 	var count int
 	var err error
+	keyword := fmt.Sprintf("%%%s%%", filters.Keyword)
 
 	db := s.db.Preload("Provider")
+
+	db = db.
+		Joins("LEFT JOIN permissions ON permissions.repository_id = repositories.id").
+		Joins("LEFT JOIN teams ON teams.id = permissions.team_id").
+		Joins("LEFT JOIN team_users ON team_users.team_id = teams.id")
+
+	if filters.UserID != 0 {
+		db = db.Where("repositories.user_id = ? AND repositories.full_name LIKE ?", filters.UserID, keyword).
+			Or("team_users.user_id = ? AND permissions.read = ? AND repositories.full_name LIKE ?", filters.UserID, true, keyword)
+	}
 
 	if filters.Limit != 0 && filters.Offset != 0 {
 		db = db.Limit(filters.Limit).Offset(filters.Offset)
 	}
-	if filters.UserID != 0 {
-		db = db.Where("user_id = ?", filters.UserID)
-	}
 
-	if filters.Keyword == "" {
-		err = db.Order("active desc, name asc").Find(&repos).Error
-		if err != nil {
-			return repos, count, err
-		}
-		err = db.Model(&core.Repository{}).Order("active desc, name asc").Count(&count).Error
-		return repos, count, err
-	}
-	keyword := fmt.Sprintf("%%%s%%", filters.Keyword)
-	err = db.Where("full_name LIKE ?", keyword).Order("active desc, name asc").Find(&repos).Error
-	if err != nil {
-		return repos, count, err
-	}
-	err = db.Model(&core.Repository{}).Where("full_name LIKE ?", keyword).Order("active desc, name asc").Count(&count).Error
+	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Count(&count).Error
 	return repos, count, err
 }
 
