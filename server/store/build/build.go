@@ -49,17 +49,21 @@ func (s buildStore) List(filters core.BuildFilter) ([]*core.Build, error) {
 		Joins("LEFT JOIN teams ON teams.id = permissions.team_id").
 		Joins("LEFT JOIN team_users ON team_users.team_id = teams.id")
 
-	if filters.RepositoryID > 0 {
-		db = db.Where("builds.repository_id = ?", uint(filters.RepositoryID))
-	}
+	if filters.RepositoryID > 0 || filters.Kind != "latest" {
+		if filters.RepositoryID > 0 {
+			db = db.Where("builds.repository_id = ?", uint(filters.RepositoryID))
+		}
 
-	if filters.Kind == "pull-requests" {
-		db = db.Where("builds.pr != ?", 0)
-	} else if filters.Kind == "commits" || filters.Kind == "branches" {
-		db = db.Where("builds.pr = ?", 0)
-	}
+		if filters.Kind == "pull-requests" {
+			db = db.Where("builds.pr != ?", 0)
+		} else if filters.Kind == "commits" || filters.Kind == "branches" {
+			db = db.Where("builds.pr = ?", 0)
+		}
 
-	db = db.Where(db.Where("repositories.user_id = ?", filters.UserID).Or("team_users.user_id = ? AND permissions.read = ?", filters.UserID, true))
+		db = db.Where(db.Where("repositories.user_id = ?", filters.UserID).Or("team_users.user_id = ? AND permissions.read = ?", filters.UserID, true))
+	} else {
+		db = db.Where("repositories.user_id = ?", filters.UserID).Or("team_users.user_id = ? AND permissions.read = ?", filters.UserID, true)
+	}
 
 	err := db.Order("created_at desc").Group("builds.id").Limit(filters.Limit).Offset(filters.Offset).Find(&builds).Error
 
