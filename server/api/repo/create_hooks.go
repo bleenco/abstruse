@@ -30,6 +30,11 @@ func HandleCreateHooks(repos core.RepositoryStore) http.HandlerFunc {
 			return
 		}
 
+		if perm := repos.GetPermissions(uint(id), claims.ID); !perm.Write {
+			render.UnathorizedError(w, err.Error())
+			return
+		}
+
 		if err := repos.CreateHook(uint(id), claims.ID, f); err != nil {
 			render.InternalServerError(w, err.Error())
 			return

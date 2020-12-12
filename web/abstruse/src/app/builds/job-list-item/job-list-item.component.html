@@ -45,13 +45,13 @@
       </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
-      <button type="button" class="button is-small"
-        [disabled]="processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)" (click)="restartJob()">
+      <button type="button" class="button is-small" [disabled]="processing || !build?.repository?.perms?.exec"
+        (click)="restartJob()">
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
       <button type="button" class="button is-small"
-        [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)"
+        [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || processing || !build?.repository?.perms?.exec"
         (click)="stopJob()">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>

@@ -5,18 +5,20 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 )
 
 // HandleRestartJob returns an http.HandlerFunc that writes JSON encoded
 // result about restarting job to http response body.
-func HandleRestartJob(jobs core.JobStore, scheduler core.Scheduler) http.HandlerFunc {
+func HandleRestartJob(jobs core.JobStore, repos core.RepositoryStore, scheduler core.Scheduler) http.HandlerFunc {
 	type form struct {
 		ID uint `json:"id" valid:"required"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
 		var err error
 		defer r.Body.Close()
@@ -28,6 +30,11 @@ func HandleRestartJob(jobs core.JobStore, scheduler core.Scheduler) http.Handler
 
 		if valid, err := govalidator.ValidateStruct(f); err != nil || !valid {
 			render.BadRequestError(w, err.Error())
+			return
+		}
+
+		if perms := repos.GetPermissions(f.ID, claims.ID); !perms.Exec {
+			render.UnathorizedError(w, err.Error())
 			return
 		}
 

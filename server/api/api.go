@@ -109,13 +109,12 @@ func (r Router) apiRouter() *chi.Mux {
 
 	router.Mount("/setup", r.setupRouter())
 	router.Mount("/auth", r.authRouter())
-
 	router.Mount("/workers", r.workersRouter())
-	router.Mount("/teams", r.teamsRouter())
 
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.Authenticator)
 		router.Mount("/users", r.usersRouter())
+		router.Mount("/teams", r.teamsRouter())
 		router.Mount("/providers", r.providersRouter())
 		router.Mount("/repos", r.reposRouter())
 		router.Mount("/builds", r.buildsRouter())
@@ -201,11 +200,11 @@ func (r Router) buildsRouter() *chi.Mux {
 	router.Get("/", build.HandleList(r.Builds))
 	router.Get("/{id}", build.HandleFind(r.Builds))
 	router.Put("/trigger", build.HandleTrigger(r.Builds, r.Scheduler, r.WS))
-	router.Put("/restart", build.HandleRestart(r.Builds, r.Scheduler))
-	router.Put("/stop", build.HandleStop(r.Builds, r.Scheduler))
+	router.Put("/restart", build.HandleRestart(r.Builds, r.Repos, r.Scheduler))
+	router.Put("/stop", build.HandleStop(r.Builds, r.Repos, r.Scheduler))
 	router.Get("/job/{id}", build.HandleFindJob(r.Jobs, r.Scheduler))
-	router.Put("/job/restart", build.HandleRestartJob(r.Jobs, r.Scheduler))
-	router.Put("/job/stop", build.HandleStopJob(r.Jobs, r.Scheduler))
+	router.Put("/job/restart", build.HandleRestartJob(r.Jobs, r.Repos, r.Scheduler))
+	router.Put("/job/stop", build.HandleStopJob(r.Jobs, r.Repos, r.Scheduler))
 
 	return router
 }

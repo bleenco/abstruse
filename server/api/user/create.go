@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 )
@@ -21,10 +22,16 @@ func HandleCreate(users core.UserStore) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// claims := middlewares.ClaimsFromCtx(r.Context())
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
 		var err error
 		defer r.Body.Close()
+
+		u, err := users.Find(claims.ID)
+		if err != nil || u.Role != "admin" {
+			render.UnathorizedError(w, err.Error())
+			return
+		}
 
 		if err := lib.DecodeJSON(r.Body, &f); err != nil {
 			render.InternalServerError(w, err.Error())

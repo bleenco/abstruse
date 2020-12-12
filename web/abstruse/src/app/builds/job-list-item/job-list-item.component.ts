@@ -3,7 +3,6 @@ import { Job, Build } from '../shared/build.model';
 import { BuildsService } from '../shared/builds.service';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { AuthService } from 'src/app/auth/shared/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -17,7 +16,7 @@ export class JobListItemComponent implements OnInit {
 
   processing = false;
 
-  constructor(public buildsService: BuildsService, public auth: AuthService) {}
+  constructor(public buildsService: BuildsService) {}
 
   ngOnInit(): void {}
 

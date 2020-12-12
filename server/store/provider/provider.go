@@ -35,7 +35,7 @@ func (s providerStore) List() ([]*core.Provider, error) {
 
 func (s providerStore) ListUser(userID uint) ([]core.Provider, error) {
 	var providers []core.Provider
-	err := s.db.Find(&providers).Where("user_id = ?", userID).Error
+	err := s.db.Where("user_id = ?", userID).Find(&providers).Error
 	return providers, err
 }
 

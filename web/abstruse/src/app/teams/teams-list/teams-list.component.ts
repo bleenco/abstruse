@@ -6,6 +6,7 @@ import { ModalService } from 'src/app/shared/components/modal/modal.service';
 import { TeamsService } from '../shared/teams.service';
 import { Team } from '../shared/user.model';
 import { TeamModalComponent } from '../team-modal/team-modal.component';
+import { AuthService } from 'src/app/auth/shared/auth.service';
 import Fuse from 'fuse.js';
 
 @UntilDestroy()
@@ -21,7 +22,7 @@ export class TeamsListComponent implements OnInit, AfterViewInit {
   displayedTeams: Team[] = [];
   fetchingTeams = false;
 
-  constructor(private teamsService: TeamsService, public modal: ModalService) {}
+  constructor(private teamsService: TeamsService, public modal: ModalService, public auth: AuthService) {}
 
   ngOnInit(): void {
     this.list();

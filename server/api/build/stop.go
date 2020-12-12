@@ -5,18 +5,20 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 )
 
 // HandleStop returns an http.HandlerFunc that writes JSON encoded
 // result about stopping build to http response body.
-func HandleStop(builds core.BuildStore, scheduler core.Scheduler) http.HandlerFunc {
+func HandleStop(builds core.BuildStore, repos core.RepositoryStore, scheduler core.Scheduler) http.HandlerFunc {
 	type form struct {
 		ID uint `json:"id" valid:"required"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
 		var err error
 		defer r.Body.Close()
@@ -34,6 +36,11 @@ func HandleStop(builds core.BuildStore, scheduler core.Scheduler) http.HandlerFu
 		build, err := builds.Find(uint(f.ID))
 		if err != nil {
 			render.NotFoundError(w, err.Error())
+			return
+		}
+
+		if perms := repos.GetPermissions(build.RepositoryID, claims.ID); !perms.Exec {
+			render.UnathorizedError(w, err.Error())
 			return
 		}
 

@@ -73,12 +73,12 @@
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
       <button type="button" class="button is-small" (click)="restartBuild()"
-        [disabled]="build?.processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)">
+        [disabled]="build?.processing || !build?.repository?.perms?.exec">
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
       <button type="button" class="button is-small" (click)="stopBuild()"
-        [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing || (!this.auth.isAdmin && !build?.repository?.perms?.exec)">
+        [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing || !build?.repository?.perms?.exec">
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

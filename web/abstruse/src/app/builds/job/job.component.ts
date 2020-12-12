@@ -7,7 +7,6 @@ import { DataService } from 'src/app/shared/providers/data.service';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
-import { AuthService } from 'src/app/auth/shared/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -23,12 +22,7 @@ export class JobComponent implements OnInit, OnDestroy {
   processing = false;
   sub: Subscription = new Subscription();
 
-  constructor(
-    private route: ActivatedRoute,
-    private buildsService: BuildsService,
-    private dataService: DataService,
-    public auth: AuthService
-  ) {}
+  constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}
 
   ngOnInit(): void {
     this.jobID = Number(this.route.snapshot.paramMap.get('jobid'));

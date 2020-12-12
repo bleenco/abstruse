@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/go-chi/chi"
@@ -18,6 +19,7 @@ func HandleActive(repos core.RepositoryStore) http.HandlerFunc {
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
 		var err error
 		defer r.Body.Close()
@@ -30,6 +32,11 @@ func HandleActive(repos core.RepositoryStore) http.HandlerFunc {
 
 		if err = lib.DecodeJSON(r.Body, &f); err != nil {
 			render.InternalServerError(w, err.Error())
+			return
+		}
+
+		if perm := repos.GetPermissions(uint(id), claims.ID); !perm.Write {
+			render.UnathorizedError(w, err.Error())
 			return
 		}
 

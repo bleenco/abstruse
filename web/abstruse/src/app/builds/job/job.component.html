@@ -13,12 +13,12 @@
       </div>
       <div class="subheader-right">
         <button type="button" class="button" (click)="restartJob()"
-          [disabled]="job?.processing || (!this.auth.isAdmin && !job?.build?.repository?.perms?.exec)">
+          [disabled]="job?.processing || !job?.build?.repository?.perms?.exec">
           <i class="fas fa-sync-alt"></i>
           <span>Restart</span>
         </button>
         <button type="button" class="button" (click)="stopJob()"
-          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing || (!this.auth.isAdmin && !job?.build?.repository?.perms?.exec)">
+          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing || !job?.build?.repository?.perms?.exec">
           <i class="fas fa-hand-paper"></i>
           <span>Stop</span>
         </button>
