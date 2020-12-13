@@ -15,11 +15,10 @@ import (
 
 // App represents main worker node application entrypoint.
 type App struct {
-	Config    *config.Config
-	Client    *http.Client
-	Logger    *zap.SugaredLogger
-	API       *Server
-	Scheduler *scheduler
+	Config *config.Config
+	Client *http.Client
+	Logger *zap.SugaredLogger
+	API    *Server
 }
 
 // NewApp returns new App instance.
@@ -38,7 +37,6 @@ func NewApp(config *config.Config, logger *zap.Logger) (*App, error) {
 	}
 	app.Client = client
 	app.API = NewServer(config, logger, app)
-	app.Scheduler = newScheduler(config.Scheduler.MaxParallel, logger, app)
 
 	return app, nil
 }
@@ -50,12 +48,6 @@ func (a *App) Run() error {
 
 	go func() {
 		if err := a.API.Run(); err != nil {
-			quitch <- err
-		}
-	}()
-
-	go func() {
-		if err := a.Scheduler.run(); err != nil {
 			quitch <- err
 		}
 	}()
