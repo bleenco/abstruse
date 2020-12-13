@@ -84,9 +84,9 @@ func (r Router) Handler() http.Handler {
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.NoCache)
+	router.Use(middleware.RealIP)
 	router.Use(middleware.Heartbeat("/ping"))
 	if r.Config.HTTP.Compress {
 		router.Use(middleware.Compress(5))

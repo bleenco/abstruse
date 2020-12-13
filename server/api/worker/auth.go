@@ -28,8 +28,7 @@ func HandleAuth(workers core.WorkerRegistry, config *config.Config, ws *ws.App) 
 		}
 		host, _, err = net.SplitHostPort(r.RemoteAddr)
 		if err != nil {
-			render.InternalServerError(w, err.Error())
-			return
+			host = r.RemoteAddr
 		}
 		addr := net.JoinHostPort(host, port)
 

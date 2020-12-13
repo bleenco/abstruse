@@ -1,24 +1,27 @@
 package parser
 
 import (
-	"errors"
+	"fmt"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
 // RepoConfig defines structure for .abstruse.yml configuration files.
 type RepoConfig struct {
-	Image            string         `yaml:"image"`
-	Branches         BranchesConfig `yaml:"branches"`
-	Matrix           []MatrixConfig `yaml:"matrix"`
-	BeforeInstall    []string       `yaml:"before_install"`
-	Install          []string       `yaml:"install"`
-	BeforeScript     []string       `yaml:"before_script"`
-	Script           []string       `yaml:"script"`
-	AfterSuccessfull []string       `yaml:"after_successful"`
-	AfterFailure     []string       `yaml:"after_failure"`
-	AfterScript      []string       `yaml:"after_script"`
-	Cache            []string       `yaml:"cache"`
+	Image         string         `yaml:"image"`
+	Branches      BranchesConfig `yaml:"branches"`
+	Matrix        []MatrixConfig `yaml:"matrix"`
+	BeforeInstall []string       `yaml:"before_install"`
+	Install       []string       `yaml:"install"`
+	BeforeScript  []string       `yaml:"before_script"`
+	Script        []string       `yaml:"script"`
+	AfterSuccess  []string       `yaml:"after_success"`
+	AfterFailure  []string       `yaml:"after_failure"`
+	BeforeDeploy  []string       `yaml:"before_deploy"`
+	Deploy        []string       `yaml:"deploy"`
+	AfterDeploy   []string       `yaml:"after_deploy"`
+	AfterScript   []string       `yaml:"after_script"`
+	Cache         []string       `yaml:"cache"`
 }
 
 // MatrixConfig defines structure for matrix job config in .abstruse.yml file.
@@ -44,7 +47,7 @@ type ConfigParser struct {
 // Parse parses raw config.
 func (c *ConfigParser) Parse() error {
 	if c.Raw == "" {
-		return errors.New("cannot parse empty config")
+		return fmt.Errorf("cannot parse empty config")
 	}
 
 	if err := yaml.Unmarshal([]byte(c.Raw), &c.Parsed); err != nil {
@@ -73,7 +76,7 @@ func (c *ConfigParser) generateCommands() []string {
 	commands = appendCommands(commands, c.Parsed.Install)
 	commands = appendCommands(commands, c.Parsed.BeforeScript)
 	commands = appendCommands(commands, c.Parsed.Script)
-	commands = appendCommands(commands, c.Parsed.AfterSuccessfull)
+	commands = appendCommands(commands, c.Parsed.AfterSuccess)
 	commands = appendCommands(commands, c.Parsed.AfterFailure)
 	commands = appendCommands(commands, c.Parsed.AfterScript)
 	return commands

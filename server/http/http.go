@@ -5,12 +5,16 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/dustin/go-humanize"
-	"github.com/felixge/httpsnoop"
 	"github.com/bleenco/abstruse/server/api"
 	"github.com/bleenco/abstruse/server/config"
+	"github.com/dustin/go-humanize"
+	"github.com/felixge/httpsnoop"
+	"github.com/go-chi/chi/middleware"
 	"go.uber.org/zap"
 )
+
+var xForwardedFor = http.CanonicalHeaderKey("X-Forwarded-For")
+var xRealIP = http.CanonicalHeaderKey("X-Real-IP")
 
 // Server extends net/http Server with graceful shutdowns.
 type Server struct {
@@ -74,7 +78,7 @@ func (s Server) closeWith(err error) {
 
 func (s Server) logHandler(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		m := httpsnoop.CaptureMetrics(handler, w, r)
+		m := httpsnoop.CaptureMetrics(middleware.RealIP(handler), w, r)
 		s.logger.Debugf(
 			"%s %s (code=%d dt=%s written=%s remote=%s)",
 			r.Method,
