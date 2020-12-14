@@ -21,6 +21,7 @@ type (
 		CloneSSH      string   `json:"cloneSSH"`
 		DefaultBranch string   `json:"defaultBranch"`
 		Active        bool     `json:"active"`
+		Timeout       uint     `gorm:"not null,default:3600"  json:"timeout"`
 		UserID        uint     `json:"userID"`
 		User          User     `json:"-"`
 		ProviderID    uint     `gorm:"not null" json:"providerID"`

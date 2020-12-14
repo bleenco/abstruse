@@ -71,6 +71,7 @@ func (s *scheduler) Next(job *core.Job) error {
 	s.mu.Unlock()
 
 	job.Status = "queued"
+	job.Log = ""
 	job.StartTime = nil
 	job.EndTime = nil
 	if err := s.saveJob(job); err != nil {
@@ -88,6 +89,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 		s.removeJob(id)
 		job.Status = "failing"
 		job.EndTime = lib.TimeNow()
+		job.Log = red(fmt.Sprintf("%s\r\n", "==> job stopped"))
 		s.logger.Infof("job %d removed from queue", id)
 		if err := s.saveJob(job); err == nil {
 			return true, nil
@@ -249,7 +251,11 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	s.mu.Lock()
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Minute)
+	timeout := job.Build.Repository.Timeout
+	if timeout == 0 {
+		timeout = 3600
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	s.pending[job.ID] = &jobType{job: job, pb: j, ctx: ctx, cancel: cancel}
 	s.mu.Unlock()
 
