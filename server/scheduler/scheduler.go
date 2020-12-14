@@ -249,7 +249,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	s.mu.Lock()
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Minute)
 	s.pending[job.ID] = &jobType{job: job, pb: j, ctx: ctx, cancel: cancel}
 	s.mu.Unlock()
 
@@ -257,7 +257,11 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	if err != nil {
 		s.logger.Errorf("job %d errored: %v", job.ID, err.Error())
 		job.Log = strings.Join(j.GetLog(), "")
-		job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
+		if strings.Contains(err.Error(), "context deadline exceeded") {
+			job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job timed out"))
+		} else {
+			job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
+		}
 		job.Status = "failing"
 	} else {
 		job.Status = j.GetStatus()

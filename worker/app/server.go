@@ -160,7 +160,10 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 
 	defer func() {
 		s.mu.Lock()
-		delete(s.jobs, job.Id)
+		if _, ok := s.jobs[job.Id]; ok {
+			docker.StopContainer(name)
+			delete(s.jobs, job.Id)
+		}
 		s.mu.Unlock()
 	}()
 
