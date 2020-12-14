@@ -192,7 +192,7 @@ func isContainerRunning(cli *client.Client, id string) bool {
 
 func findContainer(cli *client.Client, name string) (string, error) {
 	name = fmt.Sprintf("/%s", name)
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
 		return "", err
 	}
@@ -210,7 +210,7 @@ func findContainer(cli *client.Client, name string) (string, error) {
 func listRunningContainers(cli *client.Client) ([]string, error) {
 	var names []string
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
 		return names, err
 	}

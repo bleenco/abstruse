@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
 	"sync"
 	"time"
 
@@ -161,8 +162,8 @@ func (w *Worker) Connect(ctx context.Context) error {
 }
 
 // StartJob starts the job.
-func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
-	stream, err := w.CLI.StartJob(context.Background(), job)
+func (w *Worker) StartJob(ctx context.Context, job *pb.Job) (*pb.Job, error) {
+	stream, err := w.CLI.StartJob(ctx, job)
 	if err != nil {
 		return job, err
 	}
@@ -170,7 +171,11 @@ func (w *Worker) StartJob(job *pb.Job) (*pb.Job, error) {
 	for {
 		resp, err := stream.Recv()
 		if err != nil {
-			break
+			if err == io.EOF {
+				break
+			}
+
+			return job, err
 		}
 
 		switch resp.GetType() {

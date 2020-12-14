@@ -14,6 +14,7 @@ import (
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/ws"
 	"github.com/drone/go-scm/scm"
+	"github.com/logrusorgru/aurora"
 	"go.uber.org/zap"
 )
 
@@ -56,8 +57,10 @@ type scheduler struct {
 }
 
 type jobType struct {
-	job *core.Job
-	pb  *pb.Job
+	job    *core.Job
+	pb     *pb.Job
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 func (s *scheduler) Next(job *core.Job) error {
@@ -94,6 +97,14 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 	}
 
 	if job, ok := s.pending[id]; ok {
+		job.cancel()
+
+		defer func() {
+			s.mu.Lock()
+			delete(s.pending, id)
+			s.mu.Unlock()
+		}()
+
 		worker, err := s.getWorker(job.pb.WorkerId)
 		if err != nil {
 			job.job.Status = "failing"
@@ -104,12 +115,7 @@ func (s *scheduler) Stop(id uint) (bool, error) {
 			return false, err
 		}
 
-		stopped, err := worker.StopJob(job.pb)
-		if err != nil {
-			s.mu.Lock()
-			delete(s.pending, job.job.ID)
-			s.mu.Unlock()
-		}
+		stopped, _ := worker.StopJob(job.pb)
 
 		s.logger.Infof("job %d stopped", id)
 		job.job.Status = "failing"
@@ -151,11 +157,10 @@ func (s *scheduler) StopBuild(id uint) error {
 	var wg sync.WaitGroup
 	wg.Add(len(build.Jobs))
 	for _, job := range build.Jobs {
-		job, _ := s.jobStore.Find(job.ID)
-		go func(job *core.Job) {
-			s.Stop(job.ID)
+		go func(id uint) {
+			s.Stop(id)
 			wg.Done()
-		}(job)
+		}(job.ID)
 	}
 	wg.Wait()
 	return s.updateBuildTime(id)
@@ -244,17 +249,22 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	s.mu.Lock()
-	s.pending[job.ID] = &jobType{job: job, pb: j}
+	ctx, cancel := context.WithCancel(context.Background())
+	s.pending[job.ID] = &jobType{job: job, pb: j, ctx: ctx, cancel: cancel}
 	s.mu.Unlock()
 
-	j, err := worker.StartJob(j)
+	j, err := worker.StartJob(ctx, j)
 	if err != nil {
 		s.logger.Errorf("job %d errored: %v", job.ID, err.Error())
+		job.Log = strings.Join(j.GetLog(), "")
+		job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
+		job.Status = "failing"
+	} else {
+		job.Status = j.GetStatus()
+		job.Log = strings.Join(j.GetLog(), "")
 	}
 
-	job.Status = j.GetStatus()
 	job.EndTime = lib.TimeNow()
-	job.Log = strings.Join(j.GetLog(), "")
 	if err := s.saveJob(job); err != nil {
 		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
@@ -473,4 +483,8 @@ func (s *scheduler) run() error {
 			s.next(s.ctx)
 		}
 	}
+}
+
+func red(str string) string {
+	return aurora.Bold(aurora.Red(str)).String()
 }
