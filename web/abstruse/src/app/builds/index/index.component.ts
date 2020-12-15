@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { BuildsItemsOptions } from '../common/builds-items/builds-items-options.model';
+import { filter } from 'rxjs/operators';
 
 @UntilDestroy()
 @Component({
@@ -20,25 +21,25 @@ export class IndexComponent implements OnInit {
       this.router.navigate(['builds/'], { queryParams: { type: 'latest' } });
     }
 
-    this.route.queryParams.pipe(untilDestroyed(this)).subscribe(params => {
-      if (!params || !params.type) {
-        this.router.navigate(['builds/'], { queryParams: { type: 'latest' } });
-        return;
-      }
+    this.route.queryParams
+      .pipe(
+        filter(params => params.type && params.type !== this.options.type),
+        untilDestroyed(this)
+      )
+      .subscribe(params => {
+        this.options = { type: params.type };
 
-      this.options = { type: params.type };
-
-      switch (params.type) {
-        case 'latest':
-          this.title = 'Latest';
-          break;
-        case 'commits':
-          this.title = 'Commits';
-          break;
-        case 'pull-requests':
-          this.title = 'Pull Requests';
-          break;
-      }
-    });
+        switch (params.type) {
+          case 'latest':
+            this.title = 'Latest';
+            break;
+          case 'commits':
+            this.title = 'Commits';
+            break;
+          case 'pull-requests':
+            this.title = 'Pull Requests';
+            break;
+        }
+      });
   }
 }

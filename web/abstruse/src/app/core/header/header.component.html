@@ -2,7 +2,7 @@
   <div class="container">
     <nav class="header-container">
       <div class="header-left">
-        <a class="header-item logo" [routerLink]="['/']">
+        <a class="header-item logo" [routerLink]="['/']" [queryParams]="{ type: 'latest' }">
           <img src="/assets/images/abstruse.svg" class="logo-text" />
         </a>
         <a class="header-item" [routerLink]="['/repos']" routerLinkActive="is-active">
