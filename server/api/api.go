@@ -174,8 +174,9 @@ func (r Router) providersRouter() *chi.Mux {
 
 	router.Get("/", provider.HandleListUser(r.Providers))
 	router.Post("/", provider.HandleCreate(r.Providers))
-	router.Put("/", provider.HandleUpdate(r.Providers))
-	router.Get("/{id}", provider.HandleFind(r.Providers))
+	router.Put("/", provider.HandleUpdate(r.Providers, r.Users))
+	router.Get("/{id}", provider.HandleFind(r.Providers, r.Users))
+	router.Delete("/{id}", provider.HandleDelete(r.Providers, r.Users))
 	router.Put("/sync", provider.HandleSync(r.Providers))
 
 	return router

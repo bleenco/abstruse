@@ -10,8 +10,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// HandleFind writes JSON encoded provider data to the http response body.
-func HandleFind(providers core.ProviderStore, users core.UserStore) http.HandlerFunc {
+// HandleDelete returns an http.HandlerFunc that writes JSON encoded
+// result about deleting provider to the http response body.
+func HandleDelete(providers core.ProviderStore, users core.UserStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims := middlewares.ClaimsFromCtx(r.Context())
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
@@ -28,12 +29,17 @@ func HandleFind(providers core.ProviderStore, users core.UserStore) http.Handler
 
 		provider, err := providers.Find(uint(id))
 		if err != nil {
-			render.InternalServerError(w, err.Error())
+			render.NotFoundError(w, err.Error())
 			return
 		}
 
 		if provider.UserID == claims.ID || user.Role == "admin" {
-			render.JSON(w, http.StatusOK, provider)
+			if err := providers.Delete(provider); err != nil {
+				render.InternalServerError(w, err.Error())
+				return
+			}
+			render.JSON(w, http.StatusOK, render.Empty{})
+			return
 		}
 
 		render.UnathorizedError(w, err.Error())

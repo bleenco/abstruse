@@ -23,4 +23,8 @@ export class ProvidersService {
   update(data: any): Observable<Provider> {
     return this.http.put<any>('/providers', data).pipe(map(d => new Provider(d)));
   }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`/providers/${id}`);
+  }
 }

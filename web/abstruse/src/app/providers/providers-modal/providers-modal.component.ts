@@ -26,6 +26,7 @@ export class ProvidersModalComponent implements OnInit {
   checking = false;
   form!: FormGroup;
   error: string | null = null;
+  deleting = false;
 
   constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {}
 
@@ -82,6 +83,28 @@ export class ProvidersModalComponent implements OnInit {
           }
         );
     }
+  }
+
+  delete(): void {
+    if (!this.provider || !this.provider.id) {
+      return;
+    }
+
+    this.deleting = true;
+    this.providers
+      .delete(this.provider.id)
+      .pipe(
+        finalize(() => (this.deleting = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        () => {
+          this.activeModal.close(true);
+        },
+        err => {
+          this.error = err.message;
+        }
+      );
   }
 
   updateProviderURL(): void {

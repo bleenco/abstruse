@@ -12,7 +12,7 @@ import (
 
 // HandleUpdate returns http.HandlerFunc which writes JSON encoded
 // result about updating provider to the http response body.
-func HandleUpdate(providers core.ProviderStore) http.HandlerFunc {
+func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.HandlerFunc {
 	type form struct {
 		ID          uint   `json:"id" valid:"required"`
 		Name        string `json:"name" valid:"stringlength(4|12),required"`
@@ -38,21 +38,38 @@ func HandleUpdate(providers core.ProviderStore) http.HandlerFunc {
 			return
 		}
 
-		provider := core.Provider{
-			ID:          f.ID,
-			Name:        f.Name,
-			URL:         f.URL,
-			Host:        f.Host,
-			AccessToken: f.AccessToken,
-			Secret:      f.Secret,
-			UserID:      claims.ID,
-		}
-
-		if err := providers.Update(provider); err != nil {
-			render.InternalServerError(w, err.Error())
+		user, err := users.Find(claims.ID)
+		if err != nil {
+			render.UnathorizedError(w, err.Error())
 			return
 		}
 
-		render.JSON(w, http.StatusOK, provider)
+		p, err := providers.Find(f.ID)
+		if err != nil {
+			render.NotFoundError(w, err.Error())
+			return
+		}
+
+		if p.UserID == claims.ID || user.Role == "admin" {
+			provider := core.Provider{
+				ID:          f.ID,
+				Name:        f.Name,
+				URL:         f.URL,
+				Host:        f.Host,
+				AccessToken: f.AccessToken,
+				Secret:      f.Secret,
+				UserID:      claims.ID,
+			}
+
+			if err := providers.Update(provider); err != nil {
+				render.InternalServerError(w, err.Error())
+				return
+			}
+
+			render.JSON(w, http.StatusOK, provider)
+			return
+		}
+
+		render.UnathorizedError(w, err.Error())
 	}
 }

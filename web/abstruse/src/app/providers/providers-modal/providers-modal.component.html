@@ -51,7 +51,12 @@
     </div>
   </div>
   <div class="modal-footer space-between">
-    <div class="align-center"></div>
+    <div class="align-center justify-start">
+      <button type="button" class="button is-red" *ngIf="provider.id" [disabled]="deleting" (click)="delete()">
+        <span *ngIf="!deleting">Delete Provider</span>
+        <span *ngIf="deleting">Deleting provider...</span>
+      </button>
+    </div>
     <div class="align-center">
       <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
       <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
