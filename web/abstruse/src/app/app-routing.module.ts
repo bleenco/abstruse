@@ -12,6 +12,11 @@ const routes: Routes = [
   { path: 'not-found', component: NotFoundComponent },
   { path: 'gateway-timeout', component: GatewayTimeoutComponent },
   {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+    canLoad: [AuthGuardService]
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule),
     canLoad: [AuthGuardService]
