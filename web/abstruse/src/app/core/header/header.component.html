@@ -8,6 +8,9 @@
         <a class="header-item" [routerLink]="['/repos']" routerLinkActive="is-active">
           <span>Repositories</span>
         </a>
+        <a class="header-item" [routerLink]="['/dashboard']" routerLinkActive="is-active">
+          <span>Dashboard</span>
+        </a>
         <a class="header-item" [routerLink]="['/teams']" routerLinkActive="is-active">
           <span>Teams</span>
         </a>
@@ -28,7 +31,7 @@
 
           <div class="header-dropdown-container" [hidden]="!dropdownOpened">
             <div class="hd-links">
-              <a class="hd-item">
+              <a class="hd-item" [routerLink]="['/dashboard']">
                 <span>Dashboard</span>
               </a>
               <a class="hd-item" [routerLink]="['/workers']">

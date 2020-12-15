@@ -9,7 +9,7 @@ export interface ProgressBarSettings {
 }
 
 export const defaultProgressBarSettings: ProgressBarSettings = {
-  color: 'blue',
+  color: 'green',
   transition: true,
   transitionDuration: 400,
   width: '100%',

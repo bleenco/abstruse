@@ -1,0 +1,62 @@
+@import 'variables'
+@import 'colours'
+@import 'mixins'
+
+.section
+  border: 1px solid $border-default
+  border-radius: $border-radius
+  padding: 20px
+  display: block
+
+.card
+  width: 100%
+  height: 100px
+  position: relative
+  border: 1px solid $border-default
+  border-radius: $border-radius
+
+  .card-bg
+    position: absolute
+    bottom: 10px
+    right: 10px
+
+    i
+      color: rgba($border-default, .3)
+      font-size: 70px
+      display: block
+
+  .card-content
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    display: block
+    padding: 15px 30px
+
+    .title, .num, .percent
+      display: block
+      margin-bottom: 7px
+
+    .title
+      color: $text-secondary
+      font-weight: $weight-semibold
+      font-size: 13px
+
+    .num
+      color: $text-secondary
+      font-weight: $weight-medium
+      font-size: 22px
+
+    .percent
+      color: $green
+      font-weight: $weight-semibold
+      font-size: 12px
+      display: flex
+      align-items: center
+
+      i
+        color: $green
+        font-size: 12px
+        margin-right: 5px
+

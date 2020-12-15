@@ -1,1 +1,65 @@
-<p>index works!</p>
+<header class="subheader">
+  <nav class="subheader-links">
+    <a [routerLink]="['/dashboard']" routerLinkActive="is-active">Dashboard</a>
+  </nav>
+  <div class="container">
+    <div class="subheader-container">
+      <div class="subheader-left">
+        <h1>Dashboard</h1>
+        <h2>Abstruse CI Stats</h2>
+      </div>
+      <div class="subheader-right">
+        <button type="button" class="button">
+          <i class="far fa-pause-circle"></i>
+          <span>Pause Scheduler</span>
+        </button>
+        <button type="button" class="button">
+          <i class="fas fa-play-circle"></i>
+          <span>Resume Scheduler</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="columns is-multiline">
+    <div class="column is-12" *ngIf="loading">
+      <app-loader></app-loader>
+    </div>
+    <div class="column is-12">
+      <div class="columns is-multiline">
+        <div class="column is-3" *ngFor="let card of cards">
+          <article class="card">
+            <div class="card-bg">
+              <i [class]="card.icon"></i>
+            </div>
+            <div class="card-content">
+              <span class="title">{{ card.title }}</span>
+              <span class="num" *ngIf="card.type === 'currency'">{{ card.num | currency }}</span>
+              <span class="num" *ngIf="card.type === 'number'">{{ card.num }}</span>
+              <span class="percent">
+                <i class="fa fa-arrow-up"></i>
+                <span>{{ card.percent }}%</span>
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+    <div class="column is-12">
+      <div class="columns">
+        <div class="column is-5">
+          <div class="section">
+            <ngx-line-chart [data]="lineChartData" [options]="lineChartOptions"></ngx-line-chart>
+          </div>
+        </div>
+        <div class="column is-7">
+          <div class="section">
+            <ngx-bar-chart [data]="barChartData" [options]="barChartoptions"></ngx-bar-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

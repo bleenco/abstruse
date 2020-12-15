@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BarChartModule } from 'ngx-graph';
+import { BarChartModule, LineChartModule } from 'ngx-graph';
 import { SharedModule } from '../shared';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { IndexComponent } from './index/index.component';
 
 @NgModule({
   declarations: [IndexComponent],
-  imports: [CommonModule, DashboardRoutingModule, SharedModule, BarChartModule]
+  imports: [CommonModule, DashboardRoutingModule, SharedModule, BarChartModule, LineChartModule]
 })
 export class DashboardModule {}
