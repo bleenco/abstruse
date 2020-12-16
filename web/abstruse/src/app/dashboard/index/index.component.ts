@@ -34,13 +34,6 @@ export class IndexComponent implements OnInit, OnDestroy {
     running: 0
   };
 
-  cards: { title: string; num: number; percent: number; icon: string; type: 'currency' | 'number' }[] = [
-    { title: 'Jobs in Queue', num: 15, percent: 24, icon: 'fas fa-list-alt', type: 'number' },
-    { title: 'Jobs Running', num: 4, percent: 44, icon: 'fas fa-clipboard-list', type: 'number' },
-    { title: 'Server CPU Usage', num: 256, percent: 36, icon: 'fas fa-microchip', type: 'number' },
-    { title: 'Server Memory Usage', num: 1150, percent: 15, icon: 'fas fa-memory', type: 'number' }
-  ];
-
   lineChartOptions: LineChartOptions = {
     height: 300,
     margin: { top: 20, right: 30, bottom: 30, left: 60 },
@@ -197,18 +190,14 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     this.dataService.socketOutput.pipe(untilDestroyed(this)).subscribe((ev: SocketEvent) => {
       if (ev.type === statsSub) {
-        if (this.cpuRealtimeChartData.length) {
-          this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
-          if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
-            this.cpuRealtimeChartData[0].splice(0, 1);
-          }
+        this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
+        if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
+          this.cpuRealtimeChartData[0].splice(0, 1);
         }
 
-        if (this.memRealtimeChartData.length) {
-          this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
-          if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
-            this.memRealtimeChartData[0].splice(0, 1);
-          }
+        this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
+        if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
+          this.memRealtimeChartData[0].splice(0, 1);
         }
 
         this.data = { ...ev.data };
@@ -224,6 +213,8 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   stats(): void {
     this.loading = true;
+    this.cpuRealtimeChartData[0] = [];
+    this.memRealtimeChartData[0] = [];
     this.dashboardService
       .stats()
       .pipe(
@@ -231,17 +222,17 @@ export class IndexComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe(resp => {
-        const usage = [...resp.usage] || [];
+        const usage = resp.usage || [];
         if (usage.length) {
           const last = usage[usage.length - 1];
           this.data.cpu = last.cpu;
           this.data.mem = last.mem;
         }
 
-        this.cpuRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.cpu }));
-        this.memRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.mem }));
+        this.cpuRealtimeChartData[0] = usage.map((u: any) => ({ date: new Date(u.timestamp), value: u.cpu }));
+        this.memRealtimeChartData[0] = usage.map((u: any) => ({ date: new Date(u.timestamp), value: u.mem }));
 
-        const stats = [...resp.stats] || [];
+        const stats = resp.stats || [];
         if (stats.length) {
           const last = stats[stats.length - 1];
           this.data.queued = last.queued;
