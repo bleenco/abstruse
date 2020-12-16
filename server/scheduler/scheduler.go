@@ -222,6 +222,14 @@ func (s *scheduler) Stats() core.SchedulerStats {
 }
 
 func (s *scheduler) process() error {
+	s.mu.Lock()
+	paused := s.paused
+	s.mu.Unlock()
+
+	if paused {
+		return fmt.Errorf("scheduler paused")
+	}
+
 	worker, err := s.findWorker()
 	if err != nil {
 		return err
