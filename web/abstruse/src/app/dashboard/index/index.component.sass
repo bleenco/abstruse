@@ -6,7 +6,16 @@
   border: 1px solid $border-default
   border-radius: $border-radius
   padding: 20px
-  display: block
+
+  h3
+    color: $text-secondary
+    font-size: 13px
+    font-weight: $weight-medium
+    margin: 5px 0
+
+    &.is-centered
+      display: block
+      text-align: center
 
 .card
   width: 100%
@@ -40,17 +49,17 @@
 
     .title
       color: $text-secondary
-      font-weight: $weight-semibold
+      font-weight: $weight-normal
       font-size: 13px
 
     .num
       color: $text-secondary
-      font-weight: $weight-medium
+      font-weight: $weight-normal
       font-size: 22px
 
     .percent
       color: $green
-      font-weight: $weight-semibold
+      font-weight: $weight-medium
       font-size: 12px
       display: flex
       align-items: center

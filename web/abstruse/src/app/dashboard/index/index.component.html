@@ -13,10 +13,10 @@
           <i class="far fa-pause-circle"></i>
           <span>Pause Scheduler</span>
         </button>
-        <button type="button" class="button">
+        <!-- <button type="button" class="button">
           <i class="fas fa-play-circle"></i>
           <span>Resume Scheduler</span>
-        </button>
+        </button> -->
       </div>
     </div>
   </div>
@@ -39,7 +39,6 @@
               <span class="num" *ngIf="card.type === 'currency'">{{ card.num | currency }}</span>
               <span class="num" *ngIf="card.type === 'number'">{{ card.num }}</span>
               <span class="percent">
-                <i class="fa fa-arrow-up"></i>
                 <span>{{ card.percent }}%</span>
               </span>
             </div>
@@ -51,11 +50,24 @@
       <div class="columns">
         <div class="column is-5">
           <div class="section">
-            <ngx-line-chart [data]="lineChartData" [options]="lineChartOptions"></ngx-line-chart>
+            <!-- <ngx-line-chart [data]="lineChartData" [options]="lineChartOptions"></ngx-line-chart> -->
+            <div class="section-rlchart">
+              <h3 class="is-centered">CPU Usage</h3>
+              <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
+              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="realtimeChartData">
+              </ngx-realtime-canvas-chart>
+            </div>
+            <div class="section-rlchart">
+              <h3 class="is-centered">Memory Usage</h3>
+              <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
+              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="realtimeChartData">
+              </ngx-realtime-canvas-chart>
+            </div>
           </div>
         </div>
         <div class="column is-7">
           <div class="section">
+            <h3>Builds History</h3>
             <ngx-bar-chart [data]="barChartData" [options]="barChartoptions"></ngx-bar-chart>
           </div>
         </div>
