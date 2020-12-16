@@ -53,7 +53,12 @@
             <div class="card-content">
               <span class="title">Queued Jobs</span>
               <span class="num">{{ data.queued }}</span>
-              <span class="percent"></span>
+              <span class="percent">
+                <i class="fas fa-list-alt"></i>
+                <span *ngIf="queuedPercent >= 80">High Usage</span>
+                <span *ngIf="queuedPercent > 30 && queuedPercent < 80">Normal Usage</span>
+                <span *ngIf="queuedPercent <= 30">Low Usage</span>
+              </span>
             </div>
           </article>
         </div>
@@ -64,8 +69,13 @@
             </div>
             <div class="card-content">
               <span class="title">Pending Jobs</span>
-              <span class="num">{{ data.pending }}</span>
-              <span class="percent"></span>
+              <span class="num">{{ data.pending }} / {{ data.max }}</span>
+              <span class="percent">
+                <i class="fas fa-server"></i>
+                <span *ngIf="pendingPercent >= 80">High Usage</span>
+                <span *ngIf="pendingPercent > 30 && pendingPercent < 80">Normal Usage</span>
+                <span *ngIf="pendingPercent <= 30">Low Usage</span>
+              </span>
             </div>
           </article>
         </div>
@@ -77,7 +87,12 @@
             <div class="card-content">
               <span class="title">CPU Usage</span>
               <span class="num">{{ data.cpu }}%</span>
-              <span class="percent"></span>
+              <span class="percent">
+                <i class="fas fa-microchip"></i>
+                <span *ngIf="data.cpu >= 80">High Usage</span>
+                <span *ngIf="data.cpu > 30 && data.cpu < 80">Normal Usage</span>
+                <span *ngIf="data.cpu <= 30">Low Usage</span>
+              </span>
             </div>
           </article>
         </div>
@@ -89,7 +104,12 @@
             <div class="card-content">
               <span class="title">Memory Usage</span>
               <span class="num">{{ data.mem }}%</span>
-              <span class="percent"></span>
+              <span class="percent">
+                <i class="fas fa-memory"></i>
+                <span *ngIf="data.mem >= 80">High Usage</span>
+                <span *ngIf="data.mem > 30 && data.mem < 80">Normal Usage</span>
+                <span *ngIf="data.mem <= 30">Low Usage</span>
+              </span>
             </div>
           </article>
         </div>
@@ -102,13 +122,11 @@
             <!-- <ngx-line-chart [data]="lineChartData" [options]="lineChartOptions"></ngx-line-chart> -->
             <div class="section-rlchart">
               <h3 class="is-centered">CPU Usage</h3>
-              <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
               <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="cpuRealtimeChartData">
               </ngx-realtime-canvas-chart>
             </div>
             <div class="section-rlchart">
               <h3 class="is-centered">Memory Usage</h3>
-              <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
               <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="memRealtimeChartData">
               </ngx-realtime-canvas-chart>
             </div>

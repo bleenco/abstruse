@@ -153,6 +153,14 @@ export class IndexComponent implements OnInit, OnDestroy {
   cpuRealtimeChartData: RealtimeChartData[][] = [[]];
   memRealtimeChartData: RealtimeChartData[][] = [[]];
 
+  get pendingPercent(): number {
+    return Math.round(Number((this.data.running / this.data.max) * 100)) || 0;
+  }
+
+  get queuedPercent(): number {
+    return Math.round(Number((this.data.queued / (this.data.queued + this.data.running)) * 100)) || 0;
+  }
+
   constructor(private dashboardService: DashboardService, private dataService: DataService) {
     this.barChartData = [
       '11.12.',
