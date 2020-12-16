@@ -29,7 +29,7 @@
     </div>
     <div class="column is-12">
       <div class="columns is-multiline">
-        <div class="column is-3" *ngFor="let card of cards">
+        <!-- <div class="column is-3" *ngFor="let card of cards">
           <article class="card">
             <div class="card-bg">
               <i [class]="card.icon"></i>
@@ -44,6 +44,55 @@
             </div>
           </article>
         </div>
+      </div> -->
+        <div class="column is-3">
+          <article class="card">
+            <div class="card-bg">
+              <i class="fas fa-list-alt"></i>
+            </div>
+            <div class="card-content">
+              <span class="title">Queued Jobs</span>
+              <span class="num">{{ data.queued }}</span>
+              <span class="percent"></span>
+            </div>
+          </article>
+        </div>
+        <div class="column is-3">
+          <article class="card">
+            <div class="card-bg">
+              <i class="fas fa-clipboard-list"></i>
+            </div>
+            <div class="card-content">
+              <span class="title">Pending Jobs</span>
+              <span class="num">{{ data.pending }}</span>
+              <span class="percent"></span>
+            </div>
+          </article>
+        </div>
+        <div class="column is-3">
+          <article class="card">
+            <div class="card-bg">
+              <i class="fas fa-microchip"></i>
+            </div>
+            <div class="card-content">
+              <span class="title">CPU Usage</span>
+              <span class="num">{{ data.cpu }}%</span>
+              <span class="percent"></span>
+            </div>
+          </article>
+        </div>
+        <div class="column is-3">
+          <article class="card">
+            <div class="card-bg">
+              <i class="fas fa-memory"></i>
+            </div>
+            <div class="card-content">
+              <span class="title">Memory Usage</span>
+              <span class="num">{{ data.mem }}%</span>
+              <span class="percent"></span>
+            </div>
+          </article>
+        </div>
       </div>
     </div>
     <div class="column is-12">
@@ -54,13 +103,13 @@
             <div class="section-rlchart">
               <h3 class="is-centered">CPU Usage</h3>
               <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
-              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="realtimeChartData">
+              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="cpuRealtimeChartData">
               </ngx-realtime-canvas-chart>
             </div>
             <div class="section-rlchart">
               <h3 class="is-centered">Memory Usage</h3>
               <!-- <ngx-realtime-chart [options]="realtimeChartOptions" [data]="realtimeChartData"></ngx-realtime-chart> -->
-              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="realtimeChartData">
+              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="memRealtimeChartData">
               </ngx-realtime-canvas-chart>
             </div>
           </div>

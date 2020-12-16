@@ -1,8 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { addDays, subSeconds } from 'date-fns';
-import { BarChartData, BarChartOptions, LineChartData, LineChartOptions, RealtimeCanvasChartOptions } from 'ngx-graph';
-import { timer } from 'rxjs';
+import {
+  BarChartData,
+  BarChartOptions,
+  LineChartData,
+  LineChartOptions,
+  RealtimeCanvasChartOptions,
+  RealtimeChartData
+} from 'ngx-graph';
+import { finalize } from 'rxjs/operators';
+import { SocketEvent } from 'src/app/shared/models/socket.model';
+import { DataService } from 'src/app/shared/providers/data.service';
+import { DashboardService } from '../shared/dashboard.service';
+
+const statsSub = '/subs/serverusage';
 
 @UntilDestroy()
 @Component({
@@ -10,8 +22,17 @@ import { timer } from 'rxjs';
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.sass']
 })
-export class IndexComponent implements OnInit {
+export class IndexComponent implements OnInit, OnDestroy {
   loading = false;
+  data: { cpu: number; mem: number; queued: number; pending: number; workers: number; max: number; running: number } = {
+    cpu: 0,
+    mem: 0,
+    queued: 0,
+    pending: 0,
+    workers: 0,
+    max: 0,
+    running: 0
+  };
 
   cards: { title: string; num: number; percent: number; icon: string; type: 'currency' | 'number' }[] = [
     { title: 'Jobs in Queue', num: 15, percent: 24, icon: 'fas fa-list-alt', type: 'number' },
@@ -100,35 +121,12 @@ export class IndexComponent implements OnInit {
   };
   barChartData: BarChartData[];
 
-  // realtimeChartOptions: RealtimeChartOptions = {
-  //   height: 150,
-  //   margin: { left: 40, right: 10, bottom: 30, top: 5 },
-  //   lines: [{ color: '#48bb78', lineWidth: 2, area: true, areaColor: '#48bb78', areaOpacity: 0.02 }],
-  //   xGrid: {
-  //     tickPadding: 15,
-  //     tickNumber: 5,
-  //     tickFontSize: 11,
-  //     tickFontWeight: 'normal',
-  //     tickFontColor: '#CBCBCB',
-  //     color: '#ffffff'
-  //   },
-  //   yGrid: {
-  //     min: 0,
-  //     max: 100,
-  //     tickNumber: 5,
-  //     tickFormat: (v: string | number) => `${v}%`,
-  //     tickPadding: 20,
-  //     tickFontWeight: 'normal',
-  //     tickFontColor: '#CBCBCB',
-  //     tickFontSize: 11
-  //   },
-  //   timeSlots: 60
-  // };
+  timeSlots = 120;
   realtimeChartOptions: RealtimeCanvasChartOptions = {
     height: 150,
-    margin: { left: 40, top: 10 },
+    margin: { left: 40, top: 10, bottom: 30, right: 10 },
     fps: 24,
-    timeSlots: 60,
+    timeSlots: this.timeSlots,
     xGrid: {
       tickPadding: 15,
       tickNumber: 5,
@@ -152,9 +150,10 @@ export class IndexComponent implements OnInit {
     },
     lines: [{ color: '#48bb78', opacity: 1, area: true, areaColor: '#48bb78', areaOpacity: 0.05, curve: 'basis' }]
   };
-  realtimeChartData = [[...this.generateRandomRealtimeData(60, 1, 50, 75)]];
+  cpuRealtimeChartData: RealtimeChartData[][] = [[]];
+  memRealtimeChartData: RealtimeChartData[][] = [[]];
 
-  constructor() {
+  constructor(private dashboardService: DashboardService, private dataService: DataService) {
     this.barChartData = [
       '11.12.',
       '12.12.',
@@ -176,14 +175,56 @@ export class IndexComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    timer(0, 1000)
-      .pipe(untilDestroyed(this))
-      .subscribe(() => {
-        this.realtimeChartData[0].push({ date: new Date(), value: this.randomInt(50, 75) });
-        if (this.realtimeChartData[0].length - 2 > 60) {
-          this.realtimeChartData[0].splice(0, 1);
+    this.stats();
+
+    this.dataService.socketOutput.pipe(untilDestroyed(this)).subscribe((ev: SocketEvent) => {
+      if (ev.type === statsSub) {
+        this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
+        this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
+        this.data = { ...ev.data };
+      }
+    });
+
+    this.subscribeToEvents();
+  }
+
+  ngOnDestroy(): void {
+    this.dataService.unsubscribeAll();
+  }
+
+  stats(): void {
+    this.loading = true;
+    this.dashboardService
+      .stats()
+      .pipe(
+        finalize(() => (this.loading = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(resp => {
+        const usage = [...resp.usage] || [];
+        if (usage.length) {
+          const last = usage[usage.length - 1];
+          this.data.cpu = last.cpu;
+          this.data.mem = last.mem;
+        }
+
+        this.cpuRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.cpu }));
+        this.memRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.mem }));
+
+        const stats = [...resp.stats] || [];
+        if (stats.length) {
+          const last = stats[stats.length - 1];
+          this.data.queued = last.queued;
+          this.data.pending = last.pending;
+          this.data.workers = last.workers;
+          this.data.max = last.max;
+          this.data.running = last.running;
         }
       });
+  }
+
+  private subscribeToEvents(): void {
+    this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: statsSub } });
   }
 
   private randomInt(min: number = 0, max: number = 100): number {
@@ -197,20 +238,5 @@ export class IndexComponent implements OnInit {
     fromDate = new Date().setHours(0, 0, 0, 0)
   ): { x: Date; y: number }[] {
     return Array.from(Array(n).keys()).map((x, i) => ({ x: addDays(fromDate, i), y: this.randomInt(min, max) }));
-  }
-
-  private generateRandomRealtimeData(
-    n: number = 10,
-    step: number = 1,
-    min: number = 0,
-    max: number = 100,
-    date = new Date()
-  ): { date: Date; value: number }[] {
-    return Array.from(Array(n).keys())
-      .map((_, i) => ({
-        date: subSeconds(date, i * step),
-        value: this.randomInt(min, max)
-      }))
-      .reverse();
   }
 }

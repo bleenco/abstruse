@@ -7,6 +7,7 @@ import (
 	"github.com/bleenco/abstruse/server/http"
 	"github.com/bleenco/abstruse/server/logger"
 	"github.com/bleenco/abstruse/server/scheduler"
+	"github.com/bleenco/abstruse/server/service/stats"
 	"github.com/bleenco/abstruse/server/store"
 	"github.com/bleenco/abstruse/server/store/build"
 	"github.com/bleenco/abstruse/server/store/job"
@@ -36,6 +37,7 @@ func CreateApp() (*app, error) {
 		wire.NewSet(logger.New),
 		wire.NewSet(ws.New),
 		wire.NewSet(scheduler.New),
+		wire.NewSet(stats.New),
 		wire.NewSet(newApp, newConfig),
 	)))
 }

@@ -193,6 +193,34 @@ func (s *scheduler) JobLog(id uint) (string, error) {
 	return "", fmt.Errorf("job not running")
 }
 
+func (s *scheduler) Stats() core.SchedulerStats {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	var max int
+	var running int
+	var workers int
+	queued := len(s.queued)
+	pending := len(s.pending)
+	if w, err := s.workers.List(); err == nil {
+		workers = len(w)
+
+		for _, wr := range w {
+			max = max + wr.Max
+			running = running + wr.Running
+		}
+	}
+
+	return core.SchedulerStats{
+		Queued:    queued,
+		Pending:   pending,
+		Workers:   workers,
+		Max:       max,
+		Running:   running,
+		Timestamp: time.Now(),
+	}
+}
+
 func (s *scheduler) process() error {
 	worker, err := s.findWorker()
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/bleenco/abstruse/server/api/provider"
 	"github.com/bleenco/abstruse/server/api/repo"
 	"github.com/bleenco/abstruse/server/api/setup"
+	"github.com/bleenco/abstruse/server/api/stats"
 	"github.com/bleenco/abstruse/server/api/system"
 	"github.com/bleenco/abstruse/server/api/team"
 	"github.com/bleenco/abstruse/server/api/user"
@@ -48,6 +49,7 @@ func New(
 	repos core.RepositoryStore,
 	workers core.WorkerRegistry,
 	scheduler core.Scheduler,
+	stats core.StatsService,
 ) *Router {
 	return &Router{
 		Config:      config,
@@ -61,6 +63,7 @@ func New(
 		Repos:       repos,
 		Workers:     workers,
 		Scheduler:   scheduler,
+		Stats:       stats,
 	}
 }
 
@@ -77,6 +80,7 @@ type Router struct {
 	Repos       core.RepositoryStore
 	Workers     core.WorkerRegistry
 	Scheduler   core.Scheduler
+	Stats       core.StatsService
 }
 
 // Handler returns the http.Handler.
@@ -110,6 +114,7 @@ func (r Router) apiRouter() *chi.Mux {
 	router.Mount("/setup", r.setupRouter())
 	router.Mount("/auth", r.authRouter())
 	router.Mount("/workers", r.workersRouter())
+	router.Mount("/stats", r.statsRouter())
 
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.Authenticator)
@@ -226,6 +231,14 @@ func (r Router) systemRouter() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/version", system.HandleVersion())
+
+	return router
+}
+
+func (r Router) statsRouter() *chi.Mux {
+	router := chi.NewRouter()
+
+	router.Get("/", stats.HandleStats(r.Stats))
 
 	return router
 }

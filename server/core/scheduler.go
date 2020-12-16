@@ -1,6 +1,18 @@
 package core
 
+import "time"
+
 type (
+	// SchedulerStats defines scheduler statistics.
+	SchedulerStats struct {
+		Queued    int       `json:"queued"`
+		Pending   int       `json:"pending"`
+		Workers   int       `json:"workers"`
+		Max       int       `json:"max"`
+		Running   int       `json:"running"`
+		Timestamp time.Time `json:"timestamp"`
+	}
+
 	// Scheduler represents build jobs scheduler.
 	Scheduler interface {
 		// Next schedules job for execution.
@@ -24,5 +36,8 @@ type (
 
 		// JobLog returns jobs current log output.
 		JobLog(uint) (string, error)
+
+		// Stats returns scheduler current statistics.
+		Stats() SchedulerStats
 	}
 )
