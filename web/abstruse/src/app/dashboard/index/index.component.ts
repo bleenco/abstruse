@@ -217,7 +217,14 @@ export class IndexComponent implements OnInit, OnDestroy {
         }
 
         this.cpuRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.cpu }));
+        if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
+          this.cpuRealtimeChartData[0].splice(0, 1);
+        }
+
         this.memRealtimeChartData[0] = usage.map(u => ({ date: new Date(u.timestamp), value: u.mem }));
+        if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
+          this.memRealtimeChartData[0].splice(0, 1);
+        }
 
         const stats = [...resp.stats] || [];
         if (stats.length) {
