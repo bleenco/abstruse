@@ -148,10 +148,20 @@ export class IndexComponent implements OnInit, OnDestroy {
       tickFontColor: '#718096',
       tickFontSize: 10
     },
-    lines: [{ color: '#48bb78', opacity: 1, area: true, areaColor: '#48bb78', areaOpacity: 0.05, curve: 'basis' }]
+    lines: [
+      {
+        color: '#48bb78',
+        opacity: 1,
+        area: true,
+        areaColor: '#48bb78',
+        areaOpacity: 0.05,
+        curve: 'basis',
+        lineWidth: 2
+      }
+    ]
   };
-  cpuRealtimeChartData: RealtimeChartData[][] = [[]];
-  memRealtimeChartData: RealtimeChartData[][] = [[]];
+  cpuRealtimeChartData: RealtimeChartData[][] = [];
+  memRealtimeChartData: RealtimeChartData[][] = [];
 
   get pendingPercent(): number {
     return Math.round(Number((this.data.running / this.data.max) * 100)) || 0;
@@ -187,14 +197,18 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     this.dataService.socketOutput.pipe(untilDestroyed(this)).subscribe((ev: SocketEvent) => {
       if (ev.type === statsSub) {
-        this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
-        if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
-          this.cpuRealtimeChartData[0].splice(0, 1);
+        if (this.cpuRealtimeChartData.length) {
+          this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
+          if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
+            this.cpuRealtimeChartData[0].splice(0, 1);
+          }
         }
 
-        this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
-        if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
-          this.memRealtimeChartData[0].splice(0, 1);
+        if (this.memRealtimeChartData.length) {
+          this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
+          if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
+            this.memRealtimeChartData[0].splice(0, 1);
+          }
         }
 
         this.data = { ...ev.data };
