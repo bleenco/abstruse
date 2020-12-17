@@ -6306,10 +6306,10 @@ ngx-cookie-service@^10.1.1:
   dependencies:
     tslib "^2.0.0"
 
-ngx-graph@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/ngx-graph/-/ngx-graph-0.8.0.tgz#d50988319759144e66f8e5656451aa484f12b590"
-  integrity sha512-eVChcDhTlBerpyBJGbhNcR3gnzp5GNodcE7um416GGrPM61VvoNM5wZ2IgzFwGuBt/ntxVe1cb5mR+35PHNhkg==
+ngx-graph@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/ngx-graph/-/ngx-graph-0.8.1.tgz#01fd36e0ac72234967cc6abd46ff193321b81df5"
+  integrity sha512-OBWZlYzjS7bnLw0miHakmQFzJhpky7fKTxBu4M0MuL13T8t6LwToVQnrw2s13mFEri4lWq28ZJe3cx9xLHy+Ng==
   dependencies:
     "@types/d3" "^5.16.3"
     d3 "^5.16.0"

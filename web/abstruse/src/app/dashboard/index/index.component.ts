@@ -110,7 +110,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     xGrid: { tickPadding: 10, tickFontSize: 12, color: '#ffffff', tickFontWeight: 'normal' },
     colors: ['#48bb78', '#9ae6b4'],
     borderRadius: 5,
-    padding: 0.2
+    padding: 0.1
   };
   barChartData: BarChartData;
 
@@ -232,7 +232,7 @@ export class IndexComponent implements OnInit, OnDestroy {
       .map((_, i: number) => subDays(new Date(), i))
       .map(d => format(d, 'd MMM'))
       .reverse();
-    const id = ['Jobs Passed', 'Job Failed'];
+    const id = ['Jobs Passed', 'Jobs Failed'];
 
     return [...cat].map(c => {
       return { category: c, values: [...id].map(i => ({ id: i, value: this.randomInt(0, 25000) })) };
