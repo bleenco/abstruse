@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { addDays, subSeconds } from 'date-fns';
+import { addDays, format, subDays, subSeconds } from 'date-fns';
 import {
   BarChartData,
   BarChartOptions,
@@ -9,7 +9,7 @@ import {
   RealtimeCanvasChartOptions,
   RealtimeChartData
 } from 'ngx-graph';
-import { finalize } from 'rxjs/operators';
+import { delay, finalize } from 'rxjs/operators';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 import { DataService } from 'src/app/shared/providers/data.service';
 import { DashboardService } from '../shared/dashboard.service';
@@ -108,11 +108,11 @@ export class IndexComponent implements OnInit, OnDestroy {
       opacity: 0.6
     },
     xGrid: { tickPadding: 10, tickFontSize: 12, color: '#ffffff', tickFontWeight: 'normal' },
-    colors: ['#48bb78'],
+    colors: ['#48bb78', '#9ae6b4'],
     borderRadius: 5,
     padding: 0.2
   };
-  barChartData: BarChartData[];
+  barChartData: BarChartData;
 
   timeSlots = 120;
   realtimeChartOptions: RealtimeCanvasChartOptions = {
@@ -165,24 +165,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
 
   constructor(private dashboardService: DashboardService, private dataService: DataService) {
-    this.barChartData = [
-      '11.12.',
-      '12.12.',
-      '13.12.',
-      '14.12.',
-      '15.12.',
-      '16.12.',
-      '17.12.',
-      '18.12.',
-      '19.12.',
-      '20.12.',
-      '21.12.',
-      '22.12.',
-      '23.12.',
-      '24.12.',
-      '25.12.',
-      '26.12.'
-    ].map(color => ({ id: color, y: this.randomInt(10000, 22000) }));
+    this.barChartData = this.generateBarData();
   }
 
   ngOnInit(): void {
@@ -213,6 +196,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.dashboardService
       .stats()
       .pipe(
+        delay(500),
         finalize(() => (this.loading = false)),
         untilDestroyed(this)
       )
@@ -241,6 +225,18 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   private subscribeToEvents(): void {
     this.dataService.socketInput.emit({ type: 'subscribe', data: { sub: statsSub } });
+  }
+
+  private generateBarData(): BarChartData {
+    const cat = [...new Array(14)]
+      .map((_, i: number) => subDays(new Date(), i))
+      .map(d => format(d, 'd MMM'))
+      .reverse();
+    const id = ['Jobs Passed', 'Job Failed'];
+
+    return [...cat].map(c => {
+      return { category: c, values: [...id].map(i => ({ id: i, value: this.randomInt(0, 25000) })) };
+    });
   }
 
   private randomInt(min: number = 0, max: number = 100): number {

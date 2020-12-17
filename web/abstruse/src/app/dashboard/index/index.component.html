@@ -9,7 +9,8 @@
         <h2>Abstruse CI Stats</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button">
+        <button type="button" class="button" appTooltip
+          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out.">
           <i class="far fa-pause-circle"></i>
           <span>Pause Scheduler</span>
         </button>
@@ -27,24 +28,8 @@
     <div class="column is-12" *ngIf="loading">
       <app-loader></app-loader>
     </div>
-    <div class="column is-12">
+    <div class="column is-12" *ngIf="!loading">
       <div class="columns is-multiline">
-        <!-- <div class="column is-3" *ngFor="let card of cards">
-          <article class="card">
-            <div class="card-bg">
-              <i [class]="card.icon"></i>
-            </div>
-            <div class="card-content">
-              <span class="title">{{ card.title }}</span>
-              <span class="num" *ngIf="card.type === 'currency'">{{ card.num | currency }}</span>
-              <span class="num" *ngIf="card.type === 'number'">{{ card.num }}</span>
-              <span class="percent">
-                <span>{{ card.percent }}%</span>
-              </span>
-            </div>
-          </article>
-        </div>
-      </div> -->
         <div class="column is-3">
           <article class="card">
             <div class="card-bg">
@@ -115,11 +100,10 @@
         </div>
       </div>
     </div>
-    <div class="column is-12">
+    <div class="column is-12" *ngIf="!loading">
       <div class="columns">
         <div class="column is-5">
           <div class="section">
-            <!-- <ngx-line-chart [data]="lineChartData" [options]="lineChartOptions"></ngx-line-chart> -->
             <div class="section-rlchart">
               <h3 class="is-centered">CPU Usage</h3>
               <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="cpuRealtimeChartData">
