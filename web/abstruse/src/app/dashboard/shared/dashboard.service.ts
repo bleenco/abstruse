@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { format } from 'date-fns';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { generateJobModel, Job } from 'src/app/builds/shared/build.model';
@@ -16,8 +17,8 @@ export class DashboardService {
 
   jobs(from: Date, to: Date): Observable<Job[]> {
     let params = new HttpParams();
-    params = params.append('from', String(from));
-    params = params.append('to', String(to));
+    params = params.append('from', format(from, `yyyy-MM-dd'T'HH:mm:ss.SSSxxx`));
+    params = params.append('to', format(to, `yyyy-MM-dd'T'HH:mm:ss.SSSxxx`));
     return this.http
       .get<Job[]>('/stats/jobs', { params })
       .pipe(map(data => (data && data.length ? data.map(generateJobModel) : [])));
