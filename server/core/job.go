@@ -26,6 +26,9 @@ type (
 		// FindUser returns job by id and user id.
 		FindUser(uint, uint) (*Job, error)
 
+		// List returns jobs based bu from and to dates.
+		List(time.Time, time.Time) ([]*Job, error)
+
 		// Create persists job to the datastore.
 		Create(*Job) error
 

@@ -118,8 +118,22 @@
         </div>
         <div class="column is-7">
           <div class="section">
-            <h3>Builds History</h3>
-            <ngx-bar-chart [data]="barChartData" [options]="barChartoptions"></ngx-bar-chart>
+            <div class="space-between">
+              <h3>Builds History</h3>
+              <div class="sub-links">
+                <span class="sub-link" [class.is-active]="jobHistory === 'week'" (click)="jobsLastWeek()">Last 7
+                  Days</span>
+                <span class="sub-link" [class.is-active]="jobHistory === 'month'" (click)="jobsLastMonth()">Last
+                  Month</span>
+              </div>
+            </div>
+            <ngx-bar-chart [data]="barData" [options]="barChartoptions"
+              *ngIf="!loadingJobs && barData && barData.length"></ngx-bar-chart>
+            <div class="bar-chart-placeholder" *ngIf="loadingJobs || !barData || !barData.length">
+              <app-loader *ngIf="loadingJobs"></app-loader>
+              <span class="message" *ngIf="!loadingJobs && (!barData || !barData.length)">Not enough data to display
+                chart.</span>
+            </div>
           </div>
         </div>
       </div>

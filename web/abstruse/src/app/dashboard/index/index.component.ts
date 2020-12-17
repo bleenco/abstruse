@@ -24,6 +24,10 @@ const statsSub = '/subs/serverusage';
 })
 export class IndexComponent implements OnInit, OnDestroy {
   loading = false;
+  loadingJobs = false;
+  error: string | null = null;
+  jobHistory: 'month' | 'week' = 'month';
+
   data: { cpu: number; mem: number; queued: number; pending: number; workers: number; max: number; running: number } = {
     cpu: 0,
     mem: 0,
@@ -98,7 +102,6 @@ export class IndexComponent implements OnInit, OnDestroy {
     margin: { top: 20, right: 0, bottom: 30, left: 60 },
     yGrid: {
       min: 0,
-      max: 25000,
       tickFontSize: 11,
       tickFormat: (v: number | Date) => `${v}`,
       tickPadding: 40,
@@ -113,6 +116,7 @@ export class IndexComponent implements OnInit, OnDestroy {
     padding: 0.1
   };
   barChartData: BarChartData;
+  barData: BarChartData = [];
 
   timeSlots = 120;
   realtimeChartOptions: RealtimeCanvasChartOptions = {
@@ -220,7 +224,58 @@ export class IndexComponent implements OnInit, OnDestroy {
           this.data.max = last.max;
           this.data.running = last.running;
         }
+
+        this.jobsLastMonth();
       });
+  }
+
+  jobsLastMonth(): void {
+    this.jobHistory = 'month';
+    const [from, to] = [subDays(new Date(), 31), new Date()];
+    this.jobsHistory(from, to);
+  }
+
+  jobsLastWeek(): void {
+    this.jobHistory = 'week';
+    const [from, to] = [subDays(new Date(), 7), new Date()];
+    this.jobsHistory(from, to);
+  }
+
+  jobsHistory(from: Date, to: Date): void {
+    this.loadingJobs = true;
+    this.dashboardService
+      .jobs(from, to)
+      .pipe(
+        delay(500),
+        finalize(() => (this.loadingJobs = false)),
+        untilDestroyed(this)
+      )
+      .subscribe(
+        resp => {
+          this.barData = resp.reduce((acc: any, curr) => {
+            const category = format(curr.startTime as Date, 'd MMM');
+            if (curr.status !== 'passing' && curr.status !== 'failing') {
+              return acc;
+            }
+            const status = curr.status;
+            const c = acc.find((d: any) => d.category === category);
+            if (!c) {
+              acc.push({ category, values: ['passing', 'failing'].map(i => ({ id: i, value: 0 })) });
+            }
+            const index = acc.findIndex((d: any) => d.category === category);
+            if (status === 'passing') {
+              acc[index].values[0].value++;
+            } else {
+              acc[index].values[1].value++;
+            }
+
+            return acc;
+          }, []);
+        },
+        err => {
+          this.error = err.message;
+        }
+      );
   }
 
   private subscribeToEvents(): void {

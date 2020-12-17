@@ -1,6 +1,8 @@
 package job
 
 import (
+	"time"
+
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/jinzhu/gorm"
 )
@@ -29,6 +31,12 @@ func (s jobStore) FindUser(id, userID uint) (*core.Job, error) {
 	}
 	job.Build.Repository.Perms = s.repos.GetPermissions(job.Build.RepositoryID, userID)
 	return &job, err
+}
+
+func (s jobStore) List(from, to time.Time) ([]*core.Job, error) {
+	var jobs []*core.Job
+	err := s.db.Where("start_time >= ? AND end_time <= ?", from, to).Find(&jobs).Error
+	return jobs, err
 }
 
 func (s jobStore) Create(job *core.Job) error {

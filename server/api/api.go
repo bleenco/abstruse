@@ -239,6 +239,7 @@ func (r Router) statsRouter() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Get("/", stats.HandleStats(r.Stats))
+	router.Get("/jobs", stats.HandleJobs(r.Jobs))
 
 	return router
 }
