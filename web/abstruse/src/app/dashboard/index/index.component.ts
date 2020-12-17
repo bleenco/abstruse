@@ -190,15 +190,10 @@ export class IndexComponent implements OnInit, OnDestroy {
 
     this.dataService.socketOutput.pipe(untilDestroyed(this)).subscribe((ev: SocketEvent) => {
       if (ev.type === statsSub) {
+        this.cpuRealtimeChartData[0] = this.cpuRealtimeChartData[0].slice(-this.timeSlots + 1);
         this.cpuRealtimeChartData[0].push({ date: new Date(), value: ev.data.cpu });
-        if (this.cpuRealtimeChartData[0].length - 1 > this.timeSlots) {
-          this.cpuRealtimeChartData[0].splice(0, 1);
-        }
-
+        this.memRealtimeChartData[0] = this.memRealtimeChartData[0].slice(-this.timeSlots + 1);
         this.memRealtimeChartData[0].push({ date: new Date(), value: ev.data.mem });
-        if (this.memRealtimeChartData[0].length - 1 > this.timeSlots) {
-          this.memRealtimeChartData[0].splice(0, 1);
-        }
 
         this.data = { ...ev.data };
       }
