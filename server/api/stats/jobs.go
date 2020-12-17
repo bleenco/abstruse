@@ -12,7 +12,7 @@ import (
 // result about jobs statistics to the http response body.
 func HandleJobs(jobs core.JobStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		layout := "2006-01-02T15:04:05.000Z"
+		layout := "2006-01-02"
 		from := r.URL.Query().Get("from")
 		to := r.URL.Query().Get("to")
 

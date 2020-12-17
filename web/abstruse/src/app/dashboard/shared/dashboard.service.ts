@@ -17,8 +17,8 @@ export class DashboardService {
 
   jobs(from: Date, to: Date): Observable<Job[]> {
     let params = new HttpParams();
-    params = params.append('from', format(from, `yyyy-MM-dd'T'HH:mm:ss.SSSxxx`));
-    params = params.append('to', format(to, `yyyy-MM-dd'T'HH:mm:ss.SSSxxx`));
+    params = params.append('from', format(from, `yyyy-MM-dd`));
+    params = params.append('to', format(to, `yyyy-MM-dd`));
     return this.http
       .get<Job[]>('/stats/jobs', { params })
       .pipe(map(data => (data && data.length ? data.map(generateJobModel) : [])));
