@@ -114,7 +114,6 @@ func (r Router) apiRouter() *chi.Mux {
 	router.Mount("/setup", r.setupRouter())
 	router.Mount("/auth", r.authRouter())
 	router.Mount("/workers", r.workersRouter())
-	router.Mount("/stats", r.statsRouter())
 
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.Authenticator)
@@ -124,6 +123,7 @@ func (r Router) apiRouter() *chi.Mux {
 		router.Mount("/repos", r.reposRouter())
 		router.Mount("/builds", r.buildsRouter())
 		router.Mount("/system", r.systemRouter())
+		router.Mount("/stats", r.statsRouter())
 	})
 
 	return router
@@ -240,6 +240,8 @@ func (r Router) statsRouter() *chi.Mux {
 
 	router.Get("/", stats.HandleStats(r.Stats))
 	router.Get("/jobs", stats.HandleJobs(r.Jobs))
+	router.Put("/scheduler/resume", stats.HandleResume(r.Users, r.Scheduler))
+	router.Put("/scheduler/pause", stats.HandlePause(r.Users, r.Scheduler))
 
 	return router
 }

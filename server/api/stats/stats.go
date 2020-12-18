@@ -11,12 +11,14 @@ import (
 // server stats to the http response body.
 func HandleStats(stats core.StatsService) http.HandlerFunc {
 	type resp struct {
-		Usage []core.Usage          `json:"usage"`
-		Stats []core.SchedulerStats `json:"stats"`
+		Usage  []core.Usage          `json:"usage"`
+		Stats  []core.SchedulerStats `json:"stats"`
+		Status bool                  `json:"status"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		usage, statistics := stats.GetHistory()
-		render.JSON(w, http.StatusOK, resp{usage, statistics})
+		status := stats.SchedulerStatus()
+		render.JSON(w, http.StatusOK, resp{usage, statistics, status})
 	}
 }

@@ -23,4 +23,12 @@ export class DashboardService {
       .get<Job[]>('/stats/jobs', { params })
       .pipe(map(data => (data && data.length ? data.map(generateJobModel) : [])));
   }
+
+  resumeScheduler(): Observable<void> {
+    return this.http.put<void>('/stats/scheduler/resume', {});
+  }
+
+  pauseScheduler(): Observable<void> {
+    return this.http.put<void>('/stats/scheduler/pause', {});
+  }
 }

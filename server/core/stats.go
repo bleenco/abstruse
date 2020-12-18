@@ -16,5 +16,7 @@ type (
 	// StatsService defines operations on server statistics.
 	StatsService interface {
 		GetHistory() ([]Usage, []SchedulerStats)
+
+		SchedulerStatus() bool
 	}
 )

@@ -34,6 +34,9 @@ type (
 		// Resume starts paused scheduler.
 		Resume() error
 
+		// IsRunning returns scheduler running status
+		IsRunning() bool
+
 		// JobLog returns jobs current log output.
 		JobLog(uint) (string, error)
 

@@ -32,6 +32,10 @@ func (s *statsService) GetHistory() ([]core.Usage, []core.SchedulerStats) {
 	return s.history, s.stats
 }
 
+func (s *statsService) SchedulerStatus() bool {
+	return s.scheduler.IsRunning()
+}
+
 // run starts stats service ticker and broadcast stats
 // data every 5 seconds.
 func (s *statsService) run() error {

@@ -10,14 +10,21 @@
       </div>
       <div class="subheader-right">
         <button type="button" class="button" appTooltip
-          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out.">
+          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out."
+          [disabled]="!auth.isAdmin || schedulerStatusSaving || loading" *ngIf="schedulerStatus && !loading"
+          (click)="pauseResumeScheduler()">
           <i class="far fa-pause-circle"></i>
-          <span>Pause Scheduler</span>
+          <span *ngIf="!schedulerStatusSaving">Pause Scheduler</span>
+          <span *ngIf="schedulerStatusSaving">Pausing Scheduler...</span>
         </button>
-        <!-- <button type="button" class="button">
-          <i class="fas fa-play-circle"></i>
-          <span>Resume Scheduler</span>
-        </button> -->
+        <button type="button" class="button" appTooltip
+          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out."
+          [disabled]="!auth.isAdmin || schedulerStatusSaving || loading" *ngIf="!schedulerStatus && !loading"
+          (click)="pauseResumeScheduler()">
+          <i class="far fa-play-circle"></i>
+          <span *ngIf="!schedulerStatusSaving">Resume Scheduler</span>
+          <span *ngIf="schedulerStatusSaving">Resuming Scheduler...</span>
+        </button>
       </div>
     </div>
   </div>

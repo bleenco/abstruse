@@ -183,6 +183,12 @@ func (s *scheduler) Resume() error {
 	return nil
 }
 
+func (s *scheduler) IsRunning() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return !s.paused
+}
+
 func (s *scheduler) JobLog(id uint) (string, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
