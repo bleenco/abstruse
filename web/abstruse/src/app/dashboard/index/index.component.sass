@@ -2,6 +2,8 @@
 @import 'colours'
 @import 'mixins'
 
+$icon-color: #f7fafc
+
 .section
   border: 1px solid $border-default
   border-radius: $border-radius
@@ -28,11 +30,27 @@
     position: absolute
     bottom: 10px
     right: 10px
+    width: 90px
+    height: 70px
+
+    &.has-less-width
+      width: 75px
+
+    &.has-less-width-20
+      width: 60px
 
     i
-      color: rgba($border-default, .3)
+      color: $green-400
       font-size: 70px
       display: block
+      position: absolute
+
+      &.is-overlay
+        color: rgba($icon-color, .9)
+        overflow: hidden
+        height: 0
+        width: 100%
+        z-index: 9
 
   .card-content
     position: absolute
@@ -57,17 +75,18 @@
       font-weight: $weight-normal
       font-size: 22px
 
-    .percent
+    .usage
       color: $green
       font-weight: $weight-medium
       font-size: 12px
       display: flex
       align-items: center
 
-      i
-        color: $green
-        font-size: 12px
-        margin-right: 5px
+      &.is-red
+        color: $red
+
+      &.is-yellow
+        color: $yellow
 
 .bar-chart-placeholder
   width: 100%

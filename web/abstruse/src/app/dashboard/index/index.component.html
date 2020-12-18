@@ -32,14 +32,15 @@
       <div class="columns is-multiline">
         <div class="column is-3">
           <article class="card">
-            <div class="card-bg">
+            <div class="card-bg has-less-width">
               <i class="fas fa-list-alt"></i>
+              <i class="fas fa-list-alt is-overlay" [style.height]="100 - queuedPercent + '%'"></i>
             </div>
             <div class="card-content">
               <span class="title">Queued Jobs</span>
               <span class="num">{{ data.queued }}</span>
-              <span class="percent">
-                <i class="fas fa-list-alt"></i>
+              <span class="usage" [class.is-red]="queuedPercent >= 80"
+                [class.is-yellow]="queuedPercent > 30 && queuedPercent < 80">
                 <span *ngIf="queuedPercent >= 80">High Usage</span>
                 <span *ngIf="queuedPercent > 30 && queuedPercent < 80">Normal Usage</span>
                 <span *ngIf="queuedPercent <= 30">Low Usage</span>
@@ -49,14 +50,15 @@
         </div>
         <div class="column is-3">
           <article class="card">
-            <div class="card-bg">
+            <div class="card-bg has-less-width-20">
               <i class="fas fa-clipboard-list"></i>
+              <i class="fas fa-clipboard-list is-overlay" [style.height]="100 - pendingPercent + '%'"></i>
             </div>
             <div class="card-content">
               <span class="title">Pending Jobs</span>
               <span class="num">{{ data.pending }} / {{ data.max }}</span>
-              <span class="percent">
-                <i class="fas fa-server"></i>
+              <span class="usage" [class.is-red]="pendingPercent >= 80"
+                [class.is-yellow]="pendingPercent > 30 && pendingPercent < 80">
                 <span *ngIf="pendingPercent >= 80">High Usage</span>
                 <span *ngIf="pendingPercent > 30 && pendingPercent < 80">Normal Usage</span>
                 <span *ngIf="pendingPercent <= 30">Low Usage</span>
@@ -66,14 +68,14 @@
         </div>
         <div class="column is-3">
           <article class="card">
-            <div class="card-bg">
+            <div class="card-bg has-less-width">
               <i class="fas fa-microchip"></i>
+              <i class="fas fa-microchip is-overlay" [style.height]="100 - data.cpu + '%'"></i>
             </div>
             <div class="card-content">
               <span class="title">CPU Usage</span>
               <span class="num">{{ data.cpu }}%</span>
-              <span class="percent">
-                <i class="fas fa-microchip"></i>
+              <span class="usage" [class.is-red]="data.cpu >= 80" [class.is-yellow]="data.cpu > 30 && data.cpu < 80">
                 <span *ngIf="data.cpu >= 80">High Usage</span>
                 <span *ngIf="data.cpu > 30 && data.cpu < 80">Normal Usage</span>
                 <span *ngIf="data.cpu <= 30">Low Usage</span>
@@ -85,12 +87,12 @@
           <article class="card">
             <div class="card-bg">
               <i class="fas fa-memory"></i>
+              <i class="fas fa-memory is-overlay" [style.height]="100 - data.mem + '%'"></i>
             </div>
             <div class="card-content">
               <span class="title">Memory Usage</span>
               <span class="num">{{ data.mem }}%</span>
-              <span class="percent">
-                <i class="fas fa-memory"></i>
+              <span class="usage" [class.is-red]="data.mem >= 80" [class.is-yellow]="data.mem > 30 && data.mem < 80">
                 <span *ngIf="data.mem >= 80">High Usage</span>
                 <span *ngIf="data.mem > 30 && data.mem < 80">Normal Usage</span>
                 <span *ngIf="data.mem <= 30">Low Usage</span>
