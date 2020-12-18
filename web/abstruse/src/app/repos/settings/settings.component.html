@@ -6,7 +6,8 @@
           <div class="inner-section">
             <h4>General</h4>
             <div class="field">
-              <app-toggle label="Build Pushed Branches" [(ngModel)]="hooks!.push" (ngModelChange)="saveHooks()">
+              <app-toggle label="Build Pushed Branches" [(ngModel)]="hooks!.push" (ngModelChange)="saveHooks()"
+                [class.events-none]="!(reposService.repo | async)?.perms?.write">
               </app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on branches that are not explicitly excluded in config.</span>
@@ -14,13 +15,15 @@
             </div>
             <div class="field">
               <app-toggle label="Build Pushed Pull Requests" [(ngModel)]="hooks!.pullRequest"
-                (ngModelChange)="saveHooks()"></app-toggle>
+                (ngModelChange)="saveHooks()" [class.events-none]="!(reposService.repo | async)?.perms?.write">
+              </app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on new or updated pull requests.</span>
               </span>
             </div>
             <div class="field">
-              <app-toggle label="Build Pushed Tags" [(ngModel)]="hooks!.tag" (ngModelChange)="saveHooks()"></app-toggle>
+              <app-toggle label="Build Pushed Tags" [(ngModel)]="hooks!.tag" (ngModelChange)="saveHooks()"
+                [class.events-none]="!(reposService.repo | async)?.perms?.write"></app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on new tags.</span>
               </span>
@@ -40,10 +43,12 @@
               </p>
             </div>
             <div class="field">
-              <app-toggle label="Auto Cancel Branch Builds"></app-toggle>
+              <app-toggle label="Auto Cancel Branch Builds"
+                [class.events-none]="!(reposService.repo | async)?.perms?.write"></app-toggle>
             </div>
             <div class="field">
-              <app-toggle label="Auto Cancel Pull Request Builds"></app-toggle>
+              <app-toggle label="Auto Cancel Pull Request Builds"
+                [class.events-none]="!(reposService.repo | async)?.perms?.write"></app-toggle>
             </div>
           </div>
         </div>
@@ -66,7 +71,8 @@
               </p>
             </div>
             <div class="justify-end">
-              <button type="button" class="button" (click)="fetchConfig()" [disabled]="fetchingConfig">
+              <button type="button" class="button" (click)="fetchConfig()"
+                [disabled]="fetchingConfig || !(reposService.repo | async)?.perms?.read">
                 <i class="fas fa-cloud-download-alt"></i>
                 <span *ngIf="!fetchingConfig">Fetch Config</span>
                 <span *ngIf="fetchingConfig">Fetching Config...</span>
@@ -81,7 +87,8 @@
               <p>Build has been successfully triggered.</p>
             </div>
             <div class="justify-end">
-              <button type="button" class="button is-green" [disabled]="triggeringBuild || config === ''"
+              <button type="button" class="button is-green"
+                [disabled]="triggeringBuild || config === '' || !(reposService.repo | async)?.perms?.write"
                 (click)="triggerBuild()">
                 <i class="fas fa-play-circle"></i>
                 <span *ngIf="!triggeringBuild">Trigger Build</span>

@@ -40,7 +40,7 @@ func HandleStopJob(jobs core.JobStore, repos core.RepositoryStore, scheduler cor
 		}
 
 		if perms := repos.GetPermissions(job.Build.RepositoryID, claims.ID); !perms.Exec {
-			render.UnathorizedError(w, err.Error())
+			render.UnathorizedError(w, "permission denied")
 			return
 		}
 

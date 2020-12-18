@@ -31,7 +31,7 @@ func HandleCreateHooks(repos core.RepositoryStore) http.HandlerFunc {
 		}
 
 		if perm := repos.GetPermissions(uint(id), claims.ID); !perm.Write {
-			render.UnathorizedError(w, err.Error())
+			render.UnathorizedError(w, "permission denied")
 			return
 		}
 

@@ -34,7 +34,7 @@ func HandleRestartJob(jobs core.JobStore, repos core.RepositoryStore, scheduler 
 		}
 
 		if perms := repos.GetPermissions(f.ID, claims.ID); !perms.Exec {
-			render.UnathorizedError(w, err.Error())
+			render.UnathorizedError(w, "permission denied")
 			return
 		}
 

@@ -38,7 +38,8 @@
       </div>
     </div>
     <div class="column is-1 data-column justify-center" appStopPropagation>
-      <app-toggle [(ngModel)]="repo.active" (ngModelChange)="onActiveChange()"></app-toggle>
+      <app-toggle [(ngModel)]="repo.active" (ngModelChange)="onActiveChange()"
+        [class.events-none]="!repo?.perms?.write"></app-toggle>
     </div>
   </div>
 </div>
