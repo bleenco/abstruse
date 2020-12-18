@@ -149,6 +149,7 @@ func (s *Server) Usage(stream pb.API_UsageServer) error {
 // StartJob gRPC method.
 func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	name := fmt.Sprintf("abstruse-job-%d", job.GetId())
+	s.logger.Infof("starting job %d with name %s", job.Id, name)
 
 	s.mu.Lock()
 	if _, ok := s.jobs[job.Id]; ok {
@@ -212,23 +213,28 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 
 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
+		s.logger.Infof("job %d with name %s done with status failing", job.Id, name)
 		return err
 	}
 
 	stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusPassing})
+	s.logger.Infof("job %d with name %s done with status success", job.Id, name)
 
 	return nil
 }
 
 // StopJob gRPC method.
 func (s *Server) StopJob(ctx context.Context, job *pb.Job) (*pb.JobStopResp, error) {
+	name := fmt.Sprintf("abstruse-job-%d", job.GetId())
+	s.logger.Infof("stopping job %d (%s)...", job.Id, name)
+	defer s.logger.Infof("job %d (%s) stopped", job.Id, name)
+
 	defer func() {
 		s.mu.Lock()
 		delete(s.jobs, job.Id)
 		s.mu.Unlock()
 	}()
 
-	name := fmt.Sprintf("abstruse-job-%d", job.GetId())
 	if _, exists := docker.ContainerExists(name); exists {
 		if err := docker.StopContainer(name); err != nil {
 			return &pb.JobStopResp{Stopped: false}, nil
