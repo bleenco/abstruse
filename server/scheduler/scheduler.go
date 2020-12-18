@@ -266,6 +266,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}()
 
 	s.removeJob(job.ID)
+	s.next(s.ctx)
 
 	job.Status = "running"
 	job.Log = ""
