@@ -20,6 +20,7 @@ require (
 	github.com/gobwas/httphead v0.0.0-20200921212729-da3d93bc3c58
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.0.4
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/google/uuid v1.1.2
 	github.com/google/wire v0.4.0
@@ -28,6 +29,7 @@ require (
 	github.com/jpillora/backoff v1.0.0
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/narqo/go-badge v0.0.0-20190124110329-d9415e4e1e9f
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/shirou/gopsutil v3.20.10+incompatible

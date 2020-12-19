@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/bleenco/abstruse/internal/auth"
+	"github.com/bleenco/abstruse/server/api/badge"
 	"github.com/bleenco/abstruse/server/api/build"
 	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/provider"
@@ -101,6 +102,7 @@ func (r Router) Handler() http.Handler {
 
 	router.Mount("/api/v1", r.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
+	router.Get("/badge/{id}/{branch}", badge.HandleBadge(r.Builds))
 	router.Mount("/uploads", r.fileServer())
 	router.Post("/webhooks", webhook.HandleHook(r.Repos, r.Builds, r.Scheduler, r.WS))
 	router.NotFound(r.ui())

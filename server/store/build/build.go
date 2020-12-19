@@ -39,6 +39,36 @@ func (s buildStore) FindUser(id, userID uint) (*core.Build, error) {
 	return &build, err
 }
 
+func (s buildStore) FindStatus(id uint, branch string) (string, error) {
+	build := &core.Build{}
+
+	err := s.db.Preload("Jobs").Preload("Repository").Where("repository_id = ? AND branch = ?", id, branch).Last(&build).Error
+	if err != nil {
+		return core.BuildStatusUnknown, err
+	}
+	if branch == "" {
+		branch = build.Repository.DefaultBranch
+	}
+
+	running, failing := false, false
+	for _, job := range build.Jobs {
+		if job.EndTime == nil && job.Status == "running" {
+			running = true
+		}
+		if job.EndTime != nil && job.Status == "failing" {
+			failing = true
+		}
+	}
+
+	if running {
+		return core.BuildStatusRunning, nil
+	}
+	if failing {
+		return core.BuildStatusFailing, nil
+	}
+	return core.BuildStatusPassing, nil
+}
+
 func (s buildStore) List(filters core.BuildFilter) ([]*core.Build, error) {
 	var builds []*core.Build
 	db := s.db

@@ -2,6 +2,14 @@ package core
 
 import "time"
 
+// BuildStatus for badge.
+const (
+	BuildStatusUnknown = "unknown"
+	BuildStatusPassing = "passing"
+	BuildStatusFailing = "failing"
+	BuildStatusRunning = "running"
+)
+
 type (
 	// Build defines `builds` database table.
 	Build struct {
@@ -55,6 +63,9 @@ type (
 
 		// FindUser returns build by id and user id.
 		FindUser(uint, uint) (*Build, error)
+
+		// FindStatus returns build by repo id and branch.
+		FindStatus(uint, string) (string, error)
 
 		// List returns list of builds from datastore
 		List(BuildFilter) ([]*Build, error)
