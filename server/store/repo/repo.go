@@ -42,14 +42,20 @@ func (s repositoryStore) Find(id, userID uint) (core.Repository, error) {
 
 func (s repositoryStore) FindUID(uid string) (core.Repository, error) {
 	var repo core.Repository
-	err := s.db.Model(&repo).Where("uid = ?", uid).Preload("Provider").First(&repo).Error
+	err := s.db.Where("uid = ?", uid).Preload("Provider").First(&repo).Error
 	return repo, err
 }
 
 func (s repositoryStore) FindClone(clone string) (core.Repository, error) {
 	var repo core.Repository
-	err := s.db.Model(&repo).Where("clone = ?", clone).Preload("Provider").First(&repo).Error
+	err := s.db.Where("clone = ?", clone).Preload("Provider").First(&repo).Error
 	return repo, err
+}
+
+func (s repositoryStore) FindToken(token string) (*core.Repository, error) {
+	var repo core.Repository
+	err := s.db.Where("token = ?", token).First(&repo).Error
+	return &repo, err
 }
 
 func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository, int, error) {

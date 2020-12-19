@@ -64,8 +64,8 @@ type (
 		// FindUser returns build by id and user id.
 		FindUser(uint, uint) (*Build, error)
 
-		// FindStatus returns build by repo id and branch.
-		FindStatus(uint, string) (string, error)
+		// FindStatus returns build by repo token and branch.
+		FindStatus(string, string) (string, error)
 
 		// List returns list of builds from datastore
 		List(BuildFilter) ([]*Build, error)

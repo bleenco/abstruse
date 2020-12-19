@@ -39,15 +39,20 @@ func (s buildStore) FindUser(id, userID uint) (*core.Build, error) {
 	return &build, err
 }
 
-func (s buildStore) FindStatus(id uint, branch string) (string, error) {
+func (s buildStore) FindStatus(token, branch string) (string, error) {
 	build := &core.Build{}
 
-	err := s.db.Preload("Jobs").Preload("Repository").Where("repository_id = ? AND branch = ?", id, branch).Last(&build).Error
+	repo, err := s.repos.FindToken(token)
+	if err != nil || repo == nil {
+		return core.BuildStatusUnknown, fmt.Errorf("repository not found")
+	}
+
+	err = s.db.Preload("Jobs").Where("repository_id = ? AND branch = ?", repo.ID, branch).Last(&build).Error
 	if err != nil {
 		return core.BuildStatusUnknown, err
 	}
 	if branch == "" {
-		branch = build.Repository.DefaultBranch
+		branch = repo.DefaultBranch
 	}
 
 	running, failing := false, false

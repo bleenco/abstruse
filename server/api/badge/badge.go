@@ -2,7 +2,6 @@ package badge
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
@@ -14,14 +13,10 @@ import (
 // icon to the http response body.
 func HandleBadge(builds core.BuildStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.Atoi(chi.URLParam(r, "id"))
-		if err != nil {
-			render.InternalServerError(w, err.Error())
-			return
-		}
+		token := chi.URLParam(r, "token")
 		branch := chi.URLParam(r, "branch")
 
-		status, err := builds.FindStatus(uint(id), branch)
+		status, err := builds.FindStatus(token, branch)
 		if err != nil {
 			status = core.BuildStatusUnknown
 		}

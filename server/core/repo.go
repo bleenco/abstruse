@@ -1,8 +1,12 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/bleenco/abstruse/pkg/gitscm"
+	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/drone/go-scm/scm"
+	"github.com/jinzhu/gorm"
 )
 
 type (
@@ -22,6 +26,7 @@ type (
 		DefaultBranch string   `json:"defaultBranch"`
 		Active        bool     `json:"active"`
 		Timeout       uint     `gorm:"not null,default:3600"  json:"timeout"`
+		Token         string   `gorm:"not null" json:"token"`
 		UserID        uint     `json:"userID"`
 		User          User     `json:"-"`
 		ProviderID    uint     `gorm:"not null" json:"providerID"`
@@ -49,6 +54,9 @@ type (
 
 		// FindClone returns repository by clone URL from the datastore
 		FindClone(string) (Repository, error)
+
+		// FindToken returns repository by token.
+		FindToken(string) (*Repository, error)
 
 		// List returns list of repositories from the datastore.
 		List(RepositoryFilter) ([]Repository, int, error)
@@ -86,4 +94,14 @@ type (
 // TableName is name that is used in db.
 func (Repository) TableName() string {
 	return "repositories"
+}
+
+// BeforeCreate hook
+func (r *Repository) BeforeCreate(tx *gorm.DB) (err error) {
+	r.Token = lib.RandomString()
+	if r.Token == "" {
+		err = fmt.Errorf("repository must include token")
+	}
+	r.Timeout = 3600
+	return
 }
