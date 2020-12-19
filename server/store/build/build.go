@@ -50,17 +50,17 @@ func (s buildStore) FindStatus(token, branch string) (string, error) {
 		branch = repo.DefaultBranch
 	}
 
-	err = s.db.Preload("Jobs").Where("repository_id = ? AND branch = ?", repo.ID, branch).Last(&build).Error
+	err = s.db.Preload("Jobs").Where("pr = ? AND repository_id = ? AND branch = ?", 0, repo.ID, branch).Last(&build).Error
 	if err != nil {
 		return core.BuildStatusUnknown, err
 	}
 
 	running, failing := false, false
 	for _, job := range build.Jobs {
-		if job.EndTime == nil && job.Status == "running" {
+		if job.Status == "running" {
 			running = true
 		}
-		if job.EndTime != nil && job.Status == "failing" {
+		if job.Status == "failing" {
 			failing = true
 		}
 	}
@@ -100,7 +100,7 @@ func (s buildStore) List(filters core.BuildFilter) ([]*core.Build, error) {
 		db = db.Where("repositories.user_id = ?", filters.UserID).Or("team_users.user_id = ? AND permissions.read = ?", filters.UserID, true)
 	}
 
-	err := db.Order("created_at desc").Group("builds.id").Limit(filters.Limit).Offset(filters.Offset).Find(&builds).Error
+	err := db.Order("builds.created_at desc").Group("builds.id").Limit(filters.Limit).Offset(filters.Offset).Find(&builds).Error
 
 	for i, build := range builds {
 		builds[i].Repository.Perms = s.repos.GetPermissions(build.RepositoryID, filters.UserID)

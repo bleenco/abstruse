@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
-import { finalize } from 'rxjs/operators';
+import { filter, finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, HookData } from '../shared/hook.model';
 import { BuildsService } from 'src/app/builds/shared/builds.service';
@@ -45,10 +45,15 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.parent?.snapshot.paramMap.get('id'));
-    this.reposService.repo.pipe(untilDestroyed(this)).subscribe(repo => {
-      this.repo = repo as Repo;
-      this.branch = repo?.defaultBranch as string;
-    });
+    this.reposService.repoSubject
+      .pipe(
+        filter(r => !!r),
+        untilDestroyed(this)
+      )
+      .subscribe(repo => {
+        this.repo = repo as Repo;
+        this.branch = repo?.defaultBranch as string;
+      });
     this.findHooks();
   }
 
