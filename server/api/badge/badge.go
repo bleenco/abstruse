@@ -14,7 +14,7 @@ import (
 func HandleBadge(builds core.BuildStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := chi.URLParam(r, "token")
-		branch := chi.URLParam(r, "branch")
+		branch := r.URL.Query().Get("branch")
 
 		status, err := builds.FindStatus(token, branch)
 		if err != nil {

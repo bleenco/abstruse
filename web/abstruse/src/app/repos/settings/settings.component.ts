@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ReposService } from '../shared/repos.service';
-import { finalize, switchMap } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, HookData } from '../shared/hook.model';
 import { BuildsService } from 'src/app/builds/shared/builds.service';
 import { ActivatedRoute } from '@angular/router';
+import { Repo } from '../shared/repo.model';
+import * as copy from 'copy-text-to-clipboard';
 
 @UntilDestroy()
 @Component({
@@ -14,6 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SettingsComponent implements OnInit {
   id!: number;
+  repo!: Repo;
   loading = false;
   saving = false;
   triggeringBuild = false;
@@ -26,12 +29,31 @@ export class SettingsComponent implements OnInit {
   config = '';
   fetchingConfig = false;
   editorOptions = { language: 'yaml', theme: 'abstruse' };
+  branch = 'master';
+
+  get badgeURL(): string {
+    return window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
+  }
+
+  get badgeMarkdown(): string {
+    const badge = window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
+    const url = window.location.origin + `/repos/${this.repo.id}`;
+    return `[![Build Status](${badge})](${url})`;
+  }
 
   constructor(public reposService: ReposService, private buildsService: BuildsService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.parent?.snapshot.paramMap.get('id'));
+    this.reposService.repo.pipe(untilDestroyed(this)).subscribe(repo => {
+      this.repo = repo as Repo;
+      this.branch = repo?.defaultBranch as string;
+    });
     this.findHooks();
+  }
+
+  copyTextToClipboard(text: string): void {
+    copy(text);
   }
 
   findHooks(): void {

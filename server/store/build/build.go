@@ -46,13 +46,13 @@ func (s buildStore) FindStatus(token, branch string) (string, error) {
 	if err != nil || repo == nil {
 		return core.BuildStatusUnknown, fmt.Errorf("repository not found")
 	}
+	if branch == "" {
+		branch = repo.DefaultBranch
+	}
 
 	err = s.db.Preload("Jobs").Where("repository_id = ? AND branch = ?", repo.ID, branch).Last(&build).Error
 	if err != nil {
 		return core.BuildStatusUnknown, err
-	}
-	if branch == "" {
-		branch = repo.DefaultBranch
 	}
 
 	running, failing := false, false

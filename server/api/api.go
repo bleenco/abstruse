@@ -102,7 +102,7 @@ func (r Router) Handler() http.Handler {
 
 	router.Mount("/api/v1", r.apiRouter())
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
-	router.Get("/badge/{token}/{branch}", badge.HandleBadge(r.Builds))
+	router.Get("/badge/{token}", badge.HandleBadge(r.Builds))
 	router.Mount("/uploads", r.fileServer())
 	router.Post("/webhooks", webhook.HandleHook(r.Repos, r.Builds, r.Scheduler, r.WS))
 	router.NotFound(r.ui())

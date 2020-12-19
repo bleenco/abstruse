@@ -8,6 +8,10 @@
     "secure": false,
     "ws": true
   },
+  "/badge": {
+    "target": "http://localhost",
+    "secure": false
+  },
   "/uploads": {
     "target": "http://localhost",
     "secure": false

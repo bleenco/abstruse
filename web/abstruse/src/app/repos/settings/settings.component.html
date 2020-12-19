@@ -90,6 +90,34 @@
             </div>
           </div>
         </div>
+        <div class="column is-6">
+          <div class="inner-section">
+            <h4>Build Badge</h4>
+            <div class="field">
+              <label class="label">Branch</label>
+              <input type="text" class="input" name="branch" [(ngModel)]="branch"
+                [ngModelOptions]="{ standalone: true }" />
+              <span class="form-helper">
+                Branch you want to generate badge upon.
+              </span>
+            </div>
+            <h4>Generated Badge</h4>
+            <img [src]="badgeURL">
+
+            <span class="sub-title">Generated badge URL</span>
+            <span class="badge-result">
+              <span class="txt">{{ badgeURL }}</span>
+              <i class="far fa-copy" (click)="copyTextToClipboard(badgeURL)" appTooltip text="Copy to clipboard"></i>
+            </span>
+
+            <span class="sub-title">Generated Markdown</span>
+            <span class="badge-result">
+              <span class="txt">{{ badgeMarkdown }}</span>
+              <i class="far fa-copy" (click)="copyTextToClipboard(badgeMarkdown)" appTooltip
+                text="Copy to clipboard"></i>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
