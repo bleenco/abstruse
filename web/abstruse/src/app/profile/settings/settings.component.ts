@@ -48,18 +48,20 @@ export class SettingsComponent implements OnInit {
     this.error = null;
     this.saving = true;
     this.saved = false;
+    const data = this.generateModel();
 
     this.profile
-      .updateProfile(this.generateModel())
+      .updateProfile(data)
       .pipe(
         finalize(() => (this.saving = false)),
         untilDestroyed(this)
       )
       .subscribe(
         resp => {
-          this.updateValues(resp);
+          this.updateValues(data);
           this.form.markAsPristine();
           this.saved = true;
+          this.auth.setToken(resp.token);
         },
         err => {
           this.error = err.message;
@@ -115,7 +117,7 @@ export class SettingsComponent implements OnInit {
     return new Profile(this.form.controls.email.value, this.form.controls.name.value, this.form.controls.avatar.value);
   }
 
-  private updateValues(user: User): void {
+  private updateValues(user: Profile): void {
     this.form.patchValue({
       email: user.email,
       name: user.name,

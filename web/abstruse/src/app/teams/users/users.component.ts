@@ -50,8 +50,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
   openUserModal(): void {
     const modalRef = this.modal.open(UserModalComponent, { size: 'medium' });
     modalRef.result.then(
-      ok => {
-        if (ok) {
+      result => {
+        if (result) {
           this.list();
         }
       },

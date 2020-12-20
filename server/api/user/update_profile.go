@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
+	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
@@ -17,6 +18,10 @@ func HandleUpdateProfile(users core.UserStore) http.HandlerFunc {
 		Email  string `json:"email" valid:"email,required"`
 		Name   string `json:"name" valid:"stringlength(3|50),required"`
 		Avatar string `json:"avatar" valid:"stringlength(5|255),required"`
+	}
+
+	type resp struct {
+		Token string `json:"token"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +53,12 @@ func HandleUpdateProfile(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, http.StatusOK, user)
+		token, err := auth.JWT.CreateJWT(user.Claims())
+		if err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
+
+		render.JSON(w, http.StatusOK, resp{Token: token})
 	}
 }

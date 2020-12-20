@@ -74,7 +74,10 @@ export class UserModalComponent implements OnInit {
           untilDestroyed(this)
         )
         .subscribe(
-          () => {
+          resp => {
+            if (this.auth.data && this.auth.data.id === data.id) {
+              this.auth.setToken(resp.token);
+            }
             this.activeModal.close(true);
           },
           err => {

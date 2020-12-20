@@ -23,6 +23,10 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 		Role     string `json:"role" valid:"required"`
 	}
 
+	type resp struct {
+		Token string `json:"token"`
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims := middlewares.ClaimsFromCtx(r.Context())
 		var f form
@@ -71,6 +75,12 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
-		render.JSON(w, http.StatusOK, user)
+		token, err := auth.JWT.CreateJWT(user.Claims())
+		if err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
+
+		render.JSON(w, http.StatusOK, resp{Token: token})
 	}
 }

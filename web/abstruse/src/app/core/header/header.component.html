@@ -21,10 +21,10 @@
       <div class="header-right">
         <div class="header-item">
           <div class="user-item" (click)="toggleDropdown()">
-            <img [src]="user.avatar" class="avatar" />
+            <img [src]="auth.userData?.avatar" class="avatar" />
             <div class="user-info">
-              <span class="name">{{ user.name }}</span>
-              <span class="role">{{ user.role }}</span>
+              <span class="name">{{ auth.userData?.name }}</span>
+              <span class="role">{{ auth.userData?.role }}</span>
             </div>
             <i class="fas fa-caret-down icon-down"></i>
           </div>

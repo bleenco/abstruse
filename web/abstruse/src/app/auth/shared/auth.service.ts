@@ -11,6 +11,10 @@ export class AuthService {
   data: UserData | null = null;
   authenticated: BehaviorSubject<boolean>;
 
+  get userData(): UserData | null {
+    return this.data;
+  }
+
   get isAuthenticated(): boolean {
     return !!this.data;
   }
@@ -30,9 +34,7 @@ export class AuthService {
   }
 
   login(token: string): void {
-    localStorage.setItem(AUTH_TOKEN_KEY, token);
-    this.cookie.set(AUTH_TOKEN_KEY, token);
-    this.data = jwtDecode<any>(token);
+    this.setToken(token);
     this.authenticated.next(this.isAuthenticated);
     this.router.navigate(['/']);
   }
@@ -43,6 +45,12 @@ export class AuthService {
     this.cookie.delete(AUTH_TOKEN_KEY);
     this.authenticated.next(this.isAuthenticated);
     this.router.navigate(['/login']);
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    this.cookie.set(AUTH_TOKEN_KEY, token);
+    this.data = jwtDecode<any>(token);
   }
 
   authenticate(data: Login): Observable<TokenResponse> {
