@@ -34,7 +34,7 @@ export class UserModalComponent implements OnInit {
     maxFileSize: 3000000,
     allowedContentTypes: ['image/jpg', 'image/jpeg', 'image/png', 'image/gif']
   };
-  uploadUrl = `${environment.apiURL}/users/avatar`;
+  uploadUrl = `${environment.apiURL}users/avatar`;
   uploadingAvatar = false;
 
   constructor(
