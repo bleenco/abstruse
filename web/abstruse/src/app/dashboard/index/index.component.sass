@@ -2,8 +2,6 @@
 @import 'colours'
 @import 'mixins'
 
-$icon-color: #c6f6d5
-
 .section
   border: 1px solid $border-default
   border-radius: $border-radius
@@ -26,6 +24,31 @@ $icon-color: #c6f6d5
   border: 1px solid $border-default
   border-radius: $border-radius
 
+  &.is-red
+    .card-bg
+      i
+        color: $red-400
+
+        &.is-overlay
+          color: $red-100
+
+    .card-content
+      .usage
+        color: $red
+
+  &.is-yellow
+    .card-bg
+      i
+        color: $yellow-400
+
+        &.is-overlay
+          color: $yellow-200
+
+    .card-content
+      .usage
+        color: $yellow
+
+
   .card-bg
     position: absolute
     bottom: 10px
@@ -46,7 +69,7 @@ $icon-color: #c6f6d5
       position: absolute
 
       &.is-overlay
-        color: $icon-color
+        color: $green-200
         overflow: hidden
         height: 0
         width: 100%
@@ -80,12 +103,6 @@ $icon-color: #c6f6d5
       font-size: 12px
       display: flex
       align-items: center
-
-      &.is-red
-        color: $red
-
-      &.is-yellow
-        color: $yellow
 
 .bar-chart-placeholder
   width: 100%
