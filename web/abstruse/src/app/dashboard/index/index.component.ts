@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { addDays, format, subDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { BarChartData, BarChartOptions, RealtimeCanvasChartOptions, RealtimeChartData } from 'ngx-graph';
-import { delay, finalize } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/shared/auth.service';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 import { DataService } from 'src/app/shared/providers/data.service';
@@ -140,7 +140,6 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.dashboardService
       .stats()
       .pipe(
-        delay(500),
         finalize(() => {
           this.loading = false;
           this.schedulerStatusSaving = false;
@@ -193,7 +192,6 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.dashboardService
       .jobs(from, to)
       .pipe(
-        delay(500),
         finalize(() => (this.loadingJobs = false)),
         untilDestroyed(this)
       )
