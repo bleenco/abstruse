@@ -53,6 +53,12 @@ func HandleUpdateProfile(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
+		user, err = users.Find(claims.ID)
+		if err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
+
 		token, err := auth.JWT.CreateJWT(user.Claims())
 		if err != nil {
 			render.InternalServerError(w, err.Error())
