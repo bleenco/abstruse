@@ -1,4 +1,5 @@
 import { formatDistanceToNow, subSeconds } from 'date-fns';
+import { RealtimeCanvasChartData } from 'ngx-graph';
 
 export interface WorkerUsage {
   cpu: number;
@@ -11,8 +12,8 @@ export interface WorkerUsage {
 export class Worker {
   currentCPU = 0;
   currentMem = 0;
-  cpu: { date?: Date; value: number }[][] = [[]];
-  memory: { date?: Date; value: number }[][] = [[]];
+  cpu: RealtimeCanvasChartData[][] = [[]];
+  memory: RealtimeCanvasChartData[][] = [[]];
   jobsMax = 0;
   jobsRunning = 0;
   jobsPercent = 0;

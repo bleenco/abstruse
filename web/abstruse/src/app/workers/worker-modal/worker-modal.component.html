@@ -1,0 +1,68 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>Worker</h1>
+    <h2>{{ worker?.id }} - {{ worker?.addr }}</h2>
+  </div>
+  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<div class="modal-body">
+  <div class="columns is-multiline">
+    <div class="section">
+      <div class="column is-12">
+        <div class="columns">
+          <div class="column is-3">
+            <span class="text-label">Hostname</span>
+            <span class="text-data">{{ worker?.hostname }}</span>
+          </div>
+          <div class="column is-1">
+            <span class="text-label">OS</span>
+            <span class="text-data">{{ worker?.os }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Architecture</span>
+            <span class="text-data">{{ worker?.kernelArch }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Kernel Version</span>
+            <span class="text-data">{{ worker?.kernelVersion }}</span>
+          </div>
+          <div class="column is-2">
+            <span class="text-label">Uptime</span>
+            <span class="text-data">{{ worker?.getUptime }}</span>
+          </div>
+          <div class="column is-1">
+            <span class="text-label">CPU</span>
+            <span class="text-data">{{ worker?.currentCPU }}%</span>
+          </div>
+          <div class="column is-1">
+            <span class="text-label">Memory</span>
+            <span class="text-data">{{ worker?.currentMem }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="column is-12">
+        <h3>CPU Usage</h3>
+        <div class="modal-realtime-chart">
+          <ngx-realtime-canvas-chart [data]="worker.cpu" [options]="realtimeCpuChartOptions">
+          </ngx-realtime-canvas-chart>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="column is-12">
+        <h3>Memory Usage</h3>
+        <div class="modal-realtime-chart">
+          <ngx-realtime-canvas-chart [data]="worker.memory" [options]="realtimeMemoryChartOptions">
+          </ngx-realtime-canvas-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer justify-end">
+  <button type="button" class="button" (click)="activeModal.close('Close click')">Close</button>
+</div>

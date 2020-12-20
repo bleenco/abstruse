@@ -1,0 +1,16 @@
+@import 'variables'
+@import 'colours'
+@import 'mixins'
+
+.text-label, .text-data
+  display: block
+  +ellipsis
+
+.text-label
+  font-size: 12px
+  font-weight: $weight-medium
+  margin-bottom: 8px
+
+.text-data
+  font-size: 13px
+  color: $text-secondary
