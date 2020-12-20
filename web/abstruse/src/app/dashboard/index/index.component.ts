@@ -35,6 +35,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   };
 
   barChartoptions: BarChartOptions = {
+    mode: 'stacked',
     height: 320,
     margin: { top: 20, right: 0, bottom: 30, left: 60 },
     yGrid: {
@@ -48,7 +49,7 @@ export class IndexComponent implements OnInit, OnDestroy {
       opacity: 0.6
     },
     xGrid: { tickPadding: 10, tickFontSize: 12, color: '#ffffff', tickFontWeight: 'normal' },
-    colors: ['#48bb78', '#9ae6b4'],
+    colors: ['#48bb78', '#e74c3c', '#ecc94b'],
     borderRadius: 5,
     padding: 0.1
   };
@@ -198,20 +199,22 @@ export class IndexComponent implements OnInit, OnDestroy {
       .subscribe(
         resp => {
           this.barData = resp.reduce((acc: any, curr) => {
-            const category = format(curr.startTime as Date, 'd MMM');
+            const category = format(curr.createdAt as Date, 'd MMM');
             if (curr.status !== 'passing' && curr.status !== 'failing') {
               return acc;
             }
             const status = curr.status;
             const c = acc.find((d: any) => d.category === category);
             if (!c) {
-              acc.push({ category, values: ['passing', 'failing'].map(i => ({ id: i, value: 0 })) });
+              acc.push({ category, values: ['Jobs Passed', 'Jobs Failed', 'Running'].map(i => ({ id: i, value: 0 })) });
             }
             const index = acc.findIndex((d: any) => d.category === category);
             if (status === 'passing') {
               acc[index].values[0].value++;
-            } else {
+            } else if (status === 'failing') {
               acc[index].values[1].value++;
+            } else if (status === 'running' || status === 'queued') {
+              acc[index].values[2].value++;
             }
 
             return acc;

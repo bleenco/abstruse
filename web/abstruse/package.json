@@ -22,7 +22,7 @@
     "@angular/service-worker": "~11.0.1",
     "copy-text-to-clipboard": "^2.2.0",
     "fuse.js": "^6.4.3",
-    "ngx-graph": "^0.8.2",
+    "ngx-graph": "^0.8.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

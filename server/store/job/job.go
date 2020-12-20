@@ -35,7 +35,7 @@ func (s jobStore) FindUser(id, userID uint) (*core.Job, error) {
 
 func (s jobStore) List(from, to time.Time) ([]*core.Job, error) {
 	var jobs []*core.Job
-	err := s.db.Where("start_time >= ? AND end_time <= ?", from, to).Find(&jobs).Error
+	err := s.db.Where("created_at >= ? AND created_at <= ?", from, to).Order("created_at").Find(&jobs).Error
 	return jobs, err
 }
 
