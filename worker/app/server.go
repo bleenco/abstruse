@@ -18,6 +18,7 @@ import (
 	"github.com/bleenco/abstruse/worker/docker"
 	"github.com/bleenco/abstruse/worker/git"
 	"github.com/golang/protobuf/ptypes/empty"
+	"github.com/logrusorgru/aurora"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -169,6 +170,18 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	}()
 
 	logch := make(chan []byte, 1024)
+
+	go func() {
+		for output := range logch {
+			log := &pb.JobResp{Id: job.GetId(), Content: output, Type: pb.JobResp_Log}
+			if err := stream.Send(log); err != nil {
+				break
+			}
+		}
+	}()
+
+	logch <- []byte(yellow(fmt.Sprintf("==> Starting job %d in %s...\r\n", job.GetId(), name)))
+
 	image := job.Image
 	env := strings.Split(job.Env, " ")
 	var cmds []string
@@ -180,26 +193,25 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 		commands = append(commands, strings.Split(c, " "))
 	}
 
+	logch <- []byte(yellow(fmt.Sprintf("==> Creating temp directory to mount volume... ")))
 	dir, err := fs.TempDir()
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
+	logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
+
+	logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetUrl(), job.GetRef(), job.GetCommitSHA())))
 	if err := git.CloneRepository(job.GetUrl(), job.GetRef(), job.GetCommitSHA(), job.GetProviderToken(), dir); err != nil {
 		return err
 	}
+	logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
 
-	go func() {
-		for output := range logch {
-			log := &pb.JobResp{Id: job.GetId(), Content: output, Type: pb.JobResp_Log}
-			if err := stream.Send(log); err != nil {
-				break
-			}
-		}
-	}()
-
+	logch <- []byte(yellow(fmt.Sprintf("==> Pulling image %s... ", image)))
 	if err := docker.PullImage(image); err != nil {
 		logch <- []byte(err.Error())
+	} else {
+		logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
 	}
 
 	ok := true
@@ -211,6 +223,7 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 		return nil
 	}
 
+	logch <- []byte(yellow(fmt.Sprintf("==> Starting container %s...\r\n", name)))
 	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
 		s.logger.Infof("job %d with name %s done with status failing", job.Id, name)
@@ -247,4 +260,8 @@ func (s *Server) StopJob(ctx context.Context, job *pb.Job) (*pb.JobStopResp, err
 
 func (s *Server) Error() chan error {
 	return s.errch
+}
+
+func yellow(str string) string {
+	return aurora.Bold(aurora.Yellow(str)).String()
 }

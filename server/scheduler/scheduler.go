@@ -79,6 +79,14 @@ func (s *scheduler) Next(job *core.Job) error {
 	}
 	s.logger.Infof("job %d scheduled", job.ID)
 
+	build, err := s.buildStore.Find(job.BuildID)
+	if err != nil {
+		s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
+	}
+	if err := s.sendStatus(build, scm.StatePending); err != nil {
+		s.logger.Errorf("error sending status for build %d status pending", job.BuildID)
+	}
+
 	s.next(s.ctx)
 
 	return nil
@@ -266,7 +274,6 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}()
 
 	s.removeJob(job.ID)
-	s.next(s.ctx)
 
 	job.Status = "running"
 	job.Log = ""
@@ -302,15 +309,31 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	s.pending[job.ID] = &jobType{job: job, pb: j, ctx: ctx, cancel: cancel}
 	s.mu.Unlock()
 
-	j, err := worker.StartJob(ctx, j)
+	build, err := s.buildStore.Find(job.BuildID)
+	if err != nil {
+		s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
+	}
+	if err := s.sendStatus(build, scm.StateRunning); err != nil {
+		s.logger.Errorf("error sending status for build %d status running", job.BuildID)
+	}
+
+	s.next(s.ctx)
+
+	j, err = worker.StartJob(ctx, j)
 	if err != nil {
 		s.logger.Errorf("job %d errored: %v", job.ID, err.Error())
 		job.Log = strings.Join(j.GetLog(), "")
+		var l string
 		if strings.Contains(err.Error(), "context deadline exceeded") {
-			job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job timed out"))
+			l = red(fmt.Sprintf("\r\n%s\r\n", "==> job timed out"))
 		} else {
-			job.Log = job.Log + red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
+			l = red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
 		}
+		job.Log = job.Log + l
+		worker.WS.Broadcast((fmt.Sprintf("/subs/logs/%d", job.ID)), map[string]interface{}{
+			"id":  job.ID,
+			"log": l,
+		})
 		job.Status = "failing"
 	} else {
 		job.Status = j.GetStatus()
@@ -519,7 +542,6 @@ func (s *scheduler) sendStatus(build *core.Build, status scm.State) error {
 		s.logger.Errorf("error sending build status to scm provider: %v", err.Error())
 		return err
 	}
-	s.logger.Debugf("successfully sent build status to scm provider for repo %s and build %d", build.Repository.FullName, build.ID)
 
 	return nil
 }

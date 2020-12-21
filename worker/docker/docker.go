@@ -38,6 +38,8 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 	}
 	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
 
+	logch <- []byte(yellow(fmt.Sprintf("==> Starting build...\r\n")))
+
 	exitCode := 0
 	containerID := resp.ID
 
