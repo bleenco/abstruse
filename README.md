@@ -4,9 +4,8 @@
 
 # Abstruse CI
 
-<a href="https://discord.gg/dfDXn8dPEA">
-  <img src="https://img.shields.io/discord/786173138181685248.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8" alt="Discord conversation" />
-</a>
+[![Discord](https://img.shields.io/discord/786173138181685248.svg?logo=discord&logoColor=fff&label=Discord&color=7389d8)](https://discord.gg/dfDXn8dPEA)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bleenco/abstruse)](https://goreportcard.com/report/github.com/bleenco/abstruse)
 
 **Abstruse CI** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
 
