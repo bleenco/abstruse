@@ -199,7 +199,7 @@ export class IndexComponent implements OnInit, OnDestroy {
       .subscribe(
         resp => {
           this.barData = resp.reduce((acc: any, curr) => {
-            const category = format(curr.createdAt as Date, 'd MMM');
+            const category = format(curr.createdAt || new Date(), 'd MMM');
             if (curr.status !== 'passing' && curr.status !== 'failing') {
               return acc;
             }
