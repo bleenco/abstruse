@@ -15,6 +15,10 @@ all: build
 
 build: build_ui statik wire protoc server worker
 
+release:
+	@CGO_ENABLED=${CGO_ENABLED} gox -osarch="darwin/amd64 linux/amd64 linux/arm linux/386" -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -output build/{{.Dir}}_{{.OS}}_{{.Arch}} ./cmd/abstruse-server
+	@CGO_ENABLED=${CGO_ENABLED} gox -osarch="darwin/amd64 linux/amd64 linux/arm linux/386" -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -output build/{{.Dir}}_{{.OS}}_{{.Arch}} ./cmd/abstruse-worker
+
 server:
 	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-server ./cmd/abstruse-server
 
@@ -67,4 +71,4 @@ test-unit:
 test-e2e:
 	go run ./tests/e2e
 
-.PHONY: build server worker build_ui statik wire install_dependencies clean dev dev_worker protoc docker docker_server docker_worker docker_push test test-unit test-e2e
+.PHONY: build server worker build_ui statik wire install_dependencies clean dev dev_worker protoc docker docker_server docker_worker docker_push test test-unit test-e2e release
