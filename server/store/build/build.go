@@ -150,11 +150,11 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 	if err != nil {
 		return nil, 0, err
 	}
-	config := parser.ConfigParser{Raw: string(content.Data)}
-	if err := config.Parse(); err != nil {
-		return nil, 0, err
-	}
-	commandsJSON, err := json.Marshal(config.Commands)
+
+	// TODO: generate global environment variables
+	var env []string
+	parser := parser.NewConfigParser(string(content.Data), base.Target, env)
+	pjobs, err := parser.Parse()
 	if err != nil {
 		return nil, 0, err
 	}
@@ -183,18 +183,23 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 	}
 
 	var jobs []*core.Job
+	for _, j := range pjobs {
+		commands, err := json.Marshal(j.Commands)
+		if err != nil {
+			return nil, 0, err
+		}
 
-	for _, env := range config.Env {
 		job := &core.Job{
-			Image:    config.Parsed.Image,
-			Commands: string(commandsJSON),
-			Env:      env,
+			Image:    j.Image,
+			Commands: string(commands),
+			Env:      j.Title,
+			Stage:    j.Stage,
 			BuildID:  build.ID,
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, 0, err
 		}
-		job, err := s.jobs.Find(job.ID)
+		job, err = s.jobs.Find(job.ID)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -281,11 +286,10 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 
 	build.Config = content
 
-	config := parser.ConfigParser{Raw: content}
-	if err := config.Parse(); err != nil {
-		return nil, err
-	}
-	commandsJSON, err := json.Marshal(config.Commands)
+	// TODO: generate global environment variables
+	var env []string
+	parser := parser.NewConfigParser(content, branch, env)
+	pjobs, err := parser.Parse()
 	if err != nil {
 		return nil, err
 	}
@@ -298,18 +302,23 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 	}
 
 	var jobs []*core.Job
+	for _, j := range pjobs {
+		commands, err := json.Marshal(j.Commands)
+		if err != nil {
+			return nil, err
+		}
 
-	for _, env := range config.Env {
 		job := &core.Job{
-			Image:    config.Parsed.Image,
-			Commands: string(commandsJSON),
-			Env:      env,
+			Image:    j.Image,
+			Commands: string(commands),
+			Env:      j.Title,
+			Stage:    j.Stage,
 			BuildID:  build.ID,
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, err
 		}
-		job, err := s.jobs.Find(job.ID)
+		job, err = s.jobs.Find(job.ID)
 		if err != nil {
 			return nil, err
 		}
