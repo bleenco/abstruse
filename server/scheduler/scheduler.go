@@ -79,13 +79,15 @@ func (s *scheduler) Next(job *core.Job) error {
 	}
 	s.logger.Infof("job %d scheduled", job.ID)
 
-	build, err := s.buildStore.Find(job.BuildID)
-	if err != nil {
-		s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
-	}
-	if err := s.sendStatus(build, scm.StatePending); err != nil {
-		s.logger.Errorf("error sending status for build %d status pending", job.BuildID)
-	}
+	go func(job *core.Job) {
+		build, err := s.buildStore.Find(job.BuildID)
+		if err != nil {
+			s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
+		}
+		if err := s.sendStatus(build, scm.StatePending); err != nil {
+			s.logger.Errorf("error sending status for build %d status pending", job.BuildID)
+		}
+	}(job)
 
 	s.next(s.ctx)
 
@@ -309,17 +311,19 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	s.pending[job.ID] = &jobType{job: job, pb: j, ctx: ctx, cancel: cancel}
 	s.mu.Unlock()
 
-	build, err := s.buildStore.Find(job.BuildID)
-	if err != nil {
-		s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
-	}
-	if err := s.sendStatus(build, scm.StateRunning); err != nil {
-		s.logger.Errorf("error sending status for build %d status running", job.BuildID)
-	}
+	go func(job *core.Job) {
+		build, err := s.buildStore.Find(job.BuildID)
+		if err != nil {
+			s.logger.Errorf("error finding build %d for job %d", job.BuildID, job.ID)
+		}
+		if err := s.sendStatus(build, scm.StateRunning); err != nil {
+			s.logger.Errorf("error sending status for build %d status running", job.BuildID)
+		}
+	}(job)
 
 	s.next(s.ctx)
 
-	j, err = worker.StartJob(ctx, j)
+	j, err := worker.StartJob(ctx, j)
 	if err != nil {
 		s.logger.Errorf("job %d errored: %v", job.ID, err.Error())
 		job.Log = strings.Join(j.GetLog(), "")
