@@ -151,14 +151,6 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 		return nil, 0, err
 	}
 
-	// TODO: generate global environment variables
-	var env []string
-	parser := parser.NewConfigParser(string(content.Data), base.Target, env)
-	pjobs, err := parser.Parse()
-	if err != nil {
-		return nil, 0, err
-	}
-
 	build := &core.Build{
 		Branch:          base.Target,
 		Ref:             reference,
@@ -178,6 +170,17 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 		RepositoryID:    repo.ID,
 		StartTime:       lib.TimeNow(),
 	}
+
+	parser := parser.NewConfigParser(string(content.Data), base.Target, parser.GenerateGlobalEnv(build))
+	pjobs, err := parser.Parse()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if !parser.ShouldBuild() {
+		return nil, 0, fmt.Errorf("branch %s is ignored or not marked to build in config", base.Target)
+	}
+
 	if err := s.Create(build); err != nil {
 		return nil, 0, err
 	}
@@ -278,7 +281,6 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 	if content == "" {
 		raw, err := scm.FindContent(repo.FullName, sha, ".abstruse.yml")
 		if err != nil {
-			fmt.Println("content")
 			return nil, err
 		}
 		content = string(raw.Data)
@@ -286,12 +288,14 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 
 	build.Config = content
 
-	// TODO: generate global environment variables
-	var env []string
-	parser := parser.NewConfigParser(content, branch, env)
+	parser := parser.NewConfigParser(content, branch, parser.GenerateGlobalEnv(build))
 	pjobs, err := parser.Parse()
 	if err != nil {
 		return nil, err
+	}
+
+	if !parser.ShouldBuild() {
+		return nil, fmt.Errorf("branch %s is ignored or not marked to build in config", branch)
 	}
 
 	build.RepositoryID = repo.ID

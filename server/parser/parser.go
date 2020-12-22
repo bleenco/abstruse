@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -151,6 +152,40 @@ func (c *ConfigParser) Parse() ([]JobConfig, error) {
 	}
 
 	return jobs, nil
+}
+
+// ShouldBuild checks if build should be triggered considering
+// the test and ignore branches configuration.
+func (c *ConfigParser) ShouldBuild() bool {
+	if len(c.Parsed.Branches.Ignore) == 0 && len(c.Parsed.Branches.Test) == 0 {
+		return true
+	}
+
+	if len(c.Parsed.Branches.Ignore) > 0 {
+		for _, ignore := range c.Parsed.Branches.Ignore {
+			r, err := regexp.Compile(ignore)
+			if err != nil {
+				continue
+			}
+			if r.MatchString(c.Branch) {
+				return false
+			}
+		}
+	}
+
+	if len(c.Parsed.Branches.Test) > 0 {
+		for _, test := range c.Parsed.Branches.Test {
+			r, err := regexp.Compile(test)
+			if err != nil {
+				continue
+			}
+			if r.MatchString(c.Branch) {
+				return true
+			}
+		}
+	}
+
+	return true
 }
 
 func (c *ConfigParser) generateCommands() []string {
