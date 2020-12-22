@@ -172,20 +172,3 @@ script:
 cache:
   - node_modules
 ```
-
-### Golang Example
-
-```yaml
-image: golang:1.15
-
-matrix:
-  - env: CMD='go test -v ./...'
-  - env: CMD='go test -v -race ./...'
-  - env: CMD='go test -v -cover ./...'
-
-install:
-  - go get ./...
-
-script:
-  - if [[ "$CMD" ]]; then bash -ci $CMD; fi
-```
