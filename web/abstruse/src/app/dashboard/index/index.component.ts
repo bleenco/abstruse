@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { format, subDays } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns/esm';
 import { BarChartData, BarChartOptions, RealtimeCanvasChartOptions, RealtimeChartData } from 'ngx-graph';
-import { finalize } from 'rxjs/operators';
+import { delay, finalize } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/shared/auth.service';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 import { DataService } from 'src/app/shared/providers/data.service';
@@ -37,7 +38,7 @@ export class IndexComponent implements OnInit, OnDestroy {
   barChartoptions: BarChartOptions = {
     mode: 'stacked',
     height: 320,
-    margin: { top: 20, right: 0, bottom: 30, left: 60 },
+    margin: { top: 30, right: 90, bottom: 30, left: 55 },
     yGrid: {
       min: 0,
       tickFontSize: 11,
@@ -45,13 +46,16 @@ export class IndexComponent implements OnInit, OnDestroy {
       tickPadding: 40,
       tickNumber: 6,
       tickFontWeight: 'normal',
-      color: '#EDEDEE',
-      opacity: 0.6
+      color: '#EAEDF3',
+      size: 2,
+      opacity: 0.5,
+      dashed: true
     },
     xGrid: { tickPadding: 10, tickFontSize: 12, color: '#ffffff', tickFontWeight: 'normal' },
-    colors: ['#48bb78', '#e74c3c', '#ecc94b'],
+    colors: ['#9ae6b4', '#eb6e60', '#e2e8f0'],
     borderRadius: 5,
-    padding: 0.1
+    padding: 0.3,
+    legend: true
   };
   barChartData: BarChartData;
   barData: BarChartData = [];
@@ -193,32 +197,46 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.dashboardService
       .jobs(from, to)
       .pipe(
+        delay(300),
         finalize(() => (this.loadingJobs = false)),
         untilDestroyed(this)
       )
       .subscribe(
         resp => {
-          this.barData = resp.reduce((acc: any, curr) => {
-            const category = format(curr.createdAt || new Date(), 'd MMM');
-            if (curr.status !== 'passing' && curr.status !== 'failing') {
-              return acc;
-            }
-            const status = curr.status;
-            const c = acc.find((d: any) => d.category === category);
-            if (!c) {
-              acc.push({ category, values: ['Jobs Passed', 'Jobs Failed', 'Running'].map(i => ({ id: i, value: 0 })) });
-            }
-            const index = acc.findIndex((d: any) => d.category === category);
-            if (status === 'passing') {
-              acc[index].values[0].value++;
-            } else if (status === 'failing') {
-              acc[index].values[1].value++;
-            } else if (status === 'running' || status === 'queued') {
-              acc[index].values[2].value++;
-            }
+          this.barData = eachDayOfInterval({ start: from, end: to }).map(d => {
+            return {
+              category: format(d, 'd MMM'),
+              values: ['Passed', 'Failed', 'Pending'].map(i => ({ id: i, value: 0 }))
+            };
+          });
 
-            return acc;
-          }, []);
+          ([...resp] || []).forEach(d => {
+            const category = format(d.createdAt || new Date(), 'd MMM');
+            const status = d.status;
+            const index = this.barData.findIndex((j: any) => j.category === category);
+            if (index !== -1) {
+              switch (status) {
+                case 'passing':
+                  this.barData[index].values[0].value++;
+                  break;
+                case 'failing':
+                  this.barData[index].values[1].value++;
+                  break;
+                case 'running':
+                case 'queued':
+                  this.barData[index].values[2].value++;
+                  break;
+              }
+            }
+          });
+
+          if (this.barData.length > 8) {
+            const values = this.barData.map(d => d.category).filter((_, i) => i % 3 === 0);
+            this.barChartoptions = { ...this.barChartoptions, ...{ xGrid: { tickValues: values, color: '#ffffff' } } };
+          } else {
+            const values = this.barData.map(d => d.category);
+            this.barChartoptions = { ...this.barChartoptions, ...{ xGrid: { tickValues: values, color: '#ffffff' } } };
+          }
         },
         err => {
           this.error = err.message;
