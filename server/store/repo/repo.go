@@ -210,7 +210,7 @@ func (s repositoryStore) CreateHook(id, userID uint, data gitscm.HookForm) error
 		return nil
 	}
 
-	target := fmt.Sprintf("%s/webhooks/%s", repo.Provider.Host, repo.Provider.Name)
+	target := fmt.Sprintf("%s/webhooks", repo.Provider.Host)
 	_, err = gitscm.CreateHook(repo.FullName, target, repo.Provider.Name, repo.Provider.Secret, data)
 	return err
 }
@@ -247,7 +247,7 @@ func filterHooks(hooks []*scm.Hook, provider core.Provider) []*scm.Hook {
 
 	for _, hook := range hooks {
 		url, _ := url.Parse(hook.Target)
-		if strings.HasPrefix(hook.Target, provider.Host) && strings.HasSuffix(url.Path, fmt.Sprintf("/webhooks/%s", provider.Name)) {
+		if strings.HasPrefix(hook.Target, provider.Host) && strings.HasSuffix(url.Path, "/webhooks") {
 			webhooks = append(webhooks, hook)
 		}
 	}
