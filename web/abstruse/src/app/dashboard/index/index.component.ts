@@ -55,7 +55,10 @@ export class IndexComponent implements OnInit, OnDestroy {
     colors: ['#9ae6b4', '#eb6e60', '#e2e8f0'],
     borderRadius: 5,
     padding: 0.3,
-    legend: true
+    legend: true,
+    legendFontColor: '#4E5859',
+    hoverEffect: true,
+    hoverEffectColor: '#666'
   };
   barChartData: BarChartData;
   barData: BarChartData = [];
