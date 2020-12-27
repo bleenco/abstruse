@@ -21,7 +21,9 @@
       <div class="header-right">
         <div class="header-item">
           <div class="user-item" (click)="toggleDropdown()">
-            <img [src]="auth.userData?.avatar" class="avatar" />
+            <div class="avatar-container">
+              <img [src]="auth.userData?.avatar" class="avatar" />
+            </div>
             <div class="user-info">
               <span class="name">{{ auth.userData?.name }}</span>
               <span class="role">{{ auth.userData?.role }}</span>
