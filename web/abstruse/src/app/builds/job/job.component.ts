@@ -21,6 +21,7 @@ export class JobComponent implements OnInit, OnDestroy {
   fetching = false;
   processing = false;
   sub: Subscription = new Subscription();
+  error: string | null = null;
 
   constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}
 
@@ -49,7 +50,7 @@ export class JobComponent implements OnInit, OnDestroy {
       )
       .subscribe(resp => {
         this.job = resp;
-      });
+      }, err => this.error = err.message);
   }
 
   restartJob(): void {
@@ -61,7 +62,7 @@ export class JobComponent implements OnInit, OnDestroy {
         finalize(() => (this.job.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {}, err => this.error = err.message);
   }
 
   stopJob(): void {
@@ -72,7 +73,7 @@ export class JobComponent implements OnInit, OnDestroy {
         finalize(() => (this.job.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {}, err => this.error = err.message);
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {

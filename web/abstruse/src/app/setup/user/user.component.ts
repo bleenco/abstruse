@@ -18,6 +18,7 @@ export class UserComponent implements OnInit {
   submitted = false;
   saved = false;
   saving = false;
+  error: string | null = null;
 
   constructor(private fb: FormBuilder, private setup: SetupService, private router: Router) {
     this.createForm();
@@ -26,6 +27,7 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
+    this.error = null;
     this.submitted = true;
     if (!this.userForm.valid) {
       return;
@@ -45,7 +47,7 @@ export class UserComponent implements OnInit {
         },
         err => {
           this.resetValues();
-          console.error(err);
+          this.error = err.message;
         }
       );
   }

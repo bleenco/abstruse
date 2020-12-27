@@ -21,6 +21,7 @@ export class BuildComponent implements OnInit, OnDestroy {
   tab: 'jobs' | 'config' = 'jobs';
   title = 'Jobs';
   editorOptions = { language: 'yaml', theme: 'abstruse', readOnly: true };
+  error: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,7 +62,7 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.loading = false)),
         untilDestroyed(this)
       )
-      .subscribe(resp => (this.build = resp));
+      .subscribe(resp => (this.build = resp), err => this.error = err.message);
   }
 
   restartBuild(): void {
@@ -72,7 +73,7 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {}, err => this.error = err.message);
   }
 
   stopBuild(): void {
@@ -83,7 +84,7 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {}, err => this.error = err.message);
   }
 
   isLinkActive(url: string): boolean {

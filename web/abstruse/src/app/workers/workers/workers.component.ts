@@ -20,6 +20,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
 export class WorkersComponent implements OnInit, OnDestroy {
   loading = false;
   workers: Worker[] = [];
+  error: string | null = null;
 
   constructor(private workersService: WorkersService, private dataService: DataService) {}
 
@@ -62,7 +63,7 @@ export class WorkersComponent implements OnInit, OnDestroy {
       )
       .subscribe(resp => {
         this.workers = resp;
-      });
+      }, err => this.error = err.message);
   }
 
   private subscribeToWorkersEvents(): void {

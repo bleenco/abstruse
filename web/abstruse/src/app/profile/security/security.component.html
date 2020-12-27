@@ -1,4 +1,10 @@
 <div class="columns is-multiline">
+  <div class="column is-6 is-offset-3" [hidden]="!error">
+    <div class="notification is-red">
+      <i class="far fa-comment-dots"></i>
+      <p>{{ error }}.</p>
+    </div>
+  </div>
   <div class="column is-4 is-offset-4">
     <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="notification is-gray" *ngIf="!ok && !error">

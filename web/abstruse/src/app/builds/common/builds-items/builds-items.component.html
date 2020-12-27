@@ -4,6 +4,13 @@
       <app-loader></app-loader>
     </div>
 
+    <div class="column is-6 is-offset-3" [hidden]="!error">
+      <div class="notification is-red">
+        <i class="far fa-comment-dots"></i>
+        <p>{{ error }}.</p>
+      </div>
+    </div>
+
     <div class="column is-6 is-offset-3" *ngIf="!fetchingBuilds && !builds.length">
       <div class="notification">
         <i class="far fa-list-alt"></i>

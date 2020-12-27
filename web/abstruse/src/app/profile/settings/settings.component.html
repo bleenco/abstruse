@@ -2,6 +2,12 @@
   <div class="column is-6 is-offset-3" *ngIf="loading">
     <app-loader></app-loader>
   </div>
+  <div class="column is-6 is-offset-3" [hidden]="!error">
+    <div class="notification is-red">
+      <i class="far fa-comment-dots"></i>
+      <p>{{ error }}.</p>
+    </div>
+  </div>
   <div class="column is-6 is-offset-3" *ngIf="!loading">
     <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="columns is-multiline">

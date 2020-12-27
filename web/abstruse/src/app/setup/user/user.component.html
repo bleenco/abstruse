@@ -4,6 +4,12 @@
       <h1>Create Admin</h1>
     </div>
   </div>
+  <div class="column is-6 is-offset-3" [hidden]="!error">
+    <div class="notification is-red">
+      <i class="far fa-comment-dots"></i>
+      <p>{{ error }}.</p>
+    </div>
+  </div>
   <div class="column is-12 pt0 pb0">
     <form class="form" [formGroup]="userForm" (ngSubmit)="onSubmit()">
       <div class="field">

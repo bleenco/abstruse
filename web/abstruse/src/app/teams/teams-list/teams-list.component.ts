@@ -21,6 +21,7 @@ export class TeamsListComponent implements OnInit, AfterViewInit {
   teams: Team[] = [];
   displayedTeams: Team[] = [];
   fetchingTeams = false;
+  error: string | null = null;
 
   constructor(private teamsService: TeamsService, public modal: ModalService, public auth: AuthService) {}
 
@@ -76,7 +77,7 @@ export class TeamsListComponent implements OnInit, AfterViewInit {
           this.displayedTeams = [...this.teams];
         },
         err => {
-          console.error(err);
+          this.error = err.message;
         }
       );
   }

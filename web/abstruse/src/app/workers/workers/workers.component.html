@@ -19,6 +19,13 @@
       <app-loader></app-loader>
     </div>
 
+    <div class="column is-6 is-offset-3" [hidden]="!error">
+      <div class="notification is-red">
+        <i class="far fa-comment-dots"></i>
+        <p>{{ error }}.</p>
+      </div>
+    </div>
+
     <div class="column is-8 is-offset-2" *ngIf="!loading && !workers.length">
       <div class="notification">
         <i class="fas fa-network-wired"></i>

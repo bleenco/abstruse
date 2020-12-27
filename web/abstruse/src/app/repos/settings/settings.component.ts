@@ -30,6 +30,7 @@ export class SettingsComponent implements OnInit {
   fetchingConfig = false;
   editorOptions = { language: 'yaml', theme: 'abstruse' };
   branch = 'master';
+  error: string | null = null;
 
   get badgeURL(): string {
     return window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
@@ -74,7 +75,7 @@ export class SettingsComponent implements OnInit {
           this.applySettings(resp);
         },
         err => {
-          console.error(err);
+          this.error = err.message;
         }
       );
   }
@@ -98,7 +99,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(
         () => {},
         err => {
-          console.error(err);
+          this.error = err.message;
         }
       );
   }
@@ -129,7 +130,7 @@ export class SettingsComponent implements OnInit {
           this.config = resp.content;
         },
         err => {
-          console.error(err);
+          this.error = err.message;
         }
       );
   }
