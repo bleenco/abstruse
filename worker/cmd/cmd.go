@@ -84,7 +84,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/abstruse/abstruse-worker.json)")
 	rootCmd.PersistentFlags().String("id", lib.RandomString(), "worker node ID")
-	rootCmd.PersistentFlags().String("server-addr", "0.0.0.0:6500", "abstruse server remote address")
+	rootCmd.PersistentFlags().String("server-addr", "http://localhost", "abstruse server API address")
 	rootCmd.PersistentFlags().String("grpc-addr", "0.0.0.0:3330", "gRPC server listen address")
 	rootCmd.PersistentFlags().String("tls-cert", "cert-worker.pem", "path to SSL certificate file")
 	rootCmd.PersistentFlags().String("tls-key", "key-worker.pem", "path to SSL private key file")
