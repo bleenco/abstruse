@@ -78,6 +78,14 @@
                 <span *ngIf="fetchingConfig">Fetching Config...</span>
               </button>
             </div>
+            <div class="notification is-small is-red" [hidden]="!configError">
+              <i class="far fa-comment-dots"></i>
+              <p>{{ configError }}.</p>
+            </div>
+            <div class="notification is-small is-red" [hidden]="!triggerError">
+              <i class="far fa-comment-dots"></i>
+              <p>{{ triggerError }}.</p>
+            </div>
             <div class="config-container">
               <ngx-monaco-editor style="height: 300px" [options]="editorOptions" [(ngModel)]="config">
               </ngx-monaco-editor>

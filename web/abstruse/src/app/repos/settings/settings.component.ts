@@ -31,6 +31,8 @@ export class SettingsComponent implements OnInit {
   editorOptions = { language: 'yaml', theme: 'abstruse' };
   branch = 'master';
   error: string | null = null;
+  configError: string | null = null;
+  triggerError: string | null = null;
 
   get badgeURL(): string {
     return window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
@@ -106,6 +108,7 @@ export class SettingsComponent implements OnInit {
 
   triggerBuild(): void {
     this.triggeringBuild = true;
+    this.triggerError = null;
     this.buildsService
       .triggerBuild({ id: this.id, config: this.config })
       .pipe(
@@ -114,11 +117,12 @@ export class SettingsComponent implements OnInit {
       )
       .subscribe(() => {
         this.buildTriggered = true;
-      });
+      }, err => this.triggerError = err.message);
   }
 
   fetchConfig(): void {
     this.fetchingConfig = true;
+    this.configError = null;
     this.reposService
       .findConfig(this.id)
       .pipe(
@@ -130,7 +134,7 @@ export class SettingsComponent implements OnInit {
           this.config = resp.content;
         },
         err => {
-          this.error = err.message;
+          this.configError = err.message;
         }
       );
   }
