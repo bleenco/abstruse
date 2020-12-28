@@ -48,7 +48,7 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "ngx-cookie-service": "^10.1.1",
     "ngx-monaco-editor": "9.0.0",
-    "ngx-uploader": "^10.0.0",
+    "ngx-uploader": "^11.0.0",
     "parse-duration": "^0.4.4",
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
