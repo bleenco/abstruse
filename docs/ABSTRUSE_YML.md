@@ -8,8 +8,8 @@ configure your builds:
 ## `image`
 
 The `image` attribute tells abstruse which image to use for the builds
-of this repo. It HAS to match the name of one of the image you've
-created in the Images section of the abstruse app.
+of this repo. You can set different image for each entry in `matrix` or
+just use the global image. There is an example in next section.
 
 ## `matrix`
 
