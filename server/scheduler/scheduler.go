@@ -330,8 +330,10 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		var l string
 		if strings.Contains(err.Error(), "context deadline exceeded") {
 			l = red(fmt.Sprintf("\r\n%s\r\n", "==> job timed out"))
-		} else {
+		} else if strings.Contains(err.Error(), "context canceled") {
 			l = red(fmt.Sprintf("\r\n%s\r\n", "==> job stopped"))
+		} else {
+			l = red(fmt.Sprintf("\r\n==> %s\r\n", err.Error()))
 		}
 		job.Log = job.Log + l
 		worker.WS.Broadcast((fmt.Sprintf("/subs/logs/%d", job.ID)), map[string]interface{}{
