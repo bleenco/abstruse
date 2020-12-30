@@ -3,6 +3,6 @@ const PurgeCSSPlugin = require('purgecss-webpack-plugin');
 
 module.exports = {
   plugins: [
-    new PurgeCSSPlugin({ paths: glob.sync('./src/**/*.html', { nodir: true }) })
+    new PurgeCSSPlugin({ paths: glob.sync('./src/**/*.html', { nodir: true }), safelist: [/^xterm/] })
   ]
 };
