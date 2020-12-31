@@ -25,7 +25,11 @@ export class ReposService {
 
   constructor(private http: HttpClient) {}
 
-  find(limit: number = 10, offset: number = 0, keyword: string = ''): Observable<{ count: number; data: Repo[] }> {
+  find(
+    limit: number = 10,
+    offset: number = 0,
+    keyword: string = ''
+  ): Observable<{ count: number; data: Repo[] }> {
     let params = new HttpParams();
     params = params.append('limit', String(limit));
     params = params.append('offset', String(offset));

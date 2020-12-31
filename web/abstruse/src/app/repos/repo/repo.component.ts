@@ -14,7 +14,11 @@ export class RepoComponent implements OnInit {
   id!: number;
   title!: string;
 
-  constructor(public reposService: ReposService, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    public reposService: ReposService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));

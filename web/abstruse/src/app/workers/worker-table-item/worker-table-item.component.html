@@ -18,7 +18,9 @@
         </span>
         <div class="table-text">
           <span class="text-strong">{{ worker.os }} {{ worker.platformVersion }}</span>
-          <span class="text-light">{{ worker.platform }} {{ worker.kernelArch }} {{ worker.kernelVersion }}</span>
+          <span class="text-light"
+            >{{ worker.platform }} {{ worker.kernelArch }} {{ worker.kernelVersion }}</span
+          >
         </div>
       </div>
     </div>
@@ -29,19 +31,28 @@
     </div>
     <div class="column is-1">
       <div class="table-data">
-        <app-progress-bar [percent]="worker.jobsPercent" [placeholder]="worker.jobsUsage"
-          [options]="{ color: 'green' }">
+        <app-progress-bar
+          [percent]="worker.jobsPercent"
+          [placeholder]="worker.jobsUsage"
+          [options]="{ color: 'green' }"
+        >
         </app-progress-bar>
       </div>
     </div>
     <div class="column is-1">
       <div class="table-data">
-        <app-progress-bar [percent]="worker.currentCPU" [options]="{ color: 'green' }"></app-progress-bar>
+        <app-progress-bar
+          [percent]="worker.currentCPU"
+          [options]="{ color: 'green' }"
+        ></app-progress-bar>
       </div>
     </div>
     <div class="column is-1">
       <div class="table-data">
-        <app-progress-bar [percent]="worker.currentMem" [options]="{ color: 'green' }"></app-progress-bar>
+        <app-progress-bar
+          [percent]="worker.currentMem"
+          [options]="{ color: 'green' }"
+        ></app-progress-bar>
       </div>
     </div>
     <div class="column is-1">

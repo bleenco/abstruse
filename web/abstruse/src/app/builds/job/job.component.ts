@@ -23,14 +23,24 @@ export class JobComponent implements OnInit, OnDestroy {
   sub: Subscription = new Subscription();
   error: string | null = null;
 
-  constructor(private route: ActivatedRoute, private buildsService: BuildsService, private dataService: DataService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private buildsService: BuildsService,
+    private dataService: DataService
+  ) {}
 
   ngOnInit(): void {
     this.jobID = Number(this.route.snapshot.paramMap.get('jobid'));
     this.buildID = Number(this.route.snapshot.paramMap.get('buildid'));
     this.findJob();
-    this.sub.add(this.buildsService.jobEvents().subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev)));
-    this.sub.add(this.buildsService.jobLogEvents().subscribe((ev: SocketEvent) => this.updateJobLogFromEvent(ev)));
+    this.sub.add(
+      this.buildsService.jobEvents().subscribe((ev: SocketEvent) => this.updateJobFromEvent(ev))
+    );
+    this.sub.add(
+      this.buildsService
+        .jobLogEvents()
+        .subscribe((ev: SocketEvent) => this.updateJobLogFromEvent(ev))
+    );
     this.buildsService.subscribeToJobEvents();
     this.buildsService.subscribeToJobLogEvents(this.jobID);
   }
@@ -48,9 +58,12 @@ export class JobComponent implements OnInit, OnDestroy {
         finalize(() => (this.fetching = false)),
         untilDestroyed(this)
       )
-      .subscribe(resp => {
-        this.job = resp;
-      }, err => this.error = err.message);
+      .subscribe(
+        resp => {
+          this.job = resp;
+        },
+        err => (this.error = err.message)
+      );
   }
 
   restartJob(): void {
@@ -62,7 +75,10 @@ export class JobComponent implements OnInit, OnDestroy {
         finalize(() => (this.job.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe(() => {}, err => this.error = err.message);
+      .subscribe(
+        () => {},
+        err => (this.error = err.message)
+      );
   }
 
   stopJob(): void {
@@ -73,7 +89,10 @@ export class JobComponent implements OnInit, OnDestroy {
         finalize(() => (this.job.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe(() => {}, err => this.error = err.message);
+      .subscribe(
+        () => {},
+        err => (this.error = err.message)
+      );
   }
 
   private updateJobFromEvent(ev: SocketEvent): void {

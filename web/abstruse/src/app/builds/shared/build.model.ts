@@ -38,7 +38,9 @@ export class Build {
     this.status = this.getBuildStatus;
     this.buildStatus = new BehaviorSubject<string>(this.status);
     this.runningTime = new BehaviorSubject<string>(this.getTimeRunning);
-    this.createdAtWords = new BehaviorSubject<string>(formatDistanceToNow(this.createdAt as Date) + ' ago');
+    this.createdAtWords = new BehaviorSubject<string>(
+      formatDistanceToNow(this.createdAt as Date) + ' ago'
+    );
 
     this.time.getCurrentTime().subscribe(() => {
       this.status = this.getBuildStatus;
@@ -67,7 +69,10 @@ export class Build {
       return 'running';
     }
 
-    if (this.jobs.find(job => job.status === 'failing') && !this.jobs.find(job => job.status === 'queued')) {
+    if (
+      this.jobs.find(job => job.status === 'failing') &&
+      !this.jobs.find(job => job.status === 'queued')
+    ) {
       return 'failing';
     }
 
@@ -85,7 +90,9 @@ export class Build {
 
     if (!this.startTime) {
       this.startTime = new Date(
-        Math.min(...this.jobs.map(job => (job.startTime ? job.startTime.getTime() : new Date().getTime())))
+        Math.min(
+          ...this.jobs.map(job => (job.startTime ? job.startTime.getTime() : new Date().getTime()))
+        )
       );
     }
 
@@ -93,7 +100,10 @@ export class Build {
       this.endTime = new Date(Math.max(...this.jobs.map(job => (job.endTime as Date).getTime())));
     }
 
-    const millis = differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime);
+    const millis = differenceInMilliseconds(
+      this.endTime ? this.endTime : new Date(),
+      this.startTime
+    );
     return format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss');
   }
 }
@@ -130,7 +140,9 @@ export class Job {
       return { millis: 0, time: '00:00' };
     }
 
-    const millis = Number(differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime));
+    const millis = Number(
+      differenceInMilliseconds(this.endTime ? this.endTime : new Date(), this.startTime)
+    );
     return { millis, time: format(new Date(millis), millis >= 3600000 ? 'hh:mm:ss' : 'mm:ss') };
   }
 }

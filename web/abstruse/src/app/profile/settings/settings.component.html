@@ -23,23 +23,37 @@
             <label class="button is-small" [class.events-none]="uploadingAvatar">
               <span *ngIf="!uploadingAvatar">Upload Avatar</span>
               <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
-              <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
-                [uploadInput]="uploadInput" />
+              <input
+                type="file"
+                ngFileSelect
+                [options]="uploadOptions"
+                (uploadOutput)="onUploadOutput($event)"
+                [uploadInput]="uploadInput"
+              />
             </label>
           </div>
         </div>
         <div class="column is-8">
           <div class="field">
             <label class="label">Email</label>
-            <input type="email" class="input" placeholder="john@example.com" formControlName="email" />
+            <input
+              type="email"
+              class="input"
+              placeholder="john@example.com"
+              formControlName="email"
+            />
           </div>
           <div class="field">
             <label class="label">Full Name</label>
             <input type="text" class="input" placeholder="John Smith" formControlName="name" />
           </div>
           <div class="form-buttons justify-end">
-            <button type="submit" class="button" [disabled]="(form.pristine && !saved) || saving"
-              [class.events-none]="saved">
+            <button
+              type="submit"
+              class="button"
+              [disabled]="(form.pristine && !saved) || saving"
+              [class.events-none]="saved"
+            >
               <span *ngIf="!saving && !saved">Update Profile</span>
               <span *ngIf="saving">Updating Profile...</span>
               <i class="fas fa-check" *ngIf="saved"></i>

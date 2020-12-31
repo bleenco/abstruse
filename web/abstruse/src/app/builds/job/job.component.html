@@ -6,19 +6,34 @@
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Job</h1>
-        <h2 class="is-link" [routerLink]="['/repos', job?.build?.repository?.id]">{{ job?.build?.repository?.fullName }}
+        <h2 class="is-link" [routerLink]="['/repos', job?.build?.repository?.id]">
+          {{ job?.build?.repository?.fullName }}
         </h2>
-        <h2 class="is-link" [routerLink]="['/builds', job?.build?.id]">Build #{{ job?.build?.id }}</h2>
+        <h2 class="is-link" [routerLink]="['/builds', job?.build?.id]">
+          Build #{{ job?.build?.id }}
+        </h2>
         <h2>Job #{{ job?.id }}</h2>
       </div>
       <div class="subheader-right">
-        <button type="button" class="button" (click)="restartJob()"
-          [disabled]="job?.processing || !job?.build?.repository?.perms?.exec">
+        <button
+          type="button"
+          class="button"
+          (click)="restartJob()"
+          [disabled]="job?.processing || !job?.build?.repository?.perms?.exec"
+        >
           <i class="fas fa-sync-alt"></i>
           <span>Restart</span>
         </button>
-        <button type="button" class="button" (click)="stopJob()"
-          [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || job?.processing || !job?.build?.repository?.perms?.exec">
+        <button
+          type="button"
+          class="button"
+          (click)="stopJob()"
+          [disabled]="
+            (job?.status !== 'running' && job?.status !== 'queued') ||
+            job?.processing ||
+            !job?.build?.repository?.perms?.exec
+          "
+        >
           <i class="fas fa-hand-paper"></i>
           <span>Stop</span>
         </button>
@@ -45,12 +60,15 @@
         <div class="columns">
           <div class="column is-2">
             <div class="build-info-content">
-              <span class="tag is-medium" [ngClass]="{
-                            'is-gray': job?.status === 'queued',
-                            'is-green': job?.status === 'passing',
-                            'is-red': job?.status === 'failing',
-                            'is-yellow': job?.status === 'running'
-                          }">
+              <span
+                class="tag is-medium"
+                [ngClass]="{
+                  'is-gray': job?.status === 'queued',
+                  'is-green': job?.status === 'passing',
+                  'is-red': job?.status === 'failing',
+                  'is-yellow': job?.status === 'running'
+                }"
+              >
                 <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
                 <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
                 <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
@@ -63,24 +81,42 @@
           </div>
           <div class="column is-4">
             <div class="build-info-content">
-              <img [src]="job?.build?.committerAvatar" class="committer-avatar"
-                *ngIf="job?.build?.pr === 0 || job?.build?.committerLogin === job?.build?.authorLogin" />
-              <div class="avatars-container"
-                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin">
-                <img [src]="job?.build?.committerAvatar" class="committer-avatar">
-                <img [src]="job?.build?.authorAvatar" class="author-avatar">
+              <img
+                [src]="job?.build?.committerAvatar"
+                class="committer-avatar"
+                *ngIf="
+                  job?.build?.pr === 0 || job?.build?.committerLogin === job?.build?.authorLogin
+                "
+              />
+              <div
+                class="avatars-container"
+                *ngIf="
+                  job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin
+                "
+              >
+                <img [src]="job?.build?.committerAvatar" class="committer-avatar" />
+                <img [src]="job?.build?.authorAvatar" class="author-avatar" />
               </div>
-              <span class="desc-text" *ngIf="job?.build?.pr === 0">{{ job?.build?.committerName ||
-                job?.build?.committerLogin }} authored and
-                commited</span>
-              <span class="desc-text"
-                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin === job?.build?.authorLogin">{{
-                job?.build?.committerName || job?.build?.committerLogin }}
-                authored and commited</span>
-              <span class="desc-text"
-                *ngIf="job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin">{{
-                job?.build?.authorName || job?.build?.authorLogin }}
-                authored with {{ job?.build?.committerName || job?.build?.committerLogin }}</span>
+              <span class="desc-text" *ngIf="job?.build?.pr === 0"
+                >{{ job?.build?.committerName || job?.build?.committerLogin }} authored and
+                commited</span
+              >
+              <span
+                class="desc-text"
+                *ngIf="
+                  job?.build?.pr !== 0 && job?.build?.committerLogin === job?.build?.authorLogin
+                "
+                >{{ job?.build?.committerName || job?.build?.committerLogin }} authored and
+                commited</span
+              >
+              <span
+                class="desc-text"
+                *ngIf="
+                  job?.build?.pr !== 0 && job?.build?.committerLogin !== job?.build?.authorLogin
+                "
+                >{{ job?.build?.authorName || job?.build?.authorLogin }} authored with
+                {{ job?.build?.committerName || job?.build?.committerLogin }}</span
+              >
             </div>
           </div>
           <div class="column is-1">

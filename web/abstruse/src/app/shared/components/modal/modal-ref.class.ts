@@ -26,7 +26,9 @@ export class ModalRef<T = any> {
     private beforeDismiss?: () => boolean | Promise<boolean>
   ) {
     this.windowComponentRef?.instance.dismissEvent.subscribe((reason: any) => this.dismiss(reason));
-    this.result = new Promise((resolve, reject) => ([this.resolve, this.reject] = [resolve, reject]));
+    this.result = new Promise(
+      (resolve, reject) => ([this.resolve, this.reject] = [resolve, reject])
+    );
     this.result.then(null, () => {});
     this.body = document.querySelector('body') as HTMLBodyElement;
   }

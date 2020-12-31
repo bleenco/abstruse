@@ -61,9 +61,12 @@ export class WorkersComponent implements OnInit, OnDestroy {
         finalize(() => (this.loading = false)),
         untilDestroyed(this)
       )
-      .subscribe(resp => {
-        this.workers = resp;
-      }, err => this.error = err.message);
+      .subscribe(
+        resp => {
+          this.workers = resp;
+        },
+        err => (this.error = err.message)
+      );
   }
 
   private subscribeToWorkersEvents(): void {

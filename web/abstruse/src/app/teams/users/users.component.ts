@@ -23,7 +23,11 @@ export class UsersComponent implements OnInit, AfterViewInit {
   fetchingUsers = false;
   error: string | null = null;
 
-  constructor(private usersService: UsersService, public auth: AuthService, public modal: ModalService) {}
+  constructor(
+    private usersService: UsersService,
+    public auth: AuthService,
+    public modal: ModalService
+  ) {}
 
   ngOnInit(): void {
     this.list();

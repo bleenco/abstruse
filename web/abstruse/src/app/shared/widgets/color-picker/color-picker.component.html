@@ -1,4 +1,9 @@
 <div class="colors-container">
-  <span class="color-item" *ngFor="let c of colors" [style.background]="c" [class.is-active]="c === value"
-    (click)="value = c"></span>
+  <span
+    class="color-item"
+    *ngFor="let c of colors"
+    [style.background]="c"
+    [class.is-active]="c === value"
+    (click)="value = c"
+  ></span>
 </div>

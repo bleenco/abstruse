@@ -62,7 +62,10 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.loading = false)),
         untilDestroyed(this)
       )
-      .subscribe(resp => (this.build = resp), err => this.error = err.message);
+      .subscribe(
+        resp => (this.build = resp),
+        err => (this.error = err.message)
+      );
   }
 
   restartBuild(): void {
@@ -73,7 +76,10 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe(() => {}, err => this.error = err.message);
+      .subscribe(
+        () => {},
+        err => (this.error = err.message)
+      );
   }
 
   stopBuild(): void {
@@ -84,7 +90,10 @@ export class BuildComponent implements OnInit, OnDestroy {
         finalize(() => (this.processing = false)),
         untilDestroyed(this)
       )
-      .subscribe(() => {}, err => this.error = err.message);
+      .subscribe(
+        () => {},
+        err => (this.error = err.message)
+      );
   }
 
   isLinkActive(url: string): boolean {

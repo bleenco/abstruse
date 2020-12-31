@@ -3,8 +3,12 @@
     <a [routerLink]="['/repos', id, 'builds']" routerLinkActive="is-active">Builds</a>
     <a [routerLink]="['/repos', id, 'branches']" routerLinkActive="is-active">Branches</a>
     <a [routerLink]="['/repos', id, 'pull-requests']" routerLinkActive="is-active">Pull Requests</a>
-    <a [routerLink]="['/repos', id, 'settings']" routerLinkActive="is-active"
-      *ngIf="(reposService.repo | async)?.perms?.write">Settings</a>
+    <a
+      [routerLink]="['/repos', id, 'settings']"
+      routerLinkActive="is-active"
+      *ngIf="(reposService.repo | async)?.perms?.write"
+      >Settings</a
+    >
   </nav>
   <div class="container">
     <div class="subheader-container">

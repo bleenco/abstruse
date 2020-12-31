@@ -1,5 +1,11 @@
 <div class="checkbox">
-  <input type="checkbox" [id]="id" [checked]="isEnabled" (change)="onChanged($event)" (blur)="onBlur()" />
+  <input
+    type="checkbox"
+    [id]="id"
+    [checked]="isEnabled"
+    (change)="onChanged($event)"
+    (blur)="onBlur()"
+  />
   <label class="checkbox-label" [for]="id"></label>
   <label class="label" [for]="id">{{ label }}</label>
 </div>

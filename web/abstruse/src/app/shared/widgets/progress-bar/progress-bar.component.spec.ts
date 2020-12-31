@@ -33,7 +33,8 @@ describe('ProgressBarComponent', () => {
   it('should have default style class defined', () => {
     const options: ProgressBarSettings = defaultProgressBarSettings;
     const defaultClass = `is-${options.color}`;
-    const container: HTMLElement = fixture.debugElement.query(By.css('.progress-bar-container')).nativeElement;
+    const container: HTMLElement = fixture.debugElement.query(By.css('.progress-bar-container'))
+      .nativeElement;
     expect(container.classList.contains(defaultClass)).toBeTruthy();
   });
 

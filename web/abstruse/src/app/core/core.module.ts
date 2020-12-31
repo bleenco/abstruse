@@ -19,7 +19,9 @@ import { NotFoundComponent } from './not-found/not-found.component';
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
     if (parentModule) {
-      throw new Error(`${parentModule} has already been loaded. Import Core modules in the AppModule only.`);
+      throw new Error(
+        `${parentModule} has already been loaded. Import Core modules in the AppModule only.`
+      );
     }
   }
 }

@@ -2,7 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { format, subDays } from 'date-fns';
 import { eachDayOfInterval } from 'date-fns/esm';
-import { BarChartData, BarChartOptions, RealtimeCanvasChartOptions, RealtimeChartData } from 'ngx-graph';
+import {
+  BarChartData,
+  BarChartOptions,
+  RealtimeCanvasChartOptions,
+  RealtimeChartData
+} from 'ngx-graph';
 import { delay, finalize } from 'rxjs/operators';
 import { AuthService } from 'src/app/auth/shared/auth.service';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
@@ -25,7 +30,15 @@ export class IndexComponent implements OnInit, OnDestroy {
   schedulerStatusSaving = false;
   schedulerStatus = false;
 
-  data: { cpu: number; mem: number; queued: number; pending: number; workers: number; max: number; running: number } = {
+  data: {
+    cpu: number;
+    mem: number;
+    queued: number;
+    pending: number;
+    workers: number;
+    max: number;
+    running: number;
+  } = {
     cpu: 0,
     mem: 0,
     queued: 0,
@@ -110,10 +123,16 @@ export class IndexComponent implements OnInit, OnDestroy {
   }
 
   get queuedPercent(): number {
-    return Math.round(Number((this.data.queued / (this.data.queued + this.data.running)) * 100)) || 0;
+    return (
+      Math.round(Number((this.data.queued / (this.data.queued + this.data.running)) * 100)) || 0
+    );
   }
 
-  constructor(private dashboardService: DashboardService, private dataService: DataService, public auth: AuthService) {
+  constructor(
+    private dashboardService: DashboardService,
+    private dataService: DataService,
+    public auth: AuthService
+  ) {
     this.barChartData = [];
   }
 
@@ -163,8 +182,14 @@ export class IndexComponent implements OnInit, OnDestroy {
             this.data.mem = last.mem;
           }
 
-          this.cpuRealtimeChartData[0] = usage.map((u: any) => ({ date: new Date(u.timestamp), value: u.cpu }));
-          this.memRealtimeChartData[0] = usage.map((u: any) => ({ date: new Date(u.timestamp), value: u.mem }));
+          this.cpuRealtimeChartData[0] = usage.map((u: any) => ({
+            date: new Date(u.timestamp),
+            value: u.cpu
+          }));
+          this.memRealtimeChartData[0] = usage.map((u: any) => ({
+            date: new Date(u.timestamp),
+            value: u.mem
+          }));
 
           const stats = resp.stats || [];
           if (stats.length) {
@@ -235,10 +260,16 @@ export class IndexComponent implements OnInit, OnDestroy {
 
           if (this.barData.length > 8) {
             const values = this.barData.map(d => d.category).filter((_, i) => i % 3 === 0);
-            this.barChartoptions = { ...this.barChartoptions, ...{ xGrid: { tickValues: values, color: '#ffffff' } } };
+            this.barChartoptions = {
+              ...this.barChartoptions,
+              ...{ xGrid: { tickValues: values, color: '#ffffff' } }
+            };
           } else {
             const values = this.barData.map(d => d.category);
-            this.barChartoptions = { ...this.barChartoptions, ...{ xGrid: { tickValues: values, color: '#ffffff' } } };
+            this.barChartoptions = {
+              ...this.barChartoptions,
+              ...{ xGrid: { tickValues: values, color: '#ffffff' } }
+            };
           }
         },
         err => {

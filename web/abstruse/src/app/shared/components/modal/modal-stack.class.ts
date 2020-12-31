@@ -50,9 +50,13 @@ export class ModalStack {
     options: ModalOptions
   ): ModalRef {
     const containerEl =
-      options && options.container ? this.document.querySelector(options.container) : this.document.body;
+      options && options.container
+        ? this.document.querySelector(options.container)
+        : this.document.body;
     if (!containerEl) {
-      throw new Error(`The specified modal container "${options.container || 'body'}" was not found in the DOM.`);
+      throw new Error(
+        `The specified modal container "${options.container || 'body'}" was not found in the DOM.`
+      );
     }
 
     const activeModal = new ActiveModal();
@@ -107,7 +111,12 @@ export class ModalStack {
     } else if (typeof content === 'string') {
       return this.createFromString(content);
     } else {
-      return this.createFromComponent(moduleComponentFactoryResolver, contentInjector, content, activeModal);
+      return this.createFromComponent(
+        moduleComponentFactoryResolver,
+        contentInjector,
+        content,
+        activeModal
+      );
     }
   }
 

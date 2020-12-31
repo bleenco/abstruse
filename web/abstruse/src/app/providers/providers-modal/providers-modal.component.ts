@@ -28,7 +28,11 @@ export class ProvidersModalComponent implements OnInit {
   error: string | null = null;
   deleting = false;
 
-  constructor(private fb: FormBuilder, private providers: ProvidersService, public activeModal: ActiveModal) {}
+  constructor(
+    private fb: FormBuilder,
+    private providers: ProvidersService,
+    public activeModal: ActiveModal
+  ) {}
 
   ngOnInit(): void {
     this.createForm();
@@ -131,7 +135,10 @@ export class ProvidersModalComponent implements OnInit {
     this.form = this.fb.group({
       name: [(this.provider && this.provider.name) || null, [Validators.required]],
       url: [(this.provider && this.provider.url) || null, [Validators.required]],
-      host: [(this.provider && this.provider.host) || window.location.origin, [Validators.required]],
+      host: [
+        (this.provider && this.provider.host) || window.location.origin,
+        [Validators.required]
+      ],
       accessToken: [(this.provider && this.provider.accessToken) || null],
       secret: [(this.provider && this.provider.secret) || null, [Validators.required]]
     });

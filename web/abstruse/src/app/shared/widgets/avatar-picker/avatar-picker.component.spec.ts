@@ -75,7 +75,9 @@ describe('AvatarPickerComponent', () => {
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
-        const icon = fixture.debugElement.nativeElement.querySelector('.avatars-picker .close-icon');
+        const icon = fixture.debugElement.nativeElement.querySelector(
+          '.avatars-picker .close-icon'
+        );
         icon.click();
 
         fixture.whenStable().then(() => {
@@ -146,8 +148,12 @@ describe('AvatarPickerComponent', () => {
 
         fixture.whenStable().then(() => {
           fixture.detectChanges();
-          expect(component.avatarPickerComponent.value).toEqual('/assets/images/icons/spinner-green.svg');
-          expect(component.avatarPickerComponent.innerValue).toEqual('/assets/images/icons/spinner-green.svg');
+          expect(component.avatarPickerComponent.value).toEqual(
+            '/assets/images/icons/spinner-green.svg'
+          );
+          expect(component.avatarPickerComponent.innerValue).toEqual(
+            '/assets/images/icons/spinner-green.svg'
+          );
         });
       });
     })

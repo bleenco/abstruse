@@ -53,17 +53,17 @@ describe('SelectboxComponent', () => {
     fixture.detectChanges();
 
     expect(component.placeholder).toEqual('Raspberry');
-    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual(
-      'Raspberry'
-    );
+    expect(
+      fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent
+    ).toEqual('Raspberry');
 
     component.value = 'ice-cream';
     fixture.detectChanges();
 
     expect(component.placeholder).toEqual('Ice cream');
-    expect(fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent).toEqual(
-      'Ice cream'
-    );
+    expect(
+      fixture.debugElement.query(By.css('.selectbox-value > span')).nativeElement.textContent
+    ).toEqual('Ice cream');
   });
 
   it('should throw an error when setting value when values are not initialized', () => {

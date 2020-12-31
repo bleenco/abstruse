@@ -2,12 +2,15 @@
   <div class="columns is-marginless is-paddingless">
     <div class="column is-2 data-column">
       <div class="data-text has-text-left is-light align-center no-padding">
-        <span class="status-line" [ngClass]="{
+        <span
+          class="status-line"
+          [ngClass]="{
             'is-queued': job?.status === 'queued',
             'is-passing': job?.status === 'passing',
             'is-failing': job?.status === 'failing',
             'is-running': job?.status === 'running'
-          }"></span>
+          }"
+        ></span>
         <span>#{{ job?.buildId }}.{{ job?.id }}</span>
       </div>
     </div>
@@ -24,12 +27,15 @@
       </div>
     </div>
     <div class="column is-1 data-column justify-center">
-      <span class="tag" [ngClass]="{
+      <span
+        class="tag"
+        [ngClass]="{
           'is-gray': job?.status === 'queued',
           'is-green': job?.status === 'passing',
           'is-red': job?.status === 'failing',
           'is-yellow': job?.status === 'running'
-        }">
+        }"
+      >
         <i class="fas fa-check-circle" *ngIf="job?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="job?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="job?.status === 'queued'"></i>
@@ -45,14 +51,25 @@
       </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
-      <button type="button" class="button is-small" [disabled]="processing || !build?.repository?.perms?.exec"
-        (click)="restartJob()">
+      <button
+        type="button"
+        class="button is-small"
+        [disabled]="processing || !build?.repository?.perms?.exec"
+        (click)="restartJob()"
+      >
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
-      <button type="button" class="button is-small"
-        [disabled]="(job?.status !== 'running' && job?.status !== 'queued') || processing || !build?.repository?.perms?.exec"
-        (click)="stopJob()">
+      <button
+        type="button"
+        class="button is-small"
+        [disabled]="
+          (job?.status !== 'running' && job?.status !== 'queued') ||
+          processing ||
+          !build?.repository?.perms?.exec
+        "
+        (click)="stopJob()"
+      >
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

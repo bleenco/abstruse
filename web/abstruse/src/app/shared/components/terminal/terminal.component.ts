@@ -1,4 +1,12 @@
-import { Component, OnInit, OnDestroy, Input, ElementRef, OnChanges, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  ElementRef,
+  OnChanges,
+  ViewEncapsulation
+} from '@angular/core';
 import { ITheme, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 
@@ -75,7 +83,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit(): void {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
-    this.terminal.setOption('fontFamily', 'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace');
+    this.terminal.setOption(
+      'fontFamily',
+      'Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+    );
     this.terminal.setOption('fontSize', 13);
     this.terminal.setOption('fontWeight', 400);
     this.terminal.setOption('fontWeightBold', 400);

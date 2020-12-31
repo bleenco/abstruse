@@ -15,7 +15,9 @@ export class TeamsService {
   }
 
   list(): Observable<Team[]> {
-    return this.http.get('/teams').pipe(map((resp: any) => (resp && resp.length ? resp.map(generateTeam) : [])));
+    return this.http
+      .get('/teams')
+      .pipe(map((resp: any) => (resp && resp.length ? resp.map(generateTeam) : [])));
   }
 
   create(data: any): Observable<Team> {

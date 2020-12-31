@@ -12,21 +12,32 @@
           <div class="inner-section">
             <h4>General</h4>
             <div class="field">
-              <app-toggle label="Build Pushed Branches" [(ngModel)]="hooks!.push" (ngModelChange)="saveHooks()">
+              <app-toggle
+                label="Build Pushed Branches"
+                [(ngModel)]="hooks!.push"
+                (ngModelChange)="saveHooks()"
+              >
               </app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on branches that are not explicitly excluded in config.</span>
               </span>
             </div>
             <div class="field">
-              <app-toggle label="Build Pushed Pull Requests" [(ngModel)]="hooks!.pullRequest"
-                (ngModelChange)="saveHooks()"></app-toggle>
+              <app-toggle
+                label="Build Pushed Pull Requests"
+                [(ngModel)]="hooks!.pullRequest"
+                (ngModelChange)="saveHooks()"
+              ></app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on new or updated pull requests.</span>
               </span>
             </div>
             <div class="field">
-              <app-toggle label="Build Pushed Tags" [(ngModel)]="hooks!.tag" (ngModelChange)="saveHooks()"></app-toggle>
+              <app-toggle
+                label="Build Pushed Tags"
+                [(ngModel)]="hooks!.tag"
+                (ngModelChange)="saveHooks()"
+              ></app-toggle>
               <span class="form-helper is-small">
                 <span>Run builds on new tags.</span>
               </span>
@@ -39,10 +50,10 @@
             <div class="notification is-gray is-small">
               <i class="far fa-comments"></i>
               <p>
-                Auto Cancellation allows you to only run builds for the latest commits in the queue.<br />
-                When new commits are pushed to same branch or pull request and jobs for previous commits are still
-                running,
-                they will be auto-cancelled if this options are on.
+                Auto Cancellation allows you to only run builds for the latest commits in the
+                queue.<br />
+                When new commits are pushed to same branch or pull request and jobs for previous
+                commits are still running, they will be auto-cancelled if this options are on.
               </p>
             </div>
             <div class="field">
@@ -65,14 +76,18 @@
             <div class="notification is-small">
               <i class="fas fa-bars"></i>
               <p>
-                The <code>.abstruse.yml</code> file at the root of the repo configures how Abstruse CI is building,
-                testing and deploying your code.
-                This document will list the different attributes abstruse understand and you can use to configure your
-                builds.
+                The <code>.abstruse.yml</code> file at the root of the repo configures how Abstruse
+                CI is building, testing and deploying your code. This document will list the
+                different attributes abstruse understand and you can use to configure your builds.
               </p>
             </div>
             <div class="justify-end">
-              <button type="button" class="button" (click)="fetchConfig()" [disabled]="fetchingConfig">
+              <button
+                type="button"
+                class="button"
+                (click)="fetchConfig()"
+                [disabled]="fetchingConfig"
+              >
                 <i class="fas fa-cloud-download-alt"></i>
                 <span *ngIf="!fetchingConfig">Fetch Config</span>
                 <span *ngIf="fetchingConfig">Fetching Config...</span>
@@ -87,7 +102,11 @@
               <p>{{ triggerError }}.</p>
             </div>
             <div class="config-container">
-              <ngx-monaco-editor style="height: 300px" [options]="editorOptions" [(ngModel)]="config">
+              <ngx-monaco-editor
+                style="height: 300px"
+                [options]="editorOptions"
+                [(ngModel)]="config"
+              >
               </ngx-monaco-editor>
             </div>
             <div class="notification is-green is-small" *ngIf="buildTriggered">
@@ -95,8 +114,12 @@
               <p>Build has been successfully triggered.</p>
             </div>
             <div class="justify-end">
-              <button type="button" class="button" [disabled]="triggeringBuild || config === ''"
-                (click)="triggerBuild()">
+              <button
+                type="button"
+                class="button"
+                [disabled]="triggeringBuild || config === ''"
+                (click)="triggerBuild()"
+              >
                 <i class="fas fa-play-circle"></i>
                 <span *ngIf="!triggeringBuild">Trigger Build</span>
                 <span *ngIf="triggeringBuild">Triggering Build...</span>
@@ -109,26 +132,38 @@
             <h4>Build Badge</h4>
             <div class="field">
               <label class="label">Branch</label>
-              <input type="text" class="input" name="branch" [(ngModel)]="branch"
-                [ngModelOptions]="{ standalone: true }" />
-              <span class="form-helper">
-                Branch you want to generate badge upon.
-              </span>
+              <input
+                type="text"
+                class="input"
+                name="branch"
+                [(ngModel)]="branch"
+                [ngModelOptions]="{ standalone: true }"
+              />
+              <span class="form-helper"> Branch you want to generate badge upon. </span>
             </div>
             <h4>Generated Badge</h4>
-            <img [src]="badgeURL">
+            <img [src]="badgeURL" />
 
             <span class="sub-title">Generated badge URL</span>
             <span class="badge-result">
               <span class="txt">{{ badgeURL }}</span>
-              <i class="far fa-copy" (click)="copyTextToClipboard(badgeURL)" appTooltip text="Copy to clipboard"></i>
+              <i
+                class="far fa-copy"
+                (click)="copyTextToClipboard(badgeURL)"
+                appTooltip
+                text="Copy to clipboard"
+              ></i>
             </span>
 
             <span class="sub-title">Generated Markdown</span>
             <span class="badge-result">
               <span class="txt">{{ badgeMarkdown }}</span>
-              <i class="far fa-copy" (click)="copyTextToClipboard(badgeMarkdown)" appTooltip
-                text="Copy to clipboard"></i>
+              <i
+                class="far fa-copy"
+                (click)="copyTextToClipboard(badgeMarkdown)"
+                appTooltip
+                text="Copy to clipboard"
+              ></i>
             </span>
           </div>
         </div>

@@ -4,14 +4,20 @@
     <h2 *ngIf="!team?.id">Create New Team</h2>
     <h2 *ngIf="team?.id">Edit Team</h2>
   </div>
-  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="saving">
+  <span
+    class="icon close-icon is-action"
+    (click)="activeModal.dismiss(false)"
+    [class.events-none]="saving"
+  >
     <i class="fas fa-times"></i>
   </span>
 </div>
 <div class="tabs is-centered">
   <span class="tab" [class.is-active]="tab === 'general'" (click)="tab = 'general'">General</span>
   <span class="tab" [class.is-active]="tab === 'members'" (click)="tab = 'members'">Members</span>
-  <span class="tab" [class.is-active]="tab === 'access'" (click)="tab = 'access'">Manage Access</span>
+  <span class="tab" [class.is-active]="tab === 'access'" (click)="tab = 'access'"
+    >Manage Access</span
+  >
 </div>
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <div class="modal-body" *ngIf="tab === 'general'">
@@ -21,11 +27,24 @@
     </div>
     <div class="field">
       <label class="label">Name</label>
-      <input type="text" name="name" class="input" placeholder="Team Name" formControlName="name" autocomplete="off" />
+      <input
+        type="text"
+        name="name"
+        class="input"
+        placeholder="Team Name"
+        formControlName="name"
+        autocomplete="off"
+      />
     </div>
     <div class="field">
       <label class="label">About</label>
-      <input type="text" name="about" class="input" placeholder="Team Description" formControlName="about" />
+      <input
+        type="text"
+        name="about"
+        class="input"
+        placeholder="Team Description"
+        formControlName="about"
+      />
     </div>
     <div class="field">
       <label class="label">Color</label>
@@ -75,7 +94,7 @@
     </div>
     <div class="members-container" *ngIf="team?.users?.length">
       <div class="members-list">
-        <article class="member-item" *ngFor="let u of team?.users; let i = index;">
+        <article class="member-item" *ngFor="let u of team?.users; let i = index">
           <div class="columns is-marginless">
             <div class="column is-1">
               <img [src]="u.avatar" class="avatar-img" />
@@ -145,13 +164,25 @@
               <span>{{ r.repoFullName }}</span>
             </div>
             <div class="column is-2">
-              <app-checkbox [(ngModel)]="r.read" [ngModelOptions]="{standalone: true}" label="Read"></app-checkbox>
+              <app-checkbox
+                [(ngModel)]="r.read"
+                [ngModelOptions]="{ standalone: true }"
+                label="Read"
+              ></app-checkbox>
             </div>
             <div class="column is-2">
-              <app-checkbox [(ngModel)]="r.write" [ngModelOptions]="{standalone: true}" label="Write"></app-checkbox>
+              <app-checkbox
+                [(ngModel)]="r.write"
+                [ngModelOptions]="{ standalone: true }"
+                label="Write"
+              ></app-checkbox>
             </div>
             <div class="column is-2">
-              <app-checkbox [(ngModel)]="r.exec" [ngModelOptions]="{standalone: true}" label="Execute"></app-checkbox>
+              <app-checkbox
+                [(ngModel)]="r.exec"
+                [ngModelOptions]="{ standalone: true }"
+                label="Execute"
+              ></app-checkbox>
             </div>
             <div class="column is-2 justify-end">
               <button type="button" class="button is-red is-small" (click)="removeRepo(r.repoID)">
@@ -166,7 +197,9 @@
   <div class="modal-footer space-between">
     <div class="align-center"></div>
     <div class="align-center">
-      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">
+        Cancel
+      </button>
       <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
         <span *ngIf="!saving && !team?.id">Create</span>
         <span *ngIf="saving && !team?.id">Creating...</span>

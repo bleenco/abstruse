@@ -18,14 +18,22 @@
       <div class="field">
         <label class="label">
           <span>Email</span>
-          <i class="fas fa-question-circle" appTooltip text="Email is unique identifier used for username."></i>
+          <i
+            class="fas fa-question-circle"
+            appTooltip
+            text="Email is unique identifier used for username."
+          ></i>
         </label>
         <input type="text" class="input" placeholder="Email" formControlName="email" />
       </div>
       <div class="field">
         <label class="label">
           <span>Full Name</span>
-          <i class="fas fa-question-circle" appTooltip text="Type in your real name and lastname."></i>
+          <i
+            class="fas fa-question-circle"
+            appTooltip
+            text="Type in your real name and lastname."
+          ></i>
         </label>
         <input type="text" class="input" placeholder="John Smith" formControlName="name" />
       </div>
@@ -34,27 +42,48 @@
           <div class="field">
             <label class="label">
               <span>Password</span>
-              <i class="fas fa-question-circle" appTooltip text="Password must include at least 8 characters."></i>
+              <i
+                class="fas fa-question-circle"
+                appTooltip
+                text="Password must include at least 8 characters."
+              ></i>
             </label>
-            <input type="password" class="input" placeholder="Set Your Password" autocomplete="new-password"
-              formControlName="password" />
+            <input
+              type="password"
+              class="input"
+              placeholder="Set Your Password"
+              autocomplete="new-password"
+              formControlName="password"
+            />
           </div>
         </div>
         <div class="column is-6">
           <div class="field">
             <label class="label">
               <span>Confirm Password</span>
-              <i class="fas fa-question-circle" appTooltip
-                text="Re-type password, it must match with previous input."></i>
+              <i
+                class="fas fa-question-circle"
+                appTooltip
+                text="Re-type password, it must match with previous input."
+              ></i>
             </label>
-            <input type="password" class="input" placeholder="Confirm Password" autocomplete="new-password"
-              formControlName="confirmPassword" />
+            <input
+              type="password"
+              class="input"
+              placeholder="Confirm Password"
+              autocomplete="new-password"
+              formControlName="confirmPassword"
+            />
           </div>
         </div>
       </div>
       <div class="form-buttons justify-end">
-        <button type="button" class="button" [disabled]="userForm.pristine" (click)="resetValues()">Reset</button>
-        <button type="submit" class="button is-green" [disabled]="!userForm.valid">Create User</button>
+        <button type="button" class="button" [disabled]="userForm.pristine" (click)="resetValues()">
+          Reset
+        </button>
+        <button type="submit" class="button is-green" [disabled]="!userForm.valid">
+          Create User
+        </button>
       </div>
     </form>
   </div>

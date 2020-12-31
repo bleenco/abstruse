@@ -6,7 +6,9 @@ import { randomInt } from '../../common/random-int';
   selector: 'app-color-picker',
   templateUrl: './color-picker.component.html',
   styleUrls: ['./color-picker.component.sass'],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorPickerComponent), multi: true }]
+  providers: [
+    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => ColorPickerComponent), multi: true }
+  ]
 })
 export class ColorPickerComponent implements OnInit {
   @Input() colors: string[] = [

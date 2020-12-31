@@ -6,7 +6,11 @@
     <a [routerLink]="['/builds']" [queryParams]="{ type: 'commits' }" routerLinkActive="is-active">
       Commits
     </a>
-    <a [routerLink]="['/builds']" [queryParams]="{ type: 'pull-requests' }" routerLinkActive="is-active">
+    <a
+      [routerLink]="['/builds']"
+      [queryParams]="{ type: 'pull-requests' }"
+      routerLinkActive="is-active"
+    >
       Pull Requests
     </a>
   </nav>

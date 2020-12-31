@@ -1,4 +1,12 @@
-import { Directive, Input, ViewContainerRef, Renderer2, OnDestroy, HostListener, OnChanges } from '@angular/core';
+import {
+  Directive,
+  Input,
+  ViewContainerRef,
+  Renderer2,
+  OnDestroy,
+  HostListener,
+  OnChanges
+} from '@angular/core';
 
 @Directive({
   selector: '[appTooltip]'

@@ -1,13 +1,20 @@
-<div class="list-item-condensed" [routerLink]="['/builds', build?.id]" [queryParams]="{ tab: 'jobs' }">
+<div
+  class="list-item-condensed"
+  [routerLink]="['/builds', build?.id]"
+  [queryParams]="{ tab: 'jobs' }"
+>
   <div class="columns">
     <div class="column is-1 data-column">
       <div class="data-text has-text-left align-center no-padding">
-        <span class="status-line" [ngClass]="{
+        <span
+          class="status-line"
+          [ngClass]="{
             'is-queued': build?.status === 'queued',
             'is-passing': build?.status === 'passing',
             'is-failing': build?.status === 'failing',
             'is-running': build?.status === 'running'
-          }"></span>
+          }"
+        ></span>
         <span *ngIf="!build?.pr">#{{ build?.id }}</span>
         <span *ngIf="build?.pr">PR #{{ build?.pr }}</span>
       </div>
@@ -16,7 +23,7 @@
       <div class="info-text has-text-left align-center" *ngIf="style === 'history'">
         <a class="data-text" appStopPropagation [routerLink]="['/repos', build?.repository?.id]">{{
           build?.repository?.fullName
-          }}</a>
+        }}</a>
       </div>
       <div class="info-text has-text-left align-center" *ngIf="style === 'repo'">
         <span class="data-text is-small" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
@@ -25,12 +32,19 @@
     </div>
     <div class="column is-2 data-column">
       <div class="align-center justify-start mlr10">
-        <img [src]="build?.committerAvatar" class="committer-avatar" appTooltip
+        <img
+          [src]="build?.committerAvatar"
+          class="committer-avatar"
+          appTooltip
           [text]="build?.committerName || build?.committerLogin || null"
-          *ngIf="build?.pr === 0 || build?.committerLogin === build?.authorLogin" />
-        <div class="avatars-container" *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin">
-          <img [src]="build?.committerAvatar" class="committer-avatar">
-          <img [src]="build?.authorAvatar" class="author-avatar">
+          *ngIf="build?.pr === 0 || build?.committerLogin === build?.authorLogin"
+        />
+        <div
+          class="avatars-container"
+          *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin"
+        >
+          <img [src]="build?.committerAvatar" class="committer-avatar" />
+          <img [src]="build?.authorAvatar" class="author-avatar" />
         </div>
       </div>
       <div class="data-column direction-column">
@@ -46,17 +60,21 @@
     </div>
     <div class="column is-2 data-column">
       <div class="info-text justify-center align-center">
-        <span class="data-text" appTooltip [text]="build?.createdAt! | date:'medium'">{{ build?.createdAtWords! | async
-          }}</span>
+        <span class="data-text" appTooltip [text]="build?.createdAt! | date: 'medium'">{{
+          build?.createdAtWords! | async
+        }}</span>
       </div>
     </div>
     <div class="column is-1 data-column justify-center">
-      <span class="tag" [ngClass]="{
-                'is-gray': build?.status === 'queued',
-                'is-green': build?.status === 'passing',
-                'is-red': build?.status === 'failing',
-                'is-yellow': build?.status === 'running'
-              }">
+      <span
+        class="tag"
+        [ngClass]="{
+          'is-gray': build?.status === 'queued',
+          'is-green': build?.status === 'passing',
+          'is-red': build?.status === 'failing',
+          'is-yellow': build?.status === 'running'
+        }"
+      >
         <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
         <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
         <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
@@ -72,13 +90,25 @@
       </div>
     </div>
     <div class="column is-2 data-column justify-center" appStopPropagation>
-      <button type="button" class="button is-small" (click)="restartBuild()"
-        [disabled]="build?.processing || !build?.repository?.perms?.exec">
+      <button
+        type="button"
+        class="button is-small"
+        (click)="restartBuild()"
+        [disabled]="build?.processing || !build?.repository?.perms?.exec"
+      >
         <i class="fas fa-sync-alt"></i>
         <span>Restart</span>
       </button>
-      <button type="button" class="button is-small" (click)="stopBuild()"
-        [disabled]="(build?.status !== 'running' && build?.status !== 'queued') || build?.processing || !build?.repository?.perms?.exec">
+      <button
+        type="button"
+        class="button is-small"
+        (click)="stopBuild()"
+        [disabled]="
+          (build?.status !== 'running' && build?.status !== 'queued') ||
+          build?.processing ||
+          !build?.repository?.perms?.exec
+        "
+      >
         <i class="fas fa-hand-paper"></i>
         <span>Stop</span>
       </button>

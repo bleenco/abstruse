@@ -44,7 +44,11 @@ export class SettingsComponent implements OnInit {
     return `[![Build Status](${badge})](${url})`;
   }
 
-  constructor(public reposService: ReposService, private buildsService: BuildsService, private route: ActivatedRoute) {}
+  constructor(
+    public reposService: ReposService,
+    private buildsService: BuildsService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.id = Number(this.route.parent?.snapshot.paramMap.get('id'));
@@ -115,9 +119,12 @@ export class SettingsComponent implements OnInit {
         finalize(() => (this.triggeringBuild = false)),
         untilDestroyed(this)
       )
-      .subscribe(() => {
-        this.buildTriggered = true;
-      }, err => this.triggerError = err.message);
+      .subscribe(
+        () => {
+          this.buildTriggered = true;
+        },
+        err => (this.triggerError = err.message)
+      );
   }
 
   fetchConfig(): void {

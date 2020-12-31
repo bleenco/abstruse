@@ -11,8 +11,19 @@
       </div>
       <div class="subheader-right">
         <i class="fas fa-search"></i>
-        <input type="text" class="input search-input" placeholder="Search teams..." autocomplete="off" #keyword />
-        <button type="button" class="button" (click)="openTeamModal()" [disabled]="!this.auth.isAdmin">
+        <input
+          type="text"
+          class="input search-input"
+          placeholder="Search teams..."
+          autocomplete="off"
+          #keyword
+        />
+        <button
+          type="button"
+          class="button"
+          (click)="openTeamModal()"
+          [disabled]="!this.auth.isAdmin"
+        >
           <span>Add New Team</span>
         </button>
       </div>

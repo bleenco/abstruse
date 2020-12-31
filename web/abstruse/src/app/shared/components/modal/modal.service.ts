@@ -14,7 +14,12 @@ export class ModalService {
 
   open<T>(content: T, options: ModalOptions = {}): ModalRef<T> {
     const combinedOptions = Object.assign({}, this.config, options);
-    return this.modalStack.open(this.moduleComponentFactoryResolver, this.injector, content, combinedOptions);
+    return this.modalStack.open(
+      this.moduleComponentFactoryResolver,
+      this.injector,
+      content,
+      combinedOptions
+    );
   }
 
   dismissAll(reason?: any): void {

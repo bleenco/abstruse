@@ -34,12 +34,15 @@
     <div class="column is-3 data-column justify-center">
       <div class="info-text justify-center align-center">
         <i class="far fa-clock is-medium is-gray"></i>
-        <span class="data-text is-small">{{ repo?.updatedAt | date:'medium' }}</span>
+        <span class="data-text is-small">{{ repo?.updatedAt | date: 'medium' }}</span>
       </div>
     </div>
     <div class="column is-1 data-column justify-center" appStopPropagation>
-      <app-toggle [(ngModel)]="repo.active" (ngModelChange)="onActiveChange()"
-        [class.events-none]="!repo?.perms?.write"></app-toggle>
+      <app-toggle
+        [(ngModel)]="repo.active"
+        (ngModelChange)="onActiveChange()"
+        [class.events-none]="!repo?.perms?.write"
+      ></app-toggle>
     </div>
   </div>
 </div>

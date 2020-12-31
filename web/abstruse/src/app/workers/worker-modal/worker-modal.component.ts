@@ -15,7 +15,13 @@ export class WorkerModalComponent implements OnInit {
     height: 150,
     margin: { top: 10, right: 0, bottom: 25, left: 30 },
     xGrid: { tickPadding: 10, tickNumber: 5 },
-    yGrid: { min: 0, max: 100, tickNumber: 5, tickFormat: (v: string | number) => `${v}%`, tickPadding: 15 },
+    yGrid: {
+      min: 0,
+      max: 100,
+      tickNumber: 5,
+      tickFormat: (v: string | number) => `${v}%`,
+      tickPadding: 15
+    },
     timeSlots: 120
   };
   realtimeCpuChartOptions: RealtimeCanvasChartOptions = {

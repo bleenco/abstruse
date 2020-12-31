@@ -15,17 +15,32 @@
               <div class="field">
                 <label class="label">Email</label>
                 <input class="input" type="text" formControlName="email" />
-                <span class="form-helper"
-                  [hidden]="loginForm.controls.email.valid || (loginForm.controls.email.pristine && !submitted)">
+                <span
+                  class="form-helper"
+                  [hidden]="
+                    loginForm.controls.email.valid ||
+                    (loginForm.controls.email.pristine && !submitted)
+                  "
+                >
                   <i class="fas fa-exclamation-circle"></i>
                   <span>Email is required.</span>
                 </span>
               </div>
               <div class="field">
                 <label class="label">Password</label>
-                <input class="input" type="password" formControlName="password" autocomplete="off" />
-                <span class="form-helper"
-                  [hidden]="loginForm.controls.password.valid || (loginForm.controls.password.pristine && !submitted)">
+                <input
+                  class="input"
+                  type="password"
+                  formControlName="password"
+                  autocomplete="off"
+                />
+                <span
+                  class="form-helper"
+                  [hidden]="
+                    loginForm.controls.password.valid ||
+                    (loginForm.controls.password.pristine && !submitted)
+                  "
+                >
                   <i class="fas fa-exclamation-circle"></i>
                   <span>Password is required.</span>
                 </span>

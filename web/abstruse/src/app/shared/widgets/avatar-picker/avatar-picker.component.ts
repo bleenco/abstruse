@@ -6,7 +6,13 @@ import { randomInt } from '../../common/random-int';
   selector: 'app-avatar-picker',
   templateUrl: './avatar-picker.component.html',
   styleUrls: ['./avatar-picker.component.sass'],
-  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => AvatarPickerComponent), multi: true }]
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => AvatarPickerComponent),
+      multi: true
+    }
+  ]
 })
 export class AvatarPickerComponent implements ControlValueAccessor, OnInit {
   @Input() values: string[] = [...new Array(30)].map((_, i: number) => {

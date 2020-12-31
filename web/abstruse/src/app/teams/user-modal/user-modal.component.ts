@@ -116,7 +116,9 @@ export class UserModalComponent implements OnInit {
     } else if (output.type === 'addedToQueue' && typeof output.file !== 'undefined') {
       this.files.push(output.file);
     } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
-      const index = this.files.findIndex(file => typeof output.file !== 'undefined' && file.id === output.file.id);
+      const index = this.files.findIndex(
+        file => typeof output.file !== 'undefined' && file.id === output.file.id
+      );
       this.files[index] = output.file;
     } else if (output.type === 'cancelled' || output.type === 'removed') {
       this.files = this.files.filter((file: UploadFile) => file !== output.file);
@@ -134,7 +136,10 @@ export class UserModalComponent implements OnInit {
       email: [(this.user && this.user.email) || null, [Validators.required, Validators.email]],
       name: [(this.user && this.user.name) || null, [Validators.required]],
       role: [(this.user && this.user.role) || 'user', [Validators.required]],
-      avatar: [(this.user && this.user.avatar) || '/assets/images/avatars/avatar_7.svg', [Validators.required]],
+      avatar: [
+        (this.user && this.user.avatar) || '/assets/images/avatars/avatar_7.svg',
+        [Validators.required]
+      ],
       password: [null, []],
       repeatPassword: [null, []]
     });

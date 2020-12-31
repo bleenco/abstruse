@@ -23,7 +23,11 @@ export class TeamsListComponent implements OnInit, AfterViewInit {
   fetchingTeams = false;
   error: string | null = null;
 
-  constructor(private teamsService: TeamsService, public modal: ModalService, public auth: AuthService) {}
+  constructor(
+    private teamsService: TeamsService,
+    public modal: ModalService,
+    public auth: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.list();

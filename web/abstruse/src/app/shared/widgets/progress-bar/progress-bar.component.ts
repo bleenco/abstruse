@@ -1,4 +1,12 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ElementRef, Renderer2 } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ElementRef,
+  Renderer2
+} from '@angular/core';
 import { ProgressBarSettings, defaultProgressBarSettings, style } from './progress-bar.interface';
 
 @Component({
@@ -37,7 +45,9 @@ export class ProgressBarComponent implements OnInit, OnChanges {
   constructor(public elementRef: ElementRef, public renderer: Renderer2) {}
 
   ngOnInit(): void {
-    this.container = this.elementRef.nativeElement.querySelector('.progress-bar-container') as HTMLElement;
+    this.container = this.elementRef.nativeElement.querySelector(
+      '.progress-bar-container'
+    ) as HTMLElement;
     this.bar = this.container.querySelector('.progress-bar') as HTMLElement;
     this.initSettings();
   }
@@ -63,7 +73,11 @@ export class ProgressBarComponent implements OnInit, OnChanges {
     this.renderer.setStyle(this.container, 'width', this.options.width);
     this.renderer.setStyle(this.container, 'height', this.options.height);
     if (this.options.transition) {
-      this.renderer.setStyle(this.bar, 'transition', `width ${this.options.transitionDuration}ms ease-in-out`);
+      this.renderer.setStyle(
+        this.bar,
+        'transition',
+        `width ${this.options.transitionDuration}ms ease-in-out`
+      );
     } else {
       this.renderer.setStyle(this.bar, 'transition', `none`);
     }

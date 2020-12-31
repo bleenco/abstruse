@@ -86,7 +86,9 @@ export class BuildsService {
   }
 
   jobLogEvents(): Observable<SocketEvent> {
-    return this.dataService.socketOutput.pipe(filter(ev => ev.type.startsWith(buildsSubJobLogEvent)));
+    return this.dataService.socketOutput.pipe(
+      filter(ev => ev.type.startsWith(buildsSubJobLogEvent))
+    );
   }
 
   subscribeToBuildsEvents(): void {

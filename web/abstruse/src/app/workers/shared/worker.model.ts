@@ -68,8 +68,18 @@ export class Worker {
 
   private initUsage(): void {
     try {
-      this.cpu = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), this.usage.length - i), value: u.cpu }))];
-      this.memory = [this.usage.map((u, i) => ({ date: subSeconds(new Date(), this.usage.length - i), value: u.mem }))];
+      this.cpu = [
+        this.usage.map((u, i) => ({
+          date: subSeconds(new Date(), this.usage.length - i),
+          value: u.cpu
+        }))
+      ];
+      this.memory = [
+        this.usage.map((u, i) => ({
+          date: subSeconds(new Date(), this.usage.length - i),
+          value: u.mem
+        }))
+      ];
       this.currentCPU = this.usage[this.usage.length - 1].cpu;
       this.currentMem = this.usage[this.usage.length - 1].mem;
       this.jobsMax = this.usage[this.usage.length - 1].jobsMax;

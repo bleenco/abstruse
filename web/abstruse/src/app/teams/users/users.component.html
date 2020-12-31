@@ -11,8 +11,19 @@
       </div>
       <div class="subheader-right">
         <i class="fas fa-search"></i>
-        <input type="text" class="input search-input" placeholder="Search users..." autocomplete="off" #keyword />
-        <button type="button" class="button" (click)="openUserModal()" [disabled]="!this.auth.isAdmin">
+        <input
+          type="text"
+          class="input search-input"
+          placeholder="Search users..."
+          autocomplete="off"
+          #keyword
+        />
+        <button
+          type="button"
+          class="button"
+          (click)="openUserModal()"
+          [disabled]="!this.auth.isAdmin"
+        >
           <span>Add New User</span>
         </button>
       </div>
@@ -49,7 +60,11 @@
         </div>
       </div>
       <div class="list-items">
-        <app-user-list-item *ngFor="let user of displayedUsers" [user]="user" (updated)="onUserUpdated()">
+        <app-user-list-item
+          *ngFor="let user of displayedUsers"
+          [user]="user"
+          (updated)="onUserUpdated()"
+        >
         </app-user-list-item>
       </div>
     </div>

@@ -1,4 +1,4 @@
-<div *ngIf="(loggedIn | async); else loggedOut">
+<div *ngIf="loggedIn | async; else loggedOut">
   <ng-container *ngTemplateOutlet="notFoundTemplate"></ng-container>
 </div>
 

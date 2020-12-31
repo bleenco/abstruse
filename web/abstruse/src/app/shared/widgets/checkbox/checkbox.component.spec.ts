@@ -37,7 +37,8 @@ describe('CheckboxComponent', () => {
   });
 
   it('should change value on .checkbox-label click', () => {
-    const label: HTMLLabelElement = fixture.debugElement.query(By.css('.checkbox-label')).nativeElement;
+    const label: HTMLLabelElement = fixture.debugElement.query(By.css('.checkbox-label'))
+      .nativeElement;
     expect(input.checked).toBeFalsy();
     label.click();
     fixture.detectChanges();
@@ -83,12 +84,14 @@ describe('CheckboxComponent under TestHostComponent', () => {
   });
 
   it('should display label text', () => {
-    const label: HTMLLabelElement = testHostFixture.debugElement.query(By.css('.label')).nativeElement;
+    const label: HTMLLabelElement = testHostFixture.debugElement.query(By.css('.label'))
+      .nativeElement;
     expect(label.innerText).toEqual('Enabled');
   });
 
   it('should display different label text when changed', () => {
-    const label: HTMLLabelElement = testHostFixture.debugElement.query(By.css('.label')).nativeElement;
+    const label: HTMLLabelElement = testHostFixture.debugElement.query(By.css('.label'))
+      .nativeElement;
     expect(label.innerText).toEqual('Enabled');
     testHostComponent.label = 'Disabled';
     testHostFixture.detectChanges();

@@ -7,6 +7,12 @@ import { IndexComponent } from './index/index.component';
 
 @NgModule({
   declarations: [IndexComponent],
-  imports: [CommonModule, DashboardRoutingModule, SharedModule, BarChartModule, RealtimeCanvasChartModule]
+  imports: [
+    CommonModule,
+    DashboardRoutingModule,
+    SharedModule,
+    BarChartModule,
+    RealtimeCanvasChartModule
+  ]
 })
 export class DashboardModule {}

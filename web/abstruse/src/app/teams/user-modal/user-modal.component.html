@@ -4,7 +4,11 @@
     <h2 *ngIf="!user?.id">Create New User</h2>
     <h2 *ngIf="user?.id">Edit User</h2>
   </div>
-  <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)" [class.events-none]="saving">
+  <span
+    class="icon close-icon is-action"
+    (click)="activeModal.dismiss(false)"
+    [class.events-none]="saving"
+  >
     <i class="fas fa-times"></i>
   </span>
 </div>
@@ -22,8 +26,13 @@
             <label class="button is-small" [class.events-none]="uploadingAvatar">
               <span *ngIf="!uploadingAvatar">Upload Avatar</span>
               <span *ngIf="uploadingAvatar">Uploading Avatar...</span>
-              <input type="file" ngFileSelect [options]="uploadOptions" (uploadOutput)="onUploadOutput($event)"
-                [uploadInput]="uploadInput" />
+              <input
+                type="file"
+                ngFileSelect
+                [options]="uploadOptions"
+                (uploadOutput)="onUploadOutput($event)"
+                [uploadInput]="uploadInput"
+              />
             </label>
           </div>
         </div>
@@ -31,27 +40,55 @@
       <div class="column is-8">
         <div class="field">
           <label class="label">Email</label>
-          <input type="text" name="email" class="input" placeholder="Email (Username)" formControlName="email"
-            autocomplete="off" />
+          <input
+            type="text"
+            name="email"
+            class="input"
+            placeholder="Email (Username)"
+            formControlName="email"
+            autocomplete="off"
+          />
         </div>
         <div class="field">
           <label class="label">Name</label>
-          <input type="text" name="name" class="input" placeholder="Full Name" formControlName="name"
-            autocomplete="off" />
+          <input
+            type="text"
+            name="name"
+            class="input"
+            placeholder="Full Name"
+            formControlName="name"
+            autocomplete="off"
+          />
         </div>
         <div class="field">
           <label class="label">Role</label>
-          <app-selectbox [values]="roleList" placeholder="Role" formControlName="role"></app-selectbox>
+          <app-selectbox
+            [values]="roleList"
+            placeholder="Role"
+            formControlName="role"
+          ></app-selectbox>
         </div>
         <div class="field">
           <label class="label">Password</label>
-          <input type="password" name="password" class="input" placeholder="New Password" formControlName="password"
-            autocomplete="new-password" />
+          <input
+            type="password"
+            name="password"
+            class="input"
+            placeholder="New Password"
+            formControlName="password"
+            autocomplete="new-password"
+          />
         </div>
         <div class="field">
           <label class="label">Repeat Password</label>
-          <input type="password" name="repeatPassword" class="input" placeholder="Repeat Password"
-            formControlName="repeatPassword" autocomplete="new-password" />
+          <input
+            type="password"
+            name="repeatPassword"
+            class="input"
+            placeholder="Repeat Password"
+            formControlName="repeatPassword"
+            autocomplete="new-password"
+          />
         </div>
       </div>
     </div>
@@ -59,7 +96,9 @@
   <div class="modal-footer space-between">
     <div class="align-center"></div>
     <div class="align-center">
-      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">Cancel</button>
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">
+        Cancel
+      </button>
       <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
         <span *ngIf="!saving && !user?.id">Create</span>
         <span *ngIf="saving && !user?.id">Creating...</span>

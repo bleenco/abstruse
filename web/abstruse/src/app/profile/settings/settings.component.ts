@@ -83,7 +83,9 @@ export class SettingsComponent implements OnInit {
     } else if (output.type === 'addedToQueue' && typeof output.file !== 'undefined') {
       this.files.push(output.file);
     } else if (output.type === 'uploading' && typeof output.file !== 'undefined') {
-      const index = this.files.findIndex(file => typeof output.file !== 'undefined' && file.id === output.file.id);
+      const index = this.files.findIndex(
+        file => typeof output.file !== 'undefined' && file.id === output.file.id
+      );
       this.files[index] = output.file;
     } else if (output.type === 'cancelled' || output.type === 'removed') {
       this.files = this.files.filter((file: UploadFile) => file !== output.file);
@@ -114,7 +116,11 @@ export class SettingsComponent implements OnInit {
   }
 
   private generateModel(): Profile {
-    return new Profile(this.form.controls.email.value, this.form.controls.name.value, this.form.controls.avatar.value);
+    return new Profile(
+      this.form.controls.email.value,
+      this.form.controls.name.value,
+      this.form.controls.avatar.value
+    );
   }
 
   private updateValues(user: Profile): void {

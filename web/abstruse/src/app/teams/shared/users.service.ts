@@ -12,7 +12,9 @@ export class UsersService {
   constructor(private http: HttpClient) {}
 
   list(): Observable<User[]> {
-    return this.http.get('/users').pipe(map((resp: any) => (resp && resp.length ? resp.map(generateUser) : [])));
+    return this.http
+      .get('/users')
+      .pipe(map((resp: any) => (resp && resp.length ? resp.map(generateUser) : [])));
   }
 
   create(data: any): Observable<User> {

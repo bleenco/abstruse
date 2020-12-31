@@ -12,7 +12,12 @@
       <span>{{ team?.reposCount }}</span>
     </span>
     <div class="buttons justify-end">
-      <button type="button" class="button is-small" (click)="openTeamModal()" [disabled]="!this.auth.isAdmin">
+      <button
+        type="button"
+        class="button is-small"
+        (click)="openTeamModal()"
+        [disabled]="!this.auth.isAdmin"
+      >
         <i class="fas fa-edit"></i>
         <span>Edit</span>
       </button>

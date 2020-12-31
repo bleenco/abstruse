@@ -9,16 +9,29 @@
         <h2>Abstruse CI Stats</h2>
       </div>
       <div class="subheader-right">
-        <i class="fas fa-question-circle mr10 scheduler-help-icon" appTooltip
-          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out."></i>
-        <button type="button" class="button" [disabled]="!auth.isAdmin || schedulerStatusSaving || loading"
-          *ngIf="schedulerStatus && !loading" (click)="pauseResumeScheduler()">
+        <i
+          class="fas fa-question-circle mr10 scheduler-help-icon"
+          appTooltip
+          text="Pause / Resume all jobs in the queue except for ongoing jobs. All ongoing jobs continue to be carried out."
+        ></i>
+        <button
+          type="button"
+          class="button"
+          [disabled]="!auth.isAdmin || schedulerStatusSaving || loading"
+          *ngIf="schedulerStatus && !loading"
+          (click)="pauseResumeScheduler()"
+        >
           <i class="fas fa-pause"></i>
           <span *ngIf="!schedulerStatusSaving">Pause Scheduler</span>
           <span *ngIf="schedulerStatusSaving">Pausing Scheduler...</span>
         </button>
-        <button type="button" class="button" [disabled]="!auth.isAdmin || schedulerStatusSaving || loading"
-          *ngIf="!schedulerStatus && !loading" (click)="pauseResumeScheduler()">
+        <button
+          type="button"
+          class="button"
+          [disabled]="!auth.isAdmin || schedulerStatusSaving || loading"
+          *ngIf="!schedulerStatus && !loading"
+          (click)="pauseResumeScheduler()"
+        >
           <i class="fas fa-play"></i>
           <span *ngIf="!schedulerStatusSaving">Resume Scheduler</span>
           <span *ngIf="schedulerStatusSaving">Resuming Scheduler...</span>
@@ -42,8 +55,11 @@
     <div class="column is-12" *ngIf="!loading">
       <div class="columns is-multiline">
         <div class="column is-3">
-          <article class="card" [class.is-red]="queuedPercent >= 80"
-            [class.is-yellow]="queuedPercent > 30 && queuedPercent < 80">
+          <article
+            class="card"
+            [class.is-red]="queuedPercent >= 80"
+            [class.is-yellow]="queuedPercent > 30 && queuedPercent < 80"
+          >
             <div class="card-bg has-less-width">
               <i class="fas fa-list-alt"></i>
               <i class="fas fa-list-alt is-overlay" [style.height]="100 - queuedPercent + '%'"></i>
@@ -60,11 +76,17 @@
           </article>
         </div>
         <div class="column is-3">
-          <article class="card" [class.is-red]="pendingPercent >= 80"
-            [class.is-yellow]="pendingPercent > 30 && pendingPercent < 80">
+          <article
+            class="card"
+            [class.is-red]="pendingPercent >= 80"
+            [class.is-yellow]="pendingPercent > 30 && pendingPercent < 80"
+          >
             <div class="card-bg has-less-width-20">
               <i class="fas fa-clipboard-list"></i>
-              <i class="fas fa-clipboard-list is-overlay" [style.height]="100 - pendingPercent + '%'"></i>
+              <i
+                class="fas fa-clipboard-list is-overlay"
+                [style.height]="100 - pendingPercent + '%'"
+              ></i>
             </div>
             <div class="card-content">
               <span class="title">Pending Jobs</span>
@@ -78,7 +100,11 @@
           </article>
         </div>
         <div class="column is-3">
-          <article class="card" [class.is-red]="data.cpu >= 80" [class.is-yellow]="data.cpu > 30 && data.cpu < 80">
+          <article
+            class="card"
+            [class.is-red]="data.cpu >= 80"
+            [class.is-yellow]="data.cpu > 30 && data.cpu < 80"
+          >
             <div class="card-bg has-less-width">
               <i class="fas fa-microchip"></i>
               <i class="fas fa-microchip is-overlay" [style.height]="100 - data.cpu + '%'"></i>
@@ -95,7 +121,11 @@
           </article>
         </div>
         <div class="column is-3">
-          <article class="card" [class.is-red]="data.mem >= 80" [class.is-yellow]="data.mem > 30 && data.mem < 80">
+          <article
+            class="card"
+            [class.is-red]="data.mem >= 80"
+            [class.is-yellow]="data.mem > 30 && data.mem < 80"
+          >
             <div class="card-bg">
               <i class="fas fa-memory"></i>
               <i class="fas fa-memory is-overlay" [style.height]="100 - data.mem + '%'"></i>
@@ -119,12 +149,18 @@
           <div class="section">
             <div class="section-rlchart">
               <h3 class="is-centered">CPU Usage</h3>
-              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="cpuRealtimeChartData">
+              <ngx-realtime-canvas-chart
+                [options]="realtimeChartOptions"
+                [data]="cpuRealtimeChartData"
+              >
               </ngx-realtime-canvas-chart>
             </div>
             <div class="section-rlchart">
               <h3 class="is-centered">Memory Usage</h3>
-              <ngx-realtime-canvas-chart [options]="realtimeChartOptions" [data]="memRealtimeChartData">
+              <ngx-realtime-canvas-chart
+                [options]="realtimeChartOptions"
+                [data]="memRealtimeChartData"
+              >
               </ngx-realtime-canvas-chart>
             </div>
           </div>
@@ -134,18 +170,30 @@
             <div class="space-between">
               <h3>Builds History</h3>
               <div class="sub-links">
-                <span class="sub-link" [class.is-active]="jobHistory === 'week'" (click)="jobsLastWeek()">Last 7
-                  Days</span>
-                <span class="sub-link" [class.is-active]="jobHistory === 'month'" (click)="jobsLastMonth()">Last
-                  Month</span>
+                <span
+                  class="sub-link"
+                  [class.is-active]="jobHistory === 'week'"
+                  (click)="jobsLastWeek()"
+                  >Last 7 Days</span
+                >
+                <span
+                  class="sub-link"
+                  [class.is-active]="jobHistory === 'month'"
+                  (click)="jobsLastMonth()"
+                  >Last Month</span
+                >
               </div>
             </div>
-            <ngx-bar-chart [data]="barData" [options]="barChartoptions"
-              *ngIf="!loadingJobs && barData && barData.length"></ngx-bar-chart>
+            <ngx-bar-chart
+              [data]="barData"
+              [options]="barChartoptions"
+              *ngIf="!loadingJobs && barData && barData.length"
+            ></ngx-bar-chart>
             <div class="bar-chart-placeholder" *ngIf="loadingJobs || !barData || !barData.length">
               <app-loader *ngIf="loadingJobs"></app-loader>
-              <span class="message" *ngIf="!loadingJobs && (!barData || !barData.length)">Not enough data to display
-                chart.</span>
+              <span class="message" *ngIf="!loadingJobs && (!barData || !barData.length)"
+                >Not enough data to display chart.</span
+              >
             </div>
           </div>
         </div>
