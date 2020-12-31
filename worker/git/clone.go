@@ -2,7 +2,6 @@ package git
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -16,6 +15,7 @@ func CloneRepository(url, ref, commit, token, dir string) error {
 		Username: "user",
 		Password: token,
 	}
+
 	r, err := git.PlainClone(dir, false, &git.CloneOptions{
 		URL:               url,
 		Auth:              auth,
@@ -25,7 +25,13 @@ func CloneRepository(url, ref, commit, token, dir string) error {
 	if err != nil {
 		return err
 	}
-	if !strings.HasSuffix(ref, "/master") {
+
+	reference, err := r.Head()
+	if err != nil {
+		return err
+	}
+
+	if reference.Name().String() != ref {
 		if err := r.Fetch(&git.FetchOptions{
 			RefSpecs: []config.RefSpec{
 				config.RefSpec(fmt.Sprintf("%s:%s", ref, ref)),
@@ -35,15 +41,18 @@ func CloneRepository(url, ref, commit, token, dir string) error {
 			return err
 		}
 	}
+
 	w, err := r.Worktree()
 	if err != nil {
 		return err
 	}
+
 	if err := w.Checkout(&git.CheckoutOptions{
 		Branch: plumbing.ReferenceName(ref),
 	}); err != nil {
 		return err
 	}
+
 	if err := w.Checkout(&git.CheckoutOptions{
 		Hash: plumbing.NewHash(commit),
 	}); err != nil {
