@@ -34,7 +34,12 @@ func (a *App) Register(conn net.Conn, claims auth.UserClaims) *Client {
 	a.mu.Lock()
 	a.Clients = append(a.Clients, client)
 	a.mu.Unlock()
-	a.logger.Debugf("websocket user %s (id: %d, name: %s) registered", client.data.Email, client.data.ID, client.data.Name)
+	a.logger.Debugf(
+		"websocket user %s (id: %d, name: %s) registered",
+		client.data.Email,
+		client.data.ID,
+		client.data.Name,
+	)
 
 	return client
 }
@@ -76,6 +81,10 @@ func (a *App) InitClient(client *Client) error {
 		msg, err := client.Receive()
 		if err != nil {
 			return err
+		}
+
+		if msg == nil {
+			continue
 		}
 
 		if msg.Type == "subscribe" {

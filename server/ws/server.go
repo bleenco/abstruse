@@ -108,7 +108,12 @@ func (s *Server) handle(conn net.Conn) {
 	client := s.App.Register(conn, claims)
 	if err := s.App.InitClient(client); err != nil {
 		s.App.Remove(client)
-		s.logger.Debugf("websocket user %s (id: %d, name: %s) unregistered", client.data.Email, client.data.ID, client.data.Name)
+		s.logger.Debugf(
+			"websocket user %s (id: %d, name: %s) unregistered",
+			client.data.Email,
+			client.data.ID,
+			client.data.Name,
+		)
 	}
 }
 
