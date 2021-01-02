@@ -24,6 +24,11 @@ Note that demo user only have read permissions on added repositories.
 If you are interested about the status of this project, the easiest way to get Abstruse 2.x running is:
 
 ```sh
+$ docker-compose -f https://raw.githubusercontent.com/bleenco/abstruse/master/configs/demo/default/docker-compose.yml up -d
+```
+You can also build docker images locally:
+
+```sh
 $ make docker
 $ docker-compose -f configs/demo/default/docker-compose.yml up -d
 ```
