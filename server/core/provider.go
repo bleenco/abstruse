@@ -1,6 +1,10 @@
 package core
 
-import "time"
+import (
+	"time"
+
+	"github.com/jinzhu/gorm"
+)
 
 type (
 	// Provider represents `providers` db table.
@@ -42,3 +46,11 @@ type (
 		Sync(uint) error
 	}
 )
+
+// AfterDelete hook on provider which deletes all related repositories.
+func (p *Provider) AfterDelete(tx *gorm.DB) error {
+	return tx.Model(&Repository{}).
+		Where("provider_id = ?", p.ID).
+		Delete(&Repository{}).
+		Error
+}
