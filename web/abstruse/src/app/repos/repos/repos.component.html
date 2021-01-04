@@ -53,16 +53,19 @@
         <app-repo-item [repo]="r" *ngFor="let r of repos"></app-repo-item>
       </div>
       <div class="pagination" *ngIf="count > limit">
+        <span class="btn" (click)="first()">First</span>
         <span class="btn" (click)="back()">Back</span>
         <span
           class="page"
           *ngFor="let p of pages"
-          (click)="setPage(p)"
-          [class.is-active]="page === p"
+          (click)="setPage(p.page)"
+          [class.is-active]="page === p.page"
+          [class.is-hidden]="!p.display"
         >
-          {{ p }}
+          {{ p.page }}
         </span>
         <span class="btn" (click)="next()">Next</span>
+        <span class="btn" (click)="last()">Last</span>
       </div>
     </div>
   </div>

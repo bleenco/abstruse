@@ -21,7 +21,8 @@ export class ReposComponent implements OnInit, AfterViewInit {
   limit = 10;
   page = 1;
   count!: number;
-  pages: number[] = [];
+  pages: { page: number; display: boolean }[] = [];
+  maxPages = 5;
 
   constructor(private reposService: ReposService) {}
 
@@ -90,7 +91,22 @@ export class ReposComponent implements OnInit, AfterViewInit {
     this.find();
   }
 
+  first(): void {
+    this.page = 1;
+    this.find();
+  }
+
+  last(): void {
+    this.page = Math.ceil(this.count / this.limit);
+    this.find();
+  }
+
   initPages(): void {
-    this.pages = [...new Array(Math.ceil(this.count / this.limit))].map((_, i) => i + 1);
+    this.pages = [...new Array(Math.ceil(this.count / this.limit))].map((_, i) => {
+      const page = i + 1;
+      const display = page - this.maxPages <= this.page && page + this.maxPages >= this.page;
+
+      return { page, display };
+    });
   }
 }
