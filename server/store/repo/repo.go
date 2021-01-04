@@ -76,11 +76,15 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 			Or("team_users.user_id = ? AND permissions.read = ? AND repositories.full_name LIKE ?", filters.UserID, true, keyword)
 	}
 
-	if filters.Limit != 0 && filters.Offset != 0 {
-		db = db.Limit(filters.Limit).Offset(filters.Offset)
+	if filters.Limit != 0 {
+		db = db.Limit(filters.Limit)
 	}
 
-	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Count(&count).Error
+	if filters.Offset != 0 {
+		db = db.Offset(filters.Offset)
+	}
+
+	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Limit(-1).Count(&count).Error
 	if err != nil || count == 0 {
 		return repos, count, err
 	}
