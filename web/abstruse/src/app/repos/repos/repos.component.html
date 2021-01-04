@@ -59,8 +59,9 @@
           *ngFor="let p of pages"
           (click)="setPage(p)"
           [class.is-active]="page === p"
-          >{{ p }}</span
         >
+          {{ p }}
+        </span>
         <span class="btn" (click)="next()">Next</span>
       </div>
     </div>
