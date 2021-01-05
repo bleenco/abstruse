@@ -23,6 +23,8 @@
           <div class="user-item" (click)="toggleDropdown()">
             <div class="avatar-container">
               <img [src]="auth.userData?.avatar" class="avatar" />
+              <span class="connection-indicator is-green" *ngIf="onlineStatus"></span>
+              <span class="connection-indicator is-red" *ngIf="!onlineStatus"></span>
             </div>
             <div class="user-info">
               <span class="name">{{ auth.userData?.name }}</span>
@@ -59,6 +61,14 @@
               <a class="hd-item" (click)="logout()">
                 <span>Logout</span>
               </a>
+              <div class="hd-item events-none" *ngIf="onlineStatus">
+                <span class="connection-indicator is-green"></span>
+                <span>Connection Online</span>
+              </div>
+              <div class="hd-item events-none" *ngIf="!onlineStatus">
+                <span class="connection-indicator is-red"></span>
+                <span>Connection Offline</span>
+              </div>
             </div>
           </div>
         </div>
