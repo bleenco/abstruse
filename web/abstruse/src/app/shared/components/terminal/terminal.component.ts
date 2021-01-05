@@ -103,6 +103,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (this.data === '__CLEAR__') {
       this.terminal.clear();
+      this.terminal.reset();
       return;
     }
 
