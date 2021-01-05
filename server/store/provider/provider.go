@@ -21,9 +21,9 @@ type providerStore struct {
 	repos core.RepositoryStore
 }
 
-func (s providerStore) Find(id uint) (core.Provider, error) {
-	var provider core.Provider
-	err := s.db.Model(&provider).Where("id = ?", id).First(&provider).Error
+func (s providerStore) Find(id uint) (*core.Provider, error) {
+	provider := &core.Provider{}
+	err := s.db.Model(&core.Provider{}).Where("id = ?", id).First(&provider).Error
 	return provider, err
 }
 
@@ -33,21 +33,21 @@ func (s providerStore) List() ([]*core.Provider, error) {
 	return providers, err
 }
 
-func (s providerStore) ListUser(userID uint) ([]core.Provider, error) {
-	var providers []core.Provider
+func (s providerStore) ListUser(userID uint) ([]*core.Provider, error) {
+	var providers []*core.Provider
 	err := s.db.Where("user_id = ?", userID).Find(&providers).Error
 	return providers, err
 }
 
-func (s providerStore) Create(provider core.Provider) error {
-	return s.db.Create(&provider).Error
+func (s providerStore) Create(provider *core.Provider) error {
+	return s.db.Create(provider).Error
 }
 
-func (s providerStore) Update(provider core.Provider) error {
-	return s.db.Model(&provider).Updates(&provider).Error
+func (s providerStore) Update(provider *core.Provider) error {
+	return s.db.Model(provider).Updates(&provider).Error
 }
 
-func (s providerStore) Delete(provider core.Provider) error {
+func (s providerStore) Delete(provider *core.Provider) error {
 	return s.db.Delete(&provider).Error
 }
 

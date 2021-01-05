@@ -18,7 +18,7 @@ func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.Handl
 		Name        string `json:"name" valid:"stringlength(4|12),required"`
 		URL         string `json:"url" valid:"url,required"`
 		Host        string `json:"host" valid:"url,required"`
-		AccessToken string `json:"accessToken" valid:"stringlength(12|50),required"`
+		AccessToken string `json:"accessToken"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
 	}
 
@@ -51,14 +51,17 @@ func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.Handl
 		}
 
 		if p.UserID == claims.ID || user.Role == "admin" {
-			provider := core.Provider{
-				ID:          f.ID,
-				Name:        f.Name,
-				URL:         f.URL,
-				Host:        f.Host,
-				AccessToken: f.AccessToken,
-				Secret:      f.Secret,
-				UserID:      claims.ID,
+			provider := &core.Provider{
+				ID:     f.ID,
+				Name:   f.Name,
+				URL:    f.URL,
+				Host:   f.Host,
+				Secret: f.Secret,
+				UserID: claims.ID,
+			}
+
+			if f.AccessToken != "" {
+				provider.AccessToken = f.AccessToken
 			}
 
 			if err := providers.Update(provider); err != nil {
