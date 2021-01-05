@@ -24,23 +24,23 @@ type (
 	// ProviderStore defines operations on `providers` table.
 	ProviderStore interface {
 		// Find returns provider from datastore.
-		Find(uint) (Provider, error)
+		Find(uint) (*Provider, error)
 
 		// List returns providers from datastore.
 		List() ([]*Provider, error)
 
 		// ListUser returns providers from datastore based
 		// by user ID.
-		ListUser(uint) ([]Provider, error)
+		ListUser(uint) ([]*Provider, error)
 
 		// Create persists a new provider to the datastore.
-		Create(Provider) error
+		Create(*Provider) error
 
 		// Update persists updated provider to the datastore.
-		Update(Provider) error
+		Update(*Provider) error
 
 		// Delete deletes a provider from the datastore.
-		Delete(Provider) error
+		Delete(*Provider) error
 
 		// Sync synchronizes provider repositories with local repositories.
 		Sync(uint) error

@@ -37,7 +37,7 @@ func HandleCreate(providers core.ProviderStore) http.HandlerFunc {
 			return
 		}
 
-		provider := core.Provider{
+		provider := &core.Provider{
 			Name:        f.Name,
 			URL:         f.URL,
 			Host:        f.Host,
@@ -47,6 +47,11 @@ func HandleCreate(providers core.ProviderStore) http.HandlerFunc {
 		}
 
 		if err := providers.Create(provider); err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
+
+		if err := providers.Sync(provider.ID); err != nil {
 			render.InternalServerError(w, err.Error())
 			return
 		}
