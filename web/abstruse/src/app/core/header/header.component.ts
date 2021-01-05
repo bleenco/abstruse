@@ -14,7 +14,7 @@ import { ConnectionStates } from 'src/app/shared/models/socket.class';
 })
 export class HeaderComponent implements OnInit {
   dropdownOpened = false;
-  onlineStatus = false;
+  onlineStatus: 'connecting' | 'closed' | 'online' = 'connecting';
 
   constructor(
     public auth: AuthService,
@@ -24,9 +24,11 @@ export class HeaderComponent implements OnInit {
   ) {
     this.socket.connectionState.pipe(untilDestroyed(this)).subscribe(state => {
       if (state === ConnectionStates.CONNECTED) {
-        this.onlineStatus = true;
+        this.onlineStatus = 'online';
+      } else if (state === ConnectionStates.CONNECTING) {
+        this.onlineStatus = 'connecting';
       } else {
-        this.onlineStatus = false;
+        this.onlineStatus = 'closed';
       }
     });
   }
