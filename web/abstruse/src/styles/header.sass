@@ -69,12 +69,28 @@ $header-height: 60px
           border: 1px solid $border-default
           vertical-align: middle
           margin-right: 5px
+          position: relative
 
           .avatar
             display: block
             max-height: 35px
             border-radius: 50%
             padding: 3px
+
+          .connection-indicator
+            position: absolute
+            width: 12px
+            height: 12px
+            display: block
+            border-radius: 50%
+            bottom: -2px
+            left: -2px
+
+            &.is-green
+              background: $green
+
+            &.is-red
+              background: $red
 
         .user-info
           display: flex
@@ -146,3 +162,16 @@ $header-height: 60px
 
       &:hover
         color: $green
+
+      .connection-indicator
+        width: 12px
+        height: 12px
+        display: block
+        border-radius: 50%
+        margin-right: 10px
+
+        &.is-green
+          background: $green
+
+        &.is-red
+          background: $red

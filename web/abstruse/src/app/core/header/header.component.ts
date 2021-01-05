@@ -3,6 +3,8 @@ import { AuthService } from '../../auth/shared/auth.service';
 import { Router, NavigationStart } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter } from 'rxjs/operators';
+import { SocketService } from 'src/app/shared/providers/socket.service';
+import { ConnectionStates } from 'src/app/shared/models/socket.class';
 
 @UntilDestroy()
 @Component({
@@ -12,8 +14,22 @@ import { filter } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit {
   dropdownOpened = false;
+  onlineStatus = false;
 
-  constructor(public auth: AuthService, private elementRef: ElementRef, private router: Router) {}
+  constructor(
+    public auth: AuthService,
+    private elementRef: ElementRef,
+    private router: Router,
+    private socket: SocketService
+  ) {
+    this.socket.connectionState.pipe(untilDestroyed(this)).subscribe(state => {
+      if (state === ConnectionStates.CONNECTED) {
+        this.onlineStatus = true;
+      } else {
+        this.onlineStatus = false;
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.router.events
