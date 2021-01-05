@@ -6,7 +6,7 @@ import (
 )
 
 // APIVersion represents current version of abstruse API
-const APIVersion = "2.0.0-alpha.1"
+const APIVersion = "2.0.0-alpha.2"
 
 var (
 	// UIVersion is build time var and represents version of the user interface
