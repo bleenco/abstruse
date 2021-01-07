@@ -208,7 +208,7 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Pulling image %s... ", image)))
-	if err := docker.PullImage(image); err != nil {
+	if err := docker.PullImage(image, s.config.Registry); err != nil {
 		logch <- []byte(err.Error())
 	} else {
 		logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
