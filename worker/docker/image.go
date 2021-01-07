@@ -13,6 +13,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/bleenco/abstruse/worker/config"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/jsonmessage"
@@ -84,20 +85,31 @@ func PushImage(tag string) (io.ReadCloser, error) {
 }
 
 // PullImage pulls image from the registry.
-func PullImage(image string) error {
+func PullImage(image string, config *config.Registry) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		panic(err)
 	}
-	// if len(strings.Split(tag, ":")) == 1 {
-	// 	tag = fmt.Sprintf("%s:latest", tag)
-	// }
 
-	// tag = prependTag(tag)
-	// authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
-	// authJSON, _ := json.Marshal(authConfig)
-	// auth := base64.URLEncoding.EncodeToString(authJSON)
+	opts := types.ImagePullOptions{}
+
+	if cfg.Username != "" && cfg.Password != "" {
+		authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
+		authJSON, _ := json.Marshal(authConfig)
+		opts.RegistryAuth = base64.URLEncoding.EncodeToString(authJSON)
+	}
+
+	if config.Addr != "" && !strings.Contains(config.Addr, "docker.io") {
+		pimage := fmt.Sprintf("%s/%s", config.Addr, image)
+
+		out, err := cli.ImagePull(ctx, pimage, opts)
+		defer out.Close()
+		if err == nil {
+			ioutil.ReadAll(out)
+			return nil
+		}
+	}
 
 	if !strings.Contains(image, "/") && !strings.HasPrefix(image, "docker.io") {
 		image = fmt.Sprintf("docker.io/library/%s", image)
@@ -105,7 +117,7 @@ func PullImage(image string) error {
 		image = fmt.Sprintf("docker.io/%s", image)
 	}
 
-	out, err := cli.ImagePull(ctx, image, types.ImagePullOptions{})
+	out, err := cli.ImagePull(ctx, image, opts)
 	defer out.Close()
 	if _, rerr := ioutil.ReadAll(out); rerr != nil {
 		return rerr
