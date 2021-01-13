@@ -35,10 +35,18 @@ export class SettingsComponent implements OnInit {
   triggerError: string | null = null;
 
   get badgeURL(): string {
+    if (!this.repo?.token) {
+      return '';
+    }
+
     return window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
   }
 
   get badgeMarkdown(): string {
+    if (!this.repo?.token) {
+      return '';
+    }
+
     const badge = window.location.origin + `/badge/${this.repo.token}?branch=${this.branch}`;
     const url = window.location.origin + `/repos/${this.repo.id}`;
     return `[![Build Status](${badge})](${url})`;
