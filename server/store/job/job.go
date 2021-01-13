@@ -19,13 +19,19 @@ type jobStore struct {
 
 func (s jobStore) Find(id uint) (*core.Job, error) {
 	var job core.Job
-	err := s.db.Model(&job).Where("id = ?", id).Preload("Build.Repository.Provider").First(&job).Error
+	err := s.db.Model(&job).Where("id = ?", id).
+		Preload("Build.Repository.Provider").
+		Preload("Build.Repository.EnvVariables").
+		First(&job).Error
 	return &job, err
 }
 
 func (s jobStore) FindUser(id, userID uint) (*core.Job, error) {
 	var job core.Job
-	err := s.db.Model(&job).Where("id = ?", id).Preload("Build.Repository.Provider").First(&job).Error
+	err := s.db.Model(&job).Where("id = ?", id).
+		Preload("Build.Repository.Provider").
+		Preload("Build.Repository.EnvVariables").
+		First(&job).Error
 	if err != nil {
 		return &job, err
 	}

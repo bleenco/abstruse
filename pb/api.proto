@@ -35,6 +35,12 @@ message UsageStats {
   int32 mem = 2;
 }
 
+message EnvVariable {
+  string key = 1;
+  string value = 2;
+  bool secret = 3;
+}
+
 message Job {
   enum JobAction {
     JobStart = 0;
@@ -45,18 +51,18 @@ message Job {
   string name = 3;
   string commands = 4;
   string image = 5;
-  string env = 6;
-  string url = 7;
-  string providerName = 8;
-  string providerURL = 9;
-  string providerToken = 10;
-  string ref = 11;
-  string commitSHA = 12;
-  string repoName = 13;
-  repeated string log = 14;
-  string status = 15;
-  string workerId = 16;
-  JobAction action = 17;
+  string url = 6;
+  string providerName = 7;
+  string providerURL = 8;
+  string providerToken = 9;
+  string ref = 10;
+  string commitSHA = 11;
+  string repoName = 12;
+  repeated string log = 13;
+  string status = 14;
+  string workerId = 15;
+  JobAction action = 16;
+  repeated EnvVariable env = 17;
 }
 
 message JobResp {

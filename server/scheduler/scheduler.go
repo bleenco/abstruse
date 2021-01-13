@@ -285,12 +285,31 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
 
+	var envs []*pb.EnvVariable
+	env := strings.Split(job.Env, " ")
+	for _, e := range env {
+		splitted := strings.Split(e, "=")
+		envs = append(envs, &pb.EnvVariable{
+			Key:    splitted[0],
+			Value:  splitted[1],
+			Secret: false,
+		})
+	}
+
+	for _, e := range job.Build.Repository.EnvVariables {
+		envs = append(envs, &pb.EnvVariable{
+			Key:    e.Key,
+			Value:  e.Value,
+			Secret: e.Secret,
+		})
+	}
+
 	j := &pb.Job{
 		Id:            uint64(job.ID),
 		BuildId:       uint64(job.BuildID),
 		Commands:      job.Commands,
 		Image:         job.Image,
-		Env:           job.Env,
+		Env:           envs,
 		Url:           job.Build.Repository.URL,
 		ProviderName:  job.Build.Repository.Provider.Name,
 		ProviderURL:   job.Build.Repository.Provider.URL,

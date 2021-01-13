@@ -183,7 +183,12 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	logch <- []byte(yellow(fmt.Sprintf("==> Starting job %d in %s...\r\n", job.GetId(), name)))
 
 	image := job.Image
-	env := strings.Split(job.Env, " ")
+
+	var env []string
+	for _, e := range job.Env {
+		env = append(env, fmt.Sprintf("%s=%s", e.Key, e.Value))
+	}
+
 	var cmds []string
 	if err := json.Unmarshal([]byte(job.Commands), &cmds); err != nil {
 		return err
