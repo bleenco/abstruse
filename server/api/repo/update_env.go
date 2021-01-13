@@ -10,10 +10,11 @@ import (
 	"github.com/bleenco/abstruse/server/core"
 )
 
-// HandleCreateEnv returns an http.HandlerFunc that writes json encoded
-// result about creating env variable to the http response body.
-func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositoryStore) http.HandlerFunc {
+// HandleUpdateEnv returns an http.HandlerFunc that writes json encoded
+// result about updating env variable to the http response body.
+func HandleUpdateEnv(envVariables core.EnvVariableStore, repos core.RepositoryStore) http.HandlerFunc {
 	type form struct {
+		ID           uint   `json:"id" valid:"required"`
 		Key          string `json:"key" valid:"required"`
 		Value        string `json:"value" valid:"required"`
 		Secret       bool   `json:"secret" valid:"required"`
@@ -41,14 +42,17 @@ func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositorySt
 			return
 		}
 
-		env := &core.EnvVariable{
-			Key:          f.Key,
-			Value:        f.Value,
-			Secret:       f.Secret,
-			RepositoryID: f.RepositoryID,
+		env, err := envVariables.Find(f.ID)
+		if err != nil {
+			render.NotFoundError(w, err.Error())
+			return
 		}
 
-		if err := envVariables.Create(env); err != nil {
+		env.Key = f.Key
+		env.Value = f.Value
+		env.Secret = f.Secret
+
+		if err := envVariables.Update(env); err != nil {
 			render.InternalServerError(w, err.Error())
 			return
 		}
