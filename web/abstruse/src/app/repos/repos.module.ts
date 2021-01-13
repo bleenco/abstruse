@@ -10,6 +10,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { BuildsComponent } from './builds/builds.component';
 import { BranchesComponent } from './branches/branches.component';
 import { PullRequestsComponent } from './pull-requests/pull-requests.component';
+import { SettingsEnvsComponent } from './settings-envs/settings-envs.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { PullRequestsComponent } from './pull-requests/pull-requests.component';
     SettingsComponent,
     BuildsComponent,
     BranchesComponent,
-    PullRequestsComponent
+    PullRequestsComponent,
+    SettingsEnvsComponent
   ],
   imports: [CommonModule, ReposRoutingModule, SharedModule, BuildsCommonModule]
 })

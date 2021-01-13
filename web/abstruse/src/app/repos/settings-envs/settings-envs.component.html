@@ -1,0 +1,26 @@
+<div class="env-variable-list">
+  <div class="env-variable-list-item is-heading">
+    <div class="columns">
+      <div class="column is-4">Key</div>
+      <div class="column is-4">Value</div>
+      <div class="column is-2">Secret</div>
+      <div class="column is-2"></div>
+    </div>
+  </div>
+  <div class="env-variable-list-item" *ngFor="let e of envs">
+    <div class="columns">
+      <div class="column is-4">
+        <span>{{ e.key }}</span>
+      </div>
+      <div class="column is-4">
+        <span>{{ e.value }}</span>
+      </div>
+      <div class="column is-2">
+        <span>{{ e.secret }}</span>
+      </div>
+      <div class="column is-2">
+        <button type="button" class="button is-small">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
