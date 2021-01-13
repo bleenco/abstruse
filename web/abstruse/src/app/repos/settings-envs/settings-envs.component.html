@@ -1,4 +1,17 @@
-<div class="env-variable-list">
+<div class="space-between align-center">
+  <div>
+    <h4>Environment Variables</h4>
+  </div>
+  <div>
+    <button type="button" class="button is-small">Add</button>
+  </div>
+</div>
+
+<div class="notification is-small" *ngIf="!envs.length">
+  <p>No environment variables found.</p>
+</div>
+
+<div class="env-variable-list" *ngIf="envs.length">
   <div class="env-variable-list-item is-heading">
     <div class="columns">
       <div class="column is-4">Key</div>

@@ -5,6 +5,7 @@ import { Repo, generateRepoModel } from './repo.model';
 import { map, finalize, switchMap, share, filter } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, generateHook, HookData } from './hook.model';
+import { EnvVariable, generateEnvVariable } from '../settings-envs/env-variable.model';
 
 interface ConfigResp {
   content: string;
@@ -81,5 +82,13 @@ export class ReposService {
 
   findConfig(id: number): Observable<ConfigResp> {
     return this.http.get<ConfigResp>(`/repos/${id}/config`);
+  }
+
+  findEnvs(): Observable<EnvVariable[]> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.get<any>(`/repos/${repo?.id}/envs`)),
+      map(resp => (resp && resp.length ? resp.map(generateEnvVariable) : []))
+    );
   }
 }

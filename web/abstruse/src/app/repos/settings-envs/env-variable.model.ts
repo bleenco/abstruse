@@ -6,3 +6,7 @@ export class EnvVariable {
     public secret: boolean
   ) {}
 }
+
+export const generateEnvVariable = (data: any): EnvVariable => {
+  return new EnvVariable(data.id, data.key, data.value, Boolean(data.secret));
+};
