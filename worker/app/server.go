@@ -171,14 +171,22 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 
 	logch := make(chan []byte, 1024)
 
-	go func() {
+	go func(job *pb.Job) {
 		for output := range logch {
-			log := &pb.JobResp{Id: job.GetId(), Content: output, Type: pb.JobResp_Log}
+			out := string(output)
+
+			for _, e := range job.Env {
+				if e.Secret && strings.Contains(out, e.Value) {
+					out = strings.ReplaceAll(out, e.Value, "**********")
+				}
+			}
+
+			log := &pb.JobResp{Id: job.GetId(), Content: []byte(out), Type: pb.JobResp_Log}
 			if err := stream.Send(log); err != nil {
 				break
 			}
 		}
-	}()
+	}(job)
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Starting job %d in %s...\r\n", job.GetId(), name)))
 
