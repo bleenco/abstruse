@@ -1,0 +1,30 @@
+@import 'variables'
+@import 'colours'
+@import 'mixins'
+
+.env-variable-list
+  display: block
+  border: 1px solid $border-default
+  border-radius: $border-radius
+
+  .env-variable-list-item
+    display: block
+    border-bottom: 1px solid $border-default
+    padding: 10px
+    border-radius: $border-radius
+
+    &.is-heading
+      color: $text-secondary
+      font-weight: $weight-medium
+
+    &:last-child
+      border-bottom: none
+
+    .columns
+
+      .column
+        display: inline-flex
+        align-items: center
+
+        span
+          +ellipsis
