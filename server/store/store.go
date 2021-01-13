@@ -56,6 +56,7 @@ func connect(cfg *config.DB, logger *zap.Logger) {
 				core.Team{},
 				core.Permission{},
 				core.Repository{},
+				core.EnvVariable{},
 				core.Provider{},
 				core.Job{},
 				core.Build{},
