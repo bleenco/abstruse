@@ -91,4 +91,25 @@ export class ReposService {
       map(resp => (resp && resp.length ? resp.map(generateEnvVariable) : []))
     );
   }
+
+  createEnv(env: EnvVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/envs`, env))
+    );
+  }
+
+  updateEnv(env: EnvVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.post<void>(`/repos/${repo?.id}/envs`, env))
+    );
+  }
+
+  deleteEnv(env: EnvVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.delete<void>(`/repos/${repo?.id}/envs/${env.id}`))
+    );
+  }
 }

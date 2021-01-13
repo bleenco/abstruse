@@ -1,0 +1,75 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>Environment Variable</h1>
+    <h2></h2>
+  </div>
+  <span
+    class="icon close-icon is-action"
+    (click)="activeModal.dismiss(false)"
+    [class.events-none]="saving"
+  >
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="notification is-red" *ngIf="error">
+      <i class="far fa-comment"></i>
+      <p>Error: {{ error }}</p>
+    </div>
+    <div class="field">
+      <label class="label">Key</label>
+      <input
+        type="text"
+        name="key"
+        class="input"
+        placeholder="Key"
+        formControlName="key"
+        autocomplete="off"
+      />
+      <span class="form-helper">Key is automatically uppercased. </span>
+    </div>
+    <div class="field">
+      <label class="label">Value</label>
+      <input
+        type="text"
+        name="key"
+        class="input"
+        placeholder="Value"
+        formControlName="value"
+        autocomplete="off"
+      />
+    </div>
+    <div class="field">
+      <label class="label">Secret</label>
+      <app-checkbox name="secret" formControlName="secret"></app-checkbox>
+      <span class="form-helper">
+        If marked as secret, value is protected from displaying it in the console and elsewhere on
+        UI.
+      </span>
+    </div>
+  </div>
+  <div class="modal-footer space-between">
+    <div class="align-center justify-start">
+      <button
+        type="button"
+        class="button is-red"
+        *ngIf="env.id"
+        [disabled]="deleting"
+        (click)="delete()"
+      >
+        <span *ngIf="!deleting">Delete Environment Variable</span>
+        <span *ngIf="deleting">Deleting...</span>
+      </button>
+    </div>
+    <div class="align-center">
+      <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">
+        Cancel
+      </button>
+      <button type="submit" class="button is-green" [disabled]="!form.valid || saving">
+        <span *ngIf="!saving">Save</span>
+        <span *ngIf="saving">Saving...</span>
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,10 +1,14 @@
 export class EnvVariable {
   constructor(
-    public id: number,
-    public key: string,
-    public value: string,
-    public secret: boolean
+    public id?: number,
+    public key?: string,
+    public value?: string,
+    public secret?: boolean
   ) {}
+
+  get val(): string {
+    return !!this.secret ? '**********' : String(this.value);
+  }
 }
 
 export const generateEnvVariable = (data: any): EnvVariable => {

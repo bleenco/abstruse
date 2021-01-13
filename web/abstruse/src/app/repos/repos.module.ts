@@ -11,6 +11,7 @@ import { BuildsComponent } from './builds/builds.component';
 import { BranchesComponent } from './branches/branches.component';
 import { PullRequestsComponent } from './pull-requests/pull-requests.component';
 import { SettingsEnvsComponent } from './settings-envs/settings-envs.component';
+import { SettingsEnvModalComponent } from './settings-env-modal/settings-env-modal.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { SettingsEnvsComponent } from './settings-envs/settings-envs.component';
     BuildsComponent,
     BranchesComponent,
     PullRequestsComponent,
-    SettingsEnvsComponent
+    SettingsEnvsComponent,
+    SettingsEnvModalComponent
   ],
   imports: [CommonModule, ReposRoutingModule, SharedModule, BuildsCommonModule]
 })
