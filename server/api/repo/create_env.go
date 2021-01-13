@@ -2,22 +2,23 @@ package repo
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/api/middlewares"
 	"github.com/bleenco/abstruse/server/api/render"
 	"github.com/bleenco/abstruse/server/core"
+	"github.com/go-chi/chi"
 )
 
 // HandleCreateEnv returns an http.HandlerFunc that writes json encoded
 // result about creating env variable to the http response body.
 func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositoryStore) http.HandlerFunc {
 	type form struct {
-		Key          string `json:"key" valid:"required"`
-		Value        string `json:"value" valid:"required"`
-		Secret       bool   `json:"secret" valid:"required"`
-		RepositoryID uint   `json:"repositoryID" valid:"required"`
+		Key    string `json:"key" valid:"required"`
+		Value  string `json:"value" valid:"required"`
+		Secret bool   `json:"secret"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -25,6 +26,12 @@ func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositorySt
 		var f form
 		var err error
 		defer r.Body.Close()
+
+		id, err := strconv.Atoi(chi.URLParam(r, "id"))
+		if err != nil {
+			render.InternalServerError(w, err.Error())
+			return
+		}
 
 		if err = lib.DecodeJSON(r.Body, &f); err != nil {
 			render.InternalServerError(w, err.Error())
@@ -36,7 +43,7 @@ func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositorySt
 			return
 		}
 
-		if perm := repos.GetPermissions(f.RepositoryID, claims.ID); !perm.Write {
+		if perm := repos.GetPermissions(uint(id), claims.ID); !perm.Write {
 			render.UnathorizedError(w, "permission denied")
 			return
 		}
@@ -45,7 +52,7 @@ func HandleCreateEnv(envVariables core.EnvVariableStore, repos core.RepositorySt
 			Key:          f.Key,
 			Value:        f.Value,
 			Secret:       f.Secret,
-			RepositoryID: f.RepositoryID,
+			RepositoryID: uint(id),
 		}
 
 		if err := envVariables.Create(env); err != nil {

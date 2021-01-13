@@ -1,9 +1,9 @@
-<div class="space-between align-center">
+<div class="space-between align-center mb10">
   <div>
     <h4>Environment Variables</h4>
   </div>
   <div>
-    <button type="button" class="button is-small">Add</button>
+    <button type="button" class="button is-small" (click)="openAddEnvVariableModal()">Add</button>
   </div>
 </div>
 
@@ -20,19 +20,21 @@
       <div class="column is-2"></div>
     </div>
   </div>
-  <div class="env-variable-list-item" *ngFor="let e of envs">
+  <div class="env-variable-list-item" *ngFor="let e of envs; let i = index">
     <div class="columns">
       <div class="column is-4">
         <span>{{ e.key }}</span>
       </div>
       <div class="column is-4">
-        <span>{{ e.value }}</span>
+        <span>{{ e.val }}</span>
       </div>
       <div class="column is-2">
         <span>{{ e.secret }}</span>
       </div>
       <div class="column is-2">
-        <button type="button" class="button is-small">Delete</button>
+        <button type="button" class="button is-small" (click)="openEditEnvVariableModal(i)">
+          Edit
+        </button>
       </div>
     </div>
   </div>
