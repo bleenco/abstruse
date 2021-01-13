@@ -201,8 +201,10 @@ func (r Router) reposRouter() *chi.Mux {
 	router.Get("/{id}/hooks", repo.HandleListHooks(r.Repos))
 	router.Put("/{id}/hooks", repo.HandleCreateHooks(r.Repos))
 	router.Get("/{id}/config", repo.HandleConfig(r.Repos))
-	router.Get("/{id}/envs", repo.HandleListEnv(r.EnvVariables))
-	router.Put("/{id}/envs", repo.HandleCreateEnv(r.EnvVariables))
+	router.Get("/{id}/envs", repo.HandleListEnv(r.EnvVariables, r.Repos))
+	router.Put("/{id}/envs", repo.HandleCreateEnv(r.EnvVariables, r.Repos))
+	router.Post("/{id}/envs", repo.HandleUpdateEnv(r.EnvVariables, r.Repos))
+	router.Delete("/{id}/envs/{envid}", repo.HandleDeleteEnv(r.EnvVariables, r.Repos))
 
 	return router
 }
