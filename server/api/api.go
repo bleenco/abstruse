@@ -48,40 +48,43 @@ func New(
 	builds core.BuildStore,
 	jobs core.JobStore,
 	repos core.RepositoryStore,
+	envVariables core.EnvVariableStore,
 	workers core.WorkerRegistry,
 	scheduler core.Scheduler,
 	stats core.StatsService,
 ) *Router {
 	return &Router{
-		Config:      config,
-		WS:          ws,
-		Users:       users,
-		Teams:       teams,
-		Permissions: permissions,
-		Providers:   providers,
-		Builds:      builds,
-		Jobs:        jobs,
-		Repos:       repos,
-		Workers:     workers,
-		Scheduler:   scheduler,
-		Stats:       stats,
+		Config:       config,
+		WS:           ws,
+		Users:        users,
+		Teams:        teams,
+		Permissions:  permissions,
+		Providers:    providers,
+		Builds:       builds,
+		Jobs:         jobs,
+		Repos:        repos,
+		EnvVariables: envVariables,
+		Workers:      workers,
+		Scheduler:    scheduler,
+		Stats:        stats,
 	}
 }
 
 // Router is an API http.Handler.
 type Router struct {
-	Config      *config.Config
-	WS          *ws.Server
-	Users       core.UserStore
-	Teams       core.TeamStore
-	Permissions core.PermissionStore
-	Providers   core.ProviderStore
-	Builds      core.BuildStore
-	Jobs        core.JobStore
-	Repos       core.RepositoryStore
-	Workers     core.WorkerRegistry
-	Scheduler   core.Scheduler
-	Stats       core.StatsService
+	Config       *config.Config
+	WS           *ws.Server
+	Users        core.UserStore
+	Teams        core.TeamStore
+	Permissions  core.PermissionStore
+	Providers    core.ProviderStore
+	Builds       core.BuildStore
+	Jobs         core.JobStore
+	Repos        core.RepositoryStore
+	EnvVariables core.EnvVariableStore
+	Workers      core.WorkerRegistry
+	Scheduler    core.Scheduler
+	Stats        core.StatsService
 }
 
 // Handler returns the http.Handler.
@@ -198,6 +201,8 @@ func (r Router) reposRouter() *chi.Mux {
 	router.Get("/{id}/hooks", repo.HandleListHooks(r.Repos))
 	router.Put("/{id}/hooks", repo.HandleCreateHooks(r.Repos))
 	router.Get("/{id}/config", repo.HandleConfig(r.Repos))
+	router.Get("/{id}/envs", repo.HandleListEnv(r.EnvVariables))
+	router.Put("/{id}/envs", repo.HandleCreateEnv(r.EnvVariables))
 
 	return router
 }
