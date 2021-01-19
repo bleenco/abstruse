@@ -9,7 +9,7 @@
 
 **Abstruse CI** is a lightweight, yet powerful distributed CI/CD written in Golang. Its default configuration uses single node cluster with n workers, however, this cluster can be easily extended with more nodes if necessary.
 
-This is a work in progress for v2.0.0 relase, if you are looking for Node.JS based v1.x.x version please check [here](https://github.com/bleenco/abstruse/tree/v1).
+This is a v2.0.0 or later branch, if you are looking for Node.JS based v1.x.x version please check [here](https://github.com/bleenco/abstruse/tree/v1).
 
 ![Screenshot](https://user-images.githubusercontent.com/1796022/87736550-af87d700-c7d8-11ea-9e9a-c23c2b5e02d1.png)
 
