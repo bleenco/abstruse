@@ -1,6 +1,6 @@
 {
   "name": "abstruse",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --open --port 4400 --proxy-config ./proxy.conf.json",
