@@ -18,6 +18,8 @@ import (
 	"github.com/bleenco/abstruse/worker/docker"
 	"github.com/bleenco/abstruse/worker/git"
 	"github.com/golang/protobuf/ptypes/empty"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/logrusorgru/aurora"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -69,8 +71,15 @@ func (s *Server) Run() error {
 	})
 
 	grpcOpts = append(grpcOpts, grpc.Creds(creds))
-	grpcOpts = append(grpcOpts, grpc.UnaryInterceptor(s.unaryInterceptor))
-	grpcOpts = append(grpcOpts, grpc.StreamInterceptor(s.streamInterceptor))
+	grpcOpts = append(grpcOpts, grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		s.unaryInterceptor,
+		grpc_recovery.UnaryServerInterceptor(),
+	)))
+	grpcOpts = append(grpcOpts, grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(
+		s.streamInterceptor,
+		grpc_recovery.StreamServerInterceptor(),
+	)))
+
 	s.server = grpc.NewServer(grpcOpts...)
 	pb.RegisterAPIServer(s.server, s)
 	s.logger.Infof("grpc server listening on %s", s.config.GRPC.Addr)
