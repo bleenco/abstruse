@@ -104,8 +104,8 @@ func PullImage(image string, config *config.Registry) error {
 		pimage := fmt.Sprintf("%s/%s", config.Addr, image)
 
 		out, err := cli.ImagePull(ctx, pimage, opts)
-		defer out.Close()
 		if err == nil {
+			defer out.Close()
 			ioutil.ReadAll(out)
 			return nil
 		}
@@ -118,12 +118,14 @@ func PullImage(image string, config *config.Registry) error {
 	}
 
 	out, err := cli.ImagePull(ctx, image, opts)
-	defer out.Close()
-	if _, rerr := ioutil.ReadAll(out); rerr != nil {
-		return rerr
+	if err == nil {
+		defer out.Close()
+		if _, rerr := ioutil.ReadAll(out); rerr != nil {
+			return rerr
+		}
 	}
 
-	return err
+	return nil
 }
 
 // ListImages returns all images.
