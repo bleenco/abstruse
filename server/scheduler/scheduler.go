@@ -289,11 +289,13 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	env := strings.Split(job.Env, " ")
 	for _, e := range env {
 		splitted := strings.Split(e, "=")
-		envs = append(envs, &pb.EnvVariable{
-			Key:    splitted[0],
-			Value:  splitted[1],
-			Secret: false,
-		})
+		if (len(splitted) > 1) {
+			envs = append(envs, &pb.EnvVariable{
+				Key:    splitted[0],
+				Value:  splitted[1],
+				Secret: false,
+			})
+		}
 	}
 
 	for _, e := range job.Build.Repository.EnvVariables {
