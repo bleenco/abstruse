@@ -35,7 +35,7 @@ Both `abstruse-server` and `abstruse-worker` on initial run generates a config f
 Available flags for `abstruse-server`:
 
 ```
---auth-jwtsecret string    JWT authentication secret key (default "cd9a260c")
+--auth-jwtsecret string    JWT authentication secret key (default is a random string)
 --config string            config file (default is $HOME/abstruse/abstruse.json)
 --db-charset string        database charset (default "utf8")
 --db-driver string         database client (available options: mysql, postgres, mssql) (default "mysql")
@@ -61,7 +61,7 @@ Available flags for `abstruse-server`:
 ```
 Available flags for `abstruse-worker`:
 ```
---auth-jwtsecret string       JWT authentication secret key (default "fe95736a")
+--auth-jwtsecret string       JWT authentication secret key (default is a random string)
 --config string               config file (default is $HOME/abstruse/abstruse-worker.json)
 --grpc-addr string            gRPC server listen address (default "0.0.0.0:3330")
 --help                        help for abstruse-worker
@@ -76,7 +76,7 @@ Available flags for `abstruse-worker`:
 --registry-password string    docker image registry password
 --registry-username string    docker image registry username
 --scheduler-maxparallel int   scheduler max parallel option defines how many jobs can run in parallel (default 5)
---server-addr string          abstruse server remote address (default "0.0.0.0:6500")
+--server-addr string          abstruse server remote address (default "http://localhost")
 --tls-cert string             path to SSL certificate file (default "cert-worker.pem")
 --tls-key string              path to SSL private key file (default "key-worker.pem")
 ```
