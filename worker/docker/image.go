@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"path"
@@ -98,23 +97,6 @@ func PullImage(image string, config *config.Registry) error {
 		authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}
 		authJSON, _ := json.Marshal(authConfig)
 		opts.RegistryAuth = base64.URLEncoding.EncodeToString(authJSON)
-	}
-
-	if config.Addr != "" && !strings.Contains(config.Addr, "docker.io") {
-		pimage := fmt.Sprintf("%s/%s", config.Addr, image)
-
-		out, err := cli.ImagePull(ctx, pimage, opts)
-		if err == nil {
-			defer out.Close()
-			ioutil.ReadAll(out)
-			return nil
-		}
-	}
-
-	if !strings.Contains(image, "/") && !strings.HasPrefix(image, "docker.io") {
-		image = fmt.Sprintf("docker.io/library/%s", image)
-	} else if strings.Contains(image, "/") && !strings.HasPrefix(image, "docker.io") {
-		image = fmt.Sprintf("docker.io/%s", image)
 	}
 
 	out, err := cli.ImagePull(ctx, image, opts)
