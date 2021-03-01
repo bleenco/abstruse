@@ -21,6 +21,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		return err
 	}
 	defer close(logch)
+	var shell string
 
 	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env)
 	if err != nil {
@@ -34,6 +35,9 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 				logch <- []byte(err.Error())
 				return err
 			}
+			shell = "sh"
+		} else {
+			shell = "bash"
 		}
 	}
 	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
@@ -52,7 +56,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 		}
 		str := yellow("\r==> " + strings.Join(command, " ") + "\n\r")
 		logch <- []byte(str)
-		command = []string{"bash", "-ci", strings.Join(command, " ")}
+		command = []string{shell, "-ci", strings.Join(command, " ")}
 		conn, execID, err := exec(cli, containerID, command, env)
 		if err != nil {
 			logch <- []byte(err.Error())
