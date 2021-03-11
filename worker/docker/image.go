@@ -100,13 +100,14 @@ func PullImage(image string, config *config.Registry) error {
 	}
 
 	out, err := cli.ImagePull(ctx, image, opts)
-	if err == nil {
-		defer out.Close()
-		if _, rerr := ioutil.ReadAll(out); rerr != nil {
-			return rerr
-		}
+	if err != nil {
+		return err
 	}
 
+	defer out.Close()
+	if _, rerr := ioutil.ReadAll(out); rerr != nil {
+		return rerr
+	}
 	return nil
 }
 
