@@ -20,7 +20,7 @@ export class LoginComponent implements OnInit {
   submitted = false;
 
   constructor(
-    private fromBuilder: FormBuilder,
+    private formBuilder: FormBuilder,
     private auth: AuthService,
     private setup: SetupService,
     private router: Router
@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
   }
 
   private createForm(): void {
-    this.loginForm = this.fromBuilder.group({
+    this.loginForm = this.formBuilder.group({
       email: ['', Validators.required],
       password: ['', Validators.required]
     });
