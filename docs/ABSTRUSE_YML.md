@@ -107,7 +107,7 @@ execute:
 
 - `before_script` commands are executed first
 - `script` commands are executed next
-- `after_successful` commands are executed if the script commands were successful
+- `after_success` commands are executed if the script commands were successful
 - `after_failure` commands are executed if the script commands failed
 - `after_script` commands are executed after the script
 
