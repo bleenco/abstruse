@@ -13,11 +13,11 @@ func createVolume(name string) types.Volume {
 	if volume, ok := findVolume(name); ok {
 		return *volume
 	}
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		panic(err)
 	}
-	volume, err := cli.VolumeCreate(context.Background(), volume.VolumesCreateBody{Name: name})
+	volume, err := cli.VolumeCreate(context.Background(), volume.VolumeCreateBody{Name: name})
 	if err != nil {
 		panic(err)
 	}
@@ -26,7 +26,7 @@ func createVolume(name string) types.Volume {
 
 func removeVolume(name string) error {
 	if volume, ok := findVolume(name); ok {
-		cli, err := client.NewEnvClient()
+		cli, err := client.NewClientWithOpts()
 		if err != nil {
 			panic(err)
 		}
@@ -36,7 +36,7 @@ func removeVolume(name string) error {
 }
 
 func findVolume(name string) (*types.Volume, bool) {
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		panic(err)
 	}
