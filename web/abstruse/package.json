@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^12.1.0",
-    "@angular-devkit/build-angular": "^0.901.15",
+    "@angular-devkit/build-angular": "~12.0.4",
     "@angular/cli": "~12.0.4",
     "@angular/compiler-cli": "~12.0.4",
     "@fortawesome/fontawesome-free": "^5.15.3",
