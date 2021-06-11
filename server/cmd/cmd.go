@@ -194,6 +194,10 @@ func newConfig() *config.Config {
 		}
 	}
 
+	if cfg.DB.Driver == "sqlite3" && !strings.HasPrefix(cfg.DB.Name, "/") {
+		cfg.DB.Name = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), cfg.DB.Name)
+	}
+
 	if !strings.HasPrefix(cfg.Logger.Filename, "/") {
 		cfg.Logger.Filename = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), cfg.Logger.Filename)
 	}
