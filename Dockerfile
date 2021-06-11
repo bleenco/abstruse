@@ -8,7 +8,7 @@ WORKDIR /app/ui
 RUN npm install && npm run build
 
 # stage 2 build
-FROM golang:1.15-alpine as build
+FROM golang:1.16-alpine as build
 
 ARG GIT_COMMIT=""
 ENV GIT_COMMIT=$GIT_COMMIT
