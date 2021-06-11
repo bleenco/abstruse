@@ -119,6 +119,7 @@ func (r Router) apiRouter() *chi.Mux {
 	router.Mount("/setup", r.setupRouter())
 	router.Mount("/auth", r.authRouter())
 	router.Mount("/workers", r.workersRouter())
+	router.Get("/builds/job/{id}/log", build.HandleLog(r.Jobs, r.Scheduler))
 
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.Authenticator)
