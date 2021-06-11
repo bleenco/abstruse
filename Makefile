@@ -20,13 +20,13 @@ release:
 	@CGO_ENABLED=${CGO_ENABLED} gox -osarch="darwin/amd64 linux/amd64 linux/arm linux/386" -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -output build/{{.Dir}}_{{.OS}}_{{.Arch}} ./cmd/abstruse-worker
 
 server:
-	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-server ./cmd/abstruse-server
+	@CGO_ENABLED=${CGO_ENABLED} go build -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-server ./cmd/abstruse-server
 
 worker:
-	@CGO_ENABLED=${CGO_ENABLED} go build -i -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-worker ./cmd/abstruse-worker
+	@CGO_ENABLED=${CGO_ENABLED} go build -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -o build/abstruse-worker ./cmd/abstruse-worker
 
 build_ui:
-	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && yarn build; fi
+	@if [ ! -d "web/abstruse/dist" ]; then cd web/abstruse && npm run build; fi
 
 statik:
 	@if [ ! -r "server/ui/statik.go" ]; then statik -dest ./server -p ui -src ./web/abstruse/dist; fi
@@ -36,7 +36,7 @@ wire:
 
 install_dependencies:
 	@cd /tmp && go get github.com/golang/protobuf/protoc-gen-go github.com/jkuri/statik github.com/cespare/reflex github.com/google/wire/... && cd -
-	@cd web/abstruse && yarn install
+	@cd web/abstruse && npm install
 
 clean:
 	@rm -rf build/ web/abstruse/dist server/ui/ server/cmd/wire_gen.go worker/cmd/wire_gen.go

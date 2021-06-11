@@ -5,7 +5,7 @@ COPY ./web/abstruse ./app/ui
 
 WORKDIR /app/ui
 
-RUN yarn install && yarn build
+RUN npm install && npm run build
 
 # stage 2 build
 FROM golang:1.15-alpine as build

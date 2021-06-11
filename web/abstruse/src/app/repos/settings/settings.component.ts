@@ -73,7 +73,7 @@ export class SettingsComponent implements OnInit {
   }
 
   copyTextToClipboard(text: string): void {
-    copy(text);
+    copy.default(text);
   }
 
   findHooks(): void {
