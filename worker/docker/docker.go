@@ -120,7 +120,7 @@ func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedRespo
 		return conn, "", err
 	}
 
-	conn, err = cli.ContainerExecAttach(ctx, exec.ID, types.ExecConfig{
+	conn, err = cli.ContainerExecAttach(ctx, exec.ID, types.ExecStartCheck{
 		Detach: false,
 		Tty:    true,
 	})
@@ -154,7 +154,21 @@ func removeContainer(cli *client.Client, id string, force bool) error {
 
 // WaitContainer waits container to finish running and return exit status code.
 func waitContainer(cli *client.Client, id string) (int64, error) {
-	return cli.ContainerWait(context.Background(), id)
+	statusCh, errCh := cli.ContainerWait(context.Background(), id, container.WaitConditionNotRunning)
+
+	select {
+	case err := <-errCh:
+		if err != nil {
+			return 1, err
+		}
+	case status := <-statusCh:
+		if status.StatusCode == 0 {
+			return status.StatusCode, nil
+		}
+		return status.StatusCode, fmt.Errorf(status.Error.Message)
+	}
+
+	return 1, fmt.Errorf("unexpected error")
 }
 
 // StartContainer starts Docker container.
@@ -183,7 +197,7 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 		WorkingDir: "/build",
 	}, &container.HostConfig{
 		Mounts: mounts,
-	}, nil, name)
+	}, nil, nil, name)
 }
 
 // IsContainerRunning returns true if container is running.
