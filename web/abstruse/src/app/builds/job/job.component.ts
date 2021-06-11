@@ -7,6 +7,7 @@ import { DataService } from 'src/app/shared/providers/data.service';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
+import { AuthService } from 'src/app/auth/shared/auth.service';
 
 @UntilDestroy()
 @Component({
@@ -23,10 +24,19 @@ export class JobComponent implements OnInit, OnDestroy {
   sub: Subscription = new Subscription();
   error: string | null = null;
 
+  get logURL(): string {
+    const port = location.port === '4440' || '80' ? '' : `:${location.port}`;
+    return [
+      `${location.protocol}//${location.hostname}${port}/api/v1/builds/job/${this.jobID}/log`,
+      this.authService.token || ''
+    ].join('?token=');
+  }
+
   constructor(
     private route: ActivatedRoute,
     private buildsService: BuildsService,
-    private dataService: DataService
+    private dataService: DataService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {

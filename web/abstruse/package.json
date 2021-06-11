@@ -47,6 +47,7 @@
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "^1.6.0",
+    "monaco-editor": "^0.25.0",
     "ngx-cookie-service": "^12.0.0",
     "ngx-monaco-editor": "^12.0.0",
     "ngx-uploader": "^11.0.0",

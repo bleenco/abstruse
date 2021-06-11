@@ -65,10 +65,6 @@
               <a class="hd-item" (click)="logout()">
                 <span>Logout</span>
               </a>
-              <div class="hd-item events-none" *ngIf="onlineStatus === 'online'">
-                <span class="connection-indicator is-green"></span>
-                <span>Connection Online</span>
-              </div>
               <div class="hd-item events-none" *ngIf="onlineStatus === 'closed'">
                 <span class="connection-indicator is-red"></span>
                 <span>Connection Offline</span>
