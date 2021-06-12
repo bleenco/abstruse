@@ -232,6 +232,8 @@ func (r Router) workersRouter() *chi.Mux {
 	router.Group(func(router chi.Router) {
 		router.Use(auth.JWT.Verifier(), middlewares.WorkerAuthenticator)
 		router.Post("/auth", worker.HandleAuth(r.Workers, r.Config, r.WS.App))
+		router.Post("/cache", worker.HandleUploadCache(r.Config))
+		router.Get("/cache", worker.HandleDownloadCache(r.Config))
 	})
 
 	return router

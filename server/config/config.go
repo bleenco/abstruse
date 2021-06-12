@@ -9,6 +9,7 @@ type (
 		Logger    *Logger    `json:"logger"`
 		Auth      *Auth      `json:"auth"`
 		Websocket *WebSocket `json:"websocket"`
+		DataDir   string     `json:"datadir"`
 	}
 
 	// DB database config.

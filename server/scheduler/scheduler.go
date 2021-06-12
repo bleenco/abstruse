@@ -16,6 +16,7 @@ import (
 	"github.com/drone/go-scm/scm"
 	"github.com/logrusorgru/aurora"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // New returns new scheduler.
@@ -289,7 +290,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	env := strings.Split(job.Env, " ")
 	for _, e := range env {
 		splitted := strings.Split(e, "=")
-		if (len(splitted) > 1) {
+		if len(splitted) > 1 {
 			envs = append(envs, &pb.EnvVariable{
 				Key:    splitted[0],
 				Value:  splitted[1],
@@ -306,10 +307,15 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		})
 	}
 
+	var commands pb.CommandList
+	if err := protojson.Unmarshal([]byte(job.Commands), &commands); err != nil {
+		s.logger.Errorf("error parsing commands for job %d: %s", job.ID, err.Error())
+	}
+
 	j := &pb.Job{
 		Id:            uint64(job.ID),
 		BuildId:       uint64(job.BuildID),
-		Commands:      job.Commands,
+		Commands:      commands.Commands,
 		Image:         job.Image,
 		Env:           envs,
 		Url:           job.Build.Repository.URL,
@@ -321,6 +327,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		RepoName:      job.Build.Repository.FullName,
 		Action:        pb.Job_JobStart,
 		WorkerId:      worker.ID,
+		Cache:         strings.Split(job.Cache, ","),
 	}
 
 	s.mu.Lock()

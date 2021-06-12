@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -21,12 +22,12 @@ func HandleAuth(workers core.WorkerRegistry, config *config.Config, ws *ws.App) 
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		claims := middlewares.WorkerClaimsFromCtx(r.Context())
-		host, port, err := net.SplitHostPort(claims.Addr)
+		_, port, err := net.SplitHostPort(claims.Addr)
 		if err != nil {
 			render.InternalServerError(w, err.Error())
 			return
 		}
-		host, _, err = net.SplitHostPort(r.RemoteAddr)
+		host, _, err := net.SplitHostPort(r.RemoteAddr)
 		if err != nil {
 			host = r.RemoteAddr
 		}
@@ -48,6 +49,6 @@ func HandleAuth(workers core.WorkerRegistry, config *config.Config, ws *ws.App) 
 			return
 		}
 
-		render.JSON(w, http.StatusOK, resp{Auth: host + " " + port})
+		render.JSON(w, http.StatusOK, resp{Auth: fmt.Sprintf("%s %s", host, port)})
 	}
 }

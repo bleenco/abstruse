@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -206,34 +205,25 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 		env = append(env, fmt.Sprintf("%s=%s", e.Key, e.Value))
 	}
 
-	var cmds []string
-	if err := json.Unmarshal([]byte(job.Commands), &cmds); err != nil {
-		return err
-	}
-	var commands [][]string
-	for _, c := range cmds {
-		commands = append(commands, strings.Split(c, " "))
-	}
-
-	logch <- []byte(yellow(fmt.Sprintf("==> Creating temp directory to mount volume... ")))
+	logch <- []byte(yellow("==> Creating temp directory to mount volume... "))
 	dir, err := fs.TempDir()
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
-	logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
+	logch <- []byte(yellow("done\r\n"))
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetUrl(), job.GetRef(), job.GetCommitSHA())))
 	if err := git.CloneRepository(job.GetUrl(), job.GetRef(), job.GetCommitSHA(), job.GetProviderToken(), dir); err != nil {
 		return err
 	}
-	logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
+	logch <- []byte(yellow("done\r\n"))
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Pulling image %s... ", image)))
 	if err := docker.PullImage(image, s.config.Registry); err != nil {
 		logch <- []byte(err.Error())
 	} else {
-		logch <- []byte(yellow(fmt.Sprintf("done\r\n")))
+		logch <- []byte(yellow("done\r\n"))
 	}
 
 	ok := true
@@ -246,7 +236,7 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	}
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Starting container %s...\r\n", name)))
-	if err := docker.RunContainer(name, image, commands, env, dir, logch); err != nil {
+	if err := docker.RunContainer(name, image, job, s.config, env, dir, logch); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
 		s.logger.Infof("job %d with name %s done with status failing", job.Id, name)
 		return err

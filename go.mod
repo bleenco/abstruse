@@ -30,11 +30,11 @@ require (
 	github.com/jkuri/statik v0.3.0
 	github.com/jpillora/backoff v1.0.0
 	github.com/logrusorgru/aurora v2.0.3+incompatible
+	github.com/mholt/archiver/v3 v3.5.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/moby/term v0.0.0-20210610120745-9d4ed1856297 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/narqo/go-badge v0.0.0-20190124110329-d9415e4e1e9f
-	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/shirou/gopsutil v3.20.10+incompatible
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.0

@@ -2,14 +2,15 @@ package build
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/bleenco/abstruse/pkg/gitscm"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/parser"
 	"github.com/jinzhu/gorm"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // New returns a new BuildStore
@@ -187,7 +188,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 
 	var jobs []*core.Job
 	for _, j := range pjobs {
-		commands, err := json.Marshal(j.Commands)
+		commands, err := protojson.Marshal(j.Commands)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -198,6 +199,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 			Env:      j.Title,
 			Stage:    j.Stage,
 			BuildID:  build.ID,
+			Cache:    strings.Join(j.Cache, ","),
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, 0, err
@@ -307,7 +309,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 
 	var jobs []*core.Job
 	for _, j := range pjobs {
-		commands, err := json.Marshal(j.Commands)
+		commands, err := protojson.Marshal(j.Commands)
 		if err != nil {
 			return nil, err
 		}
@@ -318,6 +320,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 			Env:      j.Title,
 			Stage:    j.Stage,
 			BuildID:  build.ID,
+			Cache:    strings.Join(j.Cache, ","),
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, err

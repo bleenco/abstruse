@@ -115,6 +115,7 @@ func init() {
 	rootCmd.PersistentFlags().Int("logger-max-backups", 3, "maximum log file backups")
 	rootCmd.PersistentFlags().Int("logger-max-age", 3, "maximum log age")
 	rootCmd.PersistentFlags().String("auth-jwtsecret", lib.RandomString(), "JWT authentication secret key")
+	rootCmd.PersistentFlags().String("datadir", "data/", "Directory to store build cache and build artifacts")
 }
 
 func initDefaults() {
@@ -139,6 +140,7 @@ func initDefaults() {
 	viper.BindPFlag("logger.maxbackups", rootCmd.PersistentFlags().Lookup("logger-max-backups"))
 	viper.BindPFlag("logger.maxage", rootCmd.PersistentFlags().Lookup("logger-max-age"))
 	viper.BindPFlag("auth.jwtsecret", rootCmd.PersistentFlags().Lookup("auth-jwtsecret"))
+	viper.BindPFlag("datadir", rootCmd.PersistentFlags().Lookup("datadir"))
 }
 
 func newConfig() *config.Config {
@@ -196,6 +198,22 @@ func newConfig() *config.Config {
 
 	if cfg.DB.Driver == "sqlite3" && !strings.HasPrefix(cfg.DB.Name, "/") {
 		cfg.DB.Name = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), cfg.DB.Name)
+	}
+
+	if !strings.HasPrefix(cfg.DataDir, "/") {
+		cfg.DataDir = filepath.Join(filepath.Dir(viper.ConfigFileUsed()), cfg.DataDir)
+	}
+
+	if err := fs.MakeDir(cfg.DataDir); err != nil {
+		fatal(err)
+	}
+
+	if err := fs.MakeDir(filepath.Join(cfg.DataDir, "cache")); err != nil {
+		fatal(err)
+	}
+
+	if err := fs.MakeDir(filepath.Join(cfg.DataDir, "store")); err != nil {
+		fatal(err)
 	}
 
 	if !strings.HasPrefix(cfg.Logger.Filename, "/") {
