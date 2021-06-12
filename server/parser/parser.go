@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	api "github.com/bleenco/abstruse/pb"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -46,12 +47,12 @@ type BranchesConfig struct {
 
 // JobConfig represents generated job configuration.
 type JobConfig struct {
-	Image    string   `json:"image"`
-	Env      []string `json:"env"`
-	Stage    string   `json:"stage"`
-	Title    string   `json:"title"`
-	Commands []string `json:"commands"`
-	Cache    []string `json:"cache"`
+	Image    string           `json:"image"`
+	Env      []string         `json:"env"`
+	Stage    string           `json:"stage"`
+	Title    string           `json:"title"`
+	Commands *api.CommandList `json:"commands"`
+	Cache    []string         `json:"cache"`
 }
 
 // ConfigParser defines repository configuration parser.
@@ -72,8 +73,8 @@ func NewConfigParser(raw, branch string, env []string) ConfigParser {
 }
 
 // Parse parses raw config.
-func (c *ConfigParser) Parse() ([]JobConfig, error) {
-	var jobs []JobConfig
+func (c *ConfigParser) Parse() ([]*JobConfig, error) {
+	var jobs []*JobConfig
 
 	if c.Raw == "" {
 		return jobs, fmt.Errorf("cannot parse empty config")
@@ -89,7 +90,7 @@ func (c *ConfigParser) Parse() ([]JobConfig, error) {
 
 	if len(c.Parsed.Matrix) > 0 {
 		for _, item := range c.Parsed.Matrix {
-			job := JobConfig{}
+			job := &JobConfig{}
 
 			// set image
 			if item.Image != "" {
@@ -118,16 +119,18 @@ func (c *ConfigParser) Parse() ([]JobConfig, error) {
 				job.Title = strings.Join(c.Parsed.Script, " ")
 			}
 			job.Commands = c.generateCommands()
+			job.Cache = c.Parsed.Cache
 
 			jobs = append(jobs, job)
 		}
 	} else {
-		job := JobConfig{
+		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
 			Stage:    JobStageTest,
 			Title:    strings.Join(c.Parsed.Script, " "),
 			Commands: c.generateCommands(),
+			Cache:    c.Parsed.Cache,
 		}
 		if job.Image == "" {
 			return jobs, fmt.Errorf("image not specified")
@@ -137,12 +140,13 @@ func (c *ConfigParser) Parse() ([]JobConfig, error) {
 	}
 
 	if len(c.Parsed.Deploy) > 0 {
-		job := JobConfig{
+		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
 			Stage:    JobStageDeploy,
 			Title:    strings.Join(c.Parsed.Deploy, " "),
 			Commands: c.generateDeployCommands(),
+			Cache:    c.Parsed.Cache,
 		}
 		if job.Image == "" {
 			return jobs, fmt.Errorf("image not specified")
@@ -188,30 +192,35 @@ func (c *ConfigParser) ShouldBuild() bool {
 	return true
 }
 
-func (c *ConfigParser) generateCommands() []string {
-	var commands []string
-	commands = appendCommands(commands, c.Parsed.BeforeInstall)
-	commands = appendCommands(commands, c.Parsed.Install)
-	commands = appendCommands(commands, c.Parsed.BeforeScript)
-	commands = appendCommands(commands, c.Parsed.Script)
-	commands = appendCommands(commands, c.Parsed.AfterSuccess)
-	commands = appendCommands(commands, c.Parsed.AfterFailure)
-	commands = appendCommands(commands, c.Parsed.AfterScript)
-	return commands
+func (c *ConfigParser) generateCommands() *api.CommandList {
+	var commands api.CommandList
+
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.BeforeInstall, api.Command_BeforeInstall)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.Install, api.Command_Install)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.BeforeScript, api.Command_BeforeScript)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.Script, api.Command_Script)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.AfterSuccess, api.Command_AfterSuccess)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.AfterFailure, api.Command_AfterFailure)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.AfterScript, api.Command_AfterScript)...)
+
+	return &commands
 }
 
-func (c *ConfigParser) generateDeployCommands() []string {
-	var commands []string
-	commands = appendCommands(commands, c.Parsed.BeforeDeploy)
-	commands = appendCommands(commands, c.Parsed.Deploy)
-	commands = appendCommands(commands, c.Parsed.AfterDeploy)
-	return commands
+func (c *ConfigParser) generateDeployCommands() *api.CommandList {
+	var commands api.CommandList
+
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.BeforeDeploy, api.Command_BeforeDeploy)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.Deploy, api.Command_Deploy)...)
+	commands.Commands = append(commands.Commands, c.appendCommands(c.Parsed.AfterDeploy, api.Command_AfterDeploy)...)
+
+	return &commands
 }
 
-func appendCommands(commands []string, cmds []string) []string {
+func (c *ConfigParser) appendCommands(cmds []string, ctype api.Command_CommandType) []*api.Command {
+	var commands []*api.Command
 	for _, cmd := range cmds {
-		commands = append(commands, cmd)
+		c := api.Command{Type: ctype, Command: cmd}
+		commands = append(commands, &c)
 	}
-
 	return commands
 }

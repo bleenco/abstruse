@@ -14,6 +14,7 @@ type (
 		Status    string     `gorm:"not null;size:20;default:'queued'" json:"status"` // queued | running | passing | failing
 		Log       string     `sql:"type:text" json:"-"`
 		Stage     string     `json:"stage"`
+		Cache     string     `json:"cache"`
 		Build     *Build     `gorm:"preload:false" json:"build,omitempty"`
 		BuildID   uint       `json:"buildID"`
 		Timestamp

@@ -49,7 +49,7 @@ message Job {
   uint64 id = 1;
   uint64 buildId = 2;
   string name = 3;
-  string commands = 4;
+  repeated Command commands = 4;
   string image = 5;
   string url = 6;
   string providerName = 7;
@@ -63,6 +63,28 @@ message Job {
   string workerId = 15;
   JobAction action = 16;
   repeated EnvVariable env = 17;
+  repeated string cache = 18;
+}
+
+message Command {
+  enum CommandType {
+    BeforeInstall = 0;
+    Install = 1;
+    BeforeScript = 2;
+    Script = 3;
+    AfterSuccess = 4;
+    AfterFailure = 5;
+    BeforeDeploy = 6;
+    Deploy = 7;
+    AfterDeploy = 8;
+    AfterScript = 9;
+  }
+  CommandType type = 1;
+  string command = 2;
+}
+
+message CommandList {
+  repeated Command commands = 1;
 }
 
 message JobResp {
@@ -77,6 +99,7 @@ message JobResp {
   enum JobRespType {
     Log = 0;
     Done = 1;
+    Cache = 2;
   }
 
   uint64 id = 1;

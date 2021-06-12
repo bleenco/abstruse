@@ -16,3 +16,7 @@ func genExitMessage(code int) string {
 func yellow(str string) string {
 	return aurora.Bold(aurora.Yellow(str)).String()
 }
+
+func red(str string) string {
+	return aurora.Bold(aurora.Red(str)).String()
+}

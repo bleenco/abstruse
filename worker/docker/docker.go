@@ -3,20 +3,25 @@ package docker
 import (
 	"context"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 
+	api "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/worker/cache"
+	"github.com/bleenco/abstruse/worker/config"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/client"
+	"github.com/dustin/go-humanize"
 )
 
 // RunContainer runs container.
-func RunContainer(name, image string, commands [][]string, env []string, dir string, logch chan<- []byte) error {
+func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte) error {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		return err
 	}
@@ -42,22 +47,62 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 	}
 	defer cli.ContainerRemove(ctx, resp.ID, types.ContainerRemoveOptions{Force: true})
 
-	logch <- []byte(yellow(fmt.Sprintf("==> Starting build...\r\n")))
+	logch <- []byte(yellow("==> Starting build...\r\n"))
 
 	exitCode := 0
 	containerID := resp.ID
 
-	for _, command := range commands {
+	cacheSaved := false
+
+	for i, command := range job.GetCommands() {
 		if !isContainerRunning(cli, containerID) {
 			if err := startContainer(cli, containerID); err != nil {
 				logch <- []byte(err.Error())
 				return err
 			}
 		}
-		str := yellow("\r==> " + strings.Join(command, " ") + "\n\r")
+
+		// restore cache.
+		if i == 0 && len(job.GetCache()) > 0 {
+			logch <- []byte(yellow("\r==> Downloading and restoring cache... "))
+			if err := cache.DownloadCache(config, job, dir); err != nil {
+				logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
+			} else {
+				logch <- []byte(yellow("done\r\n"))
+			}
+		}
+
+		// save cache.
+		if !cacheSaved && len(job.GetCache()) > 0 && command.GetType() == api.Command_Script {
+			cacheSaved = true
+
+			logch <- []byte(yellow("\r==> Saving cache... "))
+			cacheFile, err := cache.SaveCache(job, dir)
+
+			if err != nil {
+				logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
+			} else {
+				info, err := os.Stat(cacheFile)
+				if err != nil {
+					return err
+				}
+
+				logch <- []byte(yellow("done\r\n"))
+				logch <- []byte(yellow(fmt.Sprintf("\r==> Uploading cache (%s) to abstruse server... ", humanize.Bytes(uint64(info.Size())))))
+				if err := cache.UploadCache(config, cacheFile); err != nil {
+					logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
+				} else {
+					logch <- []byte(yellow("done\r\n"))
+				}
+			}
+		}
+
+		cmd := strings.Split(command.GetCommand(), " ")
+
+		str := yellow("\r==> " + strings.Join(cmd, " ") + "\r\n")
 		logch <- []byte(str)
-		command = []string{shell, "-ci", strings.Join(command, " ")}
-		conn, execID, err := exec(cli, containerID, command, env)
+		shcmd := []string{shell, "-ci", strings.Join(cmd, " ")}
+		conn, execID, err := exec(cli, containerID, shcmd, env)
 		if err != nil {
 			logch <- []byte(err.Error())
 			return err
@@ -91,7 +136,7 @@ func RunContainer(name, image string, commands [][]string, env []string, dir str
 
 // StopContainer stops the container.
 func StopContainer(name string) error {
-	cli, err := client.NewEnvClient()
+	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		return err
 	}
@@ -133,7 +178,7 @@ func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedRespo
 
 // ContainerExists finds container by name and if exists returns id.
 func ContainerExists(name string) (string, bool) {
-	cli, _ := client.NewEnvClient()
+	cli, _ := client.NewClientWithOpts()
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {

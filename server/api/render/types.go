@@ -7,3 +7,7 @@ type Empty struct{}
 type Error struct {
 	Message string `json:"message"`
 }
+
+type BoolResponse struct {
+	Status bool `json:"status"`
+}
