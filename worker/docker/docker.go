@@ -65,10 +65,12 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 		// restore cache.
 		if i == 0 && len(job.GetCache()) > 0 {
 			logch <- []byte(yellow("\r==> Downloading and restoring cache... "))
-			if err := cache.DownloadCache(config, job, dir); err != nil {
+			cacheFile, err := cache.DownloadCache(config, job, dir)
+			if err != nil {
 				logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
 			} else {
 				logch <- []byte(yellow("done\r\n"))
+				os.RemoveAll(cacheFile)
 			}
 		}
 
@@ -94,6 +96,8 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 				} else {
 					logch <- []byte(yellow("done\r\n"))
 				}
+
+				os.RemoveAll(cacheFile)
 			}
 		}
 
