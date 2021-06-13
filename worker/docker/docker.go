@@ -196,30 +196,6 @@ func ContainerExists(name string) (string, bool) {
 	return "", false
 }
 
-// RemoveContainer removes Docker container.
-func removeContainer(cli *client.Client, id string, force bool) error {
-	return cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: force})
-}
-
-// WaitContainer waits container to finish running and return exit status code.
-func waitContainer(cli *client.Client, id string) (int64, error) {
-	statusCh, errCh := cli.ContainerWait(context.Background(), id, container.WaitConditionNotRunning)
-
-	select {
-	case err := <-errCh:
-		if err != nil {
-			return 1, err
-		}
-	case status := <-statusCh:
-		if status.StatusCode == 0 {
-			return status.StatusCode, nil
-		}
-		return status.StatusCode, fmt.Errorf(status.Error.Message)
-	}
-
-	return 1, fmt.Errorf("unexpected error")
-}
-
 // StartContainer starts Docker container.
 func startContainer(cli *client.Client, id string) error {
 	return cli.ContainerStart(context.Background(), id, types.ContainerStartOptions{})
