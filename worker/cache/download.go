@@ -17,13 +17,13 @@ import (
 	"github.com/mholt/archiver/v3"
 )
 
-func DownloadCache(config *config.Config, job *api.Job, dir string) error {
+func DownloadCache(config *config.Config, job *api.Job, dir string) (string, error) {
 	fileName := strings.ReplaceAll(fmt.Sprintf("%s-%s.tgz", job.GetRepoName(), job.GetRef()), "/", "_")
 	outPath := filepath.Join(dir, fileName)
 
 	out, err := os.Create(outPath)
 	if err != nil {
-		return err
+		return outPath, err
 	}
 	defer out.Close()
 
@@ -32,12 +32,12 @@ func DownloadCache(config *config.Config, job *api.Job, dir string) error {
 		Addr: config.GRPC.Addr,
 	})
 	if err != nil {
-		return err
+		return outPath, err
 	}
 
 	client, err := http.NewClient(config.Server.Addr, token)
 	if err != nil {
-		return err
+		return outPath, err
 	}
 
 	req := &http.Request{
@@ -47,26 +47,26 @@ func DownloadCache(config *config.Config, job *api.Job, dir string) error {
 
 	resp, err := client.Req(context.Background(), req, nil)
 	if err != nil {
-		return err
+		return outPath, err
 	}
 	defer resp.Body.Close()
 
 	if resp.Status != 200 {
 		var r render.Error
 		if err := lib.DecodeJSON(resp.Body, &r); err != nil {
-			return err
+			return outPath, err
 		}
 
-		return fmt.Errorf(r.Message)
+		return outPath, fmt.Errorf(r.Message)
 	}
 
 	if _, err := io.Copy(out, resp.Body); err != nil {
-		return err
+		return outPath, err
 	}
 
 	if err := out.Close(); err != nil {
-		return err
+		return outPath, err
 	}
 
-	return archiver.Unarchive(outPath, dir)
+	return outPath, archiver.Unarchive(outPath, dir)
 }
