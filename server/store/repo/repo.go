@@ -84,7 +84,7 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 		db = db.Offset(filters.Offset)
 	}
 
-	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Limit(-1).Count(&count).Error
+	err = db.Order("active desc, name asc").Group("repositories.id").Find(&repos).Limit(-1).Offset(-1).Count(&count).Error
 	if err != nil || count == 0 {
 		return repos, count, err
 	}
