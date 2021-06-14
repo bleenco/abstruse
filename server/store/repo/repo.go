@@ -215,7 +215,7 @@ func (s repositoryStore) CreateHook(id, userID uint, data gitscm.HookForm) error
 	}
 
 	target := fmt.Sprintf("%s/webhooks", repo.Provider.Host)
-	_, err = gitscm.CreateHook(repo.FullName, target, repo.Provider.Name, repo.Provider.Secret, data)
+	_, err = gitscm.CreateHook(repo.FullName, target, repo.Provider.Secret, repo.Provider.Name, data)
 	return err
 }
 
