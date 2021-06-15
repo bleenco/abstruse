@@ -6,6 +6,7 @@ type (
 	// User represents user of the system.
 	User struct {
 		ID       uint    `gorm:"primary_key;auto_increment;not null" json:"id"`
+		Login    string  `gorm:"not null;size:255;unique_index" json:"login"`
 		Email    string  `gorm:"not null;size:255;unique_index" json:"email"`
 		Password string  `gorm:"not null;size:255;column:password" json:"-"`
 		Name     string  `gorm:"not null;size:255" json:"name"`
@@ -23,6 +24,12 @@ type (
 
 		// FindEmail returns a user from the datastore by email.
 		FindEmail(string) (*User, error)
+
+		// FindLogin returns a user from the datastore by username.
+		FindLogin(string) (*User, error)
+
+		// FindEmailOrLogin returns a user from the datastore by email or username.
+		FindEmailOrLogin(string) (*User, error)
 
 		// List returns a list of users from datastore.
 		List() ([]*User, error)
@@ -51,6 +58,7 @@ type (
 func (u User) Claims() auth.UserClaims {
 	return auth.UserClaims{
 		ID:     u.ID,
+		Login:  u.Login,
 		Email:  u.Email,
 		Name:   u.Name,
 		Avatar: u.Avatar,

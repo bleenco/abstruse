@@ -14,6 +14,7 @@ import (
 func HandleUser(users core.UserStore) http.HandlerFunc {
 	type form struct {
 		Email    string `json:"email" valid:"email,required"`
+		Login    string `json:"login" valid:"stringlength(3|50),required"`
 		Name     string `json:"name" valid:"stringlength(2|50),required"`
 		Avatar   string `json:"avatar" valid:"stringlength(5|255),required"`
 		Password string `json:"password" valid:"stringlength(8|50),required"`
@@ -36,6 +37,7 @@ func HandleUser(users core.UserStore) http.HandlerFunc {
 		}
 
 		user := &core.User{
+			Login:    f.Login,
 			Email:    f.Email,
 			Name:     f.Name,
 			Avatar:   f.Avatar,

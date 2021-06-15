@@ -46,7 +46,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        const fuse = new Fuse([...this.users], { keys: ['name', 'email'], threshold: 0.3 });
+        const fuse = new Fuse([...this.users], { keys: ['login', 'name', 'email'], threshold: 0.3 });
         this.displayedUsers = fuse.search(keyword).map(r => r.item);
       });
   }
@@ -86,3 +86,4 @@ export class UsersComponent implements OnInit, AfterViewInit {
       );
   }
 }
+

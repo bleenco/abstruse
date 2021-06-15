@@ -5,6 +5,7 @@ export class Profile {
 export class User extends Profile {
   constructor(
     public id: number,
+    public login: string,
     public email: string,
     public name: string,
     public avatar: string,
@@ -26,6 +27,7 @@ export const generateProfile = (data: any): Profile => {
 export const generateUser = (data: any): User => {
   return new User(
     data.id,
+    data.login,
     data.email,
     data.name,
     data.avatar,

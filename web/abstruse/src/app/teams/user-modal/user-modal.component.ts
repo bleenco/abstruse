@@ -56,6 +56,7 @@ export class UserModalComponent implements OnInit {
     this.error = null;
     this.saving = true;
     let data: any = {
+      login: this.form.controls.login.value,
       name: this.form.controls.name.value,
       email: this.form.controls.email.value,
       password: this.form.controls.password.value,
@@ -133,6 +134,7 @@ export class UserModalComponent implements OnInit {
   private createForm(): void {
     this.form = this.fb.group({
       id: [(this.user && this.user.id) || null, []],
+      login: [(this.user && this.user.login) || null, [Validators.required, Validators.minLength(3)]],
       email: [(this.user && this.user.email) || null, [Validators.required, Validators.email]],
       name: [(this.user && this.user.name) || null, [Validators.required]],
       role: [(this.user && this.user.role) || 'user', [Validators.required]],
@@ -140,10 +142,10 @@ export class UserModalComponent implements OnInit {
         (this.user && this.user.avatar) || '/assets/images/avatars/avatar_7.svg',
         [Validators.required]
       ],
-      password: [null, []],
+      password: [null, [Validators.required]],
       repeatPassword: [null, []]
     });
 
-    this.form.controls.repeatPassword.setValidators([equalValidator(this.form.controls.password)]);
+    this.form.controls.repeatPassword.setValidators([Validators.required, equalValidator(this.form.controls.password)]);
   }
 }
