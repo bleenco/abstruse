@@ -55,6 +55,7 @@ export class UserComponent implements OnInit {
   resetValues(): void {
     this.userForm.patchValue({
       email: '',
+      login: '',
       name: '',
       password: '',
       confirmPassword: '',
@@ -66,6 +67,7 @@ export class UserComponent implements OnInit {
   private createModel(): Admin {
     const data = {
       email: this.userForm.controls.email.value,
+      login: this.userForm.controls.login.value,
       name: this.userForm.controls.name.value,
       password: this.userForm.controls.password.value,
       avatar: this.userForm.controls.avatar.value
@@ -77,6 +79,7 @@ export class UserComponent implements OnInit {
   private createForm(): void {
     this.userForm = this.fb.group({
       avatar: [`/assets/images/avatars/avatar_${randomInt(1, 30)}.svg`, [Validators.required]],
+      login: [null, [Validators.required, Validators.minLength(3)]],
       email: [null, [Validators.required]],
       name: [null, [Validators.required]],
       password: [null, [Validators.required, Validators.minLength(8)]],

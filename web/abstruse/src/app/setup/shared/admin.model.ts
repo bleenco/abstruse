@@ -4,6 +4,7 @@ export class Admin {
 
   constructor(
     public email: string,
+    public login: string,
     public name: string,
     public avatar: string,
     public password: string
@@ -11,5 +12,5 @@ export class Admin {
 }
 
 export const generateAdminModel = (data: any): Admin => {
-  return new Admin(data.email, data.name, data.avatar, data.password);
+  return new Admin(data.email, data.login, data.name, data.avatar, data.password);
 };

@@ -14,6 +14,7 @@ import (
 // result about creating user to the http response body.
 func HandleCreate(users core.UserStore) http.HandlerFunc {
 	type form struct {
+		Login    string `json:"login" valid:"stringlength(3|50),required"`
 		Email    string `json:"email" valid:"email,required"`
 		Password string `json:"password" valid:"stringlength(8|50),required"`
 		Name     string `json:"name" valid:"stringlength(3|50),required"`
@@ -44,6 +45,7 @@ func HandleCreate(users core.UserStore) http.HandlerFunc {
 		}
 
 		user := &core.User{
+			Login:    f.Login,
 			Email:    f.Email,
 			Password: f.Password,
 			Name:     f.Name,

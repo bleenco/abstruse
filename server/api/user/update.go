@@ -16,6 +16,7 @@ import (
 func HandleUpdate(users core.UserStore) http.HandlerFunc {
 	type form struct {
 		ID       uint   `json:"id" valid:"required"`
+		Login    string `json:"login" valid:"stringlength(3|50),required"`
 		Email    string `json:"email" valid:"email,required"`
 		Password string `json:"password"`
 		Name     string `json:"name" valid:"stringlength(3|50),required"`
@@ -55,6 +56,7 @@ func HandleUpdate(users core.UserStore) http.HandlerFunc {
 			return
 		}
 
+		user.Login = f.Login
 		user.Email = f.Email
 		user.Name = f.Name
 		user.Avatar = f.Avatar

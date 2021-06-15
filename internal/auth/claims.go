@@ -9,6 +9,7 @@ import (
 // UserClaims represent the claims parsed from JWT access token.
 type UserClaims struct {
 	ID     uint   `json:"id"`
+	Login  string `json:"login"`
 	Email  string `json:"email"`
 	Name   string `json:"name"`
 	Avatar string `json:"avatar"`
@@ -23,6 +24,12 @@ func (c *UserClaims) ParseClaims(claims jwt.MapClaims) error {
 		return fmt.Errorf("could not parse id claim")
 	}
 	c.ID = uint(id.(float64))
+
+	login, ok := claims["login"]
+	if !ok {
+		return fmt.Errorf("could not parse login claim")
+	}
+	c.Login = login.(string)
 
 	email, ok := claims["email"]
 	if !ok {
