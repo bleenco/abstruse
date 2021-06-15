@@ -29,6 +29,19 @@ func (s userStore) FindEmail(email string) (*core.User, error) {
 	return &user, err
 }
 
+func (s userStore) FindName(name string) (*core.User, error) {
+	var user core.User
+	err := s.db.Model(&user).Preload("Teams").Where("name = ?", name).First(&user).Error
+	return &user, err
+}
+
+func (s userStore) FindEmailOrName(pattern string) (*core.User, error) {
+	var user core.User
+	err := s.db.Model(&user).Preload("Teams").
+		Where("name = ? OR email = ?", pattern, pattern).First(&user).Error
+	return &user, err
+}
+
 func (s userStore) List() ([]*core.User, error) {
 	var users []*core.User
 	err := s.db.Model(users).Preload("Teams").Find(&users).Error
@@ -41,6 +54,16 @@ func (s userStore) Create(user *core.User) error {
 		return err
 	}
 	user.Password = hash
+
+	_, err = s.FindEmail(user.Email)
+	if err == nil {
+		return fmt.Errorf("email already exists")
+	}
+
+	_, err = s.FindName(user.Name)
+	if err == nil {
+		return fmt.Errorf("username already exists")
+	}
 
 	return s.db.Create(user).Error
 }
@@ -73,7 +96,7 @@ func (s userStore) Delete(user *core.User) error {
 }
 
 func (s userStore) Login(email, password string) bool {
-	user, err := s.FindEmail(email)
+	user, err := s.FindEmailOrName(email)
 	if err != nil {
 		return false
 	}

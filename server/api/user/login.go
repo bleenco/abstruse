@@ -31,7 +31,7 @@ func HandleLogin(users core.UserStore) http.HandlerFunc {
 		}
 
 		if users.Login(f.Email, f.Password) {
-			user, _ := users.FindEmail(f.Email)
+			user, _ := users.FindEmailOrName(f.Email)
 			token, err := auth.JWT.CreateJWT(user.Claims())
 			if err != nil {
 				render.InternalServerError(w, err.Error())

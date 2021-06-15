@@ -8,7 +8,7 @@ type (
 		ID       uint    `gorm:"primary_key;auto_increment;not null" json:"id"`
 		Email    string  `gorm:"not null;size:255;unique_index" json:"email"`
 		Password string  `gorm:"not null;size:255;column:password" json:"-"`
-		Name     string  `gorm:"not null;size:255" json:"name"`
+		Name     string  `gorm:"not null;size:255;unique_index" json:"name"`
 		Avatar   string  `gorm:"not null;size:255;default:'/assets/images/avatars/avatar_1.svg'" json:"avatar"`
 		Role     string  `gorm:"not null;size:20;default:'user'" json:"role"`
 		Active   bool    `gorm:"not null;default:true" json:"active"`
@@ -23,6 +23,12 @@ type (
 
 		// FindEmail returns a user from the datastore by email.
 		FindEmail(string) (*User, error)
+
+		// FindName returns a user from the datastore by username.
+		FindName(string) (*User, error)
+
+		// FindEmailOrName returns a user from the datastore by email or username.
+		FindEmailOrName(string) (*User, error)
 
 		// List returns a list of users from datastore.
 		List() ([]*User, error)
