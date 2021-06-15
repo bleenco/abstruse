@@ -54,7 +54,43 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 	cacheSaved := false
 
-	for i, command := range job.GetCommands() {
+	ExecCmd := func(command *api.Command) (string, error) {
+		cmd := strings.Split(command.GetCommand(), " ")
+		str := yellow("\r==> " + strings.Join(cmd, " ") + "\r\n")
+		logch <- []byte(str)
+		shcmd := []string{shell, "-ci", strings.Join(cmd, " ")}
+		conn, execID, err := exec(cli, containerID, shcmd, env)
+		if err != nil {
+			logch <- []byte(err.Error())
+			return "", err
+		}
+		for {
+			buf := make([]byte, 4096)
+			n, err := conn.Reader.Read(buf)
+			if err != nil {
+				conn.Close()
+				break
+			}
+			logch <- buf[:n]
+		}
+		return execID, nil
+	}
+
+	var commands []*api.Command
+	var failureCmd, successCmd *api.Command = nil, nil
+	for _, command := range job.GetCommands() {
+		if command.GetType() == api.Command_AfterFailure {
+			failureCmd = command
+			continue
+		}
+		if command.GetType() == api.Command_AfterSuccess {
+			successCmd = command
+			continue
+		}
+		commands = append(commands, command)
+	}
+
+	for i, command := range commands {
 		if !isContainerRunning(cli, containerID) {
 			if err := startContainer(cli, containerID); err != nil {
 				logch <- []byte(err.Error())
@@ -101,24 +137,10 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			}
 		}
 
-		cmd := strings.Split(command.GetCommand(), " ")
-
-		str := yellow("\r==> " + strings.Join(cmd, " ") + "\r\n")
-		logch <- []byte(str)
-		shcmd := []string{shell, "-ci", strings.Join(cmd, " ")}
-		conn, execID, err := exec(cli, containerID, shcmd, env)
+		execID, err := ExecCmd(command)
 		if err != nil {
 			logch <- []byte(err.Error())
 			return err
-		}
-		for {
-			buf := make([]byte, 4096)
-			n, err := conn.Reader.Read(buf)
-			if err != nil {
-				conn.Close()
-				break
-			}
-			logch <- buf[:n]
 		}
 		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
@@ -127,12 +149,24 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 		}
 		exitCode = inspect.ExitCode
 		if exitCode != 0 {
+			if failureCmd != nil {
+				logch <- []byte(red("==> Starting after_failure script...\n"))
+				if _, err := ExecCmd(failureCmd); err != nil {
+					logch <- []byte(err.Error())
+				}
+			}
 			break
 		}
 	}
 
 	logch <- []byte(genExitMessage(exitCode))
 	if exitCode == 0 {
+		if successCmd != nil {
+			logch <- []byte(green("==> Starting after_success script...\n"))
+			if _, err := ExecCmd(successCmd); err != nil {
+				logch <- []byte(err.Error())
+			}
+		}
 		return nil
 	}
 	return fmt.Errorf("errored: %d", exitCode)
