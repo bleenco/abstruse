@@ -3,6 +3,7 @@ package build
 import (
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/bleenco/abstruse/internal/auth"
@@ -45,6 +46,8 @@ func HandleLog(jobs core.JobStore, scheduler core.Scheduler) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, job.Log)
+		re := regexp.MustCompile(`(\[1;[0-9][0-9]m|\[0m|\x1b|\r)`)
+		log := re.ReplaceAllString(job.Log, "")
+		io.WriteString(w, log)
 	}
 }
