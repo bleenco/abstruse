@@ -211,7 +211,6 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 
 	mounts := []mount.Mount{
 		{Type: mount.TypeBind, Source: path.Join(dir), Target: "/build"},
-		{Type: mount.TypeBind, Source: "/var/run/docker.sock", Target: "/var/run/docker.sock"},
 	}
 
 	return cli.ContainerCreate(context.Background(), &container.Config{
