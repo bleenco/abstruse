@@ -76,4 +76,4 @@ $ make dev_worker
 
 ## License
 
-See the [license](https://github.com/irmana/abstruse/blob/master/LICENSE).
+See the [license](https://github.com/bleenco/abstruse/blob/master/LICENSE).
