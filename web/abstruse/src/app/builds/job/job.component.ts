@@ -25,9 +25,8 @@ export class JobComponent implements OnInit, OnDestroy {
   error: string | null = null;
 
   get logURL(): string {
-    const port = location.port === '4440' || '80' ? '' : `:${location.port}`;
     return [
-      `${location.protocol}//${location.hostname}${port}/api/v1/builds/job/${this.jobID}/log`,
+      `/api/v1/builds/job/${this.jobID}/log`,
       this.authService.token || ''
     ].join('?token=');
   }
