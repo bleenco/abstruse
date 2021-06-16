@@ -4,12 +4,7 @@ ifndef GIT_COMMIT
 	GIT_COMMIT=$(shell git rev-list -1 HEAD)
 endif
 BUILD_DATE=$(shell date +%FT%T%z)
-UNAME=$(shell uname -s)
-CGO_ENABLED=0
-
-ifeq ($(UNAME),Darwin)
-	CGO_ENABLED=1
-endif
+CGO_ENABLED=1
 
 all: build
 
