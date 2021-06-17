@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/bleenco/abstruse/pkg/gitscm"
@@ -12,11 +11,18 @@ import (
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/service/githook"
 	"github.com/bleenco/abstruse/server/ws"
+	"go.uber.org/zap"
 )
 
 // HandleHook returns an http.HandlerFunc that writes JSON encoded
 // result to the http response body.
-func HandleHook(repos core.RepositoryStore, builds core.BuildStore, scheduler core.Scheduler, ws *ws.Server) http.HandlerFunc {
+func HandleHook(
+	repos core.RepositoryStore,
+	builds core.BuildStore,
+	scheduler core.Scheduler,
+	ws *ws.Server,
+	logger *zap.SugaredLogger,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		repositories, _, err := repos.List(core.RepositoryFilter{})
 		if err != nil {
@@ -61,17 +67,17 @@ func HandleHook(repos core.RepositoryStore, builds core.BuildStore, scheduler co
 			}
 
 			if !repo.Active {
-				log.Println("webhook ignored, repository not active")
+				logger.Infof("webhook ignored, repository %s not active", repo.FullName)
 				break
 			}
 
 			if hook.Event == core.EventPush && hook.Action == core.ActionDelete {
-				log.Printf("branch %s deleted\n", hook.Target)
+				logger.Infof("branch %s on repository %s deleted", hook.Target, repo.FullName)
 				break
 			}
 
 			if hook.Event == core.EventPullRequest && hook.Action == core.ActionClose {
-				log.Printf("ref %s pull request closed\n", hook.Ref)
+				logger.Infof("ref %s pull request on repository %s closed", hook.Ref, repo.FullName)
 				break
 			}
 
