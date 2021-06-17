@@ -26,6 +26,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jkuri/statik/fs"
+	"go.uber.org/zap"
 )
 
 var corsOpts = cors.Options{
@@ -41,6 +42,7 @@ var corsOpts = cors.Options{
 func New(
 	config *config.Config,
 	ws *ws.Server,
+	logger *zap.Logger,
 	users core.UserStore,
 	teams core.TeamStore,
 	permissions core.PermissionStore,
@@ -55,6 +57,7 @@ func New(
 ) *Router {
 	return &Router{
 		Config:       config,
+		Logger:       logger.With(zap.String("type", "api")).Sugar(),
 		WS:           ws,
 		Users:        users,
 		Teams:        teams,
@@ -73,6 +76,7 @@ func New(
 // Router is an API http.Handler.
 type Router struct {
 	Config       *config.Config
+	Logger       *zap.SugaredLogger
 	WS           *ws.Server
 	Users        core.UserStore
 	Teams        core.TeamStore
@@ -107,7 +111,7 @@ func (r Router) Handler() http.Handler {
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
 	router.Get("/badge/{token}", badge.HandleBadge(r.Builds))
 	router.Mount("/uploads", r.fileServer())
-	router.Post("/webhooks", webhook.HandleHook(r.Repos, r.Builds, r.Scheduler, r.WS))
+	router.Post("/webhooks", webhook.HandleHook(r.Repos, r.Builds, r.Scheduler, r.WS, r.Logger))
 	router.NotFound(r.ui())
 
 	return router

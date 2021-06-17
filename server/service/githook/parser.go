@@ -58,8 +58,8 @@ func (p *parser) Parse(req *http.Request, secretFunc func(string) *core.Reposito
 }
 
 func (p *parser) parsePushHook(h *scm.PushHook) (*core.GitHook, *core.Repository, error) {
-	repo := &core.Repository{}
-	githook := &core.GitHook{}
+	var repo *core.Repository
+	var githook *core.GitHook
 
 	if h.Commit.Sha == emptyCommit {
 		return nil, nil, nil
@@ -128,9 +128,6 @@ func (p *parser) parsePushHook(h *scm.PushHook) (*core.GitHook, *core.Repository
 }
 
 func (p *parser) parseTagHook(h *scm.TagHook) (*core.GitHook, *core.Repository, error) {
-	repo := &core.Repository{}
-	githook := &core.GitHook{}
-
 	if h.Action != scm.ActionCreate {
 		return nil, nil, nil
 	}
@@ -143,7 +140,7 @@ func (p *parser) parseTagHook(h *scm.TagHook) (*core.GitHook, *core.Repository, 
 		return nil, nil, nil
 	}
 
-	githook = &core.GitHook{
+	githook := &core.GitHook{
 		Event:        core.EventTag,
 		Action:       core.ActionCreate,
 		Link:         "",
@@ -161,7 +158,7 @@ func (p *parser) parseTagHook(h *scm.TagHook) (*core.GitHook, *core.Repository, 
 		SenderName:   h.Sender.Name,
 		SenderLogin:  h.Sender.Login,
 	}
-	repo = &core.Repository{
+	repo := &core.Repository{
 		UID:       h.Repo.ID,
 		Namespace: h.Repo.Namespace,
 		Name:      h.Repo.Name,
@@ -224,7 +221,7 @@ func (p *parser) parsePRHook(h *scm.PullRequestHook) (*core.GitHook, *core.Repos
 }
 
 func (p *parser) parseBranchHook(h *scm.BranchHook) (*core.GitHook, *core.Repository, error) {
-	if h.Action != scm.ActionCreate {
+	if h.Action != scm.ActionCreate || h.Action == scm.ActionDelete || p.client.Driver != scm.DriverStash {
 		return nil, nil, nil
 	}
 
