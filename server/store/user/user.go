@@ -44,11 +44,11 @@ func (s userStore) Create(user *core.User) error {
 	}
 	user.Password = hash
 
-	return HumanizeError(s.db.Create(user).Error)
+	return humanizeError(s.db.Create(user).Error)
 }
 
 func (s userStore) Update(user *core.User) error {
-	return HumanizeError(s.db.Model(user).Updates(&user).Error)
+	return humanizeError(s.db.Model(user).Updates(&user).Error)
 }
 
 func (s userStore) UpdatePassword(id uint, curr, password string) error {
@@ -88,14 +88,14 @@ func (s userStore) AdminExists() bool {
 	return !s.db.Where("role = ?", "admin").First(&user).RecordNotFound()
 }
 
-func HumanizeError(err error) error {
+func humanizeError(err error) error {
 	if err == nil {
 		return nil
 	}
-	if strings.Contains(err.Error(), "login") {
+	if strings.Contains(err.Error(), "1062") && strings.Contains(err.Error(), "login") {
 		return fmt.Errorf("login already exists")
 	}
-	if strings.Contains(err.Error(), "email") {
+	if strings.Contains(err.Error(), "1062") && strings.Contains(err.Error(), "email") {
 		return fmt.Errorf("email already exists")
 	}
 	return err
