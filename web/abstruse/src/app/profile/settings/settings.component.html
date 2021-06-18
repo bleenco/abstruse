@@ -35,6 +35,15 @@
         </div>
         <div class="column is-8">
           <div class="field">
+            <label class="label">Login</label>
+            <input
+              type="login"
+              class="input"
+              placeholder="Username"
+              formControlName="login"
+            />
+          </div>
+          <div class="field">
             <label class="label">Email</label>
             <input
               type="email"
@@ -51,7 +60,7 @@
             <button
               type="submit"
               class="button"
-              [disabled]="(form.pristine && !saved) || saving"
+              [disabled]="form.invalid || (form.pristine && !saved) || saving"
               [class.events-none]="saved"
             >
               <span *ngIf="!saving && !saved">Update Profile</span>

@@ -1,5 +1,5 @@
 export class Profile {
-  constructor(public email: string, public name: string, public avatar: string) {}
+  constructor(public login: string, public email: string, public name: string, public avatar: string) {}
 }
 
 export class User extends Profile {
@@ -12,7 +12,7 @@ export class User extends Profile {
     public role: string,
     public teams?: Team[]
   ) {
-    super(email, name, avatar);
+    super(login, email, name, avatar);
   }
 
   get teamsCount(): number {
@@ -21,7 +21,7 @@ export class User extends Profile {
 }
 
 export const generateProfile = (data: any): Profile => {
-  return new Profile(data.email, data.name, data.avatar);
+  return new Profile(data.login, data.email, data.name, data.avatar);
 };
 
 export const generateUser = (data: any): User => {

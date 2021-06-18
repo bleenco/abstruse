@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/server/core"
@@ -20,18 +21,6 @@ type userStore struct {
 func (s userStore) Find(id uint) (*core.User, error) {
 	var user core.User
 	err := s.db.Model(&user).Preload("Teams").Where("id = ?", id).First(&user).Error
-	return &user, err
-}
-
-func (s userStore) FindEmail(email string) (*core.User, error) {
-	var user core.User
-	err := s.db.Model(&user).Preload("Teams").Where("email = ?", email).First(&user).Error
-	return &user, err
-}
-
-func (s userStore) FindLogin(login string) (*core.User, error) {
-	var user core.User
-	err := s.db.Model(&user).Preload("Teams").Where("login = ?", login).First(&user).Error
 	return &user, err
 }
 
@@ -55,21 +44,11 @@ func (s userStore) Create(user *core.User) error {
 	}
 	user.Password = hash
 
-	_, err = s.FindEmail(user.Email)
-	if err == nil {
-		return fmt.Errorf("email already exists")
-	}
-
-	_, err = s.FindLogin(user.Login)
-	if err == nil {
-		return fmt.Errorf("username already exists")
-	}
-
-	return s.db.Create(user).Error
+	return HumanizeError(s.db.Create(user).Error)
 }
 
 func (s userStore) Update(user *core.User) error {
-	return s.db.Model(user).Updates(&user).Error
+	return HumanizeError(s.db.Model(user).Updates(&user).Error)
 }
 
 func (s userStore) UpdatePassword(id uint, curr, password string) error {
@@ -107,4 +86,17 @@ func (s userStore) Login(email, password string) bool {
 func (s userStore) AdminExists() bool {
 	var user core.User
 	return !s.db.Where("role = ?", "admin").First(&user).RecordNotFound()
+}
+
+func HumanizeError(err error) error {
+	if err == nil {
+		return nil
+	}
+	if strings.Contains(err.Error(), "login") {
+		return fmt.Errorf("login already exists")
+	}
+	if strings.Contains(err.Error(), "email") {
+		return fmt.Errorf("email already exists")
+	}
+	return err
 }
