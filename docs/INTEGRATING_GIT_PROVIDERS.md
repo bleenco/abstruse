@@ -33,8 +33,8 @@ Click `Add webhook`
 ### 5. Protect master branch
 In order to protect the master branch with **Abstruse**, login to GitHub and navigate to the repository and then `Settings/Branches`
 <br>![Branches](https://user-images.githubusercontent.com/15204169/103622742-69196680-4f37-11eb-91dc-a659ace05a8f.png)
-Click on `Add Role`. Type in `master` as the branch and check **Require status checks to pass before merging**, **Require branches to be up to date before merging** and **continuous-integration**
-<br>![Protect Branch](https://user-images.githubusercontent.com/15204169/103622772-7171a180-4f37-11eb-8d20-94675436f0ef.png)
+Click on `Add Role`. Type in `master` as the branch and check **Require status checks to pass before merging** and **Require branches to be up to date before merging**. In search field type **continuous-integration** and click on **continuous-integration**.
+<br>![Protect Branch](https://user-images.githubusercontent.com/15204169/122527507-a8d29700-d01b-11eb-9f77-4e071ddfae61.jpg)
 **NOTE:** If the **continuous-integration** checkbox is not visible, we need to manually trigger a build. Go to **Abstruse** and go to repository settings by clicking on the repository and then settings:
 <br>![Trigger Build](https://user-images.githubusercontent.com/15204169/104171094-6c629580-5402-11eb-82f6-e186bec1c555.png) add `.abstruse.yml` content from step 6. to config and click `Trigger build`. Repeat step 5.
 
