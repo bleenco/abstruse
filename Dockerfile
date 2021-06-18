@@ -26,7 +26,7 @@ RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go gith
 RUN make protoc && make statik && make wire && make server
 
 # stage 3 image
-FROM scratch
+FROM alpine:latest
 
 LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
   org.label-schema.schema-version="1.0" \
