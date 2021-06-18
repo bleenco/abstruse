@@ -142,10 +142,10 @@ export class UserModalComponent implements OnInit {
         (this.user && this.user.avatar) || '/assets/images/avatars/avatar_7.svg',
         [Validators.required]
       ],
-      password: [null, [Validators.required]],
+      password: [null, []],
       repeatPassword: [null, []]
     });
 
-    this.form.controls.repeatPassword.setValidators([Validators.required, equalValidator(this.form.controls.password)]);
+    this.form.controls.repeatPassword.setValidators([equalValidator(this.form.controls.password)]);
   }
 }

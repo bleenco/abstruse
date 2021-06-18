@@ -117,6 +117,7 @@ export class SettingsComponent implements OnInit {
 
   private generateModel(): Profile {
     return new Profile(
+      this.form.controls.login.value,
       this.form.controls.email.value,
       this.form.controls.name.value,
       this.form.controls.avatar.value
@@ -125,6 +126,7 @@ export class SettingsComponent implements OnInit {
 
   private updateValues(user: Profile): void {
     this.form.patchValue({
+      login: user.login,
       email: user.email,
       name: user.name,
       avatar: user.avatar
@@ -133,6 +135,7 @@ export class SettingsComponent implements OnInit {
 
   private createForm(): void {
     this.form = this.fb.group({
+      login: [null, [Validators.required, Validators.minLength(3)]],
       email: [null, [Validators.required, Validators.email]],
       name: [null, [Validators.required]],
       avatar: [null, [Validators.required]]

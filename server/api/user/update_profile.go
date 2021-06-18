@@ -15,6 +15,7 @@ import (
 // result about updated user profile to the http response body.
 func HandleUpdateProfile(users core.UserStore) http.HandlerFunc {
 	type form struct {
+		Login  string `json:"login" valid:"stringlength(3|50),required"`
 		Email  string `json:"email" valid:"email,required"`
 		Name   string `json:"name" valid:"stringlength(3|50),required"`
 		Avatar string `json:"avatar" valid:"stringlength(5|255),required"`
@@ -42,6 +43,7 @@ func HandleUpdateProfile(users core.UserStore) http.HandlerFunc {
 
 		user := &core.User{
 			ID:     claims.ID,
+			Login:  f.Login,
 			Email:  f.Email,
 			Name:   f.Name,
 			Avatar: f.Avatar,
