@@ -51,6 +51,7 @@ func New(
 	jobs core.JobStore,
 	repos core.RepositoryStore,
 	envVariables core.EnvVariableStore,
+	mounts core.MountsStore,
 	workers core.WorkerRegistry,
 	scheduler core.Scheduler,
 	stats core.StatsService,
@@ -67,6 +68,7 @@ func New(
 		Jobs:         jobs,
 		Repos:        repos,
 		EnvVariables: envVariables,
+		Mounts:       mounts,
 		Workers:      workers,
 		Scheduler:    scheduler,
 		Stats:        stats,
@@ -86,6 +88,7 @@ type Router struct {
 	Jobs         core.JobStore
 	Repos        core.RepositoryStore
 	EnvVariables core.EnvVariableStore
+	Mounts       core.MountsStore
 	Workers      core.WorkerRegistry
 	Scheduler    core.Scheduler
 	Stats        core.StatsService
@@ -210,6 +213,10 @@ func (r Router) reposRouter() *chi.Mux {
 	router.Put("/{id}/envs", repo.HandleCreateEnv(r.EnvVariables, r.Repos))
 	router.Post("/{id}/envs", repo.HandleUpdateEnv(r.EnvVariables, r.Repos))
 	router.Delete("/{id}/envs/{envid}", repo.HandleDeleteEnv(r.EnvVariables, r.Repos))
+	router.Get("/{id}/mounts", repo.HandleListMount(r.Mounts, r.Repos))
+	router.Put("/{id}/mounts", repo.HandleCreateMount(r.Mounts, r.Repos))
+	router.Post("/{id}/mounts", repo.HandleUpdateMount(r.Mounts, r.Repos))
+	router.Delete("/{id}/mounts/{mountid}", repo.HandleDeleteMount(r.Mounts, r.Repos))
 
 	return router
 }

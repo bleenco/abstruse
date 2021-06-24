@@ -32,6 +32,7 @@ type (
 		ProviderID    uint          `gorm:"not null" json:"providerID"`
 		Provider      Provider      `json:"-"`
 		EnvVariables  []EnvVariable `json:"-"`
+		Mounts        []*Mount      `json:"mounts"`
 		Perms         Perms         `json:"perms"`
 		Timestamp
 	}

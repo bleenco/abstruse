@@ -1,0 +1,36 @@
+<div class="space-between align-center mb10">
+  <div>
+    <h4>Mount directories</h4>
+  </div>
+  <div>
+    <button type="button" class="button is-small" (click)="openAddMountVariableModal()">Add</button>
+  </div>
+</div>
+
+<div class="notification is-small" *ngIf="!mounts.length">
+  <p>No mount directories found.</p>
+</div>
+
+<div class="mount-variable-list" *ngIf="mounts.length">
+  <div class="mount-variable-list-item is-heading">
+    <div class="columns">
+      <div class="column is-4">Host</div>
+      <div class="column is-4">Container</div>
+    </div>
+  </div>
+  <div class="mount-variable-list-item" *ngFor="let e of mounts; let i = index">
+    <div class="columns">
+      <div class="column is-4">
+        <span>{{ e.host }}</span>
+      </div>
+      <div class="column is-4">
+        <span>{{ e.container }}</span>
+      </div>
+      <div class="column is-2">
+        <button type="button" class="button is-small" (click)="openEditMountVariableModal(i)">
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

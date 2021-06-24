@@ -64,6 +64,7 @@ message Job {
   JobAction action = 16;
   repeated EnvVariable env = 17;
   repeated string cache = 18;
+  repeated string mount = 19;
 }
 
 message Command {
