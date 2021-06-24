@@ -9,6 +9,7 @@ type (
 		Commands  string     `sql:"type:text" json:"commands"`
 		Image     string     `json:"image"`
 		Env       string     `json:"env"`
+		Mount     string     `json:"mount"`
 		StartTime *time.Time `json:"startTime"`
 		EndTime   *time.Time `json:"endTime"`
 		Status    string     `gorm:"not null;size:20;default:'queued'" json:"status"` // queued | running | passing | failing

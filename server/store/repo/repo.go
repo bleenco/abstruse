@@ -24,7 +24,7 @@ type repositoryStore struct {
 func (s repositoryStore) Find(id, userID uint) (core.Repository, error) {
 	var repo core.Repository
 
-	db := s.db.Preload("Provider")
+	db := s.db.Preload("Provider").Preload("Mounts")
 	db = db.Joins("LEFT JOIN permissions ON permissions.repository_id = repositories.id").
 		Joins("LEFT JOIN teams ON teams.id = permissions.team_id").
 		Joins("LEFT JOIN team_users ON team_users.team_id = teams.id")
@@ -42,13 +42,13 @@ func (s repositoryStore) Find(id, userID uint) (core.Repository, error) {
 
 func (s repositoryStore) FindUID(uid string) (core.Repository, error) {
 	var repo core.Repository
-	err := s.db.Where("uid = ?", uid).Preload("Provider").First(&repo).Error
+	err := s.db.Where("uid = ?", uid).Preload("Provider").Preload("Mounts").First(&repo).Error
 	return repo, err
 }
 
 func (s repositoryStore) FindClone(clone string) (core.Repository, error) {
 	var repo core.Repository
-	err := s.db.Where("clone = ?", clone).Preload("Provider").First(&repo).Error
+	err := s.db.Where("clone = ?", clone).Preload("Provider").Preload("Mounts").First(&repo).Error
 	return repo, err
 }
 
@@ -64,7 +64,7 @@ func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository,
 	var err error
 	keyword := fmt.Sprintf("%%%s%%", filters.Keyword)
 
-	db := s.db.Preload("Provider")
+	db := s.db.Preload("Provider").Preload("Mounts")
 
 	db = db.
 		Joins("LEFT JOIN permissions ON permissions.repository_id = repositories.id").

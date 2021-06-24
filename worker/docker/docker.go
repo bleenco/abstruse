@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	api "github.com/bleenco/abstruse/pb"
+	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/worker/cache"
 	"github.com/bleenco/abstruse/worker/config"
@@ -19,7 +20,7 @@ import (
 )
 
 // RunContainer runs container.
-func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte) error {
+func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte, mountdirs []string) error {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
@@ -28,14 +29,14 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	defer close(logch)
 	var shell string
 
-	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env)
+	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, mountdirs)
 	if err != nil {
 		logch <- []byte(err.Error())
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
-			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env)
+			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, mountdirs)
 			if err != nil {
 				logch <- []byte(err.Error())
 				return err
@@ -236,7 +237,7 @@ func startContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string, mountdir []string) (container.ContainerCreateCreatedBody, error) {
 	if id, exists := ContainerExists(name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
 			return container.ContainerCreateCreatedBody{}, err
@@ -246,7 +247,18 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 	mounts := []mount.Mount{
 		{Type: mount.TypeBind, Source: path.Join(dir), Target: "/build"},
 	}
+	for i := range mountdir {
+		m := strings.Split(mountdir[i], ":")
+		if len(m) != 2 || !fs.Exists(m[0]) {
+			continue
+		}
+		mounts = append(mounts, mount.Mount{
+			Type:   mount.TypeBind,
+			Source: m[0],
+			Target: m[1],
+		})
 
+	}
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
 		Cmd:        cmd,

@@ -12,6 +12,8 @@ import { BranchesComponent } from './branches/branches.component';
 import { PullRequestsComponent } from './pull-requests/pull-requests.component';
 import { SettingsEnvsComponent } from './settings-envs/settings-envs.component';
 import { SettingsEnvModalComponent } from './settings-env-modal/settings-env-modal.component';
+import { SettingsMountComponent } from './settings-mount/settings-mount.component';
+import { SettingsMountModalComponent } from './settings-mount-modal/settings-mount-modal.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { SettingsEnvModalComponent } from './settings-env-modal/settings-env-mod
     BranchesComponent,
     PullRequestsComponent,
     SettingsEnvsComponent,
-    SettingsEnvModalComponent
+    SettingsEnvModalComponent,
+    SettingsMountComponent,
+    SettingsMountModalComponent
   ],
   imports: [CommonModule, ReposRoutingModule, SharedModule, BuildsCommonModule]
 })

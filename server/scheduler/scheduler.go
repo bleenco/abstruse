@@ -312,6 +312,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		s.logger.Errorf("error parsing commands for job %d: %s", job.ID, err.Error())
 	}
 
+	mnts := strings.Split(job.Mount, ";")
 	j := &pb.Job{
 		Id:            uint64(job.ID),
 		BuildId:       uint64(job.BuildID),
@@ -328,6 +329,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		Action:        pb.Job_JobStart,
 		WorkerId:      worker.ID,
 		Cache:         strings.Split(job.Cache, ","),
+		Mount:         mnts,
 	}
 
 	s.mu.Lock()

@@ -234,9 +234,9 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	if !ok {
 		return nil
 	}
-
+	mountdirs := job.Mount
 	logch <- []byte(yellow(fmt.Sprintf("==> Starting container %s...\r\n", name)))
-	if err := docker.RunContainer(name, image, job, s.config, env, dir, logch); err != nil {
+	if err := docker.RunContainer(name, image, job, s.config, env, dir, logch, mountdirs); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
 		s.logger.Infof("job %d with name %s done with status failing", job.Id, name)
 		return err

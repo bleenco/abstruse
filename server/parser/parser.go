@@ -49,6 +49,7 @@ type BranchesConfig struct {
 type JobConfig struct {
 	Image    string           `json:"image"`
 	Env      []string         `json:"env"`
+	Mount    string           `json:"mount"`
 	Stage    string           `json:"stage"`
 	Title    string           `json:"title"`
 	Commands *api.CommandList `json:"commands"`
@@ -61,14 +62,16 @@ type ConfigParser struct {
 	Branch string
 	Parsed RepoConfig
 	Env    []string
+	Mount  []string
 }
 
 // NewConfigParser returns new config parser instance.
-func NewConfigParser(raw, branch string, env []string) ConfigParser {
+func NewConfigParser(raw, branch string, env []string, mount []string) ConfigParser {
 	return ConfigParser{
 		Raw:    raw,
 		Branch: branch,
 		Env:    env,
+		Mount:  mount,
 	}
 }
 
@@ -127,6 +130,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
+			Mount:    strings.Join(c.Mount, ";"),
 			Stage:    JobStageTest,
 			Title:    strings.Join(c.Parsed.Script, " "),
 			Commands: c.generateCommands(),
@@ -143,6 +147,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
+			Mount:    strings.Join(c.Mount, ";"),
 			Stage:    JobStageDeploy,
 			Title:    strings.Join(c.Parsed.Deploy, " "),
 			Commands: c.generateDeployCommands(),

@@ -6,6 +6,7 @@ import { map, finalize, switchMap, share, filter } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { Hook, generateHook, HookData } from './hook.model';
 import { EnvVariable, generateEnvVariable } from '../settings-envs/env-variable.model';
+import { MountVariable, generateMountVariable } from '../settings-mount/mount-variable.model';
 
 interface ConfigResp {
   content: string;
@@ -92,6 +93,14 @@ export class ReposService {
     );
   }
 
+  findMounts(): Observable<MountVariable[]> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.get<any>(`/repos/${repo?.id}/mounts`)),
+      map(resp => (resp && resp.length ? resp.map(generateMountVariable) : []))
+    );
+  }
+
   createEnv(env: EnvVariable): Observable<void> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),
@@ -99,6 +108,13 @@ export class ReposService {
     );
   }
 
+  createMount(mount: MountVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/mounts`, mount))
+    );
+  }
+  
   updateEnv(env: EnvVariable): Observable<void> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),
@@ -106,10 +122,24 @@ export class ReposService {
     );
   }
 
+  updateMount(mount: MountVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.post<void>(`/repos/${repo?.id}/mounts`, mount))
+    );
+  }
+
   deleteEnv(env: EnvVariable): Observable<void> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),
       switchMap(repo => this.http.delete<void>(`/repos/${repo?.id}/envs/${env.id}`))
+    );
+  }
+
+  deleteMount(mount: MountVariable): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.delete<void>(`/repos/${repo?.id}/mounts/${mount.id}`))
     );
   }
 }
