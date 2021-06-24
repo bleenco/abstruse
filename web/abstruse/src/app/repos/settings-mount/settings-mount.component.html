@@ -7,6 +7,15 @@
   </div>
 </div>
 
+<div class="notification is-small">
+  <i class="fas fa-bars"></i>
+  <p>
+    Here you can define mount points to be accessible inside job containers. Mount Host points
+    should exists on workers host machine or they are skipped while mounting. Common case for
+    mounting is <code>/var/run/docker.sock</code> for example.
+  </p>
+</div>
+
 <div class="notification is-small" *ngIf="!mounts.length">
   <p>No mount directories found.</p>
 </div>
@@ -14,16 +23,17 @@
 <div class="mount-variable-list" *ngIf="mounts.length">
   <div class="mount-variable-list-item is-heading">
     <div class="columns">
-      <div class="column is-4">Host</div>
-      <div class="column is-4">Container</div>
+      <div class="column is-5">Host</div>
+      <div class="column is-5">Container</div>
+      <div class="column is-2"></div>
     </div>
   </div>
   <div class="mount-variable-list-item" *ngFor="let e of mounts; let i = index">
     <div class="columns">
-      <div class="column is-4">
+      <div class="column is-5">
         <span>{{ e.host }}</span>
       </div>
-      <div class="column is-4">
+      <div class="column is-5">
         <span>{{ e.container }}</span>
       </div>
       <div class="column is-2">
