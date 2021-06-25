@@ -8,7 +8,7 @@ CGO_ENABLED=1
 
 all: build
 
-build: build_ui statik wire protoc server worker
+build: build_ui statik protoc wire server worker
 
 release:
 	@CGO_ENABLED=${CGO_ENABLED} gox -osarch="darwin/amd64 linux/amd64 linux/arm linux/386" -ldflags "-X ${ABSTRUSE_VERSION_PATH}.GitCommit=${GIT_COMMIT} -X ${ABSTRUSE_VERSION_PATH}.UIVersion=${ABSTRUSE_UI_VERSION} -X ${ABSTRUSE_VERSION_PATH}.BuildDate=${BUILD_DATE}" -output build/{{.Dir}}_{{.OS}}_{{.Arch}} ./cmd/abstruse-server
