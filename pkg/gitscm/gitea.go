@@ -33,12 +33,6 @@ func userLogin(src *user) string {
 }
 
 type (
-	// gitea branch object.
-	branch struct {
-		Name   string `json:"name"`
-		Commit commit `json:"commit"`
-	}
-
 	// gitea commit object.
 	commit struct {
 		Message   string     `json:"message"`
