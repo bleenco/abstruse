@@ -181,6 +181,10 @@ func (p *parser) parsePRHook(h *scm.PullRequestHook) (*core.GitHook, *core.Repos
 		return nil, nil, nil
 	}
 
+	if h.Action != scm.ActionOpen && h.Action != scm.ActionSync {
+		return nil, nil, nil
+	}
+
 	githook := &core.GitHook{
 		Event:        core.EventPullRequest,
 		Action:       h.Action.String(),

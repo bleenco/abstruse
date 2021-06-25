@@ -114,7 +114,7 @@ export class ReposService {
       switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/mounts`, mount))
     );
   }
-  
+
   updateEnv(env: EnvVariable): Observable<void> {
     return this.repoSubject.pipe(
       filter(repo => !!repo),

@@ -19,7 +19,6 @@ import (
 type SCM struct {
 	provider string
 	url      string
-	repo     string
 	token    string
 	client   *scm.Client
 	ctx      context.Context
