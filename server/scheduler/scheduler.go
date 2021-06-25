@@ -287,8 +287,8 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	var envs []*pb.EnvVariable
-	env := strings.Split(job.Env, " ")
-	for _, e := range env {
+
+	for _, e := range strings.Split(job.Env, " ") {
 		splitted := strings.Split(e, "=")
 		if len(splitted) > 1 {
 			envs = append(envs, &pb.EnvVariable{
@@ -312,7 +312,6 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		s.logger.Errorf("error parsing commands for job %d: %s", job.ID, err.Error())
 	}
 
-	mnts := strings.Split(job.Mount, ";")
 	j := &pb.Job{
 		Id:            uint64(job.ID),
 		BuildId:       uint64(job.BuildID),
@@ -320,6 +319,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		Image:         job.Image,
 		Env:           envs,
 		Url:           job.Build.Repository.URL,
+		SshURL:        job.Build.Repository.CloneSSH,
 		ProviderName:  job.Build.Repository.Provider.Name,
 		ProviderURL:   job.Build.Repository.Provider.URL,
 		ProviderToken: job.Build.Repository.Provider.AccessToken,
@@ -329,7 +329,9 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		Action:        pb.Job_JobStart,
 		WorkerId:      worker.ID,
 		Cache:         strings.Split(job.Cache, ","),
-		Mount:         mnts,
+		Mount:         strings.Split(job.Mount, ","),
+		SshPrivateKey: job.Build.Repository.SSHPrivateKey,
+		SshClone:      job.Build.Repository.UseSSH,
 	}
 
 	s.mu.Lock()

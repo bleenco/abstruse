@@ -130,7 +130,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
-			Mount:    strings.Join(c.Mount, ";"),
+			Mount:    strings.Join(c.Mount, ","),
 			Stage:    JobStageTest,
 			Title:    strings.Join(c.Parsed.Script, " "),
 			Commands: c.generateCommands(),
@@ -147,7 +147,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 		job := &JobConfig{
 			Image:    c.Parsed.Image,
 			Env:      c.Env,
-			Mount:    strings.Join(c.Mount, ";"),
+			Mount:    strings.Join(c.Mount, ","),
 			Stage:    JobStageDeploy,
 			Title:    strings.Join(c.Parsed.Deploy, " "),
 			Commands: c.generateDeployCommands(),

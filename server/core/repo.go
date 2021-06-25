@@ -20,6 +20,7 @@ type (
 		FullName      string        `gorm:"not null;size:255" json:"fullName"`
 		Private       bool          `json:"private"`
 		Fork          bool          `json:"fork"`
+		UseSSH        bool          `gorm:"default:false" json:"useSSH"`
 		URL           string        `json:"url"`
 		Clone         string        `json:"clone"`
 		CloneSSH      string        `json:"cloneSSH"`
@@ -27,6 +28,7 @@ type (
 		Active        bool          `json:"active"`
 		Timeout       uint          `gorm:"not null,default:3600"  json:"timeout"`
 		Token         string        `gorm:"not null" json:"token"`
+		SSHPrivateKey string        `sql:"type:text" json:"-"`
 		UserID        uint          `json:"userID"`
 		User          User          `json:"-"`
 		ProviderID    uint          `gorm:"not null" json:"providerID"`
@@ -90,6 +92,12 @@ type (
 
 		// DeleteHooks deletes all related webhooks for specified repository
 		DeleteHooks(uint, uint) error
+
+		// SetMisc persists miscellaneous settings to the repo datastore.
+		SetMisc(id uint, useSSH bool) error
+
+		// UpdateSSHPrivateKey perstsis ssh privat key to the repo datastore.
+		UpdateSSHPrivateKey(id uint, key string) error
 	}
 )
 

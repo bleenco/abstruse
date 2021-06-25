@@ -2,18 +2,45 @@ package git
 
 import (
 	"fmt"
+	"net"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	gitssh "github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	"golang.org/x/crypto/ssh"
 )
 
 // CloneRepository clones repository contents to specified path.
-func CloneRepository(url, ref, commit, token, dir string) error {
-	auth := &http.BasicAuth{
-		Username: "user",
-		Password: token,
+func CloneRepository(url, ref, commit, token, dir, sshURL string, sshKey []byte, useSSH bool) error {
+	var auth transport.AuthMethod
+	var err error
+
+	if token != "" && !useSSH {
+		auth = &http.BasicAuth{
+			Username: "user",
+			Password: token,
+		}
+	} else if useSSH {
+		url = sshURL
+
+		if sshKey != nil {
+			signer, err := ssh.ParsePrivateKey(sshKey)
+			if err != nil {
+				return err
+			}
+			auth = &gitssh.PublicKeys{
+				User:   "git",
+				Signer: signer,
+				HostKeyCallbackHelper: gitssh.HostKeyCallbackHelper{
+					HostKeyCallback: ssh.HostKeyCallback(func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+						return nil
+					}),
+				},
+			}
+		}
 	}
 
 	r, err := git.PlainClone(dir, false, &git.CloneOptions{

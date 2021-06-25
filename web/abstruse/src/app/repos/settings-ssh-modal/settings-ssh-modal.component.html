@@ -1,0 +1,51 @@
+<div class="modal-header">
+  <div class="header-title">
+    <h1>SSH Private Key</h1>
+    <h2></h2>
+  </div>
+  <span
+    class="icon close-icon is-action"
+    (click)="activeModal.dismiss(false)"
+    [class.events-none]="saving"
+  >
+    <i class="fas fa-times"></i>
+  </span>
+</div>
+<div class="modal-body">
+  <div class="notification is-red" *ngIf="error">
+    <i class="far fa-comment"></i>
+    <p>Error: {{ error }}</p>
+  </div>
+  <div class="field">
+    <label class="label">SSH Private Key</label>
+    <textarea
+      name="sshPrivateKey"
+      class="input"
+      placeholder="begins with -----BEGIN OPENSSH PRIVATE KEY-----"
+      autocomplete="off"
+      [(ngModel)]="sshPrivateKey"
+      [ngModelOptions]="{ standalone: true }"
+      (paste)="onPaste($event)"
+    ></textarea>
+    <span class="form-helper">
+      Your SSH Private Key, usually found in <code>~/.ssh/id_rsa</code>
+    </span>
+  </div>
+</div>
+<div class="modal-footer space-between">
+  <div class="align-center justify-start"></div>
+  <div class="align-center">
+    <button type="button" class="button" (click)="activeModal.close()" [disabled]="saving">
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="button is-green"
+      [disabled]="saving || !valid"
+      (click)="updateSSHPrivateKey()"
+    >
+      <span *ngIf="!saving">Save</span>
+      <span *ngIf="saving">Saving...</span>
+    </button>
+  </div>
+</div>

@@ -213,8 +213,22 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	defer os.RemoveAll(dir)
 	logch <- []byte(yellow("done\r\n"))
 
-	logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetUrl(), job.GetRef(), job.GetCommitSHA())))
-	if err := git.CloneRepository(job.GetUrl(), job.GetRef(), job.GetCommitSHA(), job.GetProviderToken(), dir); err != nil {
+	if !job.GetSshClone() {
+		logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetUrl(), job.GetRef(), job.GetCommitSHA())))
+	} else {
+		logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetSshURL(), job.GetRef(), job.GetCommitSHA())))
+	}
+
+	if err := git.CloneRepository(
+		job.GetUrl(),
+		job.GetRef(),
+		job.GetCommitSHA(),
+		job.GetProviderToken(),
+		dir,
+		job.GetSshURL(),
+		[]byte(job.GetSshPrivateKey()),
+		job.GetSshClone(),
+	); err != nil {
 		return err
 	}
 	logch <- []byte(yellow("done\r\n"))
@@ -234,9 +248,9 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	if !ok {
 		return nil
 	}
-	mountdirs := job.Mount
+
 	logch <- []byte(yellow(fmt.Sprintf("==> Starting container %s...\r\n", name)))
-	if err := docker.RunContainer(name, image, job, s.config, env, dir, logch, mountdirs); err != nil {
+	if err := docker.RunContainer(name, image, job, s.config, env, dir, logch, job.Mount); err != nil {
 		stream.Send(&pb.JobResp{Id: job.GetId(), Type: pb.JobResp_Done, Status: pb.JobResp_StatusFailing})
 		s.logger.Infof("job %d with name %s done with status failing", job.Id, name)
 		return err

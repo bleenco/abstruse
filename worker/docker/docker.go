@@ -55,7 +55,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 	cacheSaved := false
 
-	ExecCmd := func(command *api.Command) (string, error) {
+	execCmd := func(command *api.Command) (string, error) {
 		cmd := strings.Split(command.GetCommand(), " ")
 		str := yellow("\r==> " + strings.Join(cmd, " ") + "\r\n")
 		logch <- []byte(str)
@@ -138,7 +138,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			}
 		}
 
-		execID, err := ExecCmd(command)
+		execID, err := execCmd(command)
 		if err != nil {
 			logch <- []byte(err.Error())
 			return err
@@ -152,7 +152,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 		if exitCode != 0 {
 			if failureCmd != nil {
 				logch <- []byte(red("==> Starting after_failure script...\n"))
-				if _, err := ExecCmd(failureCmd); err != nil {
+				if _, err := execCmd(failureCmd); err != nil {
 					logch <- []byte(err.Error())
 				}
 			}
@@ -164,7 +164,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	if exitCode == 0 {
 		if successCmd != nil {
 			logch <- []byte(green("==> Starting after_success script...\n"))
-			if _, err := ExecCmd(successCmd); err != nil {
+			if _, err := execCmd(successCmd); err != nil {
 				logch <- []byte(err.Error())
 			}
 		}
@@ -257,8 +257,8 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 			Source: m[0],
 			Target: m[1],
 		})
-
 	}
+
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
 		Cmd:        cmd,

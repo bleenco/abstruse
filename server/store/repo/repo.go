@@ -258,3 +258,21 @@ func filterHooks(hooks []*scm.Hook, provider core.Provider) []*scm.Hook {
 
 	return webhooks
 }
+
+func (s repositoryStore) SetMisc(id uint, useSSH bool) error {
+	var repo core.Repository
+	if s.db.Where("id = ?", id).First(&repo).RecordNotFound() {
+		return fmt.Errorf("repository not found")
+	}
+
+	return s.db.Model(&repo).Update("useSSH", useSSH).Error
+}
+
+func (s repositoryStore) UpdateSSHPrivateKey(id uint, key string) error {
+	var repo core.Repository
+	if s.db.Where("id = ?", id).First(&repo).RecordNotFound() {
+		return fmt.Errorf("repository not found")
+	}
+
+	return s.db.Model(&repo).Update("ssh_private_key", key).Error
+}

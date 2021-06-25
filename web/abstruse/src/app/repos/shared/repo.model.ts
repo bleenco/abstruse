@@ -17,6 +17,7 @@ export class Repo {
     public token?: string,
     public userID?: number,
     public providerID?: number,
+    public useSSH?: boolean,
     public createdAt?: Date,
     public updatedAt?: Date,
     public perms?: Perms
@@ -42,6 +43,7 @@ export function generateRepoModel(data: any): Repo {
     data.token,
     Number(data.userID),
     Number(data.providerID),
+    Boolean(data.useSSH),
     new Date(data.createdAt ? data.createdAt : null),
     new Date(data.updatedAt ? data.updatedAt : null),
     data.perms || { read: false, write: false, exec: false }
