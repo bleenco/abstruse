@@ -14,6 +14,8 @@ import { SettingsEnvsComponent } from './settings-envs/settings-envs.component';
 import { SettingsEnvModalComponent } from './settings-env-modal/settings-env-modal.component';
 import { SettingsMountComponent } from './settings-mount/settings-mount.component';
 import { SettingsMountModalComponent } from './settings-mount-modal/settings-mount-modal.component';
+import { SettingsSshComponent } from './settings-ssh/settings-ssh.component';
+import { SettingsSshModalComponent } from './settings-ssh-modal/settings-ssh-modal.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { SettingsMountModalComponent } from './settings-mount-modal/settings-mou
     SettingsEnvsComponent,
     SettingsEnvModalComponent,
     SettingsMountComponent,
-    SettingsMountModalComponent
+    SettingsMountModalComponent,
+    SettingsSshComponent,
+    SettingsSshModalComponent
   ],
   imports: [CommonModule, ReposRoutingModule, SharedModule, BuildsCommonModule]
 })

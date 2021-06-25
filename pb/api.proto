@@ -65,6 +65,9 @@ message Job {
   repeated EnvVariable env = 17;
   repeated string cache = 18;
   repeated string mount = 19;
+  string sshURL = 20;
+  string sshPrivateKey = 21;
+  bool sshClone = 22;
 }
 
 message Command {

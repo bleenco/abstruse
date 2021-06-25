@@ -171,10 +171,12 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 		RepositoryID:    repo.ID,
 		StartTime:       lib.TimeNow(),
 	}
+
 	var mnts []string
-	for m := range repo.Mounts {
-		mnts = append(mnts, repo.Mounts[m].Host+":"+repo.Mounts[m].Container)
+	for _, mount := range repo.Mounts {
+		mnts = append(mnts, fmt.Sprintf("%s:%s", mount.Host, mount.Container))
 	}
+
 	parser := parser.NewConfigParser(string(content.Data), base.Target, parser.GenerateGlobalEnv(build), mnts)
 	pjobs, err := parser.Parse()
 	if err != nil {
@@ -202,7 +204,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 			Env:      j.Title,
 			Stage:    j.Stage,
 			BuildID:  build.ID,
-			Mount:    strings.Join(mnts, ";"),
+			Mount:    strings.Join(mnts, ","),
 			Cache:    strings.Join(j.Cache, ","),
 		}
 		if err := s.jobs.Create(job); err != nil {
@@ -250,7 +252,6 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 	if sha == "" {
 		commit, err := scm.LastCommit(repo.FullName, branch)
 		if err != nil {
-			fmt.Println("last commit")
 			return nil, err
 		}
 		sha = commit.Sha
@@ -293,10 +294,12 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 	}
 
 	build.Config = content
+
 	var mnts []string
-	for m := range repo.Mounts {
-		mnts = append(mnts, repo.Mounts[m].Host+":"+repo.Mounts[m].Container)
+	for _, mount := range repo.Mounts {
+		mnts = append(mnts, fmt.Sprintf("%s:%s", mount.Host, mount.Container))
 	}
+
 	parser := parser.NewConfigParser(content, branch, parser.GenerateGlobalEnv(build), mnts)
 	pjobs, err := parser.Parse()
 	if err != nil {
@@ -325,7 +328,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 			Image:    j.Image,
 			Commands: string(commands),
 			Env:      j.Title,
-			Mount:    strings.Join(mnts, ";"),
+			Mount:    strings.Join(mnts, ","),
 			Stage:    j.Stage,
 			BuildID:  build.ID,
 			Cache:    strings.Join(j.Cache, ","),

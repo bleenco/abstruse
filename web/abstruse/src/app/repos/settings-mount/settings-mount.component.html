@@ -7,17 +7,21 @@
   </div>
 </div>
 
-<div class="notification is-small">
-  <i class="fas fa-bars"></i>
-  <p>
-    Here you can define mount points to be accessible inside job containers. Mount Host points
-    should exists on workers host machine or they are skipped while mounting. Common case for
-    mounting is <code>/var/run/docker.sock</code> for example.
-  </p>
+<div class="align-center mb10">
+  <div class="notification is-small">
+    <i class="fas fa-bars"></i>
+    <p>
+      Here you can define mount points to be accessible inside job containers. Mount Host points
+      should exists on workers host machine or they are skipped while mounting. Common case for
+      mounting is <code>/var/run/docker.sock</code> for example.
+    </p>
+  </div>
 </div>
 
-<div class="notification is-small" *ngIf="!mounts.length">
-  <p>No mount directories found.</p>
+<div class="align-center mb10" *ngIf="!mounts.length">
+  <div class="notification is-small">
+    <p>No mount directories found.</p>
+  </div>
 </div>
 
 <div class="mount-variable-list" *ngIf="mounts.length">

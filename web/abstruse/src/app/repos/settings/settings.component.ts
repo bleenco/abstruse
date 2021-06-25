@@ -60,6 +60,7 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.id = Number(this.route.parent?.snapshot.paramMap.get('id'));
+
     this.reposService.repoSubject
       .pipe(
         filter(r => !!r),
@@ -69,7 +70,8 @@ export class SettingsComponent implements OnInit {
         this.repo = repo as Repo;
         this.branch = repo?.defaultBranch as string;
       });
-    this.findHooks();
+
+    // this.findHooks();
   }
 
   copyTextToClipboard(text: string): void {

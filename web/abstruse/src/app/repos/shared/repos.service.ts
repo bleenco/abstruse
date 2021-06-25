@@ -142,4 +142,18 @@ export class ReposService {
       switchMap(repo => this.http.delete<void>(`/repos/${repo?.id}/mounts/${mount.id}`))
     );
   }
+
+  updateMisc(data: { useSSH: boolean }): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/misc`, data))
+    );
+  }
+
+  updateSSHPrivateKey(key: string): Observable<void> {
+    return this.repoSubject.pipe(
+      filter(repo => !!repo),
+      switchMap(repo => this.http.put<void>(`/repos/${repo?.id}/ssh-private-key`, { key }))
+    );
+  }
 }

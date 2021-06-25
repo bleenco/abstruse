@@ -1,0 +1,26 @@
+<div class="space-between align-center mb10">
+  <div>
+    <h4>SSH Settings</h4>
+  </div>
+  <div>
+    <button type="button" class="button is-small" (click)="openSSHPrivateKeyModal()">
+      Add or Update Private SSH Key
+    </button>
+  </div>
+</div>
+
+<div class="align-center mb10">
+  <div class="notification is-small is-red" [hidden]="!error">
+    <i class="far fa-comment-dots"></i>
+    <p>{{ error }}.</p>
+  </div>
+</div>
+
+<div class="align-center mb10" *ngIf="repo">
+  <app-checkbox
+    label="Use SSH for git clones"
+    [(ngModel)]="form.useSSH"
+    [ngModelOptions]="{ standalone: true }"
+    (ngModelChange)="updateMisc()"
+  ></app-checkbox>
+</div>
