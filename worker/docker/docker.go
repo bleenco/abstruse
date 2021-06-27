@@ -20,7 +20,7 @@ import (
 )
 
 // RunContainer runs container.
-func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte, mountdirs []string) error {
+func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte) error {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
@@ -29,14 +29,14 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	defer close(logch)
 	var shell string
 
-	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, mountdirs)
+	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, job.GetMount())
 	if err != nil {
 		logch <- []byte(err.Error())
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
-			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, mountdirs)
+			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, job.GetMount())
 			if err != nil {
 				logch <- []byte(err.Error())
 				return err
@@ -54,6 +54,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	containerID := resp.ID
 
 	cacheSaved := false
+	job.Cache = lib.DeleteEmpty(job.GetCache())
 
 	execCmd := func(command *api.Command) (string, error) {
 		cmd := strings.Split(command.GetCommand(), " ")
