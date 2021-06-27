@@ -46,3 +46,15 @@ func Map(vs []string, f func(string) string) []string {
 	}
 	return vsm
 }
+
+// DeleteEmpty returns a new slice containing all non-empty strings
+// in the original slice.
+func DeleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}
