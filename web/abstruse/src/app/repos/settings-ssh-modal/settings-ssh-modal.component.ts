@@ -23,7 +23,7 @@ export class SettingsSshModalComponent implements OnInit {
       this.sshPrivateKey !== '' &&
       this.sshPrivateKey.startsWith('-----BEGIN OPENSSH PRIVATE KEY-----') &&
       this.sshPrivateKey.endsWith('-----END OPENSSH PRIVATE KEY-----') &&
-      this.sshPrivateKey.length > 2000
+      this.sshPrivateKey.length > 100
     );
   }
 
