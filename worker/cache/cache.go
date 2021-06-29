@@ -33,7 +33,10 @@ func createArchive(folders []string, outPath string) error {
 	}
 	defer out.Close()
 
-	gw := gzip.NewWriter(out)
+	gw, err := gzip.NewWriterLevel(out, gzip.BestSpeed)
+	if err != nil {
+		return err
+	}
 	defer gw.Close()
 
 	tw := tar.NewWriter(gw)
