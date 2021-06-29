@@ -53,7 +53,6 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	exitCode := 0
 	containerID := resp.ID
 
-	cacheSaved := false
 	job.Cache = lib.DeleteEmpty(job.GetCache())
 
 	execCmd := func(command *api.Command) (string, error) {
@@ -92,6 +91,13 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 		commands = append(commands, command)
 	}
 
+	var cacheIndex int
+	for i, command := range commands {
+		if command.GetType() == api.Command_Install || command.GetType() == api.Command_Script {
+			cacheIndex = i
+		}
+	}
+
 	for i, command := range commands {
 		if !isContainerRunning(cli, containerID) {
 			if err := startContainer(cli, containerID); err != nil {
@@ -112,10 +118,14 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			}
 		}
 
-		// save cache.
-		if !cacheSaved && len(job.GetCache()) > 0 && command.GetType() == api.Command_Script {
-			cacheSaved = true
+		execID, err := execCmd(command)
+		if err != nil {
+			logch <- []byte(err.Error())
+			return err
+		}
 
+		// save cache.
+		if i == cacheIndex && len(job.GetCache()) > 0 {
 			logch <- []byte(yellow("\r==> Saving cache... "))
 			cacheFile, err := cache.SaveCache(job, dir)
 
@@ -139,16 +149,12 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			}
 		}
 
-		execID, err := execCmd(command)
-		if err != nil {
-			logch <- []byte(err.Error())
-			return err
-		}
 		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
 			logch <- []byte(err.Error())
 			return err
 		}
+
 		exitCode = inspect.ExitCode
 		if exitCode != 0 {
 			if failureCmd != nil {

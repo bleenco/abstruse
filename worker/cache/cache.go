@@ -14,7 +14,7 @@ import (
 )
 
 func SaveCache(job *api.Job, dir string) (string, error) {
-	fileName := strings.ReplaceAll(fmt.Sprintf("%s-%s.tgz", job.GetRepoName(), job.GetRef()), "/", "_")
+	fileName := strings.ReplaceAll(fmt.Sprintf("%s-%s.tgz", job.GetRepoName(), job.GetBranch()), "/", "_")
 	out := filepath.Join(dir, fileName)
 
 	if fs.Exists(out) {

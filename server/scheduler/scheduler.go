@@ -325,6 +325,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		ProviderToken: job.Build.Repository.Provider.AccessToken,
 		Ref:           job.Build.Ref,
 		CommitSHA:     job.Build.Commit,
+		Branch:        job.Build.Branch,
 		RepoName:      job.Build.Repository.FullName,
 		Action:        pb.Job_JobStart,
 		WorkerId:      worker.ID,
