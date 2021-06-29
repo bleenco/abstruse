@@ -29,6 +29,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jkuri/statik v0.3.0
 	github.com/jpillora/backoff v1.0.0
+	github.com/klauspost/pgzip v1.2.5
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mholt/archiver/v3 v3.5.0
 	github.com/mitchellh/go-homedir v1.1.0
