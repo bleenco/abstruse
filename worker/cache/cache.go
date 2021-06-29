@@ -2,7 +2,6 @@ package cache
 
 import (
 	"archive/tar"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"os"
@@ -11,6 +10,7 @@ import (
 
 	api "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/pkg/fs"
+	gzip "github.com/klauspost/pgzip"
 )
 
 func SaveCache(job *api.Job, dir string) (string, error) {

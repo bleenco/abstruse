@@ -124,6 +124,23 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			return err
 		}
 
+		inspect, err := cli.ContainerExecInspect(ctx, execID)
+		if err != nil {
+			logch <- []byte(err.Error())
+			return err
+		}
+
+		exitCode = inspect.ExitCode
+		if exitCode != 0 {
+			if failureCmd != nil {
+				logch <- []byte(red("==> Starting after_failure script...\n"))
+				if _, err := execCmd(failureCmd); err != nil {
+					logch <- []byte(err.Error())
+				}
+			}
+			break
+		}
+
 		// save cache.
 		if i == cacheIndex && len(job.GetCache()) > 0 {
 			logch <- []byte(yellow("\r==> Saving cache... "))
@@ -147,23 +164,6 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 				os.RemoveAll(cacheFile)
 			}
-		}
-
-		inspect, err := cli.ContainerExecInspect(ctx, execID)
-		if err != nil {
-			logch <- []byte(err.Error())
-			return err
-		}
-
-		exitCode = inspect.ExitCode
-		if exitCode != 0 {
-			if failureCmd != nil {
-				logch <- []byte(red("==> Starting after_failure script...\n"))
-				if _, err := execCmd(failureCmd); err != nil {
-					logch <- []byte(err.Error())
-				}
-			}
-			break
 		}
 	}
 
