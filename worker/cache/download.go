@@ -18,7 +18,7 @@ import (
 )
 
 func DownloadCache(config *config.Config, job *api.Job, dir string) (string, error) {
-	fileName := strings.ReplaceAll(fmt.Sprintf("%s-%s.tgz", job.GetRepoName(), job.GetRef()), "/", "_")
+	fileName := strings.ReplaceAll(fmt.Sprintf("%s-%s.tgz", job.GetRepoName(), job.GetBranch()), "/", "_")
 	outPath := filepath.Join(dir, fileName)
 
 	out, err := os.Create(outPath)
