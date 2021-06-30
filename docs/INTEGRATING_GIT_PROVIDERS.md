@@ -24,7 +24,7 @@ Go to **Abstruse** and navigate to the `Repositories` page and turn on the repos
 To add a webhook, login to GitHub and navigate to repository and then `Settings/Webhooks` 
 <br>![Webhook](https://user-images.githubusercontent.com/15204169/103622821-80585400-4f37-11eb-805a-0868c8017edb.png)
 Click on `Add webhook`
-<br>Under **Playload URL** add the URL to your **Abstruse** and attach the `/webhooks` path to it `https://demo.abstruse.io/webhooks`
+<br>Under **Payload URL** add the URL to your **Abstruse** and attach the `/webhooks` path to it `https://demo.abstruse.io/webhooks`
 <br>Under **Secret** paste the secret from the previous step
 <br>Under **Which events would you like to trigger this webhook?** select `Let me select individual events.` and check **Branch or tag creation, Branch or tag deletion**, **Pull requests** and **Pushes**
 <br>![Add Webhook](https://user-images.githubusercontent.com/15204169/103622732-64ed4900-4f37-11eb-90fa-eebfa17b6a4a.png) 
