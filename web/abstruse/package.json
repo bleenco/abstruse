@@ -3,8 +3,8 @@
   "version": "2.1.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --open --port 4400 --proxy-config ./proxy.conf.json",
-    "build": "ng build --configuration production --output-path ./dist",
+    "start": "NG_PERSISTENT_BUILD_CACHE=1 ng serve --open --port 4400 --proxy-config ./proxy.conf.json",
+    "build": "NG_PERSISTENT_BUILD_CACHE=1 ng build --configuration production --output-path ./dist",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
