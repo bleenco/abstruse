@@ -82,6 +82,7 @@ func CloneRepository(url, ref, commit, token, dir, sshURL string, sshKey []byte,
 
 	if err := w.Checkout(&git.CheckoutOptions{
 		Hash: plumbing.NewHash(commit),
+		Keep: true,
 	}); err != nil {
 		return err
 	}
