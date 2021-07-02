@@ -18,7 +18,7 @@ func GenerateGlobalEnv(build *core.Build) []string {
 	if build.PR == 0 {
 		envs["ABSTRUSE_PULL_REQUEST"] = "false"
 	} else {
-		envs["ABSTRUSE_PULL_REQUEST"] = "true"
+		envs["ABSTRUSE_PULL_REQUEST"] = fmt.Sprintf("%d", build.PR)
 	}
 
 	return toSlice(envs)
