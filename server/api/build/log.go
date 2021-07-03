@@ -46,8 +46,7 @@ func HandleLog(jobs core.JobStore, scheduler core.Scheduler) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		re := regexp.MustCompile(`(\[1;[0-9][0-9]m|\[0m|\x1b|\r)`)
-		log := re.ReplaceAllString(job.Log, "")
-		io.WriteString(w, log)
+		re := regexp.MustCompile("[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))")
+		io.WriteString(w, re.ReplaceAllString(job.Log, ""))
 	}
 }
