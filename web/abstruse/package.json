@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "NG_PERSISTENT_BUILD_CACHE=1 ng serve --open --port 4400 --proxy-config ./proxy.conf.json",
+    "prebuild": "mkdir -p ./dist",
     "build": "NG_PERSISTENT_BUILD_CACHE=1 ng build --configuration production --output-path ./dist",
     "test": "ng test",
     "lint": "ng lint",

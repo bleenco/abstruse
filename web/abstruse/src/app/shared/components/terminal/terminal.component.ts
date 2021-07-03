@@ -123,11 +123,12 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(public elementRef: ElementRef) {
     this.terminal = new Terminal({
+      rendererType: 'dom',
       convertEol: true,
-      allowTransparency: true,
       disableStdin: true,
       scrollback: 1000000,
       drawBoldTextInBrightColors: true,
+      fontSize: 13,
       fontWeight: 400,
       fontWeightBold: 700
     });
@@ -141,9 +142,6 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       'fontFamily',
       'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
     );
-    this.terminal.setOption('fontSize', 13);
-    this.terminal.setOption('fontWeight', 400);
-    this.terminal.setOption('fontWeightBold', 700);
     this.setTheme();
     this.fitAddon.fit();
     this.terminal.onData(() => this.fitAddon.fit());

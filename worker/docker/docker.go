@@ -31,14 +31,14 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, job.GetMount())
 	if err != nil {
-		logch <- []byte(err.Error())
+		logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
 			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, job.GetMount())
 			if err != nil {
-				logch <- []byte(err.Error())
+				logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 				return err
 			}
 			shell = "sh"
@@ -62,7 +62,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 		shcmd := []string{shell, "-ci", strings.Join(cmd, " ")}
 		conn, execID, err := exec(cli, containerID, shcmd, env)
 		if err != nil {
-			logch <- []byte(err.Error())
+			logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 			return "", err
 		}
 		for {
@@ -101,7 +101,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	for i, command := range commands {
 		if !isContainerRunning(cli, containerID) {
 			if err := startContainer(cli, containerID); err != nil {
-				logch <- []byte(err.Error())
+				logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 				return err
 			}
 		}
@@ -120,13 +120,13 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 		execID, err := execCmd(command)
 		if err != nil {
-			logch <- []byte(err.Error())
+			logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 			return err
 		}
 
 		inspect, err := cli.ContainerExecInspect(ctx, execID)
 		if err != nil {
-			logch <- []byte(err.Error())
+			logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 			return err
 		}
 
@@ -135,7 +135,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 			if failureCmd != nil {
 				logch <- []byte(red("==> Starting after_failure script...\n"))
 				if _, err := execCmd(failureCmd); err != nil {
-					logch <- []byte(err.Error())
+					logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 				}
 			}
 			break
