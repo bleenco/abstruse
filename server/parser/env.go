@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bleenco/abstruse/server/core"
 )
@@ -19,6 +20,12 @@ func GenerateGlobalEnv(build *core.Build) []string {
 		envs["ABSTRUSE_PULL_REQUEST"] = "false"
 	} else {
 		envs["ABSTRUSE_PULL_REQUEST"] = fmt.Sprintf("%d", build.PR)
+	}
+
+	if strings.HasPrefix(build.Ref, "refs/tags/") {
+		envs["ABSTRUSE_TAG"] = strings.TrimPrefix(build.Ref, "refs/tags/")
+	} else {
+		envs["ABSTRUSE_TAG"] = "false"
 	}
 
 	return toSlice(envs)
