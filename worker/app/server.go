@@ -201,7 +201,7 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 	image := job.Image
 
 	var env []string
-	for _, e := range job.Env {
+	for _, e := range job.GetEnv() {
 		env = append(env, fmt.Sprintf("%s=%s", e.Key, e.Value))
 	}
 
@@ -235,7 +235,7 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 
 	logch <- []byte(yellow(fmt.Sprintf("==> Pulling image %s... ", image)))
 	if err := docker.PullImage(image, s.config.Registry); err != nil {
-		logch <- []byte(err.Error())
+		logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 	} else {
 		logch <- []byte(yellow("done\r\n"))
 	}

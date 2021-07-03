@@ -201,7 +201,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 		job := &core.Job{
 			Image:    j.Image,
 			Commands: string(commands),
-			Env:      j.Title,
+			Env:      strings.Join(j.Env, " "),
 			Stage:    j.Stage,
 			BuildID:  build.ID,
 			Mount:    strings.Join(mnts, ","),
@@ -327,7 +327,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 		job := &core.Job{
 			Image:    j.Image,
 			Commands: string(commands),
-			Env:      j.Title,
+			Env:      strings.Join(j.Env, " "),
 			Mount:    strings.Join(mnts, ","),
 			Stage:    j.Stage,
 			BuildID:  build.ID,

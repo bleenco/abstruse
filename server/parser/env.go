@@ -13,7 +13,6 @@ func GenerateGlobalEnv(build *core.Build) []string {
 
 	envs["ABSTRUSE_REF"] = build.Ref
 	envs["ABSTRUSE_BRANCH"] = build.Branch
-	envs["ABSTRUSE_BUILD_ID"] = fmt.Sprintf("%d", build.ID)
 	envs["ABSTRUSE_COMMIT"] = build.Commit
 
 	if build.PR == 0 {

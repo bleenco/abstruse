@@ -94,7 +94,6 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 	if len(c.Parsed.Matrix) > 0 {
 		for _, item := range c.Parsed.Matrix {
 			job := &JobConfig{}
-			job.Env = append(job.Env, c.Env...)
 
 			// set image
 			if item.Image != "" {

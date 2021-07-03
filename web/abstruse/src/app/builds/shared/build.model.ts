@@ -135,6 +135,17 @@ export class Job {
     });
   }
 
+  get command(): string {
+    return (
+      (this.env !== '' &&
+        this.env
+          .split(' ')
+          .filter(e => !e.startsWith('ABSTRUSE_'))
+          .join(' ')) ||
+      ''
+    );
+  }
+
   get getTimeRunning(): { millis: number; time: string } {
     if (!this.startTime) {
       return { millis: 0, time: '00:00' };
