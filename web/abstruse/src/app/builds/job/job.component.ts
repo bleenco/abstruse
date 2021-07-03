@@ -8,6 +8,9 @@ import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
 import { AuthService } from 'src/app/auth/shared/auth.service';
+import { TerminalTheme } from 'src/app/shared/components/terminal/terminal.component';
+
+const THEME_KEY = 'abstruse-console-theme';
 
 @UntilDestroy()
 @Component({
@@ -23,12 +26,10 @@ export class JobComponent implements OnInit, OnDestroy {
   processing = false;
   sub: Subscription = new Subscription();
   error: string | null = null;
+  theme: TerminalTheme;
 
   get logURL(): string {
-    return [
-      `/api/v1/builds/job/${this.jobID}/log`,
-      this.authService.token || ''
-    ].join('?token=');
+    return [`/api/v1/builds/job/${this.jobID}/log`, this.authService.token || ''].join('?token=');
   }
 
   constructor(
@@ -36,7 +37,12 @@ export class JobComponent implements OnInit, OnDestroy {
     private buildsService: BuildsService,
     private dataService: DataService,
     private authService: AuthService
-  ) {}
+  ) {
+    if (!localStorage.getItem(THEME_KEY)) {
+      localStorage.setItem(THEME_KEY, 'light');
+    }
+    this.theme = localStorage.getItem(THEME_KEY) as TerminalTheme;
+  }
 
   ngOnInit(): void {
     this.jobID = Number(this.route.snapshot.paramMap.get('jobid'));
@@ -57,6 +63,12 @@ export class JobComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.dataService.unsubscribeAll();
+  }
+
+  changeTheme(): void {
+    const curr = localStorage.getItem(THEME_KEY) as TerminalTheme;
+    this.theme = curr === 'light' ? 'dark' : 'light';
+    localStorage.setItem(THEME_KEY, this.theme);
   }
 
   findJob(): void {

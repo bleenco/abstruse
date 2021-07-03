@@ -143,9 +143,20 @@
     </div>
 
     <div class="column is-12" *ngIf="job && !fetching">
+      <div class="align-center justify-end mb20 pl20 pr20">
+        <div class="console-link" (click)="changeTheme()">
+          <i class="fas fa-moon" *ngIf="theme === 'dark'"></i>
+          <span *ngIf="theme === 'dark'">Dark Theme</span>
+          <i class="far fa-moon" *ngIf="theme === 'light'"></i>
+          <span *ngIf="theme === 'light'">Light Theme</span>
+        </div>
+        <a class="console-link" [href]="logURL" target="_blank">
+          <i class="far fa-file-alt"></i>
+          <span>Raw Log</span>
+        </a>
+      </div>
       <div class="console-output">
-        <app-terminal [data]="job!.log"></app-terminal>
-        <a class="raw-log-link" [href]="logURL" target="_blank">View Raw Log</a>
+        <app-terminal [data]="job!.log" [theme]="theme"></app-terminal>
       </div>
     </div>
   </div>
