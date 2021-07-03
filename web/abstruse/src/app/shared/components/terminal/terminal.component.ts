@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ITheme, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { WebglAddon } from 'xterm-addon-webgl';
 
 export type TerminalTheme = 'light' | 'dark';
 
@@ -72,58 +73,11 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   terminal: Terminal;
   fitAddon: FitAddon;
-
-  themeLight: ITheme = {
-    foreground: '#615f51',
-    background: '#ffffff',
-    black: '#050505',
-    red: '#b0263f',
-    green: '#4b862c',
-    yellow: '#d69e2e',
-    blue: '#3b62d9',
-    magenta: '#a431c4',
-    cyan: '#178262',
-    white: '#fbf1bc',
-    brightBlack: '#0e0e0c',
-    brightRed: '#b72424',
-    brightGreen: '#4b862c',
-    brightYellow: '#d69e2e',
-    brightBlue: '#3b62d9',
-    brightMagenta: '#a431c4',
-    brightCyan: '#178262',
-    brightWhite: '#fbf1bc',
-    cursor: 'rgba(0, 0, 0, 0)',
-    cursorAccent: 'rgba(0, 0, 0, 0)',
-    selection: 'rgba(0, 0, 0, 0)'
-  };
-
-  themeDark: ITheme = {
-    foreground: 'hsl(220, 14%, 71%)',
-    background: '#2f3136',
-    black: '#000',
-    red: '#be5046',
-    green: '#98c379',
-    yellow: '#e6c07b',
-    blue: '#61aeee',
-    magenta: '#c678dd',
-    cyan: '#56b6c2',
-    white: '#ffffff',
-    brightBlack: '#666666',
-    brightRed: '#e06c75',
-    brightGreen: '#98c379',
-    brightYellow: '#e6c07b',
-    brightBlue: '#61aeee',
-    brightMagenta: '#c678dd',
-    brightCyan: '#56b6c2',
-    brightWhite: '#ffffff',
-    cursor: 'rgba(0, 0, 0, 0)',
-    cursorAccent: 'rgba(0, 0, 0, 0)',
-    selection: 'rgba(0, 0, 0, 0)'
-  };
+  webglAddon: WebglAddon;
 
   constructor(public elementRef: ElementRef) {
     this.terminal = new Terminal({
-      rendererType: 'dom',
+      rendererType: 'canvas',
       convertEol: true,
       disableStdin: true,
       scrollback: 1000000,
@@ -133,17 +87,29 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       fontWeightBold: 700
     });
     this.fitAddon = new FitAddon();
-    this.terminal.loadAddon(this.fitAddon);
+    this.webglAddon = new WebglAddon();
   }
 
   ngOnInit(): void {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
+    this.terminal.loadAddon(this.fitAddon);
+
+    try {
+      this.terminal.loadAddon(this.webglAddon);
+      this.webglAddon.onContextLoss(() => this.webglAddon.dispose());
+    } catch (e) {
+      this.terminal.setOption('rendererType', 'dom');
+      this.terminal.setOption('fontSize', 12);
+    }
+
     this.terminal.setOption(
       'fontFamily',
       'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
     );
     this.setTheme();
+
     this.fitAddon.fit();
+
     this.terminal.onData(() => this.fitAddon.fit());
     this.terminal.onResize(() => this.fitAddon.fit());
     this.terminal.onLineFeed(() => this.fitAddon.fit());
