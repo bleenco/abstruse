@@ -170,9 +170,9 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	logch <- []byte(genExitMessage(exitCode))
 	if exitCode == 0 {
 		if successCmd != nil {
-			logch <- []byte(green("==> Starting after_success script...\n"))
+			logch <- []byte(green("\r==> Starting after_success script...\r\n"))
 			if _, err := execCmd(successCmd); err != nil {
-				logch <- []byte(err.Error())
+				logch <- []byte(red(err.Error()))
 			}
 		}
 		return nil
