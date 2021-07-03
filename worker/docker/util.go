@@ -8,9 +8,9 @@ import (
 
 func genExitMessage(code int) string {
 	if code == 0 {
-		return green(fmt.Sprintf("\nExit code: %d", code))
+		return green(fmt.Sprintf("\nExit code: %d\r\n", code))
 	}
-	return red(fmt.Sprintf("\nExit code: %d", code))
+	return red(fmt.Sprintf("\nExit code: %d\r\n", code))
 }
 
 func green(str string) string {
