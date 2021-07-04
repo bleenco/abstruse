@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { ITheme, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { WebglAddon } from 'xterm-addon-webgl';
 
 export type TerminalTheme = 'light' | 'dark';
 
@@ -73,7 +72,6 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   terminal: Terminal;
   fitAddon: FitAddon;
-  webglAddon: WebglAddon;
 
   constructor(public elementRef: ElementRef) {
     this.terminal = new Terminal({
@@ -84,30 +82,19 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       drawBoldTextInBrightColors: true,
       fontSize: 13,
       fontWeight: 400,
-      fontWeightBold: 700
+      fontWeightBold: 700,
+      allowTransparency: true,
+      fontFamily:
+        'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
     });
     this.fitAddon = new FitAddon();
-    this.webglAddon = new WebglAddon();
   }
 
   ngOnInit(): void {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
     this.terminal.loadAddon(this.fitAddon);
 
-    try {
-      this.terminal.loadAddon(this.webglAddon);
-      this.webglAddon.onContextLoss(() => this.webglAddon.dispose());
-    } catch (e) {
-      this.terminal.setOption('rendererType', 'dom');
-      this.terminal.setOption('fontSize', 12);
-    }
-
-    this.terminal.setOption(
-      'fontFamily',
-      'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
-    );
     this.setTheme();
-
     this.fitAddon.fit();
 
     this.terminal.onData(() => this.fitAddon.fit());
