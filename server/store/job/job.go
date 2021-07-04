@@ -51,6 +51,18 @@ func (s jobStore) Create(job *core.Job) error {
 
 func (s jobStore) Update(job *core.Job) error {
 	log := []byte(job.Log)
+
+	err := s.db.Model(job).Updates(map[string]interface{}{
+		"status":     job.Status,
+		"start_time": job.StartTime,
+		"end_time":   job.EndTime,
+		"log":        job.Log,
+	}).Error
+
+	if err == nil {
+		return nil
+	}
+
 	if len(log) > 65535 {
 		log = log[len(log)-65535:]
 		job.Log = string(log)
