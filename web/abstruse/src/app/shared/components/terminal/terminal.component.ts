@@ -24,7 +24,7 @@ const themes: { [key: string]: ITheme } = {
     blue: '#3b62d9',
     magenta: '#a431c4',
     cyan: '#178262',
-    white: '#d69e2e',
+    white: '#615f51',
     brightBlack: '#0e0e0c',
     brightRed: '#b72424',
     brightGreen: '#4b862c',
@@ -32,7 +32,7 @@ const themes: { [key: string]: ITheme } = {
     brightBlue: '#3b62d9',
     brightMagenta: '#a431c4',
     brightCyan: '#178262',
-    brightWhite: '#d69e2e',
+    brightWhite: '#615f51',
     cursor: 'rgba(0, 0, 0, 0)',
     cursorAccent: 'rgba(0, 0, 0, 0)',
     selection: 'rgba(0, 0, 0, 0.1)'
@@ -122,9 +122,10 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
     if ('theme' in changes) {
       this.setTheme();
+      this.fitAddon.fit();
     }
 
-    if (!this.data) {
+    if (!changes.data || !this.data) {
       return;
     }
 
@@ -134,8 +135,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.terminal.write(this.data);
-    this.fitAddon.fit();
+    this.terminal.write(this.data, () => this.fitAddon.fit());
   }
 
   ngOnDestroy(): void {
