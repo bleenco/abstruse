@@ -13,7 +13,7 @@ type (
 		StartTime *time.Time `json:"startTime"`
 		EndTime   *time.Time `json:"endTime"`
 		Status    string     `gorm:"not null;size:20;default:'queued'" json:"status"` // queued | running | passing | failing
-		Log       string     `gorm:"size:16777216" json:"-"`
+		Log       string     `gorm:"size:16777216" json:"-" sql:"type:longtext"`
 		Stage     string     `json:"stage"`
 		Cache     string     `json:"cache"`
 		Build     *Build     `gorm:"preload:false" json:"build,omitempty"`
