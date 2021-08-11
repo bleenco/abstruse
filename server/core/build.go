@@ -16,7 +16,7 @@ type (
 		ID              uint        `gorm:"primary_key;auto_increment;not null" json:"id"`
 		Branch          string      `json:"branch"`
 		Commit          string      `json:"commit"`
-		CommitMessage   string      `json:"commitMessage"`
+		CommitMessage   string      `json:"commitMessage" sql:"type:text"`
 		Ref             string      `gorm:"default:'refs/heads/master'" json:"ref"`
 		PR              int         `json:"pr"`
 		PRTitle         string      `json:"prTitle"`
