@@ -8,7 +8,7 @@ type (
 		ID        uint       `gorm:"primary_key;auto_increment;not null" json:"id"`
 		Commands  string     `sql:"type:text" json:"commands"`
 		Image     string     `json:"image"`
-		Env       string     `json:"env"`
+		Env       string     `json:"env" sql:"type:longtext"`
 		Mount     string     `json:"mount"`
 		StartTime *time.Time `json:"startTime"`
 		EndTime   *time.Time `json:"endTime"`
