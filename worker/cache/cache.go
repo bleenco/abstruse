@@ -45,12 +45,12 @@ func createArchive(folders []string, outPath string) error {
 	for _, folder := range folders {
 		folder = filepath.Join(filepath.Dir(outPath), folder)
 		if err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
-			if info.IsDir() {
-				return nil
-			}
-
 			if err != nil {
 				return err
+			}
+
+			if info.IsDir() {
+				return nil
 			}
 
 			link := ""
