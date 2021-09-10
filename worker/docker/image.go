@@ -84,14 +84,16 @@ func PushImage(tag string) (io.ReadCloser, error) {
 }
 
 // PullImage pulls image from the registry.
-func PullImage(image string, config *config.Registry) error {
+func PullImage(image string, platform string, config *config.Registry) error {
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts()
 	if err != nil {
 		panic(err)
 	}
 
-	opts := types.ImagePullOptions{}
+	opts := types.ImagePullOptions{
+		Platform: platform,
+	}
 
 	if cfg.Username != "" && cfg.Password != "" {
 		authConfig := types.AuthConfig{Username: cfg.Username, Password: cfg.Password}

@@ -36,6 +36,7 @@ require (
 	github.com/moby/term v0.0.0-20210610120745-9d4ed1856297 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/narqo/go-badge v0.0.0-20190124110329-d9415e4e1e9f
+	github.com/opencontainers/image-spec v1.0.1
 	github.com/shirou/gopsutil v3.20.10+incompatible
 	github.com/spf13/cobra v1.1.1
 	github.com/spf13/viper v1.7.0

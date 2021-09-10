@@ -333,6 +333,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		Mount:         strings.Split(job.Mount, ","),
 		SshPrivateKey: job.Build.Repository.SSHPrivateKey,
 		SshClone:      job.Build.Repository.UseSSH,
+		Platform:      job.Platform,
 	}
 
 	s.mu.Lock()
