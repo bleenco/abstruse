@@ -330,6 +330,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		Action:        pb.Job_JobStart,
 		WorkerId:      worker.ID,
 		Cache:         strings.Split(job.Cache, ","),
+		Archive:       strings.Split(job.Archive, ","),
 		Mount:         strings.Split(job.Mount, ","),
 		SshPrivateKey: job.Build.Repository.SSHPrivateKey,
 		SshClone:      job.Build.Repository.UseSSH,

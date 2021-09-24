@@ -12,6 +12,10 @@
     "target": "http://localhost",
     "secure": false
   },
+  "/archive": {
+    "target": "http://localhost",
+    "secure": false
+  },
   "/uploads": {
     "target": "http://localhost",
     "secure": false

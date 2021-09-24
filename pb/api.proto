@@ -69,6 +69,7 @@ message Job {
   string sshPrivateKey = 21;
   bool sshClone = 22;
   string branch = 23;
+  repeated string archive = 24;
 }
 
 message Command {

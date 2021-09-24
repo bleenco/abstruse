@@ -10,6 +10,7 @@ import (
 	api "github.com/bleenco/abstruse/pb"
 	"github.com/bleenco/abstruse/pkg/fs"
 	"github.com/bleenco/abstruse/pkg/lib"
+	"github.com/bleenco/abstruse/worker/archive"
 	"github.com/bleenco/abstruse/worker/cache"
 	"github.com/bleenco/abstruse/worker/config"
 	"github.com/docker/docker/api/types"
@@ -175,6 +176,32 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 				logch <- []byte(red(err.Error()))
 			}
 		}
+	}
+	// save archive.
+	if len(job.GetArchive()) > 0 {
+		logch <- []byte(yellow("\r==> Saving files to archive... "))
+		archiveFile, err := archive.SaveArchive(job, dir)
+
+		if err != nil {
+			logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
+		} else {
+			info, err := os.Stat(archiveFile)
+			if err != nil {
+				return err
+			}
+
+			logch <- []byte(yellow("done\r\n"))
+			logch <- []byte(yellow(fmt.Sprintf("\r==> Uploading archive (%s) to abstruse server... ", humanize.Bytes(uint64(info.Size())))))
+			if err := archive.UploadArchive(config, archiveFile); err != nil {
+				logch <- []byte(yellow(fmt.Sprintf("%s\r\n", err.Error())))
+			} else {
+				logch <- []byte(yellow("done\r\n"))
+			}
+
+			os.RemoveAll(archiveFile)
+		}
+	}
+	if exitCode == 0 {
 		return nil
 	}
 	return fmt.Errorf("errored: %d", exitCode)

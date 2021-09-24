@@ -16,6 +16,7 @@ type (
 		Log       string     `gorm:"size:16777216" json:"-"`
 		Stage     string     `json:"stage"`
 		Cache     string     `json:"cache"`
+		Archive   string     `json:"string"`
 		Build     *Build     `gorm:"preload:false" json:"build,omitempty"`
 		BuildID   uint       `json:"buildID"`
 		Timestamp
