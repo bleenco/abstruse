@@ -30,6 +30,9 @@ type (
 		// FindUser returns job by id and user id.
 		FindUser(uint, uint) (*Job, error)
 
+		// FindBuild return the jobs for a specific build id
+		FindBuild(uint) ([]Job, error)
+
 		// List returns jobs based bu from and to dates.
 		List(time.Time, time.Time) ([]*Job, error)
 

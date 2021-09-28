@@ -4,7 +4,7 @@
   "dataGroups": [
     {
       "name": "api",
-      "urls": ["/api", "/badge", "/uploads"],
+      "urls": ["/api", "/badge", "/uploads", "/archive"],
       "cacheConfig": {
         "maxSize": 0,
         "maxAge": "0u",

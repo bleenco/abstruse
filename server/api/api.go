@@ -111,8 +111,8 @@ func (r Router) Handler() http.Handler {
 	router.Use(cors.Handler)
 	router.Mount("/api/v1", r.apiRouter())
 
-	router.Get("/archive/{id}/", build.HandleArchive(r.Jobs, r.Config))
-
+	router.Mount("/archive/{id}/", build.HandleArchive(r.Jobs, r.Config))
+	router.Mount("/archive/{username}/{repo}/{branch}/{buildid}/{pull}/{platform}/{matrixid}", build.HandleArchiveRedirect(r.Jobs, r.Repos, r.Builds, r.Config))
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
 	router.Get("/badge/{token}", badge.HandleBadge(r.Builds))
 	router.Mount("/uploads", r.fileServer())
