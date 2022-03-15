@@ -50,6 +50,10 @@ export class Worker {
     return `${curr} / ${max}`;
   }
 
+  get getHostnameOrAddress(): string {
+    return this.hostname || this.addr ;
+  }
+
   updateUsage(data: { cpu: number; mem: number; jobsMax: number; jobsRunning: number }): void {
     this.cpu[0].push({ value: data.cpu, date: new Date() });
     this.memory[0].push({ value: data.mem, date: new Date() });
