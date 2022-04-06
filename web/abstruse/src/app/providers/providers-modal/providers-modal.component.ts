@@ -19,6 +19,7 @@ export class ProvidersModalComponent implements OnInit {
     { value: 'github', placeholder: 'GitHub' },
     { value: 'gitlab', placeholder: 'GitLab' },
     { value: 'bitbucket', placeholder: 'Bitbucket' },
+    { value: 'stash', placeholder: 'Bitbucket Enterprise' },
     { value: 'gitea', placeholder: 'Gitea' },
     { value: 'gogs', placeholder: 'Gogs' }
   ];
