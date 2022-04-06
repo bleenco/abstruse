@@ -14,14 +14,14 @@ import (
 )
 
 // CloneRepository clones repository contents to specified path.
-func CloneRepository(url, ref, commit, token, dir, sshURL string, sshKey []byte, useSSH bool) error {
+func CloneRepository(url, ref, commit, user, pass, dir, sshURL string, sshKey []byte, useSSH bool) error {
 	var auth transport.AuthMethod
 	var err error
 
-	if token != "" && !useSSH {
+	if pass != "" && !useSSH {
 		auth = &http.BasicAuth{
-			Username: "user",
-			Password: token,
+			Username: user,
+			Password: pass,
 		}
 	} else if useSSH {
 		url = sshURL

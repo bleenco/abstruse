@@ -52,6 +52,30 @@
       </span>
     </div>
     <div class="field">
+      <label class="label">Http Basic auth</label>
+      <input
+        type="text"
+        name="httpuser"
+        class="input"
+        placeholder="Http username for clone"
+        formControlName="httpUser"
+        autocomplete="off"
+        style="display: inline;box-sizing: border-box;width: calc(50% - 2px);"
+      />
+      <input
+        type="text"
+        name="httppass"
+        class="input"
+        placeholder="Http password for clone"
+        formControlName="httpPass"
+        autocomplete="off"
+        style="display: inline;box-sizing: border-box;width: calc(50% - 2px);"
+      />
+      <span class="form-helper">
+        Basic auth for clone operations via HTTP
+      </span>
+    </div>
+    <div class="field">
       <label class="label">Access Token</label>
       <input
         type="text"

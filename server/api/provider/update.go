@@ -20,6 +20,8 @@ func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.Handl
 		Host        string `json:"host" valid:"url,required"`
 		AccessToken string `json:"accessToken"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
+		HttpUser    string `json:"HttpUser"`
+		HttpPass    string `json:"HttpPass"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -52,12 +54,14 @@ func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.Handl
 
 		if p.UserID == claims.ID || user.Role == "admin" {
 			provider := &core.Provider{
-				ID:     f.ID,
-				Name:   f.Name,
-				URL:    f.URL,
-				Host:   f.Host,
-				Secret: f.Secret,
-				UserID: claims.ID,
+				ID:       f.ID,
+				Name:     f.Name,
+				URL:      f.URL,
+				Host:     f.Host,
+				Secret:   f.Secret,
+				UserID:   claims.ID,
+				HttpUser: f.HttpUser,
+				HttpPass: f.HttpPass,
 			}
 
 			if f.AccessToken != "" {

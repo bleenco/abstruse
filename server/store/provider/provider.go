@@ -44,7 +44,10 @@ func (s providerStore) Create(provider *core.Provider) error {
 }
 
 func (s providerStore) Update(provider *core.Provider) error {
-	return s.db.Model(provider).Updates(&provider).Error
+	updateHttp := make(map[string]interface{})
+	updateHttp["HttpUser"] = provider.HttpUser
+	updateHttp["HttpPass"] = provider.HttpPass
+	return s.db.Model(provider).Updates(updateHttp).Updates(&provider).Error
 }
 
 func (s providerStore) Delete(provider *core.Provider) error {

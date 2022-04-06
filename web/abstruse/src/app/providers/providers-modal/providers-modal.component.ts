@@ -46,12 +46,16 @@ export class ProvidersModalComponent implements OnInit {
 
     this.error = null;
     this.saving = true;
+    console.log('im here');
+    console.log(this.form.controls);
     let data: any = {
       name: this.form.controls.name.value,
       url: this.form.controls.url.value,
       host: this.form.controls.host.value,
       accessToken: this.form.controls.accessToken.value,
-      secret: this.form.controls.secret.value
+      secret: this.form.controls.secret.value,
+      httpUser: this.form.controls.httpUser.value,
+      httpPass: this.form.controls.httpPass.value
     };
     if (this.provider && this.provider.id) {
       data = { ...data, ...{ id: this.provider.id } };
@@ -141,7 +145,9 @@ export class ProvidersModalComponent implements OnInit {
         [Validators.required]
       ],
       accessToken: [(this.provider && this.provider.accessToken) || null],
-      secret: [(this.provider && this.provider.secret) || null, [Validators.required]]
+      secret: [(this.provider && this.provider.secret) || null, [Validators.required]],
+      httpUser: [(this.provider && this.provider.HttpUser) || null],
+      httpPass: [(this.provider && this.provider.HttpPass) || null]
     });
   }
 }
