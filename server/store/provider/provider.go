@@ -104,6 +104,16 @@ func (s providerStore) findRepos(id uint, page, size int) ([]*scm.Repository, er
 	if err != nil {
 		return repos, err
 	}
+
+	// git-scm does not work correctly with Stash pagination.
+	// Opened issue https://github.com/drone/go-scm/issues/166
+	// See https://docs.atlassian.com/bitbucket-server/rest/5.16.0/bitbucket-rest.html
+	//> Identifiers of adjacent objects in a page may not be contiguous,
+	//> so the start of the next page is not necessarily the start of the last page plus the last page's size.
+	//> A client should always use nextPageStart to avoid unexpected results from a paged API.
+	if provider.Name == "stash" {
+		size = 1000
+	}
 	repos, err = gitscm.ListRepos(page, size)
 
 	// Some providers like Stash don't return perms in ListRepos response
