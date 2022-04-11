@@ -252,6 +252,21 @@ func filterHooks(hooks []*scm.Hook, provider core.Provider) []*scm.Hook {
 	for _, hook := range hooks {
 		url, _ := url.Parse(hook.Target)
 		if strings.HasPrefix(hook.Target, provider.Host) && strings.HasSuffix(url.Path, "/webhooks") {
+			if provider.Name == "stash" {
+				stashMap := map[string]string{
+					"pr:merged":         "pull_request",
+					"pr:modified":       "pull_request",
+					"pr:opened":         "pull_request",
+					"repo:refs_changed": "push",
+				}
+				mappedEvents := make([]string, 0)
+				for _, event := range hook.Events {
+					if stashMap[event] != "" {
+						mappedEvents = append(mappedEvents, stashMap[event])
+					}
+				}
+				hook.Events = mappedEvents
+			}
 			webhooks = append(webhooks, hook)
 		}
 	}

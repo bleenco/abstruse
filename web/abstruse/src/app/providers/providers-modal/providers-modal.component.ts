@@ -46,8 +46,6 @@ export class ProvidersModalComponent implements OnInit {
 
     this.error = null;
     this.saving = true;
-    console.log('im here');
-    console.log(this.form.controls);
     let data: any = {
       name: this.form.controls.name.value,
       url: this.form.controls.url.value,
