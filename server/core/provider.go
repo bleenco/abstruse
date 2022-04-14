@@ -13,8 +13,8 @@ type (
 		Name        string     `gorm:"not null" json:"name"`
 		URL         string     `gorm:"not null" json:"url"`
 		AccessToken string     `gorm:"not null" json:"-"`
-		HttpUser    string     `json:"HttpUser"`
-		HttpPass    string     `json:"HttpPass"`
+		HttpUser    string     `json:"httpUser"`
+		HttpPass    string     `json:"httpPass"`
 		Secret      string     `gorm:"not null" json:"secret"`
 		Host        string     `gorm:"not null" json:"host"`
 		LastSync    *time.Time `json:"lastSync"`

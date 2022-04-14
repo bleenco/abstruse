@@ -19,8 +19,8 @@ func HandleCreate(providers core.ProviderStore) http.HandlerFunc {
 		Host        string `json:"host" valid:"url,required"`
 		AccessToken string `json:"accessToken" valid:"stringlength(12|50),required"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
-		HttpUser    string `json:"HttpUser"`
-		HttpPass    string `json:"HttpPass"`
+		HttpUser    string `json:"httpUser"`
+		HttpPass    string `json:"httpPass"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {

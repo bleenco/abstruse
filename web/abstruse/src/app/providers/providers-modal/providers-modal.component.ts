@@ -144,8 +144,8 @@ export class ProvidersModalComponent implements OnInit {
       ],
       accessToken: [(this.provider && this.provider.accessToken) || null],
       secret: [(this.provider && this.provider.secret) || null, [Validators.required]],
-      httpUser: [(this.provider && this.provider.HttpUser) || null],
-      httpPass: [(this.provider && this.provider.HttpPass) || null]
+      httpUser: [(this.provider && this.provider.httpUser) || null],
+      httpPass: [(this.provider && this.provider.httpPass) || null]
     });
   }
 }

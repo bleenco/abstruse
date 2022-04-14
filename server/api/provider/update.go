@@ -20,8 +20,8 @@ func HandleUpdate(providers core.ProviderStore, users core.UserStore) http.Handl
 		Host        string `json:"host" valid:"url,required"`
 		AccessToken string `json:"accessToken"`
 		Secret      string `json:"secret" valid:"stringlength(5|50),required"`
-		HttpUser    string `json:"HttpUser"`
-		HttpPass    string `json:"HttpPass"`
+		HttpUser    string `json:"httpUser"`
+		HttpPass    string `json:"httpPass"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
