@@ -26,7 +26,7 @@ type ImageBuildOutput struct {
 // BuildImage builds the docker image.
 func BuildImage(tags []string, dockerFile string) (types.ImageBuildResponse, error) {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		panic(err)
 	}
@@ -70,7 +70,7 @@ func BuildImage(tags []string, dockerFile string) (types.ImageBuildResponse, err
 // PushImage pushes image to the registry.
 func PushImage(tag string) (io.ReadCloser, error) {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		panic(err)
 	}
@@ -86,7 +86,7 @@ func PushImage(tag string) (io.ReadCloser, error) {
 // PullImage pulls image from the registry.
 func PullImage(image string, config *config.Registry) error {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +113,7 @@ func PullImage(image string, config *config.Registry) error {
 
 // ListImages returns all images.
 func ListImages() []types.ImageSummary {
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		panic(err)
 	}
