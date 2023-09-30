@@ -15,7 +15,7 @@ This is the branch for v2.0.0 or later. If you are looking for Node.JS based v1.
 
 ## Check Out Live Demo
 
-Go to https://ci.abstruse.cc and login with username `demo@bleenco.com` and password `abstruse`.
+Go to <https://ci.abstruse.app> and login with username `demo@abstruse.app` and password `abstruse`.
 
 Note: A demo user has only read permissions and can't add new repositories.
 
@@ -24,25 +24,28 @@ Note: A demo user has only read permissions and can't add new repositories.
 If you are interested about the status of this project, the easiest way to get Abstruse 2.x running is:
 
 ```sh
-$ docker-compose -f https://raw.githubusercontent.com/bleenco/abstruse/master/configs/demo/default/docker-compose.yml up -d
+git clone https://github.com/bleenco/abstruse.git
+cd abstruse
+docker-compose -f configs/demo/default/docker-compose.yml up -d
 ```
+
 You can also build docker images locally:
 
 ```sh
-$ make docker
-$ docker-compose -f configs/demo/default/docker-compose.yml up -d
+make docker
+docker-compose -f configs/demo/default/docker-compose.yml up -d
 ```
 
 This command will run `abstruse-server` with a single worker node `abstruse-worker` and MySQL database.
-You should be able to open up the installation wizard in your browser at http://localhost and finish the setup.
+You should be able to open up the installation wizard in your browser at <http://localhost> and finish the setup.
 
 ## Building the Project from Source
 
 To build the project from source, first clone or download repository, then:
 
 ```sh
-$ make install_dependencies
-$ make
+make install_dependencies
+make
 ```
 
 ## Development
@@ -50,7 +53,7 @@ $ make
 If you are interested in helping with the new release, you can get the development environment running like:
 
 ```sh
-$ make install_dependencies
+make install_dependencies
 ```
 
 This will install all dependencies for building the project. Please note that you need `Node.JS`, `yarn` and `go` installed, preferably latest releases.
@@ -58,20 +61,20 @@ This will install all dependencies for building the project. Please note that yo
 For UI development run:
 
 ```sh
-$ cd web/abstruse
-$ yarn start
+cd web/abstruse
+yarn start
 ```
 
 For `abstruse-server` development with live-reload enabled run:
 
 ```sh
-$ make dev
+make dev
 ```
 
 And for `abstruse-worker` development with live-reload run:
 
 ```sh
-$ make dev_worker
+make dev_worker
 ```
 
 ## License
