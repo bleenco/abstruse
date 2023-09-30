@@ -1,15 +1,15 @@
 <header class="subheader">
   <nav class="subheader-links">
     <a
-      [routerLink]="['/builds', build?.id]"
+      [routerLink]="['/builds', build.id]"
       [queryParams]="{ tab: 'jobs' }"
-      [class.is-active]="isLinkActive('/builds/' + build?.id + '?tab=jobs')"
+      [class.is-active]="isLinkActive('/builds/' + build.id + '?tab=jobs')"
       >Jobs</a
     >
     <a
-      [routerLink]="['/builds', build?.id]"
+      [routerLink]="['/builds', build.id]"
       [queryParams]="{ tab: 'config' }"
-      [class.is-active]="isLinkActive('/builds/' + build?.id + '?tab=config')"
+      [class.is-active]="isLinkActive('/builds/' + build.id + '?tab=config')"
       >Config</a
     >
   </nav>
@@ -17,10 +17,10 @@
     <div class="subheader-container">
       <div class="subheader-left">
         <h1>Build</h1>
-        <h2 class="is-link" [routerLink]="['/repos', build?.repository?.id]">
-          {{ build?.repository?.fullName }}
+        <h2 class="is-link" [routerLink]="['/repos', build.repository?.id]">
+          {{ build.repository?.fullName }}
         </h2>
-        <h2>Build #{{ build?.id }}</h2>
+        <h2>Build #{{ build.id }}</h2>
         <h2>{{ title }}</h2>
       </div>
       <div class="subheader-right">
@@ -28,7 +28,7 @@
           type="button"
           class="button"
           (click)="restartBuild()"
-          [disabled]="build?.processing || !build?.repository?.perms?.exec"
+          [disabled]="build.processing || !build.repository?.perms?.exec"
         >
           <i class="fas fa-sync-alt"></i>
           <span>Restart</span>
@@ -38,9 +38,9 @@
           class="button"
           (click)="stopBuild()"
           [disabled]="
-            (build?.status !== 'running' && build?.status !== 'queued') ||
-            build?.processing ||
-            !build?.repository?.perms?.exec
+            (build.status !== 'running' && build.status !== 'queued') ||
+            build.processing ||
+            !build.repository?.perms?.exec
           "
         >
           <i class="fas fa-hand-paper"></i>
@@ -72,69 +72,69 @@
               <span
                 class="tag is-medium"
                 [ngClass]="{
-                  'is-gray': build?.status === 'queued',
-                  'is-green': build?.status === 'passing',
-                  'is-red': build?.status === 'failing',
-                  'is-yellow': build?.status === 'running'
+                  'is-gray': build.status === 'queued',
+                  'is-green': build.status === 'passing',
+                  'is-red': build.status === 'failing',
+                  'is-yellow': build.status === 'running'
                 }"
               >
-                <i class="fas fa-check-circle" *ngIf="build?.status === 'passing'"></i>
-                <i class="fas fa-times-circle" *ngIf="build?.status === 'failing'"></i>
-                <i class="far fa-clock" *ngIf="build?.status === 'queued'"></i>
-                <i *ngIf="build?.status === 'running'">
+                <i class="fas fa-check-circle" *ngIf="build.status === 'passing'"></i>
+                <i class="fas fa-times-circle" *ngIf="build.status === 'failing'"></i>
+                <i class="far fa-clock" *ngIf="build.status === 'queued'"></i>
+                <i *ngIf="build.status === 'running'">
                   <app-loader class="is-small is-yellow"></app-loader>
                 </i>
-                <span>{{ build?.status }}</span>
+                <span>{{ build.status }}</span>
               </span>
             </div>
           </div>
           <div class="column is-4">
             <div class="build-info-content">
               <img
-                [src]="build?.committerAvatar"
+                [src]="build.committerAvatar"
                 class="committer-avatar"
-                *ngIf="build?.pr === 0 || build?.committerLogin === build?.authorLogin"
+                *ngIf="build.pr === 0 || build.committerLogin === build.authorLogin"
               />
               <div
                 class="avatars-container"
-                *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin"
+                *ngIf="build.pr !== 0 && build.committerLogin !== build.authorLogin"
               >
-                <img [src]="build?.committerAvatar" class="committer-avatar" />
-                <img [src]="build?.authorAvatar" class="author-avatar" />
+                <img [src]="build.committerAvatar" class="committer-avatar" />
+                <img [src]="build.authorAvatar" class="author-avatar" />
               </div>
-              <span class="desc-text" *ngIf="build?.pr === 0"
-                >{{ build?.committerName || build?.committerLogin }} authored and commited</span
+              <span class="desc-text" *ngIf="build.pr === 0"
+                >{{ build.committerName || build.committerLogin }} authored and commited</span
               >
               <span
                 class="desc-text"
-                *ngIf="build?.pr !== 0 && build?.committerLogin === build?.authorLogin"
-                >{{ build?.committerName || build?.committerLogin }} authored and commited</span
+                *ngIf="build.pr !== 0 && build.committerLogin === build.authorLogin"
+                >{{ build.committerName || build.committerLogin }} authored and commited</span
               >
               <span
                 class="desc-text"
-                *ngIf="build?.pr !== 0 && build?.committerLogin !== build?.authorLogin"
-                >{{ build?.authorName || build?.authorLogin }} authored with
-                {{ build?.committerName || build?.committerLogin }}</span
+                *ngIf="build.pr !== 0 && build.committerLogin !== build.authorLogin"
+                >{{ build.authorName || build.authorLogin }} authored with
+                {{ build.committerName || build.committerLogin }}</span
               >
             </div>
           </div>
           <div class="column is-1">
             <div class="build-info-content">
               <i class="octicon octicon-git-commit"></i>
-              <span class="desc-text">{{ build?.commitShort }}</span>
+              <span class="desc-text">{{ build.commitShort }}</span>
             </div>
           </div>
           <div class="column is-4">
             <div class="build-info-content">
               <i class="far fa-comment-alt"></i>
-              <span class="desc-text" *ngIf="!build?.pr">{{ build?.commitMessage }}</span>
-              <span class="desc-text" *ngIf="build?.pr">{{ build?.prTitle }}</span>
+              <span class="desc-text" *ngIf="!build.pr">{{ build.commitMessage }}</span>
+              <span class="desc-text" *ngIf="build.pr">{{ build.prTitle }}</span>
             </div>
           </div>
           <div class="column is-1">
             <div class="build-info-content">
               <i class="far fa-clock time-icon"></i>
-              <span class="time-text">{{ build?.runningTime | async }}</span>
+              <span class="time-text">{{ build.runningTime | async }}</span>
             </div>
           </div>
         </div>

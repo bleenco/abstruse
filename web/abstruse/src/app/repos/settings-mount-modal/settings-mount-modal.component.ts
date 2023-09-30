@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize } from 'rxjs/operators';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
@@ -16,12 +16,12 @@ export class SettingsMountModalComponent implements OnInit {
   mount!: MountVariable;
   saving = false;
   checking = false;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   error: string | null = null;
   deleting = false;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private reposService: ReposService,
     public activeModal: ActiveModal
   ) {}

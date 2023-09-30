@@ -1,7 +1,7 @@
 <div class="modal-header">
   <div class="header-title">
     <h1>Worker</h1>
-    <h2>{{ worker?.id }} - {{ worker?.addr }}</h2>
+    <h2>{{ worker.id }} - {{ worker.addr }}</h2>
   </div>
   <span class="icon close-icon is-action" (click)="activeModal.dismiss(false)">
     <i class="fas fa-times"></i>
@@ -14,31 +14,31 @@
         <div class="columns">
           <div class="column is-3">
             <span class="text-label">Hostname</span>
-            <span class="text-data">{{ worker?.hostname }}</span>
+            <span class="text-data">{{ worker.hostname }}</span>
           </div>
           <div class="column is-1">
             <span class="text-label">OS</span>
-            <span class="text-data">{{ worker?.os }}</span>
+            <span class="text-data">{{ worker.os }}</span>
           </div>
           <div class="column is-2">
             <span class="text-label">Architecture</span>
-            <span class="text-data">{{ worker?.kernelArch }}</span>
+            <span class="text-data">{{ worker.kernelArch }}</span>
           </div>
           <div class="column is-2">
             <span class="text-label">Kernel Version</span>
-            <span class="text-data">{{ worker?.kernelVersion }}</span>
+            <span class="text-data">{{ worker.kernelVersion }}</span>
           </div>
           <div class="column is-2">
             <span class="text-label">Uptime</span>
-            <span class="text-data">{{ worker?.getUptime }}</span>
+            <span class="text-data">{{ worker.getUptime }}</span>
           </div>
           <div class="column is-1">
             <span class="text-label">CPU</span>
-            <span class="text-data">{{ worker?.currentCPU }}%</span>
+            <span class="text-data">{{ worker.currentCPU }}%</span>
           </div>
           <div class="column is-1">
             <span class="text-label">Memory</span>
-            <span class="text-data">{{ worker?.currentMem }}%</span>
+            <span class="text-data">{{ worker.currentMem }}%</span>
           </div>
         </div>
       </div>

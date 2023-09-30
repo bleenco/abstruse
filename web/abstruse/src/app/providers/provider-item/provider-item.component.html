@@ -1,5 +1,5 @@
 <article class="provider-item">
-  <div class="provider-item-bg" [ngSwitch]="provider?.name">
+  <div class="provider-item-bg" [ngSwitch]="provider.name">
     <i class="fab fa-github bg-icon" *ngSwitchCase="'github'"></i>
     <i class="fab fa-gitlab bg-icon" *ngSwitchCase="'gitlab'"></i>
     <i class="fab fa-bitbucket bg-icon" *ngSwitchCase="'bitbucket'"></i>
@@ -7,14 +7,14 @@
     <i class="fab fa-git icon-large" *ngSwitchDefault></i>
   </div>
   <div class="provider-item-container">
-    <h2>{{ provider?.getName }}</h2>
-    <span class="url">{{ provider?.url }}</span>
+    <h2>{{ provider.getName }}</h2>
+    <span class="url">{{ provider.url }}</span>
     <span class="last-update">
       Last Sync:
-      <span *ngIf="provider?.lastSync" appTooltip [text]="provider?.lastSync | date: 'medium'">
-        {{ provider?.lastSynced }}
+      <span *ngIf="provider.lastSync" appTooltip [text]="provider.lastSync | date: 'medium'">
+        {{ provider.lastSynced }}
       </span>
-      <span *ngIf="!provider?.lastSync">Never</span>
+      <span *ngIf="!provider.lastSync">Never</span>
     </span>
     <div class="buttons justify-end">
       <button

@@ -9,8 +9,8 @@ import (
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/parser"
+	"github.com/golang/protobuf/proto"
 	"github.com/jinzhu/gorm"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // New returns a new BuildStore
@@ -193,7 +193,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 
 	var jobs []*core.Job
 	for _, j := range pjobs {
-		commands, err := protojson.Marshal(j.Commands)
+		commands, err := proto.Marshal(j.Commands)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -319,7 +319,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 
 	var jobs []*core.Job
 	for _, j := range pjobs {
-		commands, err := protojson.Marshal(j.Commands)
+		commands, err := proto.Marshal(j.Commands)
 		if err != nil {
 			return nil, err
 		}

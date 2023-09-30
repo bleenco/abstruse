@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { equalValidator } from '../../shared';
 import { ProfileService } from '../shared/profile.service';
 import { Password } from '../shared/password.model';
@@ -13,12 +13,12 @@ import { untilDestroyed, UntilDestroy } from '@ngneat/until-destroy';
   styleUrls: ['./security.component.sass']
 })
 export class SecurityComponent implements OnInit {
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   saving = false;
   ok = false;
   error!: string | null;
 
-  constructor(private fb: FormBuilder, private profile: ProfileService) {
+  constructor(private fb: UntypedFormBuilder, private profile: ProfileService) {
     this.createForm();
   }
 

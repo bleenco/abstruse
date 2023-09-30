@@ -7,8 +7,7 @@ import { ProviderItemComponent } from './provider-item/provider-item.component';
 import { ProvidersModalComponent } from './providers-modal/providers-modal.component';
 
 @NgModule({
-  declarations: [ProvidersModalComponent, ProvidersComponent, ProviderItemComponent],
-  imports: [CommonModule, ProvidersRoutingModule, SharedModule],
-  entryComponents: [ProvidersModalComponent]
+    declarations: [ProvidersModalComponent, ProvidersComponent, ProviderItemComponent],
+    imports: [CommonModule, ProvidersRoutingModule, SharedModule]
 })
 export class ProvidersModule {}

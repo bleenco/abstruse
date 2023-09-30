@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { equalValidator, randomInt } from '../../shared';
 import { generateAdminModel, Admin } from '../shared/admin.model';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -14,13 +14,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./user.component.sass']
 })
 export class UserComponent implements OnInit {
-  userForm!: FormGroup;
+  userForm!: UntypedFormGroup;
   submitted = false;
   saved = false;
   saving = false;
   error: string | null = null;
 
-  constructor(private fb: FormBuilder, private setup: SetupService, private router: Router) {
+  constructor(private fb: UntypedFormBuilder, private setup: SetupService, private router: Router) {
     this.createForm();
   }
 

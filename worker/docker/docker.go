@@ -244,10 +244,10 @@ func startContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string, mountdir []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string, mountdir []string) (container.CreateResponse, error) {
 	if id, exists := ContainerExists(name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
-			return container.ContainerCreateCreatedBody{}, err
+			return container.CreateResponse{}, err
 		}
 	}
 

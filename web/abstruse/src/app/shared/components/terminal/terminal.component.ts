@@ -34,7 +34,6 @@ const themes: { [key: string]: ITheme } = {
     brightWhite: '#615f51',
     cursor: 'rgba(0, 0, 0, 0)',
     cursorAccent: 'rgba(0, 0, 0, 0)',
-    selection: 'rgba(0, 0, 0, 0.1)'
   },
   dark: {
     foreground: 'hsl(220, 14%, 71%)',
@@ -57,7 +56,6 @@ const themes: { [key: string]: ITheme } = {
     brightWhite: '#ffffff',
     cursor: 'rgba(0, 0, 0, 0)',
     cursorAccent: 'rgba(0, 0, 0, 0)',
-    selection: 'rgba(0, 0, 0, 0.3)'
   }
 };
 
@@ -75,7 +73,6 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(public elementRef: ElementRef) {
     this.terminal = new Terminal({
-      rendererType: 'canvas',
       convertEol: true,
       disableStdin: true,
       scrollback: 1000000,
@@ -84,8 +81,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       fontWeight: 400,
       fontWeightBold: 700,
       allowTransparency: true,
-      fontFamily:
-        'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
+      fontFamily: 'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
     });
     this.fitAddon = new FitAddon();
   }
@@ -131,6 +127,6 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private setTheme(): void {
-    this.terminal.setOption('theme', themes[this.theme]);
+    this.terminal.options.theme = themes[this.theme];
   }
 }

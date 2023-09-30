@@ -1,5 +1,5 @@
 # stage 1 ui
-FROM node:14-alpine as ui
+FROM node:20-alpine as ui
 
 COPY ./web/abstruse ./app/ui
 
@@ -8,7 +8,7 @@ WORKDIR /app/ui
 RUN npm install && npm run build
 
 # stage 2 build
-FROM golang:1.16-alpine as build
+FROM golang:1.21-alpine as build
 
 ARG GIT_COMMIT=""
 ENV GIT_COMMIT=$GIT_COMMIT

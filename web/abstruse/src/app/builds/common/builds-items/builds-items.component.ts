@@ -26,7 +26,7 @@ export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
   error: string | null = null;
   sub: Subscription = new Subscription();
 
-  constructor(private buildsService: BuildsService, private dataService: DataService) {}
+  constructor(private buildsService: BuildsService, private dataService: DataService) { }
 
   ngOnInit(): void {
     this.initDataEvents();
@@ -88,13 +88,8 @@ export class BuildsItemsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private initDataEvents(): void {
-    this.sub
-      .add(
-        this.buildsService.buildsEvents().subscribe(build => {
-          this.builds.unshift(build);
-        })
-      )
-      .add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
+    this.sub.add(this.buildsService.buildsEvents().subscribe(build => this.builds.unshift(build)));
+    this.sub.add(this.buildsService.jobEvents().subscribe(ev => this.updateJobFromEvent(ev)));
 
     this.buildsService.subscribeToBuildsEvents();
     this.buildsService.subscribeToJobEvents();

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { UploaderOptions, UploadFile, UploadInput, UploadOutput, UploadStatus } from 'ngx-uploader';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { User } from '../shared/user.model';
@@ -20,7 +20,7 @@ export class UserModalComponent implements OnInit {
   user!: User;
   saving = false;
   error: string | null = null;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
 
   roleList = [
     { value: 'admin', placeholder: 'Admin' },
@@ -38,7 +38,7 @@ export class UserModalComponent implements OnInit {
   uploadingAvatar = false;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private usersService: UsersService,
     private auth: AuthService,
     public activeModal: ActiveModal

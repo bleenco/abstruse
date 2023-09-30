@@ -30,7 +30,8 @@ wire:
 	@wire ./server/cmd/... ./worker/cmd/...
 
 install_dependencies:
-	@cd /tmp && go get github.com/golang/protobuf/protoc-gen-go github.com/jkuri/statik github.com/cespare/reflex github.com/google/wire/... && cd -
+	@go get github.com/golang/protobuf/protoc-gen-go github.com/jkuri/statik github.com/cespare/reflex github.com/google/wire/...
+	@go install github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/google/wire/...
 	@cd web/abstruse && npm install
 
 clean:

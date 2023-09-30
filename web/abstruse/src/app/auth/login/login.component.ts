@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { AuthService } from '../shared/auth.service';
 import { finalize } from 'rxjs/operators';
@@ -15,12 +15,12 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   displayForm = false;
   error: string | undefined;
-  loginForm!: FormGroup;
+  loginForm!: UntypedFormGroup;
   isLoading = false;
   submitted = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private auth: AuthService,
     private setup: SetupService,
     private router: Router

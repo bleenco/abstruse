@@ -201,12 +201,12 @@ export class ModalStack {
 
   private registerWindowComponent(windowComponent: ComponentRef<ModalComponent>): void {
     this.windowComponents.push(windowComponent);
-    this.windowComponentChanged.next();
+    this.windowComponentChanged.next(true);
 
     windowComponent.onDestroy(() => {
       this.windowComponents = this.windowComponents.filter(x => {
         if (x === windowComponent) {
-          this.windowComponentChanged.next();
+          this.windowComponentChanged.next(true);
           return false;
         }
 

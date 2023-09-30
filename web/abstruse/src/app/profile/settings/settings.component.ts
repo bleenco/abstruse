@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ProfileService } from '../shared/profile.service';
 import { Profile, User } from '../../teams/shared/user.model';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -15,7 +15,7 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./settings.component.sass']
 })
 export class SettingsComponent implements OnInit {
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   saving = false;
   saved = false;
   error: string | null = null;
@@ -31,7 +31,7 @@ export class SettingsComponent implements OnInit {
   uploadUrl = `${environment.apiURL}users/avatar`;
   uploadingAvatar = false;
 
-  constructor(private fb: FormBuilder, private profile: ProfileService, private auth: AuthService) {
+  constructor(private fb: UntypedFormBuilder, private profile: ProfileService, private auth: AuthService) {
     this.createForm();
   }
 

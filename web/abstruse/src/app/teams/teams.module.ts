@@ -10,15 +10,14 @@ import { TeamItemComponent } from './team-item/team-item.component';
 import { TeamsListComponent } from './teams-list/teams-list.component';
 
 @NgModule({
-  declarations: [
-    TeamItemComponent,
-    TeamModalComponent,
-    UsersComponent,
-    UserListItemComponent,
-    UserModalComponent,
-    TeamsListComponent
-  ],
-  imports: [CommonModule, TeamsRoutingModule, SharedModule],
-  entryComponents: [TeamModalComponent, UserModalComponent]
+    declarations: [
+        TeamItemComponent,
+        TeamModalComponent,
+        UsersComponent,
+        UserListItemComponent,
+        UserModalComponent,
+        TeamsListComponent
+    ],
+    imports: [CommonModule, TeamsRoutingModule, SharedModule]
 })
 export class TeamsModule {}
