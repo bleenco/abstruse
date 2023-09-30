@@ -1,5 +1,5 @@
 const glob = require('glob');
-const PurgeCSSPlugin = require('purgecss-webpack-plugin');
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
 
 module.exports = {
   plugins: [

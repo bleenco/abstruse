@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { finalize } from 'rxjs/operators';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
@@ -19,7 +19,7 @@ export class TeamModalComponent implements OnInit {
   team!: Team;
   saving = false;
   error: string | null = null;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   tab: 'general' | 'members' | 'access' = 'general';
   users: User[] = [];
   fetchingUsers = false;
@@ -41,7 +41,7 @@ export class TeamModalComponent implements OnInit {
   }
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private teamsService: TeamsService,
     private usersService: UsersService,
     private reposService: ReposService,

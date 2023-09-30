@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { SetupService } from './setup.service';
 
 @Injectable({ providedIn: 'root' })
-export class SetupDoneGuardService implements CanActivate {
+export class SetupDoneGuardService  {
   constructor(private setup: SetupService, private router: Router) {}
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {

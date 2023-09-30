@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActiveModal } from 'src/app/shared/components/modal/modal-ref.class';
 import { Provider } from '../shared/provider.class';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { randomHash } from 'src/app/shared';
 import { ProvidersService } from '../shared/providers.service';
 import { finalize } from 'rxjs/operators';
@@ -24,12 +24,12 @@ export class ProvidersModalComponent implements OnInit {
   ];
   saving = false;
   checking = false;
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   error: string | null = null;
   deleting = false;
 
   constructor(
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private providers: ProvidersService,
     public activeModal: ActiveModal
   ) {}
