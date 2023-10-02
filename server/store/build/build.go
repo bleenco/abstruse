@@ -144,7 +144,8 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 			base.After = commit.Sha
 		}
 		if base.Message == "" {
-			base.Message = commit.Message
+			// Fix Database Error 1406: Data too long for column 'commit_message' at row 1
+			base.Message = strings.Split(commit.Message, "\n")[0]
 		}
 	}
 	content, err := scm.FindContent(repo.FullName, base.After, ".abstruse.yml")
@@ -257,7 +258,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 		sha = commit.Sha
 
 		build.Commit = commit.Sha
-		build.CommitMessage = commit.Message
+		build.CommitMessage = strings.Split(commit.Message, "\n")[0]
 		build.AuthorLogin = commit.Author.Login
 		build.AuthorName = commit.Author.Name
 		build.AuthorEmail = commit.Author.Email
@@ -274,7 +275,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 		}
 
 		build.Commit = commit.Sha
-		build.CommitMessage = commit.Message
+		build.CommitMessage = strings.Split(commit.Message, "\n")[0]
 		build.AuthorLogin = commit.Author.Login
 		build.AuthorName = commit.Author.Name
 		build.AuthorEmail = commit.Author.Email

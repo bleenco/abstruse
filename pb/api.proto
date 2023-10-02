@@ -69,6 +69,8 @@ message Job {
   string sshPrivateKey = 21;
   bool sshClone = 22;
   string branch = 23;
+  string providerHttpUser = 24;
+  string providerHttpPass = 25;
 }
 
 message Command {

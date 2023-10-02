@@ -312,27 +312,34 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 		s.logger.Errorf("error parsing commands for job %d: %s", job.ID, err.Error())
 	}
 
+	url := job.Build.Repository.Clone
+	if url == "" {
+		url = job.Build.Repository.URL
+	}
+
 	j := &pb.Job{
-		Id:            uint64(job.ID),
-		BuildId:       uint64(job.BuildID),
-		Commands:      commands.Commands,
-		Image:         job.Image,
-		Env:           envs,
-		Url:           job.Build.Repository.URL,
-		SshURL:        job.Build.Repository.CloneSSH,
-		ProviderName:  job.Build.Repository.Provider.Name,
-		ProviderURL:   job.Build.Repository.Provider.URL,
-		ProviderToken: job.Build.Repository.Provider.AccessToken,
-		Ref:           job.Build.Ref,
-		CommitSHA:     job.Build.Commit,
-		Branch:        job.Build.Branch,
-		RepoName:      job.Build.Repository.FullName,
-		Action:        pb.Job_JobStart,
-		WorkerId:      worker.ID,
-		Cache:         strings.Split(job.Cache, ","),
-		Mount:         strings.Split(job.Mount, ","),
-		SshPrivateKey: job.Build.Repository.SSHPrivateKey,
-		SshClone:      job.Build.Repository.UseSSH,
+		Id:               uint64(job.ID),
+		BuildId:          uint64(job.BuildID),
+		Commands:         commands.Commands,
+		Image:            job.Image,
+		Env:              envs,
+		Url:              url,
+		SshURL:           job.Build.Repository.CloneSSH,
+		ProviderName:     job.Build.Repository.Provider.Name,
+		ProviderURL:      job.Build.Repository.Provider.URL,
+		ProviderToken:    job.Build.Repository.Provider.AccessToken,
+		Ref:              job.Build.Ref,
+		CommitSHA:        job.Build.Commit,
+		Branch:           job.Build.Branch,
+		RepoName:         job.Build.Repository.FullName,
+		Action:           pb.Job_JobStart,
+		WorkerId:         worker.ID,
+		Cache:            strings.Split(job.Cache, ","),
+		Mount:            strings.Split(job.Mount, ","),
+		SshPrivateKey:    job.Build.Repository.SSHPrivateKey,
+		SshClone:         job.Build.Repository.UseSSH,
+		ProviderHttpUser: job.Build.Repository.Provider.HttpUser,
+		ProviderHttpPass: job.Build.Repository.Provider.HttpPass,
 	}
 
 	s.mu.Lock()

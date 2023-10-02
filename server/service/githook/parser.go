@@ -36,9 +36,6 @@ func (p *parser) Parse(req *http.Request, secretFunc func(string) *core.Reposito
 	}
 
 	payload, err := p.client.Webhooks.Parse(req, fn)
-	if err == scm.ErrUnknownEvent {
-		return nil, nil, nil
-	}
 	if err != nil {
 		return nil, nil, err
 	}

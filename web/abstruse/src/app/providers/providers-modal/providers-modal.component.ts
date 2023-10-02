@@ -19,6 +19,7 @@ export class ProvidersModalComponent implements OnInit {
     { value: 'github', placeholder: 'GitHub' },
     { value: 'gitlab', placeholder: 'GitLab' },
     { value: 'bitbucket', placeholder: 'Bitbucket' },
+    { value: 'stash', placeholder: 'Bitbucket Enterprise' },
     { value: 'gitea', placeholder: 'Gitea' },
     { value: 'gogs', placeholder: 'Gogs' }
   ];
@@ -50,7 +51,9 @@ export class ProvidersModalComponent implements OnInit {
       url: this.form.controls.url.value,
       host: this.form.controls.host.value,
       accessToken: this.form.controls.accessToken.value,
-      secret: this.form.controls.secret.value
+      secret: this.form.controls.secret.value,
+      httpUser: this.form.controls.httpUser.value,
+      httpPass: this.form.controls.httpPass.value
     };
     if (this.provider && this.provider.id) {
       data = { ...data, ...{ id: this.provider.id } };
@@ -140,7 +143,9 @@ export class ProvidersModalComponent implements OnInit {
         [Validators.required]
       ],
       accessToken: [(this.provider && this.provider.accessToken) || null],
-      secret: [(this.provider && this.provider.secret) || null, [Validators.required]]
+      secret: [(this.provider && this.provider.secret) || null, [Validators.required]],
+      httpUser: [(this.provider && this.provider.httpUser) || null],
+      httpPass: [(this.provider && this.provider.httpPass) || null]
     });
   }
 }

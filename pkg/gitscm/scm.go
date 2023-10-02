@@ -12,6 +12,7 @@ import (
 	"github.com/drone/go-scm/scm/driver/github"
 	"github.com/drone/go-scm/scm/driver/gitlab"
 	"github.com/drone/go-scm/scm/driver/gogs"
+	"github.com/drone/go-scm/scm/driver/stash"
 	"github.com/drone/go-scm/scm/transport"
 )
 
@@ -39,6 +40,8 @@ func New(ctx context.Context, provider, url, token string) (SCM, error) {
 		scm.client, err = github.New(scm.url)
 	case "bitbucket":
 		scm.client, err = bitbucket.New(scm.url)
+	case "stash":
+		scm.client, err = stash.New(scm.url)
 	case "gitea":
 		scm.client, err = gitea.New(scm.url)
 	case "gitlab":
@@ -66,6 +69,12 @@ func (s SCM) ListRepos(page, size int) ([]*scm.Repository, error) {
 func (s SCM) FindRepo(name string) (*scm.Repository, error) {
 	repo, _, err := s.client.Repositories.Find(s.ctx, name)
 	return repo, err
+}
+
+// FindPerms returns perms of repo.
+func (s SCM) FindPerms(repo *scm.Repository) (*scm.Perm, error) {
+	perm, _, err := s.client.Repositories.FindPerms(s.ctx, fmt.Sprintf("%s/%s", repo.Namespace, repo.Name))
+	return perm, err
 }
 
 // ListCommits returns list of commits.

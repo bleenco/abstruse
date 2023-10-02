@@ -219,11 +219,21 @@ func (s *Server) StartJob(job *pb.Job, stream pb.API_StartJobServer) error {
 		logch <- []byte(yellow(fmt.Sprintf("==> Cloning repository %s ref: %s sha: %s... ", job.GetSshURL(), job.GetRef(), job.GetCommitSHA())))
 	}
 
+	httpUser := job.GetProviderHttpUser()
+	if httpUser == "" {
+		httpUser = "user"
+	}
+	httpPass := job.GetProviderHttpPass()
+	if httpPass == "" {
+		httpPass = job.GetProviderToken()
+	}
+
 	if err := git.CloneRepository(
 		job.GetUrl(),
 		job.GetRef(),
 		job.GetCommitSHA(),
-		job.GetProviderToken(),
+		httpUser,
+		httpPass,
 		dir,
 		job.GetSshURL(),
 		[]byte(job.GetSshPrivateKey()),

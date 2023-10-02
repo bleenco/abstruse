@@ -22,7 +22,7 @@ import (
 // RunContainer runs container.
 func RunContainer(name, image string, job *api.Job, config *config.Config, env []string, dir string, logch chan<- []byte) error {
 	ctx := context.Background()
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return err
 	}
@@ -182,7 +182,7 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 
 // StopContainer stops the container.
 func StopContainer(name string) error {
-	cli, err := client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func exec(cli *client.Client, id string, cmd, env []string) (types.HijackedRespo
 
 // ContainerExists finds container by name and if exists returns id.
 func ContainerExists(name string) (string, bool) {
-	cli, _ := client.NewClientWithOpts()
+	cli, _ := client.NewClientWithOpts(client.FromEnv)
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
