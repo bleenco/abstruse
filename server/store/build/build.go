@@ -318,31 +318,33 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 	}
 
 	var jobs []*core.Job
-	for _, j := range pjobs {
-		commands, err := protojson.Marshal(j.Commands)
-		if err != nil {
-			return nil, err
-		}
+	for platform := range strings.Split(repo.Platforms, ";") {
+		for _, j := range pjobs {
+			commands, err := protojson.Marshal(j.Commands)
+			if err != nil {
+				return nil, err
+			}
 
-		job := &core.Job{
-			Image:    j.Image,
-			Commands: string(commands),
-			Env:      strings.Join(j.Env, " "),
-			Mount:    strings.Join(mnts, ","),
-			Stage:    j.Stage,
-			BuildID:  build.ID,
-			Cache:    strings.Join(j.Cache, ","),
-		}
-		if err := s.jobs.Create(job); err != nil {
-			return nil, err
-		}
-		job, err = s.jobs.Find(job.ID)
-		if err != nil {
-			return nil, err
-		}
+			job := &core.Job{
+				Image:    j.Image,
+				Commands: string(commands),
+				Env:      strings.Join(j.Env, " "),
+				Mount:    strings.Join(mnts, ","),
+				Stage:    j.Stage,
+				BuildID:  build.ID,
+				Cache:    strings.Join(j.Cache, ","),
+				Platform: strings.Split(repo.Platforms, ";")[platform],
+			}
+			if err := s.jobs.Create(job); err != nil {
+				return nil, err
+			}
+			job, err = s.jobs.Find(job.ID)
+			if err != nil {
+				return nil, err
+			}
 
-		jobs = append(jobs, job)
+			jobs = append(jobs, job)
+		}
 	}
-
 	return jobs, nil
 }

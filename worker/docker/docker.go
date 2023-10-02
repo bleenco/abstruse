@@ -29,14 +29,14 @@ func RunContainer(name, image string, job *api.Job, config *config.Config, env [
 	defer close(logch)
 	var shell string
 
-	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, job.GetMount())
+	resp, err := createContainer(cli, name, image, dir, []string{"/bin/bash"}, env, job.GetMount(), job.Platform)
 	if err != nil {
 		logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 		return err
 	}
 	if !isContainerRunning(cli, resp.ID) {
 		if err := startContainer(cli, resp.ID); err != nil {
-			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, job.GetMount())
+			resp, err = createContainer(cli, name, image, dir, []string{"/bin/sh"}, env, job.GetMount(), job.Platform)
 			if err != nil {
 				logch <- []byte(fmt.Sprintf("%s\r\n", err.Error()))
 				return err
@@ -244,7 +244,7 @@ func startContainer(cli *client.Client, id string) error {
 }
 
 // CreateContainer creates new Docker container.
-func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string, mountdir []string) (container.ContainerCreateCreatedBody, error) {
+func createContainer(cli *client.Client, name, image, dir string, cmd []string, env []string, mountdir []string, platform string) (container.ContainerCreateCreatedBody, error) {
 	if id, exists := ContainerExists(name); exists {
 		if err := cli.ContainerRemove(context.Background(), id, types.ContainerRemoveOptions{Force: true}); err != nil {
 			return container.ContainerCreateCreatedBody{}, err
@@ -266,6 +266,7 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 		})
 	}
 
+	p := getPlatform(platform)
 	return cli.ContainerCreate(context.Background(), &container.Config{
 		Image:      image,
 		Cmd:        cmd,
@@ -274,7 +275,7 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 		WorkingDir: "/build",
 	}, &container.HostConfig{
 		Mounts: mounts,
-	}, nil, nil, name)
+	}, nil, &p, name)
 }
 
 // IsContainerRunning returns true if container is running.
