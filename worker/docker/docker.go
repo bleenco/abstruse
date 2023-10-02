@@ -254,8 +254,22 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 	mounts := []mount.Mount{
 		{Type: mount.TypeBind, Source: path.Join(dir), Target: "/build"},
 	}
-	for i := range mountdir {
-		m := strings.Split(mountdir[i], ":")
+	var devices []container.DeviceMapping
+
+	for _, elem := range cfg.host.Devices {
+		m := strings.Split(elem, ":")
+		if len(m) != 2 || !fs.Exists(m[0]) {
+			continue
+		}
+		devices = append(devices, container.DeviceMapping{
+			PathOnHost:        m[0],
+			PathInContainer:   m[1],
+			CgroupPermissions: "rwm",
+		})
+	}
+
+	for _, elem := range append(mountdir, cfg.host.Mounts...) {
+		m := strings.Split(elem, ":")
 		if len(m) != 2 || !fs.Exists(m[0]) {
 			continue
 		}
@@ -273,7 +287,10 @@ func createContainer(cli *client.Client, name, image, dir string, cmd []string, 
 		Env:        env,
 		WorkingDir: "/build",
 	}, &container.HostConfig{
-		Mounts: mounts,
+		Mounts:     mounts,
+		CapAdd:     cfg.host.AddCaps,
+		Resources:  container.Resources{Devices: devices},
+		Privileged: cfg.host.Privileged,
 	}, nil, nil, name)
 }
 

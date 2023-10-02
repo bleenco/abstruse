@@ -99,6 +99,10 @@ func init() {
 	rootCmd.PersistentFlags().Int("logger-max-size", 500, "maximum log file size (in MB)")
 	rootCmd.PersistentFlags().Int("logger-max-backups", 3, "maximum log file backups")
 	rootCmd.PersistentFlags().Int("logger-max-age", 3, "maximum log age")
+	rootCmd.PersistentFlags().StringSlice("docker-mounts", []string{}, "Global mount points, colon separated")
+	rootCmd.PersistentFlags().StringSlice("docker-devices", []string{}, "Device redirection, colon separated")
+	rootCmd.PersistentFlags().Bool("docker-privileged", false, "Run build container in privileged mode")
+	rootCmd.PersistentFlags().StringSlice("docker-addcaps", []string{}, "Add Linux capabilities")
 }
 
 func initDefaults() {
@@ -118,6 +122,10 @@ func initDefaults() {
 	viper.BindPFlag("logger.maxsize", rootCmd.PersistentFlags().Lookup("logger-max-size"))
 	viper.BindPFlag("logger.maxbackups", rootCmd.PersistentFlags().Lookup("logger-max-backups"))
 	viper.BindPFlag("logger.maxage", rootCmd.PersistentFlags().Lookup("logger-max-age"))
+	viper.BindPFlag("docker.mounts", rootCmd.PersistentFlags().Lookup("docker-mounts"))
+	viper.BindPFlag("docker.devices", rootCmd.PersistentFlags().Lookup("docker-devices"))
+	viper.BindPFlag("docker.privileged", rootCmd.PersistentFlags().Lookup("docker-privileged"))
+	viper.BindPFlag("docker.addcaps", rootCmd.PersistentFlags().Lookup("docker-addcaps"))
 }
 
 func newConfig() *config.Config {
@@ -185,7 +193,7 @@ func newConfig() *config.Config {
 		fatal(err)
 	}
 
-	docker.Init(cfg.Registry)
+	docker.Init(cfg)
 
 	return cfg
 }

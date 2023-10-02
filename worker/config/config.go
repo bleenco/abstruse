@@ -11,6 +11,7 @@ type (
 		Auth      *Auth      `json:"auth"`
 		Registry  *Registry  `json:"registry"`
 		Logger    *Logger    `json:"logger"`
+		Docker    *Docker    `json:"docker"`
 	}
 
 	// Server configuration.
@@ -54,5 +55,13 @@ type (
 		MaxAge     int    `json:"maxage"`
 		Level      string `json:"level"`
 		Stdout     bool   `json:"stdout"`
+	}
+
+	// Docker Additional host configuration.
+	Docker struct {
+		Mounts     []string `json:"mounts"`
+		Devices    []string `json:"devices"`
+		Privileged bool     `json:"privileged"`
+		AddCaps    []string `json:"addcaps"`
 	}
 )
