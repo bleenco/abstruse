@@ -15,7 +15,7 @@ import { SocketEvent } from 'src/app/shared/models/socket.model';
 })
 export class BuildComponent implements OnInit, OnDestroy {
   id!: number;
-  build!: Build;
+  build!: Build | undefined;
   loading = false;
   processing = false;
   tab: 'jobs' | 'config' = 'jobs';
@@ -28,7 +28,7 @@ export class BuildComponent implements OnInit, OnDestroy {
     private buildsService: BuildsService,
     private dataService: DataService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
@@ -77,7 +77,7 @@ export class BuildComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe(
-        () => {},
+        () => { },
         err => (this.error = err.message)
       );
   }
@@ -91,7 +91,7 @@ export class BuildComponent implements OnInit, OnDestroy {
         untilDestroyed(this)
       )
       .subscribe(
-        () => {},
+        () => { },
         err => (this.error = err.message)
       );
   }
