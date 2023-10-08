@@ -1,5 +1,6 @@
 build/
 pb/api.pb.go
+pb/api_grpc.pb.go
 server/ui
 worker/data
 server/cmd/wire_gen.go

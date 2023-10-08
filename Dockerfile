@@ -21,7 +21,15 @@ COPY --from=ui /app/ui/dist /app/web/abstruse/dist
 
 COPY . /app/
 
-RUN go get github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/google/wire/...
+RUN go get google.golang.org/protobuf/cmd/protoc-gen-go \
+    github.com/jkuri/statik \
+    github.com/google/wire/cmd/wire@v0.5.0 \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go \
+    github.com/jkuri/statik \
+    github.com/google/wire/... \
+    google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 RUN make protoc && make statik && make wire && make server
 
@@ -32,7 +40,7 @@ LABEL maintainer="Jan Kuri <jkuri88@gmail.com>" \
   org.label-schema.schema-version="1.0" \
   org.label-schema.name="abstruse-server" \
   org.label-schema.description="Distributed Continuous Intergration Platform" \
-  org.label-schema.url="https://ci.abstruse.cc/" \
+  org.label-schema.url="https://ci.abstruse.app/" \
   org.label-schema.vcs-url="https://github.com/bleenco/abstruse" \
   org.label-schema.vendor="abstruse"
 
