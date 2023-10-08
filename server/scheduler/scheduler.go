@@ -14,9 +14,9 @@ import (
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/ws"
 	"github.com/drone/go-scm/scm"
-	"github.com/golang/protobuf/proto"
 	"github.com/logrusorgru/aurora"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // New returns new scheduler.
@@ -308,7 +308,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	}
 
 	var commands pb.CommandList
-	if err := proto.Unmarshal([]byte(job.Commands), &commands); err != nil {
+	if err := protojson.Unmarshal([]byte(job.Commands), &commands); err != nil {
 		s.logger.Errorf("error parsing commands for job %d: %s", job.ID, err.Error())
 	}
 

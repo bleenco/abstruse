@@ -37,6 +37,7 @@ type Server struct {
 	logger   *zap.SugaredLogger
 	jobs     map[uint64]*pb.Job
 	errch    chan error
+	pb.UnimplementedAPIServer
 }
 
 // NewServer returns new gRPC server.

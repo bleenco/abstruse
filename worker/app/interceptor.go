@@ -69,12 +69,6 @@ type serverStream struct {
 	grpc.ServerStream
 }
 
-func (s serverStream) context() context.Context {
-	c := context.WithValue(s.ServerStream.Context(), workerIdentifierKey, s.identifier)
-	c = context.WithValue(c, workerIP, s.ip)
-	return c
-}
-
 func authenticate(ctx context.Context, s *Server) (string, error) {
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		identifier := strings.Join(md["identifier"], "")

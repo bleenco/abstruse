@@ -30,12 +30,21 @@ wire:
 	@wire ./server/cmd/... ./worker/cmd/...
 
 install_dependencies:
-	@go get github.com/golang/protobuf/protoc-gen-go github.com/jkuri/statik github.com/cespare/reflex github.com/google/wire/...
-	@go install github.com/jkuri/statik github.com/golang/protobuf/protoc-gen-go github.com/google/wire/...
+	@go get google.golang.org/protobuf/cmd/protoc-gen-go
+	@go get github.com/jkuri/statik
+	@go get github.com/google/wire/cmd/wire@v0.5.0
+	@go get github.com/cespare/reflex
+	@go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	@go install google.golang.org/protobuf/cmd/protoc-gen-go
+	@go install github.com/jkuri/statik
+	@go install github.com/google/wire/...
+	@go install github.com/cespare/reflex
+	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	@go mod tidy
 	@cd web/abstruse && npm install
 
 clean:
-	@rm -rf build/ web/abstruse/dist server/ui/ server/cmd/wire_gen.go worker/cmd/wire_gen.go
+	@rm -rf build/ web/abstruse/dist server/ui/ server/cmd/wire_gen.go worker/cmd/wire_gen.go pb/api.pb.go pb/api_grpc.pb.go
 
 dev:
 	@reflex -sr '\.go$$' -R '^web/' -R '^server/ui' -R '^worker/' -R '^configs/' -R '^tests/' -- sh -c 'make server && ./build/abstruse-server --logger-level debug'
@@ -44,7 +53,7 @@ dev_worker:
 	@reflex -sr '\.go$$' -R '^web/' -R '^server/' -R '^configs/' -R '^tests/' -- sh -c 'make worker && ./build/abstruse-worker --logger-level debug'
 
 protoc:
-	@protoc ./pb/api.proto --go_out=plugins=grpc:./pb/
+	@protoc ./pb/api.proto --go-grpc_out=. --go-grpc_opt=paths=source_relative --go_out=. --go_opt=paths=source_relative
 
 docker: docker_server docker_worker
 

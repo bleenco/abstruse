@@ -4,6 +4,7 @@
 /server/cmd/wire_gen.go
 /worker/cmd/wire_gen.go
 /pb/api.pb.go
+/pb/api_grpc.pb.go
 .DS_Store
 tmp/
 configs/testing/**/*.pem
