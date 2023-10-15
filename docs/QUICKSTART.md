@@ -38,7 +38,7 @@ Available flags for `abstruse-server`:
 --auth-jwtsecret string    JWT authentication secret key (default is a random string)
 --config string            config file (default is $HOME/abstruse/abstruse.json)
 --db-charset string        database charset (default "utf8")
---db-driver string         database client (available options: mysql, postgres, mssql) (default "mysql")
+--db-driver string         database client (available options: mysql, postgres, sqlserver, clickhouse) (default "mysql")
 --db-host string           database server host address (default "localhost")
 --db-name string           database name (file name when sqlite client used) (default "abstruse")
 --db-password string       database password
