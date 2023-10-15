@@ -13,7 +13,7 @@ import (
 // list of repositories based on user id to the http response body.
 func HandleList(repos core.RepositoryStore) http.HandlerFunc {
 	type resp struct {
-		Count int               `json:"count"`
+		Count int64             `json:"count"`
 		Data  []core.Repository `json:"data"`
 	}
 

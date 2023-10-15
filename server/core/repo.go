@@ -6,7 +6,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/gitscm"
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/drone/go-scm/scm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type (
@@ -63,7 +63,7 @@ type (
 		FindToken(string) (*Repository, error)
 
 		// List returns list of repositories from the datastore.
-		List(RepositoryFilter) ([]Repository, int, error)
+		List(RepositoryFilter) ([]Repository, int64, error)
 
 		// Create persists a new repository to the datastore.
 		Create(Repository) error

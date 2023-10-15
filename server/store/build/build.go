@@ -9,8 +9,8 @@ import (
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/bleenco/abstruse/server/parser"
-	"github.com/jinzhu/gorm"
 	"google.golang.org/protobuf/encoding/protojson"
+	"gorm.io/gorm"
 )
 
 // New returns a new BuildStore

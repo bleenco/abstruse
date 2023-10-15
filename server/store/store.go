@@ -8,13 +8,14 @@ import (
 
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mssql"    // mssql driver
-	_ "github.com/jinzhu/gorm/dialects/mysql"    // mysql driver
-	_ "github.com/jinzhu/gorm/dialects/postgres" // postres driver
-	_ "github.com/jinzhu/gorm/dialects/sqlite"   // sqlite driver
 	"github.com/jpillora/backoff"
 	"go.uber.org/zap"
+	"gorm.io/driver/clickhouse"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
+	"gorm.io/driver/sqlserver"
+	"gorm.io/gorm"
 )
 
 var db *gorm.DB
@@ -48,7 +49,23 @@ func connect(cfg *config.DB, logger *zap.Logger) {
 			go reconnectLoop(cfg, logger)
 		}
 	} else {
-		conn, err := gorm.Open(cfg.Driver, connString(cfg, true))
+		dsn := dsn(cfg, true)
+		var conn *gorm.DB
+		var err error
+
+		switch cfg.Driver {
+		case "mysql":
+			conn, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		case "postgres":
+			conn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		case "sqlite":
+			conn, err = gorm.Open(sqlite.Open(cfg.Name), &gorm.Config{})
+		case "clickhouse":
+			conn, err = gorm.Open(clickhouse.Open(dsn), &gorm.Config{})
+		case "sqlserver":
+			conn, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
+		}
+
 		if err != nil {
 			log.Errorf("database connection issue: %v", err)
 		} else {
@@ -71,12 +88,17 @@ func connect(cfg *config.DB, logger *zap.Logger) {
 
 // Close closes database connection.
 func Close() error {
-	return db.Close()
+	sql, err := db.DB()
+	if err != nil {
+		return err
+	}
+
+	return sql.Close()
 }
 
 // CheckConnection checks valid database connection.
 func CheckConnection(cfg *config.DB) bool {
-	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
+	conn, err := sql.Open(cfg.Driver, dsn(cfg, false))
 	if err != nil {
 		return false
 	}
@@ -88,7 +110,7 @@ func CheckConnection(cfg *config.DB) bool {
 	return true
 }
 
-func connString(cfg *config.DB, useDB bool) string {
+func dsn(cfg *config.DB, useDB bool) string {
 	switch strings.ToLower(cfg.Driver) {
 	case "mysql", "mariadb":
 		if useDB {
@@ -101,6 +123,8 @@ func connString(cfg *config.DB, useDB bool) string {
 		return fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s", cfg.Host, cfg.Port, cfg.User, cfg.Name, cfg.Password)
 	case "sqlite", "sqlite3":
 		return cfg.Name
+	case "clickhouse":
+		return fmt.Sprintf("tcp://%s:%d?database=%s&username=%s&password=%s", cfg.Host, cfg.Port, cfg.Name, cfg.User, cfg.Password)
 	default:
 		return ""
 	}
@@ -116,7 +140,7 @@ func check(cfg *config.DB) error {
 }
 
 func checkMySQL(cfg *config.DB) error {
-	conn, err := sql.Open(cfg.Driver, connString(cfg, false))
+	conn, err := sql.Open(cfg.Driver, dsn(cfg, false))
 	if err != nil {
 		return err
 	}

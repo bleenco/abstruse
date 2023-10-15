@@ -14,11 +14,11 @@ import (
 	"github.com/bleenco/abstruse/server/config"
 	"github.com/bleenco/abstruse/server/http"
 	"github.com/bleenco/abstruse/server/ws"
-	"github.com/jinzhu/gorm"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 var (

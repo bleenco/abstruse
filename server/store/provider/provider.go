@@ -8,7 +8,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/lib"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/drone/go-scm/scm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns a new ProviderStore.
