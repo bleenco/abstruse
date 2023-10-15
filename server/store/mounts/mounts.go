@@ -2,7 +2,7 @@ package mount
 
 import (
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns a new MountsStore.
@@ -31,7 +31,7 @@ func (s mountsStore) Create(mnt *core.Mount) error {
 }
 
 func (s mountsStore) Update(mnt *core.Mount) error {
-	return s.db.Model(mnt).Update(&mnt).Error
+	return s.db.Model(mnt).Updates(&mnt).Error
 }
 
 func (s mountsStore) Delete(mnt *core.Mount) error {

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/bleenco/abstruse/pkg/gitscm"
 	"github.com/bleenco/abstruse/server/core"
 	"github.com/drone/go-scm/scm"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns a new RepositoryStore.
@@ -58,9 +59,9 @@ func (s repositoryStore) FindToken(token string) (*core.Repository, error) {
 	return &repo, err
 }
 
-func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository, int, error) {
+func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository, int64, error) {
 	var repos []core.Repository
-	var count int
+	var count int64
 	var err error
 	keyword := fmt.Sprintf("%%%s%%", filters.Keyword)
 
@@ -105,7 +106,7 @@ func (s repositoryStore) Update(repo core.Repository) error {
 }
 
 func (s repositoryStore) CreateOrUpdate(repo core.Repository) error {
-	if s.db.Where("uid = ? AND clone = ?", repo.UID, repo.Clone).First(&repo).RecordNotFound() {
+	if errors.Is(s.db.Where("uid = ? AND clone = ?", repo.UID, repo.Clone).First(&repo).Error, gorm.ErrRecordNotFound) {
 		return s.db.Create(&repo).Error
 	}
 
@@ -118,7 +119,7 @@ func (s repositoryStore) Delete(repo core.Repository) error {
 
 func (s repositoryStore) SetActive(id uint, active bool) error {
 	var repo core.Repository
-	if s.db.Where("id = ?", id).First(&repo).RecordNotFound() {
+	if errors.Is(s.db.Where("id = ?", id).First(&repo).Error, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("repository not found")
 	}
 
@@ -261,7 +262,7 @@ func filterHooks(hooks []*scm.Hook, provider core.Provider) []*scm.Hook {
 
 func (s repositoryStore) SetMisc(id uint, useSSH bool) error {
 	var repo core.Repository
-	if s.db.Where("id = ?", id).First(&repo).RecordNotFound() {
+	if errors.Is(s.db.Where("id = ?", id).First(&repo).Error, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("repository not found")
 	}
 
@@ -270,7 +271,7 @@ func (s repositoryStore) SetMisc(id uint, useSSH bool) error {
 
 func (s repositoryStore) UpdateSSHPrivateKey(id uint, key string) error {
 	var repo core.Repository
-	if s.db.Where("id = ?", id).First(&repo).RecordNotFound() {
+	if errors.Is(s.db.Where("id = ?", id).First(&repo).Error, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("repository not found")
 	}
 

@@ -2,7 +2,7 @@ package team
 
 import (
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns new TeamStore.
@@ -43,7 +43,7 @@ func (s teamStore) AddUsers(id uint, users []*core.User) error {
 	if err != nil {
 		return err
 	}
-	return s.db.Model(&team).Association("Users").Append(users).Error
+	return s.db.Model(&team).Association("Users").Append(users)
 }
 
 func (s teamStore) DeleteUsers(id uint, users []*core.User) error {
@@ -51,7 +51,7 @@ func (s teamStore) DeleteUsers(id uint, users []*core.User) error {
 	if err != nil {
 		return err
 	}
-	return s.db.Model(&team).Association("Users").Delete(users).Error
+	return s.db.Model(&team).Association("Users").Delete(users)
 }
 
 func (s teamStore) UpdateUsers(id uint, users []*core.User) error {
@@ -59,5 +59,9 @@ func (s teamStore) UpdateUsers(id uint, users []*core.User) error {
 	if err != nil {
 		return err
 	}
-	return s.db.Model(&team).Association("Users").Clear().Append(users).Error
+	err = s.db.Model(&team).Association("Users").Clear()
+	if err != nil {
+		return err
+	}
+	return s.db.Model(&team).Association("Users").Append(users)
 }

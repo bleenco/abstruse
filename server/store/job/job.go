@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns new JobStore.

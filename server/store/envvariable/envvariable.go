@@ -2,7 +2,7 @@ package envvariable
 
 import (
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns a new EnvVariableStore.
@@ -31,7 +31,7 @@ func (s envVariableStore) Create(env *core.EnvVariable) error {
 }
 
 func (s envVariableStore) Update(env *core.EnvVariable) error {
-	return s.db.Model(env).Update(&env).Error
+	return s.db.Model(env).Updates(&env).Error
 }
 
 func (s envVariableStore) Delete(env *core.EnvVariable) error {

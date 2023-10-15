@@ -1,12 +1,13 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/bleenco/abstruse/internal/auth"
 	"github.com/bleenco/abstruse/server/core"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 // New returns a new UserStore.
@@ -85,7 +86,7 @@ func (s userStore) Login(email, password string) bool {
 
 func (s userStore) AdminExists() bool {
 	var user core.User
-	return !s.db.Where("role = ?", "admin").First(&user).RecordNotFound()
+	return !errors.Is(s.db.Where("role = ?", "admin").First(&user).Error, gorm.ErrRecordNotFound)
 }
 
 func humanizeError(err error) error {

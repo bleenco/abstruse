@@ -15,12 +15,12 @@ type (
 	// DB database config.
 	DB struct {
 		Charset  string `json:"charset" valid:"ascii,optional"`
-		Driver   string `json:"driver" valid:"in(mysql|mssql|postgres),required"`
-		Host     string `json:"host" valid:"host,required"`
+		Driver   string `json:"driver" valid:"in(mysql|sqlserver|postgres|sqlite|clickhouse),required"`
+		Host     string `json:"host" valid:"host,optional"`
 		Name     string `json:"name" valid:"ascii,required"`
 		Password string `json:"password" valid:"ascii,optional"`
-		Port     int    `json:"port" valid:"port,required"`
-		User     string `json:"user" valid:"ascii,required"`
+		Port     int    `json:"port" valid:"port,optional"`
+		User     string `json:"user" valid:"ascii,optional"`
 	}
 
 	// HTTP server config.
