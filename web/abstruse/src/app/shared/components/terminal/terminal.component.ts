@@ -9,13 +9,14 @@ import {
 } from '@angular/core';
 import { ITheme, Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { CanvasAddon } from 'xterm-addon-canvas';
 
 export type TerminalTheme = 'light' | 'dark';
 
 const themes: { [key: string]: ITheme } = {
   light: {
-    foreground: '#615f51',
-    background: '#ffffff',
+    foreground: '#0d1017',
+    background: '#fafafa',
     black: '#050505',
     red: '#b0263f',
     green: '#4b862c',
@@ -37,7 +38,7 @@ const themes: { [key: string]: ITheme } = {
   },
   dark: {
     foreground: 'hsl(220, 14%, 71%)',
-    background: '#2f3136',
+    background: '#0d1017',
     black: '#000',
     red: '#be5046',
     green: '#98c379',
@@ -70,6 +71,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   terminal: Terminal;
   fitAddon: FitAddon;
+  canvasAddon: CanvasAddon;
 
   constructor(public elementRef: ElementRef) {
     this.terminal = new Terminal({
@@ -84,11 +86,13 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
       fontFamily: 'SourceCodePro, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'
     });
     this.fitAddon = new FitAddon();
+    this.canvasAddon = new CanvasAddon();
   }
 
   ngOnInit(): void {
     this.terminal.open(this.elementRef.nativeElement.querySelector('.terminal-container'));
     this.terminal.loadAddon(this.fitAddon);
+    this.terminal.loadAddon(this.canvasAddon);
 
     this.setTheme();
     this.fitAddon.fit();
@@ -123,6 +127,7 @@ export class TerminalComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy(): void {
     this.data = null;
+    this.canvasAddon.dispose();
     this.terminal.dispose();
   }
 
