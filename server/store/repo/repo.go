@@ -58,6 +58,12 @@ func (s repositoryStore) FindToken(token string) (*core.Repository, error) {
 	return &repo, err
 }
 
+func (s repositoryStore) FindArchive(username string, reponame string) (core.Repository, error) {
+	var repo core.Repository
+	err := s.db.Where("namespace = ? AND name = ?", username, reponame).First(&repo).Error
+	return repo, err
+}
+
 func (s repositoryStore) List(filters core.RepositoryFilter) ([]core.Repository, int, error) {
 	var repos []core.Repository
 	var count int

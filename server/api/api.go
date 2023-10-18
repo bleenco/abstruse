@@ -109,8 +109,10 @@ func (r Router) Handler() http.Handler {
 
 	cors := cors.New(corsOpts)
 	router.Use(cors.Handler)
-
 	router.Mount("/api/v1", r.apiRouter())
+
+	router.Mount("/archive/{id}/", build.HandleArchive(r.Jobs, r.Config))
+	router.Mount("/archive/{username}/{repo}/{branch}/{buildid}/{pull}/{platform}/{matrixid}", build.HandleArchiveRedirect(r.Jobs, r.Repos, r.Builds, r.Config))
 	router.Get("/ws", ws.UpstreamHandler(r.Config.Websocket.Addr))
 	router.Get("/badge/{token}", badge.HandleBadge(r.Builds))
 	router.Mount("/uploads", r.fileServer())
@@ -247,6 +249,7 @@ func (r Router) workersRouter() *chi.Mux {
 		router.Post("/auth", worker.HandleAuth(r.Workers, r.Config, r.WS.App))
 		router.Post("/cache", worker.HandleUploadCache(r.Config))
 		router.Get("/cache", worker.HandleDownloadCache(r.Config))
+		router.Post("/archive", worker.HandleUploadArchive(r.Config))
 	})
 
 	return router

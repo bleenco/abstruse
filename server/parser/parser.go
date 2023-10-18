@@ -31,6 +31,7 @@ type RepoConfig struct {
 	AfterDeploy   []string       `yaml:"after_deploy"`
 	AfterScript   []string       `yaml:"after_script"`
 	Cache         []string       `yaml:"cache"`
+	Archive       []string       `yaml:"archive"`
 }
 
 // MatrixConfig defines structure for matrix job config in .abstruse.yml file.
@@ -54,15 +55,17 @@ type JobConfig struct {
 	Title    string           `json:"title"`
 	Commands *api.CommandList `json:"commands"`
 	Cache    []string         `json:"cache"`
+	Archive  []string         `json:"archive"`
 }
 
 // ConfigParser defines repository configuration parser.
 type ConfigParser struct {
-	Raw    string
-	Branch string
-	Parsed RepoConfig
-	Env    []string
-	Mount  []string
+	Raw     string
+	Branch  string
+	Parsed  RepoConfig
+	Env     []string
+	Mount   []string
+	Archive []string
 }
 
 // NewConfigParser returns new config parser instance.
@@ -94,6 +97,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 	if len(c.Parsed.Matrix) > 0 {
 		for _, item := range c.Parsed.Matrix {
 			job := &JobConfig{}
+			job.Archive = c.Parsed.Archive
 
 			// set image
 			if item.Image != "" {
@@ -123,7 +127,6 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 			}
 			job.Commands = c.generateCommands()
 			job.Cache = c.Parsed.Cache
-
 			jobs = append(jobs, job)
 		}
 	} else {
@@ -135,6 +138,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 			Title:    strings.Join(c.Parsed.Script, " "),
 			Commands: c.generateCommands(),
 			Cache:    c.Parsed.Cache,
+			Archive:  c.Parsed.Archive,
 		}
 		if job.Image == "" {
 			return jobs, fmt.Errorf("image not specified")
@@ -152,6 +156,7 @@ func (c *ConfigParser) Parse() ([]*JobConfig, error) {
 			Title:    strings.Join(c.Parsed.Deploy, " "),
 			Commands: c.generateDeployCommands(),
 			Cache:    c.Parsed.Cache,
+			Archive:  c.Parsed.Archive,
 		}
 		if job.Image == "" {
 			return jobs, fmt.Errorf("image not specified")

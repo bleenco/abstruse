@@ -26,6 +26,15 @@ func (s jobStore) Find(id uint) (*core.Job, error) {
 	return &job, err
 }
 
+func (s jobStore) FindBuild(id uint) ([]core.Job, error) {
+	var jobs []core.Job
+	err := s.db.Model(&jobs).Where("build_id = ?", id).
+		Preload("Build.Repository.Provider").
+		Preload("Build.Repository.EnvVariables").
+		Find(&jobs).Error
+	return jobs, err
+}
+
 func (s jobStore) FindUser(id, userID uint) (*core.Job, error) {
 	var job core.Job
 	err := s.db.Model(&job).Where("id = ?", id).

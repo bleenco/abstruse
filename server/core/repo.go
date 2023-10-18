@@ -62,6 +62,9 @@ type (
 		// FindToken returns repository by token.
 		FindToken(string) (*Repository, error)
 
+		// FindArchive return repository by username and repo name
+		FindArchive(string, string) (Repository, error)
+
 		// List returns list of repositories from the datastore.
 		List(RepositoryFilter) ([]Repository, int, error)
 

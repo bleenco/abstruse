@@ -206,6 +206,7 @@ func (s buildStore) GenerateBuild(repo *core.Repository, base *core.GitHook) ([]
 			BuildID:  build.ID,
 			Mount:    strings.Join(mnts, ","),
 			Cache:    strings.Join(j.Cache, ","),
+			Archive:  strings.Join(j.Archive, ","),
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, 0, err
@@ -332,6 +333,7 @@ func (s buildStore) TriggerBuild(opts core.TriggerBuildOpts) ([]*core.Job, error
 			Stage:    j.Stage,
 			BuildID:  build.ID,
 			Cache:    strings.Join(j.Cache, ","),
+			Archive:  strings.Join(j.Archive, ","),
 		}
 		if err := s.jobs.Create(job); err != nil {
 			return nil, err
