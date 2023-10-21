@@ -49,7 +49,7 @@
               "includePaths": ["src/styles"]
             },
             "scripts": [],
-            "allowedCommonJsDependencies": ["xterm", "xterm-addon-fit"]
+            "allowedCommonJsDependencies": ["xterm", "xterm-addon-fit", "xterm-addon-canvas"]
           },
           "configurations": {
             "production": {
