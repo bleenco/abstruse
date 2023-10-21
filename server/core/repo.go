@@ -35,7 +35,7 @@ type (
 		Provider      Provider      `json:"-"`
 		EnvVariables  []EnvVariable `json:"-"`
 		Mounts        []*Mount      `json:"mounts"`
-		Perms         Perms         `json:"perms"`
+		Perms         Perms         `gorm:"-" json:"perms"`
 		Timestamp
 	}
 
