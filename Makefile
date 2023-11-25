@@ -40,7 +40,6 @@ install_dependencies:
 	@go install github.com/google/wire/...
 	@go install github.com/cespare/reflex
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
-	@go mod tidy
 	@cd web/abstruse && npm install
 
 clean:
