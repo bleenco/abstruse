@@ -19,6 +19,7 @@ type (
 		Build     *Build     `gorm:"preload:false" json:"build,omitempty"`
 		BuildID   uint       `json:"buildID"`
 		Timestamp
+		AssignedWorker string `json:"assignedWorker"`
 	}
 
 	// JobStore defines operations for working with jobs database table.
