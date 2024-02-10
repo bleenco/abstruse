@@ -8,12 +8,12 @@ type (
 		ID        uint       `gorm:"primary_key;auto_increment;not null" json:"id"`
 		Commands  string     `sql:"type:text" json:"commands"`
 		Image     string     `json:"image"`
-		Env       string     `json:"env"`
+		Env       string     `json:"env" sql:"type:longtext"`
 		Mount     string     `json:"mount"`
 		StartTime *time.Time `json:"startTime"`
 		EndTime   *time.Time `json:"endTime"`
 		Status    string     `gorm:"not null;size:20;default:'queued'" json:"status"` // queued | running | passing | failing
-		Log       string     `gorm:"size:16777216" json:"-"`
+		Log       string     `gorm:"size:16777216" json:"-" sql:"type:longtext"`
 		Stage     string     `json:"stage"`
 		Cache     string     `json:"cache"`
 		Build     *Build     `gorm:"preload:false" json:"build,omitempty"`
