@@ -125,7 +125,8 @@ export class Job {
     public createdAt: Date | null,
     public updatedAt: Date | null,
     public buildId: number,
-    public build: Build | null
+    public build: Build | null,
+    public assignedWorker: string,
   ) {
     this.time = new TimeService();
     this.runningTime = new BehaviorSubject<string>(this.getTimeRunning.time);
@@ -197,6 +198,7 @@ export function generateJobModel(data: any): Job {
     data.createdAt ? new Date(data.createdAt) : null,
     data.updatedAt ? new Date(data.updatedAt) : null,
     Number(data.buildID),
-    data.build ? generateBuildModel(data.build) : null
+    data.build ? generateBuildModel(data.build) : null,
+    data.assignedWorker
   );
 }

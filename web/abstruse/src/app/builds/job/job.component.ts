@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { SocketEvent } from 'src/app/shared/models/socket.model';
 import { Job } from '../shared/build.model';
 import { ActivatedRoute } from '@angular/router';
@@ -36,7 +36,8 @@ export class JobComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private buildsService: BuildsService,
     private dataService: DataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private changeDetector: ChangeDetectorRef
   ) {
     if (!localStorage.getItem(THEME_KEY)) {
       localStorage.setItem(THEME_KEY, 'light');
@@ -93,7 +94,7 @@ export class JobComponent implements OnInit, OnDestroy {
     this.buildsService
       .restartJob(this.job.id)
       .pipe(
-        finalize(() => (this.job.processing = false)),
+        finalize(() => { this.findJob(); this.changeDetector.detectChanges(); this.job.processing = false; }),
         untilDestroyed(this)
       )
       .subscribe(

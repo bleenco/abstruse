@@ -75,6 +75,7 @@ func (s *scheduler) Next(job *core.Job) error {
 	job.Log = ""
 	job.StartTime = nil
 	job.EndTime = nil
+	job.AssignedWorker = ""
 	if err := s.saveJob(job); err != nil {
 		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
@@ -282,6 +283,7 @@ func (s *scheduler) startJob(job *core.Job, worker *core.Worker) {
 	job.Log = ""
 	job.StartTime = lib.TimeNow()
 	job.EndTime = nil
+	job.AssignedWorker = worker.Host.Hostname
 	if err := s.saveJob(job); err != nil {
 		s.logger.Errorf("error saving job %d: %v", job.ID, err.Error())
 	}
