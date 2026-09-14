@@ -71,7 +71,7 @@ export class SettingsComponent implements OnInit {
         this.branch = repo?.defaultBranch as string;
       });
 
-    // this.findHooks();
+    this.findHooks();
   }
 
   copyTextToClipboard(text: string): void {
