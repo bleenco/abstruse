@@ -5,7 +5,7 @@ type (
 	EnvVariable struct {
 		ID           uint       `gorm:"primary_key;auto_increment;not null" json:"id"`
 		Key          string     `gorm:"not null" json:"key"`
-		Value        string     `gorm:"not null" sql:"type:text" json:"value"`
+		Value        string     `gorm:"not null" sql:"type:longtext" json:"value"`
 		Secret       bool       `gorm:"not null,default:false" json:"secret"`
 		RepositoryID uint       `gorm:"not null" json:"repositoryID"`
 		Repository   Repository `json:"repository"`
